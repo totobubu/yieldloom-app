@@ -1,0 +1,48 @@
+[
+    {
+        "symbol": "VRSK",
+        "ipoDate": "2009-10-07",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US92345Y1064",
+        "market": "NASDAQ",
+        "yfSymbol": "VRSK",
+        "currency": "USD",
+        "koName": "베리스크 애널리틱스"
+    },
+    {
+        "symbol": "VRSN",
+        "ipoDate": "1998-01-30",
+        "frequency": "분기",
+        "sharesOutstanding": false,
+        "isin": "US92343E1029",
+        "market": "NASDAQ",
+        "yfSymbol": "VRSN",
+        "currency": "USD",
+        "koName": "베리사인"
+    },
+    {
+        "symbol": "VRTX",
+        "ipoDate": "1991-07-24",
+        "sharesOutstanding": false,
+        "isin": "US92532F1003",
+        "market": "NASDAQ",
+        "yfSymbol": "VRTX",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "버텍스 파마슈티컬"
+    },
+    {
+        "symbol": "VTRS",
+        "ipoDate": "1980-03-17",
+        "frequency": "분기",
+        "group": "MMAN",
+        "sharesOutstanding": false,
+        "isin": "US92556V1061",
+        "market": "NASDAQ",
+        "yfSymbol": "VTRS",
+        "currency": "USD",
+        "koName": "비아트리스"
+    }
+]

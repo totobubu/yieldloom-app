@@ -1,0 +1,7 @@
+JPMorgan Equity Premium Income ETF
+Dividend Schedule
+Monthly
+Ex-Date Record Date Pay Date Dividend Paid
+09/01/2026 09/01/2026 09/03/2026 0.37142
+08/03/2026 08/03/2026 08/05/2026 0.36664
+Capital Gains Schedule

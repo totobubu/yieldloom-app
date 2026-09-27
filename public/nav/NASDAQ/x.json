@@ -1,0 +1,65 @@
+[
+    {
+        "symbol": "XBTY",
+        "company": "GraniteShares",
+        "frequency": "매주",
+        "ipoDate": "2025-05-13",
+        "group": "금",
+        "sharesOutstanding": false,
+        "isin": "US38747R4213",
+        "market": "NASDAQ",
+        "yfSymbol": "XBTY",
+        "currency": "USD",
+        "koName": "그래닛셰어즈 일드부스트 비트코인 ETF"
+    },
+    {
+        "symbol": "XDIV",
+        "company": "Roundhill Investments",
+        "ipoDate": "2025-07-10",
+        "sharesOutstanding": false,
+        "isin": "US77926X8332",
+        "market": "NASDAQ",
+        "yfSymbol": "XDIV",
+        "currency": "USD",
+        "koName": "라운드힐 S&P 500 무배당 타겟 ETF"
+    },
+    {
+        "symbol": "XDTE",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "ipoDate": "2024-03-07",
+        "group": "목",
+        "sharesOutstanding": false,
+        "isin": "US77926X2053",
+        "market": "NASDAQ",
+        "yfSymbol": "XDTE",
+        "currency": "USD",
+        "koName": "라운드힐 S&P 500 0DTE 커버드콜 전략 ETF"
+    },
+    {
+        "symbol": "XEL",
+        "ipoDate": "1973-02-21",
+        "frequency": "분기",
+        "group": "JMJS",
+        "sharesOutstanding": false,
+        "isin": "US98389B1008",
+        "market": "NASDAQ",
+        "yfSymbol": "XEL",
+        "currency": "USD",
+        "koName": "엑셀 에너지"
+    },
+    {
+        "symbol": "XOMW",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "group": "월",
+        "underlying": "XOM",
+        "upcoming": true,
+        "sharesOutstanding": false,
+        "market": "NASDAQ",
+        "yfSymbol": "XOMW",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "라운드힐 엑슨 모빌 위클리페이 ETF"
+    }
+]

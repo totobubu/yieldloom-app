@@ -1,0 +1,124 @@
+name: Market Data v2 US
+
+on:
+    schedule:
+        # 평일 오전 6시 (KST) 실행
+        - cron: '0 23 * * 1-5' # KST 06:00 평일 (월-금, UTC 21:00)
+    workflow_dispatch:
+        inputs:
+            skip_price_update:
+                description: 'Skip npm run update-data step'
+                required: false
+                default: 'false'
+
+permissions:
+    contents: write
+
+concurrency:
+    # Every workflow which writes generated repository data must share this lock.
+    # Do not let a price refresh rebase over an info/dividend refresh.
+    group: repository-generated-data-write
+    cancel-in-progress: false
+
+env:
+    NODE_VERSION: '20'
+    PYTHON_VERSION: '3.11'
+
+jobs:
+    build-us:
+        if: github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 10
+
+            - name: Free Disk Space
+              run: |
+                  sudo rm -rf /usr/local/lib/android
+                  sudo rm -rf /usr/share/dotnet
+                  sudo rm -rf /opt/ghc
+                  sudo rm -rf /usr/local/share/boost
+                  sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'npm'
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ env.PYTHON_VERSION }}
+                  cache: 'pip'
+                  cache-dependency-path: 'requirements-workflow.txt'
+
+            - name: Install Node.js dependencies
+              run: npm ci
+
+            - name: Install Python dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r requirements-workflow.txt
+
+            - name: Setup R2 environment variables
+              run: |
+                  echo "R2_ACCOUNT_ID=${{ secrets.R2_ACCOUNT_ID }}" >> $GITHUB_ENV
+                  echo "R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+                  echo "R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+                  echo "R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}" >> $GITHUB_ENV
+                  echo "R2_PUBLIC_URL=${{ secrets.R2_PUBLIC_URL }}" >> $GITHUB_ENV
+
+            - name: Refuse a stale scheduled checkout
+              run: |
+                  git fetch origin main
+                  git merge-base --is-ancestor HEAD origin/main
+
+            - name: Update historical price data (US only)
+              if: inputs.skip_price_update != 'true'
+              env:
+                  DATA_LAYOUT_MODE: market
+              run: node tasks/updateHistoricalUsData.js
+
+            - name: Generate sidebar (popularity 100%)
+              env:
+                  FIRESTORE_SA_KEY: ${{ secrets.FIRESTORE_SA_KEY }}
+              run: npm run generate-sidebar-tickers
+
+            - name: Format changed files only
+              run: npm run format:changed
+
+            - name: Compact JSON without trimming history
+              # Compaction follows formatting so daily updates stay small.
+              run: python scripts/data_pipeline/compact_history.py --apply
+
+            - name: Upload compacted files to R2 (Git-based, fast)
+              env:
+                  GITHUB_EVENT_NAME: ${{ github.event_name }}
+              run: python scripts/cloud/upload_changed_to_r2.py
+
+            - name: Upload updated data to R2
+              run: python scripts/cloud/upload_specific_to_r2.py "public/data/**/*.json"
+
+            - name: Check for changes
+              id: git_status
+              run: |
+                  if [[ -n "$(git status --porcelain public/data/ public/sidebar-tickers.json public/sidebar/)" ]]; then
+                    echo "changes=true" >> $GITHUB_OUTPUT
+                  else
+                    echo "changes=false" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Commit and push changes
+              if: steps.git_status.outputs.changes == 'true'
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git add public/data/ public/sidebar-tickers.json public/sidebar/
+                  git commit -m "📈 Auto: Update US market data v2"
+                  # A non-fast-forward push means a human/code change arrived while
+                  # this long job ran. Never rebase generated history automatically;
+                  # the next scheduled run starts from the new main and regenerates it.
+                  git push origin HEAD:main

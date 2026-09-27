@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XYZY 배당 카드</title>
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1080px; height: 1080px; overflow: hidden; }
+body { font-family: Pretendard, "Noto Sans KR", Arial, sans-serif; background: #081321; color: #f7f9fc; }
+.card { position: relative; display: grid; grid-template-rows: auto 1fr auto; width: 100%; height: 100%; padding: 43px; background: radial-gradient(circle at 90% 4%, #244b68 0, transparent 34%), linear-gradient(145deg, #081321 0%, #10283b 100%); }
+.card::after { content: ""; position: absolute; right: -9%; bottom: -20%; width: 48%; aspect-ratio: 1; border: 6px solid rgba(255,190,82,.22); border-radius: 50%; }
+.top { display: flex; justify-content: space-between; align-items: center; font-size: 22px; font-weight: 800; letter-spacing: .1em; color: #ffbd52; }
+.provider { color: #b9c8d7; letter-spacing: .02em; font-size: .92em; }
+.main { align-self: start; padding-top: 16px; }
+.ticker { margin: 0 0 15px; font-size: 124px; line-height: .9; letter-spacing: -.05em; }
+.label { margin: 0 0 12px; font-size: 32px; color: #b9c8d7; }
+.amount { margin: 0; color: #fff; font-size: 102px; font-weight: 900; letter-spacing: -.055em; }
+.change { display: inline-block; margin-top: 15px; padding: 11px 19px; border: 1px solid rgba(255,189,82,.45); border-radius: 999px; color: #ffd78f; font-size: 22px; font-weight: 800; }
+.amount-change { margin: 10px 0 0; color: #dce7f2; font-size: 22px; font-weight: 700; }
+.monthly { margin-top: 22px; padding: 19px; border-radius: 15px; background: rgba(255,255,255,.94); color: #172033; }
+.monthly > p { margin: 0 0 9px; font-size: 18px; font-weight: 900; } .monthly > p span { color: #667085; font-weight: 600; }
+.month-row { display:grid; grid-template-columns: 89px 117px 1fr; gap: 10px; align-items:center; min-height:32px; border-top:1px solid #e8ecf1; font-size:17px; }
+.month-row strong { color:#344054; } .month-row b { color:#101828; } .pills { display:flex; gap:6px; } .pill { flex:1; padding:8px 6px; border-radius:6px; color:#fff; text-align:center; font-weight:900; font-size:17px; }
+.blue{background:#4386ed}.red{background:#e3483f}.yellow{background:#eab308;color:#172033}.green{background:#22a45d}.orange{background:#e87918}
+.bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding-top: 19px; border-top: 1px solid rgba(255,255,255,.16); }
+.date span { display: block; margin-bottom: 5px; color: #8fa5b7; font-size: 17px; }
+.date strong { font-size: 24px; }
+</style>
+</head>
+<body>
+<main class="card" data-content-card>
+  <header class="top"><span>OFFICIAL DISTRIBUTION</span><span class="provider">YIELDMAX · Made by 토또부부</span></header>
+  <section class="main"><h1 class="ticker">XYZY</h1><p class="label">주당 배당금</p><p class="amount">$0.1397</p><p class="amount-change">직전 $0.1727 → 이번 $0.1397</p><span class="change">직전 대비 -19.1% | - $0.033</span><section class="monthly"><p>최근 월별 주배당 합계 <span>예정값 제외</span></p><div class="month-row"><strong>26.09</strong><b>$0.5232</b><div class="pills"><span class="pill blue">$0.2108</span><span class="pill red">$0.1727</span><span class="pill yellow">$0.1397</span></div></div><div class="month-row"><strong>26.08</strong><b>$0.9733</b><div class="pills"><span class="pill blue">$0.2538</span><span class="pill red">$0.2477</span><span class="pill yellow">$0.2475</span><span class="pill green">$0.2243</span></div></div><div class="month-row"><strong>26.07</strong><b>$1.4930</b><div class="pills"><span class="pill blue">$0.248</span><span class="pill red">$0.3659</span><span class="pill yellow">$0.3332</span><span class="pill green">$0.3019</span><span class="pill orange">$0.244</span></div></div><div class="month-row"><strong>26.06</strong><b>$1.1157</b><div class="pills"><span class="pill blue">$0.3806</span><span class="pill red">$0.2838</span><span class="pill yellow">$0.1983</span><span class="pill green">$0.253</span></div></div></section></section>
+  <footer class="bottom"><div class="date"><span>배당공시일</span><strong>260916</strong></div><div class="date"><span>배당락일</span><strong>260917</strong></div><div class="date"><span>지급일</span><strong>260918</strong></div></footer>
+</main>
+</body>
+</html>

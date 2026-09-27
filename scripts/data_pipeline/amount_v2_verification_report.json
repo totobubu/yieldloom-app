@@ -1,0 +1,14 @@
+{
+  "stats": {
+    "total_files": 3513,
+    "files_with_splits": 911,
+    "total_dividends": 67022,
+    "dividends_with_adjustments": 37954,
+    "total_adjustments": 77955
+  },
+  "issues": {
+    "missing_adjustments": [],
+    "wrong_calculation": [],
+    "missing_amount_after_split": []
+  }
+}

@@ -1,0 +1,49 @@
+[
+    {
+        "symbol": "KDP",
+        "ipoDate": "2008-05-07",
+        "frequency": "분기",
+        "group": "JMJS",
+        "sharesOutstanding": false,
+        "isin": "US49271V1008",
+        "market": "NASDAQ",
+        "yfSymbol": "KDP",
+        "currency": "USD",
+        "koName": "큐리그 닥터페퍼"
+    },
+    {
+        "symbol": "KHC",
+        "ipoDate": "2015-07-06",
+        "frequency": "분기",
+        "group": "MMAN",
+        "sharesOutstanding": false,
+        "isin": "US5007541064",
+        "market": "NASDAQ",
+        "yfSymbol": "KHC",
+        "currency": "USD",
+        "koName": "크래프트 하인즈"
+    },
+    {
+        "symbol": "KLAC",
+        "ipoDate": "1980-10-08",
+        "frequency": "분기",
+        "group": "FMAN",
+        "sharesOutstanding": false,
+        "isin": "US4824801009",
+        "market": "NASDAQ",
+        "yfSymbol": "KLAC",
+        "currency": "USD"
+    },
+    {
+        "symbol": "KMB",
+        "ipoDate": "1980-03-17",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US4943681035",
+        "market": "NASDAQ",
+        "yfSymbol": "KMB",
+        "currency": "USD",
+        "koName": "킴벌리클라크"
+    }
+]

@@ -1,0 +1,112 @@
+name: Regenerate Data (Calendar, Nav, Sidebar)
+
+on:
+    workflow_dispatch: # 수동 트리거
+
+permissions:
+    contents: write
+    id-token: write
+
+concurrency:
+    group: repository-generated-data-write
+    cancel-in-progress: false
+
+jobs:
+    regenerate-data:
+        if: github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        env:
+            R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+            R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+            R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+            R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+            R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+            FIRESTORE_SA_KEY: ${{ secrets.FIRESTORE_SA_KEY }}
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 10 # 전체 히스토리 필요 (변경사항 비교용)
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            # - name: Free Disk Space
+            #   run: |
+            #       sudo rm -rf /usr/local/lib/android
+            #       sudo rm -rf /usr/share/dotnet
+            #       sudo rm -rf /opt/ghc
+            #       sudo rm -rf /usr/local/share/boost
+            #       sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: '3.11'
+                  cache: 'pip'
+
+            - name: Install Python deps
+              run: pip install -r requirements-workflow.txt
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  cache: 'npm'
+
+            - name: Install Node deps
+              run: npm ci --no-audit --no-fund
+
+            - name: Refuse a stale manual checkout
+              run: |
+                  git fetch origin main
+                  git merge-base --is-ancestor HEAD origin/main
+
+            # 1. Nav 재생성 (가장 먼저 실행되어야 함)
+            - name: Generate nav
+              run: npm run generate-nav
+
+            # 2. 파생 데이터 재생성 (병렬 실행)
+            - name: Generate derived data
+              run: |
+                  npm run generate-calendar-events &
+                  npm run generate-sidebar-tickers &
+                  wait
+
+            # 파일 포맷팅 (병렬 실행)
+            - name: Format generated files
+              run: |
+                  npm run format:calendar &
+                  npm run format:nav.json &
+                  wait
+
+            # 변경사항 확인
+            - name: Check for changes
+              id: check_changes
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+
+                  CHANGES=$(git status --porcelain public/calendar/ public/nav.json public/sidebar-tickers.json public/sidebar/ 2>/dev/null | wc -l)
+
+                  if [ "$CHANGES" -eq 0 ]; then
+                      echo "has_changes=false" >> $GITHUB_OUTPUT
+                      echo "[INFO] 재생성된 파일 변경사항 없음"
+                  else
+                      echo "has_changes=true" >> $GITHUB_OUTPUT
+                      echo "[INFO] 재생성된 파일 변경사항 감지됨"
+                      git status --porcelain public/calendar/ public/nav.json public/sidebar-tickers.json public/sidebar/
+                  fi
+
+            # R2에 업로드
+            - name: Upload to R2
+              if: steps.check_changes.outputs.has_changes == 'true'
+              run: |
+                  python scripts/cloud/upload_changed_to_r2.py || echo "R2 업로드 실패(계속 진행)"
+
+            # 변경사항 커밋 및 푸시
+            - name: Commit and push changes
+              if: steps.check_changes.outputs.has_changes == 'true'
+              run: |
+                  git add public/calendar/ public/nav.json public/sidebar-tickers.json public/sidebar/
+                  git commit -m "chore: regenerate calendar, nav, and sidebar data [skip ci]" || echo "커밋 실패 또는 변경사항 없음"
+                  git push origin HEAD:main

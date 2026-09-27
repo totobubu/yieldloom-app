@@ -1,0 +1,24 @@
+[
+    {
+        "symbol": "ZBRA",
+        "ipoDate": "1991-08-15",
+        "sharesOutstanding": false,
+        "isin": "US9892071054",
+        "market": "NASDAQ",
+        "yfSymbol": "ZBRA",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "지브라 테크놀로지스"
+    },
+    {
+        "symbol": "ZS",
+        "ipoDate": "2018-03-16",
+        "sharesOutstanding": false,
+        "isin": "US98980G1022",
+        "market": "NASDAQ",
+        "yfSymbol": "ZS",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "지스케일러"
+    }
+]

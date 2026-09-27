@@ -1,0 +1,85 @@
+[
+    {
+        "symbol": "WBD",
+        "ipoDate": "2005-07-08",
+        "sharesOutstanding": false,
+        "isin": "US9344231041",
+        "market": "NASDAQ",
+        "yfSymbol": "WBD",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "워너 브로스 디스커버리"
+    },
+    {
+        "symbol": "WDAY",
+        "ipoDate": "2012-10-12",
+        "sharesOutstanding": false,
+        "isin": "US98138H1014",
+        "market": "NASDAQ",
+        "yfSymbol": "WDAY",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "워크데이"
+    },
+    {
+        "symbol": "WDC",
+        "ipoDate": "1978-10-31",
+        "frequency": "분기",
+        "group": "JAJS",
+        "sharesOutstanding": false,
+        "isin": "US9581021055",
+        "market": "NASDAQ",
+        "yfSymbol": "WDC",
+        "currency": "USD",
+        "koName": "웨스털 디지털"
+    },
+    {
+        "symbol": "WEED",
+        "company": "Roundhill Investments",
+        "ipoDate": "2022-04-20",
+        "sharesOutstanding": false,
+        "isin": "US53656F1286",
+        "market": "NASDAQ",
+        "yfSymbol": "WEED",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "라운드힐 대마초 ETF"
+    },
+    {
+        "symbol": "WEEK",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "ipoDate": "2025-03-06",
+        "group": "화",
+        "sharesOutstanding": false,
+        "isin": "US77926X6765",
+        "market": "NASDAQ",
+        "yfSymbol": "WEEK",
+        "currency": "USD",
+        "koName": "라운드힐 주간 만기 미국 국채 ETF"
+    },
+    {
+        "symbol": "WTW",
+        "ipoDate": "2001-06-12",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "IE00BDB6Q211",
+        "market": "NASDAQ",
+        "yfSymbol": "WTW",
+        "currency": "USD",
+        "koName": "월리스 타워스 왓슨"
+    },
+    {
+        "symbol": "WYNN",
+        "ipoDate": "2002-10-25",
+        "frequency": "분기",
+        "group": "FMAN",
+        "sharesOutstanding": false,
+        "isin": "US9831341071",
+        "market": "NASDAQ",
+        "yfSymbol": "WYNN",
+        "currency": "USD",
+        "koName": "윈 리조트"
+    }
+]

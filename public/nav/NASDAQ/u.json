@@ -1,0 +1,59 @@
+[
+    {
+        "symbol": "UAL",
+        "ipoDate": "2006-02-06",
+        "sharesOutstanding": false,
+        "isin": "US9100471096",
+        "market": "NASDAQ",
+        "yfSymbol": "UAL",
+        "currency": "USD",
+        "koName": "유나이티드 항공"
+    },
+    {
+        "symbol": "UBEW",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "group": "월",
+        "ipoDate": "2025-10-23",
+        "sharesOutstanding": false,
+        "isin": "US77926X4786",
+        "market": "NASDAQ",
+        "yfSymbol": "UBEW",
+        "currency": "USD",
+        "koName": "라운드힐 우버 위클리페이 ETF"
+    },
+    {
+        "symbol": "ULTA",
+        "ipoDate": "2007-10-25",
+        "sharesOutstanding": false,
+        "isin": "US90384S3031",
+        "market": "NASDAQ",
+        "yfSymbol": "ULTA",
+        "currency": "USD",
+        "koName": "울타 뷰티"
+    },
+    {
+        "symbol": "USOY",
+        "company": "Defiance",
+        "frequency": "매주",
+        "ipoDate": "2024-05-10",
+        "group": "목",
+        "sharesOutstanding": false,
+        "isin": "US88636J3784",
+        "market": "NASDAQ",
+        "yfSymbol": "USOY",
+        "currency": "USD",
+        "koName": "디파이언스 오일 인핸스드 옵션 인컴 ETF"
+    },
+    {
+        "symbol": "UX",
+        "company": "Roundhill Investments",
+        "ipoDate": "2025-01-29",
+        "sharesOutstanding": false,
+        "isin": "US77926X6849",
+        "market": "NASDAQ",
+        "yfSymbol": "UX",
+        "currency": "USD",
+        "koName": "프로셰어즈 울트라 엑스알피(리플) ETF"
+    }
+]

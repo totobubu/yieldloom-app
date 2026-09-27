@@ -1,0 +1,99 @@
+// src\styles\functions\breakpoints.scss
+@use 'sass:map';
+@use 'sass:list';
+@use '../abstracts/variables' as vars;
+
+@function breakpoint-next(
+    $name,
+    $breakpoints: vars.$grid-breakpoints,
+    $breakpoint-names: map.keys($breakpoints)
+) {
+    $n: list.index($breakpoint-names, $name);
+    @if $n != null and $n < list.length($breakpoint-names) {
+        @return list.nth($breakpoint-names, $n + 1);
+    } @else {
+        @return null;
+    }
+}
+
+@function breakpoint-min($name, $breakpoints: vars.$grid-breakpoints) {
+    $min: map.get($breakpoints, $name);
+    @if $min != 0 {
+        @return $min;
+    } @else {
+        @return null;
+    }
+}
+
+@function breakpoint-max($name, $breakpoints: vars.$grid-breakpoints) {
+    $next: breakpoint-next($name, $breakpoints);
+    @if $next {
+        @return breakpoint-min($next, $breakpoints) - 0.02;
+    } @else {
+        @return null;
+    }
+}
+
+@mixin media-breakpoint-up($name, $breakpoints: vars.$grid-breakpoints) {
+    $min: breakpoint-min($name, $breakpoints);
+    @if $min {
+        @media (min-width: $min) {
+            @content;
+        }
+    } @else {
+        @content;
+    }
+}
+
+@mixin media-breakpoint-down($name, $breakpoints: vars.$grid-breakpoints) {
+    $max: breakpoint-max($name, $breakpoints);
+    @if $max {
+        @media (max-width: $max) {
+            @content;
+        }
+    } @else {
+        @content;
+    }
+}
+
+@mixin media-breakpoint-between(
+    $lower,
+    $upper,
+    $breakpoints: vars.$grid-breakpoints
+) {
+    $min: breakpoint-min($lower, $breakpoints);
+    $max: breakpoint-max($upper, $breakpoints);
+
+    @if $min != null and $max != null {
+        @media (min-width: $min) and (max-width: $max) {
+            @content;
+        }
+    } @else if $max == null {
+        @include media-breakpoint-up($lower, $breakpoints) {
+            @content;
+        }
+    } @else if $min == null {
+        @include media-breakpoint-down($upper, $breakpoints) {
+            @content;
+        }
+    }
+}
+
+@mixin media-breakpoint-only($name, $breakpoints: vars.$grid-breakpoints) {
+    $min: breakpoint-min($name, $breakpoints);
+    $max: breakpoint-max($name, $breakpoints);
+
+    @if $min != null and $max != null {
+        @media (min-width: $min) and (max-width: $max) {
+            @content;
+        }
+    } @else if $max == null {
+        @include media-breakpoint-up($name, $breakpoints) {
+            @content;
+        }
+    } @else if $min == null {
+        @include media-breakpoint-down($name, $breakpoints) {
+            @content;
+        }
+    }
+}

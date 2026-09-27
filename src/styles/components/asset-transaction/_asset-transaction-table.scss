@@ -1,0 +1,246 @@
+// Asset Transaction Dialog Table Styles
+// Based on Google Sheets format
+
+.asset-transaction-table {
+    // Table container
+    .p-datatable {
+        font-size: 10pt;
+        font-family: Arial, 'Malgun Gothic', sans-serif;
+
+        // Table cells default
+        .p-datatable-tbody > tr > td {
+            padding: 2px 3px;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+            border-bottom: 1px solid #000000;
+        }
+
+        // Header cells
+        .p-datatable-thead > tr > th {
+            padding: 2px 3px;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-wrap: break-word;
+            font-weight: bold;
+            background-color: #ffffff;
+            color: #000000;
+            border-bottom: 1px solid #000000;
+            border-right: 1px solid #000000;
+
+            &:last-child {
+                border-right: 3px solid #000000;
+            }
+        }
+
+        // First column (Date) - Cyan header
+        .p-datatable-thead > tr > th:first-child {
+            background-color: #46bdc6;
+            color: #ffffff;
+            font-weight: bold;
+            border-right: 3px solid #000000;
+        }
+
+        // Date column cells
+        .p-datatable-tbody > tr > td:first-child {
+            background-color: #ffffff;
+            border-right: 3px solid #000000;
+
+            &.weekend {
+                background-color: #f4cccc; // Light red for weekends
+            }
+
+            &.holiday {
+                background-color: #ea4335; // Red for holidays
+                color: #ffffff;
+            }
+        }
+
+        // Black background rows (summary/total rows)
+        .p-datatable-tbody > tr.black-row {
+            > td {
+                background-color: #000000;
+                color: #ffffff;
+
+                &.text-green {
+                    color: #34a853;
+                }
+
+                &.text-blue {
+                    color: #4285f4;
+                }
+
+                &.text-red {
+                    color: #ea4335;
+                }
+
+                &.text-orange {
+                    color: #ff6d01;
+                }
+
+                &.text-yellow {
+                    color: #fbbc04;
+                }
+            }
+        }
+
+        // Gray background rows
+        .p-datatable-tbody > tr.gray-row {
+            > td {
+                background-color: #999999;
+                color: #ffffff;
+            }
+        }
+
+        .p-datatable-tbody > tr.gray-dark-row {
+            > td {
+                background-color: #666666;
+                color: #ffffff;
+            }
+        }
+
+        // Dividend rows with colored backgrounds
+        .p-datatable-tbody > tr.dividend-row {
+            > td {
+                background-color: #ffffff;
+
+                &.dividend-date {
+                    background-color: #ffd666; // Yellow for dividend dates
+                }
+            }
+        }
+
+        // Color-coded cells
+        .cell-green {
+            background-color: #a5c77a;
+        }
+
+        .cell-light-green {
+            background-color: #57bb8a;
+        }
+
+        .cell-yellow {
+            background-color: #ffd666;
+        }
+
+        .cell-light-yellow {
+            background-color: #fbc768;
+        }
+
+        .cell-orange {
+            background-color: #f5b26b;
+        }
+
+        .cell-light-orange {
+            background-color: #fac368;
+        }
+
+        .cell-red {
+            background-color: #e67c73;
+        }
+
+        .cell-light-red {
+            background-color: #e88172;
+        }
+
+        .cell-pink {
+            background-color: #f4cccc;
+        }
+
+        .cell-blue {
+            background-color: #cfe2f3;
+        }
+
+        .cell-light-blue {
+            background-color: #c9daf8;
+        }
+
+        .cell-cream {
+            background-color: #fff2cc;
+        }
+
+        // Text colors
+        .text-green {
+            color: #34a853;
+        }
+
+        .text-blue {
+            color: #4285f4;
+        }
+
+        .text-red {
+            color: #ea4335;
+        }
+
+        .text-orange {
+            color: #ff6d01;
+        }
+
+        .text-yellow {
+            color: #fbbc04;
+        }
+
+        // Right border emphasis
+        .border-right-thick {
+            border-right: 3px solid #000000 !important;
+        }
+
+        // Bottom border emphasis
+        .border-bottom-thick {
+            border-bottom: 3px solid #000000 !important;
+        }
+
+        // Merged cells styling
+        .merged-cell {
+            background-color: #ffffff;
+            vertical-align: middle;
+        }
+
+        // Striped rows override
+        &.p-datatable-striped .p-datatable-tbody > tr:nth-child(even) {
+            background: inherit;
+        }
+    }
+
+    // Summary section at top
+    .summary-section {
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        background-color: #efefef;
+        border-radius: 4px;
+
+        .summary-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+
+            .summary-item {
+                flex: 1;
+                text-align: center;
+                padding: 0.25rem;
+                background-color: #ffffff;
+                border-radius: 2px;
+
+                .label {
+                    font-size: 0.8rem;
+                    color: #666666;
+                }
+
+                .value {
+                    font-size: 1.1rem;
+                    font-weight: bold;
+                    color: #000000;
+
+                    &.positive {
+                        color: #34a853;
+                    }
+
+                    &.negative {
+                        color: #ea4335;
+                    }
+                }
+            }
+        }
+    }
+}

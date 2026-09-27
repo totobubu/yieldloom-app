@@ -1,0 +1,282 @@
+// src/styles/abstracts/_theme.scss
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mx;
+@use '../functions/breakpoints' as bp;
+
+// ==================
+// 다크 모드 (.p-dark)
+// ==================
+.p-dark {
+    --t-body-bg: var(--p-zinc-900);
+    --t-text-color: var(--p-surface-0);
+    --t-card-bg: var(--p-surface-900);
+    --t-border-color: var(--p-surface-700);
+
+    // Stats
+    .stats-icon-box {
+        background-color: color-mix(
+            in srgb,
+            var(--p-primary-400),
+            transparent 80%
+        );
+        color: var(--p-primary-200);
+        border: 1px solid
+            color-mix(in srgb, var(--p-primary-400), transparent 70%);
+    }
+
+    .stats-title {
+        color: var(--p-surface-0);
+    }
+
+    .stats-value {
+        color: var(--p-surface-0);
+    }
+
+    .stats-subtitle {
+        color: var(--p-surface-400);
+    }
+
+    // Header / Breadcrumb
+    #t-breadcrumb {
+        .p-breadcrumb-item .pi,
+        .p-breadcrumb-item-link,
+        .p-breadcrumb-item-icon {
+            color: var(--p-text-color-inversed, #ffffff);
+        }
+    }
+
+    // Home Page
+    .t-home {
+        &-header {
+            .desc {
+                color: var(--p-surface-400);
+            }
+        }
+        &-link {
+            .p-button {
+                color: var(--p-surface-700);
+                &-icon {
+                    color: var(--p-surface-950);
+                }
+            }
+        }
+    }
+
+    // Stock Page
+    #t-stock-header {
+        .p-card-body {
+            background-color: var(--p-surface-950);
+            color: var(--p-text-color);
+        }
+    }
+
+    // Sidebar
+    #t-calendar-toggle .p-accordioncontent-content {
+        background-color: var(--p-zinc-800);
+    }
+    #t-search-datatable {
+        .p-datatable-row-selected {
+            > td,
+            .p-datatable-frozen-column {
+                background-color: var(--p-text-color-inversed, #ffffff);
+                color: var(--p-text-color-inversed, #000000);
+            }
+        }
+    }
+
+    // Products
+    .products-table-container {
+        background-color: var(--p-surface-900);
+    }
+
+    .products-table-mask {
+        background-color: color-mix(
+            in srgb,
+            var(--p-surface-900),
+            transparent 80%
+        ) !important;
+    }
+
+    .products-table-loading {
+        color: var(--p-primary-500) !important;
+    }
+
+    .products-search {
+        background-color: var(--p-surface-900);
+        color: var(--p-surface-0);
+        border: 1px solid var(--p-surface-700);
+    }
+
+    // Chart
+    .activity-item {
+        border: 1px solid var(--p-surface-700);
+        background-color: var(--p-surface-800);
+    }
+
+    // Calendar
+    #t-calendar-list .fc-day-cushion {
+        background-color: var(--p-zinc-950);
+        color: #fff;
+    }
+}
+
+// ==================
+// 라이트 모드 (.p-light)
+// ==================
+.p-light {
+    --t-body-bg: #f3f4f6;
+    --t-text-color: #1f2937;
+    --t-card-bg: #ffffff;
+    --t-border-color: #e5e7eb;
+
+    // PrimeVue Overrides for Light Mode
+    --p-surface-0: #ffffff;
+    --p-surface-50: #f9fafb;
+    --p-surface-100: #f3f4f6;
+    --p-surface-200: #e5e7eb;
+    --p-surface-300: #d1d5db;
+    --p-surface-400: #9ca3af;
+    --p-surface-500: #6b7280;
+    --p-surface-600: #4b5563;
+    --p-surface-700: #374151;
+    --p-surface-800: #1f2937;
+    --p-surface-900: #111827;
+    --p-surface-950: #030712;
+
+    // Stats
+    .stats-icon-box {
+        background-color: color-mix(
+            in srgb,
+            var(--p-primary-100),
+            transparent 20%
+        );
+        color: var(--p-primary-700);
+        border: 1px solid var(--p-primary-200);
+    }
+
+    .stats-title {
+        color: var(--p-surface-900);
+    }
+
+    .stats-value {
+        color: var(--p-surface-900);
+    }
+
+    .stats-subtitle {
+        color: var(--p-surface-500);
+    }
+
+    // Header / Breadcrumb
+    #t-breadcrumb {
+        .p-breadcrumb-item .pi,
+        .p-breadcrumb-item-link,
+        .p-breadcrumb-item-icon {
+            color: var(--p-surface-600);
+            &:hover {
+                color: var(--p-primary-600);
+            }
+        }
+        .p-breadcrumb-item-label {
+            color: var(--p-surface-900);
+        }
+    }
+
+    // Home Page
+    .t-home {
+        &-header {
+            .desc {
+                color: var(--p-surface-600);
+            }
+        }
+        &-link {
+            .p-button {
+                color: var(--p-surface-0);
+                background: var(--p-surface-900);
+                border-color: var(--p-surface-900);
+                &-icon {
+                    color: var(--p-surface-0);
+                }
+                &:hover {
+                    background: var(--p-surface-800);
+                    border-color: var(--p-surface-800);
+                }
+            }
+        }
+    }
+
+    // Stock Page
+    #t-stock-header {
+        .p-card {
+            background-color: var(--p-surface-0);
+            border: 1px solid var(--p-surface-200);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .p-card-body {
+            background-color: transparent;
+            color: var(--p-surface-900);
+        }
+    }
+
+    // Sidebar
+    #t-calendar-toggle .p-accordioncontent-content {
+        background-color: var(--p-surface-50);
+    }
+    #t-search-datatable {
+        .p-datatable-row-selected {
+            > td,
+            .p-datatable-frozen-column {
+                background-color: var(--p-primary-50);
+                color: var(--p-primary-900);
+            }
+        }
+    }
+    .company-logo-wrapper {
+        background-color: var(--p-surface-500);
+    }
+
+    // Products
+    .products-table-container {
+        background-color: var(--p-surface-0);
+        border: 1px solid var(--p-surface-200);
+    }
+
+    .products-table-mask {
+        background-color: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .products-table-loading {
+        color: var(--p-primary-600) !important;
+    }
+
+    .products-search {
+        background-color: var(--p-surface-0);
+        color: var(--p-surface-900);
+        border: 1px solid var(--p-surface-300);
+    }
+
+    // Chart
+    .activity-item {
+        border: 1px solid var(--p-surface-200);
+        background-color: var(--p-surface-0);
+    }
+
+    // Calendar
+    #t-calendar-list .fc-day-cushion {
+        background-color: var(--p-surface-100);
+        color: var(--p-surface-900);
+    }
+
+    // Global Backgrounds
+    #t-layout {
+        background-color: var(--t-body-bg);
+    }
+
+    #t-grid {
+        background-color: var(--t-body-bg);
+    }
+
+    .p-card {
+        background-color: var(--t-card-bg);
+        color: var(--t-text-color);
+    }
+}

@@ -1,0 +1,38 @@
+[
+    {
+        "symbol": "JBHT",
+        "ipoDate": "1983-11-22",
+        "frequency": "분기",
+        "group": "FMAN",
+        "sharesOutstanding": false,
+        "isin": "US4456581077",
+        "market": "NASDAQ",
+        "yfSymbol": "JBHT",
+        "currency": "USD",
+        "koName": "JB 헌트 트랜스포트 서비시스"
+    },
+    {
+        "symbol": "JEPQ",
+        "company": "J.P. Morgan",
+        "frequency": "매월",
+        "ipoDate": "2022-05-04",
+        "sharesOutstanding": false,
+        "isin": "US46654Q2030",
+        "market": "NASDAQ",
+        "yfSymbol": "JEPQ",
+        "currency": "USD",
+        "koName": "JP모건 나스닥 프리미엄 인컴 ETF"
+    },
+    {
+        "symbol": "JKHY",
+        "ipoDate": "1985-11-20",
+        "frequency": "분기",
+        "group": "MMSD",
+        "sharesOutstanding": false,
+        "isin": "US4262811015",
+        "market": "NASDAQ",
+        "yfSymbol": "JKHY",
+        "currency": "USD",
+        "koName": "잭 헨리 앤 어소시에이츠"
+    }
+]

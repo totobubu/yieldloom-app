@@ -1,0 +1,40 @@
+// src/styles/components/_calculators.scss
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mx;
+@use '../functions/breakpoints' as bp;
+
+#t-stock-calculator {
+    width: 100%;
+    max-width: 1200px;
+    .p-drawer-close-button {
+        display: none;
+    }
+
+    .p-drawer-content {
+        height: 70vh;
+    }
+    .calculator {
+        &-option {
+            width: 100%;
+            @include bp.media-breakpoint-up('sm') {
+                flex: 0 0 auto;
+                padding: 0.5rem;
+                width: 50%;
+            }
+            table {
+                width: 100%;
+            }
+        }
+        &-result {
+            width: 100%;
+            @include bp.media-breakpoint-up('sm') {
+                flex: 0 0 auto;
+                padding: 0.5rem;
+                width: 50%;
+            }
+            table {
+                width: 100%;
+            }
+        }
+    }
+}

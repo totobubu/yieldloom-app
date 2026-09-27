@@ -1,0 +1,141 @@
+[
+    {
+        "symbol": "FANG",
+        "ipoDate": "2012-10-12",
+        "frequency": "분기",
+        "group": "MMAN",
+        "sharesOutstanding": false,
+        "isin": "US25278X1090",
+        "market": "NASDAQ",
+        "yfSymbol": "FANG",
+        "currency": "USD",
+        "koName": "다이아몬드백 에너지"
+    },
+    {
+        "symbol": "FAST",
+        "ipoDate": "1987-08-20",
+        "frequency": "분기",
+        "group": "JAJO",
+        "sharesOutstanding": false,
+        "isin": "US3119001044",
+        "market": "NASDAQ",
+        "yfSymbol": "FAST",
+        "currency": "USD",
+        "koName": "패스널"
+    },
+    {
+        "symbol": "FBYY",
+        "company": "GraniteShares",
+        "frequency": "매주",
+        "group": "금",
+        "ipoDate": "2025-10-22",
+        "sharesOutstanding": false,
+        "isin": "US38747R3140",
+        "market": "NASDAQ",
+        "yfSymbol": "FBYY",
+        "currency": "USD",
+        "koName": "그래닛셰어즈 일드부스트 메타 ETF"
+    },
+    {
+        "symbol": "FEAT",
+        "company": "YieldMax",
+        "frequency": "매주",
+        "group": "수",
+        "ipoDate": "2024-12-17",
+        "sharesOutstanding": false,
+        "isin": "US88636R6696",
+        "market": "NASDAQ",
+        "yfSymbol": "FEAT",
+        "currency": "USD",
+        "koName": "일드맥스 도시 라이트 피쳐드 5 인컴 ETF"
+    },
+    {
+        "symbol": "FEPI",
+        "company": "Rex",
+        "frequency": "매월",
+        "ipoDate": "2023-10-11",
+        "sharesOutstanding": false,
+        "isin": "US26923N7443",
+        "market": "NASDAQ",
+        "yfSymbol": "FEPI",
+        "currency": "USD",
+        "koName": "렉스 FANG & 혁신 에퀴티 프리미엄 인컴 ETF"
+    },
+    {
+        "symbol": "FFIV",
+        "ipoDate": "1999-06-04",
+        "sharesOutstanding": false,
+        "isin": "US3156161024",
+        "market": "NASDAQ",
+        "yfSymbol": "FFIV",
+        "currency": "USD",
+        "noDividends": true
+    },
+    {
+        "symbol": "FITB",
+        "ipoDate": "1980-03-17",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US3167731005",
+        "market": "NASDAQ",
+        "yfSymbol": "FITB",
+        "currency": "USD",
+        "koName": "피프스 서드 뱅코프"
+    },
+    {
+        "symbol": "FIVY",
+        "company": "YieldMax",
+        "frequency": "매주",
+        "group": "수",
+        "ipoDate": "2024-12-17",
+        "sharesOutstanding": false,
+        "isin": "US88636R6514",
+        "market": "NASDAQ",
+        "yfSymbol": "FIVY",
+        "currency": "USD",
+        "koName": "일드맥스 도시 라이트 하이브리드 5 인컴 ETF"
+    },
+    {
+        "symbol": "FOX",
+        "ipoDate": "2019-03-13",
+        "sharesOutstanding": false,
+        "isin": "US35137L2043",
+        "market": "NASDAQ",
+        "yfSymbol": "FOX",
+        "currency": "USD",
+        "koName": "폭스 B"
+    },
+    {
+        "symbol": "FOXA",
+        "ipoDate": "2019-03-12",
+        "sharesOutstanding": false,
+        "isin": "US35137L1052",
+        "market": "NASDAQ",
+        "yfSymbol": "FOXA",
+        "currency": "USD",
+        "koName": "폭스 A"
+    },
+    {
+        "symbol": "FSLR",
+        "ipoDate": "2006-11-17",
+        "sharesOutstanding": false,
+        "isin": "US3364331070",
+        "market": "NASDAQ",
+        "yfSymbol": "FSLR",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "퍼스트 솔라"
+    },
+    {
+        "symbol": "FTNT",
+        "ipoDate": "2009-11-18",
+        "sharesOutstanding": false,
+        "isin": "US34959E1091",
+        "market": "NASDAQ",
+        "yfSymbol": "FTNT",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "포티넷"
+    }
+]

@@ -1,0 +1,4 @@
+platform,content_key,ticker,topic,published_at,views,likes,comments,clicks,subscribers,watch_minutes,production_minutes
+youtube,video-id-or-slug,TSLY,weekly-high-income,2026-09-19,0,0,0,0,0,0,0
+naver,post-id-or-slug,SCHD,dividend-growth,2026-09-19,0,0,0,0,0,0,0
+toss,post-id-or-slug,SPYI,roc-risk,2026-09-19,0,0,0,0,0,0,0

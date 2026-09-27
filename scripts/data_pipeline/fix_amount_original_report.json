@@ -1,0 +1,714 @@
+{
+  "timestamp": "2025-12-23T23:40:19.045298",
+  "dry_run": false,
+  "stats": {
+    "processed_files": 3513,
+    "fixed_files": 160,
+    "skipped_files": 3353,
+    "errors": 0,
+    "items_fixed": 3459
+  },
+  "fixes": [
+    {
+      "symbol": "MSST",
+      "date": "2025-12-09",
+      "old_original": null,
+      "new_original": 0.2262,
+      "amount_fixed": 0.2262
+    },
+    {
+      "symbol": "MSST",
+      "date": "2025-12-16",
+      "old_original": null,
+      "new_original": 0.2227,
+      "amount_fixed": 0.2227
+    },
+    {
+      "symbol": "NVIT",
+      "date": "2025-12-09",
+      "old_original": null,
+      "new_original": 0.2387,
+      "amount_fixed": 0.2387
+    },
+    {
+      "symbol": "NVIT",
+      "date": "2025-12-16",
+      "old_original": null,
+      "new_original": 0.23,
+      "amount_fixed": 0.23
+    },
+    {
+      "symbol": "TEST",
+      "date": "2025-12-09",
+      "old_original": null,
+      "new_original": 0.2644,
+      "amount_fixed": 0.2644
+    },
+    {
+      "symbol": "TEST",
+      "date": "2025-12-16",
+      "old_original": null,
+      "new_original": 0.2655,
+      "amount_fixed": 0.2655
+    },
+    {
+      "symbol": "TSYW",
+      "date": "2025-11-24",
+      "old_original": null,
+      "new_original": 0.123983,
+      "amount_fixed": 0.123983
+    },
+    {
+      "symbol": "TSYW",
+      "date": "2025-12-08",
+      "old_original": null,
+      "new_original": 0.152748,
+      "amount_fixed": 0.152748
+    },
+    {
+      "symbol": "TSYW",
+      "date": "2025-12-15",
+      "old_original": null,
+      "new_original": 0.093876,
+      "amount_fixed": 0.093876
+    },
+    {
+      "symbol": "UNHW",
+      "date": "2025-12-15",
+      "old_original": null,
+      "new_original": 0.565523,
+      "amount_fixed": 0.565523
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-03-03",
+      "old_original": null,
+      "new_original": 0.241269,
+      "amount_fixed": 0.241269
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-03-10",
+      "old_original": null,
+      "new_original": 0.201504,
+      "amount_fixed": 0.201504
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-03-17",
+      "old_original": null,
+      "new_original": 0.228768,
+      "amount_fixed": 0.228768
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-03-24",
+      "old_original": null,
+      "new_original": 0.121266,
+      "amount_fixed": 0.121266
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-03-31",
+      "old_original": null,
+      "new_original": 0.277831,
+      "amount_fixed": 0.277831
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-04-07",
+      "old_original": null,
+      "new_original": 0.226348,
+      "amount_fixed": 0.226348
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-04-14",
+      "old_original": null,
+      "new_original": 0.102179,
+      "amount_fixed": 0.102179
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-04-21",
+      "old_original": null,
+      "new_original": 0.385534,
+      "amount_fixed": 0.385534
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-04-28",
+      "old_original": null,
+      "new_original": 0.24919,
+      "amount_fixed": 0.24919
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-05-05",
+      "old_original": null,
+      "new_original": 0.320112,
+      "amount_fixed": 0.320112
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-05-12",
+      "old_original": null,
+      "new_original": 0.184757,
+      "amount_fixed": 0.184757
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-05-19",
+      "old_original": null,
+      "new_original": 0.161691,
+      "amount_fixed": 0.161691
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-05-27",
+      "old_original": null,
+      "new_original": 0.277575,
+      "amount_fixed": 0.277575
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-06-02",
+      "old_original": null,
+      "new_original": 0.101323,
+      "amount_fixed": 0.101323
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-06-09",
+      "old_original": null,
+      "new_original": 0.264833,
+      "amount_fixed": 0.264833
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-06-16",
+      "old_original": null,
+      "new_original": 0.234571,
+      "amount_fixed": 0.234571
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-06-23",
+      "old_original": null,
+      "new_original": 0.144885,
+      "amount_fixed": 0.144885
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-06-30",
+      "old_original": null,
+      "new_original": 0.265388,
+      "amount_fixed": 0.265388
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-07-07",
+      "old_original": null,
+      "new_original": 0.224814,
+      "amount_fixed": 0.224814
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-07-14",
+      "old_original": null,
+      "new_original": 0.750169,
+      "amount_fixed": 0.750169
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-07-21",
+      "old_original": null,
+      "new_original": 0.39776,
+      "amount_fixed": 0.39776
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-07-28",
+      "old_original": null,
+      "new_original": 0.432191,
+      "amount_fixed": 0.432191
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-08-04",
+      "old_original": null,
+      "new_original": 0.233858,
+      "amount_fixed": 0.233858
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-08-11",
+      "old_original": null,
+      "new_original": 0.231254,
+      "amount_fixed": 0.231254
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-08-18",
+      "old_original": null,
+      "new_original": 0.484867,
+      "amount_fixed": 0.484867
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-08-25",
+      "old_original": null,
+      "new_original": 0.230749,
+      "amount_fixed": 0.230749
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-09-02",
+      "old_original": null,
+      "new_original": 0.172619,
+      "amount_fixed": 0.172619
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-09-08",
+      "old_original": null,
+      "new_original": 0.233034,
+      "amount_fixed": 0.233034
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-09-15",
+      "old_original": null,
+      "new_original": 0.232962,
+      "amount_fixed": 0.232962
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-09-22",
+      "old_original": null,
+      "new_original": 0.165677,
+      "amount_fixed": 0.165677
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-09-29",
+      "old_original": null,
+      "new_original": 0.373178,
+      "amount_fixed": 0.373178
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-10-06",
+      "old_original": null,
+      "new_original": 0.394476,
+      "amount_fixed": 0.394476
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-10-14",
+      "old_original": null,
+      "new_original": 0.380464,
+      "amount_fixed": 0.380464
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-10-20",
+      "old_original": null,
+      "new_original": 0.217648,
+      "amount_fixed": 0.217648
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-10-27",
+      "old_original": null,
+      "new_original": 0.267129,
+      "amount_fixed": 0.267129
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-11-03",
+      "old_original": null,
+      "new_original": 0.263529,
+      "amount_fixed": 0.263529
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-11-10",
+      "old_original": null,
+      "new_original": 0.270379,
+      "amount_fixed": 0.270379
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-11-17",
+      "old_original": null,
+      "new_original": 0.238375,
+      "amount_fixed": 0.238375
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-11-24",
+      "old_original": null,
+      "new_original": 0.285219,
+      "amount_fixed": 0.285219
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-12-01",
+      "old_original": null,
+      "new_original": 0.255523,
+      "amount_fixed": 0.255523
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-12-08",
+      "old_original": null,
+      "new_original": 0.271241,
+      "amount_fixed": 0.271241
+    },
+    {
+      "symbol": "AAPW",
+      "date": "2025-12-15",
+      "old_original": null,
+      "new_original": 0.239939,
+      "amount_fixed": 0.239939
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2024-07-26",
+      "old_original": null,
+      "new_original": 1.4798,
+      "amount_fixed": 1.4798
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2024-08-27",
+      "old_original": null,
+      "new_original": 1.4567,
+      "amount_fixed": 1.4567
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2024-10-24",
+      "old_original": null,
+      "new_original": 1.4696,
+      "amount_fixed": 1.4696
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2024-11-26",
+      "old_original": null,
+      "new_original": 1.5103,
+      "amount_fixed": 1.5103
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2024-12-24",
+      "old_original": null,
+      "new_original": 1.4862,
+      "amount_fixed": 1.4862
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2025-01-29",
+      "old_original": null,
+      "new_original": 1.4484,
+      "amount_fixed": 1.4484
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2025-03-26",
+      "old_original": null,
+      "new_original": 1.2804,
+      "amount_fixed": 1.2804
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2025-04-23",
+      "old_original": null,
+      "new_original": 1.1022,
+      "amount_fixed": 1.1022
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2025-05-28",
+      "old_original": null,
+      "new_original": 1.2325,
+      "amount_fixed": 1.2325
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2025-06-25",
+      "old_original": null,
+      "new_original": 1.2739,
+      "amount_fixed": 1.2739
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2025-08-27",
+      "old_original": null,
+      "new_original": 1.2307,
+      "amount_fixed": 1.2307
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2025-10-29",
+      "old_original": null,
+      "new_original": 1.3032,
+      "amount_fixed": 1.3032
+    },
+    {
+      "symbol": "AIPI",
+      "date": "2025-11-25",
+      "old_original": null,
+      "new_original": 1.2011,
+      "amount_fixed": 1.2011
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-09-03",
+      "old_original": null,
+      "new_original": 0.1749,
+      "amount_fixed": 0.1749
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-09-10",
+      "old_original": null,
+      "new_original": 0.1438,
+      "amount_fixed": 0.1438
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-09-17",
+      "old_original": null,
+      "new_original": 0.2324,
+      "amount_fixed": 0.2324
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-09-24",
+      "old_original": null,
+      "new_original": 0.1816,
+      "amount_fixed": 0.1816
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-10-01",
+      "old_original": null,
+      "new_original": 0.1707,
+      "amount_fixed": 0.1707
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-10-08",
+      "old_original": null,
+      "new_original": 0.3697,
+      "amount_fixed": 0.3697
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-10-15",
+      "old_original": null,
+      "new_original": 0.5757,
+      "amount_fixed": 0.5757
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-10-22",
+      "old_original": null,
+      "new_original": 0.4571,
+      "amount_fixed": 0.4571
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-10-29",
+      "old_original": null,
+      "new_original": 0.4373,
+      "amount_fixed": 0.4373
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-11-05",
+      "old_original": null,
+      "new_original": 0.6709,
+      "amount_fixed": 0.6709
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-11-12",
+      "old_original": null,
+      "new_original": 0.2149,
+      "amount_fixed": 0.2149
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-11-19",
+      "old_original": null,
+      "new_original": 0.1626,
+      "amount_fixed": 0.1626
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-11-26",
+      "old_original": null,
+      "new_original": 0.276,
+      "amount_fixed": 0.276
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-12-03",
+      "old_original": null,
+      "new_original": 0.2977,
+      "amount_fixed": 0.2977
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-12-10",
+      "old_original": null,
+      "new_original": 0.2583,
+      "amount_fixed": 0.2583
+    },
+    {
+      "symbol": "AMDU",
+      "date": "2025-12-17",
+      "old_original": null,
+      "new_original": 0.2043,
+      "amount_fixed": 0.2043
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-08-11",
+      "old_original": null,
+      "new_original": 1.367688,
+      "amount_fixed": 1.367688
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-08-18",
+      "old_original": null,
+      "new_original": 1.135226,
+      "amount_fixed": 1.135226
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-08-25",
+      "old_original": null,
+      "new_original": 0.641008,
+      "amount_fixed": 0.641008
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-09-02",
+      "old_original": null,
+      "new_original": 0.388622,
+      "amount_fixed": 0.388622
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-09-08",
+      "old_original": null,
+      "new_original": 0.424531,
+      "amount_fixed": 0.424531
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-09-15",
+      "old_original": null,
+      "new_original": 0.300917,
+      "amount_fixed": 0.300917
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-09-22",
+      "old_original": null,
+      "new_original": 0.535057,
+      "amount_fixed": 0.535057
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-09-29",
+      "old_original": null,
+      "new_original": 0.703227,
+      "amount_fixed": 0.703227
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-10-06",
+      "old_original": null,
+      "new_original": 0.789958,
+      "amount_fixed": 0.789958
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-10-14",
+      "old_original": null,
+      "new_original": 1.190116,
+      "amount_fixed": 1.190116
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-10-20",
+      "old_original": null,
+      "new_original": 1.367411,
+      "amount_fixed": 1.367411
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-10-27",
+      "old_original": null,
+      "new_original": 1.491251,
+      "amount_fixed": 1.491251
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-11-03",
+      "old_original": null,
+      "new_original": 1.081962,
+      "amount_fixed": 1.081962
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-11-10",
+      "old_original": null,
+      "new_original": 1.043646,
+      "amount_fixed": 1.043646
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-11-17",
+      "old_original": null,
+      "new_original": 0.563806,
+      "amount_fixed": 0.563806
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-11-24",
+      "old_original": null,
+      "new_original": 0.976707,
+      "amount_fixed": 0.976707
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-12-01",
+      "old_original": null,
+      "new_original": 0.269602,
+      "amount_fixed": 0.269602
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-12-08",
+      "old_original": null,
+      "new_original": 0.775538,
+      "amount_fixed": 0.775538
+    },
+    {
+      "symbol": "AMDW",
+      "date": "2025-12-15",
+      "old_original": null,
+      "new_original": 0.690935,
+      "amount_fixed": 0.690935
+    }
+  ],
+  "errors": []
+}

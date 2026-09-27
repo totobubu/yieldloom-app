@@ -1,0 +1,5813 @@
+{
+    "delisted": [
+        {
+            "symbol": "467940",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ]
+        }
+    ],
+    "no_dividends": [
+        {
+            "symbol": "0000Y0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Heungkuk HK 26-12 Coporate Bond(Aa- Or Higher) Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0000Z0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Rise Bio Top10 Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0002C0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Assetplus Assetplus India Leading Company Focus 20 Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0005C0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Rise Us S&P500 Yen Hedged Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0005D0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol All Solid State Battery & Silicon Anode ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0007F0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex 27-12 Corporate Bond(Aa-) Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0007G0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus Global Nuclear Energy Value Chain ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0007N0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Im Asset - Im Asset 200 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0008E0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Us Focus Manufacturing Mid-Small Cap ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0008T0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol Cosmetics Top3 Plus ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0015B0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsungactive Koact Us Nasdaq Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0015K0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger US AI Big Tech 10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0016X0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol Mid-Short Term Credit Bond (A- Or Higher) Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0018Z0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Rise Us Quantum Computing ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0019K0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Asset Management. Ltd. - Us Nasdaq100 Balanced 50 Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0020H0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsungactive Koact Global Quantum Computing Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0021C0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management Co, Ltd. - KIM ACE Long Term Asset Allocation Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0021D0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management Co, Ltd. - KIM Ace TDF2030 Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0021E0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management Co, Ltd. - Kim Ace Tdf 2050 Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0023A0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol US Quantum Computing Top10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0023B0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus U.S. Quantum Computing Top 10 Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0025N0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger TDF2045 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0026E0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Us S&P500 Buffer March Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0035T0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus Global Humanoid Robot Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0036R0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Rise Us Humanoid Robot ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0036Z0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Rise Us Natural Gas Value Chain Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0040S0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Nh-Amundi Hanaro Global Physical Ai Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0043Y0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio China AI Tech Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0047N0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus China AI Tech Top 10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "005070",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "MUTUALFUND",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0050E0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha PLUS US AI Agents ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0051A0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsungactive Koact Broadcom Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0051G0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol US Nuclear Power Smr ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0053M0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "THEJ mid-small Focus Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0061Z0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Rise Short Term Specialized Bank Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0064K0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Global Gold Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0066W0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol Global Gold Fofs ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0067V0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger China Global Leaders Top3 Plus ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0068M0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Us S&P500 Buffer June Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0072R0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Global Investments Co. Ltd. - Mirae Asset TIGER Gold Spot ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "007390",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "NatureCell Co.,Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0074K0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsungactive Koact K-Export Leaders Top30 Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0078V0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus Us Robotaxi ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0079X0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Byd Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0080G0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex K-Defense Top10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0080Y0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol Shipbuilding Top3 Plus Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0082F0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Nh-Amundi Hanaro Europe Defense Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0087F0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace China Ai Big Tech Top2 Plus Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0088N0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Won K-Global Net Buying Top Picks ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0089B0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0090B0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha PLUS Korea Defense Components Manufacturing ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0091M0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Nh-Amundi Hanaro 27-06 Corporate Bond (Aa- Or Higher) Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0091P0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0092B0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0092C0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0093A0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE AI Semiconductor TOP 10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0093D0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsungactive Koact Palantir Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "009420",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "MUTUALFUND",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0094K0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Securities Co. Ltd. - Tiger 28-04 Corporate Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0094X0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hana 1Q Xiaomi Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0098F0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Nuclear Power Smr Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0098Z0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Vi Focus 200 Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0100K0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex K-Defense Top10 Leverage Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0101N0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Rise Ai Electricity Infrastructure Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0102X0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Europe Defense Top10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0103T0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hana 1Q K Sovereign Ai Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0104G0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus Korea Defense Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0104H0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsungactive Koact Us Nasdaq Balanced 50 Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0105D0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol Korea Ai Software Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0111P0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hana 1Q Nasdaq100 Blend 50 Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "0113P0",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Heungkuk Hk Money Market Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "018290",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "VT Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "025980",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Ananti Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "028300",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "HLB Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "032350",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "MUTUALFUND",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "042000",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Cafe24 Corp.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "062040",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "064260",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Danal Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "082740",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "MUTUALFUND",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "085660",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Chabiotech Co.,Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "087010",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Peptron, Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "090710",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Hyulim ROBOT Co.,Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "100090",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "SK oceanplant Co.,Ltd",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "108490",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "ROBOTIS Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "115180",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Qurient Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "122630",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kodex Leverage",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "123320",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "127120",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "JS Link, Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "132030",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung KODEX Gold Futures Special Asset ETF - Gold-Derivatives (H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "137610",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Agriculture ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "138910",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Copper Futures Special Asset ETF - Copper-Derivatives",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "138920",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX Soybean Futures (H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "139320",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Precious Metals Futures ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "139660",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KOSEF USD Inverse Futures",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "141080",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "LigaChem Biosciences Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "143850",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER S&P500 Futures ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "144600",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kodex Silver Futures Special Asset ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "145020",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Hugel, Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "152380",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kodex 10Y F-LKTB",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "152500",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management - Kindex Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "160190",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "160580",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Physical Copper ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "168580",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KINDEX China CSI300 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "174360",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB KBSTAR China Mainland Large Cap Stock CSI100 Securities ETF Feeder Investment Trust - Equity",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "185680",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kodex Synth US Biotech",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "189400",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Arirang Synth MSCI AC World ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "195920",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Synth-Japan ETF(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "195930",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Synth - Euro Stoxx 50 ETF H - Equity-Derivatives",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "196030",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KINDEX Japan Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "196170",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "ALTEOGEN Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "199800",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "ToolGen Incorporated",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "200030",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Synth-US Industrial Securities ETF - Equity-Derivatives",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "200250",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kiwoom Kosef NIFTY 50 India ETF - Equity - Derivatives (Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "204270",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "JNTC Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "204480",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Synth-China A Leverage",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "207940",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Biologics Co.,Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "213420",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Duk San Neolux Co.,Ltd",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "213630",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Arirang Dow Jones US Select Dividend Securities ETF - Equity-Derivatives (Synth H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "217780",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger China CSI300 Inverse ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "218420",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX SYNTH-US Energy",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "219390",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE US Oil & Gas E&P Company ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "219480",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX S&P500 Futures(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "219900",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KINDEX China Mainland Leverage CSI300 ETF (Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "220130",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan BNPP SMART Synth-China Mainland Small & Mid cap CSI500 ETF(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "222080",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Creative & Innovative System Corporation",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "225040",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger SYNTH-S&P500 Leverage ETF(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "225050",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger SYNTH-EURO STOXX 50 Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "225060",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger SYNTH-MSCI EM Leverage ETF(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "225130",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KINDEX Gold Futures Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "225570",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Nat Games Co.,Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "225800",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kiwoom KOSEF USD Futures Leverage Special Assets ETF Investment Trust - USD-Derivatives (Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "226950",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "OliX Pharmaceuticals, Inc",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "230480",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kiwoom KOSEF USD Futures Inverse 2X Special Assets ETF Investment Trust - USD-Derivatives (Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "232140",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "YC Corporation",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "233160",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger KOSDAQ150 Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "233740",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX KOSDAQ150 Leverage",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "236350",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Synth-India Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "238720",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KINDEX Japan Nikkei225 ETF(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "239660",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus Credit Bond50 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "243880",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger 200 IT Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "243890",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger 200 Energy Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "245710",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KINDEX Vietnam VN30 ETF(Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "248270",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Synth-Global Healthcare ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "250730",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB KBSTAR China H-Share Securities ETF Investment Trust - Equity-Derivatives(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "252400",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB KBSTAR 200 Futures Leverage Securities ETF Investment Trust - Equity-Derivatives",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "253150",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus 200 Future Leverage Securities ETF Investment Trust - Equity-Derivatives",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "253250",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KOSEF F-200 Leverage",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "253450",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Studio Dragon Corporation",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "256440",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KINDEX MSCI Indonesia ETF(Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "256450",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Arirang Shenzhen Chinext Securities ETF Investment Trust - Equity-Derivatives (Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "256750",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX SYNTH-ChiNext",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "257720",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "SILICON2 Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "259960",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KRAFTON, Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "261110",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger US Dollar Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "261120",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger US Dollar Inverse 2X ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "261220",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX WTI CrudeOil Futures(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "261240",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX USD Futures",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "261250",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX USD Futures",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "261260",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX USD Futures",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "261270",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX USD Futures",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "261920",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KINDEX MSCI Philippines ETF(Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "263750",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Pearl Abyss Corp.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "267440",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Asset Management Co., Ltd. - US Treasury Long Bond Futures ETF Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "267450",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Asset Management Co., Ltd. - US Treasury Long Bond Futures Inverse ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "267490",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE US Treasury Long Bond Futures Leverage ETF (Synth H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "267770",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger 200 Futures Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "269420",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX SYNTH-S&P Global Infrastructure",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "271050",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX WTI CrudeOil Futures Inverse(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "271060",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX Grains Futures(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "273130",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX Active Bond",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "275980",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Synth-Morningstar Global Exponential Technology(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "276000",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Synth-Morningstar Global Upstream Natural Resources(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "276650",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE Global Technology ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "276990",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX Global Robotics & Automation",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "277540",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management - Kim Kindex S&P Asia Top50 ETF Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "277810",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Rainbow Robotics Co.,Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "278240",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE Kosdaq 150 Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "278530",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex 200 Total Return ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "278540",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KODEX MSCI Korea TR",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "278620",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus Active Short Term Credit Bond ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "280320",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KINDEX US Internet ETF(Synth H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "280930",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Us Russell 2000 Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "282000",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE KTB 3 Year Futures Inverse ETF Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "287840",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "IntoCell, Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "289670",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus KTB 10 Year Futures ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "291130",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management - Kim Kindex MSCI Mexico ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "291620",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kiwoom Asset Management - Kosef Kosdaq 150 Futures Inverse ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "291630",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kiwoom Asset Management - Kosef Kosdaq 150 Futures Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "291680",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Asset Management - KBSTAR China H Futures Inverse ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "291890",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung KODEX SGX MSCI EM Futures ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "292560",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "MIRAE Asset Tiger JPYKRW Futures ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "292770",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung KODEX Treasury Bond 3-year Inverse Securities Listing Index Investment Trust",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "293490",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Kakao Games Corp.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "294400",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KOSEF 200 Total Return ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "295000",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE KTB 10Y Futures ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "295020",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Asset Management -KB KBTAR KTB 10Y Futures Inverse ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "295040",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan BNP Paribas Asset Management Company - BNPP SMART 200 Total Return ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "298380",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "ABL Bio Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "301410",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus KOSDAQ 150 Futures Inverse ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "302440",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "SK bioscience Co.,Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "304660",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Ultra Treasury Bond Futures(H) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "304670",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Ultra Treasury Bond Futures Inverse(H) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "304780",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "NH Amundi Asset Management - Hanaro 200 Futures Leverage ETF Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "304940",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Us Nasdaq 100 Futures Etf(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "306520",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "NH Amundi Asset Management - Hanaro 200 Futures Inverse ETF Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "306530",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "NH Amundi Asset Management - Hanaro Kosdaq 150 Futures Leverage ETF Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "306950",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung KODEX KRX300 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "308620",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung KODEX Energy & chemicals Securities ETF-Kodex Treasury Note Futures Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "310080",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Asset Management Co., Ltd – KBStar Msci China Futures ETF(H) Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "310210",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Voronoi, Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "310960",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Maps Investment Management Co. Ltd - MAPS MIRAE Asset Tiger 200 Total Return ETF",
+                "quoteType": "MUTUALFUND",
+                "market": "us_market"
+            }
+        },
+        {
+            "symbol": "310970",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Mirae Asset - TIGER MSCI Korea Total Return Fund",
+                "quoteType": "MUTUALFUND",
+                "market": "us_market"
+            }
+        },
+        {
+            "symbol": "315930",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Top 5 Plus Total Return ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "315960",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE Large Cap High Dividend 10 Trust ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "317450",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "319640",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Gold Futures ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "323280",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Taesung Co.,Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "326030",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "MUTUALFUND",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "328130",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Lunit Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "328370",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus KOSPI Total Return ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "332500",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Kindex 200 Total Return ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "332930",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "NH-Amundi HANARO 200 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "332940",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Nh-Amundi Hanaro Msci Korea Trust Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "334690",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Asset Management Co. Ltd - Kbstar Palladium Futures Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "336260",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "MUTUALFUND",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "347850",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "348370",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Enchem Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "354240",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB KBSTAR U.S. Preferred Securities Ice Trust ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "354350",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Nh-Amundi Hanaro Global Luxury S&P ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "358570",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "GI Innovation, Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "359210",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Kospi Total Return ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "360140",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex 200 Long kosdaq150 short Futures Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "360150",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Kosdaq 150 Long Kospi 200 Short Futures ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "361580",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar 200 Total Return Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "361610",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "SK IE Technology Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "363510",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "SHBNPP SMART KIS Short-term MSB ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "363570",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "SAMSUNG KODEX Active Long Term Korea Total Bond Market(AA-) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "363580",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex 200 IT Total Return ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "371150",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB ASSET MANAGEMENT - KB KBSTAR China Hang Seng Tech ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "371450",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Management - Tiger Global Cloud Computing Index ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "371460",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Management - Tiger China Electric Vehicle Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "371470",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Management - Tiger China Biotech Solactive ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "371870",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management - Kim Index China Hang Seng Tech ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "372320",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "373220",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "LG Energy Solution, Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "373530",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Asset Management - Hanwha ARIRANG Emerging Markets MSCI Inverse ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "375270",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Asset Management Co Ltd. - Kb Kbstar Global Data Center REITs Nasdaq ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "377300",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kakao Pay Corp.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "379790",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Asset Management Co Ltd. - Kb Star Euro Stoxx 50 (H) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "381170",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Maps Management - Tiger US Tech Top 10 Index ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "385540",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Active Korea Total Bond Market(A-) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "385550",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Active Korea Short Term Bond Market(AA-) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "385710",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio K-Innovation Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "385720",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio Kospi Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "387270",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Maps Management - Mirae Asset Tiger Global Innovation Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "388720",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Yuil Robotics Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "391600",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management - KIM Kindex Us Green Theme Indxx ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "394350",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kiwoom Asset Management - Kiwoom KOSEF Global Future Mobility ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "394660",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Maps Management - Tiger Global Autonomous & Electric Vehicles Solactive ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "394670",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Maps Management - Tiger Synth-Global Lithium & Battery Tech Solactive ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "396510",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Maps Management  - Tiger China Clean Energy Solactive ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "396520",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Maps Management  - Tiger China Semiconductor Factset ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "397030",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "AprilBio Co.,Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "397420",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Asset Management Co. Ltd - KBStar FKTB 5 Year Duration Following ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "399580",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Asset Management Co. Ltd - KB KBSTAR GLOBAL CLEAN ENERGY S&P ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "399720",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Gaonchips Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "400570",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": " SAMSUNG ASSET MANAGEMENT CO LTD- Kodex Europe Carbon Allowance Futures ICE ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "400580",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Asset Management - SOL S and P Carbon Emission(EUA)(H) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "400590",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Asset Management - SOL IHS Markit Global Carbon Emission(Synthetic) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "401590",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "NH Amundi Asset Management - Hanaro Global Carbon Future ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "402340",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "MUTUALFUND",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "403790",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "MIDAS MIDAS KOSPI Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "404120",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio K-Renewable Energy Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "407820",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Assetplus - Assetplus Korea Platform Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "407830",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Assetplus Global Platform Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "409810",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Investment Trust Management Co. Ltd - Samsung Kodex US Nasdaq100 Futures Inverse ETF(H) Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "409820",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Investment Trust Management Co. Ltd - Samsung Kodex US Nasdaq100 Leverage ETF(SYNTH H) Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "410870",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Kculture Active FUND",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "411060",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management Co, Ltd - KIM KINDEX KRX Physical Gold ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "412770",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Global Metaverse Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "413220",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Asset Management Co. Ltd. - Shinhan SOL China Photovoltaic CSI (Synthetic) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "413930",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Woori Won AI ESG Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "414270",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KIM ACE Global Autonomous Vehicle Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "414780",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Synth-China Star50 Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "415340",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex China Star 50 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "415760",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan SOL China Fostering Industry Active Synthetic ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "416090",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Kindex China Star50 Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "417450",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Asset Management Co Ltd - KB RISE Global Hydrogen Economy Indxx ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "418660",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Synth-Nasdaq 100 Leverage Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "418670",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Global Cybersecurity Indxx ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "419430",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Msci China All Shares Batteries Etf (Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "419530",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "SAMG Entertainment Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "424460",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Nh-Amundi Hanaro Msci Global Water ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "426020",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "426030",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "426150",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Woori Won Korea Treasury Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "427120",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Platform Theme ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "429010",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Nasdaq Next 100 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "432600",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar KTB 3Y Futures ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "433220",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Assetplus - Assetplus Global Blacksmith Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "433250",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hyundai Unicorn R&D Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "436140",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol Korea - Total Bond Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "437350",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Us Short-Term Investment Grade Corporate Bond ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "437370",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Global Agribusiness Mv ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "438080",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Kindex S&P 500 Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "438100",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Kindex Nasdaq100 3070 Blend Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "438320",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Synth-China Hstech Leverage ETF(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "438740",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "MIDAS MIDAS Mid/Small-Cap Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "439260",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Daehan Shipbuilding Co., Ltd.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "439860",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Esg Korea Total Bond Market(A) - Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "439870",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex 30-Years Treasury Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "440110",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "FADU Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "440650",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Kindex Us Short Term Bond Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "442090",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Assetplus - Assetplus Korea Blacksmith Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "442320",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Global Nuclear Power ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "442550",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Asset Management - KB RISE TDF2030 Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "442560",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Asset Management - KB KBStar TDF 2040 Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "442570",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Asset Management - KB KBStar TDF 2050 Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "445680",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Curiox Biosystems Co., Ltd",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "445690",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Bank Shareholder Yield Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "448540",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Nvidia 30 Blend Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "449580",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Samsung Group Fixed Top 3 Equity & Korean Bond Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "449680",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Synth Korea-China Ev ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "449690",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Synth Korea-China Semiconductor Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "450080",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "450180",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Korea China New Energy Vehicles ETF (Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "450190",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Korea China Semiconductor ETF (Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "451000",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Arirang Total Market Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "451150",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Assetplus Global Young Age Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "451600",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Arirang 30-Year Treasury Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "451670",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Ktb 30Y Leverage (Synth) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "452250",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace U.S. Ultra T-Bond Futures Leverage Etf(Synth H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "453010",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Arirang Kofr ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "453060",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Nh Amundi Hanaro Kofr Synth Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "453820",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex India Nifty50 Leverage Etf (Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "454910",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Doosan Robotics Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "455890",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Money Market Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "455960",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Kbstar Us Dollar SOFR Active (Synth) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "456160",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "456600",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio Global Artificial Intelligence Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "456680",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset TIGER Synth-China A Leverage",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "456880",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Usd Sofr Synth ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "457190",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "MUTUALFUND",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "457480",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Trust Management Co, Ltd.- Kim Ace Tesla Value Chain Active ETF Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "457690",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex 33-06 Treasury Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "457700",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex 53-09 Treasury Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "457930",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "BNK Asset Management Co.,Ltd. - BNK Future Strategy Technology ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "458030",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Woori Won Government and Special Bank Bond Money Market Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "458210",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kiwoom Heroes Cd Active Etf(Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "458870",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "459370",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol Carbon Emission(Eua) Inverse Ice Etf(H)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "459750",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Global Equity Allocation Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "459790",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kiwoom Heroes US Growth 30 Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "460270",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KIWOOM Heroes US Dollar Sofr Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "461460",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Arirang 30-Year Treasury Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "461490",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Asset Management Co,. Ltd. - Kbstar Global Multi-Asset Allocation Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "461600",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol US Treasury Bond 30Y Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "461910",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Arirang Us Tech 10 Leverage Iselect Synth ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "462340",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Assetplus Assetplus Global Dynamic Senior Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "462870",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "463050",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio Kbio Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "463290",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hana 1Q Short-term Financial Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "463300",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar China Mainland Csi300 Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "464310",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Global Investments Co. Ltd. - Mirae Asset Tiger Global Artificial Intelligence & Robotic",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "464930",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Global Innovative Bluechip Top 10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "465350",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar Secondary Cell Top10 Inverse Etf(Synth)",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "465580",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Management Co.,Ltd. - Kim Ace Us Big Tech Top 7 Plus ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "465610",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Management Co.,Ltd. - Kim Ace Us Big Tech Top 7 Plus Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "465620",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Korea Investment Management Co.,Ltd. - Ace Us Big Tech Top 7 Plus Inverse ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "466100",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "466810",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Bnk Bnk Secondary Battery Cathode Materials Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "466950",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Global Ai Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "468530",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "469160",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Japan Semiconductor Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "469530",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB KBSTAR USD Futures Inverse ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "469830",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan SOL Short Term Money Market Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "470310",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hyundai Unicorn Generative AI Small Giant Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "471040",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Investment Trust Management Co. Ltd - KoAct Global AI and Robotics Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "471230",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Asset Management Co.,Ltd. - Kodex 10 Years Treasury Bond Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "472160",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae ASset Tiger Us Tech top10 Indxx ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "472350",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hana 1Q China H ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "472720",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Truston Truston Shareholder Value Active Etf Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "473290",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex 26-12 Corporate Bond (AA-) Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "473590",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "474390",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol Korea Treasury Bond 30Y Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "474590",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Woori Won Semiconductor Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "474920",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Assetplus Assetplus China Leading Focus 10 Active Etf Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "475350",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Kbstar Berkshire Portfolio Top 10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "475830",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Orum Therapeutics, Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "475960",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "476000",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hyundai Unicorn Post IPO Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "476310",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB KBStar Global Obesity Care Industry Top2+ ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "476450",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kiwoom KIWOOM Money Market Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "477050",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Arirang Money Market Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "477080",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Kbstar CD Rate Active (Synth) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "477490",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Assetplus Investment Management Co.,Ltd. - Global Leading Company Focus 10 Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "478150",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio Global Spacetech And Defense Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "479520",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE KOFR Active(SYNTH) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "481200",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol US Tech Top 10 Inverse(Synthetic) ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "481430",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB RISE 10-Years Treasury Bond Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "482030",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsungactive Koact Tech Materials Supply Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "483240",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "483320",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Nvidia Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "483330",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Microsoft Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "483340",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Google Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "483420",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace Apple Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "483570",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KCGI KCGI US S&P 500 Top10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "484870",
+            "tried_suffixes": [
+                ".KS",
+                ".KQ"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "484890",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol Mark-To-Market Mmf Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "485690",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Kbstar U.S. AI Value Chain Top3 Plus ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "485810",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio Global Anti-Aging Bio Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "486830",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Nh-Amundi Hanaro Money Market Acitve ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "487130",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsungactive Koact Ai Infrastructure Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "487750",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Bnk Bnk On - Device AI ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "487910",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace India Consumption Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "487920",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kim Ace India Market Leaders Group Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "488080",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Semiconductor Top 10 Leverage ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "488290",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Midas Midas Japantech Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "488480",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KB Rise Japan Samurai Sector Top4 Plus ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "488720",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "WOORI WON Total Bond Market(AA- or Higher) Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "488770",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Money Market Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "488980",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan Sol 26-12 Credit Bond (Aa- Or Higher) Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "489000",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus Japan Ultra Short-Term Treasury Bill ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "489290",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Won Us Billionaire Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "489790",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Vision CO.,LTD",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "490090",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger US AI Big Tech 10 ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "490330",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "SAMSUNGACTIVE KoAct US CNS Therapeutics Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "491010",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger Global Ai Infra Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "491080",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex 25-12 Bank Bond(Aaa) Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "491220",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus 200 Total Return Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "491230",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hanwha Plus Government Bonds Money Market Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "492500",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hana 1Q Hyundai Motor Company Group Bond (A+) & KTB/MSB ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "494180",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio Global Consumer Trend Active Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "494220",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Hyundai Unicorn SK Hynix Value Chain Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "494310",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Samsung Kodex Semiconductor Leverage Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "494340",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "KIM ACE Global AI Custom Semiconductor ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "494900",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Mirae Asset Tiger 25-12 Financial ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "495060",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Timefolio Timefolio Korea Value-Up Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "495550",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Shinhan SOL Korea Value-Up Total Return ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "495940",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Rise Us Ai Tech Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "496020",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "496130",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Truston Truston Korea Valueup Active ETF",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "497520",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "498050",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Nh-Amundi Hanaro Bio Korea Active Etf Fund",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "498610",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KS",
+            "info": {
+                "longName": "Kb Rise India Digital Growth Etf",
+                "quoteType": "ETF",
+                "market": "kr_market"
+            }
+        },
+        {
+            "symbol": "950160",
+            "tried_suffixes": [
+                ".KQ",
+                ".KS"
+            ],
+            "working_suffix": ".KQ",
+            "info": {
+                "longName": "Kolon TissueGene, Inc.",
+                "quoteType": "EQUITY",
+                "market": "kr_market"
+            }
+        }
+    ],
+    "has_data": [],
+    "timestamp": "2025-12-03T09:15:02.499197"
+}

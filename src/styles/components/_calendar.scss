@@ -1,0 +1,256 @@
+// src/styles/components/_calendar.scss
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mx;
+@use '../functions/breakpoints' as bp;
+
+#t-calendar-list {
+    overflow: hidden;
+    height: 100%;
+
+    .p-card-header {
+        padding: 1rem 1rem 0;
+        text-align: center;
+    }
+
+    .p-card-title {
+        display: flex;
+        justify-content: center;
+    }
+
+    .p-card-body {
+        height: 100%;
+        padding: 0 1rem 1rem;
+        gap: 0;
+    }
+
+    .p-card-content {
+        height: 100%;
+        > .fc {
+            height: 100%;
+        }
+    }
+
+    .fc-list {
+        border: 0;
+
+        &-event {
+            &-time {
+                display: none !important;
+            }
+
+            &-graphic {
+                vertical-align: middle;
+            }
+
+            &-title {
+                color: #fff;
+                vertical-align: middle;
+                padding-top: 0;
+                padding-bottom: 0;
+
+                .stock-item-list {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                .ticker-name {
+                    width: 20%;
+                }
+
+                .actions {
+                    justify-self: end;
+                    button {
+                        padding: 0.5rem;
+                        width: 2rem;
+                        height: 2rem;
+                    }
+                }
+
+                .p-button-text {
+                    position: static;
+                }
+            }
+
+            &:hover td {
+                background-color: inherit;
+            }
+        }
+
+        &-table {
+            td {
+                border: 0;
+            }
+        }
+
+        &-day {
+            > * {
+                background-color: transparent;
+                border-color: transparent;
+            }
+
+            &-cushion {
+                border-radius: 8px;
+            }
+        }
+    }
+}
+
+#t-calendar-grid {
+    overflow: hidden;
+    height: 100%;
+
+    .p-panel {
+        &-header {
+            height: 3rem;
+            padding: 0.5rem 1.125rem;
+
+            .header-center {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .p-button-icon-only {
+                width: auto;
+                height: auto;
+            }
+            &-actions {
+                display: none;
+            }
+
+            .p-togglebutton {
+                opacity: 0.3;
+            }
+            .p-togglebutton-checked {
+                opacity: 1;
+                font-weight: 700;
+                background: var(--p-button-primary-background);
+                color: #000;
+            }
+        }
+        &-content {
+            padding: 0;
+            height: 100%;
+            &-container {
+                height: calc(100% - 3rem);
+            }
+        }
+    }
+
+    .fc {
+        height: 100%;
+
+        &-daygrid {
+            td,
+            th {
+                padding: 0.25rem;
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+
+            &-day-events {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.3rem;
+                &:before {
+                    display: none;
+                }
+            }
+
+            &-event-harness {
+                .fc-h-event {
+                    border: 0;
+                    overflow: hidden;
+                    margin: 0;
+                    .p-button {
+                        padding: 0;
+                    }
+                }
+            }
+        }
+
+        &-scrollgrid {
+            border: 0;
+        }
+        &-bg-event {
+            opacity: 1;
+        }
+        &-event-title {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.3em;
+        }
+        &-holiday-name {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 0, 0, 0.5);
+            color: #fff;
+        }
+        &-dayGridMonth-view {
+            .fc-daygrid-day-events {
+                max-height: 25vh;
+                overflow-y: auto;
+            }
+            .fc-daygrid-event-harness {
+                max-width: calc(50% - 0.3rem);
+            }
+            .fc-h-event {
+                cursor: pointer;
+                width: auto;
+                max-width: 100%;
+            }
+        }
+        &-dayGridWeek-view {
+            .fc-daygrid-event-harness {
+                width: 100%;
+            }
+            .fc-event {
+                width: 100%;
+            }
+            .stock-item-week {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.2em.5em;
+
+                .p-button {
+                    padding: 0;
+                    width: auto;
+                }
+            }
+        }
+
+        &-day-disabled {
+            background: inherit;
+            opacity: 0.5;
+        }
+
+        .stock-item {
+            &-week {
+            }
+            &-month {
+            }
+        }
+    }
+}
+
+#p-calendar {
+    height: 100%;
+    &.filter-kr {
+        #t-calendar-grid .fc-dayGridMonth-view .fc-h-event {
+            width: 100px;
+            b {
+                text-align: center;
+                width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+    }
+}

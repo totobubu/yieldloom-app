@@ -1,0 +1,27 @@
+// src/styles/abstracts/_mixins.scss
+@use 'sass:map';
+@use 'variables' as vars;
+@use '../functions/breakpoints' as bp;
+
+@mixin clearfix() {
+    &::after {
+        display: block;
+        clear: both;
+        content: '';
+    }
+}
+
+@mixin ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@mixin ellipsisMuti($line-clamp) {
+    overflow: hidden;
+    display: -webkit-box;
+    text-overflow: ellipsis;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $line-clamp;
+}

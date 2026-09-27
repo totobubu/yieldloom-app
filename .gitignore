@@ -1,0 +1,85 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+tmp/
+
+# Node.js
+node_modules/
+dist/
+.npm/
+
+# Chrome Profile & Screenshots
+chrome_profile/
+error_screenshots/
+
+# IDE & OS files
+.vscode/
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build
+dist
+dist-ssr
+/dist-verify/
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.r2
+.env.*
+
+# Firebase
+service-account-key.json
+serviceAccountKey.json
+
+# Selenium/Chrome Profile
+/chrome_profile/
+
+.history/*
+.vercel
+temp/*
+nul
+firebase-service-account-key.json
+backups/*/*/*/*.json
+backups/*/*.json
+
+# Content Studio runtime data
+var/content-studio/*.sqlite
+var/content-studio/*.sqlite-*
+var/content-studio/raw/
+var/content-studio/generated/
+var/content-studio/weekly/
+var/content-studio/content-calendar.json
+var/content-studio/content-calendar.csv
+var/data-management/
+
+# Legacy generated market history is preserved outside this repository.
+# Yieldloom data releases use the small, versioned data-v2 manifest instead.
+/public/data/

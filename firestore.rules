@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function: 사용자가 인증되었는지 확인
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function: 사용자가 자신의 데이터에만 접근 가능
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper function: 관리자 여부 확인
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.email != null &&
+             request.auth.token.email == 'totobubu.lab@gmail.com';
+    }
+    
+    // userBookmarks 컬렉션 규칙 (기존)
+    match /userBookmarks/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // userAssets 컬렉션 규칙
+    match /userAssets/{userId} {
+      // 관리자는 모든 사용자 데이터 접근 가능, 일반 사용자는 본인 데이터만
+      allow read, write: if isOwner(userId) || isAdmin();
+
+      // 가족 멤버 하위 컬렉션
+      match /familyMembers/{memberId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+
+        // Accounts directly under familyMember
+        match /accounts/{accountId} {
+          allow read, write: if isOwner(userId) || isAdmin();
+        }
+      }
+
+      // [New Asset-Centric Structure] Assets directly under user
+      match /assets/{assetId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+
+        // Transactions for each asset
+        match /transactions/{transactionId} {
+          allow read, write: if isOwner(userId) || isAdmin();
+        }
+      }
+    }
+    
+    // collectionGroup 쿼리를 위한 별도 규칙
+    // 모든 assets 컬렉션에 대한 관리자 접근 권한
+    match /{path=**}/assets/{assetId} {
+      // 관리자는 모든 자산에 읽기/쓰기 가능 (collectionGroup 쿼리용)
+      allow read, write: if isAdmin();
+    }
+    // stockMappings 컬렉션 규칙 (공용 매핑 정보)
+    match /stockMappings/{mappingId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+  }
+}

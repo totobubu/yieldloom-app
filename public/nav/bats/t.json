@@ -1,0 +1,46 @@
+[
+    {
+        "symbol": "TEST",
+        "isin": "US88636V5460",
+        "market": "BATS",
+        "yfSymbol": "TEST",
+        "currency": "USD",
+        "sharesOutstanding": false,
+        "ipoDate": "2025-11-18",
+        "company": "YieldMax",
+        "underlying": "TSLA",
+        "koName": "일드맥스 테슬라 퍼포먼스 & 분배 타겟 25 ETF"
+    },
+    {
+        "symbol": "TMYY",
+        "isin": "US38747T6828",
+        "market": "BATS",
+        "yfSymbol": "TMYY",
+        "currency": "USD",
+        "sharesOutstanding": false,
+        "ipoDate": "2026-04-14",
+        "company": "GraniteShares",
+        "underlying": "TSM",
+        "koName": "그래닛셰어즈 일드부스트 TSM ETF"
+    },
+    {
+        "symbol": "TPAY",
+        "isin": "US77926X8662",
+        "market": "BATS",
+        "yfSymbol": "TPAY",
+        "currency": "USD",
+        "sharesOutstanding": false,
+        "ipoDate": "2026-02-18",
+        "company": "Roundhill Investments",
+        "koName": "라운드힐 S&P 500 타겟10 ETF"
+    },
+    {
+        "symbol": "TSYW",
+        "market": "BATS",
+        "ipoDate": "2025-11-13",
+        "yfSymbol": "TSYW",
+        "underlying": "TLT",
+        "currency": "USD",
+        "koName": "라운드힐 미국 장기 국채 위클리페이 ETF"
+    }
+]

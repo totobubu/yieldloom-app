@@ -1,0 +1,27 @@
+name: Validate data v2
+
+on:
+  pull_request:
+    paths:
+      - 'data-v2/**'
+      - 'scripts/data_v2/**'
+  push:
+    branches: [main]
+    paths:
+      - 'data-v2/**'
+      - 'scripts/data_v2/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python scripts/data_v2/validate_snapshot.py

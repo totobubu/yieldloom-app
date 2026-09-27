@@ -1,0 +1,28 @@
+// src/styles/style.scss
+@charset "utf-8";
+
+@forward 'abstracts/variables';
+@forward 'abstracts/mixins';
+@forward 'abstracts/functions';
+@forward 'abstracts/theme';
+
+@use 'base/reset';
+@use 'base/globals';
+@use 'components/calendar';
+@use 'components/calculators';
+@use 'components/color';
+@use 'components/chart';
+@use 'components/asset';
+
+@use 'layout/layout';
+@use 'layout/header';
+@use 'layout/topbar';
+@use 'layout/sidebar';
+
+@use 'pages/auth';
+@use 'pages/home';
+@use 'pages/stock';
+@use 'pages/backtester';
+@use 'pages/thumbnail-generator';
+
+@use 'abstracts/theme';

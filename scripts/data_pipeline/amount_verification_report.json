@@ -1,0 +1,26 @@
+{
+  "stats": {
+    "total_files": 3513,
+    "verified_files": 3512,
+    "total_items": 132576,
+    "migrated_items": 132576,
+    "current_only": 94622,
+    "with_split_dates": 37954
+  },
+  "issues": {
+    "wrong_type": [],
+    "missing_keys": [],
+    "invalid_split_ref": [],
+    "mismatch_with_fixed": [
+      {
+        "symbol": "BLOX",
+        "file": "C:\\workspace\\divgrow\\public\\data\\nyse\\blox.json",
+        "date": "2025-12-19",
+        "current": 0.12,
+        "fixed": 0.1228,
+        "diff": -0.002800000000000011
+      }
+    ],
+    "empty_object": []
+  }
+}

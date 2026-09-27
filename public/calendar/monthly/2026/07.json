@@ -1,0 +1,6570 @@
+{
+    "UsStock": {
+        "2026-07-01": [
+            {
+                "ticker": "APD",
+                "frequency": "분기",
+                "group": "JSD",
+                "amount": 1.81
+            },
+            {
+                "ticker": "CAH",
+                "frequency": "분기",
+                "group": "MJD",
+                "amount": 0.516
+            },
+            {
+                "ticker": "CMCSA",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.33
+            },
+            {
+                "ticker": "FRT",
+                "frequency": "분기",
+                "group": "MJD",
+                "amount": 1.13
+            },
+            {
+                "ticker": "KYLD",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.1
+            },
+            {
+                "ticker": "PWR",
+                "frequency": "분기",
+                "group": "AJD",
+                "amount": 0.11
+            },
+            {
+                "ticker": "RJF",
+                "frequency": "분기",
+                "group": "MJS",
+                "amount": 0.54
+            },
+            {
+                "ticker": "STT",
+                "frequency": "분기",
+                "group": "MSD",
+                "amount": 0.84
+            }
+        ],
+        "2026-07-02": [
+            {
+                "ticker": "AXP",
+                "frequency": "분기",
+                "group": "JAO",
+                "amount": 0.95
+            },
+            {
+                "ticker": "BMY",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.63
+            },
+            {
+                "ticker": "CPB",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.39
+            },
+            {
+                "ticker": "GD",
+                "frequency": "분기",
+                "group": "JAO",
+                "amount": 1.59
+            },
+            {
+                "ticker": "NUGY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.169
+            },
+            {
+                "ticker": "PGR",
+                "frequency": "분기",
+                "group": "JSD",
+                "amount": 0.1
+            },
+            {
+                "ticker": "RSG",
+                "frequency": "분기",
+                "group": "MSD",
+                "amount": 0.625
+            },
+            {
+                "ticker": "SEMY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.289
+            },
+            {
+                "ticker": "SYY",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.55
+            }
+        ],
+        "2026-07-06": [
+            {
+                "ticker": "CSCO",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.42
+            },
+            {
+                "ticker": "GL",
+                "frequency": "분기",
+                "group": "JAO",
+                "amount": 0.33
+            },
+            {
+                "ticker": "GE",
+                "frequency": "분기",
+                "group": "JSD",
+                "amount": 0.47
+            },
+            {
+                "ticker": "IEX",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.73
+            },
+            {
+                "ticker": "JPM",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 1.5
+            },
+            {
+                "ticker": "MKC",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.48
+            },
+            {
+                "ticker": "MU",
+                "frequency": "분기",
+                "group": "JND",
+                "amount": 0.15
+            }
+        ],
+        "2026-07-07": [
+            {
+                "ticker": "DG",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.59
+            },
+            {
+                "ticker": "EIX",
+                "frequency": "분기",
+                "group": "MJD",
+                "amount": 0.878
+            },
+            {
+                "ticker": "ERIE",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 1.463
+            },
+            {
+                "ticker": "MTCH",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.2
+            }
+        ],
+        "2026-07-08": [
+            {
+                "ticker": "DGX",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.86
+            },
+            {
+                "ticker": "MAIN",
+                "frequency": "매월",
+                "group": "JSD",
+                "amount": 0.265
+            },
+            {
+                "ticker": "ROP",
+                "frequency": "분기",
+                "group": "JAO",
+                "amount": 0.91
+            }
+        ],
+        "2026-07-09": [
+            {
+                "ticker": "ACN",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 1.63
+            },
+            {
+                "ticker": "DAL",
+                "frequency": "분기",
+                "group": "FMN",
+                "amount": 0.215
+            },
+            {
+                "ticker": "INTU",
+                "frequency": "분기",
+                "group": "JAO",
+                "amount": 1.2
+            },
+            {
+                "ticker": "MA",
+                "frequency": "분기",
+                "group": "JAO",
+                "amount": 0.87
+            }
+        ],
+        "2026-07-10": [
+            {
+                "ticker": "DRI",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 1.62
+            },
+            {
+                "ticker": "GIS",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.61
+            },
+            {
+                "ticker": "LEN",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.5
+            },
+            {
+                "ticker": "MRVL",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.06
+            },
+            {
+                "ticker": "NUGY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.163
+            },
+            {
+                "ticker": "NTAP",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.52
+            },
+            {
+                "ticker": "ORCL",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.5
+            },
+            {
+                "ticker": "SEMY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.266
+            },
+            {
+                "ticker": "T",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.278
+            },
+            {
+                "ticker": "VZ",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.708
+            }
+        ],
+        "2026-07-13": [
+            {
+                "ticker": "HRL",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.293
+            }
+        ],
+        "2026-07-15": [
+            {
+                "ticker": "ABBV",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 1.73
+            },
+            {
+                "ticker": "ABT",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.63
+            },
+            {
+                "ticker": "EME",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.4
+            },
+            {
+                "ticker": "FCX",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.15
+            },
+            {
+                "ticker": "KYLD",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.1
+            },
+            {
+                "ticker": "MAA",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 1.53
+            }
+        ],
+        "2026-07-17": [
+            {
+                "ticker": "EOG",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 1.02
+            },
+            {
+                "ticker": "NUGY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.162
+            },
+            {
+                "ticker": "RVTY",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.07
+            },
+            {
+                "ticker": "SEMY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.267
+            },
+            {
+                "ticker": "UDR",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.145
+            },
+            {
+                "ticker": "WSM",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.76
+            }
+        ],
+        "2026-07-20": [
+            {
+                "ticker": "CAT",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 1.63
+            },
+            {
+                "ticker": "CL",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.53
+            },
+            {
+                "ticker": "DOC",
+                "frequency": "분기",
+                "group": "FMA",
+                "amount": 0.102
+            },
+            {
+                "ticker": "PNC",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 2
+            },
+            {
+                "ticker": "ZTS",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.53
+            }
+        ],
+        "2026-07-21": [
+            {
+                "ticker": "CARR",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.24
+            },
+            {
+                "ticker": "DELL",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.63
+            }
+        ],
+        "2026-07-22": [
+            {
+                "ticker": "APA",
+                "frequency": "분기",
+                "group": "JAO",
+                "amount": 0.25
+            },
+            {
+                "ticker": "LOW",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 1.25
+            },
+            {
+                "ticker": "NIHI",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.425
+            },
+            {
+                "ticker": "SOLT",
+                "frequency": "매월",
+                "group": "MJJ",
+                "amount": 0.054
+            }
+        ],
+        "2026-07-23": [
+            {
+                "ticker": "CVS",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.665
+            }
+        ],
+        "2026-07-24": [
+            {
+                "ticker": "COST",
+                "frequency": "분기",
+                "group": "FMN",
+                "amount": 1.47
+            },
+            {
+                "ticker": "GEHC",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.035
+            },
+            {
+                "ticker": "PFE",
+                "frequency": "분기",
+                "group": "MAN",
+                "amount": 0.43
+            },
+            {
+                "ticker": "PG",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 1.089
+            },
+            {
+                "ticker": "PNR",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.27
+            },
+            {
+                "ticker": "SEMY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.258
+            }
+        ],
+        "2026-07-28": [
+            {
+                "ticker": "ASML",
+                "frequency": "분기",
+                "group": "AMN",
+                "amount": 2.151
+            },
+            {
+                "ticker": "FAST",
+                "frequency": "분기",
+                "group": "FAJ",
+                "amount": 0.26
+            },
+            {
+                "ticker": "PAYX",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 1.19
+            }
+        ],
+        "2026-07-29": [
+            {
+                "ticker": "KYLD",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.1
+            },
+            {
+                "ticker": "WST",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.22
+            }
+        ],
+        "2026-07-30": [
+            {
+                "ticker": "BAGY",
+                "frequency": "매월",
+                "group": "MJJ",
+                "amount": 0.579
+            },
+            {
+                "ticker": "CFG",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.46
+            },
+            {
+                "ticker": "CAG",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.175
+            },
+            {
+                "ticker": "STZ",
+                "frequency": "분기",
+                "group": "MAN",
+                "amount": 1.03
+            }
+        ],
+        "2026-07-31": [
+            {
+                "ticker": "AES",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 0.176
+            },
+            {
+                "ticker": "AOS",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.36
+            },
+            {
+                "ticker": "LNT",
+                "frequency": "분기",
+                "group": "JAJ",
+                "amount": 0.535
+            },
+            {
+                "ticker": "MS",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 1.15
+            },
+            {
+                "ticker": "NUGY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.157
+            },
+            {
+                "ticker": "NI",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.3
+            },
+            {
+                "ticker": "O",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.271
+            },
+            {
+                "ticker": "SEMY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.183
+            },
+            {
+                "ticker": "TRGP",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 1.25
+            },
+            {
+                "ticker": "TXN",
+                "frequency": "분기",
+                "group": "JJO",
+                "amount": 1.42
+            },
+            {
+                "ticker": "VLO",
+                "frequency": "분기",
+                "group": "FMA",
+                "amount": 1.2
+            }
+        ]
+    },
+    "UsEtf": {
+        "2026-07-01": [
+            {
+                "ticker": "AIPI",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.249
+            },
+            {
+                "ticker": "AGG",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.331
+            },
+            {
+                "ticker": "ANGL",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.171
+            },
+            {
+                "ticker": "APCB",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.107
+            },
+            {
+                "ticker": "BALI",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.267
+            },
+            {
+                "ticker": "BBAG",
+                "frequency": "매월",
+                "group": "FAD",
+                "amount": 0.166
+            },
+            {
+                "ticker": "BETE",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.03
+            },
+            {
+                "ticker": "BETH",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.044
+            },
+            {
+                "ticker": "BHYB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.285
+            },
+            {
+                "ticker": "BILS",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.293
+            },
+            {
+                "ticker": "BILZ",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.31
+            },
+            {
+                "ticker": "BINC",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.228
+            },
+            {
+                "ticker": "BITI",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 1.449
+            },
+            {
+                "ticker": "BITU",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.014
+            },
+            {
+                "ticker": "BITO",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.01
+            },
+            {
+                "ticker": "BIL",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.268
+            },
+            {
+                "ticker": "BKAG",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.156
+            },
+            {
+                "ticker": "BKIE",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.87
+            },
+            {
+                "ticker": "BKLC",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.383
+            },
+            {
+                "ticker": "BIZD",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.239
+            },
+            {
+                "ticker": "BNDW",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.194
+            },
+            {
+                "ticker": "BIV",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.275
+            },
+            {
+                "ticker": "BNDX",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.111
+            },
+            {
+                "ticker": "BLV",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.272
+            },
+            {
+                "ticker": "BOND",
+                "frequency": "매월",
+                "group": "MMD",
+                "amount": 0.39
+            },
+            {
+                "ticker": "BND",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.244
+            },
+            {
+                "ticker": "CAM",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.059
+            },
+            {
+                "ticker": "BSV",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.261
+            },
+            {
+                "ticker": "BWX",
+                "frequency": "매월",
+                "group": "FSD",
+                "amount": 0.044
+            },
+            {
+                "ticker": "CEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.273
+            },
+            {
+                "ticker": "CHPY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.6672
+            },
+            {
+                "ticker": "CLIP",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.303
+            },
+            {
+                "ticker": "CLOA",
+                "frequency": "매월",
+                "group": "MAD",
+                "amount": 0.196
+            },
+            {
+                "ticker": "CLOB",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.252
+            },
+            {
+                "ticker": "CLOI",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.205
+            },
+            {
+                "ticker": "CMF",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.143
+            },
+            {
+                "ticker": "CORP",
+                "frequency": "매월",
+                "group": "SND",
+                "amount": 0.41
+            },
+            {
+                "ticker": "CWB",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.091
+            },
+            {
+                "ticker": "EAGG",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.157
+            },
+            {
+                "ticker": "EBND",
+                "frequency": "매월",
+                "group": "MAD",
+                "amount": 0.11
+            },
+            {
+                "ticker": "EETH",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.022
+            },
+            {
+                "ticker": "EDV",
+                "frequency": "분기",
+                "group": "MJD",
+                "amount": 0.867
+            },
+            {
+                "ticker": "EMBD",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.113
+            },
+            {
+                "ticker": "EMBX",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.242
+            },
+            {
+                "ticker": "EMLC",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.144
+            },
+            {
+                "ticker": "EMB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.4
+            },
+            {
+                "ticker": "ETHT",
+                "frequency": "매월",
+                "group": "SND",
+                "amount": 0.011
+            },
+            {
+                "ticker": "FALN",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.141
+            },
+            {
+                "ticker": "FEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.209
+            },
+            {
+                "ticker": "FLBL",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.127
+            },
+            {
+                "ticker": "FLCB",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.076
+            },
+            {
+                "ticker": "FLGV",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.073
+            },
+            {
+                "ticker": "FLXR",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.2
+            },
+            {
+                "ticker": "FLMI",
+                "frequency": "매월",
+                "group": "FOD",
+                "amount": 0.087
+            },
+            {
+                "ticker": "FLOT",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.173
+            },
+            {
+                "ticker": "FLRN",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.105
+            },
+            {
+                "ticker": "FLTR",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.087
+            },
+            {
+                "ticker": "GBIL",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.311
+            },
+            {
+                "ticker": "GPIQ",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.519
+            },
+            {
+                "ticker": "GPIX",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.394
+            },
+            {
+                "ticker": "GOVT",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.068
+            },
+            {
+                "ticker": "GPTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3045
+            },
+            {
+                "ticker": "GSST",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.185
+            },
+            {
+                "ticker": "GRNB",
+                "frequency": "매월",
+                "group": "AJD",
+                "amount": 0.111
+            },
+            {
+                "ticker": "GXIG",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.102
+            },
+            {
+                "ticker": "GVI",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.321
+            },
+            {
+                "ticker": "HIMU",
+                "frequency": "매월",
+                "group": "MAM",
+                "amount": 0.206
+            },
+            {
+                "ticker": "HYGV",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.244
+            },
+            {
+                "ticker": "HYDB",
+                "frequency": "매월",
+                "group": "SND",
+                "amount": 0.261
+            },
+            {
+                "ticker": "HYEM",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.14
+            },
+            {
+                "ticker": "HYHG",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.362
+            },
+            {
+                "ticker": "HYLB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.193
+            },
+            {
+                "ticker": "IBDT",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.091
+            },
+            {
+                "ticker": "IBDU",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.086
+            },
+            {
+                "ticker": "HYD",
+                "frequency": "매월",
+                "group": "MAD",
+                "amount": 0.213
+            },
+            {
+                "ticker": "IBDV",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.081
+            },
+            {
+                "ticker": "HYMB",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.096
+            },
+            {
+                "ticker": "HYS",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.57
+            },
+            {
+                "ticker": "IAGG",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.415
+            },
+            {
+                "ticker": "IBDW",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.081
+            },
+            {
+                "ticker": "IBDX",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.1
+            },
+            {
+                "ticker": "IBDR",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.08
+            },
+            {
+                "ticker": "HYG",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.369
+            },
+            {
+                "ticker": "IBDY",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.107
+            },
+            {
+                "ticker": "IBDS",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.085
+            },
+            {
+                "ticker": "IBHF",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.083
+            },
+            {
+                "ticker": "IBTG",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.07
+            },
+            {
+                "ticker": "IBTH",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.069
+            },
+            {
+                "ticker": "IBTI",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.068
+            },
+            {
+                "ticker": "IBTJ",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.067
+            },
+            {
+                "ticker": "ICSH",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.169
+            },
+            {
+                "ticker": "ICVT",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.12
+            },
+            {
+                "ticker": "IGLD",
+                "frequency": "매월",
+                "group": "AMJ",
+                "amount": 0.426
+            },
+            {
+                "ticker": "IGEB",
+                "frequency": "매월",
+                "group": "SND",
+                "amount": 0.178
+            },
+            {
+                "ticker": "IGHG",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.333
+            },
+            {
+                "ticker": "IGLB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.215
+            },
+            {
+                "ticker": "IEI",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.363
+            },
+            {
+                "ticker": "IEF",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.311
+            },
+            {
+                "ticker": "IGIB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.215
+            },
+            {
+                "ticker": "IGSB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.201
+            },
+            {
+                "ticker": "IQQQ",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.459
+            },
+            {
+                "ticker": "ISPY",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.252
+            },
+            {
+                "ticker": "ISTB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.171
+            },
+            {
+                "ticker": "ITWO",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.245
+            },
+            {
+                "ticker": "IUSB",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.164
+            },
+            {
+                "ticker": "ITM",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.132
+            },
+            {
+                "ticker": "JBND",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.2
+            },
+            {
+                "ticker": "JCPB",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.181
+            },
+            {
+                "ticker": "JCPI",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.278
+            },
+            {
+                "ticker": "JEPI",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.3872
+            },
+            {
+                "ticker": "JEPQ",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.637
+            },
+            {
+                "ticker": "JFLX",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.168
+            },
+            {
+                "ticker": "JMTG",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.195
+            },
+            {
+                "ticker": "JMST",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.108
+            },
+            {
+                "ticker": "JMUB",
+                "frequency": "매월",
+                "group": "FAD",
+                "amount": 0.153
+            },
+            {
+                "ticker": "JPHY",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.269
+            },
+            {
+                "ticker": "JPIE",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.216
+            },
+            {
+                "ticker": "JPLD",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.183
+            },
+            {
+                "ticker": "JPIB",
+                "frequency": "매월",
+                "group": "AJD",
+                "amount": 0.146
+            },
+            {
+                "ticker": "JNK",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.531
+            },
+            {
+                "ticker": "JSCP",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.171
+            },
+            {
+                "ticker": "JPST",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.171
+            },
+            {
+                "ticker": "LFGY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2095
+            },
+            {
+                "ticker": "LDUR",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.32
+            },
+            {
+                "ticker": "LQD",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.382
+            },
+            {
+                "ticker": "MBB",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.337
+            },
+            {
+                "ticker": "MEAR",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.118
+            },
+            {
+                "ticker": "MINY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2235
+            },
+            {
+                "ticker": "MINT",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.324
+            },
+            {
+                "ticker": "MLN",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.069
+            },
+            {
+                "ticker": "MORT",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.425
+            },
+            {
+                "ticker": "MST",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.066
+            },
+            {
+                "ticker": "MUNI",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.15
+            },
+            {
+                "ticker": "MUB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.289
+            },
+            {
+                "ticker": "NEAR",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.177
+            },
+            {
+                "ticker": "NYF",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.141
+            },
+            {
+                "ticker": "PFFV",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.131
+            },
+            {
+                "ticker": "PFFD",
+                "frequency": "매월",
+                "group": "FOD",
+                "amount": 0.1
+            },
+            {
+                "ticker": "PFXF",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.109
+            },
+            {
+                "ticker": "PFF",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.142
+            },
+            {
+                "ticker": "PMBS",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.18
+            },
+            {
+                "ticker": "PREF",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.084
+            },
+            {
+                "ticker": "PSC",
+                "frequency": "분기",
+                "group": "AJD",
+                "amount": 0.087
+            },
+            {
+                "ticker": "PSK",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.18
+            },
+            {
+                "ticker": "PYLD",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.14
+            },
+            {
+                "ticker": "PPH",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.625
+            },
+            {
+                "ticker": "QDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.243
+            },
+            {
+                "ticker": "QDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3167
+            },
+            {
+                "ticker": "QLDY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.17
+            },
+            {
+                "ticker": "QQQT",
+                "frequency": "매월",
+                "group": "JSD",
+                "amount": 0.312
+            },
+            {
+                "ticker": "QLTA",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.184
+            },
+            {
+                "ticker": "RDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.224
+            },
+            {
+                "ticker": "RDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3103
+            },
+            {
+                "ticker": "RAVI",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.251
+            },
+            {
+                "ticker": "SCCR",
+                "frequency": "매월",
+                "group": "AMJ",
+                "amount": 0.096
+            },
+            {
+                "ticker": "SCHI",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.094
+            },
+            {
+                "ticker": "SCHJ",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.087
+            },
+            {
+                "ticker": "SCHQ",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.109
+            },
+            {
+                "ticker": "SCHO",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.078
+            },
+            {
+                "ticker": "SCMB",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.076
+            },
+            {
+                "ticker": "SCUS",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.081
+            },
+            {
+                "ticker": "SCYB",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.149
+            },
+            {
+                "ticker": "SCHP",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.221
+            },
+            {
+                "ticker": "SCHZ",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.08
+            },
+            {
+                "ticker": "SCHR",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.079
+            },
+            {
+                "ticker": "SDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2289
+            },
+            {
+                "ticker": "SGOV",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.296
+            },
+            {
+                "ticker": "SGVT",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.272
+            },
+            {
+                "ticker": "SHYD",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.086
+            },
+            {
+                "ticker": "SLTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2711
+            },
+            {
+                "ticker": "SHYG",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.241
+            },
+            {
+                "ticker": "SHM",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.108
+            },
+            {
+                "ticker": "SJNK",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.147
+            },
+            {
+                "ticker": "SHV",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.319
+            },
+            {
+                "ticker": "SMBS",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.109
+            },
+            {
+                "ticker": "SLQD",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.184
+            },
+            {
+                "ticker": "SHY",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.238
+            },
+            {
+                "ticker": "SMB",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.047
+            },
+            {
+                "ticker": "SMMU",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.13
+            },
+            {
+                "ticker": "SPBO",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.123
+            },
+            {
+                "ticker": "SPFF",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.052
+            },
+            {
+                "ticker": "SPHY",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.138
+            },
+            {
+                "ticker": "SPAB",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.087
+            },
+            {
+                "ticker": "SPIB",
+                "frequency": "매월",
+                "group": "MAD",
+                "amount": 0.126
+            },
+            {
+                "ticker": "SPIP",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.257
+            },
+            {
+                "ticker": "SPSB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.107
+            },
+            {
+                "ticker": "SPLB",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.101
+            },
+            {
+                "ticker": "SPMB",
+                "frequency": "매월",
+                "group": "MAD",
+                "amount": 0.071
+            },
+            {
+                "ticker": "SPTS",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.088
+            },
+            {
+                "ticker": "SPYT",
+                "frequency": "매월",
+                "group": "AJD",
+                "amount": 0.29
+            },
+            {
+                "ticker": "SPTI",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.091
+            },
+            {
+                "ticker": "SPTL",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.09
+            },
+            {
+                "ticker": "SRLN",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.231
+            },
+            {
+                "ticker": "STIP",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.965
+            },
+            {
+                "ticker": "SYFI",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.166
+            },
+            {
+                "ticker": "SUSB",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.093
+            },
+            {
+                "ticker": "SUSC",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.088
+            },
+            {
+                "ticker": "TAFI",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.062
+            },
+            {
+                "ticker": "SUB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.233
+            },
+            {
+                "ticker": "TDTF",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.238
+            },
+            {
+                "ticker": "TDTT",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.231
+            },
+            {
+                "ticker": "TFLO",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.155
+            },
+            {
+                "ticker": "TFI",
+                "frequency": "매월",
+                "group": "FOD",
+                "amount": 0.135
+            },
+            {
+                "ticker": "TIPX",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.178
+            },
+            {
+                "ticker": "TLH",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.363
+            },
+            {
+                "ticker": "TIP",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 1.058
+            },
+            {
+                "ticker": "TOTL",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.165
+            },
+            {
+                "ticker": "TLT",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.318
+            },
+            {
+                "ticker": "ULTI",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.16
+            },
+            {
+                "ticker": "ULTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3411
+            },
+            {
+                "ticker": "USHY",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.206
+            },
+            {
+                "ticker": "USMC",
+                "frequency": "분기",
+                "group": "AJO",
+                "amount": 0.139
+            },
+            {
+                "ticker": "USIG",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.202
+            },
+            {
+                "ticker": "VBIL",
+                "frequency": "매월",
+                "group": "AMJ",
+                "amount": 0.213
+            },
+            {
+                "ticker": "VCEB",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.247
+            },
+            {
+                "ticker": "VCRB",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.296
+            },
+            {
+                "ticker": "VCIT",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.332
+            },
+            {
+                "ticker": "VCLT",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.342
+            },
+            {
+                "ticker": "VETZ",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.093
+            },
+            {
+                "ticker": "VCSH",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.288
+            },
+            {
+                "ticker": "VGIT",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.188
+            },
+            {
+                "ticker": "VGLT",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.208
+            },
+            {
+                "ticker": "VGSH",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.178
+            },
+            {
+                "ticker": "VMBS",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.165
+            },
+            {
+                "ticker": "VPLS",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.291
+            },
+            {
+                "ticker": "VTEC",
+                "frequency": "매월",
+                "group": "MAD",
+                "amount": 0.262
+            },
+            {
+                "ticker": "VTEI",
+                "frequency": "매월",
+                "group": "MAD",
+                "amount": 0.263
+            },
+            {
+                "ticker": "VTES",
+                "frequency": "매월",
+                "group": "MMD",
+                "amount": 0.226
+            },
+            {
+                "ticker": "VTC",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.316
+            },
+            {
+                "ticker": "VTEB",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.142
+            },
+            {
+                "ticker": "VUSB",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.176
+            },
+            {
+                "ticker": "VTIP",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.68
+            },
+            {
+                "ticker": "VWOB",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.314
+            },
+            {
+                "ticker": "XDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.185
+            },
+            {
+                "ticker": "XHLF",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.15
+            },
+            {
+                "ticker": "XMPT",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.105
+            },
+            {
+                "ticker": "XTEN",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.151
+            },
+            {
+                "ticker": "YBMN",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.156
+            },
+            {
+                "ticker": "YBTC",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.134
+            },
+            {
+                "ticker": "YEAR",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.158
+            },
+            {
+                "ticker": "YETH",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.1
+            },
+            {
+                "ticker": "YMAG",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0725
+            },
+            {
+                "ticker": "YMAX",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0727
+            },
+            {
+                "ticker": "ZROZ",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.81
+            }
+        ],
+        "2026-07-02": [
+            {
+                "ticker": "AIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.095
+            },
+            {
+                "ticker": "AMDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.797
+            },
+            {
+                "ticker": "AMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.24
+            },
+            {
+                "ticker": "AMZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.067
+            },
+            {
+                "ticker": "APLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.047
+            },
+            {
+                "ticker": "AOM",
+                "frequency": "분기",
+                "group": "AJD",
+                "amount": 0.407
+            },
+            {
+                "ticker": "AOA",
+                "frequency": "분기",
+                "group": "AJD",
+                "amount": 0.676
+            },
+            {
+                "ticker": "AOR",
+                "frequency": "분기",
+                "group": "AJD",
+                "amount": 0.522
+            },
+            {
+                "ticker": "AZYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.103
+            },
+            {
+                "ticker": "BABO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.054
+            },
+            {
+                "ticker": "BBYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.092
+            },
+            {
+                "ticker": "BRKC",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.201
+            },
+            {
+                "ticker": "CLOZ",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.139
+            },
+            {
+                "ticker": "CONY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.239
+            },
+            {
+                "ticker": "COYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.261
+            },
+            {
+                "ticker": "CRCO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.179
+            },
+            {
+                "ticker": "CRSH",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.269
+            },
+            {
+                "ticker": "CRY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.352
+            },
+            {
+                "ticker": "CVNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.282
+            },
+            {
+                "ticker": "CWY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.302
+            },
+            {
+                "ticker": "DIPS",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.379
+            },
+            {
+                "ticker": "DRAY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.186
+            },
+            {
+                "ticker": "FBY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.059
+            },
+            {
+                "ticker": "FBYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.07
+            },
+            {
+                "ticker": "FIAT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.459
+            },
+            {
+                "ticker": "GDXY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.079
+            },
+            {
+                "ticker": "GLDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0724
+            },
+            {
+                "ticker": "GMEY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.276
+            },
+            {
+                "ticker": "GOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.08
+            },
+            {
+                "ticker": "HEFA",
+                "frequency": "매월",
+                "group": "JD",
+                "amount": 0.691
+            },
+            {
+                "ticker": "HIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.336
+            },
+            {
+                "ticker": "HMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.109
+            },
+            {
+                "ticker": "HOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.429
+            },
+            {
+                "ticker": "HOYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.08
+            },
+            {
+                "ticker": "IOYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.154
+            },
+            {
+                "ticker": "JOJO",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.056
+            },
+            {
+                "ticker": "JPO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.105
+            },
+            {
+                "ticker": "MAAY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.114
+            },
+            {
+                "ticker": "MAGY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.255454
+            },
+            {
+                "ticker": "MARO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.102
+            },
+            {
+                "ticker": "MRNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.394
+            },
+            {
+                "ticker": "MSFO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.066
+            },
+            {
+                "ticker": "MSTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1549
+            },
+            {
+                "ticker": "MTYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.296
+            },
+            {
+                "ticker": "MUYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.452
+            },
+            {
+                "ticker": "NFLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.051
+            },
+            {
+                "ticker": "NVYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.12
+            },
+            {
+                "ticker": "OARK",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.245
+            },
+            {
+                "ticker": "PLTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.257
+            },
+            {
+                "ticker": "PLYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.092
+            },
+            {
+                "ticker": "PYPY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.172
+            },
+            {
+                "ticker": "QBY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.151
+            },
+            {
+                "ticker": "QQQY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.139
+            },
+            {
+                "ticker": "RBLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.162
+            },
+            {
+                "ticker": "RDYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.255
+            },
+            {
+                "ticker": "RGYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.145
+            },
+            {
+                "ticker": "RTYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.201
+            },
+            {
+                "ticker": "SMCY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.077
+            },
+            {
+                "ticker": "SNOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.142
+            },
+            {
+                "ticker": "TLTW",
+                "frequency": "매월",
+                "group": "SOD",
+                "amount": 0.135
+            },
+            {
+                "ticker": "TMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.284
+            },
+            {
+                "ticker": "TQQY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.098
+            },
+            {
+                "ticker": "TSLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2813
+            },
+            {
+                "ticker": "TSMY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.156
+            },
+            {
+                "ticker": "TSYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.217
+            },
+            {
+                "ticker": "USOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.061
+            },
+            {
+                "ticker": "WDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.173
+            },
+            {
+                "ticker": "WNTR",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.625
+            },
+            {
+                "ticker": "XBTY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.043
+            },
+            {
+                "ticker": "XEY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.185
+            },
+            {
+                "ticker": "XYZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.248
+            },
+            {
+                "ticker": "YBIT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.149
+            },
+            {
+                "ticker": "YQQQ",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.052
+            },
+            {
+                "ticker": "YSPY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.052
+            }
+        ],
+        "2026-07-06": [
+            {
+                "ticker": "AAPW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.101437
+            },
+            {
+                "ticker": "AMDW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 1.319515
+            },
+            {
+                "ticker": "AMZW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.175697
+            },
+            {
+                "ticker": "ARMW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.470085
+            },
+            {
+                "ticker": "AVGW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.159964
+            },
+            {
+                "ticker": "BABW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.063339
+            },
+            {
+                "ticker": "BLOX",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.108
+            },
+            {
+                "ticker": "BRKW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.164709
+            },
+            {
+                "ticker": "COIW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.083
+            },
+            {
+                "ticker": "COSW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.175
+            },
+            {
+                "ticker": "DIV",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.106
+            },
+            {
+                "ticker": "GDXW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.268447
+            },
+            {
+                "ticker": "GIAX",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.079
+            },
+            {
+                "ticker": "GOOW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.149721
+            },
+            {
+                "ticker": "HOOW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.244346
+            },
+            {
+                "ticker": "METW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.121908
+            },
+            {
+                "ticker": "MSFW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.164399
+            },
+            {
+                "ticker": "MSTW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.019397
+            },
+            {
+                "ticker": "NFLW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.091574
+            },
+            {
+                "ticker": "NVDW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.125706
+            },
+            {
+                "ticker": "PLTW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.074026
+            },
+            {
+                "ticker": "QLDY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.174
+            },
+            {
+                "ticker": "RSSL",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.258
+            },
+            {
+                "ticker": "SEIM",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.081
+            },
+            {
+                "ticker": "SEIV",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.203
+            },
+            {
+                "ticker": "SDIV",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.18
+            },
+            {
+                "ticker": "SRET",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.153
+            },
+            {
+                "ticker": "TSLW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.126253
+            },
+            {
+                "ticker": "TSYW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.108962
+            },
+            {
+                "ticker": "UBEW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.304441
+            },
+            {
+                "ticker": "UNHW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.458364
+            },
+            {
+                "ticker": "ZAP",
+                "frequency": "분기",
+                "group": "AJD",
+                "amount": 0.168
+            }
+        ],
+        "2026-07-07": [
+            {
+                "ticker": "AVIG",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.146
+            },
+            {
+                "ticker": "MSST",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.1126
+            },
+            {
+                "ticker": "NVII",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.186
+            },
+            {
+                "ticker": "NVIT",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.2261
+            },
+            {
+                "ticker": "PVAL",
+                "frequency": "분기",
+                "group": "JSD",
+                "amount": 0.126
+            },
+            {
+                "ticker": "TEST",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.2261
+            },
+            {
+                "ticker": "TOPW",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.158426
+            },
+            {
+                "ticker": "TSII",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.173
+            },
+            {
+                "ticker": "WMTI",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.116
+            }
+        ],
+        "2026-07-08": [
+            {
+                "ticker": "AIPI",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.248
+            },
+            {
+                "ticker": "BIGY",
+                "frequency": "매월",
+                "group": "FMA",
+                "amount": 0.529
+            },
+            {
+                "ticker": "CEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.269
+            },
+            {
+                "ticker": "CHPY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.6274
+            },
+            {
+                "ticker": "FEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.206
+            },
+            {
+                "ticker": "GPTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3077
+            },
+            {
+                "ticker": "KGLD",
+                "frequency": "매월",
+                "group": "ASO",
+                "amount": 0.35
+            },
+            {
+                "ticker": "LFGY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2062
+            },
+            {
+                "ticker": "MINY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2245
+            },
+            {
+                "ticker": "MST",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.075
+            },
+            {
+                "ticker": "QDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2963
+            },
+            {
+                "ticker": "QLDY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.172
+            },
+            {
+                "ticker": "RDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2888
+            },
+            {
+                "ticker": "RNTY",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.503
+            },
+            {
+                "ticker": "SDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.1991
+            },
+            {
+                "ticker": "SLTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.246
+            },
+            {
+                "ticker": "SOXY",
+                "frequency": "매월",
+                "group": "FMA",
+                "amount": 1.037
+            },
+            {
+                "ticker": "TPAY",
+                "frequency": "매월",
+                "group": "MAM",
+                "amount": 0.42175
+            },
+            {
+                "ticker": "TSLP",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.32
+            },
+            {
+                "ticker": "ULTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3384
+            },
+            {
+                "ticker": "XPAY",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.899537
+            },
+            {
+                "ticker": "YBMN",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.134
+            },
+            {
+                "ticker": "YBTC",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.12908
+            },
+            {
+                "ticker": "YETH",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.093227
+            },
+            {
+                "ticker": "YMAG",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0764
+            },
+            {
+                "ticker": "YMAX",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0709
+            }
+        ],
+        "2026-07-09": [
+            {
+                "ticker": "AIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1002
+            },
+            {
+                "ticker": "AMDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.8751
+            },
+            {
+                "ticker": "AMZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.064
+            },
+            {
+                "ticker": "APLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0618
+            },
+            {
+                "ticker": "BABO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.06
+            },
+            {
+                "ticker": "BRKC",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1843
+            },
+            {
+                "ticker": "CONY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2794
+            },
+            {
+                "ticker": "CRCO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2265
+            },
+            {
+                "ticker": "CRSH",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2074
+            },
+            {
+                "ticker": "CVNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2953
+            },
+            {
+                "ticker": "DIPS",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3343
+            },
+            {
+                "ticker": "DRAY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1882
+            },
+            {
+                "ticker": "DVDN",
+                "frequency": "분기",
+                "group": "JOD",
+                "amount": 0.516
+            },
+            {
+                "ticker": "FBY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0665
+            },
+            {
+                "ticker": "FIAT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2723
+            },
+            {
+                "ticker": "GDXY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0771
+            },
+            {
+                "ticker": "GLDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0737
+            },
+            {
+                "ticker": "GMEY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2679
+            },
+            {
+                "ticker": "GOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0744
+            },
+            {
+                "ticker": "HIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3403
+            },
+            {
+                "ticker": "HOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.6687
+            },
+            {
+                "ticker": "IWMY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.112
+            },
+            {
+                "ticker": "JPO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.093
+            },
+            {
+                "ticker": "MARO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0831
+            },
+            {
+                "ticker": "MRNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.4269
+            },
+            {
+                "ticker": "MSFO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0579
+            },
+            {
+                "ticker": "MSTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2061
+            },
+            {
+                "ticker": "NFLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.048
+            },
+            {
+                "ticker": "NVDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0971
+            },
+            {
+                "ticker": "OARK",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3124
+            },
+            {
+                "ticker": "PLTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2758
+            },
+            {
+                "ticker": "PYPY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2055
+            },
+            {
+                "ticker": "QDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.20275
+            },
+            {
+                "ticker": "QQQY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.133
+            },
+            {
+                "ticker": "RBLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2905
+            },
+            {
+                "ticker": "RDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.226448
+            },
+            {
+                "ticker": "RDYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.4463
+            },
+            {
+                "ticker": "SMCY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0689
+            },
+            {
+                "ticker": "SNOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1461
+            },
+            {
+                "ticker": "TSLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2776
+            },
+            {
+                "ticker": "TSMY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.152
+            },
+            {
+                "ticker": "UBND",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.091
+            },
+            {
+                "ticker": "ULTI",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.13
+            },
+            {
+                "ticker": "UITB",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.18
+            },
+            {
+                "ticker": "USOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.051
+            },
+            {
+                "ticker": "USTB",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.203
+            },
+            {
+                "ticker": "USVM",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.303
+            },
+            {
+                "ticker": "VFLO",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.025
+            },
+            {
+                "ticker": "WNTR",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.4849
+            },
+            {
+                "ticker": "XDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.18506
+            },
+            {
+                "ticker": "XOMO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0707
+            },
+            {
+                "ticker": "XYZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3659
+            },
+            {
+                "ticker": "YBIT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1718
+            },
+            {
+                "ticker": "YQQQ",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0548
+            }
+        ],
+        "2026-07-10": [
+            {
+                "ticker": "AMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.227
+            },
+            {
+                "ticker": "AZYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.102
+            },
+            {
+                "ticker": "BBYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.095
+            },
+            {
+                "ticker": "BLOX",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.099
+            },
+            {
+                "ticker": "COYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.255
+            },
+            {
+                "ticker": "CRY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.33
+            },
+            {
+                "ticker": "CWY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.287
+            },
+            {
+                "ticker": "FBYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.068
+            },
+            {
+                "ticker": "GIAX",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.075
+            },
+            {
+                "ticker": "HMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.105
+            },
+            {
+                "ticker": "HOYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.082
+            },
+            {
+                "ticker": "IOYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.145
+            },
+            {
+                "ticker": "MAAY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.111
+            },
+            {
+                "ticker": "MAGY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.241908
+            },
+            {
+                "ticker": "MTYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.294
+            },
+            {
+                "ticker": "MUYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.38
+            },
+            {
+                "ticker": "NVYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.123
+            },
+            {
+                "ticker": "PLYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.094
+            },
+            {
+                "ticker": "QBY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.146
+            },
+            {
+                "ticker": "QLDY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.169
+            },
+            {
+                "ticker": "RGYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.14
+            },
+            {
+                "ticker": "RTYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.198
+            },
+            {
+                "ticker": "SMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.119
+            },
+            {
+                "ticker": "TMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.276
+            },
+            {
+                "ticker": "TQQY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.097
+            },
+            {
+                "ticker": "TSYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.221
+            },
+            {
+                "ticker": "XBTY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.044
+            },
+            {
+                "ticker": "XEY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.187
+            },
+            {
+                "ticker": "YSPY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.052
+            }
+        ],
+        "2026-07-13": [
+            {
+                "ticker": "AAPW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.273024
+            },
+            {
+                "ticker": "AMDW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 1.426674
+            },
+            {
+                "ticker": "AMZW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.342137
+            },
+            {
+                "ticker": "ARMW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.994886
+            },
+            {
+                "ticker": "AVGW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.350846
+            },
+            {
+                "ticker": "BABW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.183078
+            },
+            {
+                "ticker": "BRKW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.161633
+            },
+            {
+                "ticker": "COIW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.183193
+            },
+            {
+                "ticker": "COSW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.176045
+            },
+            {
+                "ticker": "GDXW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.419833
+            },
+            {
+                "ticker": "GOOW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.620934
+            },
+            {
+                "ticker": "HOOW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.592023
+            },
+            {
+                "ticker": "METW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.257672
+            },
+            {
+                "ticker": "MSFW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.248364
+            },
+            {
+                "ticker": "MSTW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.089774
+            },
+            {
+                "ticker": "NFLW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.188209
+            },
+            {
+                "ticker": "NVDW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.293091
+            },
+            {
+                "ticker": "PLTW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.267563
+            },
+            {
+                "ticker": "TSLW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.233195
+            },
+            {
+                "ticker": "TSYW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.056786
+            },
+            {
+                "ticker": "UBEW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.186677
+            },
+            {
+                "ticker": "UNHW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.336133
+            }
+        ],
+        "2026-07-14": [
+            {
+                "ticker": "MSST",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.1068
+            },
+            {
+                "ticker": "NVII",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.19
+            },
+            {
+                "ticker": "NVIT",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.2401
+            },
+            {
+                "ticker": "TDAQ",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.39
+            },
+            {
+                "ticker": "TEST",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.2153
+            },
+            {
+                "ticker": "TOPW",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.296788
+            },
+            {
+                "ticker": "TSII",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.203
+            },
+            {
+                "ticker": "WEEK",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.067
+            },
+            {
+                "ticker": "WMTI",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.132
+            }
+        ],
+        "2026-07-15": [
+            {
+                "ticker": "AIPI",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.244
+            },
+            {
+                "ticker": "AMZP",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.35
+            },
+            {
+                "ticker": "BNDI",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.224
+            },
+            {
+                "ticker": "CEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.259
+            },
+            {
+                "ticker": "CHPY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.5925
+            },
+            {
+                "ticker": "CSHI",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.195
+            },
+            {
+                "ticker": "DIVY",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.039
+            },
+            {
+                "ticker": "FEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.203
+            },
+            {
+                "ticker": "FXED",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.04
+            },
+            {
+                "ticker": "GPTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3416
+            },
+            {
+                "ticker": "HDV",
+                "frequency": "분기",
+                "group": "JSD",
+                "amount": 0.087
+            },
+            {
+                "ticker": "HYBI",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.33
+            },
+            {
+                "ticker": "LFGY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.1936
+            },
+            {
+                "ticker": "MINY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2134
+            },
+            {
+                "ticker": "MSFY",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.2
+            },
+            {
+                "ticker": "MST",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.088
+            },
+            {
+                "ticker": "QDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3028
+            },
+            {
+                "ticker": "RDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.304
+            },
+            {
+                "ticker": "SDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2073
+            },
+            {
+                "ticker": "SLTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2415
+            },
+            {
+                "ticker": "THTA",
+                "frequency": "매월",
+                "group": "JMD",
+                "amount": 0.128
+            },
+            {
+                "ticker": "TLTI",
+                "frequency": "매월",
+                "group": "JFD",
+                "amount": 0.223
+            },
+            {
+                "ticker": "ULTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3302
+            },
+            {
+                "ticker": "YBMN",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.104
+            },
+            {
+                "ticker": "YBTC",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.098746
+            },
+            {
+                "ticker": "YETH",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.076666
+            },
+            {
+                "ticker": "YMAG",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0772
+            },
+            {
+                "ticker": "YMAX",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0726
+            }
+        ],
+        "2026-07-16": [
+            {
+                "ticker": "AIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1165
+            },
+            {
+                "ticker": "AMDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.8531
+            },
+            {
+                "ticker": "AMZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0721
+            },
+            {
+                "ticker": "APLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0808
+            },
+            {
+                "ticker": "BABO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0682
+            },
+            {
+                "ticker": "BRKC",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1544
+            },
+            {
+                "ticker": "CONY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.243
+            },
+            {
+                "ticker": "CRCO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2092
+            },
+            {
+                "ticker": "CRSH",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2063
+            },
+            {
+                "ticker": "CVNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3107
+            },
+            {
+                "ticker": "DIPS",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2813
+            },
+            {
+                "ticker": "DRAY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1566
+            },
+            {
+                "ticker": "FBY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1382
+            },
+            {
+                "ticker": "FIAT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2613
+            },
+            {
+                "ticker": "FIAX",
+                "frequency": "매월",
+                "group": "JFM",
+                "amount": 0.117
+            },
+            {
+                "ticker": "GDXY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0884
+            },
+            {
+                "ticker": "GMEY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1907
+            },
+            {
+                "ticker": "GOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0734
+            },
+            {
+                "ticker": "HIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3271
+            },
+            {
+                "ticker": "HOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.6319
+            },
+            {
+                "ticker": "IWMY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.111
+            },
+            {
+                "ticker": "JPO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0849
+            },
+            {
+                "ticker": "MARO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0888
+            },
+            {
+                "ticker": "MRNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3647
+            },
+            {
+                "ticker": "MSFO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0591
+            },
+            {
+                "ticker": "MSTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2067
+            },
+            {
+                "ticker": "NFLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0393
+            },
+            {
+                "ticker": "NVDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0963
+            },
+            {
+                "ticker": "OARK",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2781
+            },
+            {
+                "ticker": "OUSA",
+                "frequency": "매월",
+                "group": "ASO",
+                "amount": 0.075
+            },
+            {
+                "ticker": "OUSM",
+                "frequency": "매월",
+                "group": "FMA",
+                "amount": 0.023
+            },
+            {
+                "ticker": "PLTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2998
+            },
+            {
+                "ticker": "PYPY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2404
+            },
+            {
+                "ticker": "QDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.208913
+            },
+            {
+                "ticker": "QQQY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.134
+            },
+            {
+                "ticker": "RBLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2776
+            },
+            {
+                "ticker": "RDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.17866
+            },
+            {
+                "ticker": "RDYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.4482
+            },
+            {
+                "ticker": "SMCY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0761
+            },
+            {
+                "ticker": "SMTH",
+                "frequency": "매월",
+                "group": "JFD",
+                "amount": 0.095
+            },
+            {
+                "ticker": "SNOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1667
+            },
+            {
+                "ticker": "TSLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2593
+            },
+            {
+                "ticker": "TSMY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1423
+            },
+            {
+                "ticker": "ULTI",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.12
+            },
+            {
+                "ticker": "USOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.055
+            },
+            {
+                "ticker": "WDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.172
+            },
+            {
+                "ticker": "WNTR",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.5531
+            },
+            {
+                "ticker": "XDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.166078
+            },
+            {
+                "ticker": "XOMO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0733
+            },
+            {
+                "ticker": "XYZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3332
+            },
+            {
+                "ticker": "YBIT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.178
+            },
+            {
+                "ticker": "YQQQ",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0542
+            }
+        ],
+        "2026-07-17": [
+            {
+                "ticker": "AMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.238
+            },
+            {
+                "ticker": "AZYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.1
+            },
+            {
+                "ticker": "BBYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.092
+            },
+            {
+                "ticker": "BLOX",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.098
+            },
+            {
+                "ticker": "COYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.263
+            },
+            {
+                "ticker": "CWY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.27
+            },
+            {
+                "ticker": "DIA",
+                "frequency": "매월",
+                "group": "AMJ",
+                "amount": 0.149
+            },
+            {
+                "ticker": "FBYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.069
+            },
+            {
+                "ticker": "HOYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.08
+            },
+            {
+                "ticker": "IOYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.135
+            },
+            {
+                "ticker": "MAGY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.20152
+            },
+            {
+                "ticker": "MTYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.237
+            },
+            {
+                "ticker": "MUYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.352
+            },
+            {
+                "ticker": "NVYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.11
+            },
+            {
+                "ticker": "QBY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.141
+            },
+            {
+                "ticker": "QLDY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.17
+            },
+            {
+                "ticker": "RGYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.137
+            },
+            {
+                "ticker": "RTYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.185
+            },
+            {
+                "ticker": "SAEF",
+                "frequency": "분기",
+                "group": "MJD",
+                "amount": 6.9659
+            },
+            {
+                "ticker": "SMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.116
+            },
+            {
+                "ticker": "TMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.266
+            },
+            {
+                "ticker": "TQQY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.098
+            },
+            {
+                "ticker": "TSYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.217
+            },
+            {
+                "ticker": "XEY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.189
+            },
+            {
+                "ticker": "YSPY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.035
+            }
+        ],
+        "2026-07-20": [
+            {
+                "ticker": "AAPW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.252211
+            },
+            {
+                "ticker": "AMDW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 1.950671
+            },
+            {
+                "ticker": "AMZW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.285876
+            },
+            {
+                "ticker": "ARMW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 1.290116
+            },
+            {
+                "ticker": "AVGW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.569764
+            },
+            {
+                "ticker": "BABW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.264959
+            },
+            {
+                "ticker": "BAB",
+                "frequency": "매월",
+                "group": "JFM",
+                "amount": 0.1
+            },
+            {
+                "ticker": "BKLN",
+                "frequency": "매월",
+                "group": "AMJ",
+                "amount": 0.109
+            },
+            {
+                "ticker": "BRKW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.062908
+            },
+            {
+                "ticker": "BSCS",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.076
+            },
+            {
+                "ticker": "BSCT",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.07
+            },
+            {
+                "ticker": "BSCQ",
+                "frequency": "매월",
+                "group": "AND",
+                "amount": 0.064
+            },
+            {
+                "ticker": "BSCU",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.064
+            },
+            {
+                "ticker": "BSCV",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.065
+            },
+            {
+                "ticker": "BSCR",
+                "frequency": "매월",
+                "group": "AND",
+                "amount": 0.069
+            },
+            {
+                "ticker": "BSCW",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.083
+            },
+            {
+                "ticker": "BSCX",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.088
+            },
+            {
+                "ticker": "BSJQ",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.1
+            },
+            {
+                "ticker": "COIW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.108
+            },
+            {
+                "ticker": "COSW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.103527
+            },
+            {
+                "ticker": "DJIA",
+                "frequency": "매월",
+                "group": "MAM",
+                "amount": 0.125
+            },
+            {
+                "ticker": "GDXW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.291611
+            },
+            {
+                "ticker": "GOOW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.425551
+            },
+            {
+                "ticker": "GOVI",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.092
+            },
+            {
+                "ticker": "GTO",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.19
+            },
+            {
+                "ticker": "GSY",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.168
+            },
+            {
+                "ticker": "HOOW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.412291
+            },
+            {
+                "ticker": "METW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.355011
+            },
+            {
+                "ticker": "MSFW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.166474
+            },
+            {
+                "ticker": "MSTW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.04734
+            },
+            {
+                "ticker": "NFLW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.089031
+            },
+            {
+                "ticker": "NVDW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.399296
+            },
+            {
+                "ticker": "PCEF",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.118
+            },
+            {
+                "ticker": "PFFA",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.173
+            },
+            {
+                "ticker": "PCY",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.105
+            },
+            {
+                "ticker": "PEY",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.097
+            },
+            {
+                "ticker": "PLTW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.177268
+            },
+            {
+                "ticker": "PGF",
+                "frequency": "매월",
+                "group": "JFD",
+                "amount": 0.082
+            },
+            {
+                "ticker": "PGX",
+                "frequency": "매월",
+                "group": "FMJ",
+                "amount": 0.062
+            },
+            {
+                "ticker": "PWZ",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.078
+            },
+            {
+                "ticker": "PZA",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.075
+            },
+            {
+                "ticker": "QYLG",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.268
+            },
+            {
+                "ticker": "QYLD",
+                "frequency": "매월",
+                "group": "AMJ",
+                "amount": 0.178
+            },
+            {
+                "ticker": "RYLD",
+                "frequency": "매월",
+                "group": "MJJ",
+                "amount": 0.161
+            },
+            {
+                "ticker": "SPHD",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.215
+            },
+            {
+                "ticker": "SPLV",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.141
+            },
+            {
+                "ticker": "TBLL",
+                "frequency": "매월",
+                "group": "FAD",
+                "amount": 0.307
+            },
+            {
+                "ticker": "TSLW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.241089
+            },
+            {
+                "ticker": "TSYW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.071272
+            },
+            {
+                "ticker": "TYLG",
+                "frequency": "매월",
+                "group": "JFD",
+                "amount": 0.4
+            },
+            {
+                "ticker": "UBEW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.214054
+            },
+            {
+                "ticker": "UNHW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.353859
+            },
+            {
+                "ticker": "VRIG",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.092
+            },
+            {
+                "ticker": "VRP",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.09
+            },
+            {
+                "ticker": "XYLD",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.409
+            }
+        ],
+        "2026-07-21": [
+            {
+                "ticker": "DFCF",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.166
+            },
+            {
+                "ticker": "DFGP",
+                "frequency": "매월",
+                "group": "MND",
+                "amount": 0.516
+            },
+            {
+                "ticker": "DFGX",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.699
+            },
+            {
+                "ticker": "DFIP",
+                "frequency": "매월",
+                "group": "AND",
+                "amount": 0.463
+            },
+            {
+                "ticker": "DFNM",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.119
+            },
+            {
+                "ticker": "DFSD",
+                "frequency": "매월",
+                "group": "MND",
+                "amount": 0.332
+            },
+            {
+                "ticker": "DUSB",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.168
+            },
+            {
+                "ticker": "EIPI",
+                "frequency": "매월",
+                "group": "MJJ",
+                "amount": 0.125
+            },
+            {
+                "ticker": "FIXD",
+                "frequency": "매월",
+                "group": "JSO",
+                "amount": 0.165
+            },
+            {
+                "ticker": "FMB",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.157
+            },
+            {
+                "ticker": "FMHI",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.177
+            },
+            {
+                "ticker": "FSIG",
+                "frequency": "매월",
+                "group": "JFD",
+                "amount": 0.073
+            },
+            {
+                "ticker": "FPE",
+                "frequency": "매월",
+                "group": "MJJ",
+                "amount": 0.081
+            },
+            {
+                "ticker": "FPEI",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.095
+            },
+            {
+                "ticker": "FTCB",
+                "frequency": "매월",
+                "group": "JFD",
+                "amount": 0.08
+            },
+            {
+                "ticker": "FTHI",
+                "frequency": "매월",
+                "group": "FMJ",
+                "amount": 0.179
+            },
+            {
+                "ticker": "FTSL",
+                "frequency": "매월",
+                "group": "MJJ",
+                "amount": 0.225
+            },
+            {
+                "ticker": "HOMZ",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.098
+            },
+            {
+                "ticker": "HYLS",
+                "frequency": "매월",
+                "group": "MJJ",
+                "amount": 0.23
+            },
+            {
+                "ticker": "KNG",
+                "frequency": "매월",
+                "group": "JSD",
+                "amount": 0.36
+            },
+            {
+                "ticker": "LMBS",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.17
+            },
+            {
+                "ticker": "MSST",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.1082
+            },
+            {
+                "ticker": "NVII",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.21
+            },
+            {
+                "ticker": "NVIT",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.234
+            },
+            {
+                "ticker": "RDVI",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.204
+            },
+            {
+                "ticker": "TEST",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.203
+            },
+            {
+                "ticker": "TOPW",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.309598
+            },
+            {
+                "ticker": "TSII",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.18
+            },
+            {
+                "ticker": "UCON",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.095
+            },
+            {
+                "ticker": "WMTI",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.104
+            }
+        ],
+        "2026-07-22": [
+            {
+                "ticker": "AAPY",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.25
+            },
+            {
+                "ticker": "AIPI",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.235
+            },
+            {
+                "ticker": "BITX",
+                "frequency": "매월",
+                "group": "MJJ",
+                "amount": 0.014
+            },
+            {
+                "ticker": "BTCI",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.646
+            },
+            {
+                "ticker": "CEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.257
+            },
+            {
+                "ticker": "CHPY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.547
+            },
+            {
+                "ticker": "ETHU",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.015
+            },
+            {
+                "ticker": "FEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.198
+            },
+            {
+                "ticker": "GOOP",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.45
+            },
+            {
+                "ticker": "GPTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2805
+            },
+            {
+                "ticker": "IAUI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.486
+            },
+            {
+                "ticker": "IWMI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.625
+            },
+            {
+                "ticker": "IYRI",
+                "frequency": "매월",
+                "group": "JFM",
+                "amount": 0.453
+            },
+            {
+                "ticker": "LFGY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.1961
+            },
+            {
+                "ticker": "MINY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2039
+            },
+            {
+                "ticker": "MST",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.094
+            },
+            {
+                "ticker": "QDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2965
+            },
+            {
+                "ticker": "QLDY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.163
+            },
+            {
+                "ticker": "QQQI",
+                "frequency": "매월",
+                "group": "FMA",
+                "amount": 0.635
+            },
+            {
+                "ticker": "RDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.302
+            },
+            {
+                "ticker": "SDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2055
+            },
+            {
+                "ticker": "SLTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2371
+            },
+            {
+                "ticker": "SPYI",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.53
+            },
+            {
+                "ticker": "ULTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3176
+            },
+            {
+                "ticker": "YBMN",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.103
+            },
+            {
+                "ticker": "YBTC",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.103208
+            },
+            {
+                "ticker": "YETH",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.063304
+            },
+            {
+                "ticker": "YMAG",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0915
+            },
+            {
+                "ticker": "YMAX",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0691
+            }
+        ],
+        "2026-07-23": [
+            {
+                "ticker": "AIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1041
+            },
+            {
+                "ticker": "AMDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.7213
+            },
+            {
+                "ticker": "AMZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0745
+            },
+            {
+                "ticker": "APLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1022
+            },
+            {
+                "ticker": "BABO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0817
+            },
+            {
+                "ticker": "BRKC",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1406
+            },
+            {
+                "ticker": "CONY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2787
+            },
+            {
+                "ticker": "CRCO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2337
+            },
+            {
+                "ticker": "CRSH",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1978
+            },
+            {
+                "ticker": "CVNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2948
+            },
+            {
+                "ticker": "DIPS",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2841
+            },
+            {
+                "ticker": "DRAY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.157
+            },
+            {
+                "ticker": "FBY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1043
+            },
+            {
+                "ticker": "FIAT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2741
+            },
+            {
+                "ticker": "GDXY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0942
+            },
+            {
+                "ticker": "GLDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0723
+            },
+            {
+                "ticker": "GMEY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2179
+            },
+            {
+                "ticker": "GOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0782
+            },
+            {
+                "ticker": "HIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2605
+            },
+            {
+                "ticker": "HOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.4057
+            },
+            {
+                "ticker": "JPO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0936
+            },
+            {
+                "ticker": "MARO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0852
+            },
+            {
+                "ticker": "MRNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2524
+            },
+            {
+                "ticker": "MSFO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0724
+            },
+            {
+                "ticker": "MSTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2231
+            },
+            {
+                "ticker": "NFLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.05
+            },
+            {
+                "ticker": "NVDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0937
+            },
+            {
+                "ticker": "OARK",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2328
+            },
+            {
+                "ticker": "PLTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2954
+            },
+            {
+                "ticker": "PYPY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.588
+            },
+            {
+                "ticker": "QDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.230242
+            },
+            {
+                "ticker": "QQQY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.132
+            },
+            {
+                "ticker": "RBLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.182
+            },
+            {
+                "ticker": "RDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.197192
+            },
+            {
+                "ticker": "RDYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.305
+            },
+            {
+                "ticker": "SMCY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0649
+            },
+            {
+                "ticker": "SNOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1701
+            },
+            {
+                "ticker": "TSLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2385
+            },
+            {
+                "ticker": "TSMY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1423
+            },
+            {
+                "ticker": "ULTI",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.105
+            },
+            {
+                "ticker": "USOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.07
+            },
+            {
+                "ticker": "WNTR",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.4992
+            },
+            {
+                "ticker": "XDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.131697
+            },
+            {
+                "ticker": "XOMO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0917
+            },
+            {
+                "ticker": "XYZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3019
+            },
+            {
+                "ticker": "YBIT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1892
+            },
+            {
+                "ticker": "YQQQ",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0705
+            }
+        ],
+        "2026-07-24": [
+            {
+                "ticker": "AMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.237
+            },
+            {
+                "ticker": "AZYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.101
+            },
+            {
+                "ticker": "BBYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.094
+            },
+            {
+                "ticker": "BLOX",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.1
+            },
+            {
+                "ticker": "BUYW",
+                "frequency": "매월",
+                "group": "JFD",
+                "amount": 0.073
+            },
+            {
+                "ticker": "COYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.266
+            },
+            {
+                "ticker": "CWY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.274
+            },
+            {
+                "ticker": "GIAX",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.073
+            },
+            {
+                "ticker": "HMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.099
+            },
+            {
+                "ticker": "IOYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.119
+            },
+            {
+                "ticker": "MAAY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.112
+            },
+            {
+                "ticker": "MAGY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.205
+            },
+            {
+                "ticker": "MTYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.179
+            },
+            {
+                "ticker": "NVYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.114
+            },
+            {
+                "ticker": "QLDY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.164
+            },
+            {
+                "ticker": "RGYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.128
+            },
+            {
+                "ticker": "SMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.111
+            },
+            {
+                "ticker": "TMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.267
+            },
+            {
+                "ticker": "TQQY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.095
+            },
+            {
+                "ticker": "TSYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.205
+            },
+            {
+                "ticker": "XBTY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.044
+            }
+        ],
+        "2026-07-27": [
+            {
+                "ticker": "AAPW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.321571
+            },
+            {
+                "ticker": "ACKY",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.213
+            },
+            {
+                "ticker": "AMDW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.844954
+            },
+            {
+                "ticker": "AMZW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.279194
+            },
+            {
+                "ticker": "ARMW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.493168
+            },
+            {
+                "ticker": "AVGW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.252578
+            },
+            {
+                "ticker": "BABW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.224551
+            },
+            {
+                "ticker": "BRKW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.106943
+            },
+            {
+                "ticker": "COIW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.120615
+            },
+            {
+                "ticker": "COSW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.240705
+            },
+            {
+                "ticker": "DRKY",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.25
+            },
+            {
+                "ticker": "GDXW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.240945
+            },
+            {
+                "ticker": "GOOW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.344984
+            },
+            {
+                "ticker": "HOOW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.23928
+            },
+            {
+                "ticker": "METW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.201005
+            },
+            {
+                "ticker": "MSFW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.21985
+            },
+            {
+                "ticker": "MSTW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.05531
+            },
+            {
+                "ticker": "NFLW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.067076
+            },
+            {
+                "ticker": "NVDW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.227312
+            },
+            {
+                "ticker": "OMAH",
+                "frequency": "매월",
+                "group": "MAM",
+                "amount": 0.233
+            },
+            {
+                "ticker": "PLTW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.25614
+            },
+            {
+                "ticker": "QUSA",
+                "frequency": "매월",
+                "group": "MJJ",
+                "amount": 0.226
+            },
+            {
+                "ticker": "SPRE",
+                "frequency": "매월",
+                "group": "JFM",
+                "amount": 0.067
+            },
+            {
+                "ticker": "SPSK",
+                "frequency": "매월",
+                "group": "AMJ",
+                "amount": 0.052
+            },
+            {
+                "ticker": "SPUS",
+                "frequency": "매월",
+                "group": "MAM",
+                "amount": 0.026
+            },
+            {
+                "ticker": "TSLW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.113208
+            },
+            {
+                "ticker": "TSYW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.099052
+            },
+            {
+                "ticker": "UBEW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.169402
+            },
+            {
+                "ticker": "UNHW",
+                "frequency": "매주",
+                "group": "월",
+                "amount": 0.343127
+            }
+        ],
+        "2026-07-28": [
+            {
+                "ticker": "AGGY",
+                "frequency": "매월",
+                "group": "ASD",
+                "amount": 0.17
+            },
+            {
+                "ticker": "CTA",
+                "frequency": "매월",
+                "group": "JSD",
+                "amount": 0.13
+            },
+            {
+                "ticker": "DES",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.045
+            },
+            {
+                "ticker": "DGRW",
+                "frequency": "매월",
+                "group": "JJD",
+                "amount": 0.065
+            },
+            {
+                "ticker": "DHS",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.305
+            },
+            {
+                "ticker": "DLN",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.105
+            },
+            {
+                "ticker": "DON",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.095
+            },
+            {
+                "ticker": "DTD",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.11
+            },
+            {
+                "ticker": "MSST",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.1047
+            },
+            {
+                "ticker": "MTBA",
+                "frequency": "매월",
+                "group": "JFD",
+                "amount": 0.23
+            },
+            {
+                "ticker": "NVII",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.229
+            },
+            {
+                "ticker": "NVIT",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.2368
+            },
+            {
+                "ticker": "SBIL",
+                "frequency": "매월",
+                "group": "ASO",
+                "amount": 0.31
+            },
+            {
+                "ticker": "TAGG",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.162
+            },
+            {
+                "ticker": "TBIL",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.15
+            },
+            {
+                "ticker": "TEST",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.169
+            },
+            {
+                "ticker": "THYF",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.288
+            },
+            {
+                "ticker": "TOPW",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.23102
+            },
+            {
+                "ticker": "TSII",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.131
+            },
+            {
+                "ticker": "UNIY",
+                "frequency": "매월",
+                "group": "FMA",
+                "amount": 0.2
+            },
+            {
+                "ticker": "USFR",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.16
+            },
+            {
+                "ticker": "WEEK",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.068
+            },
+            {
+                "ticker": "WMTI",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.095
+            },
+            {
+                "ticker": "XBIL",
+                "frequency": "매월",
+                "group": "AMD",
+                "amount": 0.159
+            }
+        ],
+        "2026-07-29": [
+            {
+                "ticker": "AIPI",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.232
+            },
+            {
+                "ticker": "CEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.254
+            },
+            {
+                "ticker": "CHPY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.5428
+            },
+            {
+                "ticker": "FEPI",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.192
+            },
+            {
+                "ticker": "GPTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2758
+            },
+            {
+                "ticker": "HIPS",
+                "frequency": "매월",
+                "group": "FMA",
+                "amount": 0.108
+            },
+            {
+                "ticker": "KQQQ",
+                "frequency": "매월",
+                "group": "ASO",
+                "amount": 0.35
+            },
+            {
+                "ticker": "LFGY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.194
+            },
+            {
+                "ticker": "MINY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2097
+            },
+            {
+                "ticker": "NFLP",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.25
+            },
+            {
+                "ticker": "QDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2917
+            },
+            {
+                "ticker": "QLDY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.157
+            },
+            {
+                "ticker": "QQQH",
+                "frequency": "매월",
+                "group": "JFD",
+                "amount": 0.402
+            },
+            {
+                "ticker": "RDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3019
+            },
+            {
+                "ticker": "SDTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2056
+            },
+            {
+                "ticker": "SLTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.2372
+            },
+            {
+                "ticker": "SPYH",
+                "frequency": "매월",
+                "group": "AMJ",
+                "amount": 0.361
+            },
+            {
+                "ticker": "ULTY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.3096
+            },
+            {
+                "ticker": "YBMN",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.105
+            },
+            {
+                "ticker": "YBTC",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.103112
+            },
+            {
+                "ticker": "YETH",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.069441
+            },
+            {
+                "ticker": "YMAG",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0899
+            },
+            {
+                "ticker": "YMAX",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0574
+            }
+        ],
+        "2026-07-30": [
+            {
+                "ticker": "AIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1044
+            },
+            {
+                "ticker": "AMDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.6309
+            },
+            {
+                "ticker": "AMZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0708
+            },
+            {
+                "ticker": "APLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1415
+            },
+            {
+                "ticker": "BABO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1245
+            },
+            {
+                "ticker": "BRKC",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1475
+            },
+            {
+                "ticker": "CCSB",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.072
+            },
+            {
+                "ticker": "CONY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2942
+            },
+            {
+                "ticker": "CRCO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.215
+            },
+            {
+                "ticker": "CRSH",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3584
+            },
+            {
+                "ticker": "CVNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2988
+            },
+            {
+                "ticker": "DIPS",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3059
+            },
+            {
+                "ticker": "DIVY",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.039
+            },
+            {
+                "ticker": "DIVO",
+                "frequency": "매월",
+                "group": "MJS",
+                "amount": 0.188
+            },
+            {
+                "ticker": "DRAY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1461
+            },
+            {
+                "ticker": "EGGQ",
+                "frequency": "매월",
+                "group": "JFM",
+                "amount": 0.4
+            },
+            {
+                "ticker": "EGGS",
+                "frequency": "매월",
+                "group": "JFM",
+                "amount": 0.7
+            },
+            {
+                "ticker": "EGGY",
+                "frequency": "매월",
+                "group": "JFM",
+                "amount": 1
+            },
+            {
+                "ticker": "FBY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0881
+            },
+            {
+                "ticker": "FBND",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.179
+            },
+            {
+                "ticker": "FIAT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.265
+            },
+            {
+                "ticker": "FIXP",
+                "frequency": "매월",
+                "group": "FMA",
+                "amount": 0.08
+            },
+            {
+                "ticker": "FLDR",
+                "frequency": "매월",
+                "group": "JJA",
+                "amount": 0.172
+            },
+            {
+                "ticker": "FSEC",
+                "frequency": "매월",
+                "group": "MAM",
+                "amount": 0.14
+            },
+            {
+                "ticker": "FXED",
+                "frequency": "매주",
+                "group": "화",
+                "amount": 0.04
+            },
+            {
+                "ticker": "GDXY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0961
+            },
+            {
+                "ticker": "GLDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0713
+            },
+            {
+                "ticker": "GMEY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2218
+            },
+            {
+                "ticker": "GOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0862
+            },
+            {
+                "ticker": "HBDC",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.115
+            },
+            {
+                "ticker": "HIYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2361
+            },
+            {
+                "ticker": "HOOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3317
+            },
+            {
+                "ticker": "HTRB",
+                "frequency": "매월",
+                "group": "FMM",
+                "amount": 0.132
+            },
+            {
+                "ticker": "IDVO",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.211
+            },
+            {
+                "ticker": "IWMY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.11
+            },
+            {
+                "ticker": "JPO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1047
+            },
+            {
+                "ticker": "LBAY",
+                "frequency": "매월",
+                "group": "JFM",
+                "amount": 0.085
+            },
+            {
+                "ticker": "MARO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0786
+            },
+            {
+                "ticker": "MDST",
+                "frequency": "매월",
+                "group": "JAM",
+                "amount": 0.225
+            },
+            {
+                "ticker": "MRNY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2374
+            },
+            {
+                "ticker": "MSFO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0772
+            },
+            {
+                "ticker": "MSTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2222
+            },
+            {
+                "ticker": "NFLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0445
+            },
+            {
+                "ticker": "NVDY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1187
+            },
+            {
+                "ticker": "OARK",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2123
+            },
+            {
+                "ticker": "PLTY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.3347
+            },
+            {
+                "ticker": "PYPY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.5321
+            },
+            {
+                "ticker": "QDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.136654
+            },
+            {
+                "ticker": "QDVO",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.265
+            },
+            {
+                "ticker": "QQQY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.125
+            },
+            {
+                "ticker": "RBLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1707
+            },
+            {
+                "ticker": "RDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.229336
+            },
+            {
+                "ticker": "RDYY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2759
+            },
+            {
+                "ticker": "RISR",
+                "frequency": "매월",
+                "group": "JON",
+                "amount": 0.18
+            },
+            {
+                "ticker": "RMCA",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.095
+            },
+            {
+                "ticker": "RMNY",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.097
+            },
+            {
+                "ticker": "RMOP",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.119
+            },
+            {
+                "ticker": "SMCY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0714
+            },
+            {
+                "ticker": "SMIG",
+                "frequency": "매월",
+                "group": "SON",
+                "amount": 0.042
+            },
+            {
+                "ticker": "SNOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1415
+            },
+            {
+                "ticker": "SSK",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.037
+            },
+            {
+                "ticker": "TSLY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.2147
+            },
+            {
+                "ticker": "TSMY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1344
+            },
+            {
+                "ticker": "ULTI",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.09
+            },
+            {
+                "ticker": "USOY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.067
+            },
+            {
+                "ticker": "WDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.169
+            },
+            {
+                "ticker": "WEEI",
+                "frequency": "매월",
+                "group": "JMJ",
+                "amount": 0.225
+            },
+            {
+                "ticker": "WNTR",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.4717
+            },
+            {
+                "ticker": "XDTE",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.089727
+            },
+            {
+                "ticker": "XOMO",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1218
+            },
+            {
+                "ticker": "XYZY",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.244
+            },
+            {
+                "ticker": "YBIT",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.1851
+            },
+            {
+                "ticker": "YQQQ",
+                "frequency": "매주",
+                "group": "목",
+                "amount": 0.0651
+            }
+        ],
+        "2026-07-31": [
+            {
+                "ticker": "AMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.224
+            },
+            {
+                "ticker": "AZYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.094
+            },
+            {
+                "ticker": "BLOX",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.092
+            },
+            {
+                "ticker": "CGCB",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.107
+            },
+            {
+                "ticker": "CGCP",
+                "frequency": "매월",
+                "group": "MAM",
+                "amount": 0.107
+            },
+            {
+                "ticker": "CGHM",
+                "frequency": "매월",
+                "group": "JAS",
+                "amount": 0.114
+            },
+            {
+                "ticker": "CGMS",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.16
+            },
+            {
+                "ticker": "CGMU",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.088
+            },
+            {
+                "ticker": "CGSD",
+                "frequency": "매월",
+                "group": "JND",
+                "amount": 0.112
+            },
+            {
+                "ticker": "CGSM",
+                "frequency": "매월",
+                "group": "OND",
+                "amount": 0.068
+            },
+            {
+                "ticker": "COYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.251
+            },
+            {
+                "ticker": "CRY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.312
+            },
+            {
+                "ticker": "CWY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.251
+            },
+            {
+                "ticker": "EVLN",
+                "frequency": "매월",
+                "group": "AMJ",
+                "amount": 0.263
+            },
+            {
+                "ticker": "EVTR",
+                "frequency": "매월",
+                "group": "MAM",
+                "amount": 0.212
+            },
+            {
+                "ticker": "FBYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.063
+            },
+            {
+                "ticker": "FTSM",
+                "frequency": "매월",
+                "group": "ASO",
+                "amount": 0.206
+            },
+            {
+                "ticker": "GIAX",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.068
+            },
+            {
+                "ticker": "HMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.095
+            },
+            {
+                "ticker": "HOYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.072
+            },
+            {
+                "ticker": "INCM",
+                "frequency": "매월",
+                "group": "JAD",
+                "amount": 0.125
+            },
+            {
+                "ticker": "IOYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.092
+            },
+            {
+                "ticker": "JAAA",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.199
+            },
+            {
+                "ticker": "JBBB",
+                "frequency": "매월",
+                "group": "MAD",
+                "amount": 0.227
+            },
+            {
+                "ticker": "JMBS",
+                "frequency": "매월",
+                "group": "FND",
+                "amount": 0.192
+            },
+            {
+                "ticker": "JSI",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.245
+            },
+            {
+                "ticker": "MAAY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.102
+            },
+            {
+                "ticker": "MAGY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.249131
+            },
+            {
+                "ticker": "MMIT",
+                "frequency": "매월",
+                "group": "FAD",
+                "amount": 0.074
+            },
+            {
+                "ticker": "MTYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.173
+            },
+            {
+                "ticker": "MUYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.272
+            },
+            {
+                "ticker": "NVYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.107
+            },
+            {
+                "ticker": "PAAA",
+                "frequency": "매월",
+                "group": "MSD",
+                "amount": 0.198
+            },
+            {
+                "ticker": "PLYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.091
+            },
+            {
+                "ticker": "PULS",
+                "frequency": "매월",
+                "group": "MJD",
+                "amount": 0.171
+            },
+            {
+                "ticker": "QBY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.108
+            },
+            {
+                "ticker": "QDPL",
+                "frequency": "분기",
+                "group": "MSD",
+                "amount": 0.121
+            },
+            {
+                "ticker": "QLDY",
+                "frequency": "매주",
+                "group": "수",
+                "amount": 0.151
+            },
+            {
+                "ticker": "RGYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.105
+            },
+            {
+                "ticker": "RTYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.178
+            },
+            {
+                "ticker": "SMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.09
+            },
+            {
+                "ticker": "TMYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.252
+            },
+            {
+                "ticker": "TQQY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.081
+            },
+            {
+                "ticker": "TSYY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.195
+            },
+            {
+                "ticker": "UYLD",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.194
+            },
+            {
+                "ticker": "VNLA",
+                "frequency": "매월",
+                "group": "FMD",
+                "amount": 0.194
+            },
+            {
+                "ticker": "XBTY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.042
+            },
+            {
+                "ticker": "XEY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.196
+            },
+            {
+                "ticker": "YSPY",
+                "frequency": "매주",
+                "group": "금",
+                "amount": 0.034
+            }
+        ]
+    },
+    "KrStock": {},
+    "KrEtf": {}
+}

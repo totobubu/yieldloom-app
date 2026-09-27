@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PYPY 배당 카드</title>
+<style>
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+body { font-family: Pretendard, "Noto Sans KR", Arial, sans-serif; background: #081321; color: #f7f9fc; }
+.card { position: relative; display: grid; grid-template-rows: auto 1fr auto; width: 100%; height: 100%; padding: 66px; background: radial-gradient(circle at 90% 4%, #244b68 0, transparent 34%), linear-gradient(145deg, #081321 0%, #10283b 100%); }
+.card::after { content: ""; position: absolute; right: -9%; bottom: -20%; width: 48%; aspect-ratio: 1; border: 7px solid rgba(255,190,82,.22); border-radius: 50%; }
+.top { display: flex; justify-content: space-between; align-items: center; font-size: 24px; font-weight: 800; letter-spacing: .1em; color: #ffbd52; }
+.provider { color: #b9c8d7; letter-spacing: .02em; font-size: .92em; }
+.main { align-self: center; padding-top: 0px; }
+.ticker { margin: 0 0 9px; font-size: 114px; line-height: .9; letter-spacing: -.05em; }
+.label { margin: 0 0 7px; font-size: 36px; color: #b9c8d7; }
+.amount { margin: 0; color: #fff; font-size: 110px; font-weight: 900; letter-spacing: -.055em; }
+.change { display: inline-block; margin-top: 9px; padding: 12px 22px; border: 1px solid rgba(255,189,82,.45); border-radius: 999px; color: #ffd78f; font-size: 24px; font-weight: 800; }
+.amount-change { margin: 6px 0 0; color: #dce7f2; font-size: 24px; font-weight: 700; }
+.monthly { margin-top: 13px; padding: 22px; border-radius: 17px; background: rgba(255,255,255,.94); color: #172033; }
+.monthly > p { margin: 0 0 5px; font-size: 20px; font-weight: 900; } .monthly > p span { color: #667085; font-weight: 600; }
+.month-row { display:grid; grid-template-columns: 98px 130px 1fr; gap: 11px; align-items:center; min-height:19px; border-top:1px solid #e8ecf1; font-size:19px; }
+.month-row strong { color:#344054; } .month-row b { color:#101828; } .pills { display:flex; gap:7px; } .pill { flex:1; padding:4px 7px; border-radius:7px; color:#fff; text-align:center; font-weight:900; font-size:19px; }
+.blue{background:#4386ed}.red{background:#e3483f}.yellow{background:#eab308;color:#172033}.green{background:#22a45d}.orange{background:#e87918}
+.bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.16); }
+.date span { display: block; margin-bottom: 3px; color: #8fa5b7; font-size: 19px; }
+.date strong { font-size: 26px; }
+</style>
+</head>
+<body>
+<main class="card" data-content-card>
+  <header class="top"><span>DIVIDEND BRIEF</span><span class="provider">YIELDMAX · Made by 토또부부</span></header>
+  <section class="main"><h1 class="ticker">PYPY</h1><p class="label">주당 배당금</p><p class="amount">$0.1514</p><p class="amount-change">직전 $0.2376 → 이번 $0.1514</p><span class="change">직전 대비 -36.3% | - $0.0862</span></section>
+  <footer class="bottom"><div class="date"><span>배당공시일</span><strong>260902</strong></div><div class="date"><span>배당락일</span><strong>260903</strong></div><div class="date"><span>지급일</span><strong>260904</strong></div></footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,17 @@
+* text eol=lf
+
+# Treat common binary files as binary (no EOL conversion)
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.gif -text
+*.webp -text
+*.ico -text
+*.pdf -text
+*.zip -text
+*.gz -text
+*.7z -text
+*.woff -text
+*.woff2 -text
+*.ttf -text
+

@@ -1,0 +1,159 @@
+// src/styles/abstracts/_variables.scss
+@use 'sass:map';
+$mode: responsive !default; // responsive, pc, mobile, tablet
+
+// breakpoints
+$grid-breakpoints: (
+    xs: 0,
+    sm: 640px,
+    md: 768px,
+    lg: 1025px,
+    xl: 1280px,
+    xxl: 1536px,
+);
+
+// Grids
+$min-width: 350px !default;
+$max-width: 1600px !default;
+
+// Colors
+$color-transparent: transparent !default;
+$color-white: #ffffff !default;
+$color-light: #f7f7f7 !default;
+$color-mid-x-light: #d9d9d9 !default;
+$color-mid-light: #f7f8f9 !default;
+$color-gray: #666666 !default;
+$color-mid-dark: #2a2d3e !default;
+$color-dark: #111111 !default;
+$color-x-dark: #000000 !default;
+
+$color-negative: #c7162b !default;
+$color-danger: #cf222e !default; // Use to emphasize an error or a blocking status. Action is required.
+$color-severe: #bc4c00 !default; // Use to emphasize a level of severity between attention and danger.
+$color-error: #e85600 !default;
+$color-caution: #f99b11 !default;
+$color-attention: #9a6700 !default; // Use to highlight text or icons that require the user's attention.
+$color-warning: #ffb700 !default;
+$color-positive: #0e8420 !default;
+$color-success: #1a7f37 !default; // Use to emphasize a positive message.
+$color-open: #1a7f37 !default; // Use to style text that refers to open tasks or workflows.
+$color-information: #24598f !default;
+$color-accent: #0f95a1 !default; // Use for interactive text or icons like links or buttons.
+$color-info: #0dcaf0 !default;
+$color-link: #06c06c !default;
+$color-closed: #cf222e !default; // Use to style text that refers to closed tasks or workflows.
+$color-done: #8250df !default; // Use to style text that refers to completed tasks or workflows.
+$color-sponsors: rgb(191, 57, 137) !default;
+
+$color-default: $color-dark !default;
+$color-muted: rgb(101, 109, 118) !default;
+$color-subtle: rgb(110, 119, 129) !default;
+
+$color-brand: #e95420 !default;
+$color-primary: #5755d9 !default;
+$color-secondary: #f1f1fc !default;
+$color-tertiary: rgba(33, 37, 41, 0.5) !default;
+
+$colors: () !default;
+$colors: map.merge(
+    (
+        'transparent': $color-transparent,
+        'white': $color-white,
+        'light': $color-light,
+        'mid-x-light': $color-mid-x-light,
+        'mid-light': $color-mid-light,
+        'mid-dark': $color-mid-dark,
+        'dark': $color-dark,
+        'x-dark': $color-x-dark,
+        'gray': $color-gray,
+
+        'negative': $color-negative,
+        'danger': $color-danger,
+        'severe': $color-severe,
+        'error': $color-error,
+        'caution': $color-caution,
+        'attention': $color-attention,
+        'warning': $color-warning,
+        'positive': $color-positive,
+        'success': $color-success,
+        'open': $color-open,
+        'information': $color-information,
+        'accent': $color-accent,
+        'info': $color-info,
+        'link': $color-link,
+        'closed': $color-closed,
+        'done': $color-done,
+        'sponsors': $color-sponsors,
+
+        'default': $color-default,
+        'muted': $color-muted,
+        'subtle': $color-subtle,
+
+        'brand': $color-brand,
+        'primary': $color-primary,
+        'secondary': $color-secondary,
+        'tertiary': $color-tertiary,
+    ),
+    $colors
+);
+
+$dark-bg-colors: () !default;
+$dark-bg-colors: map.merge(
+    (
+        'bg-mid-dark': $color-mid-dark,
+        'bg-dark': $color-dark,
+        'bg-x-dark': $color-x-dark,
+        'bg-default': $color-default,
+        'bg-danger': $color-danger,
+        'bg-muted': $color-muted,
+    ),
+    $dark-bg-colors
+);
+
+$light-bg-colors: () !default;
+$light-bg-colors: map.merge(
+    (
+        'bg-transparent': $color-transparent,
+        'bg-white': $color-white,
+        'bg-light': $color-light,
+        'bg-mid-x-light': $color-mid-x-light,
+        'bg-mid-light': $color-mid-light,
+        'bg-gray': $color-gray,
+        'bg-negative': $color-negative,
+        'bg-severe': $color-severe,
+        'bg-error': $color-error,
+        'bg-caution': $color-caution,
+        'bg-attention': $color-attention,
+        'bg-warning': $color-warning,
+        'bg-positive': $color-positive,
+        'bg-success': $color-success,
+        'bg-open': $color-open,
+        'bg-information': $color-information,
+        'bg-accent': $color-accent,
+        'bg-info': $color-info,
+        'bg-link': $color-link,
+        'bg-closed': $color-closed,
+        'bg-done': $color-done,
+        'bg-sponsors': $color-sponsors,
+        'bg-subtle': $color-subtle,
+        'bg-brand': $color-brand,
+        'bg-primary': $color-primary,
+        'bg-secondary': $color-secondary,
+        'bg-tertiary': $color-tertiary,
+    ),
+    $light-bg-colors
+);
+
+// Fonts
+$font-family-base: 'Nanum Gothic Coding', monospace !default;
+
+// toto variables
+:root {
+    --tw-spacing: 0.25rem;
+    --t-ground: var(--p-zinc-950);
+    --t-body-bg: var(--p-zinc-900);
+    --t-dialog-close-button: 2rem;
+    --t-overlay-modal-padding-y: 1rem;
+    --t-overlay-modal-padding-x: 1.5rem;
+    --p-iftalabel-input-padding-top: 1.5rem;
+}

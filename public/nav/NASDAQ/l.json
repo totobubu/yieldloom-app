@@ -1,0 +1,73 @@
+[
+    {
+        "symbol": "LIN",
+        "ipoDate": "1992-06-17",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "IE000S9YS762",
+        "market": "NASDAQ",
+        "yfSymbol": "LIN",
+        "currency": "USD",
+        "koName": "린데"
+    },
+    {
+        "symbol": "LKQ",
+        "ipoDate": "2003-10-06",
+        "frequency": "분기",
+        "group": "MMAN",
+        "sharesOutstanding": false,
+        "isin": "US5018892084",
+        "market": "NASDAQ",
+        "yfSymbol": "LKQ",
+        "currency": "USD"
+    },
+    {
+        "symbol": "LMTW",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "group": "월",
+        "upcoming": true,
+        "sharesOutstanding": false,
+        "market": "NASDAQ",
+        "yfSymbol": "LMTW",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "록히드 마틴"
+    },
+    {
+        "symbol": "LNT",
+        "ipoDate": "1973-02-21",
+        "frequency": "분기",
+        "group": "JAJO",
+        "sharesOutstanding": false,
+        "isin": "US0188021085",
+        "market": "NASDAQ",
+        "yfSymbol": "LNT",
+        "currency": "USD",
+        "koName": "얼라이언트 에너지"
+    },
+    {
+        "symbol": "LRCX",
+        "ipoDate": "1984-05-04",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US5128073062",
+        "market": "NASDAQ",
+        "yfSymbol": "LRCX",
+        "currency": "USD",
+        "koName": "램 리서치"
+    },
+    {
+        "symbol": "LULU",
+        "ipoDate": "2007-07-27",
+        "sharesOutstanding": false,
+        "isin": "US5500211090",
+        "market": "NASDAQ",
+        "yfSymbol": "LULU",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "룰루레몬"
+    }
+]

@@ -1,0 +1,14 @@
+[
+    {
+        "symbol": "XEY",
+        "isin": "US38747T6588",
+        "market": "BATS",
+        "yfSymbol": "XEY",
+        "currency": "USD",
+        "sharesOutstanding": false,
+        "ipoDate": "2026-04-29",
+        "company": "GraniteShares",
+        "underlying": "ETHER",
+        "koName": "그래닛셰어즈 일드부스트 이더리움 ETF"
+    }
+]

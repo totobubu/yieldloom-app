@@ -1,0 +1,317 @@
+{
+  "total_files": 3513,
+  "files_with_dividends": 2790,
+  "files_with_splits": 911,
+  "files_with_amount": 2790,
+  "files_with_amount_fixed": 160,
+  "items_to_migrate": 132581,
+  "splits_distribution": {
+    "15": 2,
+    "2": 144,
+    "1": 418,
+    "3": 81,
+    "6": 49,
+    "4": 73,
+    "7": 22,
+    "16": 2,
+    "11": 2,
+    "5": 61,
+    "13": 6,
+    "10": 15,
+    "8": 23,
+    "14": 1,
+    "9": 10,
+    "12": 1,
+    "26": 1
+  },
+  "market_distribution": {
+    "BATS": 5,
+    "KOSDAQ": 904,
+    "KOSPI": 25,
+    "NASDAQ": 246,
+    "NYSE": 1610
+  },
+  "sample_files": {
+    "no_splits": [
+      {
+        "symbol": "MSST",
+        "market": "BATS",
+        "file": "C:\\workspace\\divgrow\\public\\data\\bats\\msst.json",
+        "dividends": 3
+      },
+      {
+        "symbol": "NVIT",
+        "market": "BATS",
+        "file": "C:\\workspace\\divgrow\\public\\data\\bats\\nvit.json",
+        "dividends": 3
+      },
+      {
+        "symbol": "TEST",
+        "market": "BATS",
+        "file": "C:\\workspace\\divgrow\\public\\data\\bats\\test.json",
+        "dividends": 3
+      },
+      {
+        "symbol": "TSYW",
+        "market": "BATS",
+        "file": "C:\\workspace\\divgrow\\public\\data\\bats\\tsyw.json",
+        "dividends": 4
+      },
+      {
+        "symbol": "UNHW",
+        "market": "BATS",
+        "file": "C:\\workspace\\divgrow\\public\\data\\bats\\unhw.json",
+        "dividends": 1
+      }
+    ],
+    "one_split": [
+      {
+        "symbol": "000150",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\000150.json",
+        "splits": [
+          {
+            "date": "2019-09-27",
+            "ratio": "0.906006:1",
+            "type": "split"
+          }
+        ],
+        "dividends": 29
+      },
+      {
+        "symbol": "000155",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\000155.json",
+        "splits": [
+          {
+            "date": "2019-09-27",
+            "ratio": "0.906006:1",
+            "type": "split"
+          }
+        ],
+        "dividends": 25
+      },
+      {
+        "symbol": "000240",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\000240.json",
+        "splits": [
+          {
+            "date": "2000-01-04",
+            "ratio": "1.03:1",
+            "type": "reverse-split"
+          }
+        ],
+        "dividends": 28
+      },
+      {
+        "symbol": "000660",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\000660.json",
+        "splits": [
+          {
+            "date": "2003-04-14",
+            "ratio": "1:21",
+            "type": "split"
+          }
+        ],
+        "dividends": 35
+      },
+      {
+        "symbol": "000810",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\000810.json",
+        "splits": [
+          {
+            "date": "2000-03-30",
+            "ratio": "1.06:1",
+            "type": "reverse-split"
+          }
+        ],
+        "dividends": 26
+      }
+    ],
+    "multiple_splits": [
+      {
+        "symbol": "000100",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\000100.json",
+        "splits": [
+          {
+            "date": "2005-12-28",
+            "ratio": "1.049898:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2006-12-27",
+            "ratio": "1.0499:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2007-12-27",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2008-12-29",
+            "ratio": "1.049971:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2009-12-29",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2010-12-29",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2016-12-28",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2017-12-27",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2018-12-27",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2019-12-27",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2020-04-08",
+            "ratio": "5:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2020-12-29",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2021-12-29",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2022-12-28",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2023-12-27",
+            "ratio": "1.05:1",
+            "type": "reverse-split"
+          }
+        ],
+        "dividends": 15
+      },
+      {
+        "symbol": "000120",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\000120.json",
+        "splits": [
+          {
+            "date": "2001-08-03",
+            "ratio": "1:6",
+            "type": "split"
+          },
+          {
+            "date": "2009-04-22",
+            "ratio": "0.5678:1",
+            "type": "split"
+          }
+        ],
+        "dividends": 3
+      },
+      {
+        "symbol": "000720",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\000720.json",
+        "splits": [
+          {
+            "date": "2000-01-04",
+            "ratio": "1.01:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2001-07-06",
+            "ratio": "1:5.99",
+            "type": "split"
+          },
+          {
+            "date": "2004-01-13",
+            "ratio": "1:9.05",
+            "type": "split"
+          }
+        ],
+        "dividends": 18
+      },
+      {
+        "symbol": "001040",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\001040.json",
+        "splits": [
+          {
+            "date": "2007-09-03",
+            "ratio": "0.63:1",
+            "type": "split"
+          },
+          {
+            "date": "2018-12-27",
+            "ratio": "1.15:1",
+            "type": "reverse-split"
+          }
+        ],
+        "dividends": 25
+      },
+      {
+        "symbol": "001440",
+        "market": "KOSDAQ",
+        "file": "C:\\workspace\\divgrow\\public\\data\\kosdaq\\001440.json",
+        "splits": [
+          {
+            "date": "2002-04-22",
+            "ratio": "2:1",
+            "type": "reverse-split"
+          },
+          {
+            "date": "2012-10-19",
+            "ratio": "14.29:100",
+            "type": "split"
+          },
+          {
+            "date": "2015-02-17",
+            "ratio": "1:5",
+            "type": "split"
+          },
+          {
+            "date": "2022-02-03",
+            "ratio": "0.2:1",
+            "type": "split"
+          },
+          {
+            "date": "2022-02-07",
+            "ratio": "0.2:1",
+            "type": "split"
+          },
+          {
+            "date": "2023-05-16",
+            "ratio": "1:10",
+            "type": "split"
+          }
+        ],
+        "dividends": 3
+      }
+    ]
+  }
+}

@@ -1,0 +1,143 @@
+[
+    {
+        "symbol": "HAS",
+        "ipoDate": "1980-03-17",
+        "frequency": "분기",
+        "group": "MMAN",
+        "sharesOutstanding": false,
+        "isin": "US4180561072",
+        "market": "NASDAQ",
+        "yfSymbol": "HAS",
+        "currency": "USD",
+        "koName": "헤즈브로"
+    },
+    {
+        "symbol": "HBAN",
+        "ipoDate": "1980-03-17",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US4461501045",
+        "market": "NASDAQ",
+        "yfSymbol": "HBAN",
+        "currency": "USD",
+        "koName": "헌팅턴 뱅크셰어스"
+    },
+    {
+        "symbol": "HMYY",
+        "isin": "US38747R1409",
+        "market": "NASDAQ",
+        "yfSymbol": "HMYY",
+        "currency": "USD",
+        "sharesOutstanding": false,
+        "ipoDate": "2025-12-02",
+        "company": "GraniteShares",
+        "underlying": "HIMS",
+        "koName": "그래닛셰어즈 일드부스트 힘스 ETF"
+    },
+    {
+        "symbol": "HOLX",
+        "ipoDate": "1990-03-01",
+        "sharesOutstanding": false,
+        "isin": "US4364401012",
+        "market": "NASDAQ",
+        "yfSymbol": "HOLX",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "홀로직"
+    },
+    {
+        "symbol": "HON",
+        "ipoDate": "1962-01-02",
+        "frequency": "분기",
+        "group": "FMAN",
+        "sharesOutstanding": false,
+        "isin": "CA4385211061",
+        "market": "NASDAQ",
+        "yfSymbol": "HON",
+        "currency": "USD",
+        "koName": "허니웰 인터내셔널"
+    },
+    {
+        "symbol": "HOOD",
+        "ipoDate": "2021-07-29",
+        "sharesOutstanding": false,
+        "isin": "US7707001027",
+        "market": "NASDAQ",
+        "yfSymbol": "HOOD",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "로빈후드"
+    },
+    {
+        "symbol": "HOOW",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "group": "월",
+        "underlying": "HOOD",
+        "ipoDate": "2025-06-18",
+        "sharesOutstanding": false,
+        "isin": "US77926X6351",
+        "market": "NASDAQ",
+        "yfSymbol": "HOOW",
+        "currency": "USD",
+        "koName": "라운드힐 로빈후드 위클리페이 ETF"
+    },
+    {
+        "symbol": "HOYY",
+        "company": "GraniteShares",
+        "frequency": "매주",
+        "ipoDate": "2025-09-30",
+        "group": "금",
+        "sharesOutstanding": false,
+        "isin": "US38747R2563",
+        "market": "NASDAQ",
+        "yfSymbol": "HOYY",
+        "currency": "USD",
+        "koName": "그래닛셰어즈 일드부스트 로빈후드 ETF"
+    },
+    {
+        "symbol": "HSIC",
+        "ipoDate": "1995-11-03",
+        "sharesOutstanding": false,
+        "isin": "US8064071025",
+        "market": "NASDAQ",
+        "yfSymbol": "HSIC",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "헨리 세인"
+    },
+    {
+        "symbol": "HST",
+        "ipoDate": "1980-03-17",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US44107P1049",
+        "market": "NASDAQ",
+        "yfSymbol": "HST",
+        "currency": "USD",
+        "koName": "호스트 호텔 앤 리조트"
+    },
+    {
+        "symbol": "HUMN",
+        "company": "Roundhill Investments",
+        "ipoDate": "2025-06-26",
+        "sharesOutstanding": false,
+        "isin": "US77926X6500",
+        "market": "NASDAQ",
+        "yfSymbol": "HUMN",
+        "currency": "USD"
+    },
+    {
+        "symbol": "HYBI",
+        "company": "Neos Funds",
+        "frequency": "매월",
+        "ipoDate": "2024-09-30",
+        "sharesOutstanding": false,
+        "isin": "US78433H5845",
+        "market": "NASDAQ",
+        "yfSymbol": "HYBI",
+        "currency": "USD"
+    }
+]

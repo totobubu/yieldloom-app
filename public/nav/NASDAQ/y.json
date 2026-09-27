@@ -1,0 +1,55 @@
+[
+    {
+        "symbol": "YBTC",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "ipoDate": "2024-01-18",
+        "group": "수",
+        "sharesOutstanding": false,
+        "isin": "US77926X5023",
+        "market": "NASDAQ",
+        "yfSymbol": "YBTC",
+        "currency": "USD",
+        "koName": "라운드힐 비트코인 커버드콜 전략 ETF"
+    },
+    {
+        "symbol": "YETH",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "ipoDate": "2024-09-04",
+        "group": "수",
+        "sharesOutstanding": false,
+        "isin": "US77926X8415",
+        "market": "NASDAQ",
+        "yfSymbol": "YETH",
+        "currency": "USD",
+        "koName": "라운드힐 이더리움 커버드콜 전략 ETF"
+    },
+    {
+        "symbol": "YQQQ",
+        "company": "YieldMax",
+        "frequency": "매주",
+        "group": "목",
+        "ipoDate": "2024-08-15",
+        "sharesOutstanding": false,
+        "isin": "US88636J4519",
+        "market": "NASDAQ",
+        "yfSymbol": "YQQQ",
+        "currency": "USD",
+        "koName": "일드맥스 나스닥100 숏 옵션 인컴 전략 ETF"
+    },
+    {
+        "symbol": "YSPY",
+        "company": "GraniteShares",
+        "frequency": "매주",
+        "underlying": "SPY",
+        "ipoDate": "2025-04-03",
+        "group": "금",
+        "sharesOutstanding": false,
+        "isin": "US38747R5798",
+        "market": "NASDAQ",
+        "yfSymbol": "YSPY",
+        "currency": "USD",
+        "koName": "그래닛셰어즈 일드부스트 SPY ETF"
+    }
+]

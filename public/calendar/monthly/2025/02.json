@@ -1,0 +1,5501 @@
+﻿{
+    "UsStock": {
+        "2025-02-03": [
+            {
+                "ticker": "AIZ",
+                "koName": "?댁뒋?고듃",
+                "frequency": "遺꾧린",
+                "group": "FJSD",
+                "currency": "USD",
+                "amount": 0.8
+            },
+            {
+                "ticker": "AON",
+                "koName": "?먯씠??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.675
+            },
+            {
+                "ticker": "C",
+                "koName": "?⑦떚洹몃９",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.56
+            },
+            {
+                "ticker": "KMI",
+                "koName": "?⑤뜑 紐④굔",
+                "frequency": "遺꾧린",
+                "group": "FAJN",
+                "currency": "USD",
+                "amount": 0.288
+            },
+            {
+                "ticker": "NI",
+                "koName": "?섏씠?뚯뒪",
+                "frequency": "遺꾧린",
+                "group": "FAJO",
+                "currency": "USD",
+                "amount": 0.28
+            },
+            {
+                "ticker": "NRG",
+                "koName": "NRG ?먮꼫吏",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.44
+            },
+            {
+                "ticker": "O",
+                "koName": "由ъ뼹???몄뺨",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.264
+            },
+            {
+                "ticker": "OKE",
+                "koName": "?먯삤耳??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.03
+            },
+            {
+                "ticker": "PNW",
+                "koName": "?쇰꼫???⑥뒪??罹먰뵾??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.895
+            },
+            {
+                "ticker": "SYF",
+                "koName": "?깊겕濡쒕땲 ?뚯씠?몄뀥",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.25
+            }
+        ],
+        "2025-02-04": [
+            {
+                "ticker": "MET",
+                "koName": "硫뷀듃?쇱씠??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.545
+            }
+        ],
+        "2025-02-05": [
+            {
+                "ticker": "BRO",
+                "koName": "釉뚮씪????釉뚮씪??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.15
+            },
+            {
+                "ticker": "SLB",
+                "koName": "?먮읆踰꾧굅",
+                "frequency": "遺꾧린",
+                "group": "FJSD",
+                "currency": "USD",
+                "amount": 0.285
+            }
+        ],
+        "2025-02-07": [
+            {
+                "ticker": "AWK",
+                "koName": "?꾨찓由ъ뭏 ?뚰꽣 ?띿뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.765
+            },
+            {
+                "ticker": "COST",
+                "koName": "肄붿뒪?몄퐫",
+                "frequency": "遺꾧린",
+                "group": "FMAO",
+                "currency": "USD",
+                "amount": 1.16
+            },
+            {
+                "ticker": "DHI",
+                "koName": "D R ?명듉",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.4
+            },
+            {
+                "ticker": "FE",
+                "koName": "?쇱뒪?몄뿉?덉?",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.425
+            },
+            {
+                "ticker": "HWM",
+                "koName": "?섏슦硫??먯뼱濡쒖뒪?섏씠??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.1
+            },
+            {
+                "ticker": "JBHT",
+                "koName": "JB ?뚰듃 ?몃옖?ㅽ룷???쒕퉬?쒖뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.44
+            },
+            {
+                "ticker": "MAIN",
+                "koName": "硫붿씤 ?ㅽ듃由ы듃 罹먰뵾??,
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.25
+            },
+            {
+                "ticker": "NSC",
+                "koName": "?명띂?쒕뜕",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.35
+            },
+            {
+                "ticker": "PAYX",
+                "koName": "?섏씠泥듭뒪",
+                "frequency": "遺꾧린",
+                "group": "FMJN",
+                "currency": "USD",
+                "amount": 0.98
+            },
+            {
+                "ticker": "PH",
+                "koName": "?뚯뭅 ?섎땲?",
+                "frequency": "遺꾧린",
+                "group": "FMSN",
+                "currency": "USD",
+                "amount": 1.63
+            },
+            {
+                "ticker": "STZ",
+                "koName": "肄섏뒪?붾젅?댁뀡 釉뚮옖利?,
+                "frequency": "遺꾧린",
+                "group": "FAJO",
+                "currency": "USD",
+                "amount": 1.01
+            },
+            {
+                "ticker": "WFC",
+                "koName": "?곗뒪?뚭퀬",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.4
+            },
+            {
+                "ticker": "WST",
+                "koName": "?⑥뒪???뚮쭏?덊떚而??쒕퉬?쒖뒪",
+                "frequency": "遺꾧린",
+                "group": "FAJN",
+                "currency": "USD",
+                "amount": 0.21
+            }
+        ],
+        "2025-02-10": [
+            {
+                "ticker": "AAPL",
+                "koName": "?좏뵆",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.25
+            },
+            {
+                "ticker": "AEP",
+                "koName": "?꾨찓由ъ뭏 ?쇰젆?몃┃ ?뚯썙",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.93
+            },
+            {
+                "ticker": "AMP",
+                "koName": "?꾨찓由ы봽?쇱씠利??뚯씠?몄뀥",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.48
+            },
+            {
+                "ticker": "BX",
+                "koName": "釉붾옓?ㅽ넠",
+                "frequency": "遺꾧린",
+                "group": "FAAN",
+                "currency": "USD",
+                "amount": 1.44
+            },
+            {
+                "ticker": "ETR",
+                "koName": "?뷀꽣吏",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.6
+            },
+            {
+                "ticker": "GWW",
+                "koName": "W W 洹몃젅?몄?",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 2.05
+            },
+            {
+                "ticker": "IBM",
+                "koName": "IBM(?명꽣?댁뀛??鍮꾩??덉뒪 癒몄떊)",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.67
+            },
+            {
+                "ticker": "LVS",
+                "koName": "?쇱뒪踰좎씠嫄곗뒪 ?뚯쫰",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.25
+            }
+        ],
+        "2025-02-11": [
+            {
+                "ticker": "ASML",
+                "koName": "ASML ???ADR)",
+                "frequency": "遺꾧린",
+                "group": "FAJO",
+                "currency": "USD",
+                "amount": 1.57
+            },
+            {
+                "ticker": "BKR",
+                "koName": "踰좎씠而??댁쫰",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.23
+            },
+            {
+                "ticker": "V",
+                "koName": "VCI 湲濡쒕쾶",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.59
+            }
+        ],
+        "2025-02-12": [
+            {
+                "ticker": "KVUE",
+                "koName": "耳꾨럭",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.205
+            },
+            {
+                "ticker": "PCAR",
+                "koName": "?뚯뭅",
+                "frequency": "遺꾧린",
+                "group": "FMAD",
+                "currency": "USD",
+                "amount": 0.33
+            },
+            {
+                "ticker": "TGT",
+                "koName": "?寃?,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.12
+            },
+            {
+                "ticker": "URI",
+                "koName": "?좊굹?댄떚???뚰깉??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.79
+            },
+            {
+                "ticker": "XOM",
+                "koName": "?묒뒯 紐⑤퉴",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.99
+            }
+        ],
+        "2025-02-13": [
+            {
+                "ticker": "RMD",
+                "koName": "RMD",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.53
+            },
+            {
+                "ticker": "TJX",
+                "koName": "TJX 而댄띁?덉뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.375
+            }
+        ],
+        "2025-02-14": [
+            {
+                "ticker": "AMGN",
+                "koName": "?붿젨",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 2.38
+            },
+            {
+                "ticker": "CF",
+                "koName": "CF ?몃뜑?ㅽ듃由ъ뒪 ??⑹뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.5
+            },
+            {
+                "ticker": "CHD",
+                "koName": "泥섏튂 ???쒖??댄듃",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.295
+            },
+            {
+                "ticker": "CMS",
+                "koName": "CMS ?먮꼫吏",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.543
+            },
+            {
+                "ticker": "COP",
+                "koName": "肄붾끂肄뷀븘由쎌뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.78
+            },
+            {
+                "ticker": "COR",
+                "koName": "?쇱퐫??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.55
+            },
+            {
+                "ticker": "CTAS",
+                "koName": "?좏???,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.39
+            },
+            {
+                "ticker": "CVX",
+                "koName": "?곕툕濡?,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.71
+            },
+            {
+                "ticker": "DOC",
+                "koName": "?ъ뒪?쇳겕 ?꾨줈?쇳떚??,
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.305
+            },
+            {
+                "ticker": "DUK",
+                "koName": "????먮꼫吏",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.045
+            },
+            {
+                "ticker": "EMR",
+                "koName": "?먮㉧???쇰젆?몃┃",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.528
+            },
+            {
+                "ticker": "GEN",
+                "koName": "吏?몃??몃━",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.125
+            },
+            {
+                "ticker": "HSY",
+                "koName": "?덉돩",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.37
+            },
+            {
+                "ticker": "IVZ",
+                "koName": "?몃쿋?ㅼ퐫",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.205
+            },
+            {
+                "ticker": "KKR",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.175
+            },
+            {
+                "ticker": "KR",
+                "koName": "?щ줈嫄?,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.32
+            },
+            {
+                "ticker": "LLY",
+                "koName": "?쇰씪??由대━",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.5
+            },
+            {
+                "ticker": "MMM",
+                "koName": "?곕━??(3M)",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.73
+            },
+            {
+                "ticker": "MSCI",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.8
+            },
+            {
+                "ticker": "OTIS",
+                "koName": "?ㅽ떚???붾뱶??대뱶",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.39
+            },
+            {
+                "ticker": "SBUX",
+                "koName": "?ㅽ?踰낆뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.61
+            },
+            {
+                "ticker": "SCHW",
+                "koName": "李곗뒪 ?덉솑",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.27
+            },
+            {
+                "ticker": "SJM",
+                "koName": "JM?ㅻ㉧而?,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.08
+            },
+            {
+                "ticker": "SW",
+                "koName": "?ㅻ㉧???⑥뒪?몃줉",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.431
+            },
+            {
+                "ticker": "TECH",
+                "koName": "?뚰겕??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.08
+            },
+            {
+                "ticker": "TER",
+                "koName": "?뚮씪?ㅼ씤",
+                "frequency": "遺꾧린",
+                "group": "FMSN",
+                "currency": "USD",
+                "amount": 0.12
+            },
+            {
+                "ticker": "TFC",
+                "koName": "?몃（?댁뒪???뚯씠?몄뀥",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.52
+            },
+            {
+                "ticker": "WEC",
+                "koName": "WEC ?먮꼫吏 洹몃９",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.893
+            }
+        ],
+        "2025-02-18": [
+            {
+                "ticker": "ADM",
+                "koName": "ADMA 諛붿씠?ㅻ줈吏곸뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.51
+            },
+            {
+                "ticker": "APO",
+                "koName": "?꾪뤃濡?湲濡쒕쾶 留ㅻ땲吏癒쇳듃",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.463
+            },
+            {
+                "ticker": "BG",
+                "koName": "踰덉? 湲濡쒕쾶",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.68
+            },
+            {
+                "ticker": "COF",
+                "koName": "罹먰뵾?????뚯씠?몄뀥",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.6
+            },
+            {
+                "ticker": "CTSH",
+                "koName": "肄붽렇?덉쟾???뚰겕?濡쒖? ?붾（?섏쫰",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.31
+            },
+            {
+                "ticker": "EQT",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.158
+            },
+            {
+                "ticker": "F",
+                "koName": "?щ뱶 紐⑦꽣",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.3
+            },
+            {
+                "ticker": "JBL",
+                "koName": "?먮퉴",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.08
+            },
+            {
+                "ticker": "JNJ",
+                "koName": "議댁뒯 ??議댁뒯",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.24
+            },
+            {
+                "ticker": "PRU",
+                "koName": "?몃Ⅴ?댁뀥 ?뚯씠?몄뀥",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.35
+            },
+            {
+                "ticker": "ROK",
+                "koName": "濡쒗겕???ㅽ넗硫붿씠??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.31
+            },
+            {
+                "ticker": "SO",
+                "koName": "?쒕뜕",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.72
+            },
+            {
+                "ticker": "UPS",
+                "koName": "?좊굹?댄떚???뚯? ?쒕퉬??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.64
+            },
+            {
+                "ticker": "XYL",
+                "koName": "?먯씪??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.4
+            }
+        ],
+        "2025-02-19": [
+            {
+                "ticker": "AFL",
+                "koName": "?좏뵆??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.58
+            },
+            {
+                "ticker": "ED",
+                "koName": "而⑥넄由щ뜲?댄떚???먮뵒??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.85
+            },
+            {
+                "ticker": "MKTX",
+                "koName": "留덉폆?≪꽭????⑹뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.76
+            },
+            {
+                "ticker": "MPC",
+                "koName": "留덈씪???섑듃濡ㅻ━?",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.91
+            }
+        ],
+        "2025-02-20": [
+            {
+                "ticker": "AMAT",
+                "koName": "?댄뵆?쇱씠??癒명떚由ъ뼹利?,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.4
+            },
+            {
+                "ticker": "CNP",
+                "koName": "?쇳꽣?ъ씤???먮꼫吏",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.22
+            },
+            {
+                "ticker": "MSFT",
+                "koName": "留덉씠?щ줈?뚰봽??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.83
+            },
+            {
+                "ticker": "REGN",
+                "koName": "由ъ젣?ㅻ줎 ?뚮쭏?덊떚而ъ뒪",
+                "frequency": "遺꾧린",
+                "currency": "USD",
+                "amount": 0.88
+            },
+            {
+                "ticker": "STE",
+                "koName": "?ㅽ뀒由ъ뒪",
+                "frequency": "遺꾧린",
+                "group": "FJSN",
+                "currency": "USD",
+                "amount": 0.57
+            },
+            {
+                "ticker": "TRI",
+                "koName": "?곗뒯 濡쒖씠??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.595
+            }
+        ],
+        "2025-02-21": [
+            {
+                "ticker": "AZN",
+                "koName": "?꾩뒪?몃씪?쒕꽕移?ADR)",
+                "frequency": "遺꾧린",
+                "currency": "USD",
+                "amount": 1.05
+            },
+            {
+                "ticker": "CMI",
+                "koName": "而ㅻ???,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.82
+            },
+            {
+                "ticker": "EFX",
+                "koName": "?먰댄뙥??,
+                "frequency": "遺꾧린",
+                "group": "FMSN",
+                "currency": "USD",
+                "amount": 0.39
+            },
+            {
+                "ticker": "HLT",
+                "koName": "?먰듉 ?붾뱶??대뱶 ??⑹뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.15
+            },
+            {
+                "ticker": "J",
+                "koName": "?쒖씠肄μ뒪 ?붾（?섏뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAO",
+                "currency": "USD",
+                "amount": 0.316832
+            },
+            {
+                "ticker": "MAS",
+                "koName": "留ㅼ뒪肄?,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.31
+            },
+            {
+                "ticker": "PPG",
+                "koName": "PPG ?몃뜑?ㅽ듃由ъ뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.68
+            },
+            {
+                "ticker": "RTX",
+                "koName": "RTX 肄뷀띁?덉씠??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.63
+            },
+            {
+                "ticker": "TEL",
+                "koName": "TE 而ㅻ꽖?곕퉬??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.65
+            },
+            {
+                "ticker": "WAB",
+                "koName": "?⑥뒪?낇븯?곗뒪 ?먯뼱 釉뚮젅?댄겕 ?뚰겕?濡쒖?",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.25
+            },
+            {
+                "ticker": "YUM",
+                "koName": "??釉뚮옖利?,
+                "frequency": "遺꾧린",
+                "group": "FMSD",
+                "currency": "USD",
+                "amount": 0.71
+            }
+        ],
+        "2025-02-24": [
+            {
+                "ticker": "EXC",
+                "koName": "?묒?濡?,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.4
+            },
+            {
+                "ticker": "IP",
+                "koName": "?명꽣?댁뀛???섏씠??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.463
+            },
+            {
+                "ticker": "KLAC",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.7
+            },
+            {
+                "ticker": "MCHP",
+                "koName": "留덉씠?щ줈移??뚰겕?濡쒖?",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.455
+            },
+            {
+                "ticker": "PSX",
+                "koName": "?꾨┰??66",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.15
+            },
+            {
+                "ticker": "SNA",
+                "koName": "?ㅻ깄 ??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 2.14
+            },
+            {
+                "ticker": "SWKS",
+                "koName": "?ㅼ뭅?댁썚???붾（?섏쫰",
+                "frequency": "遺꾧린",
+                "group": "FMAD",
+                "currency": "USD",
+                "amount": 0.7
+            },
+            {
+                "ticker": "WYNN",
+                "koName": "??由ъ“??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.25
+            }
+        ],
+        "2025-02-25": [
+            {
+                "ticker": "ATO",
+                "koName": "?꾪넠",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.87
+            },
+            {
+                "ticker": "CDW",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.625
+            },
+            {
+                "ticker": "MCO",
+                "koName": "臾대뵒??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.94
+            },
+            {
+                "ticker": "ROL",
+                "koName": "濡ㅻ┛??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.165
+            },
+            {
+                "ticker": "WELL",
+                "koName": "?고???,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.67
+            }
+        ],
+        "2025-02-26": [
+            {
+                "ticker": "AMCR",
+                "koName": "?곗퐫",
+                "frequency": "遺꾧린",
+                "group": "FMSN",
+                "currency": "USD",
+                "amount": 0.128
+            },
+            {
+                "ticker": "EA",
+                "koName": "?쇰젆?몃줈???꾩툩",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.19
+            },
+            {
+                "ticker": "EQIX",
+                "koName": "?먰대땳??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 4.69
+            },
+            {
+                "ticker": "L",
+                "koName": "濡쒖슦??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.063
+            },
+            {
+                "ticker": "SPGI",
+                "koName": "S&P 湲濡쒕쾶",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.96
+            },
+            {
+                "ticker": "TSCO",
+                "koName": "?몃옓???쒗뵆?쇱씠",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.23
+            }
+        ],
+        "2025-02-27": [
+            {
+                "ticker": "DAL",
+                "koName": "?명? ??났",
+                "frequency": "遺꾧린",
+                "group": "FMJO",
+                "currency": "USD",
+                "amount": 0.15
+            },
+            {
+                "ticker": "LH",
+                "koName": "?⑹퐫????⑹뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.72
+            },
+            {
+                "ticker": "MAR",
+                "koName": "硫붾━?댄듃",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.63
+            },
+            {
+                "ticker": "TAP",
+                "koName": "紐곗뒯 荑좎뼱??踰좊쾭由ъ?",
+                "frequency": "遺꾧린",
+                "group": "FJSD",
+                "currency": "USD",
+                "amount": 0.47
+            }
+        ],
+        "2025-02-28": [
+            {
+                "ticker": "BAX",
+                "koName": "諛뺤뒪???명꽣?댁뀛??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.17
+            },
+            {
+                "ticker": "CBOE",
+                "koName": "CBOE 湲濡쒕쾶 留덉폆",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.63
+            },
+            {
+                "ticker": "CSX",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.13
+            },
+            {
+                "ticker": "D",
+                "koName": "?꾨??덉뼵 ?먮꼫吏",
+                "frequency": "遺꾧린",
+                "group": "FMSN",
+                "currency": "USD",
+                "amount": 0.668
+            },
+            {
+                "ticker": "DOV",
+                "koName": "?꾨쾭",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.515
+            },
+            {
+                "ticker": "DOW",
+                "koName": "?ㅼ슦",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.7
+            },
+            {
+                "ticker": "EL",
+                "koName": "?먯뒪??濡쒕뜑",
+                "frequency": "遺꾧린",
+                "group": "FMSN",
+                "currency": "USD",
+                "amount": 0.35
+            },
+            {
+                "ticker": "FDS",
+                "koName": "?⑺듃??由ъ꽌移??쒖뒪?쒖쫰",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.04
+            },
+            {
+                "ticker": "FTV",
+                "koName": "?ы떚釉?,
+                "frequency": "遺꾧린",
+                "group": "FMSN",
+                "currency": "USD",
+                "amount": 0.060286
+            },
+            {
+                "ticker": "GLW",
+                "koName": "肄붾떇",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.28
+            },
+            {
+                "ticker": "GS",
+                "koName": "怨⑤뱶留뚯궘??,
+                "frequency": "遺꾧린",
+                "group": "FMAD",
+                "currency": "USD",
+                "amount": 3
+            },
+            {
+                "ticker": "HII",
+                "koName": "?뚰똿???됯구???몃뜑?ㅽ듃由ъ뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.35
+            },
+            {
+                "ticker": "HON",
+                "koName": "?덈땲???명꽣?댁뀛??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.065033
+            },
+            {
+                "ticker": "HUBB",
+                "koName": "?덈꺼",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 1.32
+            },
+            {
+                "ticker": "IBKR",
+                "koName": "?명꽣?됲떚釉?釉뚮줈而ㅼ뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.0625
+            },
+            {
+                "ticker": "NEE",
+                "koName": "?μ뒪?몄뿉???먮꼫吏",
+                "frequency": "遺꾧린",
+                "group": "FJAN",
+                "currency": "USD",
+                "amount": 0.567
+            },
+            {
+                "ticker": "TMUS",
+                "koName": "T 紐⑤컮??,
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.88
+            },
+            {
+                "ticker": "TSN",
+                "koName": "??댁뒯 ?몃뱶",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.5
+            },
+            {
+                "ticker": "UNP",
+                "koName": "?좊땲???쇱떆??,
+                "frequency": "遺꾧린",
+                "group": "FMAD",
+                "currency": "USD",
+                "amount": 1.34
+            }
+        ]
+    },
+    "UsEtf": {
+        "2025-02-03": [
+            {
+                "ticker": "AGG",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.322
+            },
+            {
+                "ticker": "ANGL",
+                "koName": "諛섏뿉???섏씠?쇰뱶 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.156
+            },
+            {
+                "ticker": "APCB",
+                "koName": "?몃쿋?ㅽ듃???≫떚釉뚰뙣?쒕툕 肄붿뼱 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.059
+            },
+            {
+                "ticker": "AVIG",
+                "koName": "?꾨컲?곗뒪 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.145
+            },
+            {
+                "ticker": "BALI",
+                "koName": "釉붾옓濡??대뱶諛댄떚吏 ??뺤＜ ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.173
+            },
+            {
+                "ticker": "BBAG",
+                "koName": "JP紐④굔 踰좏?鍮뚮뜑 誘멸뎅 ?ъ옄?깃툒 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.158
+            },
+            {
+                "ticker": "BETE",
+                "koName": "?꾨줈?곗뼱利?鍮꾪듃肄붿씤 & ?대뜑 ?숈씪 媛以??꾨왂 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 2.527
+            },
+            {
+                "ticker": "BETH",
+                "koName": "?꾨줈?곗뼱利?鍮꾪듃肄붿씤 & ?대뜑由ъ? ?쒓?珥앹븸 媛以??꾨왂 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 2.765
+            },
+            {
+                "ticker": "BHYB",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.313
+            },
+            {
+                "ticker": "BIL",
+                "koName": "SPDR 珥덈떒湲?援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.326
+            },
+            {
+                "ticker": "BILS",
+                "koName": "SPDR 釉붾８踰꾧렇 ?④린 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.365
+            },
+            {
+                "ticker": "BILZ",
+                "koName": "?뚯퐫 珥덈떒湲??뺣? ?≫떚釉?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.33
+            },
+            {
+                "ticker": "BINC",
+                "koName": "釉붾옓濡?蹂???몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.235
+            },
+            {
+                "ticker": "BITI",
+                "koName": "?꾨줈?곗뼱利???鍮꾪듃肄붿씤 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.025
+            },
+            {
+                "ticker": "BITO",
+                "koName": "?꾨줈?곗뼱利?鍮꾪듃肄붿씤 ?좊Ъ ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.936822
+            },
+            {
+                "ticker": "BITU",
+                "koName": "?꾨줈?곗뼱利??몃윭?ㅽ듃 ?명듃??鍮꾪듃肄붿씤 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 1.214
+            },
+            {
+                "ticker": "BIV",
+                "koName": "諭낃???誘멸뎅 以묎린 援?콈-?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.253
+            },
+            {
+                "ticker": "BKAG",
+                "koName": "?댁슃 硫쒕줎????듭떖 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.143
+            },
+            {
+                "ticker": "BLV",
+                "koName": "諭낃????κ린梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.27
+            },
+            {
+                "ticker": "BND",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.235
+            },
+            {
+                "ticker": "BNDW",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.186
+            },
+            {
+                "ticker": "BNDX",
+                "koName": "諭낃????멸퀎 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.103
+            },
+            {
+                "ticker": "BOND",
+                "koName": "?뚯퐫 ?≫떚釉?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.39
+            },
+            {
+                "ticker": "BSV",
+                "koName": "諭낃???誘멸뎅 ?④린 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.247
+            },
+            {
+                "ticker": "BWX",
+                "koName": "BWX ?뚰겕?濡쒖???,
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.039
+            },
+            {
+                "ticker": "CLIP",
+                "koName": "湲濡쒕쾶?묒뒪 1~3媛쒖썡 誘멸뎅 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.358
+            },
+            {
+                "ticker": "CLOA",
+                "koName": "釉붾옓濡?AAA?깃툒 ?異쒕떞蹂대?利앷텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.244
+            },
+            {
+                "ticker": "CLOB",
+                "koName": "?대줈遊?,
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.284
+            },
+            {
+                "ticker": "CLOI",
+                "koName": "諛섏뿉???異쒕떞蹂대?利앷텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.261
+            },
+            {
+                "ticker": "CMF",
+                "koName": "?꾩씠?곗뼱利?罹섎━?щ땲??吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.132
+            },
+            {
+                "ticker": "CORP",
+                "koName": "?뚯퐫 ?ъ옄?깃툒 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.39
+            },
+            {
+                "ticker": "CWB",
+                "koName": "SPDR ?꾪솚利앷텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.095
+            },
+            {
+                "ticker": "EAGG",
+                "koName": "?꾩씠?곗뼱利?ESG 誘멸뎅 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.155
+            },
+            {
+                "ticker": "EBND",
+                "koName": "SPDR 釉붾８踰꾧렇 ?좏씎援?援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.095
+            },
+            {
+                "ticker": "EETH",
+                "koName": "?꾨줈?곗뼱利??대뜑由ъ? ?꾨왂 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 1.266
+            },
+            {
+                "ticker": "EINC",
+                "koName": "諛섏뿉???먮꼫吏 諛곕떦 ETF",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.471
+            },
+            {
+                "ticker": "EMB",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.441
+            },
+            {
+                "ticker": "EMBD",
+                "koName": "湲濡쒕쾶?묒뒪 ?좏씎援?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.1
+            },
+            {
+                "ticker": "EMLC",
+                "koName": "諛섏뿉???좏씎援??먭뎅?듯솕 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.121
+            },
+            {
+                "ticker": "FALN",
+                "koName": "?꾩씠?곗뼱利??좎슜?깃툒 ?섑뼢 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.143
+            },
+            {
+                "ticker": "FLBL",
+                "koName": "?꾨옲?대┛ ?쒕땲??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.133
+            },
+            {
+                "ticker": "FLCB",
+                "koName": "?꾨옲?대┛ 誘멸뎅 肄붿뼱 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.082
+            },
+            {
+                "ticker": "FLGV",
+                "koName": "?꾨옲?대┛ 誘멸뎅 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.07
+            },
+            {
+                "ticker": "FLMI",
+                "koName": "?꾨옲?대┛ ?ㅼ씠?섎? 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.071
+            },
+            {
+                "ticker": "FLOT",
+                "koName": "?꾩씠?곗뼱利?蹂?숆툑由?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.202
+            },
+            {
+                "ticker": "FLRN",
+                "koName": "SPDR ?ъ옄?깃툒 蹂?숆툑由ы삎 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.15
+            },
+            {
+                "ticker": "FLTR",
+                "koName": "諛섏뿉???ъ옄?깃툒 蹂?숆툑由ы삎 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.107
+            },
+            {
+                "ticker": "FLXR",
+                "koName": "TCW 蹂?숉삎 ?뚮뱷 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.23
+            },
+            {
+                "ticker": "GBIL",
+                "koName": "怨⑤뱶留뚯궘??留뚭린1??誘멸뎅 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.345
+            },
+            {
+                "ticker": "GOVT",
+                "koName": "?꾩씠?곗뼱利?誘멸뎅 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.067
+            },
+            {
+                "ticker": "GPIQ",
+                "koName": "怨⑤뱶留뚯궘???섏뒪??100 肄붿뼱 ?꾨━誘몄뾼 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.438
+            },
+            {
+                "ticker": "GPIX",
+                "koName": "怨⑤뱶留뚯궘??S&P 500 肄붿뼱 ?꾨━誘몄뾼 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.358
+            },
+            {
+                "ticker": "GRNB",
+                "koName": "諛섏뿉???뱀깋 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.083
+            },
+            {
+                "ticker": "GSST",
+                "koName": "怨⑤뱶留뚯궘??珥덈떒湲?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.181
+            },
+            {
+                "ticker": "GVI",
+                "koName": "?꾩씠?곗뼱利?援?콈/湲곌?/?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.304
+            },
+            {
+                "ticker": "HYD",
+                "koName": "諛섏뿉???섏씠?쇰뱶 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.207
+            },
+            {
+                "ticker": "HYDB",
+                "koName": "?꾩씠?곗뼱利??섏씠?쇰뱶 梨꾧텒 ?⑺꽣 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.287
+            },
+            {
+                "ticker": "HYEM",
+                "koName": "諛섏뿉???좏씎援??섏씠?쇰뱶 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.111
+            },
+            {
+                "ticker": "HYG",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.36
+            },
+            {
+                "ticker": "HYGV",
+                "koName": "?뚮젆?ㅼ뀺?댁쫰 ?섏씠?쇰뱶 梨꾧텒ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.249
+            },
+            {
+                "ticker": "HYHG",
+                "koName": "?꾨줈?곗뼱利??섏씠?쇰뱶 梨꾧텒 湲덈━ ?룹? ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.366
+            },
+            {
+                "ticker": "HYLB",
+                "koName": "?묒뒪?몃젅而??섏씠?쇰뱶 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.197
+            },
+            {
+                "ticker": "HYMB",
+                "koName": "SPDR 釉붾８踰꾧렇 怨좊같??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.094
+            },
+            {
+                "ticker": "HYS",
+                "koName": "?뚯퐫 ?섏씠?쇰뱶 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.6
+            },
+            {
+                "ticker": "IBDQ",
+                "koName": "?꾩씠?곗뼱利?2025 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.083
+            },
+            {
+                "ticker": "IBDR",
+                "koName": "?꾩씠?곗뼱利?2026 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.084
+            },
+            {
+                "ticker": "IBDS",
+                "koName": "?꾩씠?곗뼱利?2027 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.088
+            },
+            {
+                "ticker": "IBDT",
+                "koName": "?꾩씠?곗뼱利?2028??12??留뚭린 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.094
+            },
+            {
+                "ticker": "IBDU",
+                "koName": "?꾩씠?곗뼱利?2029 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.093
+            },
+            {
+                "ticker": "IBDV",
+                "koName": "?꾩씠?곗뼱利?2030 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.082
+            },
+            {
+                "ticker": "IBDW",
+                "koName": "?꾩씠?곗뼱利?2031 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.085
+            },
+            {
+                "ticker": "IBDX",
+                "koName": "?꾩씠?곗뼱利?2032 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.102
+            },
+            {
+                "ticker": "IBDY",
+                "koName": "?꾩씠?곗뼱利?2033??12??留뚭린 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.106
+            },
+            {
+                "ticker": "IBHF",
+                "koName": "?꾩씠?곗뼱利?2026 ?섏씠?쇰뱶 諛?諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.128
+            },
+            {
+                "ticker": "IBTF",
+                "koName": "?꾩씠?곗뼱利?2025??留뚭린 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.085
+            },
+            {
+                "ticker": "IBTG",
+                "koName": "?꾩씠?곗뼱利?2026 誘멸뎅梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.078
+            },
+            {
+                "ticker": "IBTH",
+                "koName": "?꾩씠?곗뼱利?2027 誘멸뎅梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.076
+            },
+            {
+                "ticker": "IBTI",
+                "koName": "?꾩씠?곗뼱利?2028 誘멸뎅梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.075
+            },
+            {
+                "ticker": "IBTJ",
+                "koName": "?꾩씠?곗뼱利?2029 誘멸뎅梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.066
+            },
+            {
+                "ticker": "ICSH",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.198
+            },
+            {
+                "ticker": "ICVT",
+                "koName": "?꾩씠?곗뼱利??꾪솚?ъ콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.141
+            },
+            {
+                "ticker": "IEF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.296
+            },
+            {
+                "ticker": "IEI",
+                "koName": "?꾩씠?곗뼱利?誘멸뎅 以묎린梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.329
+            },
+            {
+                "ticker": "IGEB",
+                "koName": "?꾩씠?곗뼱利??ъ옄?깃툒 梨꾧텒 ?⑺꽣 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.183
+            },
+            {
+                "ticker": "IGHG",
+                "koName": "?꾨줈?곗뼱利??ъ옄?깃툒 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.325
+            },
+            {
+                "ticker": "IGIB",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.198
+            },
+            {
+                "ticker": "IGLB",
+                "koName": "?꾩씠?곗뼱利??κ린 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.216
+            },
+            {
+                "ticker": "IGLD",
+                "koName": "?쇱뒪???몃윭?ㅽ듃 怨⑤뱶 ?꾨왂 ?寃?諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.119
+            },
+            {
+                "ticker": "IGSB",
+                "koName": "?꾩씠?곗뼱利?以묐떒湲곗콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.187
+            },
+            {
+                "ticker": "IQQQ",
+                "koName": "?꾨줈?곗뼱利??섏뒪???곸쐞 100 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.45
+            },
+            {
+                "ticker": "ISPY",
+                "koName": "?꾨줈?곗뼱利?S&P 500 怨좊같??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.326
+            },
+            {
+                "ticker": "ISTB",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.163
+            },
+            {
+                "ticker": "ITM",
+                "koName": "諛섏뿉??以묎린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.11
+            },
+            {
+                "ticker": "ITWO",
+                "koName": "?꾨줈?곗뼱利??ъ? 2000 怨좊같??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.489
+            },
+            {
+                "ticker": "IUSB",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.154
+            },
+            {
+                "ticker": "JAAA",
+                "koName": "?쇰늻???⑤뜑??AAA CLO ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.206
+            },
+            {
+                "ticker": "JBBB",
+                "koName": "?쇰늻???⑤뜑??B-BBB CLO ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.271
+            },
+            {
+                "ticker": "JBND",
+                "koName": "JP紐④굔 ?≫떚釉?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.201
+            },
+            {
+                "ticker": "JCPB",
+                "koName": "JP紐④굔 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.192
+            },
+            {
+                "ticker": "JCPI",
+                "koName": "JP紐④굔 ?명뵆?덉씠??諛⑹뼱 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.16
+            },
+            {
+                "ticker": "JEPI",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.326
+            },
+            {
+                "ticker": "JEPQ",
+                "koName": "JP紐④굔 ?섏뒪???꾨━誘몄뾼 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.45
+            },
+            {
+                "ticker": "JMBS",
+                "koName": "?쇰늻???⑤뜑??MBS ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.188
+            },
+            {
+                "ticker": "JMST",
+                "koName": "JP紐④굔 珥덈떒湲?吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.121
+            },
+            {
+                "ticker": "JMUB",
+                "koName": "JP紐④굔 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.13
+            },
+            {
+                "ticker": "JNK",
+                "koName": "SPDR 誘멸뎅 ?ш린?깃툒 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.536
+            },
+            {
+                "ticker": "JPIB",
+                "koName": "JP紐④굔 ?명꽣?댁뀛??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.184
+            },
+            {
+                "ticker": "JPIE",
+                "koName": "JP紐④굔 諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.22
+            },
+            {
+                "ticker": "JPLD",
+                "koName": "JP紐④굔 ?④린梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.186
+            },
+            {
+                "ticker": "JPST",
+                "koName": "JP紐④굔 珥덈떒湲?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.191
+            },
+            {
+                "ticker": "JSCP",
+                "koName": "JP紐④굔 ?④린 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.187
+            },
+            {
+                "ticker": "JSI",
+                "koName": "?쇰늻???⑤뜑??利앷텒???뚮뱷 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.304
+            },
+            {
+                "ticker": "LDUR",
+                "koName": "?뚯퐫 ?④린 留뚭린 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.37
+            },
+            {
+                "ticker": "LQD",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.389
+            },
+            {
+                "ticker": "MBB",
+                "koName": "?꾩씠?곗뼱利?誘멸뎅 MBS ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.341
+            },
+            {
+                "ticker": "MEAR",
+                "koName": "釉붾옓濡??④린 留뚭린 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.126
+            },
+            {
+                "ticker": "MINT",
+                "koName": "?뚯퐫 ?④린梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.42
+            },
+            {
+                "ticker": "MLN",
+                "koName": "諛섏뿉???κ린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.054
+            },
+            {
+                "ticker": "MMIT",
+                "koName": "IQ 留μ???以묎린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.071
+            },
+            {
+                "ticker": "MUB",
+                "koName": "?꾩씠?곗뼱利?誘멸뎅 二쇱젙遺 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.271
+            },
+            {
+                "ticker": "MUNI",
+                "koName": "?뚯퐫 以묎린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.14
+            },
+            {
+                "ticker": "NEAR",
+                "koName": "?꾩씠?곗뼱利??멸퀎 ?④린梨꾧텒 ?곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.195
+            },
+            {
+                "ticker": "NYF",
+                "koName": "?꾩씠?곗뼱利??댁슃 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.122
+            },
+            {
+                "ticker": "PAAA",
+                "koName": "PGIM AAA CLO 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.212
+            },
+            {
+                "ticker": "PFF",
+                "koName": "?꾩씠?곗뼱利??곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.175
+            },
+            {
+                "ticker": "PFFD",
+                "koName": "湲濡쒕쾶?묒뒪 誘멸뎅 ?곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.102
+            },
+            {
+                "ticker": "PFFV",
+                "koName": "湲濡쒕쾶?묒뒪 蹂?숆툑由??곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.14
+            },
+            {
+                "ticker": "PFXF",
+                "koName": "諛섏뿉??鍮꾧툑??諛곕떦二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.045
+            },
+            {
+                "ticker": "PMBS",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.15
+            },
+            {
+                "ticker": "PREF",
+                "koName": "?쇰┛?쒗뵆 ?곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.073
+            },
+            {
+                "ticker": "PSK",
+                "koName": "SPDR 誘멸뎅 鍮꾩쟾???곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.18
+            },
+            {
+                "ticker": "PULS",
+                "koName": "PGIM 誘멸뎅 珥덈떒湲?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.2
+            },
+            {
+                "ticker": "PYLD",
+                "koName": "?뚯퐫 硫???뱁꽣 梨꾧텒 ?≫떚釉?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.12
+            },
+            {
+                "ticker": "QLTA",
+                "koName": "?꾩씠?곗뼱利??곕웾 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.165
+            },
+            {
+                "ticker": "QQQT",
+                "koName": "?뷀뙆?댁뼵???섏뒪??100 ?몄뺨 ?寃?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.32
+            },
+            {
+                "ticker": "RAVI",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.295
+            },
+            {
+                "ticker": "SCHI",
+                "koName": "?덉솑 5-10?꾨Ъ ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.106
+            },
+            {
+                "ticker": "SCHJ",
+                "koName": "?덉솑 1-5?꾨Ъ ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.1
+            },
+            {
+                "ticker": "SCHO",
+                "koName": "?덉솑 以묐떒湲?誘멸뎅 援?퀬梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.096
+            },
+            {
+                "ticker": "SCHQ",
+                "koName": "?덉솑 誘멸뎅 ?κ린 援?퀬梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.134
+            },
+            {
+                "ticker": "SCHR",
+                "koName": "?덉솑 誘멸뎅 以묎린 援?퀬梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.09
+            },
+            {
+                "ticker": "SCHZ",
+                "koName": "?덉솑 怨좎젙?섏씡利앷텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.087
+            },
+            {
+                "ticker": "SCMB",
+                "koName": "?덉솑 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.081
+            },
+            {
+                "ticker": "SCUS",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.11
+            },
+            {
+                "ticker": "SCYB",
+                "koName": "?덉솑 ?섏씠?쇰뱶 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.173
+            },
+            {
+                "ticker": "SGOV",
+                "koName": "?꾩씠?곗뼱利?珥덈떒湲?誘멸뎅 援?퀬梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.363
+            },
+            {
+                "ticker": "SHM",
+                "koName": "SPDR ?④린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.098
+            },
+            {
+                "ticker": "SHV",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.403
+            },
+            {
+                "ticker": "SHY",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.273
+            },
+            {
+                "ticker": "SHYD",
+                "koName": "諛섏뿉???섏씠?쇰뱶 ?④린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.075
+            },
+            {
+                "ticker": "SHYG",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.253
+            },
+            {
+                "ticker": "SJNK",
+                "koName": "SPDR 怨좊같??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.152
+            },
+            {
+                "ticker": "SLQD",
+                "koName": "?꾩씠?곗뼱利?誘멸뎅 以묎린 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.164
+            },
+            {
+                "ticker": "SMB",
+                "koName": "諛섏뿉???④린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.037
+            },
+            {
+                "ticker": "SMBS",
+                "koName": "?덉솑 紐④린吏?대낫利앷텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.131
+            },
+            {
+                "ticker": "SMMU",
+                "koName": "?뚯퐫 ?④린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.11
+            },
+            {
+                "ticker": "SPAB",
+                "koName": "SPDR 誘멸뎅 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.088
+            },
+            {
+                "ticker": "SPBO",
+                "koName": "SPDR ?뚯궗梨??ы듃?대━??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.127
+            },
+            {
+                "ticker": "SPFF",
+                "koName": "湲濡쒕쾶?묒뒪 怨좊같???곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.048
+            },
+            {
+                "ticker": "SPHY",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.153
+            },
+            {
+                "ticker": "SPIB",
+                "koName": "SPDR 怨좎젙湲덈━ ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.128
+            },
+            {
+                "ticker": "SPLB",
+                "koName": "SPDR ?κ린 怨좎젙湲덈━ ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.096
+            },
+            {
+                "ticker": "SPMB",
+                "koName": "SPDR 二쇳깮??뱀콈沅뚮떞蹂대?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.067
+            },
+            {
+                "ticker": "SPSB",
+                "koName": "SPDR ?④린 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.118
+            },
+            {
+                "ticker": "SPTI",
+                "koName": "SPDR 以묎린 誘멸뎅 援?퀬梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.095
+            },
+            {
+                "ticker": "SPTL",
+                "koName": "SPDR 誘멸뎅 ?κ린 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.092
+            },
+            {
+                "ticker": "SPTS",
+                "koName": "SPDR 誘멸뎅 ?④린 援?퀬梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.101
+            },
+            {
+                "ticker": "SPYT",
+                "koName": "?뷀뙆?댁뼵??S&P 500 ?寃??몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.3272
+            },
+            {
+                "ticker": "SRLN",
+                "koName": "SPDR ?쒕땲?대줎 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.278
+            },
+            {
+                "ticker": "STIP",
+                "koName": "?꾩씠?곗뼱利?誘멸뎅 0~5??臾쇨?梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.034
+            },
+            {
+                "ticker": "SUB",
+                "koName": "?꾩씠?곗뼱利?以묐떒湲곗콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.192
+            },
+            {
+                "ticker": "SUSB",
+                "koName": "?꾩씠?곗뼱利?1~5??誘멸뎅 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.088
+            },
+            {
+                "ticker": "SUSC",
+                "koName": "?꾩씠?곗뼱利?誘멸뎅 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.085
+            },
+            {
+                "ticker": "SYFI",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.133
+            },
+            {
+                "ticker": "TAFI",
+                "koName": "AB ?④린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.062
+            },
+            {
+                "ticker": "TBIL",
+                "koName": "誘?援?콈 3媛쒖썡臾?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.174
+            },
+            {
+                "ticker": "TDTF",
+                "koName": "?뚮젆?ㅼ뀺?댁쫰 以묎린 臾쇨?梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.01
+            },
+            {
+                "ticker": "TDTT",
+                "koName": "?뚮젆?ㅼ뀺?댁쫰 ?④린 臾쇨?梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.018
+            },
+            {
+                "ticker": "TFI",
+                "koName": "SPDR ?κ린 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.115
+            },
+            {
+                "ticker": "TFLO",
+                "koName": "?꾩씠?곗뼱利?湲덈━蹂?숉삎 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.177
+            },
+            {
+                "ticker": "TIPX",
+                "koName": "SPDR 釉붾８踰꾧렇 以묐떒湲?臾쇨?梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.001
+            },
+            {
+                "ticker": "TLH",
+                "koName": "?꾩씠?곗뼱利?以묒옣湲?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.349
+            },
+            {
+                "ticker": "TLT",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.312
+            },
+            {
+                "ticker": "TOTL",
+                "koName": "SPDR ?꾩닠??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.171
+            },
+            {
+                "ticker": "USHY",
+                "koName": "?꾩씠?곗뼱利?怨좊같??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.214
+            },
+            {
+                "ticker": "USIG",
+                "koName": "?꾩씠?곗뼱利??ъ옄?깃툒 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.195
+            },
+            {
+                "ticker": "USOY",
+                "koName": "?뷀뙆?댁뼵???ㅼ씪 ?명빖?ㅻ뱶 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 1.0071
+            },
+            {
+                "ticker": "VCEB",
+                "koName": "諭낃???ESG 誘멸뎅 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.248
+            },
+            {
+                "ticker": "VCIT",
+                "koName": "諭낃???誘멸뎅 以묎린 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.313
+            },
+            {
+                "ticker": "VCLT",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.345
+            },
+            {
+                "ticker": "VCRB",
+                "koName": "諭낃???肄붿뼱 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.301
+            },
+            {
+                "ticker": "VCSH",
+                "koName": "諭낃???誘멸뎅 ?④린 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.281
+            },
+            {
+                "ticker": "VETZ",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.091
+            },
+            {
+                "ticker": "VGIT",
+                "koName": "諭낃???誘멸뎅 以묎린 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.191
+            },
+            {
+                "ticker": "VGLT",
+                "koName": "諭낃???誘멸뎅 ?κ린梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.207
+            },
+            {
+                "ticker": "VGSH",
+                "koName": "諭낃????④린 援?퀬梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.208
+            },
+            {
+                "ticker": "VMBS",
+                "koName": "諭낃???誘멸뎅 MBS ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.16
+            },
+            {
+                "ticker": "VNLA",
+                "koName": "?쇰늻???몃뜑???④린 怨좎젙?섏씡利앷텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.179
+            },
+            {
+                "ticker": "VPLS",
+                "koName": "諭낃???肄붿뼱 ?뚮윭??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.317
+            },
+            {
+                "ticker": "VTC",
+                "koName": "諭낃????뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.302
+            },
+            {
+                "ticker": "VTEB",
+                "koName": "諭낃???硫댁꽭 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.132
+            },
+            {
+                "ticker": "VTEC",
+                "koName": "諭낃???罹섎━?щ땲??鍮꾧낵??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.283
+            },
+            {
+                "ticker": "VTEI",
+                "koName": "諭낃???以묒옣湲?硫댁꽭 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.239
+            },
+            {
+                "ticker": "VTES",
+                "koName": "諭낃???硫댁꽭 ?④린 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.229
+            },
+            {
+                "ticker": "VUSB",
+                "koName": "諭낃????④린梨꾧텒 ?≫떚釉?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.212
+            },
+            {
+                "ticker": "VWOB",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.382
+            },
+            {
+                "ticker": "XBIL",
+                "koName": "誘멸뎅 6媛쒖썡 ?④린 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.175
+            },
+            {
+                "ticker": "XHLF",
+                "koName": "蹂몃뱶釉붾윮??珥덈떒湲?誘멸뎅梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.167
+            },
+            {
+                "ticker": "XMPT",
+                "koName": "諛섏뿉??CEF 吏諛⑹콈 諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.118
+            },
+            {
+                "ticker": "XTEN",
+                "koName": "蹂몃뱶釉붾윮??10??留뚭린 誘멸뎅梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.159
+            },
+            {
+                "ticker": "YEAR",
+                "koName": "AB ?명듃????諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.178
+            }
+        ],
+        "2025-02-04": [
+            {
+                "ticker": "CLOZ",
+                "koName": "?뚮굹洹몃옩 BBB-B ?異쒕떞蹂대?利앷텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.158
+            },
+            {
+                "ticker": "IRET",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.084
+            },
+            {
+                "ticker": "JOJO",
+                "koName": "ATAC ?щ젅??濡쒗뀒?댁뀡 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.052
+            },
+            {
+                "ticker": "TLTW",
+                "koName": "?꾩씠?곗뼱利?誘멸뎅 珥덉옣湲?援?콈 諛붿씠?쇱씠???꾨왂 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.388
+            }
+        ],
+        "2025-02-05": [
+            {
+                "ticker": "BIGY",
+                "koName": "?쇰뱶留μ뒪 ?寃?12 鍮?50 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.5025
+            },
+            {
+                "ticker": "DIV",
+                "koName": "湲濡쒕쾶?묒뒪 怨좊같??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.17
+            },
+            {
+                "ticker": "SDIV",
+                "koName": "湲濡쒕쾶?묒뒪 怨좊같??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.193
+            },
+            {
+                "ticker": "SOXY",
+                "koName": "?쇰뱶留μ뒪 ?寃?12 諛섎룄泥??듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.4883
+            },
+            {
+                "ticker": "SRET",
+                "koName": "湲濡쒕쾶?묒뒪 怨좊같??由ъ툩 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.148
+            },
+            {
+                "ticker": "TSLP",
+                "koName": "而ㅻ툕 ?쇰뱶 ?꾨━誘몄뾼 ?꾨왂 ?뚯뒳??ETF",
+                "currency": "USD",
+                "amount": 1
+            },
+            {
+                "ticker": "TSPY",
+                "koName": "ETF OPPORTUNITIES TR TAPPALPHA SPY GROWTH & DAILY INCOME",
+                "currency": "USD",
+                "amount": 0.298
+            }
+        ],
+        "2025-02-06": [
+            {
+                "ticker": "ABNY",
+                "koName": "?쇰뱶留μ뒪 ?먯뼱鍮꾩븻鍮??듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.4033
+            },
+            {
+                "ticker": "AMDY",
+                "koName": "?쇰뱶留μ뒪 AMD ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.3812
+            },
+            {
+                "ticker": "CONY",
+                "koName": "?쇰뱶留μ뒪 肄붿씤踰좎씠???듭뀡 諛곕떦 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 1.0468
+            },
+            {
+                "ticker": "FIAT",
+                "koName": "?쇰뱶留μ뒪 ??肄붿씤踰좎씠???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.5498
+            },
+            {
+                "ticker": "IWMY",
+                "koName": "?뷀뙆?댁뼵???ъ? 2000 ?듭뀡 諛곕떦 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.3013
+            },
+            {
+                "ticker": "LFGY",
+                "koName": "?쇰뱶留μ뒪 ?щ┰???곗뾽 諛?湲곗닠二??ы듃?대━???듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.628
+            },
+            {
+                "ticker": "MSFO",
+                "koName": "?쇰뱶留μ뒪 留덉씠?щ줈?뚰봽???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.3615
+            },
+            {
+                "ticker": "NFLY",
+                "koName": "?쇰뱶留μ뒪 ?룻뵆由?뒪 ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 1.0705
+            },
+            {
+                "ticker": "PYPY",
+                "koName": "?쇰뱶留μ뒪 ?섏씠???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.6665
+            },
+            {
+                "ticker": "QDTE",
+                "koName": "?쇱슫?쒗옄 N-100 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.231345
+            },
+            {
+                "ticker": "QQQY",
+                "koName": "?뷀뙆?댁뼵???섏뒪??00 ?듭뀡 諛곕떦 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2255
+            },
+            {
+                "ticker": "RDTE",
+                "koName": "?쇱슫?쒗옄 ?뚰삎二?0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.279654
+            },
+            {
+                "ticker": "ULTY",
+                "koName": "?쇰뱶留μ뒪 ?명듃???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.5369
+            },
+            {
+                "ticker": "WDTE",
+                "koName": "?뷀뙆?댁뼵??S&P 500 ?듭뀡 & 0DTE ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2343
+            },
+            {
+                "ticker": "XDTE",
+                "koName": "?쇱슫?쒗옄 S&P 500 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.178395
+            },
+            {
+                "ticker": "YBTC",
+                "koName": "?쇱슫?쒗옄 鍮꾪듃肄붿씤 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.565412
+            },
+            {
+                "ticker": "YMAG",
+                "koName": "?쇰뱶留μ뒪 M7 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.1862
+            },
+            {
+                "ticker": "YMAX",
+                "koName": "?쇰뱶留μ뒪 ?좊땲踰꾩뒪 ????ㅻ툕 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.1944
+            }
+        ],
+        "2025-02-07": [
+            {
+                "ticker": "AUSF",
+                "koName": "湲濡쒕쾶?묒뒪 ?좊뜢?곕툕 誘멸뎅 ?⑺꽣 ETF",
+                "frequency": "遺꾧린",
+                "group": "FMAD",
+                "currency": "USD",
+                "amount": 0.285
+            },
+            {
+                "ticker": "GPTY",
+                "koName": "?쇰뱶留μ뒪 ?멸났吏??湲곗닠 ?ы듃?대━???듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.3353
+            },
+            {
+                "ticker": "MLPA",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.935
+            },
+            {
+                "ticker": "MLPX",
+                "koName": "湲濡쒕쾶?묒뒪 ?먮꼫吏 ?명봽??ETF",
+                "frequency": "遺꾧린",
+                "group": "FMAD",
+                "currency": "USD",
+                "amount": 0.69
+            },
+            {
+                "ticker": "UBND",
+                "koName": "鍮낇넗由??ы듃?대━??II 鍮낇넗由ъ뀺?댁쫰 肄붿뼱 ?뚮윭??以묎린梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.078
+            },
+            {
+                "ticker": "UITB",
+                "koName": "鍮낇넗由??ы듃?대━??II 鍮낇넗由ъ뀺?댁쫰 肄붿뼱 以묎린 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.153
+            },
+            {
+                "ticker": "USTB",
+                "koName": "鍮낇넗由??ы듃?대━??II 鍮낇넗由ъ뀺?댁쫰 ?④린 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.189
+            },
+            {
+                "ticker": "USVM",
+                "koName": "鍮낇넗由ъ뀺?댁쫰 MSCI 誘멸뎅 ?뚰삎 媛移섏＜ 紐⑤찘? ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.031
+            },
+            {
+                "ticker": "VFLO",
+                "koName": "鍮낇넗由ъ뀺?댁쫰 ?꾧툑?먮쫫 ?곗닔 湲곗뾽 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.049
+            }
+        ],
+        "2025-02-12": [
+            {
+                "ticker": "AMLP",
+                "koName": "?뚮젅由ъ븞 ?먮꼫吏 ?명봽??ETF",
+                "frequency": "遺꾧린",
+                "group": "FMAN",
+                "currency": "USD",
+                "amount": 0.97
+            },
+            {
+                "ticker": "AMZP",
+                "koName": "而ㅻ툕 ?쇰뱶 ?꾨━誘몄뾼 ?꾨왂 ?꾨쭏議?ETF",
+                "currency": "USD",
+                "amount": 0.65
+            },
+            {
+                "ticker": "MSFY",
+                "koName": "而ㅻ툕 ?쇰뱶 ?꾨━誘몄뾼 ?꾨왂 留덉씠?щ줈?뚰봽??ETF",
+                "currency": "USD",
+                "amount": 0.25
+            },
+            {
+                "ticker": "XPAY",
+                "koName": "?쇱슫?쒗옄 S&P 500 ?寃?20 愿由?遺꾨같 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.952845
+            }
+        ],
+        "2025-02-13": [
+            {
+                "ticker": "AIYY",
+                "koName": "?쇰뱶留μ뒪 AI ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 3.71
+            },
+            {
+                "ticker": "AMZY",
+                "koName": "?쇰뱶留μ뒪 ?꾨쭏議??듭뀡諛곕떦 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.548
+            },
+            {
+                "ticker": "APLY",
+                "koName": "?쇰뱶留μ뒪 ?좏뵆 ?듭뀡諛곕떦 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.3625
+            },
+            {
+                "ticker": "DISO",
+                "koName": "?쇰뱶留μ뒪 ?붿쫰???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.4574
+            },
+            {
+                "ticker": "DIVY",
+                "koName": "?ъ슫???먰댄떚 諛곕떦二?ETF",
+                "currency": "USD",
+                "amount": 0.039
+            },
+            {
+                "ticker": "EIPI",
+                "koName": "?쇱뒪???몃윭?ㅽ듃 ?먮꼫吏 諛곕떦 ?뚰듃?덉뒪 ?명빖?ㅻ뱶 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.43
+            },
+            {
+                "ticker": "FXED",
+                "koName": "?ъ슫??梨꾧텒 ETF",
+                "currency": "USD",
+                "amount": 0.04
+            },
+            {
+                "ticker": "GPTY",
+                "koName": "?쇰뱶留μ뒪 ?멸났吏??湲곗닠 ?ы듃?대━???듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.2936
+            },
+            {
+                "ticker": "IWMY",
+                "koName": "?뷀뙆?댁뼵???ъ? 2000 ?듭뀡 諛곕떦 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.299
+            },
+            {
+                "ticker": "LFGY",
+                "koName": "?쇰뱶留μ뒪 ?щ┰???곗뾽 諛?湲곗닠二??ы듃?대━???듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.5642
+            },
+            {
+                "ticker": "MSTY",
+                "koName": "?쇰뱶留μ뒪 ?ㅽ듃?섑떚吏 ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 2.0216
+            },
+            {
+                "ticker": "QDTE",
+                "koName": "?쇱슫?쒗옄 N-100 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.250935
+            },
+            {
+                "ticker": "QQQY",
+                "koName": "?뷀뙆?댁뼵???섏뒪??00 ?듭뀡 諛곕떦 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2256
+            },
+            {
+                "ticker": "RDTE",
+                "koName": "?쇱슫?쒗옄 ?뚰삎二?0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.253721
+            },
+            {
+                "ticker": "SMCY",
+                "koName": "?쇰뱶留μ뒪 ?덊띁 留덉씠?щ줈 而댄벂???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 2.0901
+            },
+            {
+                "ticker": "WDTE",
+                "koName": "?뷀뙆?댁뼵??S&P 500 ?듭뀡 & 0DTE ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2337
+            },
+            {
+                "ticker": "XDTE",
+                "koName": "?쇱슫?쒗옄 S&P 500 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.233573
+            },
+            {
+                "ticker": "XYZY",
+                "koName": "?쇰뱶留μ뒪 釉붾줉 ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 2.92
+            },
+            {
+                "ticker": "YBTC",
+                "koName": "?쇱슫?쒗옄 鍮꾪듃肄붿씤 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.292781
+            },
+            {
+                "ticker": "YMAG",
+                "koName": "?쇰뱶留μ뒪 M7 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.0509
+            },
+            {
+                "ticker": "YMAX",
+                "koName": "?쇰뱶留μ뒪 ?좊땲踰꾩뒪 ????ㅻ툕 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.1503
+            },
+            {
+                "ticker": "YQQQ",
+                "koName": "?쇰뱶留μ뒪 ?섏뒪??00 ???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2498
+            }
+        ],
+        "2025-02-18": [
+            {
+                "ticker": "THTA",
+                "koName": "?뚰뙆???명빖?ㅻ뱶 ?쇰뱶 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.192
+            }
+        ],
+        "2025-02-19": [
+            {
+                "ticker": "AAPY",
+                "koName": "而ㅻ툕 ?쇰뱶 ?꾨━誘몄뾼 ?꾨왂 ?좏뵆 ETF",
+                "currency": "USD",
+                "amount": 0.3
+            },
+            {
+                "ticker": "DFCF",
+                "koName": "?붾찘?붾꼸 肄붿뼱 怨좎젙 諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.142
+            },
+            {
+                "ticker": "DFGP",
+                "koName": "?붾찘?붾꼸 湲濡쒕쾶 肄붿뼱 ?뚮윭??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.021
+            },
+            {
+                "ticker": "DFGX",
+                "koName": "?붾찘?붾꼸 誘멸뎅 ?쒖쇅 湲濡쒕쾶 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.018
+            },
+            {
+                "ticker": "DFIP",
+                "koName": "?붾찘?붾꼸 ?명뵆?덉씠??諛⑹뼱二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.034
+            },
+            {
+                "ticker": "DFNM",
+                "koName": "?붾찘?붾꼸 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.099
+            },
+            {
+                "ticker": "DFSD",
+                "koName": "?붾찘?붾꼸 ?④린 諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.143
+            },
+            {
+                "ticker": "DUSB",
+                "koName": "?붾찘?붾꼸 珥덈떒湲곗콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.165
+            },
+            {
+                "ticker": "GOOP",
+                "koName": "而ㅻ툕 ?쇰뱶 ?꾨━誘몄뾼 ?꾨왂 ?뚰뙆踰?A ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.4
+            },
+            {
+                "ticker": "HOMZ",
+                "koName": "ETF ?쒕━利??붾（???몄빞 罹먰뵾???섏슦吏?ETF",
+                "currency": "USD",
+                "amount": 0.09
+            }
+        ],
+        "2025-02-20": [
+            {
+                "ticker": "CRSH",
+                "koName": "?쇰뱶留μ뒪 ???뚯뒳???몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 3.81
+            },
+            {
+                "ticker": "FEAT",
+                "koName": "?쇰뱶留μ뒪 ?꾩떆 ?쇱씠???쇱퀜??5 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 1.9096
+            },
+            {
+                "ticker": "FIAX",
+                "koName": "?덉퐳?쇱뒪 梨꾧텒 ?泥댄닾??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.128
+            },
+            {
+                "ticker": "FIVY",
+                "koName": "?쇰뱶留μ뒪 ?꾩떆 ?쇱씠???섏씠釉뚮━??5 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 1.1203
+            },
+            {
+                "ticker": "GOOY",
+                "koName": "?쇰뱶留μ뒪 ?뚰뙆踰?A ?듭뀡諛곕떦 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.3877
+            },
+            {
+                "ticker": "GPTY",
+                "koName": "?쇰뱶留μ뒪 ?멸났吏??湲곗닠 ?ы듃?대━???듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.3258
+            },
+            {
+                "ticker": "IWMY",
+                "koName": "?뷀뙆?댁뼵???ъ? 2000 ?듭뀡 諛곕떦 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2687
+            },
+            {
+                "ticker": "LFGY",
+                "koName": "?쇰뱶留μ뒪 ?щ┰???곗뾽 諛?湲곗닠二??ы듃?대━???듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.5739
+            },
+            {
+                "ticker": "OARK",
+                "koName": "?쇰뱶留μ뒪 ?대끂踰좎씠???듭뀡 ?뚮뱷 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.4269
+            },
+            {
+                "ticker": "OUSA",
+                "koName": "?뚰봽??誘멸뎅 諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.048
+            },
+            {
+                "ticker": "OUSM",
+                "koName": "?뚰봽??FTSE ?ъ? ?뚰삎二?諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.048
+            },
+            {
+                "ticker": "PFFA",
+                "koName": "踰꾪닾???명봽??誘멸뎅 ?곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.17
+            },
+            {
+                "ticker": "QDTE",
+                "koName": "?쇱슫?쒗옄 N-100 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.246262
+            },
+            {
+                "ticker": "QQQY",
+                "koName": "?뷀뙆?댁뼵???섏뒪??00 ?듭뀡 諛곕떦 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.1979
+            },
+            {
+                "ticker": "RDTE",
+                "koName": "?쇱슫?쒗옄 ?뚰삎二?0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.202667
+            },
+            {
+                "ticker": "SDTY",
+                "koName": "?쇰뱶留μ뒪 S&P 500 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.2221
+            },
+            {
+                "ticker": "SMTH",
+                "koName": "?뚰봽???ㅻ???肄붿뼱 ?뚮윭??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.088
+            },
+            {
+                "ticker": "SNOY",
+                "koName": "?쇰뱶留μ뒪 ?ㅻ끂?고뵆?덉씠???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.921
+            },
+            {
+                "ticker": "TSLY",
+                "koName": "?쇰뱶留μ뒪 ?뚯뒳???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.5793
+            },
+            {
+                "ticker": "TSMY",
+                "koName": "?쇰뱶留μ뒪 TSMC ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.6019
+            },
+            {
+                "ticker": "WDTE",
+                "koName": "?뷀뙆?댁뼵??S&P 500 ?듭뀡 & 0DTE ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2355
+            },
+            {
+                "ticker": "XDTE",
+                "koName": "?쇱슫?쒗옄 S&P 500 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.220169
+            },
+            {
+                "ticker": "XOMO",
+                "koName": "?쇰뱶留μ뒪 ?묒뒯 紐⑤퉴 ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2541
+            },
+            {
+                "ticker": "YBIT",
+                "koName": "?쇰뱶留μ뒪 鍮꾪듃肄붿씤 ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.5506
+            },
+            {
+                "ticker": "YBTC",
+                "koName": "?쇱슫?쒗옄 鍮꾪듃肄붿씤 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.28128
+            },
+            {
+                "ticker": "YMAG",
+                "koName": "?쇰뱶留μ뒪 M7 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.1369
+            },
+            {
+                "ticker": "YMAX",
+                "koName": "?쇰뱶留μ뒪 ?좊땲踰꾩뒪 ????ㅻ툕 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.1852
+            }
+        ],
+        "2025-02-21": [
+            {
+                "ticker": "BUYW",
+                "koName": "硫붿씤 諛붿씠?쇱씠??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.071
+            },
+            {
+                "ticker": "DIA",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.659
+            },
+            {
+                "ticker": "EIPI",
+                "koName": "?쇱뒪???몃윭?ㅽ듃 ?먮꼫吏 諛곕떦 ?뚰듃?덉뒪 ?명빖?ㅻ뱶 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.125
+            },
+            {
+                "ticker": "FIXD",
+                "koName": "?쇱뒪?명듃?ъ뒪??怨좎젙?섏씡 利앷텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.155
+            },
+            {
+                "ticker": "FMB",
+                "koName": "?쇱뒪?명듃?ъ뒪??吏諛⑹콈 ?≫떚釉?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.14
+            },
+            {
+                "ticker": "FMHI",
+                "koName": "?쇱뒪???몃윭?ㅽ듃 吏諛⑹콈 怨좊같??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.163
+            },
+            {
+                "ticker": "FPE",
+                "koName": "?쇱뒪?명듃?ъ뒪???곗꽑二??뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.086
+            },
+            {
+                "ticker": "FPEI",
+                "koName": "?쇱뒪???몃윭?ㅽ듃 ?곗꽑二?諛?諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.085
+            },
+            {
+                "ticker": "FSIG",
+                "koName": "?쇱뒪???몃윭?ㅽ듃 ?쒗븳 留뚭린 ?ъ옄 ?깃툒 湲곗뾽 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.073
+            },
+            {
+                "ticker": "FTCB",
+                "koName": "FT CBOE 諛곕떦 梨뷀뵾???寃??몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.08
+            },
+            {
+                "ticker": "FTHI",
+                "koName": "?쇱뒪???몃윭?ㅽ듃 諛붿씠?쇱씠??諛곕떦二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.174
+            },
+            {
+                "ticker": "FTSL",
+                "koName": "?쇱뒪?명듃?ъ뒪???쒕땲??濡?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.263
+            },
+            {
+                "ticker": "HYLS",
+                "koName": "?쇱뒪?명듃?ъ뒪???섏씠?쇰뱶 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.215
+            },
+            {
+                "ticker": "KNG",
+                "koName": "Cboe 諛곕떦 洹議??뚮뱷 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.362
+            },
+            {
+                "ticker": "LMBS",
+                "koName": "?쇱뒪???몃윭?ㅽ듃 MBS ?≫떚釉?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.17
+            },
+            {
+                "ticker": "PCRB",
+                "koName": "?뗮깘 ESG 肄붿뼱 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.173
+            },
+            {
+                "ticker": "RDVI",
+                "koName": "FT CBOE 諛곕떦 梨뷀뵾???寃??몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.183
+            },
+            {
+                "ticker": "UCON",
+                "koName": "?쇱뒪?명듃?ъ뒪??臾댁젣??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.095
+            }
+        ],
+        "2025-02-24": [
+            {
+                "ticker": "BAB",
+                "koName": "?몃쿋?ㅼ퐫 怨쇱꽭 吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.085
+            },
+            {
+                "ticker": "BKLN",
+                "koName": "?몃쿋?ㅼ퐫 ?쒕땲?대줎 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.112
+            },
+            {
+                "ticker": "BSCP",
+                "koName": "?몃쿋?ㅼ퐫 2025 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.07
+            },
+            {
+                "ticker": "BSCQ",
+                "koName": "?몃쿋?ㅼ퐫 2026 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.067
+            },
+            {
+                "ticker": "BSCR",
+                "koName": "?몃쿋?ㅼ퐫 2027 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.066
+            },
+            {
+                "ticker": "BSCS",
+                "koName": "?몃쿋?ㅼ퐫 2028 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.073
+            },
+            {
+                "ticker": "BSCT",
+                "koName": "?몃쿋?ㅼ퐫 2029 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.067
+            },
+            {
+                "ticker": "BSCU",
+                "koName": "?몃쿋?ㅼ퐫 2030 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.061
+            },
+            {
+                "ticker": "BSCV",
+                "koName": "?몃쿋?ㅼ퐫 2031 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.063
+            },
+            {
+                "ticker": "BSCW",
+                "koName": "?몃쿋?ㅼ퐫 2032 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.081
+            },
+            {
+                "ticker": "BSCX",
+                "koName": "?몃쿋?ㅼ퐫 2033??留뚭린 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.084
+            },
+            {
+                "ticker": "BSJQ",
+                "koName": "?몃쿋?ㅼ퐫 2026??留뚭린 ?섏씠?쇰뱶 ?뚯궗梨?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.122
+            },
+            {
+                "ticker": "DJIA",
+                "koName": "湲濡쒕쾶?묒뒪 DOW30 而ㅻ쾭?쒖퐳 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.114
+            },
+            {
+                "ticker": "GOVI",
+                "koName": "?몃쿋?ㅼ퐫 0-30??援?콈 ?숈씪媛以?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.082
+            },
+            {
+                "ticker": "GSY",
+                "koName": "?몃쿋?ㅼ퐫 珥덈떒湲?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.198
+            },
+            {
+                "ticker": "GTO",
+                "koName": "?몃쿋?ㅼ퐫 ?좏깉 由ы꽩 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.173
+            },
+            {
+                "ticker": "PCEF",
+                "koName": "?몃쿋?ㅼ퐫 ?먯뇙??????섏씡 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.136
+            },
+            {
+                "ticker": "PCY",
+                "koName": "?몃쿋?ㅼ퐫 ?좏씎援?援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.106
+            },
+            {
+                "ticker": "PEY",
+                "koName": "?몃쿋?ㅼ퐫 怨좊같??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.07
+            },
+            {
+                "ticker": "PGF",
+                "koName": "?몃쿋?ㅼ퐫 湲덉쑖?곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.07
+            },
+            {
+                "ticker": "PGX",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.056
+            },
+            {
+                "ticker": "PWZ",
+                "koName": "?몃쿋?ㅼ퐫 鍮꾧낵??梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.064
+            },
+            {
+                "ticker": "PZA",
+                "koName": "?몃쿋?ㅼ퐫 鍮꾧낵??吏諛⑹콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.063
+            },
+            {
+                "ticker": "QYLD",
+                "koName": "湲濡쒕쾶?묒뒪 ?섏뒪??00 而ㅻ쾭?쒖퐳 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.165
+            },
+            {
+                "ticker": "QYLG",
+                "koName": "湲濡쒕쾶?묒뒪 ?섏뒪??00 而ㅻ쾭?쒖퐳 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.128
+            },
+            {
+                "ticker": "RYLD",
+                "koName": "湲濡쒕쾶?묒뒪 ?ъ? 2000 而ㅻ쾭?쒖퐳 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.163
+            },
+            {
+                "ticker": "SPHD",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.138
+            },
+            {
+                "ticker": "SPLV",
+                "koName": "?몃쿋?ㅼ퐫 S&P500 ?蹂??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.102
+            },
+            {
+                "ticker": "TBLL",
+                "koName": "?몃쿋?ㅼ퐫 ?④린 援?콈 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.375
+            },
+            {
+                "ticker": "TYLG",
+                "koName": "湲濡쒕쾶?묒뒪 ?뺣낫 湲곗닠 而ㅻ쾭?쒖퐳 諛??깆옣二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.221
+            },
+            {
+                "ticker": "VRIG",
+                "koName": "?몃쿋?ㅼ퐫 蹂?숆툑由??ъ옄?곴꺽 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.104
+            },
+            {
+                "ticker": "VRP",
+                "koName": "?몃쿋?ㅼ퐫 蹂?숆툑由??곗꽑二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.112
+            },
+            {
+                "ticker": "XYLD",
+                "koName": "湲濡쒕쾶?묒뒪 S&P500 而ㅻ쾭??肄?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.291
+            }
+        ],
+        "2025-02-25": [
+            {
+                "ticker": "AGGY",
+                "koName": "?꾩쫰?ㅽ듃由??섏씡瑜??μ긽 誘멸뎅 ?ъ옄?깃툒 梨꾧텒 ???,
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.155
+            },
+            {
+                "ticker": "CEPI",
+                "koName": "?됱뒪 ?щ┰???먰댄떚 ?꾨━誘몄뾼 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 1.5777
+            },
+            {
+                "ticker": "DES",
+                "koName": "?꾩쫰?ㅽ듃由?誘멸뎅 ?뚰삎 諛곕떦二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.01
+            },
+            {
+                "ticker": "DGRW",
+                "koName": "?꾩쫰?ㅽ듃由??꾨━??諛곕떦 ?깆옣 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.11
+            },
+            {
+                "ticker": "DHS",
+                "koName": "?꾩쫰?ㅽ듃由?誘멸뎅 怨좊같?뱀＜ ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.165
+            },
+            {
+                "ticker": "DLN",
+                "koName": "?꾩쫰?ㅽ듃由????諛곕떦二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.105
+            },
+            {
+                "ticker": "DON",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.035
+            },
+            {
+                "ticker": "DTD",
+                "koName": "?꾩쫰?ㅽ듃由?誘멸뎅 諛곕떦二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.09
+            },
+            {
+                "ticker": "MTBA",
+                "koName": "?ы뵆由ы뙆??MBS ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.25
+            },
+            {
+                "ticker": "TAGG",
+                "koName": "??濡??꾨씪?댁뒪 誘멸뎅 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.12
+            },
+            {
+                "ticker": "THYF",
+                "koName": "??濡??꾨씪?댁뒪 誘멸뎅 ?섏씠?쇰뱶 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.316
+            },
+            {
+                "ticker": "UNIY",
+                "koName": "?꾩쫰?ㅽ듃由??좊땲踰꾩뀥 梨꾧텒 ???,
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.195
+            },
+            {
+                "ticker": "USFR",
+                "koName": "?꾩쫰?ㅽ듃由?蹂?숆툑由ы삎 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.166
+            }
+        ],
+        "2025-02-26": [
+            {
+                "ticker": "AIPI",
+                "koName": "REX AI ?먰댄떚 ?꾨━誘몄뾼 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 1.355
+            },
+            {
+                "ticker": "BITX",
+                "koName": "鍮꾪듃肄붿씤 ?꾨왂 2諛?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.058
+            },
+            {
+                "ticker": "BNDI",
+                "koName": "?ㅼ삤???ъ옄?깃툒 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.2312
+            },
+            {
+                "ticker": "BTCI",
+                "koName": "?ㅼ삤??鍮꾪듃肄붿씤 ?섏씠 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 1.4319
+            },
+            {
+                "ticker": "CSHI",
+                "koName": "?ㅼ삤??諛곕떦 ?꾧툑 ???ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.2196
+            },
+            {
+                "ticker": "ETHU",
+                "koName": "?대뜑由ъ? 2諛?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.08
+            },
+            {
+                "ticker": "FEPI",
+                "koName": "?됱뒪 FANG & ?곸떊 ?먰댄떚 ?꾨━誘몄뾼 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.9805
+            },
+            {
+                "ticker": "HIPS",
+                "koName": "洹몃옒?쏆뀺?댁쫰 誘멸뎅 怨좊같?뱀＜ ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.108
+            },
+            {
+                "ticker": "HYBI",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.3865
+            },
+            {
+                "ticker": "IWMI",
+                "koName": "?ㅼ삤???ъ? 2000 怨좊같??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.5833
+            },
+            {
+                "ticker": "IYRI",
+                "koName": "?ㅼ삤??遺?숈궛 怨좊같??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.5087
+            },
+            {
+                "ticker": "KQQQ",
+                "koName": "而ㅻ툕 ?뚰겕?濡쒖? ??댄깂????됲듃 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.15
+            },
+            {
+                "ticker": "NFLP",
+                "koName": "而ㅻ툕 ?쇰뱶 ?꾨━誘몄뾼 ?꾨왂 ?룻뵆由?뒪 ETF",
+                "currency": "USD",
+                "amount": 0.85
+            },
+            {
+                "ticker": "QQQH",
+                "koName": "NEOS ?섏뒪??100 ?룹????먯옘???몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.39
+            },
+            {
+                "ticker": "QQQI",
+                "koName": "?ㅼ삤???섏뒪??100 ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.6138
+            },
+            {
+                "ticker": "SPYI",
+                "koName": "?ㅼ삤??S&P 500 怨좊같??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.5142
+            },
+            {
+                "ticker": "TLTI",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.2452
+            }
+        ],
+        "2025-02-27": [
+            {
+                "ticker": "BABO",
+                "koName": "?쇰뱶留μ뒪 ?뚮━諛붾컮 ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 1.919
+            },
+            {
+                "ticker": "CCSB",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.081
+            },
+            {
+                "ticker": "DIPS",
+                "koName": "?쇰뱶留μ뒪 ?붾퉬?붿븘 ???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.5845
+            },
+            {
+                "ticker": "DIVO",
+                "koName": "?고뵆由ы뙆??諛곕떦 ?섏씡 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.167
+            },
+            {
+                "ticker": "DIVY",
+                "koName": "?ъ슫???먰댄떚 諛곕떦二?ETF",
+                "currency": "USD",
+                "amount": 0.078
+            },
+            {
+                "ticker": "EGGQ",
+                "koName": "?ㅼ뒪?몄씪??鍮꾩??덈━ ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.191
+            },
+            {
+                "ticker": "EGGS",
+                "koName": "?ㅼ뒪?몄씪???좏꽭 由ы꽩 媛??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.59
+            },
+            {
+                "ticker": "EGGY",
+                "koName": "?ㅼ뒪?몄씪???ㅼ씠?섎? ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.946
+            },
+            {
+                "ticker": "FBND",
+                "koName": "?쇰뜽由ы떚 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.163
+            },
+            {
+                "ticker": "FBY",
+                "koName": "?쇰뱶留μ뒪 硫뷀? ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.4767
+            },
+            {
+                "ticker": "FIXP",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.11
+            },
+            {
+                "ticker": "FLDR",
+                "koName": "?쇰뜽由ы떚 ?④린 梨꾧텒 ?⑺꽣 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.202
+            },
+            {
+                "ticker": "FSEC",
+                "koName": "?쇰뜽由ы떚 ?ъ옄 ?깃툒 利앷텒??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.126
+            },
+            {
+                "ticker": "FXED",
+                "koName": "?ъ슫??梨꾧텒 ETF",
+                "currency": "USD",
+                "amount": 0.04
+            },
+            {
+                "ticker": "GDXY",
+                "koName": "?쇰뱶留μ뒪 湲?愿묐Ъ ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.4424
+            },
+            {
+                "ticker": "GIAX",
+                "koName": "?덉퐳?쇱뒪 湲濡쒕쾶 二쇱떇 諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.3709
+            },
+            {
+                "ticker": "GPTY",
+                "koName": "?쇰뱶留μ뒪 ?멸났吏??湲곗닠 ?ы듃?대━???듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.313
+            },
+            {
+                "ticker": "HTRB",
+                "koName": "?섑듃?щ뱶 ?좏깉 由ы꽩 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.118
+            },
+            {
+                "ticker": "IDVO",
+                "koName": "?고뵆由ы뙆??諛곕떦二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.161
+            },
+            {
+                "ticker": "IWMY",
+                "koName": "?뷀뙆?댁뼵???ъ? 2000 ?듭뀡 諛곕떦 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2573
+            },
+            {
+                "ticker": "JPMO",
+                "koName": "?쇰뱶留μ뒪 ?쒖씠?쇰え嫄?泥댁씠???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2951
+            },
+            {
+                "ticker": "LBAY",
+                "koName": "?덈뜑諛?濡????쇳꽣?덊떚釉?諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.076
+            },
+            {
+                "ticker": "LFGY",
+                "koName": "?쇰뱶留μ뒪 ?щ┰???곗뾽 諛?湲곗닠二??ы듃?대━???듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.5392
+            },
+            {
+                "ticker": "MARO",
+                "koName": "?쇰뱶留μ뒪 留덈씪 ??⑹뒪 ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 1.5575
+            },
+            {
+                "ticker": "MDST",
+                "currency": "USD",
+                "amount": 0.225
+            },
+            {
+                "ticker": "MRNY",
+                "koName": "?쇰뱶留μ뒪 紐⑤뜑???듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2308
+            },
+            {
+                "ticker": "NVDY",
+                "koName": "?쇰뱶留μ뒪 ?붾퉬?붿븘 ?듭뀡諛곕떦 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 1.6118
+            },
+            {
+                "ticker": "PLTY",
+                "koName": "?쇰뱶留μ뒪 ?붾??곗뼱 ?듭뀡 ?몄뺨 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 5.9377
+            },
+            {
+                "ticker": "QDTE",
+                "koName": "?쇱슫?쒗옄 N-100 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.259556
+            },
+            {
+                "ticker": "QDTY",
+                "koName": "?쇰뱶留μ뒪 ?섏뒪??100 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.3231
+            },
+            {
+                "ticker": "QDVO",
+                "koName": "?고뵆由ы뙆??CWP ?깆옣 & ?몄뺨 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.198
+            },
+            {
+                "ticker": "QQQY",
+                "koName": "?뷀뙆?댁뼵???섏뒪??00 ?듭뀡 諛곕떦 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.1938
+            },
+            {
+                "ticker": "RDTE",
+                "koName": "?쇱슫?쒗옄 ?뚰삎二?0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.193473
+            },
+            {
+                "ticker": "RISR",
+                "koName": "?대━?ㅻ퉬?섎뱶 湲덈━ ?몄긽 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.18
+            },
+            {
+                "ticker": "RMCA",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.077
+            },
+            {
+                "ticker": "RMNY",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.057
+            },
+            {
+                "ticker": "RMOP",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.084
+            },
+            {
+                "ticker": "SDTY",
+                "koName": "?쇰뱶留μ뒪 S&P 500 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.1977
+            },
+            {
+                "ticker": "SMIG",
+                "koName": "諛???寃뚯씠??以묒냼??諛곕떦 ?깆옣二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.041
+            },
+            {
+                "ticker": "SPRE",
+                "koName": "S&P 湲濡쒕쾶 由ъ툩 ?ㅻ━??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.067
+            },
+            {
+                "ticker": "SPSK",
+                "koName": "SP ????ㅼ슦 議댁뒪 湲濡쒕쾶 ?섏퓼??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.032
+            },
+            {
+                "ticker": "SPUS",
+                "koName": "SP ???S&P500 ?ㅻ━???곗뾽 ?쒖쇅 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.026
+            },
+            {
+                "ticker": "WDTE",
+                "koName": "?뷀뙆?댁뼵??S&P 500 ?듭뀡 & 0DTE ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.2311
+            },
+            {
+                "ticker": "WEEI",
+                "koName": "?⑥뒪?몄슦???대━?명듃 ?먮꼫吏 ?몄뺨 媛뺥솕 ETF",
+                "currency": "USD",
+                "amount": 0.225
+            },
+            {
+                "ticker": "XDTE",
+                "koName": "?쇱슫?쒗옄 S&P 500 0DTE 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "紐?,
+                "currency": "USD",
+                "amount": 0.203243
+            },
+            {
+                "ticker": "YBTC",
+                "koName": "?쇱슫?쒗옄 鍮꾪듃肄붿씤 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.229658
+            },
+            {
+                "ticker": "YETH",
+                "koName": "?쇱슫?쒗옄 ?대뜑由ъ? 而ㅻ쾭?쒖퐳 ?꾨왂 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 1.89333
+            },
+            {
+                "ticker": "YMAG",
+                "koName": "?쇰뱶留μ뒪 M7 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.176
+            },
+            {
+                "ticker": "YMAX",
+                "koName": "?쇰뱶留μ뒪 ?좊땲踰꾩뒪 ????ㅻ툕 ?듭뀡 ?몄뺨 ETF",
+                "frequency": "留ㅼ＜",
+                "group": "??,
+                "currency": "USD",
+                "amount": 0.1327
+            }
+        ],
+        "2025-02-28": [
+            {
+                "ticker": "CGCB",
+                "koName": "罹먰뵾?덇렇猷?肄붿뼱 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.089
+            },
+            {
+                "ticker": "CGCP",
+                "koName": "罹먰뵾?덇렇猷?肄붿뼱 ?뚮윭??諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.084
+            },
+            {
+                "ticker": "CGHM",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.077
+            },
+            {
+                "ticker": "CGMS",
+                "koName": "罹먰뵾?덇렇猷?誘멸뎅 硫?곗꽮??諛곕떦二?ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.117
+            },
+            {
+                "ticker": "CGMU",
+                "koName": "罹먰뵾?덇렇猷?吏諛⑹콈 諛곕떦 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.078
+            },
+            {
+                "ticker": "CGSD",
+                "koName": "罹먰뵾?덇렇猷??④린 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.091
+            },
+            {
+                "ticker": "CGSM",
+                "koName": "罹먰뵾?덇렇猷??④린 吏諛⑹콈 ?뚮뱷 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.069
+            },
+            {
+                "ticker": "EVLN",
+                "koName": "?댄듉 諛섏뒪 蹂??湲덈━ ?곹뭹 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.314
+            },
+            {
+                "ticker": "EVTR",
+                "koName": "紐④굔?ㅽ깲由??댄듉 諛섏뒪 ?좏깉 由ы꽩 梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.186
+            },
+            {
+                "ticker": "FTSM",
+                "koName": "?쇱뒪?명듃?ъ뒪??怨좎젙?섏씡 利앷텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.203
+            },
+            {
+                "ticker": "INCM",
+                "koName": "?꾨옲?대┛ ?몄뺨 ?ъ빱??ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.114
+            },
+            {
+                "ticker": "TSYY",
+                "koName": "洹몃옒?쏆뀺?댁쫰 ?쇰뱶遺?ㅽ듃 ?뚯뒳??ETF",
+                "frequency": "留ㅼ＜",
+                "group": "湲?,
+                "currency": "USD",
+                "amount": 2.5432
+            },
+            {
+                "ticker": "UYLD",
+                "koName": "?붿젮 ?ㅽ겕 珥덈떒湲?梨꾧텒 ETF",
+                "frequency": "留ㅼ썡",
+                "currency": "USD",
+                "amount": 0.197
+            }
+        ]
+    },
+    "KrStock": {
+        "2025-02-18": [
+            {
+                "ticker": "267260",
+                "koName": "HD?꾨??쇰젆?몃┃",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 4250
+            }
+        ],
+        "2025-02-20": [
+            {
+                "ticker": "055550",
+                "koName": "?좏븳吏二?,
+                "frequency": "遺꾧린",
+                "group": "FAJN",
+                "currency": "KRW",
+                "amount": 540
+            }
+        ],
+        "2025-02-25": [
+            {
+                "ticker": "011200",
+                "koName": "HMM",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 600
+            }
+        ],
+        "2025-02-27": [
+            {
+                "ticker": "000660",
+                "koName": "SK?섏씠?됱뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 1304
+            },
+            {
+                "ticker": "002380",
+                "koName": "KCC",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 9000
+            },
+            {
+                "ticker": "003230",
+                "koName": "?쇱뼇?앺뭹",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 1800
+            },
+            {
+                "ticker": "005380",
+                "koName": "?꾨?李?,
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 6000
+            },
+            {
+                "ticker": "005385",
+                "koName": "?꾨?李⑥슦",
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 6050
+            },
+            {
+                "ticker": "005387",
+                "koName": "?꾨?李??캛",
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 6100
+            },
+            {
+                "ticker": "005490",
+                "koName": "POSCO??⑹뒪",
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 2500
+            },
+            {
+                "ticker": "006260",
+                "koName": "LS",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 1650
+            },
+            {
+                "ticker": "006360",
+                "koName": "GS嫄댁꽕",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 300
+            },
+            {
+                "ticker": "007070",
+                "koName": "GS由ы뀒??,
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 500
+            },
+            {
+                "ticker": "007340",
+                "koName": "DN?ㅽ넗紐⑦떚釉?,
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 600
+            },
+            {
+                "ticker": "009540",
+                "koName": "HD?쒓뎅議곗꽑?댁뼇",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 5100
+            },
+            {
+                "ticker": "010620",
+                "koName": "HD?꾨?誘명룷",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 710
+            },
+            {
+                "ticker": "017670",
+                "koName": "SK?붾젅肄?,
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 1050
+            },
+            {
+                "ticker": "030200",
+                "koName": "KT",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 500
+            },
+            {
+                "ticker": "033780",
+                "koName": "KT&G",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 4200
+            },
+            {
+                "ticker": "035420",
+                "koName": "NAVER",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 1130
+            },
+            {
+                "ticker": "042670",
+                "koName": "HD?꾨??명봽?쇱퐫??,
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 70
+            },
+            {
+                "ticker": "071050",
+                "koName": "?쒓뎅湲덉쑖吏二?,
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 3980
+            },
+            {
+                "ticker": "078930",
+                "koName": "GS",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 2700
+            },
+            {
+                "ticker": "086520",
+                "koName": "?먯퐫?꾨줈",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 100
+            },
+            {
+                "ticker": "086790",
+                "koName": "?섎굹湲덉쑖吏二?,
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 1800
+            },
+            {
+                "ticker": "097950",
+                "koName": "CJ?쒖씪?쒕떦",
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 3000
+            },
+            {
+                "ticker": "103140",
+                "koName": "?띿궛",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 2600
+            },
+            {
+                "ticker": "105560",
+                "koName": "KB湲덉쑖",
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 804
+            },
+            {
+                "ticker": "138040",
+                "koName": "硫붾━痢좉툑?듭?二?,
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 1350
+            },
+            {
+                "ticker": "139130",
+                "koName": "iM湲덉쑖吏二?,
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 500
+            },
+            {
+                "ticker": "175330",
+                "koName": "JB湲덉쑖吏二?,
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 680
+            },
+            {
+                "ticker": "267250",
+                "koName": "HD?꾨?",
+                "frequency": "遺꾧린",
+                "group": "FMJS",
+                "currency": "KRW",
+                "amount": 900
+            },
+            {
+                "ticker": "267270",
+                "koName": "HD?꾨?嫄댁꽕湲곌퀎",
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 500
+            },
+            {
+                "ticker": "271560",
+                "koName": "?ㅻ━??,
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 2500
+            },
+            {
+                "ticker": "282330",
+                "koName": "BGF由ы뀒??,
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 4100
+            },
+            {
+                "ticker": "316140",
+                "koName": "?곕━湲덉쑖吏二?,
+                "frequency": "遺꾧린",
+                "group": "FMAS",
+                "currency": "KRW",
+                "amount": 660
+            },
+            {
+                "ticker": "323410",
+                "koName": "移댁뭅?ㅻ콉??,
+                "frequency": "留ㅻ뀈",
+                "currency": "KRW",
+                "amount": 360
+            },
+            {
+                "ticker": "329180",
+                "koName": "HD?꾨?以묎났??,
+                "currency": "KRW",
+                "amount": 2090
+            },
+            {
+                "ticker": "443060",
+                "koName": "HD?꾨?留덈┛?붾（??,
+                "frequency": "遺꾧린",
+                "group": "FMJS",
+                "currency": "KRW",
+                "amount": 2700
+            },
+            {
+                "ticker": "448100",
+                "koName": "WON 200",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 60
+            },
+            {
+                "ticker": "480460",
+                "koName": "WON ?쒓뎅遺?숈궛TOP3?뚮윭??,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 50
+            },
+            {
+                "ticker": "495230",
+                "koName": "KoAct 肄붾━?꾨갭瑜섏뾽?≫떚釉?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 20
+            },
+            {
+                "ticker": "495330",
+                "koName": "1Q 肄붾━?꾨갭瑜섏뾽",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 23
+            },
+            {
+                "ticker": "497780",
+                "koName": "KoAct 誘멸뎅泥쒖뿰媛?ㅼ씤?꾨씪?≫떚釉?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 37
+            }
+        ]
+    },
+    "KrEtf": {
+        "2025-02-13": [
+            {
+                "ticker": "0008S0",
+                "koName": "TIGER 誘멸뎅諛곕떦?ㅼ슦議댁뒪?寃잙뜲?쇰━而ㅻ쾭?쒖퐳",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 99
+            },
+            {
+                "ticker": "237370",
+                "koName": "KODEX 肄붾━?꾨같?뱀꽦?μ콈沅뚰샎??,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 12
+            },
+            {
+                "ticker": "402970",
+                "koName": "ACE 誘멸뎅諛곕떦?ㅼ슦議댁뒪",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 28
+            },
+            {
+                "ticker": "441640",
+                "koName": "KODEX 誘멸뎅諛곕떦而ㅻ쾭?쒖퐳?≫떚釉?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 97
+            },
+            {
+                "ticker": "448330",
+                "koName": "KODEX ?쇱꽦?꾩옄梨꾧텒?쇳빀",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 15
+            },
+            {
+                "ticker": "458750",
+                "koName": "TIGER 誘멸뎅諛곕떦?ㅼ슦議댁뒪?寃잛빱踰꾨뱶肄???,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 60
+            },
+            {
+                "ticker": "474220",
+                "koName": "TIGER 誘멸뎅?뚰겕TOP10?寃잛빱踰꾨뱶肄?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 121
+            },
+            {
+                "ticker": "476800",
+                "koName": "KODEX ?쒓뎅遺?숈궛由ъ툩?명봽??,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 36
+            },
+            {
+                "ticker": "480020",
+                "koName": "ACE 誘멸뎅鍮낇뀒??+?곗씪由ы?寃잛빱踰꾨뱶肄??⑹꽦)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 149
+            },
+            {
+                "ticker": "480030",
+                "koName": "ACE 誘멸뎅500?곗씪由ы?寃잛빱踰꾨뱶肄??⑹꽦)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 140
+            },
+            {
+                "ticker": "480040",
+                "koName": "ACE 誘멸뎅諛섎룄泥대뜲?쇰━?寃잛빱踰꾨뱶肄??⑹꽦)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 128
+            },
+            {
+                "ticker": "481060",
+                "koName": "KODEX 誘멸뎅30?꾧뎅梨꾪?寃잛빱踰꾨뱶肄??⑹꽦 H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 91
+            },
+            {
+                "ticker": "489250",
+                "koName": "KODEX 誘멸뎅諛곕떦?ㅼ슦議댁뒪",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 32
+            },
+            {
+                "ticker": "490490",
+                "koName": "SOL 誘멸뎅諛곕떦誘멸뎅梨꾪샎??0",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 25
+            },
+            {
+                "ticker": "493810",
+                "koName": "TIGER 誘멸뎅AI鍮낇뀒??0?寃잙뜲?쇰━而ㅻ쾭?쒖퐳",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 139
+            },
+            {
+                "ticker": "494420",
+                "koName": "PLUS 誘멸뎅諛곕떦利앷??깆옣二쇰뜲?쇰━而ㅻ쾭?쒖퐳",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 110
+            },
+            {
+                "ticker": "495040",
+                "koName": "PLUS 肄붾━?꾨갭瑜섏뾽",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 4
+            },
+            {
+                "ticker": "495050",
+                "koName": "RISE 肄붾━?꾨갭瑜섏뾽",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 12
+            },
+            {
+                "ticker": "498400",
+                "koName": "KODEX 200?寃잛쐞?대━而ㅻ쾭?쒖퐳",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 142
+            },
+            {
+                "ticker": "498860",
+                "koName": "RISE 肄붾━?꾧툑?듦퀬諛곕떦",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 20
+            }
+        ],
+        "2025-02-27": [
+            {
+                "ticker": "0000D0",
+                "koName": "TIGER ?붾퉬?붿븘誘멸뎅梨꾩빱踰꾨뱶肄쒕갭?곗뒪(?⑹꽦)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 97
+            },
+            {
+                "ticker": "0005A0",
+                "koName": "KODEX 誘멸뎅S&P500?곗씪由ъ빱踰꾨뱶肄쏰TM",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 90
+            },
+            {
+                "ticker": "091170",
+                "koName": "KODEX ???,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 30
+            },
+            {
+                "ticker": "104530",
+                "koName": "KIWOOM 怨좊같??,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 40
+            },
+            {
+                "ticker": "136340",
+                "koName": "RISE 以묎린?곕웾?뚯궗梨?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 180
+            },
+            {
+                "ticker": "138930",
+                "koName": "BNK湲덉쑖吏二?,
+                "frequency": "遺꾧린",
+                "currency": "KRW",
+                "amount": 450
+            },
+            {
+                "ticker": "161510",
+                "koName": "PLUS 怨좊같?뱀＜",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 63
+            },
+            {
+                "ticker": "166400",
+                "koName": "TIGER 200而ㅻ쾭?쒖퐳OTM",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 31
+            },
+            {
+                "ticker": "181480",
+                "koName": "ACE 誘멸뎅遺?숈궛由ъ툩(?⑹꽦 H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 254
+            },
+            {
+                "ticker": "182480",
+                "koName": "TIGER 誘멸뎅MSCI由ъ툩(?⑹꽦 H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 35
+            },
+            {
+                "ticker": "245340",
+                "koName": "TIGER 誘멸뎅?ㅼ슦議댁뒪30",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 37
+            },
+            {
+                "ticker": "251600",
+                "koName": "PLUS 怨좊같?뱀＜梨꾧텒?쇳빀",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 45
+            },
+            {
+                "ticker": "279530",
+                "koName": "KODEX 怨좊같?뱀＜",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 45
+            },
+            {
+                "ticker": "289480",
+                "koName": "TIGER 200而ㅻ쾭?쒖퐳",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 59
+            },
+            {
+                "ticker": "290080",
+                "koName": "RISE 200怨좊같?뱀빱踰꾨뱶肄쏛TM",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 60
+            },
+            {
+                "ticker": "316300",
+                "koName": "ACE ?깃??щⅤ由ъ툩",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 55
+            },
+            {
+                "ticker": "329200",
+                "koName": "TIGER 由ъ툩遺?숈궛?명봽??,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 41
+            },
+            {
+                "ticker": "336160",
+                "koName": "RISE 湲덉쑖梨꾩븸?곕툕",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 190
+            },
+            {
+                "ticker": "341850",
+                "koName": "TIGER 由ъ툩遺?숈궛?명봽?쇱콈沅?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 31
+            },
+            {
+                "ticker": "352540",
+                "koName": "KODEX ?쇰낯遺?숈궛由ъ툩(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 60
+            },
+            {
+                "ticker": "352560",
+                "koName": "KODEX 誘멸뎅遺?숈궛由ъ툩(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 38
+            },
+            {
+                "ticker": "373790",
+                "koName": "KIWOOM 誘멸뎅諛⑹뼱諛곕떦?깆옣?섏뒪??,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 20
+            },
+            {
+                "ticker": "429000",
+                "koName": "TIGER 誘멸뎅S&P500諛곕떦洹議?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 23
+            },
+            {
+                "ticker": "429740",
+                "koName": "PLUS K由ъ툩",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 40
+            },
+            {
+                "ticker": "432840",
+                "koName": "HANARO 誘멸뎅S&P500",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 9
+            },
+            {
+                "ticker": "433330",
+                "koName": "SOL 誘멸뎅S&P500",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 16
+            },
+            {
+                "ticker": "437080",
+                "koName": "KODEX 誘멸뎅醫낇빀梨꾧텒ESG?≫떚釉?H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 379
+            },
+            {
+                "ticker": "440340",
+                "koName": "TIGER 湲濡쒕쾶硫?곗뿉?딻IF?≫떚釉?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 31
+            },
+            {
+                "ticker": "441680",
+                "koName": "TIGER 誘멸뎅?섏뒪??00而ㅻ쾭?쒖퐳(?⑹꽦)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 114
+            },
+            {
+                "ticker": "441800",
+                "koName": "TIMEFOLIO Korea?뚮윭?ㅻ같?뱀븸?곕툕",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 66
+            },
+            {
+                "ticker": "446720",
+                "koName": "SOL 誘멸뎅諛곕떦?ㅼ슦議댁뒪",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 32
+            },
+            {
+                "ticker": "448600",
+                "koName": "RISE 25-11 ?뚯궗梨?AA-?댁긽)?≫떚釉?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 150
+            },
+            {
+                "ticker": "452360",
+                "koName": "SOL 誘멸뎅諛곕떦?ㅼ슦議댁뒪(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 30
+            },
+            {
+                "ticker": "453330",
+                "koName": "RISE 誘멸뎅S&P500(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 14
+            },
+            {
+                "ticker": "453850",
+                "koName": "ACE 誘멸뎅30?꾧뎅梨꾩븸?곕툕(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 26
+            },
+            {
+                "ticker": "455660",
+                "koName": "ACE 誘멸뎅?섏씠?쇰뱶?≫떚釉?H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 53
+            },
+            {
+                "ticker": "458260",
+                "koName": "TIGER 誘멸뎅?ъ옄?깃툒?뚯궗梨꾩븸?곕툕(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 205
+            },
+            {
+                "ticker": "458730",
+                "koName": "TIGER 誘멸뎅諛곕떦?ㅼ슦議댁뒪",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 35
+            },
+            {
+                "ticker": "458760",
+                "koName": "TIGER 誘멸뎅諛곕떦?ㅼ슦議댁뒪?寃잛빱踰꾨뱶肄???,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 98
+            },
+            {
+                "ticker": "460660",
+                "koName": "RISE 誘멸뎅S&P諛곕떦??,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 30
+            },
+            {
+                "ticker": "460960",
+                "koName": "ACE 湲濡쒕쾶?몄뺨TOP10",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 49
+            },
+            {
+                "ticker": "465670",
+                "koName": "TIGER 誘멸뎅罹먯떆移댁슦100",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 23
+            },
+            {
+                "ticker": "466940",
+                "koName": "TIGER ??됯퀬諛곕떦?뚮윭?짽OP10",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 73
+            },
+            {
+                "ticker": "468380",
+                "koName": "KODEX iShares誘멸뎅?섏씠?쇰뱶?≫떚釉?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 65
+            },
+            {
+                "ticker": "468630",
+                "koName": "KODEX iShares誘멸뎅?ъ옄?깃툒?뚯궗梨꾩븸?곕툕",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 40
+            },
+            {
+                "ticker": "471460",
+                "koName": "KIWOOM 援?퀬梨?0?꾩븸?곕툕",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 126
+            },
+            {
+                "ticker": "472150",
+                "koName": "TIGER 諛곕떦而ㅻ쾭?쒖퐳?≫떚釉?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 72
+            },
+            {
+                "ticker": "472830",
+                "koName": "RISE 誘멸뎅30?꾧뎅梨꾩빱踰꾨뱶肄??⑹꽦)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 104
+            },
+            {
+                "ticker": "472870",
+                "koName": "RISE 誘멸뎅30?꾧뎅梨꾩뿏?붾끂異??⑹꽦 H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 21
+            },
+            {
+                "ticker": "473330",
+                "koName": "SOL 誘멸뎅30?꾧뎅梨꾩빱踰꾨뱶肄??⑹꽦)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 130
+            },
+            {
+                "ticker": "475080",
+                "koName": "KODEX ?뚯뒳?쇱빱踰꾨뱶肄쒖콈沅뚰샎?⑹븸?곕툕",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 112
+            },
+            {
+                "ticker": "475380",
+                "koName": "RISE 湲濡쒕쾶由ъ뼹?곗씤而?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 39
+            },
+            {
+                "ticker": "476550",
+                "koName": "TIGER 誘멸뎅30?꾧뎅梨꾩빱踰꾨뱶肄쒖븸?곕툕(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 86
+            },
+            {
+                "ticker": "476690",
+                "koName": "TIGER 湲濡쒕쾶鍮꾨쭔移섎즺?쏷OP2Plus",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 25
+            },
+            {
+                "ticker": "476750",
+                "koName": "ACE 誘멸뎅30?꾧뎅梨꾩뿏?붾끂異쒖븸?곕툕(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 25
+            },
+            {
+                "ticker": "476760",
+                "koName": "ACE 誘멸뎅30?꾧뎅梨꾩븸?곕툕",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 31
+            },
+            {
+                "ticker": "481050",
+                "koName": "KODEX CD1?꾧툑由ы뵆?ъ뒪?≫떚釉??⑹꽦)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 2579
+            },
+            {
+                "ticker": "481340",
+                "koName": "RISE 誘멸뎅30?꾧뎅梨꾩븸?곕툕",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 45
+            },
+            {
+                "ticker": "482730",
+                "koName": "TIGER 誘멸뎅S&P500?寃잙뜲?쇰━而ㅻ쾭?쒖퐳",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 92
+            },
+            {
+                "ticker": "483280",
+                "koName": "KODEX 誘멸뎅AI?뚰겕TOP10?寃잛빱踰꾨뱶肄?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 135
+            },
+            {
+                "ticker": "483290",
+                "koName": "KODEX 誘멸뎅諛곕떦?ㅼ슦議댁뒪?寃잛빱踰꾨뱶肄?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 106
+            },
+            {
+                "ticker": "484790",
+                "koName": "KODEX 誘멸뎅30?꾧뎅梨꾩븸?곕툕(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 38
+            },
+            {
+                "ticker": "484880",
+                "koName": "SOL 湲덉쑖吏二쇳뵆?ъ뒪怨좊같??,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 53
+            },
+            {
+                "ticker": "486290",
+                "koName": "TIGER 誘멸뎅?섏뒪??00?寃잙뜲?쇰━而ㅻ쾭?쒖퐳",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 125
+            },
+            {
+                "ticker": "487950",
+                "koName": "KODEX ?留뚰뀒?ш퀬諛곕떦?ㅼ슦議댁뒪",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 58
+            },
+            {
+                "ticker": "489030",
+                "koName": "PLUS 怨좊같?뱀＜?꾪겢由ъ빱踰꾨뱶肄?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 130
+            },
+            {
+                "ticker": "490590",
+                "koName": "RISE 誘멸뎅AI諛몃쪟泥댁씤?곗씪由ш퀬?뺤빱踰꾨뱶肄?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 185
+            },
+            {
+                "ticker": "490600",
+                "koName": "RISE 誘멸뎅諛곕떦100?곗씪由ш퀬?뺤빱踰꾨뱶肄?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 112
+            },
+            {
+                "ticker": "491620",
+                "koName": "RISE 誘멸뎅?뚰겕100?곗씪由ш퀬?뺤빱踰꾨뱶肄?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 185
+            },
+            {
+                "ticker": "494210",
+                "koName": "SOL 誘멸뎅500?寃잙뜲?쇰━而ㅻ쾭?쒖퐳?≫떚釉?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 110
+            },
+            {
+                "ticker": "494300",
+                "koName": "KODEX 誘멸뎅?섏뒪??00?곗씪由ъ빱踰꾨뱶肄쏰TM",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 155
+            },
+            {
+                "ticker": "495850",
+                "koName": "KODEX 肄붾━?꾨갭瑜섏뾽",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 10
+            },
+            {
+                "ticker": "496080",
+                "koName": "TIGER 肄붾━?꾨갭瑜섏뾽",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 20
+            },
+            {
+                "ticker": "497880",
+                "koName": "SOL CD湲덈━&癒몃땲留덉폆?≫떚釉?,
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 150
+            },
+            {
+                "ticker": "498410",
+                "koName": "KODEX 湲덉쑖怨좊같?퉅OP10?寃잛쐞?대━而ㅻ쾭?쒖퐳",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 123
+            },
+            {
+                "ticker": "499150",
+                "koName": "SOL 誘멸뎅S&P500?뷀솕?몄텧(H)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 10
+            },
+            {
+                "ticker": "499660",
+                "koName": "TIGER CD湲덈━?뚮윭?ㅼ븸?곕툕(?⑹꽦)",
+                "frequency": "留ㅼ썡",
+                "currency": "KRW",
+                "amount": 2873
+            }
+        ]
+    }
+}
+

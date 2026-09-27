@@ -1,0 +1,339 @@
+// src\styles\layout\_sidebar.scss
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mx;
+@use '../functions/breakpoints' as bp;
+
+#t-sidebar {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 100vh;
+
+    .p-calendar-search {
+        overflow-y: hidden;
+        height: calc(100% - 0.5rem - var(--p-button-icon-only-width));
+    }
+}
+
+#t-calendar-toggle {
+    .p-accordionheader {
+        padding: 0.75rem 1rem;
+
+        color: var(--p-text-color-inversed, #ffffff);
+        gap: 0.5rem;
+
+        > span {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        i {
+            font-style: normal;
+        }
+    }
+
+    .p-accordioncontent-content {
+        padding: 0.5rem;
+        gap: 0.3rem;
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .p-togglebutton {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75em;
+    }
+}
+
+#t-calendar-search-button {
+    width: 100%;
+}
+
+.p-drawer-full .p-drawer {
+    .p-drawer-header {
+        padding: 0.75rem var(--p-drawer-header-padding);
+    }
+
+    .p-drawer-content {
+        padding: 0 1rem 1rem;
+    }
+}
+
+.p-drawer-right .p-drawer {
+    width: 500px !important;
+    .p-drawer-header {
+        display: none;
+        // padding: 0.75rem var(--p-drawer-header-padding);
+    }
+
+    .p-drawer-content {
+        overflow-y: hidden;
+        width: max-content;
+        margin-right: 0;
+    }
+}
+
+#t-search {
+    .p-drawer-header {
+        position: absolute;
+        right: 0;
+        top: 0;
+        padding: 0.5rem;
+    }
+    .p-drawer-content {
+        width: 100%;
+        padding: 0.5rem;
+    }
+    .t-column-company {
+        width: 0.5rem;
+    }
+}
+.filter-button-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .bookmark-toggle {
+        min-width: 3rem;
+    }
+
+    .market-select {
+        flex: 1;
+    }
+
+    .p-drawer-full & {
+        width: calc(100vw - 3.5rem);
+    }
+}
+
+:deep(.p-selectbutton) {
+    display: flex;
+}
+:deep(.p-selectbutton .p-togglebutton) {
+    flex: 1;
+    justify-content: center;
+}
+:deep(.p-selectbutton .p-button-label) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* [핵심 추가] 깃발 아이콘 스타일링 */
+.flag-icon {
+    height: 2rem; /* 버튼 높이에 맞게 조절 */
+    width: auto;
+    border-radius: 3px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3); /* 살짝 그림자 효과 */
+}
+.select-option-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.t-column-bookmark .p-column-header-content,
+.t-column-bookmark .p-column-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.p-datatable-loading :deep(.p-datatable-tbody > tr > td) {
+    text-align: center;
+}
+.p-column-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.select-option-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#t-search-datatable {
+    .p-datatable {
+        &-thead {
+            > tr {
+                > th {
+                    font-size: 0.75rem;
+                    padding-left: 0;
+                    padding-right: 0;
+
+                    @include bp.media-breakpoint-up('lg') {
+                        font-size: 0.6rem;
+                        svg {
+                            width: 12px;
+                        }
+                    }
+
+                    .p-button {
+                        padding: 0;
+                        width: auto;
+                    }
+
+                    .pi-filter-fill {
+                        font-size: 0.75rem;
+
+                        @include bp.media-breakpoint-up('lg') {
+                            font-size: 0.5rem;
+                        }
+                    }
+                }
+            }
+        }
+
+        &-column-header-content {
+            justify-content: center;
+            gap: 0.3rem;
+            @include bp.media-breakpoint-up('lg') {
+                gap: 0.2rem;
+            }
+        }
+
+        &-tbody > tr > td {
+            padding: 0.25rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            text-align: center;
+            &.p-datatable-frozen-column {
+                text-align: left;
+            }
+
+            @include bp.media-breakpoint-up('lg') {
+                font-size: 0.7rem;
+            }
+        }
+
+        &-row-selected {
+            > td,
+            .p-datatable-frozen-column {
+                font-weight: 700;
+            }
+            .t-column-bookmark .pi-bookmark.is-active {
+                color: gold !important;
+            }
+        }
+    }
+
+    .t-column {
+        &-bookmark {
+            width: 2rem;
+
+            @include bp.media-breakpoint-only('xs') {
+                width: 3rem;
+            }
+            align-items: center;
+            justify-content: center;
+            > * {
+                align-self: center;
+                justify-self: center;
+            }
+            .p-togglebutton {
+                padding: 0;
+                border: 0;
+                &-label {
+                    display: none;
+                }
+            }
+            .pi.pi-bookmark {
+                cursor: pointer;
+                color: var(--text-color-secondary, #a0a0a0);
+                transition:
+                    color 0.2s ease,
+                    transform 0.2s ease,
+                    box-shadow 0.2s ease;
+                border-radius: 50%;
+                padding: 0.1rem;
+            }
+            .pi.pi-bookmark.is-active {
+                color: var(--p-primary-color, #f59e0b);
+                box-shadow: 0 0 0 0.1rem rgba(245, 158, 11, 0.15);
+                transform: scale(1.04);
+            }
+            .pi.pi-bookmark:focus-visible {
+                outline: 2px solid var(--p-primary-color, #f59e0b);
+                outline-offset: 2px;
+            }
+        }
+        &-ticker {
+        }
+
+        &-company {
+            width: 2rem;
+
+            @include bp.media-breakpoint-down('md') {
+                width: 2.25rem;
+            }
+        }
+
+        &-frequency {
+            width: 3rem;
+
+            @include bp.media-breakpoint-down('md') {
+                width: 3rem;
+            }
+        }
+
+        &-group {
+            width: 3rem;
+
+            @include bp.media-breakpoint-down('md') {
+                width: 7rem;
+            }
+
+            @include bp.media-breakpoint-down('md') {
+                .p-tag {
+                    font-size: 0.65rem;
+                }
+            }
+        }
+    }
+}
+
+.company-logo-wrapper {
+    /* 정사각형 비율 유지를 위한 스타일 */
+    margin: 0 auto;
+    max-width: 2rem;
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; /* 너비와 동일한 높이를 만듦 (1:1 비율) */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+
+    text-align: center;
+    overflow: hidden; /* 로고가 튀어나가는 것을 방지 */
+    border-radius: 0.5rem;
+    aspect-ratio: 1 / 1; /* 1:1 비율 유지 */
+}
+
+.company-logo,
+.company-name-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.company-logo {
+    /* 로고가 찌그러지지 않고 컨테이너 안에 맞게 표시되도록 함 */
+    object-fit: contain;
+    padding: 4px; /* 로고 주변에 약간의 여백 */
+}
+
+.company-name-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+}

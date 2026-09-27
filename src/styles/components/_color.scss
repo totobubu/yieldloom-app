@@ -1,0 +1,133 @@
+// src\styles\components\_color.scss
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins' as mx;
+@use '../functions/breakpoints' as bp;
+
+$color-mon: #a78bfa;
+$color-tue: #facc15;
+$color-wed: #14b8a6;
+$color-thu: #6366fa;
+$color-fri: #f472b6;
+
+$color-monthly: var(--p-amber-400);
+$color-quarterly: var(--p-fuchsia-400);
+
+.p-tag {
+    &[data-p='mon'] {
+        background: $color-mon;
+    }
+
+    &[data-p='tue'] {
+        background: $color-tue;
+    }
+
+    &[data-p='wed'] {
+        background: $color-wed;
+    }
+
+    &[data-p='thu'] {
+        background: $color-thu;
+    }
+
+    &[data-p='fri'] {
+        background: $color-fri;
+    }
+}
+.fc {
+    &-list {
+        .freq-monthly {
+            color: $color-monthly;
+            .fc-list-event-dot {
+                border-color: $color-monthly;
+            }
+        }
+        .freq-quarterly {
+            color: $color-quarterly;
+            .fc-list-event-dot {
+                border-color: $color-quarterly;
+            }
+        }
+        .freq-mon {
+            color: $color-mon;
+            .fc-list-event-dot {
+                border-color: $color-mon;
+            }
+        }
+        .freq-tue {
+            color: $color-tue;
+            .fc-list-event-dot {
+                border-color: $color-tue;
+            }
+        }
+        .freq-wed {
+            color: $color-wed;
+            .fc-list-event-dot {
+                border-color: $color-wed;
+            }
+        }
+        .freq-thu {
+            color: $color-thu;
+            .fc-list-event-dot {
+                border-color: $color-thu;
+            }
+        }
+        .freq-fri {
+            color: $color-fri;
+            .fc-list-event-dot {
+                border-color: $color-fri;
+            }
+        }
+    }
+    &-dayGridWeek-view {
+        .stock-item-week {
+            &.freq-monthly {
+                background-color: $color-monthly;
+                color: #000;
+            }
+            &.freq-quarterly {
+                background-color: $color-quarterly;
+            }
+            &.freq-mon {
+                background-color: $color-mon;
+            }
+            &.freq-tue {
+                background-color: $color-tue;
+                color: #000;
+            }
+            &.freq-wed {
+                background-color: $color-wed;
+            }
+            &.freq-thu {
+                background-color: $color-thu;
+            }
+            &.freq-fri {
+                background-color: $color-fri;
+            }
+        }
+    }
+    &-dayGridMonth-view {
+        .freq-monthly {
+            background-color: $color-monthly;
+            color: #000;
+        }
+        .freq-quarterly {
+            background-color: $color-quarterly;
+        }
+        .freq-mon {
+            background-color: $color-mon;
+        }
+        .freq-tue {
+            color: #000;
+            background-color: $color-tue;
+        }
+        .freq-wed {
+            background-color: $color-wed;
+        }
+        .freq-thu {
+            background-color: $color-thu;
+        }
+        .freq-fri {
+            background-color: $color-fri;
+        }
+    }
+}

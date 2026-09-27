@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-12-23T11:37:15.119112",
+  "dry_run": false,
+  "stats": {
+    "processed": 3513,
+    "migrated": 724,
+    "skipped": 2789,
+    "errors": 0,
+    "items_migrated": 37912,
+    "split_adjustments_added": 0
+  },
+  "errors": []
+}

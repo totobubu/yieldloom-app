@@ -1,0 +1,57 @@
+[
+    {
+        "symbol": "ODFL",
+        "ipoDate": "1991-10-24",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US6795801009",
+        "market": "NASDAQ",
+        "yfSymbol": "ODFL",
+        "currency": "USD",
+        "koName": "올드 도미니언 프레이트 라인"
+    },
+    {
+        "symbol": "ON",
+        "ipoDate": "2000-05-02",
+        "sharesOutstanding": false,
+        "isin": "US6821891057",
+        "market": "NASDAQ",
+        "yfSymbol": "ON",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "온 세미컨덕터"
+    },
+    {
+        "symbol": "OPEN",
+        "koName": "오픈도어랩스",
+        "market": "NASDAQ",
+        "isin": "US6837121036",
+        "ipoDate": "2020-06-18",
+        "yfSymbol": "OPEN",
+        "currency": "USD",
+        "noDividends": true
+    },
+    {
+        "symbol": "ORLY",
+        "ipoDate": "1993-04-23",
+        "sharesOutstanding": false,
+        "isin": "US67103H1077",
+        "market": "NASDAQ",
+        "yfSymbol": "ORLY",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "오릴리 오토모티브"
+    },
+    {
+        "symbol": "OZEM",
+        "company": "Roundhill Investments",
+        "ipoDate": "2024-05-21",
+        "sharesOutstanding": false,
+        "isin": "US77926X8829",
+        "market": "NASDAQ",
+        "yfSymbol": "OZEM",
+        "currency": "USD",
+        "koName": "라운드힐 GLP-1 & 비만치료제 ETF"
+    }
+]

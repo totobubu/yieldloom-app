@@ -1,0 +1,367 @@
+{
+    "증권사": [
+        {
+            "name": "토스증권",
+            "fileName": "toss-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "미래에셋증권",
+            "fileName": "mirae-asset-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "삼성증권",
+            "fileName": "samsung-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "NH투자증권",
+            "fileName": "nh-securities.svg",
+            "type": "증권"
+        },
+        {
+            "name": "KB증권",
+            "fileName": "kb-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "한국투자증권",
+            "fileName": "korea-investment-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "신한투자증권",
+            "fileName": "shinhan-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "하나증권",
+            "fileName": "hana-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "키움증권",
+            "fileName": "kiwoom-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "대신증권",
+            "fileName": "daishin-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "메리츠증권",
+            "fileName": "meritz-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "교보증권",
+            "fileName": "kyobo-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "유안타증권",
+            "fileName": "yuanta-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "SK증권",
+            "fileName": "sk-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "한화투자증권",
+            "fileName": "hanwha-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "현대차증권",
+            "fileName": "hyundai-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "IBK투자증권",
+            "fileName": "ibk-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "DB금융투자",
+            "fileName": "db-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "신영증권",
+            "fileName": "shinyoung-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "케이프투자증권",
+            "fileName": "cape-securities.svg",
+            "type": "증권"
+        },
+        {
+            "name": "부국증권",
+            "fileName": "bookook-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "유진투자증권",
+            "fileName": "eugene-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "이베스트투자증권",
+            "fileName": "ebest-securities.svg",
+            "type": "증권",
+            "ready": true
+        },
+        {
+            "name": "하이투자증권",
+            "fileName": "hi-securities.svg",
+            "type": "증권"
+        },
+        {
+            "name": "카카오페이증권",
+            "fileName": "kakaopay-securities.svg",
+            "type": "증권"
+        },
+        {
+            "name": "코리아에셋투자증권",
+            "fileName": "korea-asset-securities.svg",
+            "type": "증권"
+        }
+    ],
+    "은행": [
+        {
+            "name": "KB국민은행",
+            "fileName": "kb-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "신한은행",
+            "fileName": "shinhan-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "우리은행",
+            "fileName": "woori-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "하나은행",
+            "fileName": "hana-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "NH농협은행",
+            "fileName": "nh-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "IBK기업은행",
+            "fileName": "ibk-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "카카오뱅크",
+            "fileName": "kakao-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "토스뱅크",
+            "fileName": "toss-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "케이뱅크",
+            "fileName": "k-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "SC제일은행",
+            "fileName": "sc-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "한국씨티은행",
+            "fileName": "citi-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "KDB산업은행",
+            "fileName": "kdb-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "수협은행",
+            "fileName": "suhyup-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "전북은행",
+            "fileName": "jeonbuk-bank.svg",
+            "type": "은행"
+        },
+        {
+            "name": "경남은행",
+            "fileName": "kyongnam-bank.svg",
+            "type": "은행"
+        },
+        {
+            "name": "광주은행",
+            "fileName": "gwangju-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "대구은행",
+            "fileName": "daegu-bank.svg",
+            "type": "은행"
+        },
+        {
+            "name": "부산은행",
+            "fileName": "busan-bank.svg",
+            "type": "은행"
+        },
+        {
+            "name": "제주은행",
+            "fileName": "jeju-bank.svg",
+            "type": "은행"
+        },
+        {
+            "name": "새마을금고",
+            "fileName": "kfcc-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "신협",
+            "fileName": "cu-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "저축은행",
+            "fileName": "savings-bank.svg",
+            "type": "은행",
+            "ready": true
+        },
+        {
+            "name": "우체국",
+            "fileName": "post-bank.svg",
+            "type": "은행",
+            "ready": true
+        }
+    ],
+    "거래소": [
+        {
+            "name": "업비트",
+            "fileName": "upbit.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "빗썸",
+            "fileName": "bithumb.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "코인원",
+            "fileName": "coinone.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "코빗",
+            "fileName": "korbit.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "바이낸스",
+            "fileName": "binance.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "바이비트",
+            "fileName": "bybit.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "OKX",
+            "fileName": "okx.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "크라켄",
+            "fileName": "kraken.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "후오비",
+            "fileName": "huobi.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "게이트",
+            "fileName": "gate.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "쿠코인",
+            "fileName": "kucoin.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "코인베이스",
+            "fileName": "coinbase.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "업빗",
+            "fileName": "upbit.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "고팍스",
+            "fileName": "gopax.svg",
+            "type": "거래소"
+        },
+        {
+            "name": "프로비트",
+            "fileName": "probit.svg",
+            "type": "거래소"
+        }
+    ]
+}

@@ -1,0 +1,122 @@
+[
+    {
+        "symbol": "BABW",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "group": "월",
+        "ipoDate": "2025-10-23",
+        "sharesOutstanding": false,
+        "isin": "US77926X5106",
+        "market": "NASDAQ",
+        "yfSymbol": "BABW",
+        "currency": "USD",
+        "koName": "라운드힐 알리바바(ADR) 위클리페이 ETF"
+    },
+    {
+        "symbol": "BALI",
+        "company": "iShares",
+        "frequency": "매월",
+        "ipoDate": "2023-09-28",
+        "sharesOutstanding": false,
+        "isin": "US09290C8635",
+        "market": "NASDAQ",
+        "yfSymbol": "BALI",
+        "currency": "USD",
+        "koName": "블랙록 어드밴티지 대형주 인컴 ETF"
+    },
+    {
+        "symbol": "BBYY",
+        "company": "GraniteShares",
+        "frequency": "매주",
+        "group": "금",
+        "ipoDate": "2025-10-22",
+        "sharesOutstanding": false,
+        "isin": "US38747R2985",
+        "market": "NASDAQ",
+        "yfSymbol": "BBYY",
+        "currency": "USD",
+        "koName": "그래닛셰어즈 일드부스트 알리바바(ADR) ETF"
+    },
+    {
+        "symbol": "BETZ",
+        "company": "Roundhill Investments",
+        "ipoDate": "2020-06-04",
+        "sharesOutstanding": false,
+        "isin": "US53656F7895",
+        "market": "NASDAQ",
+        "yfSymbol": "BETZ",
+        "currency": "USD",
+        "koName": "라운드힐 스포츠 베팅 ETF"
+    },
+    {
+        "symbol": "BIIB",
+        "ipoDate": "1991-09-17",
+        "sharesOutstanding": false,
+        "isin": "US09062X1037",
+        "market": "NASDAQ",
+        "yfSymbol": "BIIB",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "바이오젠"
+    },
+    {
+        "symbol": "BKNG",
+        "ipoDate": "1999-03-31",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US09857L1089",
+        "market": "NASDAQ",
+        "yfSymbol": "BKNG",
+        "currency": "USD",
+        "koName": "부킹 홀딩스"
+    },
+    {
+        "symbol": "BKR",
+        "ipoDate": "1987-04-06",
+        "frequency": "분기",
+        "group": "FMAN",
+        "sharesOutstanding": false,
+        "isin": "AR0302010498",
+        "market": "NASDAQ",
+        "yfSymbol": "BKR",
+        "currency": "USD",
+        "koName": "베이커 휴즈"
+    },
+    {
+        "symbol": "BRKW",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "group": "월",
+        "underlying": "BRK.B",
+        "ipoDate": "2025-06-18",
+        "sharesOutstanding": false,
+        "isin": "US77926X6278",
+        "market": "NASDAQ",
+        "yfSymbol": "BRKW",
+        "currency": "USD",
+        "koName": "라운드힐 버크셔 해서웨이 B 위클리페이 ETF"
+    },
+    {
+        "symbol": "BTCI",
+        "company": "Neos Funds",
+        "frequency": "매월",
+        "ipoDate": "2024-10-17",
+        "sharesOutstanding": false,
+        "isin": "US78433H6421",
+        "market": "NASDAQ",
+        "yfSymbol": "BTCI",
+        "currency": "USD",
+        "koName": "네오스 비트코인 하이 인컴 ETF"
+    },
+    {
+        "symbol": "BYDDY",
+        "ipoDate": "2009-12-29",
+        "frequency": "매년",
+        "sharesOutstanding": false,
+        "isin": "US05606L1008",
+        "market": "NASDAQ",
+        "yfSymbol": "BYDDY",
+        "currency": "USD"
+    }
+]

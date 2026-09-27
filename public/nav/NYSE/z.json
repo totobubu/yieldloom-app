@@ -1,0 +1,64 @@
+[
+    {
+        "symbol": "ZAP",
+        "company": "Global",
+        "ipoDate": "2024-12-18",
+        "frequency": "분기",
+        "group": "AJOD",
+        "sharesOutstanding": false,
+        "isin": "US37960A3703",
+        "market": "NYSE",
+        "yfSymbol": "ZAP",
+        "currency": "USD",
+        "koName": "GLOBAL X 미국 전기화 ETF"
+    },
+    {
+        "symbol": "ZBH",
+        "ipoDate": "2001-07-25",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US98956P1021",
+        "market": "NYSE",
+        "yfSymbol": "ZBH",
+        "currency": "USD",
+        "koName": "짐머 바이오멧 홀딩스"
+    },
+    {
+        "symbol": "ZHDG",
+        "company": "Zega",
+        "ipoDate": "2021-07-07",
+        "frequency": "매년",
+        "sharesOutstanding": false,
+        "isin": "US8863646605",
+        "market": "NYSE",
+        "yfSymbol": "ZHDG",
+        "currency": "USD",
+        "koName": "제가 바이 & 헷지 ETF"
+    },
+    {
+        "symbol": "ZROZ",
+        "company": "PIMCO",
+        "ipoDate": "2009-11-04",
+        "frequency": "분기",
+        "group": "AJOD",
+        "sharesOutstanding": false,
+        "isin": "US72201R8824",
+        "market": "NYSE",
+        "yfSymbol": "ZROZ",
+        "currency": "USD",
+        "koName": "핌코 초장기 채권 ETF"
+    },
+    {
+        "symbol": "ZTS",
+        "ipoDate": "2013-02-01",
+        "frequency": "분기",
+        "group": "JAJO",
+        "sharesOutstanding": false,
+        "isin": "US98978V1035",
+        "market": "NYSE",
+        "yfSymbol": "ZTS",
+        "currency": "USD",
+        "koName": "조에티스"
+    }
+]

@@ -1,0 +1,156 @@
+name: Update Info Data v2 (US)
+
+on:
+    schedule:
+        - cron: '30 18 * * 1-5' # KST 03:30 평일 (월-금, UTC 18:30)
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+concurrency:
+    group: repository-generated-data-write
+    cancel-in-progress: false
+
+env:
+    NODE_VERSION: '20'
+    PYTHON_VERSION: '3.11'
+
+jobs:
+    update-info-v2-us:
+        if: github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 10
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Free Disk Space
+              run: |
+                  sudo rm -rf /usr/local/lib/android
+                  sudo rm -rf /usr/share/dotnet
+                  sudo rm -rf /opt/ghc
+                  sudo rm -rf /usr/local/share/boost
+                  sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'npm'
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: ${{ env.PYTHON_VERSION }}
+                  cache: 'pip'
+                  cache-dependency-path: 'requirements-workflow.txt'
+
+            - name: Install Node.js dependencies
+              run: npm ci
+
+            - name: Install Python dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -r requirements-workflow.txt
+
+            - name: Setup R2 environment variables
+              run: |
+                  echo "R2_ACCOUNT_ID=${{ secrets.R2_ACCOUNT_ID }}" >> $GITHUB_ENV
+                  echo "R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+                  echo "R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+                  echo "R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}" >> $GITHUB_ENV
+                  echo "R2_PUBLIC_URL=${{ secrets.R2_PUBLIC_URL }}" >> $GITHUB_ENV
+
+            - name: Refuse a stale scheduled checkout
+              run: |
+                  git fetch origin main
+                  git merge-base --is-ancestor HEAD origin/main
+
+            - name: Update exchange rate data
+              run: node scripts/exchange/fetch_all_exchange_rates.js
+
+            - name: Sync IPO dates and upcoming status
+              run: npm run add-ipo-dates
+
+            - name: Generate final nav.json
+              run: npm run generate-nav
+
+            - name: Detect changed symbols in public/nav
+              id: detect_nav_changes
+              run: bash scripts/mappings/extract-changed-symbols.sh
+
+            - name: Sync changed symbols to Firebase
+              if: steps.detect_nav_changes.outputs.changed_symbols != ''
+              env:
+                  FIRESTORE_SA_KEY: ${{ secrets.FIRESTORE_SA_KEY }}
+              run: |
+                  SYMBOLS="${{ steps.detect_nav_changes.outputs.changed_symbols }}"
+                  echo "🔄 Syncing changed symbols to Firebase..."
+                  for symbol in $SYMBOLS; do
+                    echo "  📝 Syncing: $symbol"
+                    node scripts/mappings/sync-nav-to-firebase.js --symbol "$symbol"
+                  done
+                  echo "✅ Firebase sync completed"
+
+            - name: Update all info data (dividends, info+marketCap, frequency, projection) - US only
+              env:
+                  FIRESTORE_SA_KEY: ${{ secrets.FIRESTORE_SA_KEY }}
+                  DATA_LAYOUT_MODE: market
+              run: python scripts/data_pipeline/info_data_pipeline_us.py
+
+            - name: Process and enrich dividend history - US only
+              env:
+                  DATA_LAYOUT_MODE: market
+                  MARKET_FILTER: US
+              run: python scripts/data_pipeline/scraper_dividend.py
+
+            - name: Apply split adjustments to dividend history - US only
+              env:
+                  DATA_LAYOUT_MODE: market
+                  MARKET_FILTER: US
+              run: python scripts/data_processing/apply_split_adjustments.py
+
+            - name: Generate calendar events data
+              env:
+                  DATA_LAYOUT_MODE: market
+              run: npm run generate-calendar-events
+
+            - name: Format changed files only
+              run: npm run format:changed
+
+            - name: Compact JSON without trimming history
+              run: python scripts/data_pipeline/compact_history.py --apply
+
+            - name: Upload compacted files to R2 (Git-based, fast)
+              env:
+                  GITHUB_EVENT_NAME: ${{ github.event_name }}
+              run: python scripts/cloud/upload_changed_to_r2.py
+
+            - name: Upload updated data to R2
+              run: python scripts/cloud/upload_specific_to_r2.py "public/data/**/*.json"
+
+            - name: Check for file changes
+              id: git_status
+              run: |
+                  if [[ -n "$(git status --porcelain public/data/ public/calendar/ public/nav.json public/exchange-rates.json public/missing-logos.json)" ]]; then
+                    echo "changes=true" >> $GITHUB_OUTPUT
+                  else
+                    echo "changes=false" >> $GITHUB_OUTPUT
+                  fi
+
+            - name: Commit and push changes
+              if: steps.git_status.outputs.changes == 'true'
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+                  git add public/data/ public/calendar/ public/nav.json public/exchange-rates.json public/missing-logos.json
+                  git commit -m "ℹ️ Auto: Update info data v2 (US)"
+                  # Do not rebase auto-generated data over a concurrent human change.
+                  # A later scheduled run regenerates from the new main instead.
+                  git push origin HEAD:main

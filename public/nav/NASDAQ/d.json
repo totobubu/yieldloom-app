@@ -1,0 +1,94 @@
+[
+    {
+        "symbol": "DASH",
+        "ipoDate": "2020-12-09",
+        "sharesOutstanding": false,
+        "isin": "US25809K1051",
+        "market": "NASDAQ",
+        "yfSymbol": "DASH",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "도어대시"
+    },
+    {
+        "symbol": "DDOG",
+        "ipoDate": "2019-09-19",
+        "sharesOutstanding": false,
+        "isin": "US23804L1035",
+        "market": "NASDAQ",
+        "yfSymbol": "DDOG",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "데이터독"
+    },
+    {
+        "symbol": "DGRW",
+        "company": "WisdomTree",
+        "frequency": "매월",
+        "ipoDate": "2013-05-22",
+        "sharesOutstanding": false,
+        "isin": "US97717X6691",
+        "market": "NASDAQ",
+        "yfSymbol": "DGRW",
+        "currency": "USD",
+        "koName": "위즈덤트리 퀄리티 배당 성장 ETF"
+    },
+    {
+        "symbol": "DKNG",
+        "ipoDate": "2019-07-25",
+        "sharesOutstanding": false,
+        "isin": "US26142V1052",
+        "market": "NASDAQ",
+        "yfSymbol": "DKNG",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "드래프트킹스"
+    },
+    {
+        "symbol": "DKNW",
+        "company": "Roundhill Investments",
+        "frequency": "매주",
+        "group": "월",
+        "upcoming": true,
+        "sharesOutstanding": false,
+        "market": "NASDAQ",
+        "yfSymbol": "DKNW",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "디파이언스 드래프트킹스 데일리 2배 ETF"
+    },
+    {
+        "symbol": "DLTR",
+        "ipoDate": "1995-03-07",
+        "sharesOutstanding": false,
+        "isin": "US2567461080",
+        "market": "NASDAQ",
+        "yfSymbol": "DLTR",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "달러 트리"
+    },
+    {
+        "symbol": "DPZ",
+        "ipoDate": "2004-07-13",
+        "frequency": "분기",
+        "group": "MJSD",
+        "sharesOutstanding": false,
+        "isin": "US25754A2015",
+        "market": "NASDAQ",
+        "yfSymbol": "DPZ",
+        "currency": "USD",
+        "koName": "도미노 피자"
+    },
+    {
+        "symbol": "DXCM",
+        "ipoDate": "2005-04-14",
+        "sharesOutstanding": false,
+        "isin": "US2521311074",
+        "market": "NASDAQ",
+        "yfSymbol": "DXCM",
+        "currency": "USD",
+        "noDividends": true,
+        "koName": "덱스콤"
+    }
+]

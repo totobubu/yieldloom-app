@@ -1,0 +1,36 @@
+[
+    {
+        "symbol": "MINY",
+        "isin": "US88636X2523",
+        "market": "BATS",
+        "yfSymbol": "MINY",
+        "currency": "USD",
+        "sharesOutstanding": false,
+        "ipoDate": "2026-02-27",
+        "company": "YieldMax",
+        "koName": "YieldMax 전략 금속 및 광업 포트폴리오 옵션 소득 ETF"
+    },
+    {
+        "symbol": "MSST",
+        "isin": "US88636V7516",
+        "market": "BATS",
+        "yfSymbol": "MSST",
+        "currency": "USD",
+        "sharesOutstanding": false,
+        "ipoDate": "2025-11-18",
+        "company": "YieldMax",
+        "koName": "일드맥스 스트래티지 타겟 분배 ETF"
+    },
+    {
+        "symbol": "MUYY",
+        "isin": "US38747T6901",
+        "market": "BATS",
+        "yfSymbol": "MUYY",
+        "currency": "USD",
+        "sharesOutstanding": false,
+        "ipoDate": "2026-04-14",
+        "company": "GraniteShares",
+        "underlying": "MU",
+        "koName": "그래닛셰어즈 일드부스트 MU ETF"
+    }
+]

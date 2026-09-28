@@ -36,6 +36,7 @@ dist
 dist-ssr
 /dist-verify/
 /dist-verify-v2/
+/provider-probe.local.json
 *.local
 
 # Editor directories and files

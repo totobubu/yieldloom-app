@@ -18,7 +18,7 @@ from scripts.content_pipeline.providers import NoDataError, PROVIDERS
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=Path("data-v2/candidates/pilot-events.json"))
-    parser.add_argument("--provider", action="append", choices=("roundhill", "neos"))
+    parser.add_argument("--provider", action="append", choices=sorted(PROVIDERS))
     args = parser.parse_args()
     providers = args.provider or ["roundhill", "neos"]
     rows: list[dict[str, object]] = []

@@ -41,6 +41,8 @@ dist-ssr
 /data-v2/review/incremental-report.json
 /data-v2/review/incremental-report.md
 /data-v2/review/collection-state.json
+/email-evidence-report.json
+/evidence-receipt-*.json
 *.local
 
 # Editor directories and files

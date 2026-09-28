@@ -10,4 +10,5 @@ tabulate
 boto3
 Flask
 pdfplumber
-
+pytesseract
+Pillow

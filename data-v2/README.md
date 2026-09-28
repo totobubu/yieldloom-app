@@ -59,3 +59,18 @@ To publish a reviewed artifact, run `Publish approved data v2 release` on
 `main`, pass `candidate_run_id` from the collection workflow, and use release
 ID `candidate-<candidate_run_id>`. This validates the downloaded artifact and
 only then moves `releases/current.json`.
+
+## Official email screenshot evidence
+
+Email screenshots are never placed under `public/`, data-v2 releases, or the
+public data R2 bucket. Use a **separate private R2 bucket** and the local
+command below after configuring its four `EVIDENCE_R2_*` environment variables:
+
+```powershell
+python scripts/data_v2/ingest_email_evidence.py .\notice.png --provider neos --received-at 2026-09-28T08:00:00+09:00 --ticker-hint SPYI --output evidence-receipt-spyi.json
+```
+
+The command returns a SHA-256 evidence ID. Dispatch `Analyze uploaded email
+evidence` with that ID to re-run OCR from the private original and compare its
+hints against the current official collection state. This produces a private
+review artifact only; it cannot add, modify, or publish a dividend event.

@@ -1,0 +1,7 @@
+SPDR Dividend Distributions
+Historical Distributions Fund Name Ticker CUSIP Ex-Date Record Date Payable Date Distribution ($)
+Monthly
+Show State Street SPDR Bloomberg 1-3 Month T-Bill ETF BIL 78468R663 09/01/2026 09/01/2026 09/04/2026 0.279771 - -
+Show State Street SPDR Portfolio TIPS ETF SPIP 78464A656 09/01/2026 09/01/2026 09/04/2026 0.000000 - -
+Quarterly
+Show State Street SPDR S&P 500 ETF Trust SPY 78462F103 09/25/2026 09/25/2026 09/29/2026 1.831214 - -

@@ -38,8 +38,10 @@
         "data:sort-keys": "node tasks/sortDataKeys.js",
         "content:init": "python scripts/content_pipeline/manage.py init-db",
         "content:dashboard": "python scripts/content_pipeline/export_dashboard.py",
+        "content:prices": "python scripts/content_pipeline/export_price_snapshot.py",
         "content:generate": "python scripts/content_pipeline/generate_content.py",
         "content:images": "node scripts/content_pipeline/render_content_images.mjs",
+        "content:publish:prepare": "node scripts/content_pipeline/prepare_publish.mjs",
         "content:calendar": "python scripts/content_pipeline/content_calendar.py",
         "content:notion:dry": "python scripts/content_pipeline/sync_notion.py --dry-run",
         "content:notion": "python scripts/content_pipeline/sync_notion.py",
@@ -51,7 +53,8 @@
         "content:schedule:install": "powershell -ExecutionPolicy Bypass -File scripts/content_pipeline/install-schedule.ps1",
         "content:weekly": "python scripts/content_pipeline/weekly_digest.py",
         "content:performance": "python scripts/content_pipeline/performance.py import",
-        "content:recommend": "python scripts/content_pipeline/performance.py recommend"
+        "content:recommend": "python scripts/content_pipeline/performance.py recommend",
+        "content:release-check": "python scripts/content_pipeline/release_readiness.py"
     },
     "dependencies": {
         "@capacitor/android": "^8.3.1",

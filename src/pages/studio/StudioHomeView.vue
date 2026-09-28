@@ -12,6 +12,10 @@
             last_fetched_at: string | null;
             source_count: number;
             event_count: number;
+            last_attempt_status: string | null;
+            last_attempt_message: string | null;
+            last_fetch_mode: string | null;
+            last_attempt_at: string | null;
         }>;
         recentEvents: Array<{
             id: number;
@@ -65,6 +69,20 @@
             reason: string;
         }>
     >([]);
+    const priceQuality = ref<{
+        generatedAt: string;
+        summary: { priced: number; missing: number; stale: number };
+        findings: Array<{
+            ticker: string;
+            status: string;
+            message: string;
+            priceDate?: string;
+        }>;
+    }>({
+        generatedAt: '',
+        summary: { priced: 0, missing: 0, stale: 0 },
+        findings: [],
+    });
     const isLoading = ref(true);
     const error = ref('');
     const activeProvider = ref('all');
@@ -118,6 +136,17 @@
             detail: '미해결 검증 항목',
             attention: dashboard.value.openFindings.length > 0,
         },
+        {
+            label: '가격 품질',
+            value:
+                priceQuality.value.summary.missing +
+                priceQuality.value.summary.stale,
+            detail: `${priceQuality.value.summary.priced}개 가격 연결`,
+            attention:
+                priceQuality.value.summary.missing +
+                    priceQuality.value.summary.stale >
+                0,
+        },
     ]);
 
     const formatTimestamp = (value: string | null) => {
@@ -144,14 +173,22 @@
         isLoading.value = true;
         error.value = '';
         try {
-            const [response, recommendationResponse] = await Promise.all([
-                fetch(`/content-studio/dashboard.json?t=${Date.now()}`, {
-                    cache: 'no-store',
-                }),
-                fetch(`/content-studio/recommendations.json?t=${Date.now()}`, {
-                    cache: 'no-store',
-                }),
-            ]);
+            const [response, recommendationResponse, priceResponse] =
+                await Promise.all([
+                    fetch(`/content-studio/dashboard.json?t=${Date.now()}`, {
+                        cache: 'no-store',
+                    }),
+                    fetch(
+                        `/content-studio/recommendations.json?t=${Date.now()}`,
+                        {
+                            cache: 'no-store',
+                        }
+                    ),
+                    fetch(
+                        `/content-studio/price-quality.json?t=${Date.now()}`,
+                        { cache: 'no-store' }
+                    ),
+                ]);
             if (!response.ok) {
                 throw new Error(
                     `대시보드 스냅샷을 읽지 못했습니다 (${response.status})`
@@ -170,6 +207,8 @@
                 const payload = await recommendationResponse.json();
                 recommendations.value = payload.recommendations || [];
             }
+            if (priceResponse.ok)
+                priceQuality.value = await priceResponse.json();
         } catch (loadError) {
             error.value =
                 loadError instanceof Error
@@ -224,7 +263,10 @@
                     </div>
                     <span>{{ visibleRecentEvents.length }}건</span>
                 </header>
-                <div class="provider-tabs" role="tablist" aria-label="운용사별 최근 배당 발표">
+                <div
+                    class="provider-tabs"
+                    role="tablist"
+                    aria-label="운용사별 최근 배당 발표">
                     <button
                         v-for="tab in recentProviderTabs"
                         :key="tab.slug"
@@ -303,13 +345,56 @@
                         <div>
                             <strong>{{ provider.display_name }}</strong>
                             <span>{{
-                                formatTimestamp(provider.last_fetched_at)
+                                [
+                                    provider.last_fetch_mode || '미실행',
+                                    provider.last_attempt_status || '기록 없음',
+                                    formatTimestamp(
+                                        provider.last_attempt_at ||
+                                            provider.last_fetched_at
+                                    ),
+                                ].join(' · ')
+                            }}</span>
+                            <span v-if="provider.last_attempt_message">{{
+                                provider.last_attempt_message
                             }}</span>
                         </div>
                         <b>{{ provider.event_count }} events</b>
                     </li>
                 </ul>
                 <p v-else class="empty-state">등록된 공급자가 없습니다.</p>
+            </article>
+
+            <article class="panel">
+                <header class="panel-heading">
+                    <div>
+                        <p class="panel-kicker">PRICE QUALITY</p>
+                        <h2>가격 커버리지</h2>
+                    </div>
+                    <router-link to="/dividend-calendar?price=attention"
+                        >필터 보기</router-link
+                    >
+                </header>
+                <p class="empty-state">
+                    Yahoo EOD 가격 {{ priceQuality.summary.priced }}개 · 누락
+                    {{ priceQuality.summary.missing }}개 · 노후
+                    {{ priceQuality.summary.stale }}개
+                </p>
+                <ul v-if="priceQuality.findings.length" class="finding-list">
+                    <li
+                        v-for="finding in priceQuality.findings.slice(0, 6)"
+                        :key="finding.ticker">
+                        <span data-severity="warning">{{
+                            finding.status
+                        }}</span>
+                        <div>
+                            <strong>{{ finding.ticker }}</strong>
+                            <p>{{ finding.message }}</p>
+                        </div>
+                    </li>
+                </ul>
+                <p v-else class="empty-state">
+                    가격 누락 또는 노후 종목이 없습니다.
+                </p>
             </article>
 
             <article class="panel">

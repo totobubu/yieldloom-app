@@ -18,10 +18,15 @@
                 DIVGROW CONTENT STUDIO
             </router-link>
             <nav aria-label="콘텐츠 스튜디오 관리">
+                <router-link to="/collect">수집</router-link>
                 <router-link to="/distributions">배당</router-link>
+                <router-link to="/compare">ETF 비교</router-link>
+                <router-link to="/my-dividends">내 배당</router-link>
+                <router-link to="/dividend-calendar">배당 캘린더</router-link>
                 <router-link to="/sources">소스</router-link>
                 <router-link to="/reconciliation">대조</router-link>
                 <router-link to="/renders">산출물</router-link>
+                <router-link to="/publishing">발행 대기열</router-link>
                 <router-link to="/archive">아카이브</router-link>
             </nav>
             <Button

@@ -29,19 +29,29 @@ class RoundhillAdapter(OfficialHTTPAdapter):
         today = date.today()
         for offset in range(0, 7):
             declaration_date = today - timedelta(days=offset)
-            query = urlencode(
-                {
-                    "declaration_dt": declaration_date.isoformat(),
-                    "firm_name": "Roundhill Financial Inc.",
-                    "symbols": symbols,
-                }
-            )
-            yield SourceCandidate(
-                url=f"{self.cboe_url}?{query}",
-                source_type="official_exchange_notice",
-                published_at=declaration_date.isoformat(),
-                metadata={"primary_provider": "Roundhill Investments", "exchange": "Cboe"},
-            )
+            yield self._candidate(declaration_date, symbols)
+
+    def discover_for_ex_date(self, ex_date: date):
+        symbols = ",".join(self.tracked_symbols)
+        for offset in range(1, 8):
+            yield self._candidate(ex_date - timedelta(days=offset), symbols)
+
+    def _candidate(self, declaration_date: date, symbols: str) -> SourceCandidate:
+        query = urlencode({
+            "declaration_dt": declaration_date.isoformat(),
+            "firm_name": "Roundhill Financial Inc.",
+            "symbols": symbols,
+        })
+        return SourceCandidate(
+            url=f"{self.cboe_url}?{query}",
+            source_type="official_exchange_notice",
+            published_at=declaration_date.isoformat(),
+            metadata={
+                "primary_provider": "Roundhill Investments",
+                "exchange": "Cboe",
+                "tickers": list(self.tracked_symbols),
+            },
+        )
 
     def parse(self, document: SourceDocument) -> list[DistributionEvent]:
         parsed = parse_html(document.content, document.source_url)

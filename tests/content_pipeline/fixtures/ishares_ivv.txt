@@ -1,0 +1,18 @@
+IVV
+EQUITY
+iShares Core S&amp;P 500 ETF
+Distribution Frequency
+Quarterly
+Distributions
+Distributions Schedule
+Record Date
+Ex-Date
+Payable Date
+Total Distribution
+Income
+ST Cap Gains
+LT Cap Gains
+Return of Capital
+Sep 15, 2026 Sep 15, 2026 Sep 18, 2026 $2.202607 $2.202607 $0.000000 $0.000000 $0.000000
+Jun 15, 2026 Jun 15, 2026 Jun 18, 2026 $1.995653 $1.995653 $0.000000 $0.000000 $0.000000
+Fees

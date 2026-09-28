@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import re
-import subprocess
-from pathlib import Path
 
 from ..models import SourceDocument
 from .base import SourceCandidate
@@ -17,6 +15,10 @@ class JPMorganAdapter(OfficialHTTPAdapter):
     official_homepage = "https://am.jpmorgan.com/"
     parser_version = "1"
     allowed_hosts = ("am.jpmorgan.com",)
+    fetch_mode = "browser"
+    browser_ready_text = "Dividend Schedule"
+    browser_content = "text"
+    timeout_seconds = 90
     fund_urls = {
         "JEPI": "https://am.jpmorgan.com/us/en/asset-management/adv/products/jpmorgan-equity-premium-income-etf-46641q332#/dividends",
         "JEPQ": "https://am.jpmorgan.com/us/en/asset-management/adv/products/jpmorgan-nasdaq-equity-premium-income-etf-46654q203#/dividends",
@@ -59,14 +61,3 @@ class JPMorganAdapter(OfficialHTTPAdapter):
         if not events:
             raise ValueError("J.P. Morgan rendered dividend schedule contained no rows")
         return events
-
-    def request_bytes(self, url: str) -> bytes:
-        self.validate_url(url)
-        script = Path(__file__).resolve().parents[1] / "fetch_rendered_text.mjs"
-        result = subprocess.run(
-            ["node", str(script), url, "Dividend Schedule"],
-            check=True,
-            capture_output=True,
-            timeout=90,
-        )
-        return result.stdout

@@ -19,7 +19,11 @@ class DefianceAdapter(OfficialHTTPAdapter):
     tracked_tickers = {"QQQY", "WDTE", "IWMY", "SPYT", "QQQT", "USOY", "GOLI", "MST", "QLDY"}
 
     def discover(self):
-        yield SourceCandidate(url=self.latest_url, source_type="official_latest_distributions")
+        yield SourceCandidate(
+            url=self.latest_url,
+            source_type="official_latest_distributions",
+            metadata={"tickers": sorted(self.tracked_tickers)},
+        )
 
     def parse(self, document: SourceDocument):
         text = parse_html(document.content, document.source_url).text

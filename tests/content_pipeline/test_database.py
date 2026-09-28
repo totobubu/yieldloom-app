@@ -44,8 +44,11 @@ class ContentDatabaseTest(unittest.TestCase):
                 database.summary(),
                 {
                     "providers": 1,
+                    "provider_funds": 1,
                     "source_documents": 1,
+                    "collection_attempts": 0,
                     "distribution_events": 1,
+                    "distribution_observations": 1,
                     "validation_findings": 0,
                     "pipeline_runs": 0,
                     "content_performance": 0,
@@ -56,6 +59,16 @@ class ContentDatabaseTest(unittest.TestCase):
             self.assertEqual(snapshot["counts"]["distribution_events"], 1)
             self.assertEqual(snapshot["recentEvents"][0]["ticker"], "TSLY")
             self.assertEqual(snapshot["providers"][0]["event_count"], 1)
+            self.assertEqual(snapshot["providers"][0]["catalog_ticker_count"], 1)
+            self.assertEqual(snapshot["providers"][0]["collected_ticker_count"], 1)
+            self.assertEqual(snapshot["providerFunds"][0]["coverage_status"], "collected")
+            with database.connect() as connection:
+                observation = connection.execute(
+                    "SELECT * FROM distribution_observations"
+                ).fetchone()
+            self.assertEqual(observation["amount_raw"], "0.212700")
+            self.assertEqual(observation["precision_digits"], 6)
+            self.assertEqual(observation["source_class"], "issuer_official")
             # A correction keeps exact old decimals and its source link.
             corrected = replace(event, distribution_per_share="0.212701")
             database.upsert_distribution_event(corrected, source_id)

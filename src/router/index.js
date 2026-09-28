@@ -21,7 +21,12 @@ const StudioHomeView = () => import('../pages/studio/StudioHomeView.vue');
 const StudioDataView = () => import('../pages/studio/StudioDataView.vue');
 const StudioDistributionsView = () => import('../pages/studio/StudioDistributionsView.vue');
 const StudioRendersView = () => import('../pages/studio/StudioRendersView.vue');
+const StudioPublishingView = () => import('../pages/studio/StudioPublishingView.vue');
 const StudioReconciliationView = () => import('../pages/studio/StudioReconciliationView.vue');
+const StudioCollectionView = () => import('../pages/studio/StudioCollectionView.vue');
+const StudioCompareView = () => import('../pages/studio/StudioCompareView.vue');
+const StudioMyDividendsView = () => import('../pages/studio/StudioMyDividendsView.vue');
+const StudioDividendCalendarView = () => import('../pages/studio/StudioDividendCalendarView.vue');
 
 const getCurrentUser = async () => {
     const [{ auth }, { onAuthStateChanged }] = await Promise.all([
@@ -43,11 +48,16 @@ const getCurrentUser = async () => {
 
 const contentStudioRoutes = [
     { path: '/', name: 'studio-home', component: StudioHomeView },
+    { path: '/collect', name: 'studio-collect', component: StudioCollectionView },
     { path: '/distributions', name: 'studio-distributions', component: StudioDistributionsView },
+    { path: '/compare', name: 'studio-compare', component: StudioCompareView },
+    { path: '/my-dividends', name: 'studio-my-dividends', component: StudioMyDividendsView },
+    { path: '/dividend-calendar', name: 'studio-dividend-calendar', component: StudioDividendCalendarView },
     { path: '/content', name: 'studio-content', component: StudioDataView, meta: { kind: 'content' } },
     { path: '/sources', name: 'studio-sources', component: StudioDataView, meta: { kind: 'sources' } },
     { path: '/reconciliation', name: 'studio-reconciliation', component: StudioReconciliationView },
     { path: '/renders', name: 'studio-renders', component: StudioRendersView },
+    { path: '/publishing', name: 'studio-publishing', component: StudioPublishingView },
     { path: '/archive', name: 'studio-archive', component: StudioDataView, meta: { kind: 'archive' } },
     { path: '/:pathMatch(.*)*', redirect: '/' },
 ];

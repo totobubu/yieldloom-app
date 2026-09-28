@@ -10,6 +10,23 @@ CREATE TABLE IF NOT EXISTS providers (
     updated_at TEXT NOT NULL
 );
 
+-- Candidate universe observed from an official provider catalog or an
+-- official distribution source. Presence here is coverage evidence, not a
+-- verified distribution event.
+CREATE TABLE IF NOT EXISTS provider_funds (
+    provider_slug TEXT NOT NULL REFERENCES providers(slug),
+    ticker TEXT NOT NULL,
+    official_url TEXT,
+    source_type TEXT NOT NULL,
+    first_seen_at TEXT NOT NULL,
+    last_seen_at TEXT NOT NULL,
+    last_collected_at TEXT,
+    PRIMARY KEY (provider_slug, ticker)
+);
+
+CREATE INDEX IF NOT EXISTS idx_provider_funds_last_seen
+    ON provider_funds (provider_slug, last_seen_at DESC);
+
 CREATE TABLE IF NOT EXISTS source_documents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     provider_slug TEXT NOT NULL REFERENCES providers(slug),
@@ -27,6 +44,24 @@ CREATE TABLE IF NOT EXISTS source_documents (
 
 CREATE INDEX IF NOT EXISTS idx_source_documents_provider_fetched
     ON source_documents (provider_slug, fetched_at DESC);
+
+CREATE TABLE IF NOT EXISTS collection_attempts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    provider_slug TEXT NOT NULL REFERENCES providers(slug),
+    source_url TEXT NOT NULL,
+    fetch_mode TEXT NOT NULL CHECK (fetch_mode IN ('http', 'browser', 'official_file')),
+    status TEXT NOT NULL,
+    retryable INTEGER NOT NULL DEFAULT 0 CHECK (retryable IN (0, 1)),
+    http_status INTEGER,
+    content_sha256 TEXT,
+    event_count INTEGER NOT NULL DEFAULT 0,
+    message TEXT NOT NULL DEFAULT '',
+    details_json TEXT NOT NULL DEFAULT '{}',
+    attempted_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_collection_attempts_provider_time
+    ON collection_attempts (provider_slug, attempted_at DESC, id DESC);
 
 CREATE TABLE IF NOT EXISTS distribution_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,6 +92,39 @@ CREATE INDEX IF NOT EXISTS idx_distribution_events_ticker_ex_date
 
 CREATE INDEX IF NOT EXISTS idx_distribution_events_provider_declared
     ON distribution_events (provider_slug, declared_date DESC);
+
+-- Every reported amount remains an immutable observation. Third-party values
+-- are never promoted into distribution_events without an explicit review.
+CREATE TABLE IF NOT EXISTS distribution_observations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    canonical_event_id INTEGER REFERENCES distribution_events(id) ON DELETE SET NULL,
+    ticker TEXT NOT NULL,
+    ex_date TEXT NOT NULL,
+    amount_raw TEXT NOT NULL,
+    amount_normalized TEXT NOT NULL,
+    currency TEXT NOT NULL DEFAULT 'USD',
+    declared_date TEXT,
+    record_date TEXT,
+    payable_date TEXT,
+    source_class TEXT NOT NULL CHECK (source_class IN (
+        'issuer_official', 'exchange_official', 'market_infrastructure',
+        'licensed_vendor', 'public_aggregator', 'manual'
+    )),
+    source_provider TEXT NOT NULL,
+    source_url TEXT NOT NULL,
+    content_sha256 TEXT,
+    precision_digits INTEGER NOT NULL DEFAULT 0,
+    verification_status TEXT NOT NULL CHECK (verification_status IN (
+        'official', 'market_confirmed', 'cross_checked', 'third_party_only',
+        'conflicting', 'needs_review', 'rejected'
+    )),
+    raw_json TEXT NOT NULL DEFAULT '{}',
+    observed_at TEXT NOT NULL,
+    UNIQUE (source_provider, ticker, ex_date, amount_raw, source_url)
+);
+
+CREATE INDEX IF NOT EXISTS idx_distribution_observations_ticker_date
+    ON distribution_observations (ticker, ex_date DESC, source_class);
 
 CREATE TABLE IF NOT EXISTS validation_findings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -148,6 +216,16 @@ CREATE TABLE IF NOT EXISTS public_data_reconciliation_reviews (
 CREATE INDEX IF NOT EXISTS idx_public_data_reconciliation_status
     ON public_data_reconciliation_reviews (status, updated_at DESC);
 
+-- A later scan may refresh unresolved proposals, but it must not erase the
+-- reviewer, reason, or before/after hashes recorded by a terminal decision.
+CREATE TRIGGER IF NOT EXISTS preserve_terminal_reconciliation_review
+BEFORE UPDATE OF comparison_json ON public_data_reconciliation_reviews
+WHEN OLD.status IN ('approved', 'rejected', 'applied')
+  AND NEW.comparison_json <> OLD.comparison_json
+BEGIN
+    SELECT RAISE(IGNORE);
+END;
+
 -- Keep the previous official values when a source corrects an existing event.
 CREATE TABLE IF NOT EXISTS distribution_event_revisions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -218,4 +296,4 @@ CREATE TABLE IF NOT EXISTS frequency_regime_observations (
     PRIMARY KEY(listing_key, effective_date, next_frequency)
 );
 
-PRAGMA user_version = 6;
+PRAGMA user_version = 9;

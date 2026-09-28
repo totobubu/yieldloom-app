@@ -32,14 +32,46 @@ class ContentEvent:
     payable_date: str | None
     official_url: str
     verification_status: str
+    source_class: str = "issuer_official"
+    source_provider: str | None = None
+    precision_digits: int | None = None
     previous_distribution: str | None = None
     previous_distribution_source: str | None = None
     monthly_distributions: tuple[MonthlyDistribution, ...] = ()
 
     @property
+    def source_label(self) -> str:
+        return {
+            "issuer_official": "운용사 공식",
+            "exchange_official": "거래소 확인",
+            "market_infrastructure": "시장 인프라 확인",
+            "licensed_vendor": "외부 데이터 서비스",
+            "public_aggregator": "공개 집계 서비스",
+            "manual": "수동 확인",
+        }.get(self.source_class, "출처 확인 필요")
+
+    @property
     def amount_display(self) -> str:
         value = Decimal(self.distribution_per_share)
-        return format(value.normalize(), "f")
+        # Preserve official lexical precision instead of silently shortening it.
+        return format(value, "f")
+
+    @property
+    def verification_label(self) -> str:
+        return {
+            "official": "공식 확인",
+            "cross_checked": "교차 검증",
+            "needs_review": "검토 필요",
+        }.get(self.verification_status, self.verification_status)
+
+    @property
+    def source_sentence(self) -> str:
+        provider = self.source_provider or self.provider_slug.upper()
+        return {
+            "issuer_official": f"{provider} 운용사 공식 자료에서 확인했습니다.",
+            "exchange_official": f"{provider} 거래소 공식 공시에서 확인했습니다.",
+            "market_infrastructure": f"{provider} 시장 인프라 공식 자료에서 확인했습니다.",
+        }.get(self.source_class, f"{provider} 자료에서 확인했으며 출처 등급을 함께 검토해야 합니다.")
 
     @property
     def change_percent(self) -> Decimal | None:
@@ -89,7 +121,7 @@ def toss_text(event: ContentEvent) -> str:
             f"주당 ${event.amount_display} · {event.amount_change_label} · {event.change_label}",
             f"배당락 {event.ex_date} · 지급 {payable}",
             "",
-            f"{event.provider_slug.upper()} 공식 발표를 기준으로 정리했습니다.",
+            f"출처 등급: {event.source_label} · {event.source_provider or event.provider_slug.upper()}",
             "투자 판단과 세금 적용은 개인 상황에 따라 달라질 수 있습니다.",
             f"원문: {event.official_url}",
         ]
@@ -101,7 +133,7 @@ def naver_markdown(event: ContentEvent) -> str:
     payable = event.payable_date or "공식 원문에서 확인 필요"
     return f"""# {event.ticker} 배당 발표: 주당 ${event.amount_display}
 
-{event.provider_slug.upper()}가 **{name}({event.ticker})**의 배당 정보를 공식 발표했습니다.
+**{name}({event.ticker})**의 배당 정보를 {event.source_sentence}
 
 ## 핵심 일정
 
@@ -112,16 +144,53 @@ def naver_markdown(event: ContentEvent) -> str:
 - 배당락일: **{event.ex_date}**
 - 지급일: **{payable}**
 - 검증 상태: **{event.verification_status}**
+- 출처 등급: **{event.source_label}**
+- 출처 제공자: **{event.source_provider or event.provider_slug.upper()}**
 
 ## 한 줄 해석
 
 이번 발표는 직전 지급 기록과 비교해 `{event.change_label}`입니다. 배당금만으로 수익성을 판단하지 말고 기준가 변동, 총수익률, ROC 여부와 세금을 함께 확인하는 편이 좋습니다.
 
-## 공식 출처
+## 원문 출처
 
 {event.official_url}
 
-> 이 글은 공식 발표를 빠르게 정리한 정보성 콘텐츠이며 투자 권유가 아닙니다. 실제 매매 전 운용사 원문을 다시 확인하세요.
+> 출처 등급을 함께 확인하세요. 외부 서비스 자료는 운용사 공식 발표가 아니며 투자 권유가 아닙니다.
+"""
+
+
+def blog_explainer_markdown(event: ContentEvent) -> str:
+    """A longer, source-bound blog variant for review before publishing.
+
+    This deliberately only interprets values already present in the verified
+    ledger. It does not turn a distribution announcement into a yield or a
+    recommendation.
+    """
+    name = event.fund_name or event.ticker
+    payable = event.payable_date or "공식 원문에서 확인 필요"
+    return f"""# {event.ticker} 배당 공시, 무엇을 확인해야 할까
+
+{name}({event.ticker})의 이번 주당 분배금은 **${event.amount_display} {event.currency}**입니다.
+이 글은 {event.source_sentence}
+
+## 공시 요약
+
+- 선언일: **{event.declared_date}**
+- 배당락일: **{event.ex_date}**
+- 지급일: **{payable}**
+- 직전 실제 기록과 비교: **{event.change_label}**
+- 검증 상태: **{event.verification_label}**
+- 출처 등급: **{event.source_label}**
+
+## 함께 볼 항목
+
+분배금 증감만으로 ETF의 성과를 판단하기는 어렵습니다. 기준가와 총수익률, 분배 원천(ROC 포함 가능성), 분배 주기 변화, 개인별 세금 조건을 함께 확인하세요. 이번 공시의 정확한 조건은 아래 운용사 원문을 기준으로 다시 확인해야 합니다.
+
+## 공식 원문
+
+{event.official_url}
+
+> 이 콘텐츠는 공시 요약이며 투자 권유가 아닙니다. 수치와 일정은 게시 직전에 공식 원문으로 재확인하세요.
 """
 
 

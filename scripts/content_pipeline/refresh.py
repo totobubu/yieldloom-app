@@ -18,12 +18,14 @@ from scripts.content_pipeline.export_dashboard import export_dashboard
 from scripts.content_pipeline.export_system_logs import export_system_logs
 from scripts.content_pipeline.generate_content import generate_all_bundles
 from scripts.content_pipeline.providers import PROVIDERS
+from scripts.content_pipeline.record_collection_report import record_collection_report
 from scripts.content_pipeline.reconcile_public_data import export_snapshot as export_reconciliation
 from scripts.content_pipeline.weekly_digest import generate_weekly_digest
 from scripts.data_pipeline.register_history import register as register_history
 
 
-def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None) -> dict:
+def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None,
+                ex_date: date | None = None) -> dict:
     command = [
         sys.executable,
         "scripts/content_pipeline/collect.py",
@@ -36,11 +38,15 @@ def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None) 
     ]
     if url:
         command.extend(["--url", url])
+    if ex_date:
+        command.extend(["--ex-date", ex_date.isoformat()])
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     try:
         payload = json.loads(result.stdout)
     except json.JSONDecodeError:
         payload = {"stdout": result.stdout[-1000:], "stderr": result.stderr[-1000:]}
+    if payload.get("provider") == provider:
+        record_collection_report(db, provider, payload)
     if result.returncode:
         raise RuntimeError(json.dumps(payload, ensure_ascii=False))
     return payload
@@ -49,12 +55,20 @@ def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None) 
 def _ticker_target(database: ContentDatabase, ticker: str) -> tuple[str, str]:
     with database.connect() as connection:
         row = connection.execute(
-            """SELECT provider_slug, official_url FROM distribution_events
-               WHERE ticker = ? ORDER BY ex_date DESC, id DESC LIMIT 1""",
-            (ticker,),
+            """
+            SELECT provider_slug, official_url FROM (
+                SELECT provider_slug, official_url, 0 AS priority, ex_date AS observed_at
+                FROM distribution_events WHERE ticker = ?
+                UNION ALL
+                SELECT provider_slug, official_url, 1 AS priority, last_seen_at AS observed_at
+                FROM provider_funds WHERE ticker = ? AND official_url IS NOT NULL
+            )
+            ORDER BY priority, observed_at DESC LIMIT 1
+            """,
+            (ticker, ticker),
         ).fetchone()
     if row is None or row["provider_slug"] not in PROVIDERS:
-        raise ValueError("ticker is not present in the official distribution index")
+        raise ValueError("ticker is not present in the official distribution or catalog index")
     return str(row["provider_slug"]), str(row["official_url"])
 
 
@@ -65,9 +79,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--bundles", type=Path, default=Path("var/content-studio/generated"))
     parser.add_argument("--public-dir", type=Path, default=Path("public/content-studio"))
     parser.add_argument("--legacy-data-dir", type=Path, default=Path("public/data"))
-    parser.add_argument("--scope", choices=("all", "provider", "ticker"), default="all")
+    parser.add_argument("--scope", choices=("all", "provider", "ticker", "ex_date"), default="all")
     parser.add_argument("--provider", choices=sorted(PROVIDERS))
     parser.add_argument("--ticker")
+    parser.add_argument("--ex-date", type=date.fromisoformat)
     parser.add_argument("--request-id")
     parser.add_argument("--week-ending", type=date.fromisoformat, default=date.today())
     return parser
@@ -92,6 +107,10 @@ def main() -> int:
         except ValueError as exc:
             parser.error(str(exc))
         providers = [provider]
+    elif args.scope == "ex_date":
+        if not args.ex_date:
+            parser.error("--scope ex_date requires --ex-date")
+        providers = sorted(PROVIDERS)
     else:
         providers = sorted(PROVIDERS)
 
@@ -104,6 +123,7 @@ def main() -> int:
         "scope": args.scope,
         "provider": providers[0] if args.scope in {"provider", "ticker"} else None,
         "ticker": ticker,
+        "exDate": args.ex_date.isoformat() if args.ex_date else None,
         "recoveredInterruptedRuns": recovered,
         "providers": {},
     }
@@ -112,7 +132,9 @@ def main() -> int:
     try:
         for provider in providers:
             try:
-                payload = run_collect(provider, args.db, args.raw_dir, selected_url)
+                payload = run_collect(
+                    provider, args.db, args.raw_dir, selected_url, args.ex_date
+                )
                 step_status = "warning" if payload.get("status") == "partial" else "success"
                 warned = warned or step_status == "warning"
                 database.add_pipeline_step(

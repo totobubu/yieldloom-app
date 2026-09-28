@@ -7,11 +7,16 @@ export const PROVIDERS = new Set([
     'amplify',
     'defiance',
     'globalx',
+    'graniteshares',
+    'ishares',
     'jpmorgan',
+    'kurv',
     'neos',
+    'proshares',
     'rex',
     'roundhill',
     'schwab',
+    'statestreet',
     'yieldmax',
 ]);
 export const ACTIVE_STATUSES = new Set([
@@ -46,14 +51,15 @@ async function readJson(relativePath) {
 export function targetKey(input) {
     if (input.scope === 'provider') return `provider:${input.provider}`;
     if (input.scope === 'ticker') return `ticker:${input.ticker}`;
+    if (input.scope === 'ex_date') return `ex-date:${input.exDate}`;
     if (input.scope === 'render') return `render:${input.eventId}`;
     return 'all:all';
 }
 
 export async function validateRefreshInput(body = {}) {
     const scope = String(body.scope || '').trim().toLowerCase();
-    if (!['all', 'provider', 'ticker', 'render'].includes(scope)) {
-        throw new TypeError('scope must be one of all, provider, ticker, or render');
+    if (!['all', 'provider', 'ticker', 'ex_date', 'render'].includes(scope)) {
+        throw new TypeError('scope must be one of all, provider, ticker, ex_date, or render');
     }
     if (scope === 'all') return { scope };
     if (scope === 'provider') {
@@ -64,10 +70,28 @@ export async function validateRefreshInput(body = {}) {
     if (scope === 'ticker') {
         const ticker = String(body.ticker || '').trim().toUpperCase();
         const index = await readJson('public/content-studio/distribution-index.json');
-        if (!Array.isArray(index.tickers) || !index.tickers.some((row) => row.ticker === ticker)) {
+        const knownDistribution = Array.isArray(index.tickers)
+            && index.tickers.some((row) => row.ticker === ticker);
+        let knownCatalogFund = false;
+        if (!knownDistribution) {
+            const dashboard = await readJson('public/content-studio/dashboard.json');
+            knownCatalogFund = Array.isArray(dashboard.providerFunds)
+                && dashboard.providerFunds.some((row) => row.ticker === ticker);
+        }
+        if (!knownDistribution && !knownCatalogFund) {
             throw new TypeError('ticker is not present in the official distribution index');
         }
         return { scope, ticker };
+    }
+    if (scope === 'ex_date') {
+        const exDate = String(body.exDate || '').trim();
+        const parsed = new Date(`${exDate}T00:00:00Z`);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(exDate)
+            || Number.isNaN(parsed.getTime())
+            || parsed.toISOString().slice(0, 10) !== exDate) {
+            throw new TypeError('exDate must be a valid ISO date');
+        }
+        return { scope, exDate };
     }
     const eventId = Number(body.eventId);
     if (!Number.isInteger(eventId) || eventId <= 0) throw new TypeError('eventId must be a positive integer');
@@ -82,10 +106,11 @@ export async function validateRefreshInput(body = {}) {
 
 export function githubConfig() {
     const token = process.env.GITHUB_ACTIONS_TOKEN;
-    const repository = process.env.GITHUB_REPOSITORY || 'totobubu/totobubu.github.io';
+    const repository = process.env.GITHUB_REPOSITORY || 'totobubu/yieldloom-app';
+    const ref = String(process.env.CONTENT_REFRESH_REF || '').trim();
     const [owner, repo] = repository.split('/');
-    if (!token || !owner || !repo) throw new Error('Content refresh service is not configured');
-    return { token, owner, repo };
+    if (!token || !owner || !repo || !ref) throw new Error('Content refresh service is not configured');
+    return { token, owner, repo, ref };
 }
 
 export async function githubRequest(endpoint, options = {}) {
@@ -133,16 +158,18 @@ export async function dispatchRefresh(input) {
     const runs = await listRuns();
     const conflict = findConflict(runs, key);
     if (conflict) return { conflict, key };
+    const { ref } = githubConfig();
     const dispatched = await githubRequest(`/actions/workflows/${WORKFLOW_FILE}/dispatches`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            ref: 'main',
+            ref,
             inputs: {
                 requestId,
                 scope: input.scope,
                 provider: input.provider || '',
                 ticker: input.ticker || '',
+                exDate: input.exDate || '',
                 eventId: input.eventId ? String(input.eventId) : '',
             },
         }),

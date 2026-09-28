@@ -2,6 +2,7 @@ export type RefreshInput =
     | { scope: 'all' }
     | { scope: 'provider'; provider: string }
     | { scope: 'ticker'; ticker: string }
+    | { scope: 'ex_date'; exDate: string }
     | { scope: 'render'; eventId: number };
 
 export type RefreshStatus = {

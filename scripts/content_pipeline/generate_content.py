@@ -15,11 +15,11 @@ if __package__ in {None, ""}:
 from scripts.content_pipeline.content_templates import (
     ContentEvent,
     MonthlyDistribution,
-    blog_cover_html,
+    blog_explainer_markdown,
     naver_markdown,
-    social_square_html,
     toss_text,
 )
+from scripts.content_pipeline.content_cards import blog_cover_html, social_square_html
 from scripts.content_pipeline.database import DEFAULT_DB_PATH
 from scripts.content_pipeline.models import utc_now_iso
 
@@ -112,6 +112,12 @@ def load_event(database_path: Path, event_id: int | None, allow_review: bool,
         parameters.append(event_id)
     query = f"""
         SELECT e.*,
+            (SELECT o.source_class FROM distribution_observations o
+             WHERE o.canonical_event_id=e.id ORDER BY o.id DESC LIMIT 1) AS source_class,
+            (SELECT o.source_provider FROM distribution_observations o
+             WHERE o.canonical_event_id=e.id ORDER BY o.id DESC LIMIT 1) AS source_provider,
+            (SELECT o.precision_digits FROM distribution_observations o
+             WHERE o.canonical_event_id=e.id ORDER BY o.id DESC LIMIT 1) AS precision_digits,
             (
                 SELECT previous.distribution_per_share
                 FROM distribution_events previous
@@ -155,6 +161,9 @@ def load_event(database_path: Path, event_id: int | None, allow_review: bool,
         payable_date=row["payable_date"],
         official_url=row["official_url"],
         verification_status=row["verification_status"],
+        source_class=row["source_class"] or "issuer_official",
+        source_provider=row["source_provider"] or row["provider_slug"],
+        precision_digits=row["precision_digits"],
         previous_distribution=previous_distribution,
         previous_distribution_source=previous_source,
         monthly_distributions=monthly_distributions,
@@ -167,13 +176,14 @@ def generate_bundle(event: ContentEvent, output_root: Path, *, bundle_dir: Path 
     files = {
         "toss.txt": toss_text(event),
         "naver-blog.md": naver_markdown(event),
+        "blog-explainer.md": blog_explainer_markdown(event),
         "social-square.html": social_square_html(event),
         "blog-cover.html": blog_cover_html(event),
     }
     for name, content in files.items():
         (bundle_dir / name).write_text(content, encoding="utf-8")
     manifest = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "generatedAt": utc_now_iso(),
         "eventId": event.id,
         "provider": event.provider_slug,
@@ -192,11 +202,25 @@ def generate_bundle(event: ContentEvent, output_root: Path, *, bundle_dir: Path 
             for item in event.monthly_distributions
         ],
         "verificationStatus": event.verification_status,
+        "sourceClass": event.source_class,
+        "sourceProvider": event.source_provider,
+        "precisionDigits": event.precision_digits,
         "officialUrl": event.official_url,
         "files": {
             **{name: name for name in files},
             "social-square.png": "social-square.png",
             "blog-cover.png": "blog-cover.png",
+        },
+        # Publishing is an explicitly reviewed operation. This metadata only
+        # describes a local package; it never stores credentials or posts.
+        "publishing": {
+            "status": "draft",
+            "requiresApproval": True,
+            "targets": [
+                {"id": "toss-community-alert", "channel": "toss-community", "label": "토스 배당 속보", "textFile": "toss.txt", "imageFile": "social-square.png"},
+                {"id": "blog-brief", "channel": "blog", "label": "블로그 배당 브리프", "textFile": "naver-blog.md", "imageFile": "blog-cover.png"},
+                {"id": "blog-explainer", "channel": "blog", "label": "블로그 확인 가이드", "textFile": "blog-explainer.md", "imageFile": "blog-cover.png"},
+            ],
         },
     }
     (bundle_dir / "manifest.json").write_text(

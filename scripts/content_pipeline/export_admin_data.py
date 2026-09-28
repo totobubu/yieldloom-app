@@ -27,7 +27,14 @@ def export_all(db: Path, bundles: Path, output: Path, *, legacy_exports: bool = 
     connection.row_factory = sqlite3.Row
     try:
         events = [dict(row) for row in connection.execute("""
-            SELECT e.*, LAG(distribution_per_share) OVER (PARTITION BY ticker ORDER BY ex_date) AS previous_amount,
+            SELECT e.*,
+            (SELECT o.source_class FROM distribution_observations o
+             WHERE o.canonical_event_id=e.id ORDER BY o.id DESC LIMIT 1) AS source_class,
+            (SELECT o.source_provider FROM distribution_observations o
+             WHERE o.canonical_event_id=e.id ORDER BY o.id DESC LIMIT 1) AS source_provider,
+            (SELECT o.precision_digits FROM distribution_observations o
+             WHERE o.canonical_event_id=e.id ORDER BY o.id DESC LIMIT 1) AS precision_digits,
+            LAG(distribution_per_share) OVER (PARTITION BY ticker ORDER BY ex_date) AS previous_amount,
             AVG(CAST(distribution_per_share AS REAL)) OVER (PARTITION BY ticker ORDER BY ex_date ROWS BETWEEN 3 PRECEDING AND CURRENT ROW) AS average4,
             AVG(CAST(distribution_per_share AS REAL)) OVER (PARTITION BY ticker ORDER BY ex_date ROWS BETWEEN 11 PRECEDING AND CURRENT ROW) AS average12
             FROM distribution_events e ORDER BY declared_date DESC, id DESC""")]
@@ -37,6 +44,16 @@ def export_all(db: Path, bundles: Path, output: Path, *, legacy_exports: bool = 
             (SELECT prs.message FROM pipeline_run_steps prs WHERE prs.provider_slug=p.slug ORDER BY prs.id DESC LIMIT 1) last_message
             FROM providers p LEFT JOIN source_documents s ON s.provider_slug=p.slug GROUP BY p.slug ORDER BY p.display_name""")]
         performance = [dict(row) for row in connection.execute("SELECT * FROM content_performance ORDER BY published_at DESC")]
+        fallback_observations = [dict(row) for row in connection.execute("""
+            SELECT id, ticker, ex_date, amount_raw, amount_normalized, currency,
+                   declared_date, record_date, payable_date, source_class,
+                   source_provider, source_url, content_sha256, precision_digits,
+                   verification_status, observed_at
+            FROM distribution_observations
+            WHERE canonical_event_id IS NULL
+            ORDER BY observed_at DESC, id DESC
+            LIMIT 200
+        """)]
         boundaries: dict[str, set[str]] = {}
         for row in connection.execute('''
             SELECT h.symbol, a.effective_date FROM corporate_action_observations a
@@ -50,6 +67,7 @@ def export_all(db: Path, bundles: Path, output: Path, *, legacy_exports: bool = 
     public_fields = {'id', 'provider_slug', 'ticker', 'distribution_per_share', 'currency',
                      'declared_date', 'ex_date', 'record_date', 'payable_date', 'frequency',
                      'roc_percent', 'official_url', 'verification_status',
+                     'source_class', 'source_provider', 'precision_digits',
                      'previous_amount', 'average4', 'average12'}
     events = [{key: value for key, value in event.items() if key in public_fields} for event in events]
     # A change across different share bases or payout cadences is not growth.
@@ -177,6 +195,7 @@ def export_all(db: Path, bundles: Path, output: Path, *, legacy_exports: bool = 
         "providers": distribution_providers,
         "recentEvents": events[:100],
         "tickers": ticker_index,
+        "fallbackObservations": fallback_observations,
         "marketData": "not_configured: NAV/price adapter required",
     })
     if legacy_exports:

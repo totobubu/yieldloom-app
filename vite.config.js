@@ -6,7 +6,9 @@ import { PrimeVueResolver } from 'unplugin-vue-components/resolvers';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    base: '/',
+    // Project Pages sites are served below /<repository>/; Vercel and local
+    // development remain at the domain root.
+    base: process.env.GITHUB_ACTIONS ? '/yieldloom-app/' : '/',
     plugins: [
         vue(),
         // AutoImport 플러그인은 잠시 제거하고, Components 플러그인만 사용합니다.

@@ -1,0 +1,44 @@
+name: Deploy Yieldloom Pages
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'data-v2/**'
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Build application
+        env:
+          VITE_DATA_RELEASE_BASE_URL: ${{ vars.VITE_DATA_RELEASE_BASE_URL }}
+        run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

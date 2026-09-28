@@ -4,6 +4,8 @@ import { useHead } from '@vueuse/head';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
+import { isDataReleaseConfigured, loadDataReleaseHistory, loadDataReleaseIndex } from '../../services/dataRelease';
+import { subtractDecimal } from '../../utils/decimalAmount';
 
 type EventRow = { id: number; provider_slug: string; ticker: string; distribution_per_share: string; previous_amount: string | null; average4: number | null; average12: number | null; declared_date: string; ex_date: string; payable_date: string | null; official_url: string };
 type Provider = { slug: string; displayName: string; eventCount: number };
@@ -17,11 +19,11 @@ const selected = ref<TickerRow | null>(null); const detailOpen = ref(false); con
 useHead({ title: '배당 이력 | 콘텐츠 스튜디오' });
 
 const rows = computed(() => index.value.tickers.filter((row) => (activeProvider.value === 'all' || row.providerSlug === activeProvider.value) && row.ticker.toLowerCase().includes(query.value.trim().toLowerCase())).sort((a, b) => b.latest.ex_date.localeCompare(a.latest.ex_date) || a.ticker.localeCompare(b.ticker)));
-const decimal = (value: string | number | null) => value === null || value === undefined ? '—' : `$${Number(value).toFixed(4).replace(/0+$/, '').replace(/\.$/, '')}`;
-const change = (event: EventRow) => event.previous_amount === null ? '—' : `${Number(event.distribution_per_share) - Number(event.previous_amount) >= 0 ? '+' : ''}${decimal(Number(event.distribution_per_share) - Number(event.previous_amount))}`;
+const decimal = (value: string | number | null) => value === null || value === undefined ? '—' : `$${typeof value === 'string' ? value : String(value)}`;
+const change = (event: EventRow) => { if (event.previous_amount === null) return '—'; const value = subtractDecimal(event.distribution_per_share, event.previous_amount); return `${value.startsWith('-') ? '' : '+'}$${value}`; };
 const chartPoints = computed(() => { const rows = [...(history.value?.history || [])].slice(0, 12).reverse(); const values = rows.map((row) => Number(row.distribution_per_share)); const max = Math.max(...values, 1); const min = Math.min(...values, 0); const span = max - min || 1; return rows.map((row, i) => `${rows.length === 1 ? 50 : (i / (rows.length - 1)) * 100},${100 - ((Number(row.distribution_per_share) - min) / span) * 82 - 9}`).join(' '); });
-async function openHistory(row: TickerRow) { selected.value = row; detailOpen.value = true; history.value = null; isHistoryLoading.value = true; try { const response = await fetch(`${row.historyUrl}?t=${Date.now()}`, { cache: 'no-store' }); if (!response.ok) throw new Error(`과거 이력을 읽지 못했습니다 (${response.status})`); history.value = await response.json(); } catch (e) { error.value = e instanceof Error ? e.message : '과거 이력을 불러오지 못했습니다.'; } finally { isHistoryLoading.value = false; } }
-onMounted(async () => { try { const response = await fetch(`/content-studio/distribution-index.json?t=${Date.now()}`, { cache: 'no-store' }); if (!response.ok) throw new Error(`배당 이력 색인을 읽지 못했습니다 (${response.status})`); index.value = await response.json(); } catch (e) { error.value = e instanceof Error ? e.message : '배당 이력을 불러오지 못했습니다.'; } finally { isLoading.value = false; } });
+async function openHistory(row: TickerRow) { selected.value = row; detailOpen.value = true; history.value = null; isHistoryLoading.value = true; try { history.value = isDataReleaseConfigured() ? await loadDataReleaseHistory(row.historyUrl) : await (await fetch(`${row.historyUrl}?t=${Date.now()}`, { cache: 'no-store' })).json(); } catch (e) { error.value = e instanceof Error ? e.message : '과거 이력을 불러오지 못했습니다.'; } finally { isHistoryLoading.value = false; } }
+onMounted(async () => { try { if (isDataReleaseConfigured()) index.value = await loadDataReleaseIndex(); else { const response = await fetch(`/content-studio/distribution-index.json?t=${Date.now()}`, { cache: 'no-store' }); if (!response.ok) throw new Error(`배당 이력 색인을 읽지 못했습니다 (${response.status})`); index.value = await response.json(); } } catch (e) { error.value = e instanceof Error ? e.message : '배당 이력을 불러오지 못했습니다.'; } finally { isLoading.value = false; } });
 </script>
 
 <template>

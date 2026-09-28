@@ -29,13 +29,15 @@ def event_id(event: dict[str, object]) -> str:
 
 
 def normalize(event: dict[str, object]) -> dict[str, object]:
-    required = ("provider", "ticker", "amount", "declaredDate", "exDate", "officialUrl", "sourceSha256", "verificationStatus")
+    required = ("provider", "ticker", "amount", "declaredDate", "exDate", "officialUrl", "sourceSha256", "verificationStatus", "collectionMethod")
     missing = [key for key in required if not event.get(key)]
     if missing:
         raise ValueError(f"candidate is missing {', '.join(missing)}")
     status = str(event["verificationStatus"])
     if status not in ALLOWED_STATUSES:
         raise ValueError(f"candidate {event['ticker']} is not releasable: {status}")
+    if event["collectionMethod"] != "official_fetch":
+        raise ValueError(f"candidate {event['ticker']} was not freshly collected from an official source")
     amount = str(event["amount"])
     return {
         "eventId": event_id(event),

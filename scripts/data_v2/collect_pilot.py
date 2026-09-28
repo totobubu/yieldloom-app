@@ -46,6 +46,7 @@ def main() -> int:
                         "officialUrl": event.official_url,
                         "sourceSha256": document.content_sha256,
                         "verificationStatus": event.verification_status,
+                        "collectionMethod": "official_fetch",
                     })
                     provider_event_counts[slug] += 1
             except NoDataError:

@@ -24,7 +24,8 @@ def sha256(path: Path) -> str:
 
 
 def event_id(event: dict[str, object]) -> str:
-    value = "|".join(str(event[key]) for key in ("provider", "ticker", "declaredDate", "exDate", "amount"))
+    # A correction must replace an event instead of becoming a second event.
+    value = "|".join(str(event[key]) for key in ("provider", "ticker", "declaredDate", "exDate"))
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:20]
 
 

@@ -37,6 +37,10 @@ dist-ssr
 /dist-verify/
 /dist-verify-v2/
 /provider-probe.local.json
+/data-v2/candidates/incremental-events.json
+/data-v2/review/incremental-report.json
+/data-v2/review/incremental-report.md
+/data-v2/review/collection-state.json
 *.local
 
 # Editor directories and files

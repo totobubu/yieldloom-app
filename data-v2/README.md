@@ -41,3 +41,21 @@ It verifies manifest hashes and rejects amounts whose raw/decimal strings are
 not exact decimal representations. A publisher should download only the current
 manifest plus changed files, create a new immutable snapshot, validate it, then
 atomically update the current-release pointer after human approval.
+
+## Incremental collection
+
+`Collect incremental data v2 candidate` runs at 08:30 Asia/Seoul on weekdays
+and can also be dispatched manually. It reads the small, versioned state at
+`yieldloom/v2/collection-state/current.json`, fetches official documents to
+compare their hashes, and parses only changed documents. Immutable state
+snapshots live below `collection-state/snapshots/<run-id>/`.
+
+The workflow uploads a complete candidate snapshot and an incremental review
+report. An unchanged document reuses its last approved-state events; a missing
+historical row is retained and marked for deletion review. A provider failure
+does not discard candidates from other providers.
+
+To publish a reviewed artifact, run `Publish approved data v2 release` on
+`main`, pass `candidate_run_id` from the collection workflow, and use release
+ID `candidate-<candidate_run_id>`. This validates the downloaded artifact and
+only then moves `releases/current.json`.

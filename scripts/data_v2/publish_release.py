@@ -23,8 +23,10 @@ def put(client, bucket: str, key: str, body: bytes, cache: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--release-id", required=True)
+    parser.add_argument("--data-dir", type=Path, default=ROOT / "data-v2")
     args = parser.parse_args()
-    manifest_path = ROOT / "data-v2" / "manifest.json"
+    data_dir = args.data_dir.resolve()
+    manifest_path = data_dir / "manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if manifest.get("releaseId") != args.release_id:
         raise ValueError("release-id does not match data-v2/manifest.json")
@@ -34,7 +36,7 @@ def main() -> int:
     release_prefix = f"{PREFIX}/snapshots/{args.release_id}"
     for entry in manifest["files"]:
         relative = Path(entry["path"])
-        body = (ROOT / "data-v2" / relative).read_bytes()
+        body = (data_dir / relative).read_bytes()
         put(client, bucket, f"{release_prefix}/{relative.as_posix()}", body, "public, max-age=31536000, immutable")
     put(client, bucket, f"{release_prefix}/manifest.json", manifest_path.read_bytes(), "public, max-age=31536000, immutable")
     pointer = {"schemaVersion": 1, "releaseId": args.release_id, "manifestKey": f"{release_prefix}/manifest.json"}

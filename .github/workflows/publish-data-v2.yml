@@ -7,8 +7,13 @@ on:
         description: Approved manifest releaseId to publish
         required: true
         type: string
+      candidate_run_id:
+        description: Reviewed incremental collection workflow run ID
+        required: false
+        type: string
 
 permissions:
+  actions: read
   contents: read
 
 concurrency:
@@ -30,11 +35,30 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-workflow.txt
       - run: pip install -r requirements-workflow.txt
-      - run: python scripts/data_v2/validate_snapshot.py
+      - name: Download reviewed candidate artifact
+        if: inputs.candidate_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: incremental-data-v2-review-${{ inputs.candidate_run_id }}
+          path: reviewed-candidate
+          run-id: ${{ inputs.candidate_run_id }}
+          github-token: ${{ github.token }}
+      - name: Validate approved snapshot
+        run: |
+          if [ -n "${{ inputs.candidate_run_id }}" ]; then
+            python scripts/data_v2/validate_snapshot.py --data-dir reviewed-candidate/candidate-release
+          else
+            python scripts/data_v2/validate_snapshot.py
+          fi
       - name: Publish immutable snapshot and current pointer
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-        run: python scripts/data_v2/publish_release.py --release-id "${{ inputs.release_id }}"
+        run: |
+          if [ -n "${{ inputs.candidate_run_id }}" ]; then
+            python scripts/data_v2/publish_release.py --release-id "${{ inputs.release_id }}" --data-dir reviewed-candidate/candidate-release
+          else
+            python scripts/data_v2/publish_release.py --release-id "${{ inputs.release_id }}"
+          fi

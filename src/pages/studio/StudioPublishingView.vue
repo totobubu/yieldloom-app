@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import Button from 'primevue/button';
+import { getAssetUrl } from '@/utils/dataUrl';
 
 type Target = { id: string; channel: 'toss-community' | 'blog'; label: string; textFile: string; imageFile: string };
 type Manifest = {
@@ -27,7 +28,7 @@ const queue = computed<QueueItem[]>(() => manifests.value.flatMap((manifest) =>
 async function load() {
     error.value = '';
     try {
-        const response = await fetch('/content-studio/content.json', { cache: 'no-store' });
+        const response = await fetch(getAssetUrl('content-studio/content.json'), { cache: 'no-store' });
         if (response.status === 404) { manifests.value = []; return; }
         if (!response.ok) throw new Error(`발행 패키지를 읽지 못했습니다 (${response.status})`);
         const payload = await response.json() as { bundles?: Bundle[] };
@@ -39,7 +40,7 @@ async function load() {
     }
 }
 
-function assetUrl(item: QueueItem, file: string) { return `/content-studio/renders/${item.eventId}/${file}`; }
+function assetUrl(item: QueueItem, file: string) { return getAssetUrl(`content-studio/renders/${item.eventId}/${file}`); }
 
 async function copyDraft(item: QueueItem) {
     notice.value = '';

@@ -6,6 +6,7 @@
     import { useCalendarData } from '@/composables/data/useCalendarData';
     import { useFilterState } from '@/composables/portfolio/useFilterState';
     import { getRouteParamsFromSymbol } from '@/utils/tickerRoute';
+    import { getAssetUrl } from '@/utils/dataUrl';
 
     import LoadingOverlay from '@/components/common/LoadingOverlay.vue';
     import CalendarGrid from '@/components/CalendarGrid.vue';
@@ -28,7 +29,7 @@
     const loadHolidays = async () => {
         const fileName = 'us_holidays.json';
         try {
-            const response = await fetch(`/holidays/${fileName}`);
+            const response = await fetch(getAssetUrl(`holidays/${fileName}`));
             if (!response.ok) throw new Error(`Failed to fetch ${fileName}`);
             holidays.value = await response.json();
         } catch (e) {

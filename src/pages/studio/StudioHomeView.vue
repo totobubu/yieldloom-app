@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { computed, onMounted, ref } from 'vue';
     import { useHead } from '@vueuse/head';
+    import { getAssetUrl } from '@/utils/dataUrl';
 
     type DashboardSnapshot = {
         generatedAt: string | null;
@@ -175,17 +176,17 @@
         try {
             const [response, recommendationResponse, priceResponse] =
                 await Promise.all([
-                    fetch(`/content-studio/dashboard.json?t=${Date.now()}`, {
+                    fetch(`${getAssetUrl('content-studio/dashboard.json')}?t=${Date.now()}`, {
                         cache: 'no-store',
                     }),
                     fetch(
-                        `/content-studio/recommendations.json?t=${Date.now()}`,
+                        `${getAssetUrl('content-studio/recommendations.json')}?t=${Date.now()}`,
                         {
                             cache: 'no-store',
                         }
                     ),
                     fetch(
-                        `/content-studio/price-quality.json?t=${Date.now()}`,
+                        `${getAssetUrl('content-studio/price-quality.json')}?t=${Date.now()}`,
                         { cache: 'no-store' }
                     ),
                 ]);

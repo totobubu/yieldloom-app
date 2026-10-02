@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import { computed, onMounted, ref } from 'vue';
     import { useRoute } from 'vue-router';
+    import { getAssetUrl } from '@/utils/dataUrl';
     const route = useRoute();
     const kind = computed(() => String(route.meta.kind || 'content'));
     const labels: Record<string, string> = { distributions: '배당 이력', content: '콘텐츠 Bundle', sources: '공급자 소스 상태', reconciliation: '기존 데이터 대조·승인 대기', renders: '산출물', archive: '발행 아카이브' };
@@ -9,7 +10,7 @@
         const values = Object.values(data.value); return (values.find(Array.isArray) as Record<string, unknown>[] | undefined) || [];
     });
     const columns = computed(() => Array.from(new Set(rows.value.flatMap(row => Object.keys(row)))).filter(key => !['files', 'manifest'].includes(key)).slice(0, 12));
-    async function load() { try { const r = await fetch(`/content-studio/${kind.value}.json`, { cache: 'no-store' }); if (!r.ok) throw new Error(`스냅샷 없음 (${r.status})`); data.value = await r.json(); } catch (e) { error.value = e instanceof Error ? e.message : '불러오기 실패'; } }
+    async function load() { try { const r = await fetch(getAssetUrl(`content-studio/${kind.value}.json`), { cache: 'no-store' }); if (!r.ok) throw new Error(`스냅샷 없음 (${r.status})`); data.value = await r.json(); } catch (e) { error.value = e instanceof Error ? e.message : '불러오기 실패'; } }
     onMounted(load);
 </script>
 <template>

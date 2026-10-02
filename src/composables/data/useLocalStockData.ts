@@ -1,5 +1,6 @@
 // src/composables/data/useLocalStockData.ts
 import { ref, type Ref } from 'vue';
+import { getAssetUrl } from '@/utils/dataUrl';
 
 /**
  * 로컬 주식 데이터 항목
@@ -45,7 +46,7 @@ export function useLocalStockData(): UseLocalStockDataReturn {
         for (const market of markets) {
             for (const char of chars) {
                 promises.push(
-                    fetch(`/nav/${market}/${char}.json`)
+                    fetch(getAssetUrl(`nav/${market}/${char}.json`))
                         .then((res) => {
                             if (!res.ok) return [];
                             return res.json() as Promise<LocalStockItem[]>;

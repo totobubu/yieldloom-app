@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import { getAssetUrl } from '@/utils/dataUrl';
 
 type Review = { id: number; ticker: string; ex_date: string; status: string; distribution_per_share: string; official_url: string; comparison_json: string; data_path: string | null };
 type AuditRow = { ticker: string; status: string; path: string | null; rowCount: number; actualRowCount: number; expectedRowCount: number; forecastRowCount: number; placeholderRowCount: number; malformedRowCount: number; duplicateDateCount: number; earliestDate: string | null; latestDate: string | null; officialEventCount: number; matchedOfficialEventCount: number; conflictCount: number; pendingComparisonCount: number };
@@ -39,7 +40,7 @@ async function copyReviewCommand(row: Review, kind: 'approve' | 'reject') {
   await navigator.clipboard.writeText(command);
   commandFeedback.value = `${row.ticker} ${kind === 'approve' ? '승인' : '거절'} 명령을 복사했습니다. 로컬에서 실행해야 반영됩니다.`;
 }
-async function load() { try { const response = await fetch('/content-studio/reconciliation.json', { cache: 'no-store' }); if (!response.ok) throw new Error(`스냅샷 없음 (${response.status})`); const payload = await response.json(); reviews.value = payload.reviews || []; summary.value = payload.summary || {}; auditRows.value = payload.legacyAudit?.tickers || []; auditSummary.value = payload.legacyAudit?.summary || {}; visibleLimit.value = 100; auditVisibleLimit.value = 100; } catch (reason) { error.value = reason instanceof Error ? reason.message : '불러오기 실패'; } }
+async function load() { try { const response = await fetch(getAssetUrl('content-studio/reconciliation.json'), { cache: 'no-store' }); if (!response.ok) throw new Error(`스냅샷 없음 (${response.status})`); const payload = await response.json(); reviews.value = payload.reviews || []; summary.value = payload.summary || {}; auditRows.value = payload.legacyAudit?.tickers || []; auditSummary.value = payload.legacyAudit?.summary || {}; visibleLimit.value = 100; auditVisibleLimit.value = 100; } catch (reason) { error.value = reason instanceof Error ? reason.message : '불러오기 실패'; } }
 onMounted(load);
 </script>
 <template>

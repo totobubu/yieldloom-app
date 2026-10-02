@@ -1,4 +1,5 @@
 import type { DistributionTicker } from '@/composables/studio/useDividendPortfolio';
+import { getAssetUrl } from '@/utils/dataUrl';
 
 export type PriceQuote = {
     close: number;
@@ -32,8 +33,8 @@ export const yieldPercent = (annual: number | null, quote?: PriceQuote) =>
 
 export async function loadMarketInputs() {
     const [distributionResponse, priceResponse] = await Promise.all([
-        fetch('/content-studio/distribution-index.json', { cache: 'no-store' }),
-        fetch('/content-studio/price-index.json', { cache: 'no-store' }),
+        fetch(getAssetUrl('content-studio/distribution-index.json'), { cache: 'no-store' }),
+        fetch(getAssetUrl('content-studio/price-index.json'), { cache: 'no-store' }),
     ]);
     if (!distributionResponse.ok)
         throw new Error('공식 배당 원장을 불러오지 못했습니다.');

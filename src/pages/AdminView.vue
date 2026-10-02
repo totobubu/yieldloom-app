@@ -13,6 +13,7 @@
     } from '@/composables/asset/useAssetAdmin';
     import { useToast } from 'primevue/usetoast';
     import { useRouter } from 'vue-router';
+    import { getAssetUrl } from '@/utils/dataUrl';
 
     import Card from 'primevue/card';
     import Button from 'primevue/button';
@@ -168,7 +169,7 @@
         for (const market of markets) {
             for (const char of chars) {
                 promises.push(
-                    fetch(`/nav/${market}/${char}.json`)
+                    fetch(getAssetUrl(`nav/${market}/${char}.json`))
                         .then((res) => {
                             if (!res.ok) return [];
                             return res.json();

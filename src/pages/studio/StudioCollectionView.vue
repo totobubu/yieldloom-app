@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { runRefresh, type RefreshInput, type RefreshStatus } from '@/services/contentRefresh';
+import { getAssetUrl } from '@/utils/dataUrl';
 
 type Provider = { slug: string; displayName: string; eventCount: number; catalogTickerCount: number; collectedTickerCount: number; lastAttemptStatus: string | null; lastAttemptMessage: string | null; lastFetchMode: string | null; lastAttemptAt: string | null };
 type ProviderFund = { provider_slug: string; ticker: string; official_url: string | null; source_type: string; coverage_status: 'collected' | 'catalog_only' };
@@ -61,8 +62,8 @@ const formatTimestamp = (value: string | null) => value ? new Intl.DateTimeForma
 
 async function loadIndex() {
     const [indexResponse, dashboardResponse] = await Promise.all([
-        fetch('/content-studio/distribution-index.json', { cache: 'no-store' }),
-        fetch('/content-studio/dashboard.json', { cache: 'no-store' }),
+        fetch(getAssetUrl('content-studio/distribution-index.json'), { cache: 'no-store' }),
+        fetch(getAssetUrl('content-studio/dashboard.json'), { cache: 'no-store' }),
     ]);
     if (!indexResponse.ok) throw new Error(`배당 색인을 읽지 못했습니다 (${indexResponse.status})`);
     if (!dashboardResponse.ok) throw new Error(`공급자 원장을 읽지 못했습니다 (${dashboardResponse.status})`);

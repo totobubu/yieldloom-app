@@ -8,12 +8,13 @@
         useAccounts,
     } from '@/composables/asset/useAssetFirestore';
     import { useToast } from 'primevue/usetoast';
+    import { getAssetUrl } from '@/utils/dataUrl';
 
     // 환율 데이터 로드
     let exchangeRates = null;
     const loadExchangeRates = async () => {
         if (!exchangeRates) {
-            const response = await fetch('/exchange-rates.json');
+            const response = await fetch(getAssetUrl('exchange-rates.json'));
             exchangeRates = await response.json();
         }
         return exchangeRates;

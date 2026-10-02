@@ -14,7 +14,7 @@ def main() -> int:
     args = parser.parse_args()
     report = json.loads(args.input.read_text(encoding="utf-8"))
     summary = report["summary"]
-    lines = ["# Incremental collection review", "", f"Run: `{report['runId']}`", "", "| New | Changed | Deletion suspected | Unchanged sources | Failed sources |", "| ---: | ---: | ---: | ---: | ---: |", f"| {summary['new']} | {summary['changed']} | {summary['suspectedRemoved']} | {summary['unchangedSources']} | {summary['failedSources']} |", ""]
+    lines = ["# Incremental collection review", "", f"Run: `{report['runId']}`", "", "| Selected sources | Skipped sources | New | Changed | Deletion suspected | Unchanged sources | Failed sources |", "| ---: | ---: | ---: | ---: | ---: | ---: |", f"| {summary.get('selectedSources', 0)} | {summary.get('skippedSources', 0)} | {summary['new']} | {summary['changed']} | {summary['suspectedRemoved']} | {summary['unchangedSources']} | {summary['failedSources']} |", ""]
     for provider, details in report["providers"].items():
         lines += [f"## {provider} — {details['status']}", ""]
         if details["errors"]:

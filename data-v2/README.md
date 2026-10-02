@@ -44,10 +44,20 @@ atomically update the current-release pointer after human approval.
 
 ## Incremental collection
 
-`Collect incremental data v2 candidate` runs at 08:30 Asia/Seoul on weekdays
-and can also be dispatched manually. It reads the small, versioned state at
-`yieldloom/v2/collection-state/current.json`, fetches official documents to
-compare their hashes, and parses only changed documents. Immutable state
+`Collect incremental data v2 candidate` has an hourly weekday dispatcher and
+can also be dispatched manually. The dispatcher reads the small, versioned
+state at `yieldloom/v2/collection-state/current.json` and fetches only the
+individual official URLs that are due. A source is identified by provider,
+ticker (or `*` for an official aggregate page), and URL. Its state retains the
+official publication timestamp when supplied by the issuer, the separate first
+observation timestamp, source hash, failure/backoff state, and the next
+expected announcement window.
+
+Three or more consistent official publication timestamps enable a one-hour
+window around the predicted UTC time; sources without reliable issuer timestamps
+remain in observation mode and receive one daily safety check. Provider catalog
+discovery is also limited to once per provider per UTC day. This keeps new
+sources discoverable without repeatedly crawling every provider. Immutable state
 snapshots live below `collection-state/snapshots/<run-id>/`.
 
 The workflow uploads a complete candidate snapshot and an incremental review

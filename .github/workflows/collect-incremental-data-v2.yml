@@ -2,8 +2,8 @@ name: Collect incremental data v2 candidate
 
 on:
   schedule:
-    # 08:30 Asia/Seoul, Monday through Friday. GitHub cron is UTC.
-    - cron: '30 23 * * 0-4'
+    # Hourly dispatcher. It fetches only source URLs currently due; GitHub cron is UTC.
+    - cron: '0 * * * 0-5'
   workflow_dispatch:
 
 permissions:

@@ -25,7 +25,7 @@ def _read(path: Path) -> dict:
 
 def assess(
     public_root: Path = Path("public/content-studio"),
-    workflow_path: Path = Path(".github/workflows/content-studio-refresh.yml"),
+    workflow_path: Path = Path(".github/workflows/content-studio-provider-refresh.yml"),
     *,
     expected_providers: set[str] | None = None,
 ) -> dict:
@@ -95,7 +95,7 @@ def assess(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Assess Content Studio release readiness")
     parser.add_argument("--public-root", type=Path, default=Path("public/content-studio"))
-    parser.add_argument("--workflow", type=Path, default=Path(".github/workflows/content-studio-refresh.yml"))
+    parser.add_argument("--workflow", type=Path, default=Path(".github/workflows/content-studio-provider-refresh.yml"))
     parser.add_argument("--report-only", action="store_true")
     args = parser.parse_args()
     report = assess(args.public_root, args.workflow)

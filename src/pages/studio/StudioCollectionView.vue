@@ -4,6 +4,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import { runRefresh, type RefreshInput, type RefreshStatus } from '@/services/contentRefresh';
 import { getAssetUrl } from '@/utils/dataUrl';
+import { providerCollectionSchedules, providerSchedule } from '@/constants/contentCollectionSchedule';
 
 type Provider = { slug: string; displayName: string; eventCount: number; catalogTickerCount: number; collectedTickerCount: number; lastAttemptStatus: string | null; lastAttemptMessage: string | null; lastFetchMode: string | null; lastAttemptAt: string | null };
 type ProviderFund = { provider_slug: string; ticker: string; official_url: string | null; source_type: string; coverage_status: 'collected' | 'catalog_only' };
@@ -42,6 +43,7 @@ const coverageGaps = computed(() => providerFunds.value.filter((item) => item.co
 const filteredCoverageGaps = computed(() => coverageGaps.value.filter((item) => item.ticker.includes(coverageQuery.value.trim().toUpperCase())));
 const visibleCoverageGaps = computed(() => filteredCoverageGaps.value.slice(0, 120));
 const selectedProvider = computed(() => providers.value.find((item) => item.slug === provider.value) || null);
+const selectedSchedule = computed(() => selectedProvider.value ? providerSchedule(selectedProvider.value.slug) : null);
 const singleRequestProviders = new Set(['defiance', 'ishares', 'rex', 'schwab', 'statestreet']);
 function estimatedRequests(item: Provider) {
     if (singleRequestProviders.has(item.slug)) return 1;
@@ -76,19 +78,21 @@ async function loadIndex() {
             indexedTickerCounts.set(item.providerSlug, (indexedTickerCounts.get(item.providerSlug) || 0) + 1);
         }
     }
-    providers.value = (dashboard.providers || [])
-        .filter((item) => item.enabled === 1)
-        .map((item) => ({
-            slug: item.slug,
-            displayName: item.display_name,
-            eventCount: item.event_count,
-            catalogTickerCount: item.catalog_ticker_count || indexedTickerCounts.get(item.slug) || 0,
-            collectedTickerCount: item.collected_ticker_count || indexedTickerCounts.get(item.slug) || 0,
-            lastAttemptStatus: item.last_attempt_status || null,
-            lastAttemptMessage: item.last_attempt_message || null,
-            lastFetchMode: item.last_fetch_mode || null,
-            lastAttemptAt: item.last_attempt_at || null,
-        }));
+    const dashboardProviders = new Map((dashboard.providers || []).map((item) => [item.slug, item]));
+    providers.value = Object.entries(providerCollectionSchedules).map(([slug, schedule]) => {
+        const item = dashboardProviders.get(slug);
+        return {
+            slug,
+            displayName: item?.display_name || schedule.displayName,
+            eventCount: item?.event_count || 0,
+            catalogTickerCount: item?.catalog_ticker_count || indexedTickerCounts.get(slug) || 0,
+            collectedTickerCount: item?.collected_ticker_count || indexedTickerCounts.get(slug) || 0,
+            lastAttemptStatus: item?.last_attempt_status || null,
+            lastAttemptMessage: item?.last_attempt_message || null,
+            lastFetchMode: item?.last_fetch_mode || null,
+            lastAttemptAt: item?.last_attempt_at || null,
+        };
+    });
     providerFunds.value = dashboard.providerFunds || [];
     knownTickers.value = new Set([
         ...(index.tickers || []).map((row) => row.ticker.toUpperCase()),
@@ -152,6 +156,7 @@ onMounted(() => loadIndex().catch((reason) => {
                     <strong>{{ selectedProvider.lastAttemptStatus || '수집 이력 없음' }}</strong>
                     <span>{{ selectedProvider.lastFetchMode || '방식 미확인' }} · {{ formatTimestamp(selectedProvider.lastAttemptAt) }}</span>
                     <small v-if="selectedProvider.lastAttemptMessage">{{ selectedProvider.lastAttemptMessage }}</small>
+                    <small v-if="selectedSchedule">자동 실행: {{ selectedSchedule.label }} (KST) · ROC: {{ selectedSchedule.rocCollection === 'official_column' ? '공식 원문 수집' : '공식 원문 미공시' }}</small>
                 </div>
                 <small>현재 어댑터 기준 최대 약 {{ selectedRequestEstimate }}회 공식 요청</small>
                 <Button :label="`운용사 수집 · 약 ${selectedRequestEstimate}회`" :disabled="!provider" :loading="isRunning"

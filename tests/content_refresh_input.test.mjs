@@ -17,6 +17,7 @@ test('rejects a calendar-invalid ex-date', async () => {
 });
 
 test('accepts newly registered official providers', async () => {
+    assert.equal(PROVIDERS.has('firsttrust'), true);
     assert.equal(PROVIDERS.has('ishares'), true);
     assert.equal(PROVIDERS.has('statestreet'), true);
     assert.equal(PROVIDERS.has('graniteshares'), true);
@@ -25,5 +26,9 @@ test('accepts newly registered official providers', async () => {
     assert.deepEqual(
         await validateRefreshInput({ scope: 'provider', provider: 'ishares' }),
         { scope: 'provider', provider: 'ishares' }
+    );
+    assert.deepEqual(
+        await validateRefreshInput({ scope: 'provider', provider: 'firsttrust' }),
+        { scope: 'provider', provider: 'firsttrust' }
     );
 });

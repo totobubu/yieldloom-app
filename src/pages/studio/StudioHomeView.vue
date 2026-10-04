@@ -24,6 +24,7 @@
             ticker: string;
             fund_name: string | null;
             distribution_per_share: string;
+            roc_percent?: string | null;
             currency: string;
             declared_date: string;
             ex_date: string;
@@ -286,6 +287,7 @@
                                 <th>공급자</th>
                                 <th>티커</th>
                                 <th>배당금</th>
+                                <th>ROC</th>
                                 <th>배당락일</th>
                                 <th>상태</th>
                                 <th>원문</th>
@@ -300,6 +302,7 @@
                                     <strong>{{ event.ticker }}</strong>
                                 </td>
                                 <td>${{ event.distribution_per_share }}</td>
+                                <td>{{ event.roc_percent === null || event.roc_percent === undefined ? '미공시' : `${event.roc_percent}%` }}</td>
                                 <td>{{ event.ex_date }}</td>
                                 <td>
                                     <span

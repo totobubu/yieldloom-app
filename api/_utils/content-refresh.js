@@ -2,10 +2,11 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-export const WORKFLOW_FILE = 'content-studio-refresh.yml';
+export const WORKFLOW_FILE = 'content-studio-provider-refresh.yml';
 export const PROVIDERS = new Set([
     'amplify',
     'defiance',
+    'firsttrust',
     'globalx',
     'graniteshares',
     'ishares',

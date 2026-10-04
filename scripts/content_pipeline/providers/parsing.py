@@ -12,6 +12,24 @@ DATE_FORMATS = (
     "%b %d, %Y",
 )
 
+ROC_COLUMN_LABELS = ("roc", "return of capital", "return of capital %")
+
+
+def is_roc_column(label: str) -> bool:
+    normalized = re.sub(r"\s+", " ", label).strip().lower()
+    return normalized in ROC_COLUMN_LABELS
+
+
+def extract_roc_percent(value: str, *, labeled: bool = False) -> str | None:
+    """Return only an issuer-published ROC percentage; never derive one."""
+    pattern = (
+        r"(?:roc|return\s+of\s+capital).*?([0-9]+(?:\.[0-9]+)?)\s*%"
+        if labeled
+        else r"^\s*([0-9]+(?:\.[0-9]+)?)\s*%?\s*$"
+    )
+    match = re.search(pattern, value, flags=re.IGNORECASE)
+    return match.group(1) if match else None
+
 
 def parse_date(value: str) -> str:
     cleaned = re.sub(r"\s+", " ", value.replace(" ", " ")).strip(" .")

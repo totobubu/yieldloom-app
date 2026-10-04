@@ -6,7 +6,7 @@ from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
 from .base import SourceCandidate
 from .http import OfficialHTTPAdapter
-from .parsing import parse_date
+from .parsing import extract_roc_percent, is_roc_column, parse_date
 
 
 class GraniteSharesAdapter(OfficialHTTPAdapter):
@@ -41,7 +41,7 @@ class GraniteSharesAdapter(OfficialHTTPAdapter):
         name_index = column_index(headers, "etf name")
         frequency_index = column_index(headers, "frequency")
         amount_index = column_index(headers, "distribution per share")
-        roc_index = column_index(headers, "roc")
+        roc_index = next((index for index, header in enumerate(headers) if is_roc_column(header)), None)
         ex_index = column_index(headers, "ex-date", "ex date")
         payable_index = column_index(headers, "payment date", "payable date")
 
@@ -49,13 +49,13 @@ class GraniteSharesAdapter(OfficialHTTPAdapter):
         for row in rows:
             required = (
                 ticker_index, name_index, frequency_index, amount_index,
-                roc_index, ex_index, payable_index,
+                ex_index, payable_index,
             )
             if max(required) >= len(row):
                 continue
             ticker = row[ticker_index].strip().upper()
             amount = re.search(r"\$?\s*([0-9]+(?:\.[0-9]+)?)", row[amount_index])
-            roc = re.search(r"([0-9]+(?:\.[0-9]+)?)\s*%?", row[roc_index])
+            roc = extract_roc_percent(row[roc_index]) if roc_index is not None and roc_index < len(row) else None
             if not re.fullmatch(r"[A-Z][A-Z0-9.-]{0,11}", ticker) or not amount:
                 continue
             ex_date = parse_date(row[ex_index])
@@ -71,7 +71,7 @@ class GraniteSharesAdapter(OfficialHTTPAdapter):
                     record_date=ex_date,
                     payable_date=parse_date(row[payable_index]),
                     frequency=row[frequency_index].strip().lower() or None,
-                    roc_percent=roc.group(1) if roc else None,
+                    roc_percent=roc,
                     official_url=document.source_url,
                     verification_status="needs_review",
                 )

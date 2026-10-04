@@ -6,7 +6,7 @@ from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
 from .base import SourceCandidate
 from .http import OfficialHTTPAdapter
-from .parsing import date_from_timestamp, extract_labeled_date, parse_date
+from .parsing import date_from_timestamp, extract_labeled_date, extract_roc_percent, is_roc_column, parse_date
 
 
 class YieldMaxAdapter(OfficialHTTPAdapter):
@@ -103,10 +103,7 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
         ex_index = column_index(headers, "ex date")
         record_index = column_index(headers, "record date")
         payable_index = column_index(headers, "payable date")
-        try:
-            roc_index = column_index(headers, "roc")
-        except ValueError:
-            roc_index = None
+        roc_index = next((index for index, header in enumerate(headers) if is_roc_column(header)), None)
 
         ticker = str(document.metadata.get("ticker") or "").upper()
         if not ticker:
@@ -128,9 +125,7 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
             amount_match = re.search(r"\$?([0-9]+(?:\.[0-9]+)?)", row[amount_index])
             if not amount_match:
                 continue
-            roc_match = None
-            if roc_index is not None and roc_index < len(row):
-                roc_match = re.search(r"([0-9]+(?:\.[0-9]+)?)", row[roc_index])
+            roc = extract_roc_percent(row[roc_index]) if roc_index is not None and roc_index < len(row) else None
             event = DistributionEvent(
                 provider_slug=self.slug,
                 ticker=ticker,
@@ -140,7 +135,7 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
                 record_date=parse_date(row[record_index]),
                 payable_date=parse_date(row[payable_index]),
                 frequency="weekly",
-                roc_percent=roc_match.group(1) if roc_match else None,
+                roc_percent=roc,
                 official_url=document.source_url,
                 verification_status="official",
             )

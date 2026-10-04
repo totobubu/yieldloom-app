@@ -6,7 +6,7 @@ from ..html_tables import parse_html
 from ..models import DistributionEvent, SourceDocument
 from .base import SourceCandidate
 from .http import OfficialHTTPAdapter
-from .parsing import date_from_timestamp, parse_date
+from .parsing import date_from_timestamp, extract_roc_percent, parse_date
 
 
 class DefianceAdapter(OfficialHTTPAdapter):
@@ -39,16 +39,12 @@ class DefianceAdapter(OfficialHTTPAdapter):
             fund_match = re.match(rf"{ticker}\s+(.*?)\s+Distribution Rate", card)
             amount_match = re.search(r"Latest Distribution\s+\$([0-9]+(?:\.[0-9]+)?)", card)
             payable_match = re.search(r"Payable On\s+(\d{1,2}/\d{1,2}/\d{4})", card)
-            roc_match = re.search(
-                r"Return of Capital As of\s+\d{1,2}/\d{1,2}/\d{4}\s+([0-9]+(?:\.[0-9]+)?)%",
-                card,
-            )
-            if not all((fund_match, amount_match, payable_match, roc_match)):
+            roc = extract_roc_percent(card, labeled=True)
+            if not all((fund_match, amount_match, payable_match, roc)):
                 continue
             fund_name = fund_match.group(1)
             amount = amount_match.group(1)
             payable = payable_match.group(1)
-            roc = roc_match.group(1)
             if float(amount) <= 0:
                 continue
             payable_date = parse_date(payable)

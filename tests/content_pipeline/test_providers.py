@@ -24,6 +24,7 @@ from scripts.content_pipeline.providers import (
     StateStreetAdapter,
     YieldMaxAdapter,
 )
+from scripts.content_pipeline.providers.parsing import extract_roc_percent, is_roc_column
 
 
 FIXTURES = Path(__file__).with_name("fixtures")
@@ -40,6 +41,12 @@ def document(provider: str, fixture: str, url: str, **kwargs) -> SourceDocument:
 
 
 class ProviderParserTest(unittest.TestCase):
+    def test_roc_extraction_accepts_only_explicit_official_roc_fields(self):
+        self.assertTrue(is_roc_column("Return of Capital %"))
+        self.assertEqual(extract_roc_percent("95.30%"), "95.30")
+        self.assertEqual(extract_roc_percent("Return of Capital As of 09/18/2026 69.22%", labeled=True), "69.22")
+        self.assertIsNone(extract_roc_percent("Distribution Rate 30.00%", labeled=True))
+
     def test_graniteshares_tables_share_a_stable_duplicate_identity(self):
         adapter = GraniteSharesAdapter()
         first = adapter.parse(document(

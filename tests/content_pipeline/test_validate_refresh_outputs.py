@@ -8,11 +8,17 @@ from scripts.content_pipeline.validate_refresh_outputs import validate
 
 class RefreshOutputValidationTest(unittest.TestCase):
     def test_workflow_keeps_feature_branch_state_and_push_isolated(self):
-        workflow = Path(".github/workflows/content-studio-refresh.yml").read_text(encoding="utf-8")
+        workflow = Path(".github/workflows/content-studio-provider-refresh.yml").read_text(encoding="utf-8")
         self.assertNotIn("git push origin HEAD:main", workflow)
         self.assertIn('git push origin "HEAD:${GITHUB_REF_NAME}"', workflow)
         self.assertIn("content-studio/state/branches/${safe_ref}.tar.gz", workflow)
-        self.assertIn("'statestreet'", workflow)
+        self.assertNotIn("canary", workflow)
+        for provider in (
+            "amplify", "defiance", "firsttrust", "globalx", "graniteshares",
+            "ishares", "jpmorgan", "kurv", "neos", "proshares", "rex",
+            "roundhill", "schwab", "statestreet", "yieldmax",
+        ):
+            self.assertIn(f"provider='{provider}'", workflow)
 
     def test_accepts_complete_approval_gated_snapshots(self):
         with tempfile.TemporaryDirectory() as directory:

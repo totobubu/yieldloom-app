@@ -17,6 +17,7 @@ const ProfileView = () => import('../pages/ProfileView.vue');
 const ContactView = () => import('../pages/ContactView.vue');
 const NotFound = () => import('../pages/NotFound.vue');
 const ThumbnailGenerator = () => import('../pages/ThumbnailGenerator.vue');
+const TickerThumbnailView = () => import('../pages/TickerThumbnailView.vue');
 const StudioHomeView = () => import('../pages/studio/StudioHomeView.vue');
 const StudioDataView = () => import('../pages/studio/StudioDataView.vue');
 const StudioDistributionsView = () => import('../pages/studio/StudioDistributionsView.vue');
@@ -48,6 +49,11 @@ const getCurrentUser = async () => {
 
 const contentStudioRoutes = [
     { path: '/', name: 'studio-home', component: StudioHomeView },
+    {
+        path: '/thumbnail/:ticker',
+        name: 'ticker-thumbnail',
+        component: TickerThumbnailView,
+    },
     { path: '/collect', name: 'studio-collect', component: StudioCollectionView },
     { path: '/distributions', name: 'studio-distributions', component: StudioDistributionsView },
     { path: '/compare', name: 'studio-compare', component: StudioCompareView },
@@ -112,6 +118,11 @@ const legacyPortfolioRoutes = [
         path: '/bookmark',
         name: 'bookmark-gallery',
         component: ThumbnailGenerator,
+    },
+    {
+        path: '/thumbnail/:ticker',
+        name: 'ticker-thumbnail',
+        component: TickerThumbnailView,
     },
     { path: '/contact', name: 'contact', component: ContactView },
     {

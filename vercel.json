@@ -1,5 +1,5 @@
 {
-    "devCommand": "vite --port $PORT",
+    "devCommand": "node -e \"const { spawn } = require('node:child_process'); spawn('npm', ['run', 'dev', '--', '--port', process.env.PORT], { stdio: 'inherit', shell: process.platform === 'win32' }).on('exit', (code) => process.exit(code ?? 1));\"",
     "functions": {
         "api/**/*.py": {
             "excludeFiles": "{scripts,public,data,tmp}/**"

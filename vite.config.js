@@ -1,11 +1,16 @@
 import { fileURLToPath, URL } from 'node:url';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from 'unplugin-vue-components/resolvers';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '');
+    const apiProxyTarget =
+        env.VITE_API_PROXY_TARGET || 'https://totobubu-github-io.vercel.app';
+
+    return {
     // Project Pages sites are served below /<repository>/; Vercel and local
     // development remain at the domain root.
     base: process.env.GITHUB_ACTIONS ? '/yieldloom-app/' : '/',
@@ -67,12 +72,12 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                // --- Vercel 배포 주소 확인 ---
-                target: 'https://totobubu-github-io.vercel.app',
+                target: apiProxyTarget,
                 changeOrigin: true,
                 // (선택) 더 복잡한 문제를 해결하기 위해 rewrite 추가
                 rewrite: (path) => path.replace(/^\/api/, '/api'),
             },
         },
     },
+    };
 });

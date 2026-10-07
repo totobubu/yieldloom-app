@@ -2,8 +2,8 @@
 import { computed, ref } from 'vue';
 const props = defineProps({ data: { type: Object, required: true } });
 const copied = ref(false);
-const usd = (v, n = 4) => Number.isFinite(Number(v)) ? `$${Number(v).toFixed(n).replace(/\.?(0+)$/, '')}` : '데이터 없음';
-const pct = (v) => Number.isFinite(Number(v)) ? `${Number(v).toFixed(2)}%` : null;
+const usd = (v, n = 4) => v != null && Number.isFinite(Number(v)) ? `$${Number(v).toFixed(n).replace(/\.?(0+)$/, '')}` : '데이터 없음';
+const pct = (v) => v != null && Number.isFinite(Number(v)) ? `${Number(v).toFixed(2)}%` : null;
 const text = computed(() => {
     const d = props.data;
     if (!d.hasDividend) return `${d.symbol} 최근 배당 정보\n\n최근 실제 배당 데이터를 찾지 못했습니다.`;

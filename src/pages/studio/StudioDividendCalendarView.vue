@@ -36,7 +36,7 @@
             : 'all'
     );
     const { holdings, watchlist } = useDividendPortfolio();
-    useHead({ title: '배당 캘린더 | DivGrow' });
+    useHead({ title: '배당 캘린더 | 토토부부 배당 스튜디오' });
 
     const scopes = [
         { label: '전체 공식 ETF', value: 'all' },

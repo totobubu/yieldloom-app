@@ -49,7 +49,7 @@ useHead({
             <p class="logo mb-2">
                 <img src="/src/assets/apple-touch-icon.png" alt="" style="width: 48px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" />
             </p>
-            <h1 class="h1 text-2xl font-bold mb-1">배당모아 Div Grow</h1>
+            <h1 class="h1 text-2xl font-bold mb-1">토토부부 배당 스튜디오</h1>
             <h2 class="text-color-secondary text-sm mb-3">해외 ETF 쇼핑 및 배당 포트폴리오 매니저</h2>
 
             <div class="search-container px-3 w-full mx-auto mb-4">

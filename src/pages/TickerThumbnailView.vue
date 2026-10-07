@@ -7,9 +7,9 @@ import Button from 'primevue/button';
 import MultiSelect from 'primevue/multiselect';
 import ProgressSpinner from 'primevue/progressspinner';
 import DividendSummaryThumbnail from '@/components/thumbnail/DividendSummaryThumbnail.vue';
-import DividendComparisonCard from '@/components/thumbnail/DividendComparisonCard.vue';
+import DividendComparisonThumbnail from '@/components/thumbnail/DividendComparisonThumbnail.vue';
 import TossCommunityCopy from '@/components/thumbnail/TossCommunityCopy.vue';
-import RivalComparisonCard from '@/components/thumbnail/RivalComparisonCard.vue';
+import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
 import { getAssetUrl, getDataUrl, getR2Url } from '@/utils/dataUrl';
 import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
 
@@ -22,6 +22,7 @@ const loading = ref(true);
 const error = ref('');
 const rivals = ref([]);
 const cache = new Map();
+const exporting = ref('');
 
 useHead({ title: computed(() => selectedInfo.value ? `${selectedInfo.value.symbol} 배당 썸네일` : '배당 썸네일'), meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
@@ -106,14 +107,30 @@ const load = async () => {
         rivals.value = requestedRivals;
     } catch (e) { error.value = '썸네일 데이터를 불러오지 못했습니다.'; console.error(e); } finally { loading.value = false; }
 };
-const download = async () => { const element = document.querySelector('[data-thumbnail-capture]'); if (!element) return; const canvas = await html2canvas(element, { useCORS: true, backgroundColor: null, scale: 1 }); const link = document.createElement('a'); link.download = `${thumbnailData.value.symbol.toLowerCase()}_dividend.png`; link.href = canvas.toDataURL('image/png'); link.click(); };
+const downloadArtwork = async (kind) => {
+    const element = document.querySelector(`[data-thumbnail-kind="${kind}"]`);
+    if (!element) return;
+    exporting.value = kind;
+    try {
+        const canvas = await html2canvas(element, { useCORS: true, backgroundColor: null, scale: 2 });
+        const link = document.createElement('a');
+        link.download = `${thumbnailData.value.symbol.toLowerCase()}_${kind}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } catch (e) {
+        error.value = 'PNG를 생성하지 못했습니다. 잠시 후 다시 시도하세요.';
+        console.error('Thumbnail export failed', e);
+    } finally {
+        exporting.value = '';
+    }
+};
 onMounted(load); watch(() => route.params.ticker, load);
 </script>
 
 <template>
-    <main class="ticker-thumbnail-page"><div v-if="loading" class="state"><ProgressSpinner /><p>썸네일 데이터를 불러오는 중…</p></div><div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p></div><template v-else><header class="page-header"><div><p>DIVIDEND THUMBNAIL</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div><Button label="PNG 다운로드" icon="pi pi-download" @click="download" /></header><section class="content-grid"><div><div data-thumbnail-capture><DividendSummaryThumbnail :data="thumbnailData" /></div><Button class="mobile-download" label="PNG 다운로드" icon="pi pi-download" @click="download" /></div><div class="side"><DividendComparisonCard :data="thumbnailData" /><TossCommunityCopy :data="thumbnailData" /></div></section><section v-if="selectedInfo.underlying" class="rivals"><header><div><p>같은 기초자산</p><h2>{{ selectedInfo.underlying }} 기반 ETF 라이벌 비교</h2></div><MultiSelect v-model="rivals" :options="rivalOptions" option-label="label" option-value="value" :max-selected-labels="3" :selection-limit="3" :disabled="!rivalOptions.length" placeholder="라이벌 1~3종 선택" class="rival-select" /></header><p v-if="!rivalOptions.length" class="hint">같은 기초자산으로 등록된 비교 후보가 없습니다.</p><p v-else-if="!rivals.length" class="hint">비교할 라이벌을 최대 3종 선택하세요.</p><RivalComparisonCard v-else :comparison="comparison" :focal-symbol="selectedInfo.symbol" :underlying="selectedInfo.underlying" /></section></template></main>
+    <main class="ticker-thumbnail-page"><div v-if="loading" class="state"><ProgressSpinner /><p>썸네일 데이터를 불러오는 중…</p></div><div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p></div><template v-else><header class="page-header"><div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div></header><section class="artwork-grid"><article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /></article><article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article><article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article></section><section class="content-grid"><TossCommunityCopy :data="thumbnailData" /><section v-if="selectedInfo.underlying" class="rivals"><header><div><p>같은 기초자산</p><h2>{{ selectedInfo.underlying }} 기반 ETF 라이벌 비교</h2></div><MultiSelect v-model="rivals" :options="rivalOptions" option-label="label" option-value="value" :max-selected-labels="3" :selection-limit="3" :disabled="!rivalOptions.length" placeholder="라이벌 1~3종 선택" class="rival-select" /></header><p v-if="!rivalOptions.length" class="hint">같은 기초자산으로 등록된 비교 후보가 없습니다.</p><p v-else-if="!rivals.length" class="hint">비교할 라이벌을 최대 3종 선택하세요.</p><p v-else-if="!comparison" class="hint">공통 가격 이력을 계산하는 중이거나 데이터가 부족합니다.</p></section></section></template></main>
 </template>
 
 <style scoped>
-.ticker-thumbnail-page{min-height:100vh;padding:32px;background:#edf2f8;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header,.rivals>header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:1280px;margin:0 auto 24px}.page-header p,.rivals header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1,.rivals h2{margin:5px 0 0}.content-grid{display:grid;grid-template-columns:minmax(0,720px) minmax(360px,1fr);gap:24px;max-width:1280px;margin:auto;align-items:start}.side{display:grid;gap:24px}.mobile-download{display:none}.rivals{max-width:1280px;margin:32px auto 0;padding:24px;border-radius:18px;background:#dfe8f2}.rivals>header{margin-bottom:18px}.rival-select{min-width:320px}.hint{margin:0;color:#526274}@media(max-width:1000px){.content-grid{grid-template-columns:1fr}.summary-thumbnail{max-width:100%;height:auto;aspect-ratio:1}.page-header>button{display:none}.mobile-download{display:inline-flex;margin-top:12px}.rivals>header{align-items:flex-start;flex-direction:column}.rival-select{width:100%;min-width:0}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}}
+.ticker-thumbnail-page{min-height:100vh;padding:32px;background:#edf2f8;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header,.rivals>header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:1520px;margin:0 auto 24px}.page-header p,.rivals header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1,.rivals h2{margin:5px 0 0}.artwork-grid{display:grid;grid-template-columns:repeat(3,minmax(320px,1fr));gap:24px;max-width:2240px;margin:auto}.artwork-panel{display:grid;gap:12px}.artwork-panel>button{justify-self:start}.content-grid{display:grid;grid-template-columns:minmax(0,520px) minmax(360px,1fr);gap:24px;max-width:1520px;margin:32px auto 0;align-items:start}.rivals{padding:24px;border-radius:18px;background:#dfe8f2}.rivals>header{margin-bottom:18px}.rival-select{min-width:320px}.hint{margin:0;color:#526274}@media(max-width:1500px){.artwork-grid{grid-template-columns:repeat(2,minmax(320px,720px))}}@media(max-width:1000px){.artwork-grid,.content-grid{grid-template-columns:1fr}.summary-thumbnail,.thumbnail-artboard{max-width:100%;height:auto;aspect-ratio:1}.rivals>header{align-items:flex-start;flex-direction:column}.rival-select{width:100%;min-width:0}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}}
 </style>

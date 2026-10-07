@@ -85,7 +85,7 @@
     };
 
     const chartTitle = computed(() => {
-        if (!props.result) return 'DivGrow Backtester';
+        if (!props.result) return '토토부부 배당 스튜디오 백테스터';
         const portfolioName = props.result.symbols.join(', ');
         const comparisonName =
             props.result.comparisonSymbol !== 'None'

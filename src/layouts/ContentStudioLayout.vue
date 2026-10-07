@@ -15,7 +15,7 @@
     <div class="content-studio-shell" :class="{ 'p-dark': isDarkMode }">
         <header class="content-studio-header">
             <router-link to="/" class="content-studio-brand">
-                DIVGROW CONTENT STUDIO
+                토토부부 배당 스튜디오
             </router-link>
             <nav aria-label="콘텐츠 스튜디오 관리">
                 <router-link to="/collect">수집</router-link>

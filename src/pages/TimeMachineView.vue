@@ -17,7 +17,7 @@ import TimeMachineResultCard from '@/components/time-machine/TimeMachineResultCa
 import { useBacktestData } from '@/composables/data/useBacktestData';
 import { useBacktestPortfolio } from '@/composables/portfolio/useBacktestPortfolio';
 
-useHead({ title: 'Time Machine | Div Grow' });
+useHead({ title: 'Time Machine | 토토부부 배당 스튜디오' });
 
 const route = useRoute();
 const router = useRouter();

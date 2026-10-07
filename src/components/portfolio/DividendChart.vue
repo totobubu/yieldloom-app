@@ -84,7 +84,7 @@ const chartOption = computed(() => {
         barWidth: '60%',
         data: props.monthlyData,
         itemStyle: {
-          color: '#4CAF50', // 초록색 계열 (DivGrow 컨셉)
+          color: '#4CAF50', // 초록색 계열 브랜드 컨셉
           borderRadius: [4, 4, 0, 0],
         },
       },

@@ -1,4 +1,4 @@
-# 배당 모아
+# 토토부부 배당 스튜디오
 
 https://blog.naver.com/upgrade-forever
 

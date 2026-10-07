@@ -35,7 +35,7 @@
     const error = ref('');
     const loading = ref(true);
     const { watchlist, toggleWatchlist } = useDividendPortfolio();
-    useHead({ title: 'ETF 비교 | DivGrow' });
+    useHead({ title: 'ETF 비교 | 토토부부 배당 스튜디오' });
     const explorerRows = computed(() =>
         rows.value
             .map((row) => ({

@@ -44,7 +44,7 @@
     const selectedAccount = ref<number | null>(null);
     const tossError = ref('');
     const tossLoading = ref(false);
-    useHead({ title: '내 배당 | DivGrow' });
+    useHead({ title: '내 배당 | 토토부부 배당 스튜디오' });
     const number = (value: number) =>
         `$${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
     const portfolio = computed(() =>

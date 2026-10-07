@@ -91,3 +91,9 @@ var/data-management/
 # Legacy generated market history is preserved outside this repository.
 # Yieldloom data releases use the small, versioned data-v2 manifest instead.
 /public/data/
+
+# Private brokerage statements used only for local, in-browser review.
+/TossStatements/
+
+.vercel
+.env*

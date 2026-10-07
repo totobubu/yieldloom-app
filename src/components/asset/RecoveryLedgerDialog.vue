@@ -8,10 +8,19 @@
         @update:visible="$emit('update:visible', $event)">
         <Message severity="info" :closable="false" class="mb-3">
             PDF는 이 브라우저에서만 분석됩니다. 원본 파일은 업로드·저장하지 않으며,
-            아래에서 승인한 원장 행만 계정에 저장됩니다.
+            비밀번호도 이 대화상자 메모리에만 유지됩니다. 아래에서 승인한 원장 행만 계정에 저장됩니다.
         </Message>
 
         <div class="flex flex-wrap gap-3 align-items-center mb-3">
+            <span class="field">
+                <label>PDF 비밀번호</label>
+                <input
+                    v-model="statementPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    class="p-inputtext p-component"
+                    placeholder="암호화 PDF에만 필요" />
+            </span>
             <input
                 ref="fileInput"
                 type="file"
@@ -106,6 +115,7 @@ const parsing = ref(false);
 const saving = ref(false);
 const loadingOrders = ref(false);
 const error = ref('');
+const statementPassword = ref('');
 const accountSeq = ref(null);
 const orderFrom = ref('');
 const { loadEntries, saveReviewedEntries } = useRecoveryLedger();
@@ -113,6 +123,7 @@ const { loadEntries, saveReviewedEntries } = useRecoveryLedger();
 const kindOptions = [
     ['buy', '매수'], ['sell', '매도'], ['dividend', '배당'], ['interest', '이자'],
     ['deposit', '입금'], ['withdrawal', '출금'], ['exchange', '환전'],
+    ['tax', '세금(별도)'], ['tax_refund', '세금 환급(별도)'], ['other', '기타'],
 ].map(([value, label]) => ({ value, label }));
 
 const allEntries = computed(() => [...storedEntries.value, ...candidates.value.map((entry) => ({ ...entry, reviewStatus: entry.reviewStatus === 'approved' ? 'applied' : entry.reviewStatus }))]);
@@ -120,7 +131,11 @@ const summary = computed(() => calculateRecoverySummary(allEntries.value));
 const fundingPreview = computed(() => buildFundingPreview(allEntries.value));
 
 watch(() => props.visible, async (isVisible) => {
-    if (isVisible && props.userId) storedEntries.value = await loadEntries(props.userId);
+    if (isVisible && props.userId) {
+        storedEntries.value = await loadEntries(props.userId);
+    } else if (!isVisible) {
+        statementPassword.value = '';
+    }
 });
 
 async function onFilesSelected(event) {
@@ -129,12 +144,21 @@ async function onFilesSelected(event) {
     parsing.value = true;
     error.value = '';
     try {
-        const parsed = (await Promise.all(files.map(parseTossStatementLocally))).flat();
+        const parsed = (await Promise.all(
+            files.map((file) => parseTossStatementLocally(file, statementPassword.value))
+        )).flat();
         const seen = new Set(candidates.value.map((entry) => entry.fingerprint));
-        candidates.value.push(...parsed.filter((entry) => !seen.has(entry.fingerprint)));
+        const unique = parsed.filter((entry) => {
+            if (seen.has(entry.fingerprint)) return false;
+            seen.add(entry.fingerprint);
+            return true;
+        });
+        candidates.value.push(...unique);
         if (!parsed.length) error.value = '인식 가능한 거래 행이 없습니다. 비식별 샘플 PDF 서식을 먼저 확인해주세요.';
     } catch (cause) {
-        error.value = `PDF를 브라우저에서 분석하지 못했습니다: ${cause.message || '알 수 없는 오류'}`;
+        error.value = cause?.name === 'PasswordException'
+            ? 'PDF 비밀번호를 확인한 뒤 다시 선택하세요.'
+            : `PDF를 브라우저에서 분석하지 못했습니다: ${cause.message || '알 수 없는 오류'}`;
     } finally {
         parsing.value = false;
         event.target.value = '';

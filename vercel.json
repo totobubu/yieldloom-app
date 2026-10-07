@@ -1,4 +1,5 @@
 {
+    "devCommand": "vite --port $PORT",
     "functions": {
         "api/**/*.py": {
             "excludeFiles": "{scripts,public,data,tmp}/**"

@@ -49,6 +49,7 @@
     import AssetTransactionDialog from '@/components/asset/AssetTransactionDialog.vue';
     import BrokerageTransactionDialog from '@/components/asset/BrokerageTransactionDialog.vue';
     import EnhancedTransactionDialog from '@/components/asset/EnhancedTransactionDialog.vue';
+    import RecoveryLedgerDialog from '@/components/asset/RecoveryLedgerDialog.vue';
 
     useHead({ title: '자산관리' });
 
@@ -107,6 +108,7 @@
     const showAssetTransactionDialog = ref(false);
     const showBrokerageTransactionDialog = ref(false);
     const showEnhancedTransactionDialog = ref(false);
+    const showRecoveryLedgerDialog = ref(false);
 
     // 거래내역 다이얼로그 열기
     const openAssetTransactionDialog = async (asset, accountId = null) => {
@@ -1607,6 +1609,11 @@
         showBrokerageUploadDialog.value = true;
     };
 
+    const openRecoveryLedgerDialog = () => {
+        if (!user.value) return;
+        showRecoveryLedgerDialog.value = true;
+    };
+
     // 계좌별 거래내역 보기
     const openAccountTransactions = async (
         accountId,
@@ -2349,6 +2356,12 @@
         <!-- 증권사 추가 버튼 (제거 또는 계좌 추가로 변경) -->
         <div v-if="selectedMember" class="flex justify-content-end gap-2 mb-3">
             <Button
+                label="원금 회수 원장"
+                icon="pi pi-chart-line"
+                severity="info"
+                outlined
+                @click="openRecoveryLedgerDialog" />
+            <Button
                 label="거래내역서 업로드"
                 icon="pi pi-upload"
                 severity="success"
@@ -2933,6 +2946,11 @@
             v-model:visible="showBrokerageUploadDialog"
             :memberId="selectedMember.id"
             @upload-complete="handleTransactionUploadComplete" />
+        <RecoveryLedgerDialog
+            v-if="user"
+            v-model:visible="showRecoveryLedgerDialog"
+            :userId="user.uid"
+            @saved="() => toast.add({ severity: 'success', summary: '원장 저장', detail: '검토 승인된 현금흐름만 저장했습니다.', life: 3000 })" />
 
         <!-- 종목명 매핑 다이얼로그 -->
         <StockMappingDialog

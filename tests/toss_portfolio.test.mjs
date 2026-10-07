@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
     fetchHoldings,
+    listClosedOrders,
     normalizeAccounts,
     normalizeHoldings,
 } from '../api/_utils/toss-portfolio.js';
@@ -89,6 +90,49 @@ test('uses server-side credentials and returns a normalized holdings snapshot', 
         assert.deepEqual(snapshot.holdings, [
             { ticker: 'TSLY', shares: 2, market: 'US', name: null },
         ]);
+    } finally {
+        if (previousId === undefined) delete process.env.TOSS_CLIENT_ID;
+        else process.env.TOSS_CLIENT_ID = previousId;
+        if (previousSecret === undefined) delete process.env.TOSS_CLIENT_SECRET;
+        else process.env.TOSS_CLIENT_SECRET = previousSecret;
+    }
+});
+
+test('returns only executed closed orders as review candidates', async () => {
+    const previousId = process.env.TOSS_CLIENT_ID;
+    const previousSecret = process.env.TOSS_CLIENT_SECRET;
+    process.env.TOSS_CLIENT_ID = 'test-client';
+    process.env.TOSS_CLIENT_SECRET = 'test-secret';
+    const fakeFetch = async (url) => {
+        if (url.endsWith('/oauth2/token')) {
+            return { ok: true, json: async () => ({ access_token: 'token' }) };
+        }
+        assert.match(url, /status=CLOSED/);
+        return {
+            ok: true,
+            json: async () => ({
+                result: {
+                    orders: [
+                        {
+                            orderId: 'filled', symbol: 'ABC', side: 'BUY', currency: 'USD',
+                            orderedAt: '2026-01-01T00:00:00+09:00',
+                            execution: { filledQuantity: '2', filledAmount: '20', averageFilledPrice: '10', commission: '0.1', tax: '0', filledAt: '2026-01-01T00:01:00+09:00' },
+                        },
+                        {
+                            orderId: 'cancelled', symbol: 'ABC', side: 'SELL', currency: 'USD',
+                            orderedAt: '2026-01-01T00:00:00+09:00', execution: { filledQuantity: '0' },
+                        },
+                    ],
+                    nextCursor: null,
+                    hasNext: false,
+                },
+            }),
+        };
+    };
+    try {
+        const result = await listClosedOrders(1, {}, fakeFetch);
+        assert.deepEqual(result.orders.map((order) => order.orderId), ['filled']);
+        assert.equal(result.orders[0].reviewStatus, 'needs_review');
     } finally {
         if (previousId === undefined) delete process.env.TOSS_CLIENT_ID;
         else process.env.TOSS_CLIENT_ID = previousId;

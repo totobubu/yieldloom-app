@@ -134,3 +134,46 @@ export async function fetchHoldings(accountSeq, fetchImpl = fetch) {
     );
     return normalizeHoldings(payload, accountSeq);
 }
+
+/** Read-only closed-order history. Callers must still review it before storage. */
+export async function listClosedOrders(accountSeq, options = {}, fetchImpl = fetch) {
+    if (!Number.isSafeInteger(accountSeq) || accountSeq <= 0) {
+        throw new TossPortfolioError('유효한 Toss 계좌를 선택하세요.', 400);
+    }
+    const query = new URLSearchParams({
+        status: 'CLOSED',
+        limit: String(Math.min(Math.max(Number(options.limit) || 100, 1), 100)),
+    });
+    ['from', 'to', 'cursor', 'symbol'].forEach((key) => {
+        if (options[key]) query.set(key, String(options[key]));
+    });
+    const token = await issueAccessToken(fetchImpl);
+    const payload = await providerFetch(
+        `/api/v1/orders?${query.toString()}`,
+        { headers: apiHeaders(token, accountSeq) },
+        fetchImpl
+    );
+    const result = payload?.result || {};
+    const orders = Array.isArray(result.orders) ? result.orders : [];
+    return {
+        orders: orders
+            .filter((order) => Number(order?.execution?.filledQuantity || 0) > 0)
+            .map((order) => ({
+                orderId: String(order.orderId),
+                occurredAt: order.execution?.filledAt || order.orderedAt,
+                kind: order.side === 'SELL' ? 'sell' : 'buy',
+                rawType: order.side === 'SELL' ? 'API 체결 매도' : 'API 체결 매수',
+                symbol: String(order.symbol || ''),
+                currency: String(order.currency || 'KRW'),
+                quantity: Number(order.execution?.filledQuantity || 0),
+                nativeAmount: Number(order.execution?.filledAmount || 0),
+                nativePrice: Number(order.execution?.averageFilledPrice || 0),
+                nativeFee: Number(order.execution?.commission || 0),
+                nativeTax: Number(order.execution?.tax || 0),
+                source: 'toss-open-api',
+                reviewStatus: 'needs_review',
+            })),
+        nextCursor: result.nextCursor || null,
+        hasNext: Boolean(result.hasNext),
+    };
+}

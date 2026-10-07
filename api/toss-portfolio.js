@@ -1,5 +1,6 @@
 import {
     fetchHoldings,
+    listClosedOrders,
     listAccounts,
     TossPortfolioError,
 } from './_utils/toss-portfolio.js';
@@ -14,6 +15,18 @@ export default async function handler(req, res) {
         if (action === 'holdings') {
             const accountSeq = Number(req.query.accountSeq);
             return res.status(200).json(await fetchHoldings(accountSeq));
+        }
+        if (action === 'orders') {
+            const accountSeq = Number(req.query.accountSeq);
+            return res.status(200).json(
+                await listClosedOrders(accountSeq, {
+                    from: req.query.from,
+                    to: req.query.to,
+                    cursor: req.query.cursor,
+                    symbol: req.query.symbol,
+                    limit: req.query.limit,
+                })
+            );
         }
         return res.status(400).json({ error: 'Unsupported action' });
     } catch (error) {

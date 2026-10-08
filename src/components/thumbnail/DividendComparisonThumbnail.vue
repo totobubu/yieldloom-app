@@ -1,32 +1,20 @@
 <script setup>
 import { computed } from 'vue';
-
 const props = defineProps({ data: { type: Object, required: true } });
 const hasPrevious = computed(() => Number(props.data.previousDividendAmount) > 0);
 const difference = computed(() => Number(props.data.dividendDifference ?? 0));
-const tone = computed(() => !hasPrevious.value || difference.value === 0 ? 'neutral' : difference.value > 0 ? 'up' : 'down');
-const usd = (value, digits = 6) => value != null && Number.isFinite(Number(value)) ? `$${Number(value).toFixed(digits).replace(/\.?(0+)$/, '')}` : '데이터 없음';
-const pct = (value) => value != null && Number.isFinite(Number(value)) ? `${Number(value).toFixed(2)}%` : '데이터 없음';
-const date = (value) => value ? String(value).replaceAll('-', '.') : '데이터 없음';
-const rows = computed(() => [
-    ['배당락일', date(props.data.previousExDate), date(props.data.exDate)],
-    ['배당락일 종가', usd(props.data.previousExDividendClose, 2), usd(props.data.exDividendClose, 2)],
-    ['세전 배당금', usd(props.data.previousDividendAmount), usd(props.data.currentDividendAmount)],
-    ['세후 배당금 (15%)', usd(props.data.previousAfterTaxDividendAmount), usd(props.data.afterTaxDividendAmount)],
-    ['세전 배당률', pct(props.data.previousExDividendYield), pct(props.data.exDividendYield)],
-    ['세후 배당률', pct(props.data.previousAfterTaxDividendYield), pct(props.data.afterTaxDividendYield)],
-]);
+const tone = computed(() => difference.value > 0 ? 'up' : difference.value < 0 ? 'down' : 'flat');
+const usd = (value, digits = 6) => value != null && Number.isFinite(Number(value)) ? `$${Number(value).toFixed(digits).replace(/\.?(0+)$/, '')}` : '—';
+const pct = (value) => value != null && Number.isFinite(Number(value)) ? `${Number(value).toFixed(2)}%` : '—';
+const date = (value) => value ? String(value).replace(/-/g, '.') : '—';
+const rows = computed(() => [['배당락일', date(props.data.previousExDate), date(props.data.exDate)], ['세전 배당금', usd(props.data.previousDividendAmount), usd(props.data.currentDividendAmount)], ['세후 배당금', usd(props.data.previousAfterTaxDividendAmount), usd(props.data.afterTaxDividendAmount)], ['배당락일 종가', usd(props.data.previousExDividendClose, 2), usd(props.data.exDividendClose, 2)], ['세전 배당률', pct(props.data.previousExDividendYield), pct(props.data.exDividendYield)], ['세후 배당률', pct(props.data.previousAfterTaxDividendYield), pct(props.data.afterTaxDividendYield)]]);
 </script>
-
 <template>
-    <section class="thumbnail-artboard comparison-artboard" :class="tone" data-thumbnail-kind="comparison">
-        <header><div><p>DIVIDEND COMPARISON</p><h1>{{ data.symbol }}</h1></div><time>{{ date(data.exDate) }}</time></header>
-        <template v-if="data.hasDividend"><section class="headline"><span>직전 배당 대비</span><strong>{{ hasPrevious ? `${difference >= 0 ? '+' : ''}${usd(difference)}` : '비교 불가' }}</strong><b v-if="hasPrevious">{{ data.dividendChangePercent >= 0 ? '+' : '' }}{{ pct(data.dividendChangePercent) }}</b></section><div class="table"><div class="head"><span>항목</span><b>직전</b><b>이번</b></div><div v-for="row in rows" :key="row[0]"><span>{{ row[0] }}</span><b>{{ row[1] }}</b><strong>{{ row[2] }}</strong></div></div></template>
-        <p v-else class="unavailable">최근 실제 배당 데이터를 찾지 못했습니다.</p>
-        <footer>주당 USD 기준 · 세후 금액은 15% 원천징수 단순 가정</footer>
+    <section class="comparison-card" :class="tone" data-thumbnail-kind="comparison">
+        <header><div><p>DIVIDEND COMPARISON</p><h1>{{ data.symbol }}</h1></div><div><small>배당락일</small><b>{{ date(data.exDate) }}</b></div></header>
+        <template v-if="data.hasDividend"><section class="kpis"><article><p>세전 배당금 변화율</p><strong>{{ hasPrevious ? `${difference >= 0 ? '+' : ''}${pct(data.dividendChangePercent)}` : '비교 불가' }}</strong><small>직전 확정 회차 대비</small></article><article><p>이번 세후 배당금</p><strong>{{ usd(data.afterTaxDividendAmount) }}</strong><small>15% 원천징수 가정</small></article></section><section class="table"><div class="head"><span>항목</span><b>직전</b><b>이번</b></div><div v-for="row in rows" :key="row[0]"><span>{{ row[0] }}</span><b>{{ row[1] }}</b><strong>{{ row[2] }}</strong></div></section></template><p v-else class="unavailable">최근 실제 배당 데이터를 찾지 못했습니다.</p><footer>주당 USD 기준 · 수익률은 해당 1회 배당금의 배당락일 종가 대비</footer>
     </section>
 </template>
-
 <style scoped>
-.thumbnail-artboard{box-sizing:border-box;width:720px;height:720px;padding:48px;display:flex;flex-direction:column;border-radius:2px;background:#111c2d;color:#f8fafc;font-family:Arial,sans-serif}.thumbnail-artboard header{display:flex;justify-content:space-between;align-items:flex-start}.thumbnail-artboard header p{margin:0;color:#90bfff;font-size:15px;font-weight:800;letter-spacing:.13em}.thumbnail-artboard h1{margin:10px 0 0;font-size:70px;line-height:1}.thumbnail-artboard time{font-weight:700;font-size:19px}.headline{display:grid;grid-template-columns:1fr auto;gap:8px;margin:46px 0 28px;padding:24px;border-radius:16px;background:#ffffff12}.headline span{font-size:20px}.headline strong{font-size:37px}.headline b{grid-column:1 / -1;font-size:22px}.up .headline b{color:#8cff94}.down .headline b{color:#ff9d9d}.table{border-top:1px solid #ffffff36}.table>div{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:12px;padding:17px 0;border-bottom:1px solid #ffffff24;font-size:17px}.table .head{font-size:14px;color:#bdcadd}.table strong{color:#94c5ff}.unavailable{margin:auto 0;font-size:28px;text-align:center}footer{margin-top:auto;padding-top:22px;color:#bdcadd;font-size:14px;text-align:center}
+.comparison-card{box-sizing:border-box;width:720px;height:720px;padding:48px;background:radial-gradient(circle at 100% 0,#d1fae577,transparent 30%),#fff;color:#0f172a;font-family:Arial,sans-serif;display:flex;flex-direction:column}.comparison-card>header{display:flex;justify-content:space-between;align-items:start}.comparison-card>header p{margin:0;color:#059669;font-size:15px;font-weight:800;letter-spacing:.14em}.comparison-card h1{margin:9px 0 0;font-size:64px;line-height:1}.comparison-card>header>div:last-child{padding:10px 13px;border:1px solid #e2e8f0;border-radius:12px;background:#ffffffcc;text-align:right}.comparison-card>header small{display:block;color:#94a3b8}.comparison-card>header b{font-family:monospace;font-size:17px}.kpis{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:36px 0 22px}.kpis article{padding:21px;border:1px solid #e2e8f0;border-radius:18px;background:#f8fafc}.kpis article:first-child{background:#ecfdf5;border-color:#a7f3d0}.down .kpis article:first-child{background:#fef2f2;border-color:#fecaca}.kpis p{margin:0;color:#64748b;font-size:15px;font-weight:700}.kpis strong{display:block;margin:11px 0 5px;color:#047857;font-size:35px}.down .kpis article:first-child strong{color:#dc2626}.kpis small{color:#94a3b8}.table{overflow:hidden;border:1px solid #e2e8f0;border-radius:18px;background:#fff}.table>div{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:10px;padding:18px;border-bottom:1px solid #e2e8f0;font-size:16px}.table>div:last-child{border:0}.table .head{background:#f8fafc;color:#64748b;font-size:13px;font-weight:800}.table strong{color:#047857}.unavailable{margin:auto;text-align:center;font-size:25px}footer{margin-top:auto;padding-top:18px;color:#94a3b8;font-size:12px;text-align:center}
 </style>

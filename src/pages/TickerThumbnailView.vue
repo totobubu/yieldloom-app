@@ -26,6 +26,7 @@ const rivals = ref([]);
 const cache = new Map();
 const exporting = ref('');
 const schedule = ref(null);
+const artworkSize = 720;
 
 useHead({ title: computed(() => selectedInfo.value ? `${selectedInfo.value.symbol} 배당 썸네일` : '배당 썸네일'), meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
@@ -116,7 +117,13 @@ const downloadArtwork = async (kind) => {
     if (!element) return;
     exporting.value = kind;
     try {
-        const canvas = await html2canvas(element, { useCORS: true, backgroundColor: null, scale: 2 });
+        const canvas = await html2canvas(element, {
+            useCORS: true,
+            backgroundColor: null,
+            scale: 1,
+            width: artworkSize,
+            height: artworkSize,
+        });
         const link = document.createElement('a');
         link.download = `${thumbnailData.value.symbol.toLowerCase()}_${kind}.png`;
         link.href = canvas.toDataURL('image/png');

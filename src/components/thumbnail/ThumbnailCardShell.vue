@@ -59,7 +59,7 @@ withDefaults(defineProps<{
 .thumbnail-card-title-group h1 {
 	margin: 0;
 	color: #0f172a;
-	font-family: Arial, sans-serif;
+
 	font-size: 32px;
 	font-weight: 900;
 	letter-spacing: -.04em;
@@ -74,7 +74,7 @@ withDefaults(defineProps<{
 	border-radius: 6px;
 	background: #f8fafc;
 	color: #475569;
-	font-family: Arial, sans-serif;
+
 	font-size: 12px;
 	font-weight: 700;
 	line-height: 1;
@@ -93,7 +93,7 @@ withDefaults(defineProps<{
 
 .thumbnail-card-date small {
 	color: #94a3b8;
-	font-family: Arial, sans-serif;
+
 	font-size: 11px;
 	font-weight: 700;
 	line-height: 1
@@ -105,7 +105,7 @@ withDefaults(defineProps<{
 	border-radius: 8px;
 	background: #ffffffcc;
 	color: #0f172a;
-	font-family: monospace;
+
 	font-size: 16px;
 	line-height: 1
 }

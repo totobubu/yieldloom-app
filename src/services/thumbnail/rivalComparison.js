@@ -23,6 +23,7 @@ const buildSeries = (ticker) => {
     return {
         symbol: ticker.symbol,
         frequency: ticker.tickerInfo?.frequency,
+        ipoDate: ticker.tickerInfo?.ipoDate,
         prices: new Map(rows.map((row) => [row.date, Number(row.close)])),
         dividends: new Map(
             rows
@@ -78,6 +79,7 @@ const calculateMetric = (series, startDate, endDate) => {
     return {
         symbol: series.symbol,
         frequency: series.frequency,
+        ipoDate: series.ipoDate,
         startPrice,
         endPrice,
         priceReturn: endPrice / startPrice - 1,

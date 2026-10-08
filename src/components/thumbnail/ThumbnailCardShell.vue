@@ -1,123 +1,63 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
-	title: string;
-	badge?: string;
-	dateLabel?: string;
-	dateValue?: string;
-}>(), {
-	badge: '',
-	dateLabel: '기준일',
-	dateValue: '',
-});
+withDefaults(
+	defineProps<{
+		title: string;
+		badge?: string;
+		contextLabel?: string;
+		dateLabel?: string;
+		dateValue?: string;
+	}>(),
+	{
+		badge: '',
+		contextLabel: '배당 카드',
+		dateLabel: '기준일',
+		dateValue: '',
+	}
+);
 </script>
+
+<link
+	href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=Pretendard:wght@400;500;600;700;800&amp;display=swap"
+	rel="stylesheet">
+</link>
 
 <template>
 	<section class="thumbnail-card-shell">
 		<header class="thumbnail-card-header">
-			<div class="thumbnail-card-title-group">
-				<h1>{{ title }}</h1>
-				<span v-if="badge" class="thumbnail-card-badge">{{ badge }}</span>
-			</div>
-			<div v-if="dateValue" class="thumbnail-card-date">
-				<small>{{ dateLabel }}</small>
-				<b>{{ dateValue }}</b>
-			</div>
+			<slot name="header">
+				<div class="thumbnail-card-title-stack">
+					<div class="thumbnail-card-context">
+						<span>TOTOBUBU DIVIDEND SCHEDULE</span>
+						<i aria-hidden="true">•</i>
+						<span class="thumbnail-card-context-label">{{
+							contextLabel
+						}}</span>
+					</div>
+					<div class="thumbnail-card-title-group">
+						<h1>{{ title }}</h1>
+						<span v-if="badge" class="thumbnail-card-badge">{{
+							badge
+						}}</span>
+					</div>
+				</div>
+				<div v-if="dateValue" class="thumbnail-card-date">
+					<small>{{ dateLabel }}</small>
+					<b>{{ dateValue }}</b>
+				</div>
+			</slot>
 		</header>
 		<main class="thumbnail-card-content">
 			<slot />
+			<slot name="hero" />
+			<slot name="content01" />
+			<slot name="content02" />
+			<slot name="content03" />
 		</main>
 		<footer class="thumbnail-card-footer">
-			<slot name="footer" />
+			<span class="thumbnail-card-footer-note">
+				<slot name="footer" />
+			</span>
+			<span class="thumbnail-card-footer-brand">토또부부의 배당 스튜디오</span>
 		</footer>
 	</section>
 </template>
-
-<style scoped>
-.thumbnail-card-shell {
-	box-sizing: border-box;
-	width: 720px;
-	height: 720px;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden
-}
-
-.thumbnail-card-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	flex: 0 0 auto
-}
-
-.thumbnail-card-title-group {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	min-width: 0
-}
-
-.thumbnail-card-title-group h1 {
-	margin: 0;
-	color: #0f172a;
-
-	font-size: 32px;
-	font-weight: 900;
-	letter-spacing: -.04em;
-	line-height: 1
-}
-
-.thumbnail-card-badge {
-	max-width: 270px;
-	overflow: hidden;
-	padding: 5px 10px;
-	border: 1px solid #e2e8f0;
-	border-radius: 6px;
-	background: #f8fafc;
-	color: #475569;
-
-	font-size: 12px;
-	font-weight: 700;
-	line-height: 1;
-	text-overflow: ellipsis;
-	white-space: nowrap
-}
-
-.thumbnail-card-date {
-	display: flex;
-	flex: 0 0 auto;
-	flex-direction: column;
-	gap: 5px;
-	align-items: flex-end;
-	text-align: right
-}
-
-.thumbnail-card-date small {
-	color: #94a3b8;
-
-	font-size: 11px;
-	font-weight: 700;
-	line-height: 1
-}
-
-.thumbnail-card-date b {
-	padding: 7px 11px;
-	border: 1px solid #e2e8f0;
-	border-radius: 8px;
-	background: #ffffffcc;
-	color: #0f172a;
-
-	font-size: 16px;
-	line-height: 1
-}
-
-.thumbnail-card-footer {
-	flex: 0 0 auto
-}
-
-.thumbnail-card-content {
-	min-height: 0;
-	flex: 1;
-	display: flex;
-	flex-direction: column
-}
-</style>

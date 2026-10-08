@@ -24,5 +24,6 @@
 @use 'pages/stock';
 @use 'pages/backtester';
 @use 'pages/thumbnail-generator';
+@use '../components/thumbnail/thumbnailcard';
 
 @use 'abstracts/theme';

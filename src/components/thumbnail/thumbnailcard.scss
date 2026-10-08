@@ -1,0 +1,178 @@
+// Shared 720px thumbnail-card frame. Individual cards keep only their
+// content-specific artwork rules in their own SFC styles.
+.thumbnail-card-shell {
+	box-sizing: border-box;
+	width: 720px;
+	height: 720px;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	gap: 12px;
+	padding: 20px;
+	background: #fff;
+	font-family:
+		'Pretendard',
+		'Apple SD Gothic Neo',
+		'Malgun Gothic',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		'Helvetica Neue',
+		Arial,
+		sans-serif;
+}
+
+.thumbnail-card-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex: 0 0 auto;
+	margin-bottom: 12px;
+}
+
+.thumbnail-card-title-stack {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 0;
+	align-items: start;
+}
+
+.thumbnail-card-context {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #2563eb;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.16em;
+	line-height: 1;
+	 i {
+	color: #cbd5e1;
+	font-size: 10px;
+	font-style: normal;
+}
+&-label {
+	padding: 3px 6px;
+	border: 1px solid #e2e8f0;
+	border-radius: 4px;
+	background: #f8fafc;
+	color: #64748b;
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: 0;
+}
+
+}
+
+
+.thumbnail-card-title-group {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+	h1 {
+		margin: 0;
+		color: #0f172a;
+		font-family:
+			'Pretendard',
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			'Helvetica Neue',
+			Arial,
+			sans-serif;
+		font-size: 38px;
+		font-weight: 800;
+		letter-spacing: -0.04em;
+		line-height: 1;
+}
+
+}
+
+.thumbnail-card-badge {
+	max-width: 270px;
+	overflow: hidden;
+	padding: 5px 10px;
+	border: 1px solid #e2e8f0;
+	border-radius: 6px;
+	background: #f8fafc;
+	color: #475569;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.thumbnail-card-date {
+	display: flex;
+	flex: 0 0 auto;
+	flex-direction: column;
+	gap: 5px;
+	align-items: flex-end;
+	text-align: right;
+	 small {
+	color: #94a3b8;
+	font-size: 11px;
+	font-weight: 500;
+	letter-spacing: 0.08em;
+	line-height: 1;
+}
+ b {
+	padding: 7px 11px;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	background: #ffffffcc;
+	color: #0f172a;
+	font-family: 'Plus Jakarta Sans', 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+	font-size: 15px;
+	line-height: 1;
+}
+
+}
+
+.thumbnail-card-footer {
+	display: flex;
+	align-items: center;
+	text-align: left;
+	justify-content: space-between;
+	gap: 12px;
+	flex: 0 0 auto;
+	color: #94a3b8;
+	font-size: 13px;
+	line-height: 1.25;
+	&-note {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+
+		&::before {
+	content: 'ⓘ';
+	flex: 0 0 auto;
+	font-size: 14px;
+}
+	}
+	&-brand {
+	flex: 0 0 auto;
+	color: #94a3b8;
+	font-size: 10.5px;
+	font-weight: 600;
+	letter-spacing: 0;
+	white-space: nowrap;
+}
+}
+
+.thumbnail-card-content {
+	min-height: 0;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}

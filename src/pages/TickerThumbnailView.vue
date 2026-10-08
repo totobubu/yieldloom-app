@@ -97,7 +97,7 @@ const fetchJson = async (path) => {
 const loadTicker = async (info) => {
     if (cache.has(info.symbol)) return cache.get(info.symbol);
     const loaded = await fetchJson(info.dataPaths[0]);
-    const result = { symbol: info.symbol, tickerInfo: loaded.tickerInfo ?? info, backtestData: loaded.backtestData ?? [] };
+    const result = { symbol: info.symbol, tickerInfo: { ...info, ...(loaded.tickerInfo ?? {}) }, backtestData: loaded.backtestData ?? [] };
     cache.set(info.symbol, result); return result;
 };
 const comparison = ref(null);

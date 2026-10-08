@@ -10,8 +10,10 @@ import DividendSummaryThumbnail from '@/components/thumbnail/DividendSummaryThum
 import DividendComparisonThumbnail from '@/components/thumbnail/DividendComparisonThumbnail.vue';
 import TossCommunityCopy from '@/components/thumbnail/TossCommunityCopy.vue';
 import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
+import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
 import { getAssetUrl, getDataUrl, getR2Url } from '@/utils/dataUrl';
 import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
+import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
 
 const route = useRoute();
 const router = useRouter();
@@ -23,6 +25,7 @@ const error = ref('');
 const rivals = ref([]);
 const cache = new Map();
 const exporting = ref('');
+const schedule = ref(null);
 
 useHead({ title: computed(() => selectedInfo.value ? `${selectedInfo.value.symbol} 배당 썸네일` : '배당 썸네일'), meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
@@ -102,6 +105,7 @@ const load = async () => {
         selectedInfo.value = nav.value.find((item) => normalize(item.symbol) === requested || normalize(item.yfSymbol) === requested) ?? null;
         if (!selectedInfo.value?.dataPaths?.[0]) { error.value = `'${route.params.ticker}' 종목을 찾을 수 없거나 데이터 경로가 없습니다.`; return; }
         selectedData.value = await loadTicker(selectedInfo.value);
+        schedule.value = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
         const allowed = new Set(rivalOptions.value.map((item) => item.value));
         const requestedRivals = String(route.query.rivals ?? '').split(',').map(normalize).filter((symbol) => allowed.has(symbol)).slice(0, 3);
         rivals.value = requestedRivals;
@@ -128,7 +132,7 @@ onMounted(load); watch(() => route.params.ticker, load);
 </script>
 
 <template>
-    <main class="ticker-thumbnail-page"><div v-if="loading" class="state"><ProgressSpinner /><p>썸네일 데이터를 불러오는 중…</p></div><div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p></div><template v-else><header class="page-header"><div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div></header><section class="artwork-grid"><article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /></article><article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article><article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article></section><section class="content-grid"><TossCommunityCopy :data="thumbnailData" /><section v-if="selectedInfo.underlying" class="rivals"><header><div><p>같은 기초자산</p><h2>{{ selectedInfo.underlying }} 기반 ETF 라이벌 비교</h2></div><MultiSelect v-model="rivals" :options="rivalOptions" option-label="label" option-value="value" :max-selected-labels="3" :selection-limit="3" :disabled="!rivalOptions.length" placeholder="라이벌 1~3종 선택" class="rival-select" /></header><p v-if="!rivalOptions.length" class="hint">같은 기초자산으로 등록된 비교 후보가 없습니다.</p><p v-else-if="!rivals.length" class="hint">비교할 라이벌을 최대 3종 선택하세요.</p><p v-else-if="!comparison" class="hint">공통 가격 이력을 계산하는 중이거나 데이터가 부족합니다.</p></section></section></template></main>
+    <main class="ticker-thumbnail-page"><div v-if="loading" class="state"><ProgressSpinner /><p>썸네일 데이터를 불러오는 중…</p></div><div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p></div><template v-else><header class="page-header"><div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div></header><section class="artwork-grid"><article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /></article><article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article><article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article><article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /></article></section><section class="content-grid"><TossCommunityCopy :data="thumbnailData" /><section v-if="selectedInfo.underlying" class="rivals"><header><div><p>같은 기초자산</p><h2>{{ selectedInfo.underlying }} 기반 ETF 라이벌 비교</h2></div><MultiSelect v-model="rivals" :options="rivalOptions" option-label="label" option-value="value" :max-selected-labels="3" :selection-limit="3" :disabled="!rivalOptions.length" placeholder="라이벌 1~3종 선택" class="rival-select" /></header><p v-if="!rivalOptions.length" class="hint">같은 기초자산으로 등록된 비교 후보가 없습니다.</p><p v-else-if="!rivals.length" class="hint">비교할 라이벌을 최대 3종 선택하세요.</p><p v-else-if="!comparison" class="hint">공통 가격 이력을 계산하는 중이거나 데이터가 부족합니다.</p></section></section></template></main>
 </template>
 
 <style scoped>

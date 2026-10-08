@@ -72,6 +72,7 @@
         "@vueuse/head": "^2.0.0",
         "axios": "^1.12.2",
         "date-fns": "^4.1.0",
+        "date-holidays": "^3.37.0",
         "echarts": "^5.6.0",
         "firebase": "^12.1.0",
         "formidable": "^3.5.4",

@@ -16,7 +16,10 @@ const mapEvent = (event) => ({
   average12: null,
   declared_date: event.declaredDate,
   ex_date: event.exDate,
+  record_date: event.recordDate,
   payable_date: event.payableDate,
+  frequency: event.frequency,
+  verification_status: event.verificationStatus,
   official_url: event.source.url,
 });
 

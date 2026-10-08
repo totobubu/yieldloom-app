@@ -34,6 +34,7 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     CompanyLogo: typeof import('./src/components/CompanyLogo.vue')['default']
     DateAndInvestment: typeof import('./src/components/backtester/controls/DateAndInvestment.vue')['default']
+    DividendCalendarThumbnail: typeof import('./src/components/thumbnail/DividendCalendarThumbnail.vue')['default']
     DividendChart: typeof import('./src/components/portfolio/DividendChart.vue')['default']
     DividendComparisonCard: typeof import('./src/components/thumbnail/DividendComparisonCard.vue')['default']
     DividendComparisonThumbnail: typeof import('./src/components/thumbnail/DividendComparisonThumbnail.vue')['default']

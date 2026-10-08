@@ -71,6 +71,7 @@ declare module 'vue' {
     StockPriceCandlestickChart: typeof import('./src/components/charts/StockPriceCandlestickChart.vue')['default']
     StockTimelineModal: typeof import('./src/components/StockTimelineModal.vue')['default']
     Tag: typeof import('primevue/tag')['default']
+    ThumbnailCardShell: typeof import('./src/components/thumbnail/ThumbnailCardShell.vue')['default']
     ThumbnailItem: typeof import('./src/components/thumbnail/ThumbnailItem.vue')['default']
     TimeMachineResultCard: typeof import('./src/components/time-machine/TimeMachineResultCard.vue')['default']
     TossCommunityCopy: typeof import('./src/components/thumbnail/TossCommunityCopy.vue')['default']

@@ -16,6 +16,7 @@ export type DividendScheduleEvent = {
     frequency?: string | null;
     verificationStatus?: string | null;
     officialUrl?: string | null;
+    amount?: string | number | null;
 };
 
 export type CalendarMarker = {
@@ -31,6 +32,8 @@ export type DividendSchedule = {
     markers: CalendarMarker[];
     forecastExDate: string | null;
     depositRange: { start: string; end: string } | null;
+    intervalDays: number | null;
+    history: DividendScheduleEvent[];
 };
 
 type LedgerEvent = {
@@ -43,6 +46,7 @@ type LedgerEvent = {
     frequency?: string | null;
     verification_status?: string | null;
     official_url?: string | null;
+    distribution_per_share?: string | number | null;
 };
 
 const iso = (value: unknown) =>
@@ -62,6 +66,7 @@ const toEvent = (row: LedgerEvent): DividendScheduleEvent | null => {
         frequency: row.frequency ?? null,
         verificationStatus: row.verification_status ?? null,
         officialUrl: row.official_url ?? null,
+        amount: row.distribution_per_share ?? null,
     };
 };
 
@@ -145,5 +150,5 @@ export async function loadDividendSchedule(ticker: string): Promise<DividendSche
         ? { start: addKoreanBusinessDays(current.payableDate, 1), end: addKoreanBusinessDays(current.payableDate, 2) }
         : null;
     if (depositRange) markers.push({ date: depositRange.start, kind: 'deposit', status: 'confirmed' });
-    return { ticker: ticker.toUpperCase(), frequency: current?.frequency ?? events[0]?.frequency ?? null, current, markers, forecastExDate, depositRange };
+    return { ticker: ticker.toUpperCase(), frequency: current?.frequency ?? events[0]?.frequency ?? null, current, markers, forecastExDate, depositRange, intervalDays: interval, history: events };
 }

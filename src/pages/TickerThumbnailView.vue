@@ -4,7 +4,6 @@ import { useHead } from '@vueuse/head';
 import { useRoute, useRouter } from 'vue-router';
 import html2canvas from 'html2canvas';
 import Button from 'primevue/button';
-import MultiSelect from 'primevue/multiselect';
 import ProgressSpinner from 'primevue/progressspinner';
 import DividendSummaryThumbnail from '@/components/thumbnail/DividendSummaryThumbnail.vue';
 import DividendComparisonThumbnail from '@/components/thumbnail/DividendComparisonThumbnail.vue';
@@ -27,6 +26,7 @@ const cache = new Map();
 const exporting = ref('');
 const schedule = ref(null);
 const artworkSize = 720;
+const maxRivals = 3;
 
 useHead({ title: computed(() => selectedInfo.value ? `${selectedInfo.value.symbol} 배당 썸네일` : '배당 썸네일'), meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
 
@@ -74,6 +74,13 @@ const rivalOptions = computed(() => {
     if (!underlying) return [];
     return nav.value.filter((item) => item.symbol !== selectedInfo.value.symbol && item.underlying === underlying && item.dataPaths?.[0]).map((item) => ({ label: `${item.symbol}${item.koName ? ` · ${item.koName}` : ''}`, value: item.symbol }));
 });
+const toggleRival = (symbol) => {
+    if (rivals.value.includes(symbol)) {
+        rivals.value = rivals.value.filter((rival) => rival !== symbol);
+        return;
+    }
+    if (rivals.value.length < maxRivals) rivals.value = [...rivals.value, symbol];
+};
 
 const fetchJson = async (path) => {
     const local = getDataUrl(path);
@@ -139,9 +146,37 @@ onMounted(load); watch(() => route.params.ticker, load);
 </script>
 
 <template>
-    <main class="ticker-thumbnail-page"><div v-if="loading" class="state"><ProgressSpinner /><p>썸네일 데이터를 불러오는 중…</p></div><div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p></div><template v-else><header class="page-header"><div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div></header><section class="artwork-grid"><article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /></article><article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article><article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article><article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /></article></section><section class="content-grid"><TossCommunityCopy :data="thumbnailData" /><section v-if="selectedInfo.underlying" class="rivals"><header><div><p>같은 기초자산</p><h2>{{ selectedInfo.underlying }} 기반 ETF 라이벌 비교</h2></div><MultiSelect v-model="rivals" :options="rivalOptions" option-label="label" option-value="value" :max-selected-labels="3" :selection-limit="3" :disabled="!rivalOptions.length" placeholder="라이벌 1~3종 선택" class="rival-select" /></header><p v-if="!rivalOptions.length" class="hint">같은 기초자산으로 등록된 비교 후보가 없습니다.</p><p v-else-if="!rivals.length" class="hint">비교할 라이벌을 최대 3종 선택하세요.</p><p v-else-if="!comparison" class="hint">공통 가격 이력을 계산하는 중이거나 데이터가 부족합니다.</p></section></section></template></main>
+    <main class="ticker-thumbnail-page">
+        <div v-if="loading" class="state"><ProgressSpinner /><p>썸네일 데이터를 불러오는 중…</p></div>
+        <div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p></div>
+        <template v-else>
+            <header class="page-header">
+                <div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div>
+                <section v-if="selectedInfo.underlying && rivalOptions.length" class="rival-candidate-picker" :aria-label="`${selectedInfo.symbol} 라이벌 카드 후보`">
+                    <div class="candidate-heading"><p>라이벌 카드 후보</p><strong>{{ selectedInfo.underlying }} 기반 · 최대 {{ maxRivals }}종</strong></div>
+                    <div class="candidate-buttons">
+                        <button v-for="option in rivalOptions" :key="option.value" type="button" :class="{ selected: rivals.includes(option.value) }" :aria-pressed="rivals.includes(option.value)" :title="option.label" :disabled="!rivals.includes(option.value) && rivals.length >= maxRivals" @click="toggleRival(option.value)">{{ option.value }}</button>
+                    </div>
+                </section>
+            </header>
+            <section class="artwork-grid">
+                <article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /></article>
+                <article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article>
+                <article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article>
+                <article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /></article>
+            </section>
+            <section class="content-grid">
+                <TossCommunityCopy :data="thumbnailData" />
+                <section v-if="selectedInfo.underlying" class="rivals">
+                    <p v-if="!rivalOptions.length" class="hint">같은 기초자산으로 등록된 비교 후보가 없습니다.</p>
+                    <p v-else-if="!rivals.length" class="hint">페이지 헤더에서 라이벌 후보를 최대 {{ maxRivals }}종 선택하세요.</p>
+                    <p v-else-if="!comparison" class="hint">공통 가격 이력을 계산하는 중이거나 데이터가 부족합니다.</p>
+                </section>
+            </section>
+        </template>
+    </main>
 </template>
 
 <style scoped>
-.ticker-thumbnail-page{min-height:100vh;padding:32px;background:#edf2f8;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header,.rivals>header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:1520px;margin:0 auto 24px}.page-header p,.rivals header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1,.rivals h2{margin:5px 0 0}.artwork-grid{display:grid;grid-template-columns:repeat(3,minmax(320px,1fr));gap:24px;max-width:2240px;margin:auto}.artwork-panel{display:grid;gap:12px}.artwork-panel>button{justify-self:start}.content-grid{display:grid;grid-template-columns:minmax(0,520px) minmax(360px,1fr);gap:24px;max-width:1520px;margin:32px auto 0;align-items:start}.rivals{padding:24px;border-radius:18px;background:#dfe8f2}.rivals>header{margin-bottom:18px}.rival-select{min-width:320px}.hint{margin:0;color:#526274}@media(max-width:1500px){.artwork-grid{grid-template-columns:repeat(2,minmax(320px,720px))}}@media(max-width:1000px){.artwork-grid,.content-grid{grid-template-columns:1fr}.summary-thumbnail,.thumbnail-artboard{max-width:100%;height:auto;aspect-ratio:1}.rivals>header{align-items:flex-start;flex-direction:column}.rival-select{width:100%;min-width:0}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}}
+.ticker-thumbnail-page{min-height:100vh;padding:32px;background:#edf2f8;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:1520px;margin:0 auto 24px}.page-header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1{margin:5px 0 0}.rival-candidate-picker{min-width:340px;padding:14px 16px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;box-shadow:0 4px 14px #15212b0d}.candidate-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}.candidate-heading strong{color:#64748b;font-size:.72rem}.candidate-buttons{display:flex;flex-wrap:wrap;gap:7px}.candidate-buttons button{min-width:52px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#334155;font:800 .8rem/1 ui-monospace,monospace;cursor:pointer}.candidate-buttons button:hover:not(:disabled){border-color:#2563eb;color:#1d4ed8}.candidate-buttons button.selected{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 2px 6px #2563eb3d}.candidate-buttons button:disabled{opacity:.42;cursor:not-allowed}.artwork-grid{display:grid;grid-template-columns:repeat(3,minmax(320px,1fr));gap:24px;max-width:2240px;margin:auto}.artwork-panel{display:grid;gap:12px}.artwork-panel>button{justify-self:start}.content-grid{display:grid;grid-template-columns:minmax(0,520px) minmax(360px,1fr);gap:24px;max-width:1520px;margin:32px auto 0;align-items:start}.rivals{padding:24px;border-radius:18px;background:#dfe8f2}.hint{margin:0;color:#526274}@media(max-width:1500px){.artwork-grid{grid-template-columns:repeat(2,minmax(320px,720px))}}@media(max-width:1000px){.page-header{align-items:flex-start;flex-direction:column}.rival-candidate-picker{width:100%;min-width:0;box-sizing:border-box}.artwork-grid,.content-grid{grid-template-columns:1fr}.summary-thumbnail,.thumbnail-artboard{max-width:100%;height:auto;aspect-ratio:1}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}.candidate-heading{align-items:flex-start;flex-direction:column;gap:3px}}
 </style>

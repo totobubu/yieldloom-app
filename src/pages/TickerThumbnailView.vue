@@ -11,20 +11,18 @@ import TossCommunityCopy from '@/components/thumbnail/TossCommunityCopy.vue';
 import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
 import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
 import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
-import { getAssetUrl, getDataUrl, getR2Url } from '@/utils/dataUrl';
+import { getAssetUrl } from '@/utils/dataUrl';
 import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
 import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
 import { calculateEntryIncomeEfficiency } from '@/services/thumbnail/entryIncomeEfficiency';
 
 const route = useRoute();
 const router = useRouter();
-const nav = ref([]);
 const selectedInfo = ref(null);
 const selectedData = ref(null);
 const loading = ref(true);
 const error = ref('');
 const rivals = ref([]);
-const cache = new Map();
 const exporting = ref('');
 const schedule = ref(null);
 const artworkSize = 720;
@@ -77,9 +75,7 @@ const entryEfficiency = computed(() =>
 );
 
 const rivalOptions = computed(() => {
-    const underlying = selectedInfo.value?.underlying;
-    if (!underlying) return [];
-    return nav.value.filter((item) => item.symbol !== selectedInfo.value.symbol && item.underlying === underlying && item.dataPaths?.[0]).map((item) => ({ label: `${item.symbol}${item.koName ? ` · ${item.koName}` : ''}`, value: item.symbol }));
+    return (selectedInfo.value?.rivalOptions ?? []).map((symbol) => ({ label: symbol, value: symbol }));
 });
 const toggleRival = (symbol) => {
     if (rivals.value.includes(symbol)) {
@@ -89,41 +85,26 @@ const toggleRival = (symbol) => {
     if (rivals.value.length < maxRivals) rivals.value = [...rivals.value, symbol];
 };
 
-const fetchJson = async (path) => {
-    const local = getDataUrl(path);
-    try { const response = await fetch(local); if (!response.ok) throw new Error(`${response.status}`); return await response.json(); }
-    catch (localError) { const fallback = getR2Url(path); if (!fallback || fallback === local) throw localError; const response = await fetch(fallback); if (!response.ok) throw localError; return response.json(); }
-};
-const loadTicker = async (info) => {
-    if (cache.has(info.symbol)) return cache.get(info.symbol);
-    const loaded = await fetchJson(info.dataPaths[0]);
-    const result = { symbol: info.symbol, tickerInfo: { ...info, ...(loaded.tickerInfo ?? {}) }, backtestData: loaded.backtestData ?? [] };
-    cache.set(info.symbol, result); return result;
-};
 const comparison = ref(null);
 const refreshComparison = async () => {
-    comparison.value = null;
-    if (!selectedInfo.value?.underlying || !rivals.value.length) return;
-    const target = nav.value.find((item) => normalize(item.symbol) === normalize(selectedInfo.value.underlying));
-    const competitorInfo = rivals.value.map((symbol) => nav.value.find((item) => item.symbol === symbol)).filter(Boolean);
-    if (!target || competitorInfo.length !== rivals.value.length) return;
-    try { const [focal, ...loaded] = await Promise.all([loadTicker(selectedInfo.value), ...competitorInfo.map(loadTicker)]); const underlying = await loadTicker(target); comparison.value = calculateRivalComparison([focal, ...loaded], underlying, new Date().toISOString().slice(0, 10)); } catch (e) { console.warn('Rival comparison could not load', e); }
+    await load(rivals.value);
 };
 const syncRivalsToUrl = () => router.replace({ query: { ...route.query, rivals: rivals.value.length ? rivals.value.join(',') : undefined } });
 watch(rivals, async () => { syncRivalsToUrl(); await refreshComparison(); }, { deep: true });
 
-const load = async () => {
+const load = async (requestedRivals = String(route.query.rivals ?? '').split(',').filter(Boolean)) => {
     loading.value = true; error.value = ''; comparison.value = null;
     try {
-        const navData = await fetchJson('nav.json'); nav.value = navData.nav ?? [];
         const requested = normalize(route.params.ticker);
-        selectedInfo.value = nav.value.find((item) => normalize(item.symbol) === requested || normalize(item.yfSymbol) === requested) ?? null;
-        if (!selectedInfo.value?.dataPaths?.[0]) { error.value = `'${route.params.ticker}' 종목을 찾을 수 없거나 데이터 경로가 없습니다.`; return; }
-        selectedData.value = await loadTicker(selectedInfo.value);
+        const response = await fetch(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}&rivals=${encodeURIComponent(requestedRivals.join(','))}`, { cache: 'no-store' });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error ?? response.status);
+        selectedInfo.value = { ...payload.catalog, ...payload.ticker.tickerInfo, symbol: payload.ticker.symbol, rivalOptions: payload.rivalOptions };
+        selectedData.value = payload.ticker;
+        comparison.value = payload.catalog.underlying && payload.rivals.length && payload.series[payload.catalog.underlying] && payload.rivals.every((symbol) => payload.series[symbol]) ? calculateRivalComparison([payload.ticker, ...payload.rivals.map((symbol) => payload.series[symbol])], payload.series[payload.catalog.underlying], new Date().toISOString().slice(0, 10)) : null;
         schedule.value = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
-        const allowed = new Set(rivalOptions.value.map((item) => item.value));
-        const requestedRivals = String(route.query.rivals ?? '').split(',').map(normalize).filter((symbol) => allowed.has(symbol)).slice(0, 3);
-        rivals.value = requestedRivals;
+        const requestedRivals = payload.rivals ?? [];
+        if (requestedRivals.join(',') !== rivals.value.join(',')) rivals.value = requestedRivals;
     } catch (e) { error.value = '썸네일 데이터를 불러오지 못했습니다.'; console.error(e); } finally { loading.value = false; }
 };
 const downloadArtwork = async (kind) => {

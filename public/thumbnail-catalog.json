@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "relationships": {
+    "AAPL": ["AAPW", "APLY"], "ABNB": ["ABNY"], "AI": ["AIYY"], "AMD": ["AMDW", "AMDY", "AMYY"], "AMZN": ["AMZW", "AMZY", "AZYY"], "ARKK": ["OARK"], "AVGO": ["AVGW"], "BABA": ["BABO"], "BRK.B": ["BRKC", "BRKW"], "COIN": ["COII", "COIW", "CONY", "COYY", "FIAT"], "COST": ["COSW"], "CRCL": ["CRCO", "CRY"], "CRWD": ["CWY"], "CRWV": ["CWII"], "CVNA": ["CVNY"], "DIS": ["DISO"], "DKNG": ["DRAY"], "ETHER": ["XEY"], "GDX": ["GDXY"], "GME": ["GMEY"], "GOOGL": ["GOOW", "GOOY"], "HIMS": ["HIYY", "HMYY"], "HOOD": ["HOII", "HOOW", "HOOY"], "JPM": ["JPO"], "LLY": ["LLII"], "MARA": ["MARO"], "META": ["FBY", "METW"], "MRNA": ["MRNY"], "MSFT": ["MSFO", "MSFW"], "MSTR": ["MSII", "MST", "MSTW", "MSTY", "MTYY", "WNTR"], "MU": ["MUYY"], "NFLX": ["NFLW", "NFLY"], "NVDA": ["DIPS", "NVDW", "NVDY", "NVII", "NVYY"], "PLTR": ["PLTI", "PLTW", "PLTY", "PLTZ", "PLYY"], "PYPL": ["PYPY"], "QBTS": ["QBY"], "QQQ": ["QQQM", "QQQT", "QQQY", "TQQY"], "RGTI": ["RGYY"], "RIOT": ["RTYY"], "SMCI": ["SMCY"], "SNOW": ["SNOY"], "SPY": ["SPYH", "SPYI", "SPYT", "TSPY", "YSPY"], "TLT": ["TSYW"], "TSLA": ["CRSH", "TEST", "TSII", "TSLW", "TSLY", "TSYY"], "TSM": ["TMYY", "TSMW", "TSMY"], "UNH": ["UNHW"], "WMT": ["WMTI"], "XOM": ["XOMO", "XOMW"], "XYZ": ["XYZY"]
+  }
+}

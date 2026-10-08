@@ -35,6 +35,8 @@ jobs:
       - name: Build application
         env:
           VITE_DATA_RELEASE_BASE_URL: ${{ vars.VITE_DATA_RELEASE_BASE_URL }}
+          VITE_R2_PUBLIC_URL: ${{ vars.VITE_R2_PUBLIC_URL }}
+          VITE_USE_R2: ${{ vars.VITE_USE_R2 }}
         run: |
           npm run build
           cp dist/index.html dist/404.html

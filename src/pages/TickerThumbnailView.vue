@@ -10,9 +10,11 @@ import DividendComparisonThumbnail from '@/components/thumbnail/DividendComparis
 import TossCommunityCopy from '@/components/thumbnail/TossCommunityCopy.vue';
 import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
 import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
+import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
 import { getAssetUrl, getDataUrl, getR2Url } from '@/utils/dataUrl';
 import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
 import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
+import { calculateEntryIncomeEfficiency } from '@/services/thumbnail/entryIncomeEfficiency';
 
 const route = useRoute();
 const router = useRouter();
@@ -68,6 +70,11 @@ const thumbnailData = computed(() => {
         monthlyTotals: [...monthly.entries()].slice(-4).map(([month, total]) => ({ month, total })), backgroundImageUrl: getAssetUrl(`thumbnail/${background}`),
     };
 });
+const entryEfficiency = computed(() =>
+    calculateEntryIncomeEfficiency(selectedData.value, {
+        asOfDate: new Date().toISOString().slice(0, 10),
+    })
+);
 
 const rivalOptions = computed(() => {
     const underlying = selectedInfo.value?.underlying;
@@ -164,6 +171,7 @@ onMounted(load); watch(() => route.params.ticker, load);
                 <article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article>
                 <article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article>
                 <article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /></article>
+                <article class="artwork-panel"><DividendEntryEfficiencyThumbnail :data="{ ...entryEfficiency, symbol: selectedInfo.symbol }" /><Button label="매수 효율 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'entry-efficiency'" @click="downloadArtwork('entry-efficiency')" /></article>
             </section>
             <section class="content-grid">
                 <TossCommunityCopy :data="thumbnailData" />

@@ -115,7 +115,7 @@ watch(rivals, async () => { syncRivalsToUrl(); await refreshComparison(); }, { d
 const load = async () => {
     loading.value = true; error.value = ''; comparison.value = null;
     try {
-        const navData = await fetchJson('nav.json'); nav.value = navData.nav ?? [];
+        const navData = await fetchJson('ticker-index.json'); nav.value = navData.nav ?? [];
         const requested = normalize(route.params.ticker);
         selectedInfo.value = nav.value.find((item) => normalize(item.symbol) === requested || normalize(item.yfSymbol) === requested) ?? null;
         if (!selectedInfo.value?.dataPaths?.[0]) { error.value = `'${route.params.ticker}' 종목을 찾을 수 없거나 데이터 경로가 없습니다.`; return; }

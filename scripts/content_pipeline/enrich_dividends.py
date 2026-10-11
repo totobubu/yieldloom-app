@@ -26,6 +26,7 @@ from scripts.content_pipeline.database import ContentDatabase, DEFAULT_DB_PATH
 from scripts.content_pipeline.models import SourceDocument, utc_now_iso
 from scripts.content_pipeline.providers import PROVIDERS, SourceCandidate
 from scripts.content_pipeline.investing_evidence import parse_investing
+from scripts.content_pipeline.seekingalpha_evidence import parse_seekingalpha
 
 RULE_VERSION = "dividend-evidence-v1"
 USER_AGENT = "YieldloomDividendAudit/1.0"
@@ -137,7 +138,7 @@ def record_audit(database, ticker, event, source_id, result, observation_id=None
 
 
 def enrich(database, nav_path, raw_dir, *, tickers=None, provider=None, limit=50, search_limit=5, fetch=read_url,
-           sources_path=Path("data-v2/verification-sources.json")):
+           sources_path=Path("data-v2/verification-sources.json"), reference_limit=5):
     database.initialize()
     nav = json.loads(nav_path.read_text(encoding="utf-8"))["nav"]
     metadata = {row["symbol"].upper(): row for row in nav}
@@ -157,6 +158,7 @@ def enrich(database, nav_path, raw_dir, *, tickers=None, provider=None, limit=50
     report = {"ruleVersion": RULE_VERSION, "checkedAt": utc_now_iso(), "universeCount": len(universe),
               "selectedCount": len(selected), "searchConfigured": bool(os.environ.get("BRAVE_SEARCH_API_KEY")), "tickers": []}
     searches = 0
+    reference_fetches = 0
     for ticker in selected:
         row = metadata.get(ticker, {})
         canonical = by_ticker.get(ticker, [])
@@ -218,6 +220,37 @@ def enrich(database, nav_path, raw_dir, *, tickers=None, provider=None, limit=50
         else:
             result["investingStatus"] = "unmapped_security"
 
+        # Seeking Alpha has stable ticker URLs, but only map known US/USD
+        # securities; never infer identity for overseas listings from a ticker.
+        seeking_url = f"https://seekingalpha.com/symbol/{quote(ticker, safe='')}/dividends/history"
+        if row.get('currency') == 'USD' and row.get('market') in {'NYSE', 'NASDAQ', 'NYSEARCA', 'NYSEAMERICAN', 'AMEX'} and reference_fetches < reference_limit:
+            reference_fetches += 1
+            result['seekingAlphaUrl'] = seeking_url
+            try:
+                content = fetch(seeking_url)
+                seeking_rows = parse_seekingalpha(content, ticker, seeking_url, row['currency'])
+                database.upsert_provider('seekingalpha-evidence', 'Seeking Alpha comparison evidence', 'https://seekingalpha.com')
+                _, source_id = store_document(database, 'seekingalpha-evidence', seeking_url, content, raw_dir, 'seekingalpha_dividends')
+                for observation in seeking_rows:
+                    if positive_decimal(observation['amount_raw']) is None: continue
+                    observation.update(source_provider='seekingalpha', source_class='public_aggregator', source_url=seeking_url,
+                                       content_sha256=hashlib.sha256(content).hexdigest(), verification_status='third_party_only')
+                    observation_id = database.add_distribution_observation(observation)
+                    matching = [event for event in canonical if event['ex_date'] == observation['ex_date']]
+                    if not matching:
+                        record_audit(database, ticker, {'ex_date': observation['ex_date']}, source_id,
+                                     {'status': 'missing_official', 'observation': observation}, observation_id)
+                    for event in matching:
+                        compared = compare_event(event, [observation])
+                        compared['coverage'] = 'available_table_fields'
+                        result['comparisons'].append({'source': 'seekingalpha', 'eventId': event['id'], **compared})
+                        record_audit(database, ticker, event, source_id, compared, observation_id)
+                result['seekingAlphaObservationCount'] = len(seeking_rows)
+            except Exception as error:
+                result['errors'].append({'source': 'seekingalpha', 'type': type(error).__name__})
+        else:
+            result['seekingAlphaStatus'] = 'ineligible_or_budget_exhausted'
+
         needs_supplement = bool(result["errors"] or result.get("missingOfficialCount") or any(item["status"] != "matched" for item in result["comparisons"]) or any(event["verification_status"] == "needs_review" for event in canonical))
         adapters = {event["provider_slug"] for event in canonical} & set(PROVIDERS)
         for slug in sorted(adapters):
@@ -276,11 +309,12 @@ def main():
     parser.add_argument("--limit", type=int, default=50)
     parser.add_argument("--search-limit", type=int, default=5)
     parser.add_argument("--sources", type=Path, default=Path("data-v2/verification-sources.json"))
+    parser.add_argument("--reference-limit", type=int, default=5)
     args = parser.parse_args()
-    if args.limit < 1 or args.search_limit < 0:
+    if args.limit < 1 or args.search_limit < 0 or args.reference_limit < 0:
         parser.error("limit must be positive and search-limit nonnegative")
     report = enrich(ContentDatabase(args.db), args.nav, args.raw_dir, tickers=args.ticker, provider=args.provider,
-                    limit=args.limit, search_limit=args.search_limit, sources_path=args.sources)
+                    limit=args.limit, search_limit=args.search_limit, sources_path=args.sources, reference_limit=args.reference_limit)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({"selected": report["selectedCount"], "universe": report["universeCount"],

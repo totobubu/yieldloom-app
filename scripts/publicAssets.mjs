@@ -6,12 +6,13 @@ export const excludedPublicDirectories = new Set([
     // Source metadata is retained locally for the legacy data generators.
     'nav',
 ]);
-const indexFields = ['symbol', 'koName', 'company', 'underlying', 'yfSymbol', 'frequency', 'ipoDate'];
+const indexFields = ['symbol', 'koName', 'company', 'underlying', 'yfSymbol', 'frequency', 'ipoDate', 'market', 'currency'];
 
 export function createTickerIndex(payload) {
     return { nav: (payload.nav ?? []).filter(row => row.symbol && row.dataPaths?.[0]).map(row => ({
         ...Object.fromEntries(indexFields.filter(key => row[key] != null).map(key => [key, row[key]])),
         dataPaths: [row.dataPaths[0]],
+        securityType: row.company && row.sharesOutstanding === false ? 'etf' : row.sharesOutstanding === true ? 'stock' : 'other',
     })) };
 }
 

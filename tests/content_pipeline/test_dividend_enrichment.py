@@ -6,11 +6,44 @@ from unittest.mock import patch
 from scripts.content_pipeline.database import ContentDatabase
 from scripts.content_pipeline.enrich_dividends import compare_event, enrich, parse_yahoo
 from scripts.content_pipeline.investing_evidence import parse_investing
+from scripts.content_pipeline.seekingalpha_evidence import parse_seekingalpha
 
 
 class DividendEvidenceTests(unittest.TestCase):
+    def test_seekingalpha_public_table_and_identity(self):
+        url = 'https://seekingalpha.com/symbol/JEPI/dividends/history'
+        html = b'''<h1>JEPI Dividend History</h1><table><tr>
+        <th>Ex-Div Date</th><th>Amount</th><th>Record Date</th><th>Pay Date</th></tr>
+        <tr><td>Oct 1, 2026</td><td>$0.34134</td><td>Oct 1, 2026</td><td>Oct 5, 2026</td></tr></table>'''
+        rows = parse_seekingalpha(html, 'JEPI', url, 'USD')
+        self.assertEqual(rows[0]['ex_date'], '2026-10-01')
+        self.assertEqual(rows[0]['payable_date'], '2026-10-05')
+        self.assertEqual(rows[0]['amount_raw'], '0.34134')
+        self.assertEqual(compare_event(self.event(payable_date='2026-10-06'), rows)['status'], 'mismatch')
+        for ticker, currency in [('JEPQ', 'USD'), ('JEPI', 'KRW')]:
+            with self.assertRaises(ValueError): parse_seekingalpha(html, ticker, url, currency)
+        with self.assertRaises(ValueError):
+            parse_seekingalpha(b'<h1>JEPI Dividend History</h1>Please enable Javascript and cookies', 'JEPI', url, 'USD')
+
     def event(self, **changes):
         return {"ex_date": "2026-10-01", "currency": "USD", "distribution_per_share": "0.34134", **changes}
+
+    @patch('scripts.content_pipeline.enrich_dividends.time.sleep')
+    def test_seekingalpha_accumulates_public_evidence(self, _):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            nav = root / 'nav.json'
+            nav.write_text(json.dumps({'nav': [{'symbol': 'JEPI', 'currency': 'USD', 'market': 'NYSE'}]}))
+            db = ContentDatabase(root / 'ledger.sqlite')
+            html = b'<h1>JEPI Dividend History</h1><table><tr><th>Ex-Div Date</th><th>Amount</th><th>Pay Date</th></tr><tr><td>Oct 1, 2026</td><td>$0.34134</td><td>Oct 5, 2026</td></tr></table>'
+            def fetch(url, headers=None):
+                return html if 'seekingalpha.com' in url else json.dumps(self.payload()).encode()
+            result = enrich(db, nav, root / 'raw', fetch=fetch, search_limit=0, sources_path=root / 'absent.json')
+            self.assertEqual(result['tickers'][0]['seekingAlphaObservationCount'], 1)
+            self.assertFalse(result['tickers'][0]['errors'])
+            with db.connect() as connection:
+                self.assertEqual(connection.execute("SELECT COUNT(*) FROM distribution_observations WHERE source_provider='seekingalpha'").fetchone()[0], 1)
+                self.assertEqual(connection.execute('SELECT COUNT(*) FROM distribution_events').fetchone()[0], 0)
 
     def test_exact_date_currency_precision_and_split(self):
         observation = {"ex_date": "2026-10-01", "currency": "USD", "amount_raw": "0.3413400001"}

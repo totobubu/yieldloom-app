@@ -14,6 +14,7 @@ import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEnt
 import { getAssetUrl, getDataUrl, getR2Url } from '@/utils/dataUrl';
 import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
 import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
+import { normalizeFrequency } from '@/services/thumbnail/frequency';
 import { calculateEntryIncomeEfficiency } from '@/services/thumbnail/entryIncomeEfficiency';
 
 const route = useRoute();
@@ -120,7 +121,7 @@ const load = async () => {
         selectedInfo.value = nav.value.find((item) => normalize(item.symbol) === requested || normalize(item.yfSymbol) === requested) ?? null;
         if (!selectedInfo.value?.dataPaths?.[0]) { error.value = `'${route.params.ticker}' 종목을 찾을 수 없거나 데이터 경로가 없습니다.`; return; }
         selectedData.value = await loadTicker(selectedInfo.value);
-        schedule.value = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
+        schedule.value = await loadDividendSchedule(selectedInfo.value.symbol, selectedInfo.value.frequency).catch((reason) => { console.warn('Dividend schedule could not load', reason); return { frequency: normalizeFrequency(selectedInfo.value.frequency) }; });
         const allowed = new Set(rivalOptions.value.map((item) => item.value));
         const requestedRivals = String(route.query.rivals ?? '').split(',').map(normalize).filter((symbol) => allowed.has(symbol)).slice(0, 3);
         rivals.value = requestedRivals;

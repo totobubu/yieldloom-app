@@ -103,7 +103,7 @@ const completedSlots = computed(() => annualSlots.value.filter((slot) => slot.do
 				</article>
 			</div>
 		</section>
-		<section v-else class="annual-roadmap">
+		<section v-else-if="['monthly', 'quarterly'].includes(data.frequency)" class="annual-roadmap">
 			<div class="section-heading">
 				<h2>{{ data.frequency === 'quarterly' ? '연간 분기배당 로드맵' : '연간 월배당 풀사이클 로드맵' }}</h2>
 				<aside>연간 진행률 <b>{{ Math.round((completedSlots / annualSlots.length) * 100) }}%</b></aside>
@@ -546,6 +546,9 @@ const completedSlots = computed(() => annualSlots.value.filter((slot) => slot.do
 	margin-top: 10px;
 	text-align: center
 }
+
+.track.quarterly>div { grid-template-columns: repeat(4, 1fr); }
+.slot-grid.quarterly article { min-height: 150px; }
 
 .track span {
 	color: #94a3b8;

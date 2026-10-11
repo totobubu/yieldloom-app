@@ -1,4 +1,5 @@
 import Holidays from 'date-holidays';
+import { normalizeFrequency } from './frequency';
 import { getAssetUrl } from '@/utils/dataUrl';
 import {
     isDataReleaseConfigured,
@@ -63,7 +64,7 @@ const toEvent = (row: LedgerEvent): DividendScheduleEvent | null => {
         exDate,
         recordDate: iso(row.record_date),
         payableDate: iso(row.payable_date),
-        frequency: row.frequency ?? null,
+        frequency: normalizeFrequency(row.frequency),
         verificationStatus: row.verification_status ?? null,
         officialUrl: row.official_url ?? null,
         amount: row.distribution_per_share ?? null,
@@ -119,14 +120,15 @@ async function loadHistory(ticker: string): Promise<DividendScheduleEvent[]> {
     return (history.history ?? []).map(toEvent).filter(Boolean) as DividendScheduleEvent[];
 }
 
-export async function loadDividendSchedule(ticker: string): Promise<DividendSchedule> {
+export async function loadDividendSchedule(ticker: string, fallbackFrequency?: string | null): Promise<DividendSchedule> {
     const events = (await loadHistory(ticker.toUpperCase()))
         .filter(confirmed)
         .sort((a, b) => b.exDate.localeCompare(a.exDate));
     const reference = today();
     const announcedNext = events.find((event) => event.exDate >= reference) ?? null;
     const current = announcedNext ?? events[0] ?? null;
-    const isWeekly = (current?.frequency ?? events[0]?.frequency) === 'weekly';
+    const frequency = current?.frequency ?? events[0]?.frequency ?? normalizeFrequency(fallbackFrequency);
+    const isWeekly = frequency === 'weekly';
     const displayedEvents = events.filter((event) =>
         isWeekly
             ? event.exDate >= format(new Date(day(reference).getTime() - 42 * 86400000))
@@ -150,5 +152,5 @@ export async function loadDividendSchedule(ticker: string): Promise<DividendSche
         ? { start: addKoreanBusinessDays(current.payableDate, 1), end: addKoreanBusinessDays(current.payableDate, 2) }
         : null;
     if (depositRange) markers.push({ date: depositRange.start, kind: 'deposit', status: 'confirmed' });
-    return { ticker: ticker.toUpperCase(), frequency: current?.frequency ?? events[0]?.frequency ?? null, current, markers, forecastExDate, depositRange, intervalDays: interval, history: events };
+    return { ticker: ticker.toUpperCase(), frequency, current, markers, forecastExDate, depositRange, intervalDays: interval, history: events };
 }

@@ -3,6 +3,7 @@
 import { reactive } from 'vue';
 import { getDataUrl } from '@/utils/dataUrl';
 import type { Currency } from '@/types/common';
+import { loadCoreDirectory, loadCoreInstrument, type CoreInstrument } from '@/services/coreRelease';
 
 export interface Instrument {
     symbol: string;
@@ -61,6 +62,16 @@ const loadSymbolIsinSnapshot = async () => {
         );
     }
 };
+
+const coreInstrumentToInstrument = (instrument: CoreInstrument): Instrument => ({
+    ...instrument,
+    symbol: instrument.symbol,
+    isin: instrument.isin || undefined,
+    currency: instrument.currency as Currency,
+    koName: instrument.koName || undefined,
+    longName: instrument.longName || undefined,
+    upcoming: !instrument.active,
+});
 
 const mergeInstrument = (existing: Instrument | undefined, incoming: Partial<Instrument>): Instrument => {
     const merged = { ...existing, ...incoming } as Instrument;
@@ -129,6 +140,22 @@ export const resolveInstrument = ({ symbol, isin }: { symbol?: string; isin?: st
     return symbol ? resolveInstrumentBySymbol(symbol) : null;
 };
 
+export const loadInstrumentDetails = async (symbol: string): Promise<Instrument | null> => {
+    await ensureInstrumentDirectory();
+    const instrument = resolveInstrumentBySymbol(symbol);
+    if (!instrument) return null;
+    try {
+        const detail = await loadCoreInstrument(instrument as CoreInstrument);
+        registerInstruments([coreInstrumentToInstrument(detail)]);
+        return resolveInstrumentBySymbol(symbol);
+    } catch (error) {
+        // A directory hit is sufficient for navigation; a detail failure must
+        // not force a legacy nav.json request.
+        console.warn('[InstrumentDirectory] core instrument detail load failed:', error);
+        return instrument;
+    }
+};
+
 export const ensureInstrumentDirectory = async () => {
     if (instrumentState.hasNavSnapshot) return;
 
@@ -136,23 +163,19 @@ export const ensureInstrumentDirectory = async () => {
         navLoadPromise = (async () => {
             try {
                 await loadSymbolIsinSnapshot();
-                const response = await fetch(getDataUrl('nav.json'));
-                if (!response.ok) {
-                    throw new Error(
-                        `nav.json fetch 실패 (status: ${response.status})`
-                    );
-                }
-
-                const navData = await response.json();
-                const navTickers = Array.isArray(navData?.nav)
-                    ? navData.nav
-                    : [];
-                registerInstruments(navTickers, { markInitialized: true });
+                const coreDirectory = await loadCoreDirectory();
+                registerInstruments(
+                    coreDirectory.map(coreInstrumentToInstrument),
+                    { markInitialized: true }
+                );
             } catch (error) {
                 console.error(
-                    '[InstrumentDirectory] nav.json 로드 실패:',
+                    '[InstrumentDirectory] core catalog load failed:',
                     error
                 );
+                // Keep the small symbol/ISIN snapshot usable in offline and
+                // pre-migration environments without falling back to nav.json.
+                instrumentState.hasNavSnapshot = true;
             } finally {
                 navLoadPromise = null;
             }

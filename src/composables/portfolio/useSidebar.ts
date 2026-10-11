@@ -17,6 +17,7 @@ import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
 import { useToast } from 'primevue/usetoast';
 import {
     ensureInstrumentDirectory,
+    instrumentState,
     registerInstruments,
     resolveInstrument,
     resolveInstrumentByIsin,
@@ -65,13 +66,6 @@ interface NavDataItem {
     group?: string;
     underlying?: string;
     upcoming?: boolean;
-}
-
-/**
- * Nav 데이터
- */
-interface NavData {
-    nav: NavDataItem[];
 }
 
 type MarketKey = 'us-stocks' | 'us-etfs';
@@ -196,11 +190,7 @@ export function useSidebar(): UseSidebarReturn {
 
         try {
             await ensureInstrumentDirectory();
-            const response = await fetch(getDataUrl('nav.json'));
-            if (!response.ok) throw new Error('nav.json could not be loaded.');
-            const navData: NavData = await response.json();
-
-            allTickersForSearch.value = (navData.nav || [])
+            allTickersForSearch.value = (Object.values(instrumentState.bySymbol) as NavDataItem[])
                 .filter((item) => !item.upcoming)
                 .map(convertNavItemToTicker)
                 .filter(

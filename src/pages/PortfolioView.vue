@@ -82,15 +82,16 @@ import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
 import SelectButton from 'primevue/selectbutton';
-import { getDataUrl } from '@/utils/dataUrl';
 import { useExchangeRates } from '@/composables/data/useExchangeRates';
+import { ensureInstrumentDirectory, instrumentState, resolveInstrumentBySymbol } from '@/store/instruments';
+import { loadCoreDividendEvents } from '@/services/coreRelease';
 
 const { findRateForDate } = useExchangeRates();
 
 const holdings = ref([]);
 const loading = ref(true);
 const currentUser = ref(null);
-const navData = ref(null);
+const coreDirectoryReady = ref(false);
 
 const newHolding = ref({
   ticker: '',
@@ -111,12 +112,10 @@ let unsubscribeSnapshot = null;
 
 onMounted(async () => {
   try {
-    const navRes = await fetch(getDataUrl('nav.json'));
-    if (navRes.ok) {
-      navData.value = await navRes.json();
-    }
+    await ensureInstrumentDirectory();
+    coreDirectoryReady.value = Object.keys(instrumentState.bySymbol).length > 0;
   } catch (e) {
-    console.error('Failed to load nav.json', e);
+    console.error('Failed to load core catalog', e);
   }
 
   onAuthStateChanged(auth, (user) => {
@@ -146,7 +145,7 @@ const fetchHoldings = (uid) => {
 };
 
 const calculateDividends = async () => {
-  if (!navData.value || holdings.value.length === 0) {
+  if (!coreDirectoryReady.value || holdings.value.length === 0) {
     monthlyDividends.value = Array(12).fill(0);
     expectedAnnualDividends.value = {};
     return;
@@ -163,25 +162,16 @@ const calculateDividends = async () => {
     let totalForTicker = 0;
     const ticker = holding.ticker.toUpperCase();
     
-    const navInfo = navData.value.nav.find(
-      (item) => item.symbol.toUpperCase() === ticker || item.yfSymbol?.toUpperCase() === ticker
-    );
+    const instrument = resolveInstrumentBySymbol(ticker);
 
-    if (navInfo && navInfo.dataPaths && navInfo.dataPaths.length > 0) {
+    if (instrument) {
       try {
-        const dataRes = await fetch(getDataUrl(navInfo.dataPaths[0]));
-        if (dataRes.ok) {
-          const staticData = await dataRes.json();
-          const backtestData = staticData.backtestData || [];
-          
-          const dividends = backtestData.filter(d => 
-            (d.amount !== undefined || d.amountFixed !== undefined) && 
-            new Date(d.date) >= oneYearAgo
-          );
+          const events = await loadCoreDividendEvents(instrument);
+          const dividends = events.filter(d => new Date(d.exDate) >= oneYearAgo);
 
           for (const d of dividends) {
-            let amount = d.amountFixed ?? d.amount ?? 0;
-            const dateObj = new Date(d.date);
+            let amount = Number(d.amount?.decimal ?? 0);
+            const dateObj = new Date(d.exDate);
             const month = dateObj.getMonth();
             
             if (isKRW) {
@@ -195,9 +185,8 @@ const calculateDividends = async () => {
             newMonthly[month] += totalAmount;
             totalForTicker += totalAmount;
           }
-        }
       } catch (e) {
-        console.error(`Failed to load data for ${ticker}`, e);
+        console.error(`Failed to load core dividend data for ${ticker}`, e);
       }
     }
     newExpected[holding.id] = totalForTicker;

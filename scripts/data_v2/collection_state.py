@@ -12,7 +12,9 @@ from botocore.exceptions import ClientError
 from scripts.cloud.r2_helper import get_r2_client
 
 
-PREFIX = "yieldloom/v2/collection-state"
+# Collection state contains source URLs, hashes, and retry details. It is
+# operational evidence, not a browser asset, so keep it outside public releases.
+PREFIX = "core/private/collection-state"
 SCHEMA_VERSION = 2
 
 
@@ -75,6 +77,6 @@ def save_r2(state: dict[str, Any], run_id: str) -> None:
     state["generatedAt"] = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     state_key = f"{PREFIX}/snapshots/{run_id}/state.json"
     body = json.dumps(state, ensure_ascii=False, indent=2).encode("utf-8")
-    client.put_object(Bucket=bucket, Key=state_key, Body=body, ContentType="application/json", CacheControl="public, max-age=31536000, immutable")
+    client.put_object(Bucket=bucket, Key=state_key, Body=body, ContentType="application/json", CacheControl="no-store")
     pointer = {"schemaVersion": SCHEMA_VERSION, "runId": run_id, "stateKey": state_key}
-    client.put_object(Bucket=bucket, Key=f"{PREFIX}/current.json", Body=json.dumps(pointer, indent=2).encode("utf-8"), ContentType="application/json", CacheControl="no-cache")
+    client.put_object(Bucket=bucket, Key=f"{PREFIX}/current.json", Body=json.dumps(pointer, indent=2).encode("utf-8"), ContentType="application/json", CacheControl="no-store")

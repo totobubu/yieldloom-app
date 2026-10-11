@@ -1,8 +1,8 @@
 // src/composables/portfolio/useBacktestPortfolio.ts
 import { ref, computed, watch, type Ref, type ComputedRef } from 'vue';
 import { useRoute } from 'vue-router';
-import { joinURL } from 'ufo';
 import type { Currency } from '@/types/common';
+import { ensureInstrumentDirectory, instrumentState } from '@/store/instruments';
 
 /**
  * 포트폴리오 항목
@@ -23,13 +23,6 @@ interface NavDataItem {
     underlying?: string;
     upcoming?: boolean;
     [key: string]: any;
-}
-
-/**
- * Nav 데이터
- */
-interface NavData {
-    nav: NavDataItem[];
 }
 
 export interface UseBacktestPortfolioReturn {
@@ -80,9 +73,8 @@ export function useBacktestPortfolio(country: 'US' | 'KR' = 'US'): UseBacktestPo
 
     const loadNavData = async (): Promise<void> => {
         try {
-            const navUrl = joinURL(import.meta.env.BASE_URL, 'nav.json');
-            const response = await fetch(navUrl);
-            const navData: NavData = await response.json();
+            await ensureInstrumentDirectory();
+            const catalog = Object.values(instrumentState.bySymbol) as NavDataItem[];
 
             const countryFilter = (item: NavDataItem): boolean => {
                 if (country === 'KR') {
@@ -91,7 +83,7 @@ export function useBacktestPortfolio(country: 'US' | 'KR' = 'US'): UseBacktestPo
                 return item.currency === 'USD';
             };
 
-            const activeItems = navData.nav.filter(
+            const activeItems = catalog.filter(
                 (item) => !item.upcoming && countryFilter(item)
             );
 

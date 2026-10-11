@@ -5,9 +5,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -21,6 +23,10 @@ def dump(path: Path, payload: object) -> None:
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def catalog_filename(symbol: str) -> str:
+    return re.sub(r"[^A-Z0-9._-]", "-", symbol.upper()).replace(".", "-")
 
 
 def event_id(event: dict[str, object]) -> str:
@@ -55,11 +61,50 @@ def normalize(event: dict[str, object]) -> dict[str, object]:
     }
 
 
+def load_catalog(path: Path | None, events: list[dict[str, object]]) -> list[dict[str, object]]:
+    """Return only product-neutral catalog fields; events fill known providers."""
+    providers = {str(event["ticker"]): str(event["provider"]) for event in events}
+    raw: list[object] = []
+    if path:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        raw = payload.get("instruments", []) if isinstance(payload, dict) else payload
+        if not isinstance(raw, list):
+            raise ValueError("catalog input must be an instruments array")
+    by_symbol: dict[str, dict[str, object]] = {}
+    for row in raw:
+        if not isinstance(row, dict):
+            raise ValueError("catalog instrument must be an object")
+        symbol = str(row.get("symbol") or "").upper().strip()
+        market = str(row.get("market") or "").upper().strip()
+        currency = str(row.get("currency") or "").upper().strip()
+        if not symbol or not market or not currency:
+            raise ValueError("catalog instrument requires symbol, market, and currency")
+        if symbol in by_symbol:
+            raise ValueError(f"duplicate catalog symbol: {symbol}")
+        by_symbol[symbol] = {
+            "symbol": symbol,
+            "isin": str(row["isin"]).upper().strip() if row.get("isin") else None,
+            "market": market,
+            "currency": currency,
+            "koName": str(row["koName"]).strip() if row.get("koName") else None,
+            "longName": str(row["longName"]).strip() if row.get("longName") else None,
+            "active": bool(row.get("active", True)),
+            "officialProvider": str(row["officialProvider"]).strip() if row.get("officialProvider") else providers.get(symbol),
+        }
+    for symbol, provider in providers.items():
+        by_symbol.setdefault(symbol, {
+            "symbol": symbol, "isin": None, "market": "UNKNOWN", "currency": "USD",
+            "koName": None, "longName": None, "active": True, "officialProvider": provider,
+        })
+    return [by_symbol[symbol] for symbol in sorted(by_symbol)]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, default=Path("data-v2/candidates/pilot-events.json"))
     parser.add_argument("--release-id", required=True)
     parser.add_argument("--output", type=Path, default=Path("data-v2"))
+    parser.add_argument("--catalog-input", type=Path, help="Core catalog seed; normally produced from legacy nav.json during migration")
     args = parser.parse_args()
     source = args.input if args.input.is_absolute() else ROOT / args.input
     output = args.output if args.output.is_absolute() else ROOT / args.output
@@ -68,6 +113,8 @@ def main() -> int:
         raise ValueError("candidate input must be an array")
 
     events = [normalize(item) for item in candidates]
+    catalog_input = args.catalog_input.resolve() if args.catalog_input else None
+    catalog = load_catalog(catalog_input, events)
     seen = set()
     for event in events:
         if event["eventId"] in seen:
@@ -95,11 +142,29 @@ def main() -> int:
     index_path = output / "index.json"
     dump(index_path, {"providers": sorted({str(row["provider"]) for row in events}), "tickers": ticker_index})
     generated.append(index_path)
+    catalog_index = []
+    for instrument in catalog:
+        ticker = str(instrument["symbol"])
+        filename = catalog_filename(ticker)
+        path = output / "catalog" / "instruments" / f"{filename}.json"
+        detail = dict(instrument)
+        if ticker in by_ticker:
+            detail["dividendHistoryPath"] = f"tickers/{ticker}.json"
+        dump(path, detail)
+        generated.append(path)
+        catalog_index.append({
+            key: detail[key]
+            for key in ("symbol", "isin", "market", "currency", "koName", "longName", "active", "officialProvider")
+        } | {"instrumentPath": f"catalog/instruments/{filename}.json"})
+    search_path = output / "catalog" / "search-index.json"
+    dump(search_path, {"schemaVersion": 1, "instruments": catalog_index})
+    generated.append(search_path)
     manifest = {
-        "schemaVersion": 1,
+        "schemaVersion": 2,
         "releaseId": args.release_id,
         "generatedAt": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
         "indexPath": "index.json",
+        "catalogSearchIndexPath": "catalog/search-index.json",
         "files": [{"path": str(path.relative_to(output)).replace("\\", "/"), "sha256": sha256(path)} for path in sorted(generated)],
     }
     dump(output / "manifest.json", manifest)

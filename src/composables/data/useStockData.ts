@@ -1,5 +1,7 @@
 import { ref } from 'vue';
 import { getDataUrl } from '@/utils/dataUrl';
+import { ensureInstrumentDirectory, loadInstrumentDetails, resolveInstrumentBySymbol } from '@/store/instruments';
+import { loadCoreDividendEvents } from '@/services/coreRelease';
 
 // Types
 export interface TickerInfo {
@@ -58,10 +60,6 @@ interface NavItem {
     [key: string]: any;
 }
 
-interface NavData {
-    nav: NavItem[];
-}
-
 // State
 const tickerInfo = ref<TickerInfo | null>(null);
 const dividendHistory = ref<DividendHistoryItem[]>([]);
@@ -69,22 +67,6 @@ const backtestData = ref<BacktestDataItem[]>([]);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 const isUpcoming = ref(false);
-let navDataCache: NavData | null = null;
-
-const loadNavData = async (): Promise<NavData> => {
-    if (navDataCache) return navDataCache;
-    try {
-        const navUrl = getDataUrl('nav.json');
-        const navResponse = await fetch(navUrl);
-        if (!navResponse.ok) throw new Error('nav.json not found');
-        navDataCache = await navResponse.json();
-        return navDataCache as NavData;
-    } catch (e) {
-        console.error('Failed to load nav.json', e);
-        return { nav: [] };
-    }
-};
-
 const sanitizeTickerForFilename = (ticker?: string): string =>
     ticker ? ticker.replace(/\./g, '-').toLowerCase() : '';
 
@@ -116,26 +98,14 @@ const isUsdUsMarket = (currency?: string | null, market?: string | null): boolea
     );
 };
 
-const uniqueArray = <T>(items: T[] = []): T[] => {
-    const seen = new Set<T>();
-    const result: T[] = [];
-    items.forEach((item) => {
-        if (!item) return;
-        if (seen.has(item)) return;
-        seen.add(item);
-        result.push(item);
-    });
-    return result;
-};
-
 const buildStaticDataCandidates = (navInfo?: NavItem): string[] => {
     if (!navInfo) return [];
-    const candidates: string[] = [];
-    if (Array.isArray(navInfo.dataPaths)) {
-        candidates.push(...navInfo.dataPaths);
-    }
-    // fallback 경로 제거: /data/{{market}}/{{ticker}}.json만 사용
-    return uniqueArray(candidates);
+    const directories: Record<string, string> = {
+        NASDAQ: 'nasdaq', NYSE: 'nyse', AMEX: 'amex', KOSPI: 'kospi', KOSDAQ: 'kosdaq',
+    };
+    const directory = directories[String(navInfo.market || '').toUpperCase()];
+    const symbol = sanitizeTickerForFilename(navInfo.yfSymbol || navInfo.symbol);
+    return directory && symbol ? [`data/${directory}/${symbol}.json`] : [];
 };
 
 const fetchStaticData = async (paths: string[] = []): Promise<{ data: any; path: string | null }> => {
@@ -171,23 +141,13 @@ export function useStockData() {
         backtestData.value = [];
 
         try {
-            const navData = await loadNavData();
             const normalizedTicker = stripMarketSuffix(sanitizedTicker);
-            let navInfo =
-                navData.nav.find(
-                    (item) =>
-                        sanitizeTickerForFilename(item.symbol) ===
-                        normalizedTicker
-                ) ||
-                navData.nav.find(
-                    (item) =>
-                        sanitizeTickerForFilename(item.yfSymbol || '') ===
-                        sanitizedTicker
-                ) ||
-                navData.nav.find(
-                    (item) =>
-                        item.aliases && item.aliases.includes(sanitizedTicker.toUpperCase())
-                );
+            await ensureInstrumentDirectory();
+            const matchingSymbol = Object.keys({
+                [sanitizedTicker.toUpperCase()]: true,
+                [normalizedTicker.toUpperCase()]: true,
+            }).find((symbol) => Boolean(resolveInstrumentBySymbol(symbol)));
+            let navInfo = matchingSymbol ? await loadInstrumentDetails(matchingSymbol) as NavItem | null : null;
 
             let staticData = null;
             let originalTickerSymbol = '';
@@ -203,6 +163,21 @@ export function useStockData() {
                 const staticDataCandidates = buildStaticDataCandidates(navInfo);
                 const result = await fetchStaticData(staticDataCandidates);
                 staticData = result.data;
+                if (!staticData) {
+                    const events = await loadCoreDividendEvents(navInfo as any).catch((coreError) => {
+                        console.warn('[useStockData] Core dividend history load failed', coreError);
+                        return [];
+                    });
+                    if (events.length) {
+                        staticData = {
+                            tickerInfo: navInfo,
+                            backtestData: events.map((event: any) => ({
+                                date: event.exDate,
+                                amount: Number(event.amount?.decimal),
+                            })),
+                        };
+                    }
+                }
             } else {
                 // FALLBACK: 사전 등록되지 않은 티커는 실시간 동적 조회 API를 통해 가져옵니다.
                 originalTickerSymbol = sanitizedTicker.toUpperCase();

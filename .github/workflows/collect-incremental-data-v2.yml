@@ -35,7 +35,8 @@ jobs:
         run: python scripts/data_v2/prepare_incremental_candidate.py --run-id "${{ github.run_id }}"
       - name: Validate complete candidate snapshot
         run: |
-          python scripts/data_v2/build_release.py --input data-v2/candidates/incremental-events.json --release-id "candidate-${{ github.run_id }}" --output candidate-release
+          python scripts/data_v2/build_catalog.py --input public/nav.json --output data-v2/catalog-seed.json
+          python scripts/data_v2/build_release.py --input data-v2/candidates/incremental-events.json --catalog-input data-v2/catalog-seed.json --release-id "candidate-${{ github.run_id }}" --output candidate-release
           python scripts/data_v2/validate_snapshot.py --data-dir candidate-release
       - name: Render review summary
         if: always()
@@ -47,6 +48,7 @@ jobs:
           name: incremental-data-v2-review-${{ github.run_id }}
           path: |
             data-v2/candidates/incremental-events.json
+            data-v2/catalog-seed.json
             data-v2/review/incremental-report.json
             data-v2/review/incremental-report.md
             candidate-release/

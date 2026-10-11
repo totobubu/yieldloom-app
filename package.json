@@ -8,6 +8,8 @@
         "data:compact": "python scripts/data_pipeline/compact_history.py --apply",
         "data:register": "python scripts/data_pipeline/register_history.py",
         "data:repair-splits": "python scripts/data_pipeline/repair_split_types.py --apply",
+        "core:catalog:seed": "python scripts/data_v2/build_catalog.py",
+        "core:validate": "python scripts/data_v2/validate_snapshot.py",
         "add:etf": "python scripts/utils/add_etfs_by_provider.py",
         "backfill-market-cap": "python scripts/data_pipeline/backfill_market_cap_approximate.py",
         "generate-nav": "node tasks/generateNav.js",

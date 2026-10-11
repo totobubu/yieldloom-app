@@ -13,7 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.cloud.r2_helper import get_r2_client
-PREFIX = "yieldloom/v2"
+PREFIX = "core"
 
 
 def put(client, bucket: str, key: str, body: bytes, cache: str) -> None:
@@ -33,14 +33,14 @@ def main() -> int:
     client, bucket = get_r2_client()
     if not client or not bucket:
         raise RuntimeError("R2 credentials are required")
-    release_prefix = f"{PREFIX}/snapshots/{args.release_id}"
+    release_prefix = f"{PREFIX}/releases/{args.release_id}"
     for entry in manifest["files"]:
         relative = Path(entry["path"])
         body = (data_dir / relative).read_bytes()
         put(client, bucket, f"{release_prefix}/{relative.as_posix()}", body, "public, max-age=31536000, immutable")
     put(client, bucket, f"{release_prefix}/manifest.json", manifest_path.read_bytes(), "public, max-age=31536000, immutable")
-    pointer = {"schemaVersion": 1, "releaseId": args.release_id, "manifestKey": f"{release_prefix}/manifest.json"}
-    put(client, bucket, f"{PREFIX}/releases/current.json", json.dumps(pointer, indent=2).encode(), "public, max-age=60")
+    pointer = {"schemaVersion": 2, "releaseId": args.release_id, "manifestKey": f"{release_prefix}/manifest.json"}
+    put(client, bucket, f"{PREFIX}/current.json", json.dumps(pointer, indent=2).encode(), "public, max-age=60")
     print(f"Published {args.release_id} to {release_prefix}")
     return 0
 

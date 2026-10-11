@@ -53,6 +53,22 @@ def validate_event_file(path: Path) -> list[str]:
     return errors
 
 
+def validate_catalog_file(path: Path) -> list[str]:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        return [f"{path}: invalid JSON: {error}"]
+    if path.name == "search-index.json":
+        rows = payload.get("instruments") if isinstance(payload, dict) else None
+        if not isinstance(rows, list):
+            return [f"{path}: catalog search index must contain instruments"]
+        return [f"{path}: invalid catalog entry" for row in rows if not isinstance(row, dict) or not isinstance(row.get("symbol"), str) or not isinstance(row.get("instrumentPath"), str)]
+    if not isinstance(payload, dict) or not isinstance(payload.get("symbol"), str):
+        return [f"{path}: catalog instrument must contain symbol"]
+    forbidden = {"dataPaths", "periods", "logo", "price", "regularMarketPrice"} & set(payload)
+    return [f"{path}: product fields are not allowed in core catalog: {', '.join(sorted(forbidden))}"] if forbidden else []
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-dir", type=Path, default=Path("data-v2"))
@@ -87,6 +103,8 @@ def main() -> int:
             errors.append(f"hash mismatch: {relative}")
         if relative.parts[:1] == ("providers",) and relative.name.startswith("events-"):
             errors.extend(validate_event_file(path))
+        if relative.parts[:1] == ("catalog",):
+            errors.extend(validate_catalog_file(path))
 
     if errors:
         print("Snapshot validation failed:", file=sys.stderr)

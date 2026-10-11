@@ -18,6 +18,7 @@ const isWeekly = computed(() => props.data?.frequency === 'weekly');
 const usd = (value?: string | number | null) => value != null && Number.isFinite(Number(value)) ? `$${Number(value).toFixed(4).replace(/\.?(0+)$/, '')}` : '—';
 const addDays = (value: string, days: number) => new Date(new Date(`${value}T12:00:00`).getTime() + days * 86400000).toISOString().slice(0, 10);
 const active = computed(() => props.data?.current ?? null);
+const reviewHistory = computed(() => props.data?.reviewHistory ?? []);
 const completed = computed(() => (props.data?.history ?? [])
 	.filter((event: any) => event.exDate < today && event.id !== active.value?.id)
 	.slice(0, 2)
@@ -37,13 +38,16 @@ const annualSlots = computed(() => {
 	const count = quarterly ? 4 : 12;
 	return Array.from({ length: count }, (_, index) => {
 		const month = quarterly ? index * 3 : index;
-		const event = (props.data?.history ?? []).find((row: any) => {
+        const inSlot = (row: any) => {
 			if (!row.exDate?.startsWith(String(now.getFullYear()))) return false;
 			const rowMonth = Number(row.exDate.slice(5, 7)) - 1;
 			return quarterly ? Math.floor(rowMonth / 3) === index : rowMonth === month;
-		});
+        };
+        const confirmedEvent = (props.data?.history ?? []).find(inSlot);
+        const event = confirmedEvent ?? reviewHistory.value.find(inSlot);
+        const review = Boolean(event && !confirmedEvent);
 		const current = Boolean(event && event.id === props.data?.current?.id);
-		return { label: quarterly ? `${index + 1}분기` : `${index + 1}월`, event, current, done: Boolean(event && event.exDate < today), future: !event && month > now.getMonth() };
+        return { label: quarterly ? `${index + 1}분기` : `${index + 1}월`, event, review, current, done: Boolean(event && !review && event.payableDate && event.payableDate < today), future: !event && month > now.getMonth() };
 	});
 });
 const completedSlots = computed(() => annualSlots.value.filter((slot) => slot.done).length);
@@ -84,7 +88,7 @@ const completedSlots = computed(() => annualSlots.value.filter((slot) => slot.do
 				</article>
 			</div>
 		</section>
-		<p v-else class="unavailable">공식 배당 일정이 아직 없습니다.</p>
+		<p v-else-if="!reviewHistory.length" class="unavailable">배당 일정이 아직 없습니다.</p>
 		<section v-if="isWeekly" class="weekly-cycle">
 			<div class="section-heading">
 				<h2>주간 배당 5주 사이클 캘린더</h2>
@@ -103,36 +107,43 @@ const completedSlots = computed(() => annualSlots.value.filter((slot) => slot.do
 				</article>
 			</div>
 		</section>
-		<section v-else class="annual-roadmap">
+		<section v-else-if="['monthly', 'quarterly'].includes(data.frequency)" class="annual-roadmap">
 			<div class="section-heading">
 				<h2>{{ data.frequency === 'quarterly' ? '연간 분기배당 로드맵' : '연간 월배당 풀사이클 로드맵' }}</h2>
-				<aside>연간 진행률 <b>{{ Math.round((completedSlots / annualSlots.length) * 100) }}%</b></aside>
+				<aside v-if="!reviewHistory.length">연간 진행률 <b>{{ Math.round((completedSlots / annualSlots.length) * 100) }}%</b></aside>
+				<aside v-else>배당 이력 <b>{{ annualSlots.filter(slot => slot.event).length }}/{{ annualSlots.length }}</b></aside>
 			</div>
 			<div class="track" :class="{ quarterly: data.frequency === 'quarterly' }"><i
 					:style="{ width: `${(completedSlots / annualSlots.length) * 100}%` }" />
 				<div><span v-for="slot in annualSlots" :key="slot.label"
-						:class="{ done: slot.done, current: slot.current, future: slot.future }"><em>{{ slot.done ? '✓'
-							: slot.current ? '★' : '·' }}</em>{{ slot.label }}</span></div>
+						:class="{ recorded: Boolean(slot.event), done: slot.done, current: slot.current, future: slot.future }"
+						:title="slot.event ? `${slot.label} · 배당락 ${shortDate(slot.event.exDate)} · ${usd(slot.event.amount)}` : `${slot.label} · 공시 전 일정`"><em>{{ slot.done ? '✓'
+							: slot.current ? '★' : slot.event ? '●' : '·' }}</em>{{ slot.label }}<small v-if="slot.event" class="track-amount">{{ usd(slot.event.amount) }}</small></span></div>
 			</div>
 			<div class="slot-grid" :class="{ quarterly: data.frequency === 'quarterly' }">
 				<article v-for="slot in annualSlots" :key="slot.label"
 					:class="{ done: slot.done, current: slot.current, future: slot.future }">
-					<header><b>{{ slot.label }}</b><em>{{ slot.current ? '이번 회차' : slot.done ? '지급완료' : slot.future ?
+					<header><b>{{ slot.label }}</b><em>{{ slot.review ? '배당 이력' : slot.current ? '이번 회차' : slot.done ? '지급완료' : slot.future ?
 						'주기 추정' : '대기' }}</em></header><template v-if="slot.event">
 						<p><span>배당락</span><b>{{ shortDate(slot.event.exDate) }}</b></p>
 						<p><span>현지지급</span><b>{{ shortDate(slot.event.payableDate) }}</b></p>
-						<p><span>국내입금</span><b>지급 후 +1~2영업일</b></p>
+						<p v-if="data.frequency !== 'monthly' || slot.event.exDate >= today"><span>국내입금</span><b>{{ slot.review ? '—' : '지급 후 +1~2영업일' }}</b></p>
 						<footer><small>DPS</small><strong>{{ usd(slot.event.amount) }}</strong></footer>
 					</template>
 					<p v-else class="empty">{{ slot.future ? '공시 전 일정' : '기록 없음' }}</p>
 				</article>
 			</div>
 		</section>
+		<section v-if="isWeekly && reviewHistory.length" class="review-weekly">
+			<h3>최근 배당 이력</h3>
+			<p v-for="event in reviewHistory.slice(0, 3)" :key="event.id ?? event.exDate">배당락 {{ shortDate(event.exDate) }} · 지급 {{ shortDate(event.payableDate) }} · {{ usd(event.amount) }}</p>
+		</section>
 		<template #footer>ⓘ 공시 전 일정은 최근 주기 기반 추정 · 증권사/환전 처리에 따라 실제 입금일은 달라질 수 있음</template>
 	</ThumbnailCardShell>
 </template>
 
 <style scoped>
+.review-weekly { color: #475569; font-size: 11px; }
 .as-of {
 	min-width: 135px;
 	padding: 11px 15px;
@@ -547,6 +558,9 @@ const completedSlots = computed(() => annualSlots.value.filter((slot) => slot.do
 	text-align: center
 }
 
+.track.quarterly>div { grid-template-columns: repeat(4, 1fr); }
+.slot-grid.quarterly article { min-height: 150px; }
+
 .track span {
 	color: #94a3b8;
 	font-size: 9px;
@@ -567,6 +581,9 @@ const completedSlots = computed(() => annualSlots.value.filter((slot) => slot.do
 	line-height: 13px
 }
 
+.track .recorded { color: #334155; }
+.track .recorded em { background: #64748b; }
+.track-amount { display: block; margin-top: 4px; font-size: 8px; font-weight: 600; white-space: nowrap; }
 .track .done {
 	color: #047857
 }

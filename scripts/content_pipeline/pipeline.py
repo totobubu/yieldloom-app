@@ -11,14 +11,11 @@ from pathlib import Path
 if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from scripts.content_pipeline.content_calendar import export_calendar
 from scripts.content_pipeline.database import ContentDatabase, DEFAULT_DB_PATH
 from scripts.content_pipeline.export_admin_data import export_all
 from scripts.content_pipeline.export_dashboard import export_dashboard
 from scripts.content_pipeline.export_price_snapshot import export_price_snapshot
-from scripts.content_pipeline.generate_content import generate_all_bundles
 from scripts.content_pipeline.reconcile_public_data import export_snapshot as export_reconciliation
-from scripts.content_pipeline.weekly_digest import generate_weekly_digest
 from scripts.content_pipeline.providers import PROVIDERS
 from scripts.content_pipeline.record_collection_report import record_collection_report
 from scripts.data_pipeline.register_history import register as register_history
@@ -51,6 +48,7 @@ def main() -> int:
     parser.add_argument("--providers", nargs="*", choices=sorted(PROVIDERS), default=sorted(PROVIDERS))
     parser.add_argument("--skip-collect", action="store_true")
     parser.add_argument("--week-ending", type=date.fromisoformat, default=date.today())
+    parser.add_argument('--include-editorial', action='store_true', help='Also generate legacy blog bundles, editorial calendar and weekly scripts')
     args = parser.parse_args()
 
     database = ContentDatabase(args.db)
@@ -76,12 +74,17 @@ def main() -> int:
             database.add_pipeline_step(run_id, "collect", "skipped", message="--skip-collect")
 
         # Verified events only. Existing directory/event identifiers make this idempotent.
-        bundles = generate_all_bundles(args.db, args.bundles, args.legacy_data_dir)
-        database.add_pipeline_step(run_id, "generate-bundles", "success", details={"count": len(bundles)})
-        export_calendar(args.bundles, Path("var/content-studio/content-calendar.json"), Path("var/content-studio/content-calendar.csv"))
-        database.add_pipeline_step(run_id, "calendar", "success")
-        generate_weekly_digest(args.db, args.week_ending, Path("var/content-studio/weekly"))
-        database.add_pipeline_step(run_id, "weekly", "success")
+        if args.include_editorial:
+            from scripts.content_pipeline.content_calendar import export_calendar
+            from scripts.content_pipeline.generate_content import generate_all_bundles
+            from scripts.content_pipeline.weekly_digest import generate_weekly_digest
+
+            bundles = generate_all_bundles(args.db, args.bundles, args.legacy_data_dir)
+            database.add_pipeline_step(run_id, "generate-bundles", "success", details={"count": len(bundles)})
+            export_calendar(args.bundles, Path("var/content-studio/content-calendar.json"), Path("var/content-studio/content-calendar.csv"))
+            database.add_pipeline_step(run_id, "calendar", "success")
+            generate_weekly_digest(args.db, args.week_ending, Path("var/content-studio/weekly"))
+            database.add_pipeline_step(run_id, "weekly", "success")
         history_report = register_history(args.legacy_data_dir, args.db)
         database.add_pipeline_step(run_id, "register-history", "success", details=history_report)
         export_dashboard(args.db, args.public_dir / "dashboard.json")

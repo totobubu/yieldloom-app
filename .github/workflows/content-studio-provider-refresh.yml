@@ -70,6 +70,7 @@ jobs:
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
       MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+      BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
       EVENT_SCHEDULE: ${{ github.event.schedule }}
     steps:
       - uses: actions/checkout@v4
@@ -182,6 +183,20 @@ jobs:
         if: ${{ steps.target.outputs.scope == 'render' }}
         continue-on-error: true
         run: node scripts/content_pipeline/render_public_event.mjs '${{ inputs.eventId }}'
+
+      - name: Enrich and verify rotating dividend evidence
+        if: ${{ always() && steps.restore.outcome == 'success' && steps.target.outputs.scope != 'render' }}
+        continue-on-error: true
+        run: python scripts/content_pipeline/enrich_dividends.py --limit 50 --search-limit 5
+
+      - name: Upload dividend evidence audit
+        if: ${{ always() && steps.target.outputs.scope != 'render' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dividend-evidence-${{ github.run_id }}
+          path: var/content-studio/dividend-verification.json
+          if-no-files-found: ignore
+          retention-days: 30
 
       - name: Save durable Content Studio state
         if: ${{ always() && steps.target.outputs.scope != 'render' && steps.restore.outcome == 'success' }}

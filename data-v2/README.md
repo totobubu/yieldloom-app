@@ -24,11 +24,13 @@ not a browser release.
 
 ## Catalog migration
 
-Use `npm run core:catalog:seed` to create `data-v2/catalog-seed.json` from the
-legacy `public/nav.json`. It is an input-only migration bridge: only symbol,
-ISIN, market, currency, names, active state, and an optional provider reference
-are copied. Product fields such as `dataPaths`, logo paths, periods, and prices
-are excluded. Pass the result to the release builder:
+`data-v2/catalog-seed.json` is the checked-in migration seed created from the
+DivGrow catalog. Refresh it only through the explicit migration command
+(`npm run core:catalog:seed -- --input <DivGrow-nav.json>`), then review the
+catalog diff. It carries only symbol, ISIN, market, currency, names, active
+state, and an optional provider reference. Product fields such as `dataPaths`,
+logo paths, periods, and prices are excluded. Pass the reviewed result to the
+release builder:
 
 ```powershell
 python scripts/data_v2/build_release.py --input data-v2/candidates/incremental-events.json --catalog-input data-v2/catalog-seed.json --release-id candidate-123 --output candidate-release

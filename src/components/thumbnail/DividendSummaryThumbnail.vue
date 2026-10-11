@@ -13,7 +13,7 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 </script>
 
 <template>
-	<ThumbnailCardShell class="summary-card" :class="tone" :title="data.symbol" context-label="배당 요약" badge="ETF · 커버드콜"
+	<ThumbnailCardShell class="summary-card" :class="tone" :title="data.symbol" context-label="배당 요약" badge="배당 정보"
 		date-label="배당락일" :date-value="date(data.exDate)" data-thumbnail-kind="summary">
 		<template v-if="data.hasDividend">
 			<section class="hero">

@@ -3,18 +3,21 @@ import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from 'unplugin-vue-components/resolvers';
+import { publicAssetsPlugin } from './scripts/publicAssets.mjs';
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command }) => {
     const env = loadEnv(mode, process.cwd(), '');
     const apiProxyTarget =
         env.VITE_API_PROXY_TARGET || 'https://totobubu-github-io.vercel.app';
 
     return {
+    publicDir: command === 'build' ? false : 'public',
     // Project Pages sites are served below /<repository>/; Vercel and local
     // development remain at the domain root.
     base: process.env.GITHUB_ACTIONS ? '/yieldloom-app/' : '/',
     plugins: [
+        publicAssetsPlugin(),
         vue(),
         // AutoImport 플러그인은 잠시 제거하고, Components 플러그인만 사용합니다.
         // 이것이 PrimeVue 컴포넌트를 자동으로 가져오는 핵심입니다.
@@ -40,14 +43,6 @@ export default defineConfig(({ mode }) => {
                         // PrimeVue 관련
                         if (id.includes('primevue') || id.includes('primeicons') || id.includes('primeflex')) {
                             return 'primevue';
-                        }
-                        // 차트 라이브러리 (ECharts)
-                        if (id.includes('echarts') || id.includes('vue-echarts')) {
-                            return 'chart';
-                        }
-                        // FullCalendar
-                        if (id.includes('@fullcalendar')) {
-                            return 'fullcalendar';
                         }
                         // Firebase
                         if (id.includes('firebase')) {

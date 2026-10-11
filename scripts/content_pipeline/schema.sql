@@ -1,5 +1,25 @@
 PRAGMA foreign_keys = ON;
 
+-- Evidence-only audit. This never changes canonical distribution status/amounts.
+CREATE TABLE IF NOT EXISTS dividend_verification_results (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ticker TEXT NOT NULL,
+    event_id INTEGER,
+    observation_id INTEGER,
+    source_document_id INTEGER NOT NULL,
+    rule_version TEXT NOT NULL,
+    status TEXT NOT NULL,
+    details_json TEXT NOT NULL,
+    checked_at TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS dividend_verification_result_identity
+    ON dividend_verification_results(ticker, IFNULL(event_id, -1), IFNULL(observation_id, -1), source_document_id, rule_version, details_json);
+CREATE TABLE IF NOT EXISTS dividend_verification_targets (
+    ticker TEXT PRIMARY KEY,
+    last_checked_at TEXT NOT NULL,
+    report_json TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS providers (
     slug TEXT PRIMARY KEY,
     display_name TEXT NOT NULL,

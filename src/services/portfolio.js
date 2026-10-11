@@ -1,5 +1,6 @@
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from './firebaseClient';
+import { summarizePortfolio } from './portfolioSummary';
 
 export async function loadPortfolioAssets(uid) {
     if (!db || !uid) return [];
@@ -23,6 +24,15 @@ export async function loadPortfolioAsset(uid, ticker) {
     if (!asset) return null;
     const transactions = await getDocs(collection(db, 'portfolios', uid, 'assets', asset.id, 'transactions'));
     return { ...asset, transactions: transactions.docs.map((item) => item.data()) };
+}
+
+export async function loadPortfolioDashboard(uid) {
+    const assets = await loadPortfolioAssets(uid);
+    const withTransactions = await Promise.all(assets.map(async (asset) => {
+        const snapshot = await getDocs(collection(db, 'portfolios', uid, 'assets', asset.id, 'transactions'));
+        return { ...asset, transactions: snapshot.docs.map((item) => item.data()) };
+    }));
+    return summarizePortfolio(withTransactions);
 }
 
 export async function importTossStatement(user, file, password) {

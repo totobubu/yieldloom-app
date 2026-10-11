@@ -41,14 +41,6 @@ export default defineConfig(({ mode }) => {
                         if (id.includes('primevue') || id.includes('primeicons') || id.includes('primeflex')) {
                             return 'primevue';
                         }
-                        // 차트 라이브러리 (ECharts)
-                        if (id.includes('echarts') || id.includes('vue-echarts')) {
-                            return 'chart';
-                        }
-                        // FullCalendar
-                        if (id.includes('@fullcalendar')) {
-                            return 'fullcalendar';
-                        }
                         // Firebase
                         if (id.includes('firebase')) {
                             return 'firebase';

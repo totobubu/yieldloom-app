@@ -5,6 +5,7 @@
 """
 
 import json
+import os
 import re
 import sys
 from datetime import datetime
@@ -180,7 +181,7 @@ def parse_transaction_lines(lines, start_idx):
         return None, next_idx
 
 
-def extract_transactions_from_pdf(pdf_path, verbose=True):
+def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
     """PDF에서 모든 거래 데이터 추출"""
 
     transactions = []
@@ -193,7 +194,7 @@ def extract_transactions_from_pdf(pdf_path, verbose=True):
     else:
         print(f"[extractor] 시작: pdf_path={pdf_path}", file=sys.stderr)
 
-    with pdfplumber.open(pdf_path) as pdf:
+    with pdfplumber.open(pdf_path, password=password or "") as pdf:
         if verbose:
             print(f"총 페이지 수: {len(pdf.pages)}", file=sys.stderr)
 
@@ -361,7 +362,9 @@ def main():
             print(json.dumps(error_result, ensure_ascii=False))
             sys.exit(1)
 
-        data = extract_transactions_from_pdf(pdf_path)
+        data = extract_transactions_from_pdf(
+            pdf_path, password=os.environ.get("TOSS_PDF_PASSWORD")
+        )
         print(json.dumps(data, ensure_ascii=False))
     else:
         pdf_path = Path("public/transactions/1761864827737.pdf")

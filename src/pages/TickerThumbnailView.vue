@@ -11,10 +11,14 @@ import TossCommunityCopy from '@/components/thumbnail/TossCommunityCopy.vue';
 import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
 import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
 import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
+import HoldingDividendThumbnail from '@/components/thumbnail/HoldingDividendThumbnail.vue';
 import { getAssetUrl } from '@/utils/dataUrl';
 import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
 import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
 import { calculateEntryIncomeEfficiency } from '@/services/thumbnail/entryIncomeEfficiency';
+import { firebaseUser } from '@/services/firebaseClient';
+import { loadPortfolioAsset } from '@/services/portfolio';
+import { calculateHoldingDividend } from '@/services/thumbnail/holdingDividend';
 
 const route = useRoute();
 const router = useRouter();
@@ -25,6 +29,7 @@ const error = ref('');
 const rivals = ref([]);
 const exporting = ref('');
 const schedule = ref(null);
+const holdingAsset = ref(null);
 const artworkSize = 720;
 const maxRivals = 3;
 
@@ -73,6 +78,7 @@ const entryEfficiency = computed(() =>
         asOfDate: new Date().toISOString().slice(0, 10),
     })
 );
+const holdingDividend = computed(() => calculateHoldingDividend(holdingAsset.value, schedule.value));
 
 const rivalOptions = computed(() => {
     return (selectedInfo.value?.rivalOptions ?? []).map((symbol) => ({ label: symbol, value: symbol }));
@@ -103,6 +109,7 @@ const load = async (requestedRivals = String(route.query.rivals ?? '').split(','
         selectedData.value = payload.ticker;
         comparison.value = payload.catalog.underlying && payload.rivals.length && payload.series[payload.catalog.underlying] && payload.rivals.every((symbol) => payload.series[symbol]) ? calculateRivalComparison([payload.ticker, ...payload.rivals.map((symbol) => payload.series[symbol])], payload.series[payload.catalog.underlying], new Date().toISOString().slice(0, 10)) : null;
         schedule.value = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
+        holdingAsset.value = firebaseUser.value ? await loadPortfolioAsset(firebaseUser.value.uid, selectedInfo.value.symbol).catch(() => null) : null;
         const requestedRivals = payload.rivals ?? [];
         if (requestedRivals.join(',') !== rivals.value.join(',')) rivals.value = requestedRivals;
     } catch (e) { error.value = '썸네일 데이터를 불러오지 못했습니다.'; console.error(e); } finally { loading.value = false; }
@@ -131,6 +138,7 @@ const downloadArtwork = async (kind) => {
     }
 };
 onMounted(load); watch(() => route.params.ticker, load);
+watch(firebaseUser, () => { if (selectedInfo.value) load(rivals.value); });
 </script>
 
 <template>
@@ -152,6 +160,7 @@ onMounted(load); watch(() => route.params.ticker, load);
                 <article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article>
                 <article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article>
                 <article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /></article>
+                <article v-if="holdingDividend.supported" class="artwork-panel"><HoldingDividendThumbnail :data="{ ...holdingDividend, symbol: selectedInfo.symbol }" /><Button label="보유 배당 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'holding-dividend'" @click="downloadArtwork('holding-dividend')" /></article>
                 <article class="artwork-panel"><DividendEntryEfficiencyThumbnail :data="{ ...entryEfficiency, symbol: selectedInfo.symbol }" /><Button label="매수 효율 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'entry-efficiency'" @click="downloadArtwork('entry-efficiency')" /></article>
             </section>
             <section class="content-grid">

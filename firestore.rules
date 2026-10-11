@@ -16,7 +16,7 @@ service cloud.firestore {
     function isAdmin() {
       return isAuthenticated() && 
              request.auth.token.email != null &&
-             request.auth.token.email == 'totobubu.lab@gmail.com';
+             request.auth.token.email == 'jomalkeun@gmail.com';
     }
     
     // userBookmarks 컬렉션 규칙 (기존)
@@ -46,6 +46,36 @@ service cloud.firestore {
         // Transactions for each asset
         match /transactions/{transactionId} {
           allow read, write: if isOwner(userId) || isAdmin();
+        }
+      }
+    }
+
+    // 관리자 전용 토스 포트폴리오 가져오기 데이터
+    match /adminPortfolios/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+
+      match /assets/{assetId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+
+        match /transactions/{transactionId} {
+          allow read, write: if isOwner(userId) || isAdmin();
+        }
+      }
+    }
+
+    // Active member portfolio store. PDFs are parsed server-side; the browser
+    // may only read its own normalized portfolio data.
+    match /portfolios/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin();
+
+      match /assets/{assetId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow write: if isAdmin();
+
+        match /transactions/{transactionId} {
+          allow read: if isOwner(userId) || isAdmin();
+          allow write: if isAdmin();
         }
       }
     }

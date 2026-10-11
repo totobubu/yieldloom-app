@@ -1,4 +1,5 @@
 Flask
+firebase-admin
 pdfplumber
 pytesseract
 Pillow

@@ -31,6 +31,7 @@
         "format": "prettier --write src/ --log-level=warn",
         "data:sort-keys": "node tasks/sortDataKeys.js",
         "content:init": "python scripts/content_pipeline/manage.py init-db",
+        "content:verify-dividends": "python scripts/content_pipeline/enrich_dividends.py",
         "content:dashboard": "python scripts/content_pipeline/export_dashboard.py",
         "content:prices": "python scripts/content_pipeline/export_price_snapshot.py",
         "content:generate": "python scripts/content_pipeline/generate_content.py",

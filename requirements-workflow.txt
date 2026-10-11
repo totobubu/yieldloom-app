@@ -12,3 +12,4 @@ Flask
 pdfplumber
 pytesseract
 Pillow
+tzdata

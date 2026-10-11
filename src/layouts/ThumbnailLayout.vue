@@ -9,7 +9,7 @@ const { isDarkMode, toggleDarkMode } = useLayout();
     <Toast /><ConfirmDialog />
     <div class="thumbnail-app" :class="{ 'p-dark': isDarkMode }">
         <header>
-            <router-link to="/">토토부부 배당 스튜디오 · 종목 선택</router-link>
+            <router-link to="/">토또부부 배당 스튜디오 · 종목 선택</router-link>
             <Button :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'" :label="isDarkMode ? '라이트 모드' : '다크 모드'" :aria-pressed="isDarkMode" severity="secondary" @click="toggleDarkMode" />
         </header>
         <main><router-view /></main>

@@ -17,6 +17,8 @@ try {
     await page.locator('.thumbnail-preview').first().waitFor();
     await page.getByRole('button', { name: '라이벌 PNG 다운로드', exact: true }).waitFor();
     await page.waitForFunction(() => !document.querySelectorAll('.artwork-panel button')[2].disabled);
+    const entry = page.locator('.entry-efficiency-card');
+    await entry.getByText('언제 샀을 때 배당 효율이 높았을까?', { exact: true }).waitFor();
     for (const width of [320, 375, 390, 768, 799, 800, 1024, 1440, 1920]) {
         await page.setViewportSize({ width, height: 1000 });
         await page.waitForTimeout(100);
@@ -34,6 +36,7 @@ try {
             assert.ok(item.width <= 720);
         }
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Page overflow at ${width}`);
+        assert.ok(await entry.evaluate(card => card.querySelector('.definition').getBoundingClientRect().bottom <= card.querySelector('.thumbnail-card-footer').getBoundingClientRect().top), `Entry card footer overlaps at ${width}`);
     }
     for (const width of [375, 1440]) {
         await page.setViewportSize({ width, height: 1000 });

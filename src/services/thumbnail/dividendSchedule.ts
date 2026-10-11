@@ -1,5 +1,6 @@
 import Holidays from 'date-holidays';
 import { normalizeFrequency } from './frequency';
+import { partitionScheduleHistory } from './scheduleVerification';
 import { getAssetUrl } from '@/utils/dataUrl';
 import {
     isDataReleaseConfigured,
@@ -35,6 +36,7 @@ export type DividendSchedule = {
     depositRange: { start: string; end: string } | null;
     intervalDays: number | null;
     history: DividendScheduleEvent[];
+    reviewHistory: DividendScheduleEvent[];
 };
 
 type LedgerEvent = {
@@ -74,8 +76,6 @@ const toEvent = (row: LedgerEvent): DividendScheduleEvent | null => {
 const day = (value: string) => new Date(`${value}T12:00:00`);
 const format = (value: Date) => value.toISOString().slice(0, 10);
 const today = () => format(new Date());
-const confirmed = (event: DividendScheduleEvent) =>
-    ['official', 'cross_checked'].includes(event.verificationStatus ?? '');
 
 const koreanHolidays = new Holidays('KR');
 const isKoreanBusinessDay = (value: Date) => {
@@ -121,13 +121,11 @@ async function loadHistory(ticker: string): Promise<DividendScheduleEvent[]> {
 }
 
 export async function loadDividendSchedule(ticker: string, fallbackFrequency?: string | null): Promise<DividendSchedule> {
-    const events = (await loadHistory(ticker.toUpperCase()))
-        .filter(confirmed)
-        .sort((a, b) => b.exDate.localeCompare(a.exDate));
+    const { confirmed: events, review: reviewHistory } = partitionScheduleHistory(await loadHistory(ticker.toUpperCase()));
     const reference = today();
     const announcedNext = events.find((event) => event.exDate >= reference) ?? null;
     const current = announcedNext ?? events[0] ?? null;
-    const frequency = current?.frequency ?? events[0]?.frequency ?? normalizeFrequency(fallbackFrequency);
+    const frequency = current?.frequency ?? events[0]?.frequency ?? normalizeFrequency(fallbackFrequency) ?? reviewHistory[0]?.frequency ?? null;
     const isWeekly = frequency === 'weekly';
     const displayedEvents = events.filter((event) =>
         isWeekly
@@ -152,5 +150,5 @@ export async function loadDividendSchedule(ticker: string, fallbackFrequency?: s
         ? { start: addKoreanBusinessDays(current.payableDate, 1), end: addKoreanBusinessDays(current.payableDate, 2) }
         : null;
     if (depositRange) markers.push({ date: depositRange.start, kind: 'deposit', status: 'confirmed' });
-    return { ticker: ticker.toUpperCase(), frequency, current, markers, forecastExDate, depositRange, intervalDays: interval, history: events };
+    return { ticker: ticker.toUpperCase(), frequency, current, markers, forecastExDate, depositRange, intervalDays: interval, history: events, reviewHistory };
 }

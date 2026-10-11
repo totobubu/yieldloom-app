@@ -174,7 +174,7 @@ onMounted(load); watch(() => route.params.ticker, load);
         <div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p></div>
         <template v-else>
             <header class="page-header">
-                <div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div>
+                <div><p>토또부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div>
                 <section v-if="selectedInfo.underlying && rivalOptions.length" class="rival-candidate-picker" :aria-label="`${selectedInfo.symbol} 라이벌 카드 후보`">
                     <div class="candidate-heading"><p>라이벌 카드 후보</p><strong>{{ selectedInfo.underlying }} 기반 · 최대 {{ maxRivals }}종</strong></div>
                     <div class="candidate-buttons">

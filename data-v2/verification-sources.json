@@ -1,0 +1,9 @@
+{
+  "investing": {
+    "JEPI": {
+      "url": "https://kr.investing.com/etfs/jepi-dividends",
+      "market_label": "뉴욕",
+      "currency": "USD"
+    }
+  }
+}

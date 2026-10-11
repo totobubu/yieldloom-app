@@ -29,17 +29,24 @@ test('an approved catalog ticker can render when it has no published dividend hi
     assert.deepEqual(payload.ticker.backtestData, []);
 });
 
-test('AMDY is loaded from its official static distribution ledger, not a market-data API', async () => {
+test('AMDY joins its official ledger to its R2 price projection', async () => {
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = async (url) => {
-        assert.match(String(url), /distribution-ticker-amdy\.json$/);
-        return { ok: true, json: async () => ({ history: [{ ex_date: '2026-10-08', distribution_per_share: '1.0254' }] }) };
-    };
     try {
-        const ticker = await loadTicker('AMDY', 'https://yieldloom-app.vercel.app');
-        assert.equal(ticker.tickerInfo.regularMarketPrice, null);
-        assert.deepEqual(ticker.backtestData, [{ date: '2026-10-08', amount: 1.0254, amountFixed: 1.0254 }]);
+        globalThis.fetch = async (url) => {
+            if (String(url).endsWith('distribution-ticker-amdy.json')) {
+                return { ok: true, json: async () => ({ history: [{ ex_date: '2026-10-08', distribution_per_share: '1.0254' }] }) };
+            }
+            assert.match(String(url), /data\/nyse\/amdy\.json$/);
+            return { ok: true, json: async () => ({ backtestData: [{ date: '2026-10-07', close: 46.5 }, { date: '2026-10-08', close: 47.04 }, { date: '2027-04-08', forecasted: true }] }) };
+        };
+        const ticker = await loadTicker('AMDY', 'https://yieldloom-app.vercel.app', { priceDataBaseUrl: 'https://prices.example' });
+        assert.equal(ticker.tickerInfo.regularMarketPrice, 47.04);
+        assert.deepEqual(ticker.backtestData, [
+            { date: '2026-10-07', close: 46.5 },
+            { date: '2026-10-08', close: 47.04, amount: 1.0254, amountFixed: 1.0254 },
+        ]);
         assert.equal(ticker.sourceStatus.dividends, 'official_projection');
+        assert.equal(ticker.sourceStatus.price, 'r2_projection');
     } finally {
         globalThis.fetch = originalFetch;
     }

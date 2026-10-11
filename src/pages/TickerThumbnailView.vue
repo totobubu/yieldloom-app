@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useHead } from '@vueuse/head';
 import { useRoute, useRouter } from 'vue-router';
 import html2canvas from 'html2canvas';
+import ThumbnailPreview from '@/components/thumbnail/ThumbnailPreview.vue';
 import Button from 'primevue/button';
 import ProgressSpinner from 'primevue/progressspinner';
 import DividendSummaryThumbnail from '@/components/thumbnail/DividendSummaryThumbnail.vue';
@@ -132,12 +133,26 @@ const downloadArtwork = async (kind) => {
     if (!element) return;
     exporting.value = kind;
     try {
+        await document.fonts.ready;
+        await Promise.all([...element.querySelectorAll('img')].map(image => image.decode().catch(() => {})));
         const canvas = await html2canvas(element, {
             useCORS: true,
             backgroundColor: null,
             scale: 1,
             width: artworkSize,
             height: artworkSize,
+            onclone: async (clonedDocument) => {
+                const card = clonedDocument.querySelector(`[data-thumbnail-kind="${kind}"]`);
+                const artboard = card.closest('.thumbnail-preview-artboard');
+                const frame = card.closest('.thumbnail-preview');
+                artboard.style.transform = 'none';
+                frame.style.width = `${artworkSize}px`;
+                frame.style.height = `${artworkSize}px`;
+                frame.style.maxWidth = 'none';
+                card.style.width = `${artworkSize}px`;
+                card.style.height = `${artworkSize}px`;
+                await clonedDocument.fonts.ready;
+            },
         });
         const link = document.createElement('a');
         link.download = `${thumbnailData.value.symbol.toLowerCase()}_${kind}.png`;
@@ -168,11 +183,11 @@ onMounted(load); watch(() => route.params.ticker, load);
                 </section>
             </header>
             <section class="artwork-grid">
-                <article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /></article>
-                <article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article>
-                <article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article>
-                <article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /></article>
-                <article class="artwork-panel"><DividendEntryEfficiencyThumbnail :data="{ ...entryEfficiency, symbol: selectedInfo.symbol }" /><Button label="매수 효율 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'entry-efficiency'" @click="downloadArtwork('entry-efficiency')" /></article>
+                <article class="artwork-panel"><ThumbnailPreview><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /></ThumbnailPreview><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /></article>
+                <article class="artwork-panel"><ThumbnailPreview><DividendComparisonThumbnail :data="thumbnailData" /></ThumbnailPreview><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article>
+                <article v-if="selectedInfo.underlying" class="artwork-panel"><ThumbnailPreview><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /></ThumbnailPreview><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article>
+                <article class="artwork-panel"><ThumbnailPreview><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /></ThumbnailPreview><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /></article>
+                <article class="artwork-panel"><ThumbnailPreview><DividendEntryEfficiencyThumbnail :data="{ ...entryEfficiency, symbol: selectedInfo.symbol }" /></ThumbnailPreview><Button label="매수 효율 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'entry-efficiency'" @click="downloadArtwork('entry-efficiency')" /></article>
             </section>
             <section class="content-grid">
                 <TossCommunityCopy :data="thumbnailData" />
@@ -187,5 +202,5 @@ onMounted(load); watch(() => route.params.ticker, load);
 </template>
 
 <style scoped>
-.ticker-thumbnail-page{min-height:100vh;padding:32px;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:2208px;margin:0 auto 24px}.page-header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1{margin:5px 0 0}.rival-candidate-picker{min-width:340px;padding:14px 16px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;box-shadow:0 4px 14px #15212b0d}.candidate-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}.candidate-heading strong{color:#64748b;font-size:.72rem}.candidate-buttons{display:flex;flex-wrap:wrap;gap:7px}.candidate-buttons button{min-width:52px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#334155;font:800 .8rem/1 ui-monospace,monospace;cursor:pointer}.candidate-buttons button:hover:not(:disabled){border-color:#2563eb;color:#1d4ed8}.candidate-buttons button.selected{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 2px 6px #2563eb3d}.candidate-buttons button:disabled{opacity:.42;cursor:not-allowed}.artwork-grid{display:grid;grid-template-columns:repeat(auto-fit,720px);justify-content:center;gap:24px;max-width:2208px;margin:auto}.artwork-panel{display:grid;width:720px;gap:12px}.artwork-panel>button{justify-self:start}.content-grid{display:grid;grid-template-columns:minmax(0,520px) minmax(360px,1fr);gap:24px;max-width:1520px;margin:32px auto 0;align-items:start}.rivals{padding:24px;border-radius:18px;background:#dfe8f2}.hint{margin:0;color:#526274}@media(max-width:1000px){.page-header{align-items:flex-start;flex-direction:column}.rival-candidate-picker{width:100%;min-width:0;box-sizing:border-box}.content-grid{grid-template-columns:1fr}.artwork-grid{justify-content:start;overflow-x:auto;padding-bottom:12px}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}.candidate-heading{align-items:flex-start;flex-direction:column;gap:3px}}
+.ticker-thumbnail-page{min-width:0;box-sizing:border-box;min-height:100vh;padding:32px;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:2208px;margin:0 auto 24px}.page-header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1{margin:5px 0 0}.rival-candidate-picker{min-width:340px;padding:14px 16px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;box-shadow:0 4px 14px #15212b0d}.candidate-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}.candidate-heading strong{color:#64748b;font-size:.72rem}.candidate-buttons{display:flex;flex-wrap:wrap;gap:7px}.candidate-buttons button{min-width:52px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#334155;font:800 .8rem/1 ui-monospace,monospace;cursor:pointer}.candidate-buttons button:hover:not(:disabled){border-color:#2563eb;color:#1d4ed8}.candidate-buttons button.selected{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 2px 6px #2563eb3d}.candidate-buttons button:disabled{opacity:.42;cursor:not-allowed}.artwork-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,720px),720px));justify-content:center;gap:24px;max-width:2208px;margin:auto}.artwork-panel{display:grid;width:100%;min-width:0;gap:12px;align-content:start}.artwork-panel>button{justify-self:start}.content-grid{display:grid;grid-template-columns:minmax(0,520px) minmax(360px,1fr);gap:24px;max-width:1520px;margin:32px auto 0;align-items:start}.rivals{padding:24px;border-radius:18px;background:#dfe8f2}.hint{margin:0;color:#526274}@media(max-width:1000px){.page-header{align-items:flex-start;flex-direction:column}.rival-candidate-picker{width:100%;min-width:0;box-sizing:border-box}.content-grid{grid-template-columns:1fr}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}.candidate-heading{align-items:flex-start;flex-direction:column;gap:3px}}
 </style>

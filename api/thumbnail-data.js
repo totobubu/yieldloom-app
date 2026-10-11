@@ -1,6 +1,6 @@
 import yahooFinance from '../lib/yahooFinanceClient.js';
 import catalog from '../public/thumbnail-catalog.json' with { type: 'json' };
-import { createApiHandler } from './_utils/api-handler.js';
+import { createApiHandler } from '../lib/api-handler.js';
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const cache = new Map();

@@ -16,7 +16,6 @@ declare module 'vue' {
     DividendEntryEfficiencyThumbnail: typeof import('./src/components/thumbnail/DividendEntryEfficiencyThumbnail.vue')['default']
     DividendSummaryThumbnail: typeof import('./src/components/thumbnail/DividendSummaryThumbnail.vue')['default']
     ErrorBoundary: typeof import('./src/components/ErrorBoundary.vue')['default']
-    RecoveryLedgerDialog: typeof import('./src/components/asset/RecoveryLedgerDialog.vue')['default']
     RivalThumbnail: typeof import('./src/components/thumbnail/RivalThumbnail.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

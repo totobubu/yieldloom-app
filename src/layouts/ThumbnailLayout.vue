@@ -24,10 +24,9 @@ const logout = async () => { if (auth) await signOut(auth); };
     </div>
 </template>
 <style scoped>
-.thumbnail-app { min-height: 100vh; background: #f4f6f8; color: #172033; }
-.thumbnail-app.p-dark { background: #09111f; color: #f3f6fb; }
-.thumbnail-app.p-dark :deep(.ticker-thumbnail-page) { color: #f3f6fb; }
-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; border-bottom: 1px solid #8090a540; }
+.thumbnail-app { --app-bg:#f5f5f5;--app-surface:#fff;--app-surface-muted:#ececec;--app-text:#161616;--app-muted:#5f5f5f;--app-border:#a3a3a3;--app-border-subtle:#d4d4d4;--app-accent:#1d4ed8;--app-accent-contrast:#fff;--app-overlay:#000000a8;min-height:100vh;background:var(--app-bg);color:var(--app-text); }
+.thumbnail-app.p-dark { --app-bg:#0b0b0b;--app-surface:#161616;--app-surface-muted:#252525;--app-text:#f5f5f5;--app-muted:#c2c2c2;--app-border:#858585;--app-border-subtle:#414141;--app-accent:#8ab4ff;--app-accent-contrast:#101010;--app-overlay:#000000c7; }
+header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; border-bottom: 1px solid var(--app-border-subtle); }
 header a { color: inherit; font-weight: 700; text-decoration: none; }
 .header-actions { display:flex; align-items:center; gap:.65rem; }
 .header-actions a { font-size:.86rem; }

@@ -57,7 +57,9 @@ export interface SurfaceDefinition {
 interface LayoutConfig {
     primary: string;
     surface: string | null;
-    darkMode: boolean;
+    themePreference: 'light' | 'dark' | 'system';
+    /** Retained for migration from the previous boolean-only preference. */
+    darkMode?: boolean;
 }
 
 /**
@@ -74,15 +76,30 @@ const getSavedConfig = (): LayoutConfig | null => {
 };
 
 const savedConfig = getSavedConfig();
+const savedThemePreference = savedConfig?.themePreference
+    ?? (typeof savedConfig?.darkMode === 'boolean'
+        ? (savedConfig.darkMode ? 'dark' : 'light')
+        : 'system');
+const systemDarkMode = ref(
+    typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+);
+
+if (typeof window !== 'undefined') {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+        systemDarkMode.value = event.matches;
+    });
+}
 
 const appState = ref<LayoutConfig>({
     primary: savedConfig?.primary || 'emerald',
     surface: savedConfig?.surface || null,
-    darkMode: savedConfig?.darkMode !== undefined ? savedConfig.darkMode : true,
+    themePreference: savedThemePreference,
 });
 
 watchEffect(() => {
-    localStorage.setItem(LAYOUT_CONFIG_KEY, JSON.stringify(appState.value));
+    const darkMode = appState.value.themePreference === 'dark'
+        || (appState.value.themePreference === 'system' && systemDarkMode.value);
+    localStorage.setItem(LAYOUT_CONFIG_KEY, JSON.stringify({ ...appState.value, darkMode }));
 });
 
 const primaryColors = ref<ColorDefinition[]>([
@@ -489,6 +506,7 @@ export interface UseLayoutReturn {
     isDarkMode: Readonly<Ref<boolean>>;
     primary: ComputedRef<string>;
     surface: ComputedRef<string | null>;
+    themePreference: Readonly<Ref<'light' | 'dark' | 'system'>>;
     setPrimary: (value: string) => void;
     setSurface: (value: string) => void;
     toggleDarkMode: () => void;
@@ -498,7 +516,7 @@ export interface UseLayoutReturn {
 
 export function useLayout(): UseLayoutReturn {
     watchEffect(() => {
-        if (appState.value.darkMode) {
+        if (isDarkMode.value) {
             document.documentElement.classList.add('p-dark');
         } else {
             document.documentElement.classList.remove('p-dark');
@@ -514,11 +532,11 @@ export function useLayout(): UseLayoutReturn {
     }
 
     function toggleDarkMode(): void {
-        appState.value.darkMode = !appState.value.darkMode;
+        appState.value.themePreference = isDarkMode.value ? 'light' : 'dark';
     }
 
     function setDarkMode(value: boolean): void {
-        appState.value.darkMode = value;
+        appState.value.themePreference = value ? 'dark' : 'light';
     }
 
     function updateColors(
@@ -538,9 +556,12 @@ export function useLayout(): UseLayoutReturn {
         }
     }
 
-    const isDarkMode = computed(() => appState.value.darkMode);
+    const isDarkMode = computed(() => appState.value.themePreference === 'system'
+        ? systemDarkMode.value
+        : appState.value.themePreference === 'dark');
     const primary = computed(() => appState.value.primary);
     const surface = computed(() => appState.value.surface);
+    const themePreference = computed(() => appState.value.themePreference);
 
     return {
         primaryColors,
@@ -548,6 +569,7 @@ export function useLayout(): UseLayoutReturn {
         isDarkMode: readonly(isDarkMode),
         primary,
         surface,
+        themePreference: readonly(themePreference),
         setPrimary,
         setSurface,
         toggleDarkMode,

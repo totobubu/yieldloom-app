@@ -32,4 +32,5 @@ const open = (url) => window.open(url, '_blank', 'noopener,noreferrer,width=640,
 
 <style scoped>
 .card-share-actions{display:flex;flex-wrap:wrap;gap:7px}.card-share-actions button{border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#334155;padding:8px 10px;font:700 .75rem/1 inherit;cursor:pointer}.card-share-actions button:hover{border-color:#2563eb;color:#1d4ed8}.card-share-actions .kakao{background:#fee500;border-color:#fee500;color:#191919}.card-share-actions .x{background:#111827;border-color:#111827;color:#fff}.card-share-actions .facebook{background:#1877f2;border-color:#1877f2;color:#fff}.card-share-actions .web-share{background:#2563eb;border-color:#2563eb;color:#fff}
+.card-share-actions button{border-color:var(--app-border);background:var(--app-surface);color:var(--app-text)}.card-share-actions button:hover{border-color:var(--app-accent);color:var(--app-accent)}.card-share-actions .web-share{background:var(--app-accent);border-color:var(--app-accent);color:var(--app-accent-contrast)}
 </style>

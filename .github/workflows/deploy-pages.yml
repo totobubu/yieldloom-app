@@ -41,6 +41,10 @@ jobs:
           VITE_DIVGROW_RELEASE_BASE_URL: ${{ vars.VITE_DIVGROW_RELEASE_BASE_URL }}
           VITE_ADSENSE_CLIENT: ${{ vars.VITE_ADSENSE_CLIENT }}
           VITE_ADSENSE_HOME_SLOT: ${{ vars.VITE_ADSENSE_HOME_SLOT }}
+          VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ vars.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ vars.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
         run: |
           npm run build
           cp dist/index.html dist/404.html

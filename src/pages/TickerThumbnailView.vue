@@ -11,19 +11,15 @@ import TossCommunityCopy from '@/components/thumbnail/TossCommunityCopy.vue';
 import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
 import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
 import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
-import HoldingDividendThumbnail from '@/components/thumbnail/HoldingDividendThumbnail.vue';
 import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
 import { getAssetUrl } from '@/utils/dataUrl';
 import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
 import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
 import { calculateEntryIncomeEfficiency } from '@/services/thumbnail/entryIncomeEfficiency';
-import { firebaseUser } from '@/services/firebaseClient';
-import { loadPortfolioAsset } from '@/services/portfolio';
-import { calculateHoldingDividend } from '@/services/thumbnail/holdingDividend';
 import { createShareText } from '@/services/thumbnail/shareText';
 import { createCardShareText } from '@/services/thumbnail/shareText';
 import { createPublishPackage, downloadBlob } from '@/services/thumbnail/publishPackage';
-import { loadLocalPresets, removePreset, savePreset, syncPresets } from '@/services/contentPresets';
+import { loadLocalPresets, removeLocalPreset, saveLocalPreset } from '@/services/contentPresets';
 import { trackAggregate } from '@/services/analytics';
 
 const route = useRoute();
@@ -35,7 +31,6 @@ const error = ref('');
 const rivals = ref([]);
 const exporting = ref('');
 const schedule = ref(null);
-const holdingAsset = ref(null);
 const artworkSize = 720;
 const maxRivals = 3;
 const shareCopyReady = ref(false);
@@ -105,8 +100,6 @@ const entryEfficiency = computed(() =>
         asOfDate: new Date().toISOString().slice(0, 10),
     })
 );
-const holdingDividend = computed(() => calculateHoldingDividend(holdingAsset.value, schedule.value));
-
 const rivalOptions = computed(() => {
     return (selectedInfo.value?.rivalOptions ?? []).map((symbol) => ({ label: symbol, value: symbol }));
 });
@@ -138,7 +131,6 @@ const load = async (rivalSymbols = String(route.query.rivals ?? '').split(',').f
         trackAggregate('card_open', 'summary');
         comparison.value = payload.catalog.underlying && payload.rivals.length && payload.series[payload.catalog.underlying] && payload.rivals.every((symbol) => payload.series[symbol]) ? calculateRivalComparison([payload.ticker, ...payload.rivals.map((symbol) => payload.series[symbol])], payload.series[payload.catalog.underlying], new Date().toISOString().slice(0, 10)) : null;
         schedule.value = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
-        holdingAsset.value = firebaseUser.value ? await loadPortfolioAsset(firebaseUser.value.uid, selectedInfo.value.symbol).catch(() => null) : null;
         const loadedRivals = payload.rivals ?? [];
         if (loadedRivals.join(',') !== rivals.value.join(',')) rivals.value = loadedRivals;
     } catch (e) { error.value = '썸네일 데이터를 불러오지 못했습니다.'; console.error(e); } finally { loading.value = false; }
@@ -178,7 +170,7 @@ const copyShareText = async (kind = 'summary') => {
 const downloadPublishPackage = async () => {
     packaging.value = true;
     try {
-        const kinds = ['summary', 'comparison', 'rival', 'calendar', 'holding-dividend', 'entry-efficiency'];
+        const kinds = ['summary', 'comparison', 'rival', 'calendar', 'entry-efficiency'];
         const cards = await Promise.all(kinds.map(async (kind) => {
             const element = document.querySelector(`[data-thumbnail-kind="${kind}"]`);
             if (!element) return null;
@@ -190,17 +182,15 @@ const downloadPublishPackage = async () => {
     } catch (reason) { error.value = '게시 패키지를 생성하지 못했습니다. 잠시 후 다시 시도하세요.'; console.error('Publish package failed', reason); }
     finally { packaging.value = false; }
 };
-const refreshPresets = async () => { presets.value = await syncPresets(firebaseUser.value?.uid); };
 const saveCurrentPreset = async () => {
     const name = window.prompt('프리셋 이름을 입력하세요.', `${selectedInfo.value.symbol} 콘텐츠`);
     if (!name?.trim()) return;
-    const item = await savePreset(firebaseUser.value?.uid, { id: crypto.randomUUID?.() ?? `${Date.now()}`, name, ticker: selectedInfo.value.symbol, rivals: rivals.value, tone: selectedTone.value, updatedAt: new Date().toISOString() });
+    const item = saveLocalPreset({ id: crypto.randomUUID?.() ?? `${Date.now()}`, name, ticker: selectedInfo.value.symbol, rivals: rivals.value, tone: selectedTone.value, updatedAt: new Date().toISOString() });
     presets.value = [item, ...presets.value.filter((preset) => preset.id !== item.id)];
 };
 const openPreset = async (preset) => { selectedTone.value = preset.tone || 'informative'; await router.push({ path: `/thumbnail/${preset.ticker}`, query: preset.rivals.length ? { rivals: preset.rivals.join(',') } : {} }); };
-const deletePreset = async (preset) => { await removePreset(firebaseUser.value?.uid, preset.id); presets.value = presets.value.filter((item) => item.id !== preset.id); };
-onMounted(async () => { await refreshPresets(); await load(); }); watch(() => route.params.ticker, () => load());
-watch(firebaseUser, async () => { await refreshPresets(); if (selectedInfo.value) load(rivals.value); });
+const deletePreset = (preset) => { removeLocalPreset(preset.id); presets.value = presets.value.filter((item) => item.id !== preset.id); };
+onMounted(load); watch(() => route.params.ticker, () => load());
 </script>
 
 <template>
@@ -224,7 +214,6 @@ watch(firebaseUser, async () => { await refreshPresets(); if (selectedInfo.value
                 <article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" data-thumbnail-kind="comparison" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /><CardShareActions title="비교 카드" :text="cardShareText('comparison')" :url="publicUrl" /></article>
                 <article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" data-thumbnail-kind="rival" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /><CardShareActions title="라이벌 카드" :text="cardShareText('rival')" :url="publicUrl" /></article>
                 <article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" data-thumbnail-kind="calendar" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /><CardShareActions title="일정 카드" :text="cardShareText('calendar')" :url="publicUrl" /></article>
-                <article v-if="holdingDividend.supported" class="artwork-panel"><HoldingDividendThumbnail :data="{ ...holdingDividend, symbol: selectedInfo.symbol }" data-thumbnail-kind="holding-dividend" /><Button label="보유 배당 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'holding-dividend'" @click="downloadArtwork('holding-dividend')" /><CardShareActions title="보유 배당 카드" :text="cardShareText('holding-dividend')" :url="publicUrl" /></article>
                 <article class="artwork-panel"><DividendEntryEfficiencyThumbnail :data="{ ...entryEfficiency, symbol: selectedInfo.symbol }" data-thumbnail-kind="entry-efficiency" /><Button label="매수 효율 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'entry-efficiency'" @click="downloadArtwork('entry-efficiency')" /><CardShareActions title="매수 효율 카드" :text="cardShareText('entry-efficiency')" :url="publicUrl" /></article>
             </section>
             <div v-if="shareCopyReady" class="share-copy-notice"><span>PNG 공유용 문구가 복사되었습니다. 토스·카카오톡에 바로 붙여넣으세요.</span><button type="button" @click="copyShareText">이미지 공유용 문구 복사</button></div>

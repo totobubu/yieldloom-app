@@ -11,7 +11,7 @@ const normalize = (value) => String(value ?? '').trim().toUpperCase().replace(/\
 const instruments = new Map(coreCatalog.instruments.map((instrument) => [normalize(instrument.symbol), instrument]));
 const distributions = new Map((distributionIndex.tickers ?? []).map((row) => [normalize(row.ticker), row]));
 const prices = new Map(Object.entries(priceIndex.prices ?? {}).map(([symbol, row]) => [normalize(symbol), row]));
-const priceDataBaseUrl = () => String(process.env.THUMBNAIL_PRICE_DATA_BASE_URL ?? process.env.VITE_R2_PUBLIC_URL ?? '').replace(/\/$/, '');
+const priceDataBaseUrl = () => String(process.env.DIVGROW_DATA_BASE_URL ?? process.env.THUMBNAIL_PRICE_DATA_BASE_URL ?? process.env.VITE_R2_PUBLIC_URL ?? '').replace(/\/$/, '');
 const officialDataFallbackOrigin = 'https://totobubu.github.io/yieldloom-app';
 
 export function catalogEntry(symbol) {

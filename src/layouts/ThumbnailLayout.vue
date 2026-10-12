@@ -3,10 +3,7 @@ import { useLayout } from '@/composables/shared/useLayout';
 import Button from 'primevue/button';
 import Toast from 'primevue/toast';
 import ConfirmDialog from 'primevue/confirmdialog';
-import { signOut } from 'firebase/auth';
-import { auth, firebaseReady, firebaseUser } from '@/services/firebaseClient';
 const { isDarkMode, toggleDarkMode } = useLayout();
-const logout = async () => { if (auth) await signOut(auth); };
 </script>
 <template>
     <Toast /><ConfirmDialog />
@@ -14,9 +11,8 @@ const logout = async () => { if (auth) await signOut(auth); };
         <header>
             <router-link to="/">토또부부 배당 스튜디오 · 종목 선택</router-link>
             <div class="header-actions">
-                <router-link v-if="firebaseReady && firebaseUser" to="/mypage">마이페이지</router-link>
-                <router-link v-else-if="firebaseReady" to="/login">로그인</router-link>
-                <Button v-if="firebaseReady && firebaseUser" label="로그아웃" severity="secondary" @click="logout" />
+                <router-link to="/mypage">내 포트폴리오</router-link>
+                <router-link to="/legal">이용 안내</router-link>
                 <Button :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'" :label="isDarkMode ? '라이트 모드' : '다크 모드'" :aria-pressed="isDarkMode" severity="secondary" @click="toggleDarkMode" />
             </div>
         </header>

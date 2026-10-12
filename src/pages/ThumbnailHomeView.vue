@@ -2,15 +2,11 @@
 import { computed, onMounted, ref, watch } from 'vue';
 import { useHead } from '@vueuse/head';
 import { getDataUrl, getR2Url } from '@/utils/dataUrl';
-import { firebaseUser } from '@/services/firebaseClient';
-import { loadPortfolioAssets, portfolioTickerStates } from '@/services/portfolio';
+import { isDivgrowReleaseConfigured, loadDivgrowTickerIndex } from '@/services/divgrowRelease';
 useHead({ title: 'ETF·주식 검색' });
 const query = ref(''), company = ref(''), securityType = ref(''), sort = ref('symbol');
 const page = ref(1), rows = ref([]), distributions = ref({}), loading = ref(true), error = ref('');
 const pageSize = 25;
-const portfolioAssets = ref([]);
-const portfolioStates = computed(() => portfolioTickerStates(portfolioAssets.value));
-const priorityRank = (symbol) => ({ current: 0, historical: 1 }[portfolioStates.value.get(symbol)] ?? 2);
 const companies = computed(() => [...new Set(rows.value.map(row => row.company?.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b)));
 const filtered = computed(() => {
     const needle = query.value.trim().toLowerCase();
@@ -18,8 +14,6 @@ const filtered = computed(() => {
         && (!securityType.value || row.securityType === securityType.value)
         && [row.symbol, row.koName, row.company, row.underlying].some(value => String(value ?? '').toLowerCase().includes(needle)))
         .sort((a, b) => {
-            const priority = priorityRank(a.symbol) - priorityRank(b.symbol);
-            if (priority) return priority;
             return sort.value === 'ipoDate' ? String(b.ipoDate ?? '').localeCompare(String(a.ipoDate ?? '')) : String(a[sort.value] ?? '').localeCompare(String(b[sort.value] ?? ''), 'ko');
         });
 });
@@ -46,16 +40,14 @@ async function fetchJson(path) {
 }
 async function load() {
     loading.value = true; error.value = '';
-    const [index, dividend] = await Promise.allSettled([fetchJson('ticker-index.json'), fetchJson('content-studio/distribution-index.json')]);
+    const indexLoader = isDivgrowReleaseConfigured() ? loadDivgrowTickerIndex() : fetchJson('ticker-index.json');
+    const [index, dividend] = await Promise.allSettled([indexLoader, fetchJson('content-studio/distribution-index.json')]);
     if (index.status === 'fulfilled') rows.value = (index.value.nav ?? []).filter(row => row.symbol);
     else error.value = '종목 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
     if (dividend.status === 'fulfilled') distributions.value = Object.fromEntries((dividend.value.tickers ?? []).map(row => [row.ticker, row.latest]));
     loading.value = false;
 }
 onMounted(load);
-watch(firebaseUser, async (user) => {
-    portfolioAssets.value = user ? await loadPortfolioAssets(user.uid).catch(() => []) : [];
-}, { immediate: true });
 </script>
 
 <template>
@@ -70,10 +62,10 @@ watch(firebaseUser, async (user) => {
         <div v-if="loading" class="empty" role="status">종목 목록을 불러오는 중입니다.</div>
         <div v-else-if="error" class="empty" role="alert">{{ error }} <button @click="load">다시 시도</button></div>
         <template v-else>
-            <div class="results-toolbar"><h2>검색 결과 <b>{{ filtered.length.toLocaleString() }}</b><small>개 종목</small><em v-if="firebaseUser && portfolioStates.size">보유 종목 우선 표시</em></h2><label for="sort-order">정렬 <select id="sort-order" v-model="sort"><option value="symbol">티커순</option><option value="company">운용사순</option><option value="ipoDate">최근 상장순</option></select></label></div>
+            <div class="results-toolbar"><h2>검색 결과 <b>{{ filtered.length.toLocaleString() }}</b><small>개 종목</small></h2><label for="sort-order">정렬 <select id="sort-order" v-model="sort"><option value="symbol">티커순</option><option value="company">운용사순</option><option value="ipoDate">최근 상장순</option></select></label></div>
             <div class="table-wrap" tabindex="0" role="region" aria-label="종목 검색 결과 표">
                 <table><thead><tr><th scope="col">종목명 / 티커</th><th scope="col">운용사</th><th scope="col" class="numeric">최근 주당 배당금</th><th scope="col">최근 배당락일</th><th scope="col"><span class="sr-only">콘텐츠 제작</span></th></tr></thead>
-                    <tbody><tr v-for="row in visible" :key="row.symbol"><td><router-link class="ticker-link" :to="{ name: 'ticker-thumbnail', params: { ticker: row.symbol } }"><strong>{{ row.symbol }}</strong><span>{{ row.koName || row.symbol }}</span></router-link><small v-if="portfolioStates.get(row.symbol)" class="holding-badge" :class="portfolioStates.get(row.symbol)">{{ portfolioStates.get(row.symbol) === 'current' ? '현재 보유' : '과거 보유' }}</small><small v-else-if="row.underlying" class="underlying">{{ row.underlying }} 기반</small></td><td>{{ row.company || '—' }}</td><td class="numeric dividend">{{ amount(row) }}</td><td>{{ distributions[row.symbol]?.ex_date || '—' }}</td><td><router-link class="create-link" :to="{ name: 'ticker-thumbnail', params: { ticker: row.symbol } }" :aria-label="`${row.symbol} 카드 제작`">카드 제작 <i class="pi pi-arrow-right" aria-hidden="true" /></router-link></td></tr></tbody>
+                    <tbody><tr v-for="row in visible" :key="row.symbol"><td><router-link class="ticker-link" :to="{ name: 'ticker-thumbnail', params: { ticker: row.symbol } }"><strong>{{ row.symbol }}</strong><span>{{ row.koName || row.symbol }}</span></router-link><small v-if="row.underlying" class="underlying">{{ row.underlying }} 기반</small></td><td>{{ row.company || '—' }}</td><td class="numeric dividend">{{ amount(row) }}</td><td>{{ distributions[row.symbol]?.ex_date || '—' }}</td><td><router-link class="create-link" :to="{ name: 'ticker-thumbnail', params: { ticker: row.symbol } }" :aria-label="`${row.symbol} 카드 제작`">카드 제작 <i class="pi pi-arrow-right" aria-hidden="true" /></router-link></td></tr></tbody>
                 </table>
                 <p v-if="!filtered.length" class="empty">검색 결과가 없습니다. 검색어나 필터를 변경해 주세요.</p>
             </div>

@@ -5,9 +5,10 @@
 ## 화면
 
 - `/`: 티커·종목명·운용사 검색 및 종목 선택.
-- `/login`: 이메일·비밀번호 및 Google 로그인, 비밀번호 재설정.
-- `/mypage`: 암호화된 토스 거래내역 PDF를 개인 거래 원장으로 가져오기.
-- `/thumbnail/:ticker`: 배당 요약, 배당 비교, 라이벌 비교, 배당 일정, 매수 효율 카드와 PNG 다운로드, 토스 게시 문구 복사. 현재 보유 배당종목은 실제 원장 기반 보유 배당 카드가 추가됩니다.
+- `/login`: 이메일·비밀번호 또는 Google 로그인.
+- `/mypage`: 인증된 고객의 PDF 기반 거래 원장, 보유 종목 및 배당 요약.
+- `/thumbnail/:ticker`: 배당 요약, 배당 비교, 라이벌 비교, 배당 일정, 매수 효율 카드와 PNG 다운로드, 토스 게시 문구 복사.
+- `/legal`: 데이터 출처·갱신·투자 면책 및 개인정보 안내.
 - `?rivals=CRSH,TSII`: 라이벌 선택 공유. 최대 3종.
 - 그 외 주소는 `/`로 이동합니다. `VITE_APP_MODE`에 따른 화면 전환은 제거했습니다.
 
@@ -23,7 +24,7 @@ python -m unittest discover -s tests/content_pipeline -p 'test_*.py'
 
 ## 데이터 공급
 
-검색 목록은 `data-v2/catalog-seed.json`에서 생성한 작은 `ticker-index.json`만 로드합니다. 카드 페이지는 현재 썸네일 API로 필요한 시세 보조 데이터를 요청하며, 검증된 공식 배당 원장은 data v2의 승인 릴리스로 분리합니다. 라이벌 비교에는 기초자산의 가격 이력이 필요합니다.
+검색 목록은 기본적으로 작은 `ticker-index.json`을 사용합니다. `VITE_DIVGROW_RELEASE_BASE_URL`을 설정하면 DivGrow의 버전 고정 `releases/v1/current.json`과 manifest·catalog를 검증해 목록을 읽습니다. 카드 페이지는 썸네일 API로 필요한 시세 보조 데이터를 요청하며, `DIVGROW_DATA_BASE_URL`은 DivGrow R2의 `data/` 경로를 가리킵니다. 검증된 공식 배당 원장은 data v2의 승인 릴리스로 분리합니다.
 
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.
 
@@ -38,15 +39,9 @@ npm run content:refresh -- --scope provider --provider yieldmax
 
 수집 파이프라인은 기본적으로 카드용 데이터 작업을 수행합니다. 기존 블로그 Bundle·편집 캘린더·주간 대본 생성은 `--include-editorial`을 명시한 경우에만 실행합니다. 호환 도구와 기존 저장 데이터는 보존합니다.
 
-## 개인 포트폴리오
+## 개인화 포트폴리오
 
-인증된 회원의 거래 원장은 `portfolios/{uid}`에만 저장합니다. PDF 원본, 비밀번호, 계좌번호는 저장하지 않습니다. PDF 업로드는 서버에서 Firebase ID 토큰을 검증한 뒤 정규화하며, 안정적인 거래 ID로 재업로드를 병합합니다. 관리자의 읽기 전용 토스 API 동기화는 `scripts/toss/import-admin-portfolio.mjs --apply`로만 실행하고 일반 회원의 토스 로그인으로 사용하지 않습니다.
-
-Firebase 웹 설정은 `VITE_FIREBASE_*`, 서버 서비스 계정은 `FIRESTORE_SA_KEY`로 설정합니다. `firestore.rules`는 별도로 배포해야 합니다.
-
-## 별도 도구로 보존한 기능
-
-Toss 계좌·보유수량·종료 주문 API, 브라우저 PDF 파서, 회수 원장 계산·승인 행 Firestore 저장 코드, Firebase 인증 상태, IndexedDB 유틸리티를 유지합니다. 기존 `userAssets`와 `adminPortfolios` 데이터는 보존하며 앱의 조회 대상은 `portfolios`로 전환합니다.
+인증된 고객은 토스 거래내역 PDF를 업로드해 검토 후 자신의 원장에 반영할 수 있습니다. PDF 원본과 비밀번호는 저장하지 않으며, 서버는 정규화한 거래만 사용자별 `portfolios/{uid}`에 저장합니다. Toss API는 고객별 공식 동의 방식이 확인되기 전까지 읽기 전용 준비 상태만 표시합니다.
 
 테마 전환·로컬 설정 저장, 오류 경계·Sentry, Android 구성도 유지합니다. Vercel Analytics는 기존 패키지 상태를 유지하며 새로 활성화하지 않았습니다.
 

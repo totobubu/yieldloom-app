@@ -12,6 +12,7 @@ const instruments = new Map(coreCatalog.instruments.map((instrument) => [normali
 const distributions = new Map((distributionIndex.tickers ?? []).map((row) => [normalize(row.ticker), row]));
 const prices = new Map(Object.entries(priceIndex.prices ?? {}).map(([symbol, row]) => [normalize(symbol), row]));
 const priceDataBaseUrl = () => String(process.env.THUMBNAIL_PRICE_DATA_BASE_URL ?? process.env.VITE_R2_PUBLIC_URL ?? '').replace(/\/$/, '');
+const officialDataFallbackOrigin = 'https://totobubu.github.io/yieldloom-app';
 
 export function catalogEntry(symbol) {
     const normalized = normalize(symbol);
@@ -51,10 +52,22 @@ function requestOrigin(req) {
 async function loadOfficialHistory(symbol, origin, fetcher = fetch) {
     const indexRow = distributions.get(symbol);
     if (!indexRow?.historyUrl || !/^\/content-studio\/distribution-ticker-[a-z0-9.-]+\.json$/i.test(indexRow.historyUrl)) return [];
-    const response = await fetcher(new URL(indexRow.historyUrl, origin), { headers: { Accept: 'application/json' } });
-    if (!response.ok) throw new Error(`공식 배당 원장을 불러오지 못했습니다: ${symbol}`);
-    const payload = await response.json();
-    return payload.history ?? [];
+    const origins = [...new Set([origin, process.env.THUMBNAIL_OFFICIAL_DATA_BASE_URL, officialDataFallbackOrigin].filter(Boolean))];
+    let lastError;
+    for (const dataOrigin of origins) {
+        try {
+            const response = await fetcher(new URL(indexRow.historyUrl.replace(/^\//, ''), `${String(dataOrigin).replace(/\/$/, '')}/`), { headers: { Accept: 'application/json' } });
+            if (!response.ok) {
+                lastError = new Error(`HTTP ${response.status}`);
+                continue;
+            }
+            const payload = await response.json();
+            return payload.history ?? [];
+        } catch (error) {
+            lastError = error;
+        }
+    }
+    throw new Error(`공식 배당 원장을 불러오지 못했습니다: ${symbol}`, { cause: lastError });
 }
 
 function toPriceRows(history, events) {

@@ -54,3 +54,18 @@ test('AMDY joins its official ledger to its R2 price projection', async () => {
         globalThis.fetch = originalFetch;
     }
 });
+
+test('official ledger falls back to the public static origin when the deployment origin fails', async () => {
+    const requestedUrls = [];
+    const ticker = await loadTicker('TOPW', 'https://yieldloom-app.vercel.app', {
+        fetcher: async (url) => {
+            requestedUrls.push(String(url));
+            if (String(url).startsWith('https://yieldloom-app.vercel.app')) return { ok: false, status: 500 };
+            if (String(url).startsWith('https://totobubu.github.io/yieldloom-app')) return { ok: true, json: async () => ({ history: [{ ex_date: '2026-10-13', distribution_per_share: '0.10', verification_status: 'official' }] }) };
+            throw new Error(`Unexpected URL: ${url}`);
+        },
+    });
+    assert.equal(ticker.backtestData.length, 1);
+    assert.equal(ticker.backtestData[0].amount, 0.1);
+    assert.equal(requestedUrls.length, 2);
+});

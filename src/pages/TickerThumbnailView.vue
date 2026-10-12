@@ -24,6 +24,7 @@ import { createShareText } from '@/services/thumbnail/shareText';
 import { createCardShareText } from '@/services/thumbnail/shareText';
 import { createPublishPackage, downloadBlob } from '@/services/thumbnail/publishPackage';
 import { loadLocalPresets, removePreset, savePreset, syncPresets } from '@/services/contentPresets';
+import { trackAggregate } from '@/services/analytics';
 
 const route = useRoute();
 const router = useRouter();
@@ -134,6 +135,7 @@ const load = async (requestedRivals = String(route.query.rivals ?? '').split(','
         selectedInfo.value = { ...payload.catalog, ...payload.ticker.tickerInfo, symbol: payload.ticker.symbol, rivalOptions: payload.rivalOptions };
         selectedData.value = payload.ticker;
         dataStatus.value = payload.dataStatus ?? payload.ticker.sourceStatus?.freshness ?? 'partial';
+        trackAggregate('card_open', 'summary');
         comparison.value = payload.catalog.underlying && payload.rivals.length && payload.series[payload.catalog.underlying] && payload.rivals.every((symbol) => payload.series[symbol]) ? calculateRivalComparison([payload.ticker, ...payload.rivals.map((symbol) => payload.series[symbol])], payload.series[payload.catalog.underlying], new Date().toISOString().slice(0, 10)) : null;
         schedule.value = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
         holdingAsset.value = firebaseUser.value ? await loadPortfolioAsset(firebaseUser.value.uid, selectedInfo.value.symbol).catch(() => null) : null;
@@ -160,6 +162,7 @@ const downloadArtwork = async (kind) => {
         // The download is normally initiated from a user gesture, so immediately offer its matching post copy.
         await navigator.clipboard?.writeText(cardShareText(kind));
         shareCopyReady.value = true;
+        trackAggregate('png_download', kind);
     } catch (e) {
         error.value = 'PNG를 생성하지 못했습니다. 잠시 후 다시 시도하세요.';
         console.error('Thumbnail export failed', e);
@@ -170,6 +173,7 @@ const downloadArtwork = async (kind) => {
 const copyShareText = async (kind = 'summary') => {
     await navigator.clipboard.writeText(cardShareText(kind));
     shareCopyReady.value = true;
+    trackAggregate('share_copy', kind);
 };
 const downloadPublishPackage = async () => {
     packaging.value = true;

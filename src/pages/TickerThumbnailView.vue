@@ -125,11 +125,11 @@ const refreshComparison = async () => {
 const syncRivalsToUrl = () => router.replace({ query: { ...route.query, rivals: rivals.value.length ? rivals.value.join(',') : undefined } });
 watch(rivals, async () => { syncRivalsToUrl(); await refreshComparison(); }, { deep: true });
 
-const load = async (requestedRivals = String(route.query.rivals ?? '').split(',').filter(Boolean)) => {
+const load = async (rivalSymbols = String(route.query.rivals ?? '').split(',').filter(Boolean)) => {
     loading.value = true; error.value = ''; comparison.value = null;
     try {
         const requested = normalize(route.params.ticker);
-        const response = await fetch(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}&rivals=${encodeURIComponent(requestedRivals.join(','))}`, { cache: 'no-store' });
+        const response = await fetch(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}&rivals=${encodeURIComponent(rivalSymbols.join(','))}`, { cache: 'no-store' });
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error ?? response.status);
         selectedInfo.value = { ...payload.catalog, ...payload.ticker.tickerInfo, symbol: payload.ticker.symbol, rivalOptions: payload.rivalOptions };
@@ -139,8 +139,8 @@ const load = async (requestedRivals = String(route.query.rivals ?? '').split(','
         comparison.value = payload.catalog.underlying && payload.rivals.length && payload.series[payload.catalog.underlying] && payload.rivals.every((symbol) => payload.series[symbol]) ? calculateRivalComparison([payload.ticker, ...payload.rivals.map((symbol) => payload.series[symbol])], payload.series[payload.catalog.underlying], new Date().toISOString().slice(0, 10)) : null;
         schedule.value = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
         holdingAsset.value = firebaseUser.value ? await loadPortfolioAsset(firebaseUser.value.uid, selectedInfo.value.symbol).catch(() => null) : null;
-        const requestedRivals = payload.rivals ?? [];
-        if (requestedRivals.join(',') !== rivals.value.join(',')) rivals.value = requestedRivals;
+        const loadedRivals = payload.rivals ?? [];
+        if (loadedRivals.join(',') !== rivals.value.join(',')) rivals.value = loadedRivals;
     } catch (e) { error.value = '썸네일 데이터를 불러오지 못했습니다.'; console.error(e); } finally { loading.value = false; }
 };
 const downloadArtwork = async (kind) => {
@@ -199,7 +199,7 @@ const saveCurrentPreset = async () => {
 };
 const openPreset = async (preset) => { selectedTone.value = preset.tone || 'informative'; await router.push({ path: `/thumbnail/${preset.ticker}`, query: preset.rivals.length ? { rivals: preset.rivals.join(',') } : {} }); };
 const deletePreset = async (preset) => { await removePreset(firebaseUser.value?.uid, preset.id); presets.value = presets.value.filter((item) => item.id !== preset.id); };
-onMounted(async () => { await refreshPresets(); await load(); }); watch(() => route.params.ticker, load);
+onMounted(async () => { await refreshPresets(); await load(); }); watch(() => route.params.ticker, () => load());
 watch(firebaseUser, async () => { await refreshPresets(); if (selectedInfo.value) load(rivals.value); });
 </script>
 

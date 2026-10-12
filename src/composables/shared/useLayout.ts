@@ -515,6 +515,10 @@ export interface UseLayoutReturn {
 }
 
 export function useLayout(): UseLayoutReturn {
+    const isDarkMode = computed(() => appState.value.themePreference === 'system'
+        ? systemDarkMode.value
+        : appState.value.themePreference === 'dark');
+
     watchEffect(() => {
         if (isDarkMode.value) {
             document.documentElement.classList.add('p-dark');
@@ -556,9 +560,6 @@ export function useLayout(): UseLayoutReturn {
         }
     }
 
-    const isDarkMode = computed(() => appState.value.themePreference === 'system'
-        ? systemDarkMode.value
-        : appState.value.themePreference === 'dark');
     const primary = computed(() => appState.value.primary);
     const surface = computed(() => appState.value.surface);
     const themePreference = computed(() => appState.value.themePreference);

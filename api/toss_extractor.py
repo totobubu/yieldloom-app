@@ -191,8 +191,6 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
         print(f"\n{'=' * 80}", file=sys.stderr)
         print(f"📄 거래내역서 데이터 추출 중: {pdf_path}", file=sys.stderr)
         print(f"{'=' * 80}\n", file=sys.stderr)
-    else:
-        print(f"[extractor] 시작: pdf_path={pdf_path}", file=sys.stderr)
 
     with pdfplumber.open(pdf_path, password=password or "") as pdf:
         if verbose:
@@ -208,11 +206,6 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
             # 첫 페이지에서 메타데이터 추출
             if page_num == 1:
                 for line in lines:
-                    if not verbose:
-                        print(
-                            f"[extractor] metadata 후보 line: {line}",
-                            file=sys.stderr,
-                        )
                     if "발급번호" in line:
                         parts = line.split("발급번호")
                         if len(parts) > 1:
@@ -234,11 +227,6 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
             while i < len(lines):
                 transaction, next_i = parse_transaction_lines(lines, i)
                 if transaction:
-                    if not verbose:
-                        print(
-                            f"[extractor] 거래 추출: {transaction}",
-                            file=sys.stderr,
-                        )
                     transactions.append(transaction)
                 i = next_i
 

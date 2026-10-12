@@ -36,14 +36,15 @@
 
 ### 2. API
 
-#### `api/parsePdfTransaction.py`
+#### `api/portfolio-import.py`
 
-- **역할**: PDF 파일을 받아서 파싱
+- **역할**: 로그인한 고객의 PDF를 임시 처리하고, 검토 후 정규화된 개인 원장만 저장
 - **지원 증권사**: 토스증권
 - **처리 과정**:
-    1. 업로드된 파일을 임시 경로에 저장
-    2. Python 파서 호출
-    3. JSON 결과 반환
+    1. Firebase ID 토큰을 서버에서 검증
+    2. 업로드된 파일과 비밀번호를 임시 경로에서만 사용
+    3. 검토 세션을 만든 뒤 사용자가 선택한 거래만 `portfolios/{uid}`에 저장
+    4. PDF 원본, 비밀번호, 계좌번호는 저장하지 않음
 
 ### 3. Python 스크립트
 
@@ -129,9 +130,8 @@ def extract_transactions_from_pdf(pdf_path):
 2. **API 핸들러 추가**
 
 ```python
-# api/parsePdfTransaction.py
-if brokerage == "kb":
-    result = extract_kb_transactions(temp_file_path)
+# api/portfolio-import.py
+# 새 증권사 파서는 인증된 개인 원장 가져오기 흐름에 연결합니다.
 ```
 
 3. **증권사 옵션 추가**

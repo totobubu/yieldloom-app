@@ -75,7 +75,8 @@ def parse_statement(uploaded, password):
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as handle:
             temp_path = handle.name
             uploaded.save(handle)
-        raw_transactions = extract_transactions_from_pdf(temp_path, verbose=False, password=password)
+        extraction = extract_transactions_from_pdf(temp_path, verbose=False, password=password)
+        raw_transactions = extraction.get("transactions", [])
     finally:
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)

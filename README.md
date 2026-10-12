@@ -28,6 +28,10 @@ python -m unittest discover -s tests/content_pipeline -p 'test_*.py'
 
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.
 
+## 광고 배치
+
+공개 종목 검색 화면만 광고 슬롯을 지원합니다. `VITE_ADSENSE_CLIENT`과 `VITE_ADSENSE_HOME_SLOT`이 모두 유효할 때만 Google AdSense 스크립트를 지연 로드합니다. 개인 포트폴리오·로그인·PDF 업로드 화면에서는 광고를 로드하지 않습니다. 실제 활성화 전에는 AdSense 사이트 심사와 이용 지역에 맞는 개인정보·동의 고지를 별도로 완료해야 합니다.
+
 일정 카드는 `public/content-studio/distribution-index.json`과 티커별 공식 배당 이력, 또는 `VITE_DATA_RELEASE_BASE_URL`로 지정한 data v2 릴리스를 사용합니다. 가격 이력과 공식 배당 원장의 업데이트·정합성 검사는 계속 필요합니다.
 
 공식 운용사 수집기 15종, SQLite 원장, 데이터 대조 및 릴리스·배포 도구는 유지합니다.

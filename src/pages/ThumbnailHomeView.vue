@@ -3,8 +3,10 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useHead } from '@vueuse/head';
 import { getDataUrl, getR2Url } from '@/utils/dataUrl';
 import { isDivgrowReleaseConfigured, loadDivgrowTickerIndex } from '@/services/divgrowRelease';
+import AdSlot from '@/components/ads/AdSlot.vue';
 useHead({ title: 'ETF·주식 검색' });
 const query = ref(''), company = ref(''), securityType = ref(''), sort = ref('symbol');
+const homeAdSlot = String(import.meta.env.VITE_ADSENSE_HOME_SLOT || '');
 const page = ref(1), rows = ref([]), distributions = ref({}), loading = ref(true), error = ref('');
 const pageSize = 25;
 const companies = computed(() => [...new Set(rows.value.map(row => row.company?.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b)));
@@ -70,6 +72,7 @@ onMounted(load);
                 <p v-if="!filtered.length" class="empty">검색 결과가 없습니다. 검색어나 필터를 변경해 주세요.</p>
             </div>
             <div class="results-footer"><p>배당금·배당락일은 저장된 최근 이력 기준입니다. ‘—’는 제공된 데이터가 없는 항목입니다.</p><nav class="pagination" aria-label="검색 결과 페이지"><button :disabled="page === 1" @click="page--" aria-label="이전 페이지">‹</button><span>{{ page }} / {{ pages }}</span><button :disabled="page === pages" @click="page++" aria-label="다음 페이지">›</button></nav></div>
+            <AdSlot :slot="homeAdSlot" label="종목 검색 결과 광고" />
         </template>
     </section>
 </template>

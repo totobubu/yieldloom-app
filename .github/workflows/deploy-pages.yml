@@ -38,6 +38,9 @@ jobs:
           VITE_R2_PUBLIC_URL: ${{ vars.VITE_R2_PUBLIC_URL }}
           VITE_USE_R2: ${{ vars.VITE_USE_R2 }}
           VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL }}
+          VITE_DIVGROW_RELEASE_BASE_URL: ${{ vars.VITE_DIVGROW_RELEASE_BASE_URL }}
+          VITE_ADSENSE_CLIENT: ${{ vars.VITE_ADSENSE_CLIENT }}
+          VITE_ADSENSE_HOME_SLOT: ${{ vars.VITE_ADSENSE_HOME_SLOT }}
         run: |
           npm run build
           cp dist/index.html dist/404.html

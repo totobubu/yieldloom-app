@@ -3,6 +3,7 @@ import coreCatalog from '../data-v2/catalog-seed.json' with { type: 'json' };
 import distributionIndex from '../public/content-studio/distribution-index.json' with { type: 'json' };
 import priceIndex from '../public/content-studio/price-index.json' with { type: 'json' };
 import { createApiHandler } from '../lib/api-handler.js';
+import { readTickerSnapshot, writeTickerSnapshot } from '../lib/r2-snapshot.js';
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const cache = new Map();
@@ -105,12 +106,48 @@ export async function loadTicker(symbol, origin, options = {}) {
         backtestData,
         sourceStatus: {
             dividends: indexRow ? 'official_projection' : 'unavailable',
+            dividendSourceUrl: indexRow?.historyUrl ?? null,
             price: priceHistory ? 'r2_projection' : 'unavailable',
             priceDate: latest?.date ?? null,
+            asOf: new Date().toISOString(),
+            freshness: priceHistory ? 'fresh' : 'partial',
         },
     };
     if (fetcher === fetch) cache.set(cacheKey, { value, expiresAt: Date.now() + CACHE_TTL_MS });
     return value;
+}
+
+async function loadTickerWithSnapshot(symbol, origin, options = {}) {
+    try {
+        const value = await loadTicker(symbol, origin, options);
+        if (value.sourceStatus.price === 'unavailable') {
+            const snapshot = await readTickerSnapshot(symbol).catch((error) => {
+                console.warn(`Snapshot read failed for ${symbol}`, error.message);
+                return null;
+            });
+            if (snapshot?.value?.sourceStatus?.price !== 'unavailable') {
+                return { ...snapshot.value, sourceStatus: { ...(snapshot.value.sourceStatus ?? {}), freshness: 'stale', staleSince: snapshot.savedAt, reason: 'price_source_unavailable' } };
+            }
+        }
+        // Snapshot persistence is optional locally, but mandatory where R2 credentials exist.
+        await writeTickerSnapshot(symbol, value).catch((error) => console.warn(`Snapshot write failed for ${symbol}`, error.message));
+        return value;
+    } catch (error) {
+        const snapshot = await readTickerSnapshot(symbol).catch((snapshotError) => {
+            console.warn(`Snapshot read failed for ${symbol}`, snapshotError.message);
+            return null;
+        });
+        if (!snapshot?.value) throw error;
+        return {
+            ...snapshot.value,
+            sourceStatus: {
+                ...(snapshot.value.sourceStatus ?? {}),
+                freshness: 'stale',
+                staleSince: snapshot.savedAt,
+                reason: 'live_source_unavailable',
+            },
+        };
+    }
 }
 
 export async function buildThumbnailPayload(ticker, requestedRivals = [], loader) {
@@ -118,13 +155,15 @@ export async function buildThumbnailPayload(ticker, requestedRivals = [], loader
     const allowed = new Set(rivalOptions(entry));
     const rivals = requestedRivals.map(normalize).filter((symbol) => allowed.has(symbol)).slice(0, 3);
     const symbols = [entry.symbol, ...rivals, ...(entry.underlying ? [entry.underlying] : [])];
-    const activeLoader = loader ?? ((symbol) => loadTicker(symbol, 'http://localhost'));
+    const activeLoader = loader ?? ((symbol) => loadTickerWithSnapshot(symbol, 'http://localhost'));
     const settled = await Promise.allSettled(symbols.map(activeLoader));
     const loaded = Object.fromEntries(symbols.map((symbol, index) => [symbol, settled[index].status === 'fulfilled' ? settled[index].value : null]));
     const unavailable = symbols.filter((symbol) => !loaded[symbol]);
     if (!loaded[entry.symbol]) throw new Error(`공식 배당 원장을 불러올 수 없습니다: ${entry.symbol}`);
     const instrument = instruments.get(entry.symbol);
-    return { ticker: loaded[entry.symbol], catalog: { ...entry, company: instrument?.officialProvider ?? null }, rivalOptions: rivalOptions(entry), rivals, series: loaded, partial: unavailable.length > 0, unavailable };
+    const seriesStatus = Object.fromEntries(symbols.map((symbol) => [symbol, loaded[symbol]?.sourceStatus ?? { freshness: 'unavailable' }]));
+    const freshness = Object.values(seriesStatus).some((status) => status.freshness === 'stale') ? 'stale' : unavailable.length ? 'partial' : loaded[entry.symbol].sourceStatus?.freshness ?? 'fresh';
+    return { ticker: loaded[entry.symbol], catalog: { ...entry, company: instrument?.officialProvider ?? null }, rivalOptions: rivalOptions(entry), rivals, series: loaded, partial: unavailable.length > 0, unavailable, dataStatus: freshness, seriesStatus };
 }
 
 async function handler(req, res) {
@@ -132,7 +171,7 @@ async function handler(req, res) {
     if (!/^[A-Z0-9.-]{1,15}$/.test(ticker)) return res.status(400).json({ error: 'A valid ticker is required.' });
     const rivals = String(req.query.rivals ?? '').split(',').filter(Boolean);
     const origin = requestOrigin(req);
-    const payload = await buildThumbnailPayload(ticker, rivals, (symbol) => loadTicker(symbol, origin));
+    const payload = await buildThumbnailPayload(ticker, rivals, (symbol) => loadTickerWithSnapshot(symbol, origin));
     res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
     return res.status(200).json(payload);
 }

@@ -14,6 +14,8 @@ test('payload removes invalid rivals and reports partial loads', async () => {
     assert.deepEqual(payload.rivals, ['TSII']);
     assert.equal(payload.partial, true);
     assert.deepEqual(payload.unavailable, ['TSII']);
+    assert.equal(payload.dataStatus, 'partial');
+    assert.equal(payload.seriesStatus.TSII.freshness, 'unavailable');
 });
 
 test('official events retain exact ex-date and distribution amount without a price', () => {
@@ -47,6 +49,7 @@ test('AMDY joins its official ledger to its R2 price projection', async () => {
         ]);
         assert.equal(ticker.sourceStatus.dividends, 'official_projection');
         assert.equal(ticker.sourceStatus.price, 'r2_projection');
+        assert.equal(ticker.sourceStatus.freshness, 'fresh');
     } finally {
         globalThis.fetch = originalFetch;
     }

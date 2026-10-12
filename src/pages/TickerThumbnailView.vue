@@ -21,6 +21,9 @@ import { firebaseUser } from '@/services/firebaseClient';
 import { loadPortfolioAsset } from '@/services/portfolio';
 import { calculateHoldingDividend } from '@/services/thumbnail/holdingDividend';
 import { createShareText } from '@/services/thumbnail/shareText';
+import { createCardShareText } from '@/services/thumbnail/shareText';
+import { createPublishPackage, downloadBlob } from '@/services/thumbnail/publishPackage';
+import { loadLocalPresets, removePreset, savePreset, syncPresets } from '@/services/contentPresets';
 
 const route = useRoute();
 const router = useRouter();
@@ -35,6 +38,10 @@ const holdingAsset = ref(null);
 const artworkSize = 720;
 const maxRivals = 3;
 const shareCopyReady = ref(false);
+const dataStatus = ref('fresh');
+const selectedTone = ref('informative');
+const packaging = ref(false);
+const presets = ref(loadLocalPresets());
 
 const publicUrl = computed(() => typeof window === 'undefined' ? '' : `${window.location.origin}${route.fullPath}`);
 
@@ -77,6 +84,7 @@ const thumbnailData = computed(() => {
     };
 });
 const shareText = computed(() => createShareText(thumbnailData.value));
+const cardShareText = (kind) => createCardShareText(kind, thumbnailData.value, { tone: selectedTone.value, sourceStatus: dataStatus.value, asOfDate: selectedData.value?.sourceStatus?.priceDate ?? null });
 const shareTitle = computed(() => selectedInfo.value ? `${selectedInfo.value.symbol} 최신 배당 | Yieldloom` : 'Yieldloom 배당 콘텐츠');
 useHead({
     title: shareTitle,
@@ -125,6 +133,7 @@ const load = async (requestedRivals = String(route.query.rivals ?? '').split(','
         if (!response.ok) throw new Error(payload.error ?? response.status);
         selectedInfo.value = { ...payload.catalog, ...payload.ticker.tickerInfo, symbol: payload.ticker.symbol, rivalOptions: payload.rivalOptions };
         selectedData.value = payload.ticker;
+        dataStatus.value = payload.dataStatus ?? payload.ticker.sourceStatus?.freshness ?? 'partial';
         comparison.value = payload.catalog.underlying && payload.rivals.length && payload.series[payload.catalog.underlying] && payload.rivals.every((symbol) => payload.series[symbol]) ? calculateRivalComparison([payload.ticker, ...payload.rivals.map((symbol) => payload.series[symbol])], payload.series[payload.catalog.underlying], new Date().toISOString().slice(0, 10)) : null;
         schedule.value = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
         holdingAsset.value = firebaseUser.value ? await loadPortfolioAsset(firebaseUser.value.uid, selectedInfo.value.symbol).catch(() => null) : null;
@@ -149,7 +158,7 @@ const downloadArtwork = async (kind) => {
         link.href = canvas.toDataURL('image/png');
         link.click();
         // The download is normally initiated from a user gesture, so immediately offer its matching post copy.
-        await navigator.clipboard?.writeText(shareText.value);
+        await navigator.clipboard?.writeText(cardShareText(kind));
         shareCopyReady.value = true;
     } catch (e) {
         error.value = 'PNG를 생성하지 못했습니다. 잠시 후 다시 시도하세요.';
@@ -158,12 +167,36 @@ const downloadArtwork = async (kind) => {
         exporting.value = '';
     }
 };
-const copyShareText = async () => {
-    await navigator.clipboard.writeText(shareText.value);
+const copyShareText = async (kind = 'summary') => {
+    await navigator.clipboard.writeText(cardShareText(kind));
     shareCopyReady.value = true;
 };
-onMounted(load); watch(() => route.params.ticker, load);
-watch(firebaseUser, () => { if (selectedInfo.value) load(rivals.value); });
+const downloadPublishPackage = async () => {
+    packaging.value = true;
+    try {
+        const kinds = ['summary', 'comparison', 'rival', 'calendar', 'holding-dividend', 'entry-efficiency'];
+        const cards = await Promise.all(kinds.map(async (kind) => {
+            const element = document.querySelector(`[data-thumbnail-kind="${kind}"]`);
+            if (!element) return null;
+            const canvas = await html2canvas(element, { useCORS: true, backgroundColor: null, scale: 1, width: artworkSize, height: artworkSize });
+            const png = await (await fetch(canvas.toDataURL('image/png'))).arrayBuffer();
+            return { kind, label: kind, filename: `${thumbnailData.value.symbol.toLowerCase()}_${kind}.png`, png: new Uint8Array(png), text: cardShareText(kind), sourceUrl: selectedData.value?.sourceStatus?.dividendSourceUrl, asOfDate: selectedData.value?.sourceStatus?.priceDate };
+        }));
+        downloadBlob(createPublishPackage({ symbol: thumbnailData.value.symbol, tone: selectedTone.value, cards: cards.filter(Boolean), sourceStatus: dataStatus.value }), `${thumbnailData.value.symbol.toLowerCase()}_publish-package.zip`);
+    } catch (reason) { error.value = '게시 패키지를 생성하지 못했습니다. 잠시 후 다시 시도하세요.'; console.error('Publish package failed', reason); }
+    finally { packaging.value = false; }
+};
+const refreshPresets = async () => { presets.value = await syncPresets(firebaseUser.value?.uid); };
+const saveCurrentPreset = async () => {
+    const name = window.prompt('프리셋 이름을 입력하세요.', `${selectedInfo.value.symbol} 콘텐츠`);
+    if (!name?.trim()) return;
+    const item = await savePreset(firebaseUser.value?.uid, { id: crypto.randomUUID?.() ?? `${Date.now()}`, name, ticker: selectedInfo.value.symbol, rivals: rivals.value, tone: selectedTone.value, updatedAt: new Date().toISOString() });
+    presets.value = [item, ...presets.value.filter((preset) => preset.id !== item.id)];
+};
+const openPreset = async (preset) => { selectedTone.value = preset.tone || 'informative'; await router.push({ path: `/thumbnail/${preset.ticker}`, query: preset.rivals.length ? { rivals: preset.rivals.join(',') } : {} }); };
+const deletePreset = async (preset) => { await removePreset(firebaseUser.value?.uid, preset.id); presets.value = presets.value.filter((item) => item.id !== preset.id); };
+onMounted(async () => { await refreshPresets(); await load(); }); watch(() => route.params.ticker, load);
+watch(firebaseUser, async () => { await refreshPresets(); if (selectedInfo.value) load(rivals.value); });
 </script>
 
 <template>
@@ -173,6 +206,8 @@ watch(firebaseUser, () => { if (selectedInfo.value) load(rivals.value); });
         <template v-else>
             <header class="page-header">
                 <div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div>
+                <div class="data-toolbar"><p class="data-status" :class="dataStatus">{{ dataStatus === 'fresh' ? '데이터 최신' : dataStatus === 'stale' ? '마지막 정상 데이터 · 갱신 지연' : '일부 데이터 확인 필요' }}</p><label>문구 톤 <select v-model="selectedTone"><option value="informative">정보형</option><option value="concise">간결형</option><option value="friendly">친근형</option></select></label><Button label="프리셋 저장" icon="pi pi-bookmark" @click="saveCurrentPreset" /><Button label="게시 패키지 ZIP" icon="pi pi-box" :loading="packaging" @click="downloadPublishPackage" /></div>
+                <div v-if="presets.length" class="preset-row" aria-label="저장된 콘텐츠 프리셋"><span>저장한 조합</span><template v-for="preset in presets" :key="preset.id"><button type="button" @click="openPreset(preset)">{{ preset.name }}</button><button type="button" class="preset-delete" :aria-label="`${preset.name} 삭제`" @click="deletePreset(preset)">×</button></template></div>
                 <section v-if="selectedInfo.underlying && rivalOptions.length" class="rival-candidate-picker" :aria-label="`${selectedInfo.symbol} 라이벌 카드 후보`">
                     <div class="candidate-heading"><p>라이벌 카드 후보</p><strong>{{ selectedInfo.underlying }} 기반 · 최대 {{ maxRivals }}종</strong></div>
                     <div class="candidate-buttons">
@@ -181,12 +216,12 @@ watch(firebaseUser, () => { if (selectedInfo.value) load(rivals.value); });
                 </section>
             </header>
             <section class="artwork-grid">
-                <article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /><CardShareActions title="요약 카드" :text="shareText" :url="publicUrl" /></article>
-                <article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /><CardShareActions title="비교 카드" :text="shareText" :url="publicUrl" /></article>
-                <article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /><CardShareActions title="라이벌 카드" :text="shareText" :url="publicUrl" /></article>
-                <article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /><CardShareActions title="일정 카드" :text="shareText" :url="publicUrl" /></article>
-                <article v-if="holdingDividend.supported" class="artwork-panel"><HoldingDividendThumbnail :data="{ ...holdingDividend, symbol: selectedInfo.symbol }" /><Button label="보유 배당 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'holding-dividend'" @click="downloadArtwork('holding-dividend')" /><CardShareActions title="보유 배당 카드" :text="shareText" :url="publicUrl" /></article>
-                <article class="artwork-panel"><DividendEntryEfficiencyThumbnail :data="{ ...entryEfficiency, symbol: selectedInfo.symbol }" /><Button label="매수 효율 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'entry-efficiency'" @click="downloadArtwork('entry-efficiency')" /><CardShareActions title="매수 효율 카드" :text="shareText" :url="publicUrl" /></article>
+                <article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /><CardShareActions title="요약 카드" :text="cardShareText('summary')" :url="publicUrl" /></article>
+                <article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" data-thumbnail-kind="comparison" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /><CardShareActions title="비교 카드" :text="cardShareText('comparison')" :url="publicUrl" /></article>
+                <article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" data-thumbnail-kind="rival" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /><CardShareActions title="라이벌 카드" :text="cardShareText('rival')" :url="publicUrl" /></article>
+                <article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" data-thumbnail-kind="calendar" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /><CardShareActions title="일정 카드" :text="cardShareText('calendar')" :url="publicUrl" /></article>
+                <article v-if="holdingDividend.supported" class="artwork-panel"><HoldingDividendThumbnail :data="{ ...holdingDividend, symbol: selectedInfo.symbol }" data-thumbnail-kind="holding-dividend" /><Button label="보유 배당 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'holding-dividend'" @click="downloadArtwork('holding-dividend')" /><CardShareActions title="보유 배당 카드" :text="cardShareText('holding-dividend')" :url="publicUrl" /></article>
+                <article class="artwork-panel"><DividendEntryEfficiencyThumbnail :data="{ ...entryEfficiency, symbol: selectedInfo.symbol }" data-thumbnail-kind="entry-efficiency" /><Button label="매수 효율 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'entry-efficiency'" @click="downloadArtwork('entry-efficiency')" /><CardShareActions title="매수 효율 카드" :text="cardShareText('entry-efficiency')" :url="publicUrl" /></article>
             </section>
             <div v-if="shareCopyReady" class="share-copy-notice"><span>PNG 공유용 문구가 복사되었습니다. 토스·카카오톡에 바로 붙여넣으세요.</span><button type="button" @click="copyShareText">이미지 공유용 문구 복사</button></div>
             <section class="content-grid">
@@ -203,5 +238,5 @@ watch(firebaseUser, () => { if (selectedInfo.value) load(rivals.value); });
 
 <style scoped>
 .ticker-thumbnail-page{min-height:100vh;padding:32px;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:2208px;margin:0 auto 24px}.page-header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1{margin:5px 0 0}.rival-candidate-picker{min-width:340px;padding:14px 16px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;box-shadow:0 4px 14px #15212b0d}.candidate-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}.candidate-heading strong{color:#64748b;font-size:.72rem}.candidate-buttons{display:flex;flex-wrap:wrap;gap:7px}.candidate-buttons button{min-width:52px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#334155;font:800 .8rem/1 ui-monospace,monospace;cursor:pointer}.candidate-buttons button:hover:not(:disabled){border-color:#2563eb;color:#1d4ed8}.candidate-buttons button.selected{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 2px 6px #2563eb3d}.candidate-buttons button:disabled{opacity:.42;cursor:not-allowed}.artwork-grid{display:grid;grid-template-columns:repeat(auto-fit,720px);justify-content:center;gap:24px;max-width:2208px;margin:auto}.artwork-panel{display:grid;width:720px;gap:12px}.artwork-panel>button{justify-self:start}.share-copy-notice{position:sticky;bottom:16px;z-index:2;display:flex;justify-content:center;align-items:center;gap:12px;width:max-content;max-width:calc(100% - 32px);margin:24px auto;padding:12px 15px;border-radius:12px;background:#17212b;color:#fff;box-shadow:0 10px 28px #17212b40}.share-copy-notice button{border:0;border-radius:7px;background:#fee500;color:#191919;padding:8px 10px;font:700 .78rem inherit;cursor:pointer}.content-grid{display:grid;grid-template-columns:minmax(0,520px) minmax(360px,1fr);gap:24px;max-width:1520px;margin:32px auto 0;align-items:start}.rivals{padding:24px;border-radius:18px;background:#dfe8f2}.hint{margin:0;color:#526274}@media(max-width:1000px){.page-header{align-items:flex-start;flex-direction:column}.rival-candidate-picker{width:100%;min-width:0;box-sizing:border-box}.content-grid{grid-template-columns:1fr}.artwork-grid{justify-content:start;overflow-x:auto;padding-bottom:12px}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}.candidate-heading{align-items:flex-start;flex-direction:column;gap:3px}.share-copy-notice{align-items:flex-start;flex-direction:column}}
-.ticker-thumbnail-page{color:var(--app-text)}.page-header p{color:var(--app-accent)}.rival-candidate-picker{border-color:var(--app-border);background:var(--app-surface);box-shadow:none}.candidate-heading strong,.hint{color:var(--app-muted)}.candidate-buttons button{border-color:var(--app-border);background:var(--app-surface-muted);color:var(--app-text)}.candidate-buttons button:hover:not(:disabled){border-color:var(--app-accent);color:var(--app-accent)}.candidate-buttons button.selected{border-color:var(--app-accent);background:var(--app-accent);color:var(--app-accent-contrast);box-shadow:none}.share-copy-notice{background:var(--app-surface);color:var(--app-text);border:1px solid var(--app-border);box-shadow:0 10px 28px var(--app-overlay)}.share-copy-notice button{background:var(--app-accent);color:var(--app-accent-contrast)}.rivals{background:var(--app-surface-muted);border:1px solid var(--app-border-subtle)}
+.ticker-thumbnail-page{color:var(--app-text)}.page-header p{color:var(--app-accent)}.data-toolbar{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:10px}.data-toolbar label{font-size:.78rem;font-weight:700}.data-toolbar select{margin-left:5px;padding:7px;border:1px solid var(--app-border);border-radius:7px;background:var(--app-surface);color:var(--app-text)}.data-status{padding:8px 10px;border-radius:8px;background:var(--app-surface-muted);color:var(--app-muted)!important;letter-spacing:0!important}.data-status.stale,.data-status.partial{background:#fff7ed;color:#9a3412!important}.preset-row{display:flex;align-items:center;flex-wrap:wrap;gap:5px;max-width:2208px;margin:0 auto 18px;font-size:.75rem}.preset-row span{margin-right:5px;color:var(--app-muted);font-weight:700}.preset-row button{padding:6px 8px;border:1px solid var(--app-border);border-radius:7px;background:var(--app-surface);color:var(--app-text);cursor:pointer}.preset-row .preset-delete{margin-left:-6px;border-left:0;color:var(--app-muted)}.rival-candidate-picker{border-color:var(--app-border);background:var(--app-surface);box-shadow:none}.candidate-heading strong,.hint{color:var(--app-muted)}.candidate-buttons button{border-color:var(--app-border);background:var(--app-surface-muted);color:var(--app-text)}.candidate-buttons button:hover:not(:disabled){border-color:var(--app-accent);color:var(--app-accent)}.candidate-buttons button.selected{border-color:var(--app-accent);background:var(--app-accent);color:var(--app-accent-contrast);box-shadow:none}.share-copy-notice{background:var(--app-surface);color:var(--app-text);border:1px solid var(--app-border);box-shadow:0 10px 28px var(--app-overlay)}.share-copy-notice button{background:var(--app-accent);color:var(--app-accent-contrast)}.rivals{background:var(--app-surface-muted);border:1px solid var(--app-border-subtle)}
 </style>

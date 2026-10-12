@@ -1,6 +1,8 @@
+import { apiUrl } from './apiUrl.js';
+
 export async function getTossConnectionStatus(user, fetcher = fetch) {
     if (!user) throw new Error('로그인이 필요합니다.');
-    const response = await fetcher('/api/toss-connection', {
+    const response = await fetcher(apiUrl('/api/toss-connection'), {
         headers: { Authorization: `Bearer ${await user.getIdToken()}` },
     });
     const payload = await response.json().catch(() => ({}));

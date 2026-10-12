@@ -28,6 +28,8 @@ python -m unittest discover -s tests/content_pipeline -p 'test_*.py'
 
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.
 
+GitHub Pages에서 개인화·썸네일 API를 사용하려면 Pages 환경변수 `VITE_API_BASE_URL`에 별도 서버리스 API origin을 설정합니다. 해당 서버에는 `PUBLIC_APP_ORIGINS`에 Pages origin만, `FIRESTORE_SA_KEY`·Toss 자격증명은 서버 전용으로 설정합니다.
+
 ## 광고 배치
 
 공개 종목 검색 화면만 광고 슬롯을 지원합니다. `VITE_ADSENSE_CLIENT`과 `VITE_ADSENSE_HOME_SLOT`이 모두 유효할 때만 Google AdSense 스크립트를 지연 로드합니다. 개인 포트폴리오·로그인·PDF 업로드 화면에서는 광고를 로드하지 않습니다. 실제 활성화 전에는 AdSense 사이트 심사와 이용 지역에 맞는 개인정보·동의 고지를 별도로 완료해야 합니다.

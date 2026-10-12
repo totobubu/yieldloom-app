@@ -1,6 +1,7 @@
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from './firebaseClient';
 import { summarizePortfolio } from './portfolioSummary';
+import { apiUrl } from './apiUrl.js';
 
 export async function loadPortfolioAssets(uid) {
     if (!db || !uid) return [];
@@ -40,7 +41,7 @@ export async function previewTossStatement(user, file, password) {
     const form = new FormData();
     form.append('file', file);
     form.append('password', password);
-    const response = await fetch('/api/portfolio-import?action=preview', {
+    const response = await fetch(apiUrl('/api/portfolio-import?action=preview'), {
         method: 'POST',
         headers: { Authorization: `Bearer ${await user.getIdToken()}` },
         body: form,
@@ -52,7 +53,7 @@ export async function previewTossStatement(user, file, password) {
 
 export async function commitTossStatement(user, sessionId, acceptedIds) {
     if (!user || !sessionId || !acceptedIds?.length) throw new Error('확정할 거래를 선택해 주세요.');
-    const response = await fetch('/api/portfolio-import?action=commit', {
+    const response = await fetch(apiUrl('/api/portfolio-import?action=commit'), {
         method: 'POST', headers: { Authorization: `Bearer ${await user.getIdToken()}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, acceptedIds }),
     });

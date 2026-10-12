@@ -12,8 +12,10 @@ from firebase_admin import auth, credentials, firestore
 from flask import Flask, jsonify, request
 
 from toss_extractor import extract_transactions_from_pdf
+from server_cors import configure_cors
 
 app = Flask(__name__)
+configure_cors(app)
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 
 

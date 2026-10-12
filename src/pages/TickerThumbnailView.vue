@@ -21,6 +21,7 @@ import { createCardShareText } from '@/services/thumbnail/shareText';
 import { createPublishPackage, downloadBlob } from '@/services/thumbnail/publishPackage';
 import { loadLocalPresets, removeLocalPreset, saveLocalPreset } from '@/services/contentPresets';
 import { trackAggregate } from '@/services/analytics';
+import { apiOrigin, apiUrl } from '@/services/apiUrl';
 
 const route = useRoute();
 const router = useRouter();
@@ -88,7 +89,7 @@ useHead({
         { name: 'description', content: computed(() => shareText.value) },
         { property: 'og:title', content: shareTitle },
         { property: 'og:description', content: computed(() => shareText.value) },
-        { property: 'og:image', content: computed(() => `${typeof window === 'undefined' ? '' : window.location.origin}/api/thumbnail-og?ticker=${encodeURIComponent(selectedInfo.value?.symbol ?? normalize(route.params.ticker))}`) },
+        { property: 'og:image', content: computed(() => `${apiOrigin || (typeof window === 'undefined' ? '' : window.location.origin)}/api/thumbnail-og?ticker=${encodeURIComponent(selectedInfo.value?.symbol ?? normalize(route.params.ticker))}`) },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
         { name: 'twitter:card', content: 'summary_large_image' },
@@ -122,7 +123,7 @@ const load = async (rivalSymbols = String(route.query.rivals ?? '').split(',').f
     loading.value = true; error.value = ''; comparison.value = null;
     try {
         const requested = normalize(route.params.ticker);
-        const response = await fetch(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}&rivals=${encodeURIComponent(rivalSymbols.join(','))}`, { cache: 'no-store' });
+        const response = await fetch(apiUrl(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}&rivals=${encodeURIComponent(rivalSymbols.join(','))}`), { cache: 'no-store' });
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error ?? response.status);
         selectedInfo.value = { ...payload.catalog, ...payload.ticker.tickerInfo, symbol: payload.ticker.symbol, rivalOptions: payload.rivalOptions };

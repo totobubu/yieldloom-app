@@ -6,8 +6,10 @@ import os
 import firebase_admin
 from firebase_admin import auth, credentials
 from flask import Flask, jsonify, request
+from server_cors import configure_cors
 
 app = Flask(__name__)
+configure_cors(app)
 
 
 def initialise_firebase():

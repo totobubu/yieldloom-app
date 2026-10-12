@@ -15,7 +15,7 @@
         "generate-nav": "node tasks/generateNav.js",
         "watch-nav": "nodemon --watch public/nav --ext json --exec \"npm run generate-nav\"",
         "dev": "vite",
-        "build": "vue-tsc --noEmit && vite build",
+        "build": "vue-tsc --noEmit && vite build && node scripts/seo/prerender-thumbnail-pages.mjs",
         "type-check": "vue-tsc --noEmit",
         "add-ipo-dates": "node tasks/addIpoDatesToNav.js",
         "preview": "vite preview",

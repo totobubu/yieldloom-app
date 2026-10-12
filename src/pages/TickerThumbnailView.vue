@@ -12,6 +12,7 @@ import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
 import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
 import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
 import HoldingDividendThumbnail from '@/components/thumbnail/HoldingDividendThumbnail.vue';
+import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
 import { getAssetUrl } from '@/utils/dataUrl';
 import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
 import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
@@ -19,6 +20,7 @@ import { calculateEntryIncomeEfficiency } from '@/services/thumbnail/entryIncome
 import { firebaseUser } from '@/services/firebaseClient';
 import { loadPortfolioAsset } from '@/services/portfolio';
 import { calculateHoldingDividend } from '@/services/thumbnail/holdingDividend';
+import { createShareText } from '@/services/thumbnail/shareText';
 
 const route = useRoute();
 const router = useRouter();
@@ -32,8 +34,9 @@ const schedule = ref(null);
 const holdingAsset = ref(null);
 const artworkSize = 720;
 const maxRivals = 3;
+const shareCopyReady = ref(false);
 
-useHead({ title: computed(() => selectedInfo.value ? `${selectedInfo.value.symbol} 배당 썸네일` : '배당 썸네일'), meta: [{ name: 'robots', content: 'noindex, nofollow' }] });
+const publicUrl = computed(() => typeof window === 'undefined' ? '' : `${window.location.origin}${route.fullPath}`);
 
 const normalize = (value) => String(value ?? '').trim().toUpperCase().replace(/\./g, '-');
 const dividendRows = (rows) =>
@@ -72,6 +75,21 @@ const thumbnailData = computed(() => {
         afterTaxDividendYield: validClose ? (currentAmount * 0.85 / exClose) * 100 : null, previousAfterTaxDividendYield: validPreviousClose ? (previousAmount * 0.85 / prevClose) * 100 : null,
         monthlyTotals: [...monthly.entries()].slice(-4).map(([month, total]) => ({ month, total })), backgroundImageUrl: getAssetUrl(`thumbnail/${background}`),
     };
+});
+const shareText = computed(() => createShareText(thumbnailData.value));
+const shareTitle = computed(() => selectedInfo.value ? `${selectedInfo.value.symbol} 최신 배당 | Yieldloom` : 'Yieldloom 배당 콘텐츠');
+useHead({
+    title: shareTitle,
+    meta: [
+        { name: 'description', content: computed(() => shareText.value) },
+        { property: 'og:title', content: shareTitle },
+        { property: 'og:description', content: computed(() => shareText.value) },
+        { property: 'og:image', content: computed(() => `${typeof window === 'undefined' ? '' : window.location.origin}/api/thumbnail-og?ticker=${encodeURIComponent(selectedInfo.value?.symbol ?? normalize(route.params.ticker))}`) },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+    ],
+    link: [{ rel: 'canonical', href: publicUrl }],
 });
 const entryEfficiency = computed(() =>
     calculateEntryIncomeEfficiency(selectedData.value, {
@@ -130,12 +148,19 @@ const downloadArtwork = async (kind) => {
         link.download = `${thumbnailData.value.symbol.toLowerCase()}_${kind}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
+        // The download is normally initiated from a user gesture, so immediately offer its matching post copy.
+        await navigator.clipboard?.writeText(shareText.value);
+        shareCopyReady.value = true;
     } catch (e) {
         error.value = 'PNG를 생성하지 못했습니다. 잠시 후 다시 시도하세요.';
         console.error('Thumbnail export failed', e);
     } finally {
         exporting.value = '';
     }
+};
+const copyShareText = async () => {
+    await navigator.clipboard.writeText(shareText.value);
+    shareCopyReady.value = true;
 };
 onMounted(load); watch(() => route.params.ticker, load);
 watch(firebaseUser, () => { if (selectedInfo.value) load(rivals.value); });
@@ -156,13 +181,14 @@ watch(firebaseUser, () => { if (selectedInfo.value) load(rivals.value); });
                 </section>
             </header>
             <section class="artwork-grid">
-                <article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /></article>
-                <article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /></article>
-                <article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /></article>
-                <article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /></article>
-                <article v-if="holdingDividend.supported" class="artwork-panel"><HoldingDividendThumbnail :data="{ ...holdingDividend, symbol: selectedInfo.symbol }" /><Button label="보유 배당 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'holding-dividend'" @click="downloadArtwork('holding-dividend')" /></article>
-                <article class="artwork-panel"><DividendEntryEfficiencyThumbnail :data="{ ...entryEfficiency, symbol: selectedInfo.symbol }" /><Button label="매수 효율 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'entry-efficiency'" @click="downloadArtwork('entry-efficiency')" /></article>
+                <article class="artwork-panel"><DividendSummaryThumbnail :data="thumbnailData" data-thumbnail-kind="summary" /><Button label="요약 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'summary'" @click="downloadArtwork('summary')" /><CardShareActions title="요약 카드" :text="shareText" :url="publicUrl" /></article>
+                <article class="artwork-panel"><DividendComparisonThumbnail :data="thumbnailData" /><Button label="비교 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'comparison'" @click="downloadArtwork('comparison')" /><CardShareActions title="비교 카드" :text="shareText" :url="publicUrl" /></article>
+                <article v-if="selectedInfo.underlying" class="artwork-panel"><RivalThumbnail :data="comparison ? { comparison, underlying: selectedInfo.underlying, selectedTicker: selectedInfo.symbol } : null" /><Button label="라이벌 PNG 다운로드" icon="pi pi-download" :disabled="!comparison" :loading="exporting === 'rival'" @click="downloadArtwork('rival')" /><CardShareActions title="라이벌 카드" :text="shareText" :url="publicUrl" /></article>
+                <article class="artwork-panel"><DividendCalendarThumbnail :data="{ ...schedule, symbol: selectedInfo.symbol }" /><Button label="일정 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'calendar'" @click="downloadArtwork('calendar')" /><CardShareActions title="일정 카드" :text="shareText" :url="publicUrl" /></article>
+                <article v-if="holdingDividend.supported" class="artwork-panel"><HoldingDividendThumbnail :data="{ ...holdingDividend, symbol: selectedInfo.symbol }" /><Button label="보유 배당 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'holding-dividend'" @click="downloadArtwork('holding-dividend')" /><CardShareActions title="보유 배당 카드" :text="shareText" :url="publicUrl" /></article>
+                <article class="artwork-panel"><DividendEntryEfficiencyThumbnail :data="{ ...entryEfficiency, symbol: selectedInfo.symbol }" /><Button label="매수 효율 PNG 다운로드" icon="pi pi-download" :loading="exporting === 'entry-efficiency'" @click="downloadArtwork('entry-efficiency')" /><CardShareActions title="매수 효율 카드" :text="shareText" :url="publicUrl" /></article>
             </section>
+            <div v-if="shareCopyReady" class="share-copy-notice"><span>PNG 공유용 문구가 복사되었습니다. 토스·카카오톡에 바로 붙여넣으세요.</span><button type="button" @click="copyShareText">이미지 공유용 문구 복사</button></div>
             <section class="content-grid">
                 <TossCommunityCopy :data="thumbnailData" />
                 <section v-if="selectedInfo.underlying" class="rivals">
@@ -176,5 +202,5 @@ watch(firebaseUser, () => { if (selectedInfo.value) load(rivals.value); });
 </template>
 
 <style scoped>
-.ticker-thumbnail-page{min-height:100vh;padding:32px;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:2208px;margin:0 auto 24px}.page-header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1{margin:5px 0 0}.rival-candidate-picker{min-width:340px;padding:14px 16px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;box-shadow:0 4px 14px #15212b0d}.candidate-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}.candidate-heading strong{color:#64748b;font-size:.72rem}.candidate-buttons{display:flex;flex-wrap:wrap;gap:7px}.candidate-buttons button{min-width:52px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#334155;font:800 .8rem/1 ui-monospace,monospace;cursor:pointer}.candidate-buttons button:hover:not(:disabled){border-color:#2563eb;color:#1d4ed8}.candidate-buttons button.selected{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 2px 6px #2563eb3d}.candidate-buttons button:disabled{opacity:.42;cursor:not-allowed}.artwork-grid{display:grid;grid-template-columns:repeat(auto-fit,720px);justify-content:center;gap:24px;max-width:2208px;margin:auto}.artwork-panel{display:grid;width:720px;gap:12px}.artwork-panel>button{justify-self:start}.content-grid{display:grid;grid-template-columns:minmax(0,520px) minmax(360px,1fr);gap:24px;max-width:1520px;margin:32px auto 0;align-items:start}.rivals{padding:24px;border-radius:18px;background:#dfe8f2}.hint{margin:0;color:#526274}@media(max-width:1000px){.page-header{align-items:flex-start;flex-direction:column}.rival-candidate-picker{width:100%;min-width:0;box-sizing:border-box}.content-grid{grid-template-columns:1fr}.artwork-grid{justify-content:start;overflow-x:auto;padding-bottom:12px}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}.candidate-heading{align-items:flex-start;flex-direction:column;gap:3px}}
+.ticker-thumbnail-page{min-height:100vh;padding:32px;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:2208px;margin:0 auto 24px}.page-header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1{margin:5px 0 0}.rival-candidate-picker{min-width:340px;padding:14px 16px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;box-shadow:0 4px 14px #15212b0d}.candidate-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}.candidate-heading strong{color:#64748b;font-size:.72rem}.candidate-buttons{display:flex;flex-wrap:wrap;gap:7px}.candidate-buttons button{min-width:52px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#334155;font:800 .8rem/1 ui-monospace,monospace;cursor:pointer}.candidate-buttons button:hover:not(:disabled){border-color:#2563eb;color:#1d4ed8}.candidate-buttons button.selected{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 2px 6px #2563eb3d}.candidate-buttons button:disabled{opacity:.42;cursor:not-allowed}.artwork-grid{display:grid;grid-template-columns:repeat(auto-fit,720px);justify-content:center;gap:24px;max-width:2208px;margin:auto}.artwork-panel{display:grid;width:720px;gap:12px}.artwork-panel>button{justify-self:start}.share-copy-notice{position:sticky;bottom:16px;z-index:2;display:flex;justify-content:center;align-items:center;gap:12px;width:max-content;max-width:calc(100% - 32px);margin:24px auto;padding:12px 15px;border-radius:12px;background:#17212b;color:#fff;box-shadow:0 10px 28px #17212b40}.share-copy-notice button{border:0;border-radius:7px;background:#fee500;color:#191919;padding:8px 10px;font:700 .78rem inherit;cursor:pointer}.content-grid{display:grid;grid-template-columns:minmax(0,520px) minmax(360px,1fr);gap:24px;max-width:1520px;margin:32px auto 0;align-items:start}.rivals{padding:24px;border-radius:18px;background:#dfe8f2}.hint{margin:0;color:#526274}@media(max-width:1000px){.page-header{align-items:flex-start;flex-direction:column}.rival-candidate-picker{width:100%;min-width:0;box-sizing:border-box}.content-grid{grid-template-columns:1fr}.artwork-grid{justify-content:start;overflow-x:auto;padding-bottom:12px}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}.candidate-heading{align-items:flex-start;flex-direction:column;gap:3px}.share-copy-notice{align-items:flex-start;flex-direction:column}}
 </style>

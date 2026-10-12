@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    CardShareActions: typeof import('./src/components/thumbnail/CardShareActions.vue')['default']
     DividendCalendarThumbnail: typeof import('./src/components/thumbnail/DividendCalendarThumbnail.vue')['default']
     DividendComparisonThumbnail: typeof import('./src/components/thumbnail/DividendComparisonThumbnail.vue')['default']
     DividendEntryEfficiencyThumbnail: typeof import('./src/components/thumbnail/DividendEntryEfficiencyThumbnail.vue')['default']

@@ -31,6 +31,8 @@ export function toBacktestData(events) {
         .map((event) => {
             const date = isoDate(event?.ex_date ?? event?.exDate);
             const amount = Number(event?.distribution_per_share ?? event?.amount?.raw ?? event?.amount);
+            // An explicitly review-only record is not a confirmed dividend and must not power public share copy.
+            if (event?.verification_status && event.verification_status !== 'official') return null;
             if (!date || !Number.isFinite(amount) || amount <= 0) return null;
             return { date, amount, amountFixed: amount };
         })

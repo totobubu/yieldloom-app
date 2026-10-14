@@ -25,7 +25,15 @@ jobs:
           python-version: '3.11'
           cache: pip
           cache-dependency-path: requirements-workflow.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
       - run: pip install -r requirements-workflow.txt
+      - name: Install browser collection runtime
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
       - name: Collect changed official documents and persist state
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
@@ -53,3 +61,18 @@ jobs:
             candidate-release/
           if-no-files-found: warn
           retention-days: 30
+      - name: Report source collection failures
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('data-v2/review/incremental-report.json')
+          if path.exists():
+              report = json.loads(path.read_text(encoding='utf-8'))
+              failures = report.get('summary', {}).get('failedSources', 0)
+              if failures:
+                  print(f'::error::{failures} source collections failed; inspect the review artifact before publishing.')
+                  raise SystemExit(1)
+          PY

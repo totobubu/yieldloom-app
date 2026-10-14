@@ -49,8 +49,8 @@ def schedule_for(history: list[dict[str, str]], now: datetime) -> dict[str, Any]
 def due_reason(source: dict[str, Any], now: datetime) -> str | None:
     """Return one reason to fetch now, or None when the source can be skipped."""
     retry_at = parse_time(source.get("nextRetryAt"))
-    if retry_at and retry_at <= now:
-        return "retry"
+    if retry_at:
+        return "retry" if retry_at <= now else None
     last_checked = parse_time(source.get("lastCheckedAt"))
     schedule = source.get("schedule") or {}
     if schedule.get("mode") == "scheduled":

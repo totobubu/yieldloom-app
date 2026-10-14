@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import re
+import json
+from decimal import Decimal
 
 from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
@@ -15,12 +17,32 @@ class RexAdapter(OfficialHTTPAdapter):
     official_homepage = "https://www.rexshares.com/"
     parser_version = "1"
     allowed_hosts = ("rexshares.com",)
-    news_url = "https://www.rexshares.com/news-insights/?llm_view=1"
+    news_url = "https://www.rexshares.com/distributions/"
 
     def discover(self):
         yield SourceCandidate(url=self.news_url, source_type="official_distribution_index")
 
     def parse(self, document: SourceDocument) -> list[DistributionEvent]:
+        html = document.content.decode("utf-8", errors="replace")
+        data = re.search(r'<script\b[^>]*\bid=[\'"]rex-dist-data[\'"][^>]*>(.*?)</script>', html, re.S | re.I)
+        if data:
+            events = []
+            for fund in json.loads(data.group(1)):
+                for row in fund["schedule"]:
+                    amount = str(row.get("amount") or "").strip().removeprefix("$")
+                    # Future calendar dates without an announced amount are not distributions.
+                    if not amount or Decimal(amount) <= 0:
+                        continue
+                    events.append(DistributionEvent(
+                        provider_slug=self.slug, ticker=fund["ticker"], fund_name=fund["name"],
+                        distribution_per_share=amount, declared_date=parse_date(row["declare"]),
+                        ex_date=parse_date(row["ex"]), record_date=parse_date(row["record"]),
+                        payable_date=parse_date(row["pay"]), frequency=fund["freq"],
+                        official_url=document.source_url,
+                    ))
+            if not events:
+                raise ValueError("REX payment schedules contained no announced distributions")
+            return events
         parsed = parse_html(document.content, document.source_url)
         headers, rows = find_table(parsed, ("ticker", "ex date", "distribution"))
         fund_index = column_index(headers, "fund")

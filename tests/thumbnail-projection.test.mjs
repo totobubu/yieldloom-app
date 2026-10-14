@@ -139,3 +139,28 @@ test('R2 object keys for index and currency symbols contain no URL escapes', asy
     const {symbolKey}=await import('../lib/thumbnail-projection.js');
     for(const symbol of ['^GSPC','EURUSD=X','005930.KS','BRK.B']) assert.match(symbolKey(symbol),/^[A-Za-z0-9_-]+$/);
 });
+
+test('bounded concurrent processing waits for every ticker before publishing a deterministic manifest', async () => {
+    const nav={nav:['ZTEST','ATEST','MTEST'].map(symbol=>({symbol,dataPaths:[`data/nyse/${symbol.toLowerCase()}.json`]}))};
+    const identities=[];
+    for(const concurrency of [1,2]) {
+        const storage=new Storage();let active=0,maxActive=0;
+        const fetcher=async url=>{
+            active++;maxActive=Math.max(maxActive,active);
+            await new Promise(resolve=>setTimeout(resolve,String(url).includes('ztest')?15:1));
+            active--;
+            return new Response(JSON.stringify({backtestData:makeRows()}));
+        };
+        const result=await refresh({...config,nav,storage,bucket:'derived',fetcher,concurrency});
+        assert.equal(result.rejected.length,0);
+        assert.equal(result.changed.length,3);
+        assert.equal(maxActive,concurrency);
+        const pointer=JSON.parse(storage.objects.get('thumbnail/v1/current.json'));
+        identities.push(pointer.releaseId);
+        const manifest=JSON.parse(storage.objects.get(pointer.manifestKey));
+        assert.deepEqual(Object.keys(manifest.tickers),['ATEST','MTEST','ZTEST']);
+        assert.equal(storage.writes.at(-1),'thumbnail/v1/current.json');
+        for(const row of Object.values(manifest.tickers))assert.ok(storage.objects.has(`${row.root}/entry-efficiency.json`));
+    }
+    assert.equal(identities[0],identities[1]);
+});

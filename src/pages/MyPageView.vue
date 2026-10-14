@@ -862,7 +862,7 @@
     }
     @media (max-width: 640px) {
         .mypage {
-            padding: 24px 16px 40px;
+            padding: 20px 12px 40px;
         }
         h1 {
             font-size: 1.65rem;
@@ -878,7 +878,7 @@
             font-size: 1.15rem;
         }
         .panel {
-            padding: 18px;
+            padding: 14px;
         }
         .page-header,
         .section-heading,

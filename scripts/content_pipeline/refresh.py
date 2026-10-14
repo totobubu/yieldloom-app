@@ -69,6 +69,25 @@ def _ticker_target(database: ContentDatabase, ticker: str) -> tuple[str, str]:
     return str(row["provider_slug"]), str(row["official_url"])
 
 
+def insights_targets(public_dir: Path, ticker: str | None = None,
+                     provider: str | None = None, ex_date: date | None = None) -> list[str] | None:
+    if ticker:
+        return [ticker]
+    if not provider and not ex_date:
+        return None
+    symbols = set()
+    for path in public_dir.glob("distribution-ticker-*.json"):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        for row in payload.get("history", []):
+            if row.get("currency") != "USD" or (provider and row.get("provider_slug") != provider):
+                continue
+            if ex_date and row.get("ex_date") != ex_date.isoformat():
+                continue
+            if row.get("ticker"):
+                symbols.add(str(row["ticker"]))
+    return sorted(symbols)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Refresh official Content Studio data")
     parser.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
@@ -82,6 +101,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--ex-date", type=date.fromisoformat)
     parser.add_argument("--request-id")
     parser.add_argument("--week-ending", type=date.fromisoformat, default=date.today())
+    parser.add_argument("--with-insights", action="store_true", help="ROC와 미국 주식·ETF 유용한 정보도 누적 수집")
     return parser
 
 
@@ -194,6 +214,20 @@ def main() -> int:
             details=reconciliation["summary"],
         )
         database.add_pipeline_step(run_id, "exports", "success")
+        if args.with_insights:
+            targets = insights_targets(args.public_dir, ticker, args.provider if args.scope == "provider" else None,
+                                       args.ex_date if args.scope == "ex_date" else None)
+            command = [sys.executable, "scripts/utils/collect_security_insights.py", "--resume",
+                       "--content-dir", str(args.public_dir)]
+            for target in targets or []:
+                command.extend(["--symbol", target])
+            result = subprocess.run(command, capture_output=True, text=True, check=False) if targets != [] else subprocess.CompletedProcess(command, 0, "No insight targets in selected scope", "")
+            insight_status = "success" if result.returncode == 0 else "warning"
+            warned = warned or insight_status == "warning"
+            details = {"exitCode": result.returncode, "output": result.stdout[-2000:], "errors": result.stderr[-1000:]}
+            report["securityInsights"] = details
+            database.add_pipeline_step(run_id, "security-insights", insight_status,
+                                       message="Inspect enrichment source failures" if result.returncode else "", details=details)
     except Exception as exc:
         failed = True
         database.add_pipeline_step(run_id, "pipeline", "failed", message=str(exc))

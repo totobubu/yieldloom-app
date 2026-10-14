@@ -23,12 +23,19 @@ python scripts/utils/discover_us_dividend_stocks.py --resume --refresh-etfs --ve
 # 검증된 종목을 앱 검색 목록에 등록
 python scripts/utils/export_us_dividend_catalog.py
 
+# ROC와 총수익률·배당 증감·현금흐름·ETF 정보도 누적 수집
+python scripts/utils/collect_security_insights.py --resume --workers 8
+
+# 검증 → 등록 → 새 정보 수집을 한 번에 실행
+python scripts/utils/run_us_collection.py --resume --workers 8
+
 # Vanguard 공식 전체 보유종목 CSV를 함께 수집
 python scripts/utils/discover_us_dividend_stocks.py --holdings-csv VYM=/path/vym.csv --holdings-csv VIG=/path/vig.csv
 ```
 
 프로젝트 의존성은 `requirements-workflow.txt`를 사용합니다. npm 실행도 가능합니다:
 `npm run discover:us-dividends -- --etf SCHD`, `npm run register:us-dividends`.
+새 지표의 기준과 누적 방식은 [ROC·주식 정보 수집](SECURITY_INSIGHTS_COLLECTION.md)을 참조하세요.
 
 기본 ETF는 SCHD·DGRO·HDV·VYM·VIG입니다. SCHD 다운로드 링크는 공식 상품 페이지에서
 찾고, DGRO·HDV는 iShares의 `latest-holdings.csv`를 사용합니다. VYM·VIG는 Vanguard의

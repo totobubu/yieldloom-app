@@ -118,8 +118,15 @@ changed decimal precision, invalid source evidence, ticker identity mismatches,
 duplicate ticker events and broken manifest references. The publisher validates
 itself and refuses to overwrite an existing immutable release ID. CI may use
 `--allow-bootstrap` to inspect the migration placeholder; publication never does.
-No approved candidate was published during implementation because local R2 write
-credentials and candidate download access were unavailable.
+The candidate from collection run `38518825012` was downloaded and validated
+against the strengthened release gate: 4,377 events across 91 tickers and four
+providers, in 2,292 release files. Its source report records 39 failures among
+45 selected sources despite a successful workflow result. Most failures came
+from browser collectors, whose workflow lacked Node dependencies and Chromium.
+The collection workflow now installs that runtime and reports source failures
+as a failed run after preserving the review artifact. Global X payload parsing
+and the REX table layout also require source-specific review. No core release
+has been approved or published on the basis of that partial collection.
 
 ## Verification
 

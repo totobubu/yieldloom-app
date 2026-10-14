@@ -12,6 +12,8 @@
         "core:catalog:seed": "python scripts/data_v2/build_catalog.py",
         "core:validate": "python scripts/data_v2/validate_snapshot.py",
         "add:etf": "python scripts/utils/add_etfs_by_provider.py",
+        "discover:us-dividends": "python scripts/utils/discover_us_dividend_stocks.py",
+        "register:us-dividends": "python scripts/utils/export_us_dividend_catalog.py",
         "backfill-market-cap": "python scripts/data_pipeline/backfill_market_cap_approximate.py",
         "generate-nav": "node tasks/generateNav.js",
         "watch-nav": "nodemon --watch public/nav --ext json --exec \"npm run generate-nav\"",

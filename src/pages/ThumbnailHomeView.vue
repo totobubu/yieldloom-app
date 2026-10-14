@@ -5,6 +5,7 @@ import { getDataUrl, getR2Url } from '@/utils/dataUrl';
 import { isDivgrowReleaseConfigured, loadDivgrowTickerIndex } from '@/services/divgrowRelease';
 import { loadCoreDirectory } from '@/services/coreRelease';
 import { loadDataReleaseIndex } from '@/services/dataRelease';
+import { mergeDiscoveredStocks } from '../../lib/discovered-stocks.js';
 import AdSlot from '@/components/ads/AdSlot.vue';
 useHead({ title: 'ETF·주식 검색' });
 const query = ref(''), company = ref(''), securityType = ref(''), sort = ref('symbol');
@@ -16,7 +17,7 @@ const filtered = computed(() => {
     const needle = query.value.trim().toLowerCase();
     return rows.value.filter(row => (!company.value || row.company?.trim() === company.value)
         && (!securityType.value || row.securityType === securityType.value)
-        && [row.symbol, row.koName, row.company, row.underlying].some(value => String(value ?? '').toLowerCase().includes(needle)))
+        && [row.symbol, row.koName, row.longName, row.company, row.underlying, ...(row.dividendEtfs ?? []).map(etf => etf.ticker)].some(value => String(value ?? '').toLowerCase().includes(needle)))
         .sort((a, b) => {
             return sort.value === 'ipoDate' ? String(b.ipoDate ?? '').localeCompare(String(a.ipoDate ?? '')) : String(a[sort.value] ?? '').localeCompare(String(b[sort.value] ?? ''), 'ko');
         });
@@ -27,9 +28,10 @@ const filterCount = computed(() => [company.value, securityType.value, query.val
 watch([query, company, securityType, sort], () => { page.value = 1; });
 function reset() { query.value = ''; company.value = ''; securityType.value = ''; }
 function amount(row) {
-    const event = distributions.value[row.symbol], value = event?.distribution_per_share;
+    const event = distributions.value[row.symbol], value = event?.distribution_per_share ?? row.dividendEvidence?.latestAmount;
     if (value == null || !Number.isFinite(Number(value))) return '—';
-    return `${event.currency === 'USD' ? '$' : event.currency ? event.currency + ' ' : ''}${Number(value).toLocaleString('en-US', { maximumFractionDigits: 6 })}`;
+    const currency = event?.currency ?? row.currency;
+    return `${currency === 'USD' ? '$' : currency ? currency + ' ' : ''}${Number(value).toLocaleString('en-US', { maximumFractionDigits: 6 })}`;
 }
 async function fetchJson(path) {
     const local = getDataUrl(path);
@@ -46,8 +48,8 @@ async function load() {
     loading.value = true; error.value = '';
     const coreConfigured = Boolean(import.meta.env.VITE_DATA_RELEASE_BASE_URL);
     const indexLoader = coreConfigured ? loadCoreDirectory().then(instruments => ({ nav: instruments.filter(row => row.active !== false).map(row => ({ ...row, company: row.officialProvider, securityType: 'etf' })) })) : isDivgrowReleaseConfigured() ? loadDivgrowTickerIndex() : fetchJson('ticker-index.json');
-    const [index, dividend] = await Promise.allSettled([indexLoader, coreConfigured ? loadDataReleaseIndex() : fetchJson('content-studio/distribution-index.json')]);
-    if (index.status === 'fulfilled') rows.value = (index.value.nav ?? []).filter(row => row.symbol);
+    const [index, dividend, discovered] = await Promise.allSettled([indexLoader, coreConfigured ? loadDataReleaseIndex() : fetchJson('content-studio/distribution-index.json'), fetchJson('us-dividend-stocks.json')]);
+    if (index.status === 'fulfilled') rows.value = mergeDiscoveredStocks(index.value.nav ?? [], discovered.status === 'fulfilled' ? discovered.value : {}).filter(row => row.symbol && row.active !== false);
     else error.value = '종목 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
     if (dividend.status === 'fulfilled') distributions.value = Object.fromEntries((dividend.value.tickers ?? []).map(row => [row.ticker, row.latest]));
     loading.value = false;
@@ -70,7 +72,7 @@ onMounted(load);
             <div class="results-toolbar"><h2>검색 결과 <b>{{ filtered.length.toLocaleString() }}</b><small>개 종목</small></h2><label for="sort-order">정렬 <select id="sort-order" v-model="sort"><option value="symbol">티커순</option><option value="company">운용사순</option><option value="ipoDate">최근 상장순</option></select></label></div>
             <div class="table-wrap" tabindex="0" role="region" aria-label="종목 검색 결과 표">
                 <table><thead><tr><th scope="col">종목명 / 티커</th><th scope="col">운용사</th><th scope="col" class="numeric">최근 주당 배당금</th><th scope="col">최근 배당락일</th><th scope="col"><span class="sr-only">콘텐츠 제작</span></th></tr></thead>
-                    <tbody><tr v-for="row in visible" :key="row.symbol"><td><router-link class="ticker-link" :to="{ name: 'ticker-thumbnail', params: { ticker: row.symbol } }"><strong>{{ row.symbol }}</strong><span>{{ row.koName || row.symbol }}</span></router-link><small v-if="row.underlying" class="underlying">{{ row.underlying }} 기반</small></td><td>{{ row.company || '—' }}</td><td class="numeric dividend">{{ amount(row) }}</td><td>{{ distributions[row.symbol]?.ex_date || '—' }}</td><td><router-link class="create-link" :to="{ name: 'ticker-thumbnail', params: { ticker: row.symbol } }" :aria-label="`${row.symbol} 카드 제작`">카드 제작 <i class="pi pi-arrow-right" aria-hidden="true" /></router-link></td></tr></tbody>
+                    <tbody><tr v-for="row in visible" :key="row.symbol"><td><router-link class="ticker-link" :to="{ name: 'ticker-thumbnail', params: { ticker: row.symbol } }"><strong>{{ row.symbol }}</strong><span>{{ row.koName || row.longName || row.symbol }}</span></router-link><small v-if="row.underlying" class="underlying">{{ row.underlying }} 기반</small><small v-if="row.dividendEtfs?.length" class="underlying">{{ row.dividendEtfs.map(etf => etf.ticker).join(' · ') }} 편입</small></td><td>{{ row.company || '—' }}</td><td class="numeric dividend">{{ amount(row) }}<small v-if="!distributions[row.symbol] && row.dividendEvidence" class="underlying">Yahoo Finance · {{ row.dividendEvidence.asOfDate }}</small></td><td>{{ distributions[row.symbol]?.ex_date || row.dividendEvidence?.latestExDate || '—' }}</td><td><router-link class="create-link" :to="{ name: 'ticker-thumbnail', params: { ticker: row.symbol } }" :aria-label="`${row.symbol} 카드 제작`">카드 제작 <i class="pi pi-arrow-right" aria-hidden="true" /></router-link></td></tr></tbody>
                 </table>
                 <p v-if="!filtered.length" class="empty">검색 결과가 없습니다. 검색어나 필터를 변경해 주세요.</p>
             </div>

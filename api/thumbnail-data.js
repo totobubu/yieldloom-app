@@ -1,5 +1,7 @@
 import catalog from '../public/thumbnail-catalog.json' with { type: 'json' };
 import coreCatalog from '../data-v2/catalog-seed.json' with { type: 'json' };
+import discoveredStocks from '../public/us-dividend-stocks.json' with { type: 'json' };
+import { mergeDiscoveredStocks } from '../lib/discovered-stocks.js';
 import distributionIndex from '../public/content-studio/distribution-index.json' with { type: 'json' };
 import priceIndex from '../public/content-studio/price-index.json' with { type: 'json' };
 import nav from '../public/nav.json' with { type: 'json' };
@@ -12,7 +14,7 @@ const CACHE_TTL_MS = 5 * 60 * 1000;
 const cache = new Map();
 const inFlight = new Map();
 const normalize = normalizeSymbol;
-const instruments = new Map(coreCatalog.instruments.map((instrument) => [normalize(instrument.symbol), instrument]));
+const instruments = new Map(mergeDiscoveredStocks(coreCatalog.instruments, discoveredStocks).map((instrument) => [normalize(instrument.symbol), instrument]));
 const distributions = new Map((distributionIndex.tickers ?? []).map((row) => [normalize(row.ticker), row]));
 const prices = new Map(Object.entries(priceIndex.prices ?? {}).map(([symbol, row]) => [normalize(symbol), row]));
 const pricePaths = new Map((nav.nav ?? []).map((row) => [normalize(row.symbol), row]));

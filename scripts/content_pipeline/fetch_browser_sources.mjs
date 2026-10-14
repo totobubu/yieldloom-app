@@ -81,7 +81,7 @@ try {
                 responseContent = await data.text();
                 JSON.parse(responseContent);
             } else if (source.readyText) {
-                await page.getByText(source.readyText, { exact: true }).waitFor({ timeout: timeoutMs });
+                await page.getByText(source.readyText, { exact: source.readyTextExact !== false }).waitFor({ timeout: timeoutMs });
             } else {
                 await page.waitForLoadState('networkidle', { timeout: Math.min(timeoutMs, 15_000) }).catch(() => {});
             }

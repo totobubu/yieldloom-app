@@ -95,6 +95,7 @@ class OfficialHTTPAdapter(ProviderAdapter):
                 {
                     "url": candidate.url,
                     "readyText": candidate.metadata.get("browserReadyText", self.browser_ready_text),
+                    "readyTextExact": candidate.metadata.get("browserReadyExact", True),
                     "content": candidate.metadata.get("browserContent", self.browser_content),
                     "responsePath": candidate.metadata.get("browserResponsePath", self.browser_response_path),
                 }

@@ -38,6 +38,7 @@ class SchwabAdapter(OfficialHTTPAdapter):
                 "catalogOnly": True,
                 "browserContent": "text",
                 "browserReadyText": "showing",
+                "browserReadyExact": False,
             },
         )
 

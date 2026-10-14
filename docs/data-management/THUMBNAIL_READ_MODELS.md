@@ -61,7 +61,11 @@ THUMBNAIL_SOURCE_BASE_URL=https://SOURCE_R2_ROOT \
 
 By default the source directory is `SOURCE_R2_ROOT/nav.json`. Use
 `--nav public/nav.json` only for an explicitly reviewed local directory.
-The run accepts `--as-of YYYY-MM-DD` for reproducible validation.
+The run accepts `--as-of YYYY-MM-DD` for reproducible validation and
+`--concurrency 1..8` to bound ticker processing (default 8). Source reads and
+per-ticker verification run concurrently; the public pointer still moves only
+after all selected tickers have completed. Manifest entries are sorted before
+hashing so completion order does not change the release identity.
 Conditional GET with the last ETag and then SHA-256 comparison skips unchanged
 sources. Bump `generatorVersion` when changing the transformation to rebuild
 unchanged sources with the new algorithm. This still reads changed full source objects in the background; the API
@@ -127,6 +131,11 @@ The collection workflow now installs that runtime and reports source failures
 as a failed run after preserving the review artifact. Global X payload parsing
 and the REX table layout also require source-specific review. No core release
 has been approved or published on the basis of that partial collection.
+Browser-enabled run `38539695637` confirms the runtime fix: 154 newly observed
+events, source failures reduced from 39 to 13, and a validated candidate with
+4,529 events across 106 tickers and five providers. Its remaining failures are
+provider layout changes, unavailable dividend tables, and a Schwab HTTP 403.
+The workflow correctly reports failure after saving the candidate artifact.
 
 ## Verification
 

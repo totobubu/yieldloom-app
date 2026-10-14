@@ -1,5 +1,6 @@
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import fs from 'node:fs/promises';
+import pLimit from 'p-limit';
 import { pathToFileURL } from 'node:url';
 import { buildProjection, validateProjection, projectionPrefix, sha256, jsonBytes, symbolKey, generatorVersion } from '../../lib/thumbnail-projection.js';
 
@@ -15,8 +16,11 @@ export async function putJson(storage, bucket, key, value, immutable = true) {
     await storage.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: jsonBytes(value), ContentType: 'application/json', CacheControl: immutable ? 'public, max-age=31536000, immutable' : 'public, max-age=60' }));
 }
 
-export async function refresh({ nav, sourceBase, storage, bucket, asOf, symbols, fetcher = fetch, dryRun = false }) {
+export async function refresh({ nav, sourceBase, storage, bucket, asOf, symbols, fetcher = fetch, dryRun = false, concurrency = 8 }) {
+    if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 8) throw new Error('Concurrency must be an integer between 1 and 8');
     if (!sourceBase?.startsWith('https://')) throw new Error('An HTTPS source R2 URL is required');
+    if (!Array.isArray(nav?.nav) || nav.nav.some(row => typeof row?.symbol !== 'string')) throw new Error('Invalid source directory');
+    if (new Set(nav.nav.map(row => row.symbol)).size !== nav.nav.length) throw new Error('Source directory has duplicate symbols');
     const pointer = storage ? await readJson(storage, bucket, `${projectionPrefix}/current.json`) : null;
     if (pointer && !/^thumbnail\/v1\/releases\/[a-f0-9]+\/manifest\.json$/.test(pointer.manifestKey ?? '')) throw new Error('Invalid thumbnail pointer');
     const previous = pointer ? await readJson(storage, bucket, pointer.manifestKey) : null;
@@ -24,18 +28,19 @@ export async function refresh({ nav, sourceBase, storage, bucket, asOf, symbols,
     const entries = { ...(previous?.tickers ?? {}) };
     const report = { asOf, dryRun, changed: [], unchanged: [], rejected: [], measurements: [] };
     const selected = symbols ? new Set(symbols) : null;
-    for (const item of nav.nav.filter(row => !selected || selected.has(row.symbol))) {
+    const limit = pLimit(concurrency);
+    await Promise.all(nav.nav.filter(row => !selected || selected.has(row.symbol)).map(item => limit(async () => {
         const symbol = item.symbol;
         const sourceKey = item.dataPaths?.[0];
         try {
             if (!/^data\/[a-z0-9_-]+\/[a-z0-9.-]+\.json$/i.test(sourceKey ?? '')) throw new Error('Invalid source path');
             const old = entries[symbol];
             const response = await fetcher(new URL(sourceKey, `${sourceBase.replace(/\/$/, '')}/`), { signal: AbortSignal.timeout(15000), headers: { ...(old?.etag && old.generatorVersion === generatorVersion ? { 'If-None-Match': old.etag } : {}), Accept: 'application/json' } });
-            if (response.status === 304) { report.unchanged.push(symbol); continue; }
+            if (response.status === 304) { report.unchanged.push(symbol); return; }
             if (!response.ok) throw new Error(`Source HTTP ${response.status}`);
             const bytes = Buffer.from(await response.arrayBuffer());
             const hash = sha256(bytes);
-            if (old?.sourceSha256 === hash && old.generatorVersion === generatorVersion) { report.unchanged.push(symbol); continue; }
+            if (old?.sourceSha256 === hash && old.generatorVersion === generatorVersion) { report.unchanged.push(symbol); return; }
             const coverage = old && storage ? await readJson(storage, bucket, `${old.root}/source-coverage.json`) : null;
             if (old && !coverage) throw new Error('Previous source coverage missing');
             const models = validateProjection(buildProjection({ symbol, payload: JSON.parse(bytes), sourceBytes: bytes, sourceKey, asOf, previousDates: coverage?.dates }));
@@ -56,10 +61,10 @@ export async function refresh({ nav, sourceBase, storage, bucket, asOf, symbols,
             // Keep the old immutable entry on source failure or history loss.
             report.rejected.push({ symbol, reason: error.message, retainedPrevious: Boolean(entries[symbol]) });
         }
-    }
+    })));
     if (selected) for (const symbol of selected) if (!nav.nav.some(row => row.symbol === symbol)) report.rejected.push({ symbol, reason: 'Symbol missing from source directory', retainedPrevious: Boolean(entries[symbol]) });
     if (!dryRun && report.changed.length) {
-        const manifest = { schemaVersion: 1, asOf, tickers: entries };
+        const manifest = { schemaVersion: 1, asOf, tickers: Object.fromEntries(Object.entries(entries).sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0)) };
         const releaseId = sha256(jsonBytes(manifest));
         const key = `${projectionPrefix}/releases/${releaseId}/manifest.json`;
         await putJson(storage, bucket, key, manifest);
@@ -68,6 +73,10 @@ export async function refresh({ nav, sourceBase, storage, bucket, asOf, symbols,
         // A rejected source never points to its new objects. Previous versions stay available.
         await putJson(storage, bucket, `${projectionPrefix}/current.json`, { schemaVersion: 1, releaseId, manifestKey: key }, false);
     }
+    report.changed.sort();
+    report.unchanged.sort();
+    report.rejected.sort((left, right) => left.symbol.localeCompare(right.symbol));
+    report.measurements.sort((left, right) => left.symbol.localeCompare(right.symbol));
     return report;
 }
 
@@ -93,7 +102,7 @@ async function main() {
         nav = await response.json();
     }
     if (!Array.isArray(nav.nav)) throw new Error('Source directory requires nav array');
-    const report = await refresh({ nav, sourceBase, storage, bucket, symbols, dryRun, asOf: value('--as-of') ?? new Date().toISOString().slice(0,10) });
+    const report = await refresh({ nav, sourceBase, storage, bucket, symbols, dryRun, concurrency: Number(value('--concurrency') ?? 8), asOf: value('--as-of') ?? new Date().toISOString().slice(0,10) });
     console.log(JSON.stringify(report, null, 2));
     if (report.rejected.length) process.exitCode = 1;
 }

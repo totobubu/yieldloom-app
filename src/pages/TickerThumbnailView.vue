@@ -116,16 +116,16 @@ const comparison = ref(null);
 const refreshComparison = async () => {
     await load(rivals.value);
 };
-const syncRivalsToUrl = () => router.replace({ query: { ...route.query, rivals: rivals.value.length ? rivals.value.join(',') : undefined } });
+const syncRivalsToUrl = () => router.replace({ query: { ...route.query, rivals: rivals.value.join(',') } });
 watch(rivals, async () => { syncRivalsToUrl(); await refreshComparison(); }, { deep: true });
 
 let loadSequence = 0;
-const load = async (rivalSymbols = String(route.query.rivals ?? '').split(',').filter(Boolean)) => {
+const load = async (rivalSymbols = route.query.rivals == null ? undefined : String(route.query.rivals).split(',').filter(Boolean)) => {
     const sequence = ++loadSequence;
     loading.value = true; error.value = ''; comparison.value = null;
     try {
         const requested = normalize(route.params.ticker);
-        const response = await fetch(apiUrl(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}&rivals=${encodeURIComponent(rivalSymbols.join(','))}`), { cache: 'no-store' });
+        const response = await fetch(apiUrl(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}${rivalSymbols == null ? '' : `&rivals=${encodeURIComponent(rivalSymbols.join(','))}`}`), { cache: 'no-store' });
         const payload = await response.json();
         if (sequence !== loadSequence) return;
         if (!response.ok) throw new Error(response.status === 404 ? '해당 티커를 찾을 수 없습니다. 티커를 확인해 주세요.' : response.status === 503 ? '시세 제공 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.' : payload.error ?? '종목 데이터를 불러오지 못했습니다.');

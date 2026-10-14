@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildThumbnailPayload, catalogEntry, loadTicker, rivalOptions, toBacktestData } from '../api/thumbnail-data.js';
+import { buildThumbnailPayload, catalogEntry, loadTicker, loadTickerWithSnapshot, rivalOptions, toBacktestData } from '../api/thumbnail-data.js';
 
 test('catalog limits rivals to the same verified underlying', () => {
     const entry = catalogEntry('tsly');
@@ -58,6 +58,7 @@ test('AMDY joins its official ledger to its R2 price projection', async () => {
 test('official ledger falls back to the public static origin when the deployment origin fails', async () => {
     const requestedUrls = [];
     const ticker = await loadTicker('TOPW', 'https://yieldloom-app.vercel.app', {
+        priceDataBaseUrl: '',
         fetcher: async (url) => {
             requestedUrls.push(String(url));
             if (String(url).startsWith('https://yieldloom-app.vercel.app')) return { ok: false, status: 500 };
@@ -68,4 +69,47 @@ test('official ledger falls back to the public static origin when the deployment
     assert.equal(ticker.backtestData.length, 1);
     assert.equal(ticker.backtestData[0].amount, 0.1);
     assert.equal(requestedUrls.length, 2);
+});
+
+test('missing price and snapshot preserve the available official dividends', async () => {
+    const value = await loadTickerWithSnapshot('TOPW', 'https://app.example', {
+        priceDataBaseUrl: 'https://prices.example',
+        fetcher: async (url) => String(url).includes('distribution-ticker-topw.json')
+            ? { ok: true, json: async () => ({ history: [{ ex_date: '2026-10-13', distribution_per_share: '0.219894', verification_status: 'official' }] }) }
+            : { ok: false, status: 403 },
+        readSnapshot: async () => null,
+        writeSnapshot: async () => false,
+    });
+    assert.equal(value.sourceStatus.price, 'unavailable');
+    assert.equal(value.sourceStatus.freshness, 'partial');
+    assert.equal(value.backtestData[0].amount, 0.219894);
+});
+
+test('an available price snapshot is used when the live price fails', async () => {
+    const snapshotValue = { symbol: 'AMD', tickerInfo: { price: 100 }, backtestData: [{ date: '2026-10-12', close: 100 }], sourceStatus: { price: 'r2_projection' } };
+    const value = await loadTickerWithSnapshot('AMD', 'https://app.example', {
+        priceDataBaseUrl: 'https://prices.example',
+        fetcher: async () => ({ ok: false, status: 403 }),
+        readSnapshot: async () => ({ value: snapshotValue, savedAt: '2026-10-12T20:00:00Z' }),
+        writeSnapshot: async () => { throw new Error('Should preserve the saved price snapshot'); },
+    });
+    assert.equal(value.tickerInfo.price, 100);
+    assert.equal(value.sourceStatus.freshness, 'stale');
+    assert.equal(value.sourceStatus.reason, 'price_source_unavailable');
+});
+
+test('nav paths provide prices for underlying stocks and TOPW outside the price index', async () => {
+    for (const symbol of ['AMD', 'TSLA', 'TOPW']) {
+        const value = await loadTicker(symbol, 'https://app.example', {
+            priceDataBaseUrl: 'https://prices.example',
+            fetcher: async (url) => {
+                if (String(url).includes('distribution-ticker-')) return { ok: true, json: async () => ({ history: [] }) };
+                assert.equal(String(url), `https://prices.example/data/nasdaq/${symbol.toLowerCase()}.json`);
+                return { ok: true, json: async () => ({ backtestData: [{ date: '2026-10-13', close: 100 }] }) };
+            },
+        });
+        assert.equal(value.tickerInfo.price, 100);
+        assert.equal(value.tickerInfo.currency, 'USD');
+        assert.equal(value.sourceStatus.price, 'r2_projection');
+    }
 });

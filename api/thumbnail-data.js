@@ -2,6 +2,7 @@ import catalog from '../public/thumbnail-catalog.json' with { type: 'json' };
 import coreCatalog from '../data-v2/catalog-seed.json' with { type: 'json' };
 import distributionIndex from '../public/content-studio/distribution-index.json' with { type: 'json' };
 import priceIndex from '../public/content-studio/price-index.json' with { type: 'json' };
+import nav from '../public/nav.json' with { type: 'json' };
 import { createApiHandler } from '../lib/api-handler.js';
 import { readTickerSnapshot, writeTickerSnapshot } from '../lib/r2-snapshot.js';
 
@@ -11,6 +12,7 @@ const normalize = (value) => String(value ?? '').trim().toUpperCase().replace(/\
 const instruments = new Map(coreCatalog.instruments.map((instrument) => [normalize(instrument.symbol), instrument]));
 const distributions = new Map((distributionIndex.tickers ?? []).map((row) => [normalize(row.ticker), row]));
 const prices = new Map(Object.entries(priceIndex.prices ?? {}).map(([symbol, row]) => [normalize(symbol), row]));
+const pricePaths = new Map((nav.nav ?? []).map((row) => [normalize(row.symbol), row]));
 const priceDataBaseUrl = () => String(process.env.DIVGROW_DATA_BASE_URL ?? process.env.THUMBNAIL_PRICE_DATA_BASE_URL ?? process.env.VITE_R2_PUBLIC_URL ?? '').replace(/\/$/, '');
 const officialDataFallbackOrigin = 'https://totobubu.github.io/yieldloom-app';
 
@@ -85,8 +87,9 @@ function toPriceRows(history, events) {
 
 async function loadPriceHistory(symbol, fetcher, baseUrl) {
     const price = prices.get(symbol);
-    if (!baseUrl || !price?.dataPath || !/^data\/[a-z0-9_-]+\/[a-z0-9.-]+\.json$/i.test(price.dataPath)) return null;
-    const response = await fetcher(new URL(price.dataPath, `${baseUrl}/`), { headers: { Accept: 'application/json' } });
+    const dataPath = price?.dataPath ?? pricePaths.get(symbol)?.dataPaths?.[0];
+    if (!baseUrl || !dataPath || !/^data\/[a-z0-9_-]+\/[a-z0-9.-]+\.json$/i.test(dataPath)) return null;
+    const response = await fetcher(new URL(dataPath, `${baseUrl}/`), { headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error(`가격 projection을 불러오지 못했습니다: ${symbol}`);
     return response.json();
 }
@@ -100,7 +103,7 @@ export async function loadTicker(symbol, origin, options = {}) {
     const cacheKey = `${key}|${origin}|${baseUrl}`;
     const cached = fetcher === fetch && cache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now()) return cached.value;
-    const instrument = instruments.get(key);
+    const instrument = instruments.get(key) ?? pricePaths.get(key);
     const indexRow = distributions.get(key);
     const history = await loadOfficialHistory(key, origin, fetcher);
     const priceHistory = await loadPriceHistory(key, fetcher, baseUrl).catch(() => null);
@@ -130,23 +133,25 @@ export async function loadTicker(symbol, origin, options = {}) {
     return value;
 }
 
-async function loadTickerWithSnapshot(symbol, origin, options = {}) {
+export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
+    const readSnapshot = options.readSnapshot ?? readTickerSnapshot;
+    const writeSnapshot = options.writeSnapshot ?? writeTickerSnapshot;
     try {
         const value = await loadTicker(symbol, origin, options);
         if (value.sourceStatus.price === 'unavailable') {
-            const snapshot = await readTickerSnapshot(symbol).catch((error) => {
+            const snapshot = await readSnapshot(symbol).catch((error) => {
                 console.warn(`Snapshot read failed for ${symbol}`, error.message);
                 return null;
             });
-            if (snapshot?.value?.sourceStatus?.price !== 'unavailable') {
+            if (snapshot?.value && snapshot.value.sourceStatus?.price === 'r2_projection') {
                 return { ...snapshot.value, sourceStatus: { ...(snapshot.value.sourceStatus ?? {}), freshness: 'stale', staleSince: snapshot.savedAt, reason: 'price_source_unavailable' } };
             }
         }
         // Snapshot persistence is optional locally, but mandatory where R2 credentials exist.
-        await writeTickerSnapshot(symbol, value).catch((error) => console.warn(`Snapshot write failed for ${symbol}`, error.message));
+        await writeSnapshot(symbol, value).catch((error) => console.warn(`Snapshot write failed for ${symbol}`, error.message));
         return value;
     } catch (error) {
-        const snapshot = await readTickerSnapshot(symbol).catch((snapshotError) => {
+        const snapshot = await readSnapshot(symbol).catch((snapshotError) => {
             console.warn(`Snapshot read failed for ${symbol}`, snapshotError.message);
             return null;
         });

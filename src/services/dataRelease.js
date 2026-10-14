@@ -1,7 +1,7 @@
 const baseUrl = (import.meta.env.VITE_DATA_RELEASE_BASE_URL || '').replace(/\/$/, '');
 
 const fetchJson = async (url) => {
-  const response = await fetch(url, { cache: 'no-store' });
+  const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(4000) });
   if (!response.ok) throw new Error(response.status === 404 ? '승인된 data v2 릴리스가 아직 없습니다.' : `data v2 요청 실패 (${response.status})`);
   return response.json();
 };
@@ -11,6 +11,7 @@ const mapEvent = (event) => ({
   provider_slug: event.provider,
   ticker: event.ticker,
   distribution_per_share: event.amount.raw,
+  currency: event.amount.currency,
   previous_amount: null,
   average4: null,
   average12: null,
@@ -26,8 +27,10 @@ const mapEvent = (event) => ({
 export const isDataReleaseConfigured = () => Boolean(baseUrl);
 
 export async function loadDataReleaseIndex() {
-  const pointer = await fetchJson(`${baseUrl}/yieldloom/v2/releases/current.json`);
+  const pointer = await fetchJson(`${baseUrl}/core/current.json`);
+  if (pointer.schemaVersion !== 2 || !/^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(pointer.manifestKey || '')) throw new Error('Invalid core release pointer');
   const manifest = await fetchJson(`${baseUrl}/${pointer.manifestKey}`);
+  if (manifest.schemaVersion !== 2 || manifest.releaseId !== pointer.releaseId || manifest.indexPath !== 'index.json') throw new Error('Invalid core release manifest');
   const index = await fetchJson(`${baseUrl}/${pointer.manifestKey.replace(/manifest\.json$/, manifest.indexPath)}`);
   return {
     releaseId: manifest.releaseId,

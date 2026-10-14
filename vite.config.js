@@ -4,12 +4,14 @@ import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from 'unplugin-vue-components/resolvers';
 import { publicAssetsPlugin } from './scripts/publicAssets.mjs';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
     const env = loadEnv(mode, process.cwd(), '');
     const apiProxyTarget =
         env.VITE_API_PROXY_TARGET || 'https://totobubu-github-io.vercel.app';
+    const outboundProxy = process.env.HTTPS_PROXY || process.env.https_proxy;
 
     return {
     publicDir: command === 'build' ? false : 'public',
@@ -68,6 +70,9 @@ export default defineConfig(({ mode, command }) => {
         proxy: {
             '/api': {
                 target: apiProxyTarget,
+                ...(outboundProxy && apiProxyTarget.startsWith('https://')
+                    ? { agent: new HttpsProxyAgent(outboundProxy) }
+                    : {}),
                 changeOrigin: true,
                 // (선택) 더 복잡한 문제를 해결하기 위해 rewrite 추가
                 rewrite: (path) => path.replace(/^\/api/, '/api'),

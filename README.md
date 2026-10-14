@@ -45,6 +45,14 @@ npm run content:refresh -- --scope provider --provider yieldmax
 
 수집 파이프라인은 기본적으로 카드용 데이터 작업을 수행합니다. 기존 블로그 Bundle·편집 캘린더·주간 대본 생성은 `--include-editorial`을 명시한 경우에만 실행합니다. 호환 도구와 기존 저장 데이터는 보존합니다.
 
+## R2 경량 가공 데이터
+
+외부 수집 저장소의 원본을 읽어 썸네일용 가격 요약과 기간별 이력을 별도 R2 `thumbnail/v1/` 경로에 생성합니다. 원본·거래 원장은 수정하지 않으며 과거 가격 날짜 소실을 감지하면 이전 가공 결과를 유지합니다. 실행·환경변수·단계별 활성화 방법은 [가공 데이터 운영 안내](docs/data-management/THUMBNAIL_READ_MODELS.md)를 참조하세요.
+
+```sh
+npm run thumbnail:refresh -- --dry-run --symbols AMDY,TSLY,TOPW,AAPL,TSLA
+```
+
 ## 개인화 포트폴리오
 
 인증된 고객은 토스 거래내역 PDF를 업로드해 검토 후 자신의 원장에 반영할 수 있습니다. PDF 원본과 비밀번호는 저장하지 않으며, 서버는 정규화한 거래만 사용자별 `portfolios/{uid}`에 저장합니다. Toss API는 고객별 공식 동의 방식이 확인되기 전까지 읽기 전용 준비 상태만 표시합니다.

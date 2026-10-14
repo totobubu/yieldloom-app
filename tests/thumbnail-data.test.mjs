@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildThumbnailPayload, catalogEntry, loadTicker, rivalOptions, toBacktestData } from '../api/thumbnail-data.js';
+import { buildThumbnailPayload, catalogEntry, loadTicker, loadTickerWithSnapshot, rivalOptions, toBacktestData } from '../api/thumbnail-data.js';
 
 test('catalog limits rivals to the same verified underlying', () => {
     const entry = catalogEntry('tsly');
@@ -10,7 +10,7 @@ test('catalog limits rivals to the same verified underlying', () => {
 });
 
 test('payload removes invalid rivals and reports partial loads', async () => {
-    const payload = await buildThumbnailPayload('TSLY', ['TSII', 'NVDY'], async (symbol) => symbol === 'TSII' ? Promise.reject(new Error('missing')) : { symbol, tickerInfo: {}, backtestData: [] });
+    const payload = await buildThumbnailPayload('TSLY', ['TSII', 'NVDY'], async (symbol) => symbol === 'TSII' ? Promise.reject(new Error('missing')) : { symbol, tickerInfo: { price: 100 }, backtestData: [] });
     assert.deepEqual(payload.rivals, ['TSII']);
     assert.equal(payload.partial, true);
     assert.deepEqual(payload.unavailable, ['TSII']);
@@ -41,7 +41,7 @@ test('AMDY joins its official ledger to its R2 price projection', async () => {
             assert.match(String(url), /data\/nyse\/amdy\.json$/);
             return { ok: true, json: async () => ({ backtestData: [{ date: '2026-10-07', close: 46.5 }, { date: '2026-10-08', close: 47.04 }, { date: '2027-04-08', forecasted: true }] }) };
         };
-        const ticker = await loadTicker('AMDY', 'https://yieldloom-app.vercel.app', { priceDataBaseUrl: 'https://prices.example' });
+        const ticker = await loadTicker('AMDY', 'https://yieldloom-app.vercel.app', { priceDataBaseUrl: 'https://prices.example', asOfDate: '2026-10-09' });
         assert.equal(ticker.tickerInfo.regularMarketPrice, 47.04);
         assert.deepEqual(ticker.backtestData, [
             { date: '2026-10-07', close: 46.5 },
@@ -58,6 +58,7 @@ test('AMDY joins its official ledger to its R2 price projection', async () => {
 test('official ledger falls back to the public static origin when the deployment origin fails', async () => {
     const requestedUrls = [];
     const ticker = await loadTicker('TOPW', 'https://yieldloom-app.vercel.app', {
+        priceDataBaseUrl: '',
         fetcher: async (url) => {
             requestedUrls.push(String(url));
             if (String(url).startsWith('https://yieldloom-app.vercel.app')) return { ok: false, status: 500 };
@@ -67,5 +68,72 @@ test('official ledger falls back to the public static origin when the deployment
     });
     assert.equal(ticker.backtestData.length, 1);
     assert.equal(ticker.backtestData[0].amount, 0.1);
-    assert.equal(requestedUrls.length, 2);
+    assert.equal(requestedUrls.filter(url => url.includes('distribution-ticker-topw.json')).length, 2);
+});
+
+test('missing price and snapshot preserve the available official dividends', async () => {
+    const value = await loadTickerWithSnapshot('TOPW', 'https://app.example', {
+        priceDataBaseUrl: 'https://prices.example',
+        fetcher: async (url) => String(url).includes('distribution-ticker-topw.json')
+            ? { ok: true, json: async () => ({ history: [{ ex_date: '2026-10-13', distribution_per_share: '0.219894', verification_status: 'official' }] }) }
+            : { ok: false, status: 403 },
+        readSnapshot: async () => null,
+        writeSnapshot: async () => false,
+    });
+    assert.equal(value.sourceStatus.price, 'unavailable');
+    assert.equal(value.sourceStatus.freshness, 'partial');
+    assert.equal(value.backtestData[0].amount, 0.219894);
+});
+
+test('an available price snapshot is used when the live price fails', async () => {
+    const snapshotValue = { symbol: 'AMD', tickerInfo: { price: 100 }, backtestData: [{ date: '2026-10-12', close: 100 }], sourceStatus: { price: 'r2_projection' } };
+    const value = await loadTickerWithSnapshot('AMD', 'https://app.example', {
+        priceDataBaseUrl: 'https://prices.example',
+        fetcher: async () => ({ ok: false, status: 403 }),
+        readSnapshot: async () => ({ value: snapshotValue, savedAt: '2026-10-12T20:00:00Z' }),
+        writeSnapshot: async () => { throw new Error('Should preserve the saved price snapshot'); },
+    });
+    assert.equal(value.tickerInfo.price, 100);
+    assert.equal(value.sourceStatus.freshness, 'stale');
+    assert.equal(value.sourceStatus.reason, 'price_source_unavailable');
+});
+
+test('nav paths provide prices for underlying stocks and TOPW outside the price index', async () => {
+    for (const symbol of ['AMD', 'TSLA', 'TOPW']) {
+        const value = await loadTicker(symbol, 'https://app.example', {
+            priceDataBaseUrl: 'https://prices.example',
+            fetcher: async (url) => {
+                if (String(url).includes('distribution-ticker-')) return { ok: true, json: async () => ({ history: [] }) };
+                assert.equal(String(url), `https://prices.example/data/nasdaq/${symbol.toLowerCase()}.json`);
+                return { ok: true, json: async () => ({ backtestData: [{ date: '2026-10-13', close: 100 }] }) };
+            },
+        });
+        assert.equal(value.tickerInfo.price, 100);
+        assert.equal(value.tickerInfo.currency, 'USD');
+        assert.equal(value.sourceStatus.price, 'r2_projection');
+    }
+});
+
+test('price still renders when the official ledger is temporarily unavailable', async () => {
+    const ticker = await loadTicker('AMDY', 'https://app.example', {
+        priceDataBaseUrl: 'https://prices.example', asOfDate: '2026-10-14',
+        fetcher: async url => String(url).includes('distribution-ticker-') ? { ok:false,status:503 } : { ok:true,json:async()=>({backtestData:[{date:'2026-10-13',close:100}]}) },
+    });
+    assert.equal(ticker.tickerInfo.price,100);
+    assert.equal(ticker.sourceStatus.dividends,'unavailable');
+    assert.equal(ticker.sourceStatus.freshness,'partial');
+});
+
+test('no rivals avoids loading the underlying and duplicating the main ticker', async () => {
+    const calls = [];
+    const payload = await buildThumbnailPayload('AMDY', [], async symbol => {
+        calls.push(symbol);return {symbol,tickerInfo:{price:100},backtestData:[],sourceStatus:{freshness:'fresh'}};
+    });
+    assert.deepEqual(calls,['AMDY']);
+    assert.deepEqual(payload.series,{});
+});
+
+test('cross checked official ledger events are usable but review-only events are excluded', () => {
+    const events=['official','cross_checked','needs_review'].map((verification_status,index)=>({ex_date:`2026-10-0${index+1}`,distribution_per_share:'0.1000',verification_status}));
+    assert.equal(toBacktestData(events).length,2);
 });

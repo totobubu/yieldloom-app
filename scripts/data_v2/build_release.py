@@ -45,7 +45,9 @@ def normalize(event: dict[str, object]) -> dict[str, object]:
         raise ValueError(f"candidate {event['ticker']} is not releasable: {status}")
     if event["collectionMethod"] != "official_fetch":
         raise ValueError(f"candidate {event['ticker']} was not freshly collected from an official source")
-    amount = str(event["amount"])
+    if not isinstance(event["amount"], str):
+        raise ValueError("Candidate amount must preserve the issuer decimal string")
+    amount = event["amount"]
     return {
         "eventId": event_id(event),
         "provider": str(event["provider"]),

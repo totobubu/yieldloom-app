@@ -2,15 +2,20 @@ import catalog from '../public/thumbnail-catalog.json' with { type: 'json' };
 import coreCatalog from '../data-v2/catalog-seed.json' with { type: 'json' };
 import distributionIndex from '../public/content-studio/distribution-index.json' with { type: 'json' };
 import priceIndex from '../public/content-studio/price-index.json' with { type: 'json' };
+import nav from '../public/nav.json' with { type: 'json' };
 import { createApiHandler } from '../lib/api-handler.js';
 import { readTickerSnapshot, writeTickerSnapshot } from '../lib/r2-snapshot.js';
+import { loadProjection, loadYahooQuote, PriceError } from '../lib/thumbnail-prices.js';
+import { normalizeSymbol, validSymbol, priceFreshness, actualPrices } from '../lib/thumbnail-projection.js';
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const cache = new Map();
-const normalize = (value) => String(value ?? '').trim().toUpperCase().replace(/\./g, '-');
+const inFlight = new Map();
+const normalize = normalizeSymbol;
 const instruments = new Map(coreCatalog.instruments.map((instrument) => [normalize(instrument.symbol), instrument]));
 const distributions = new Map((distributionIndex.tickers ?? []).map((row) => [normalize(row.ticker), row]));
 const prices = new Map(Object.entries(priceIndex.prices ?? {}).map(([symbol, row]) => [normalize(symbol), row]));
+const pricePaths = new Map((nav.nav ?? []).map((row) => [normalize(row.symbol), row]));
 const priceDataBaseUrl = () => String(process.env.DIVGROW_DATA_BASE_URL ?? process.env.THUMBNAIL_PRICE_DATA_BASE_URL ?? process.env.VITE_R2_PUBLIC_URL ?? '').replace(/\/$/, '');
 const officialDataFallbackOrigin = 'https://totobubu.github.io/yieldloom-app';
 
@@ -34,7 +39,8 @@ export function toBacktestData(events) {
             const date = isoDate(event?.ex_date ?? event?.exDate);
             const amount = Number(event?.distribution_per_share ?? event?.amount?.raw ?? event?.amount);
             // An explicitly review-only record is not a confirmed dividend and must not power public share copy.
-            if (event?.verification_status && event.verification_status !== 'official') return null;
+            const status = event?.verification_status ?? event?.verificationStatus;
+            if (status && !['official', 'cross_checked'].includes(status)) return null;
             if (!date || !Number.isFinite(amount) || amount <= 0) return null;
             return { date, amount, amountFixed: amount };
         })
@@ -50,13 +56,18 @@ function requestOrigin(req) {
 }
 
 async function loadOfficialHistory(symbol, origin, fetcher = fetch) {
+    const coreBase = process.env.DATA_RELEASE_BASE_URL ?? process.env.VITE_DATA_RELEASE_BASE_URL;
+    if (coreBase) {
+        const { loadCoreHistory } = await import('../lib/core-release.js');
+        return loadCoreHistory(symbol, coreBase, fetcher);
+    }
     const indexRow = distributions.get(symbol);
     if (!indexRow?.historyUrl || !/^\/content-studio\/distribution-ticker-[a-z0-9.-]+\.json$/i.test(indexRow.historyUrl)) return [];
     const origins = [...new Set([origin, process.env.THUMBNAIL_OFFICIAL_DATA_BASE_URL, officialDataFallbackOrigin].filter(Boolean))];
     let lastError;
     for (const dataOrigin of origins) {
         try {
-            const response = await fetcher(new URL(indexRow.historyUrl.replace(/^\//, ''), `${String(dataOrigin).replace(/\/$/, '')}/`), { headers: { Accept: 'application/json' } });
+            const response = await fetcher(new URL(indexRow.historyUrl.replace(/^\//, ''), `${String(dataOrigin).replace(/\/$/, '')}/`), { signal: AbortSignal.timeout(4000), headers: { Accept: 'application/json' } });
             if (!response.ok) {
                 lastError = new Error(`HTTP ${response.status}`);
                 continue;
@@ -83,70 +94,111 @@ function toPriceRows(history, events) {
     return [...rows, ...officialAmounts.values()].sort((left, right) => left.date.localeCompare(right.date));
 }
 
-async function loadPriceHistory(symbol, fetcher, baseUrl) {
+async function loadPriceHistory(symbol, fetcher, baseUrl, historyKind, asOf) {
     const price = prices.get(symbol);
-    if (!baseUrl || !price?.dataPath || !/^data\/[a-z0-9_-]+\/[a-z0-9.-]+\.json$/i.test(price.dataPath)) return null;
-    const response = await fetcher(new URL(price.dataPath, `${baseUrl}/`), { headers: { Accept: 'application/json' } });
+    const dataPath = price?.dataPath ?? pricePaths.get(symbol)?.dataPaths?.[0];
+    if (!baseUrl || !dataPath || !/^data\/[a-z0-9_-]+\/[a-z0-9.-]+\.json$/i.test(dataPath)) return null;
+    const response = await fetcher(new URL(dataPath, `${baseUrl}/`), { signal: AbortSignal.timeout(4000), headers: { Accept: 'application/json' } });
     if (!response.ok) throw new Error(`가격 projection을 불러오지 못했습니다: ${symbol}`);
-    return response.json();
+    const payload = await response.json();
+    const rows = actualPrices(payload, asOf);
+    const cutoff = new Date(`${asOf.slice(0, 7)}-01T00:00:00Z`);
+    cutoff.setUTCMonth(cutoff.getUTCMonth() - (historyKind === 'comparison-1y' ? 13 : 37));
+    return { ...payload, backtestData: rows.filter(row => row.date >= cutoff.toISOString().slice(0, 10)) };
 }
 
 const latestClose = (rows) => [...rows].reverse().find((row) => Number.isFinite(Number(row.close)) && Number(row.close) > 0) ?? null;
 
-export async function loadTicker(symbol, origin, options = {}) {
+async function fetchTicker(symbol, origin, options = {}) {
     const key = normalize(symbol);
     const fetcher = options.fetcher ?? fetch;
     const baseUrl = options.priceDataBaseUrl ?? priceDataBaseUrl();
-    const cacheKey = `${key}|${origin}|${baseUrl}`;
+    const projectionBase = options.projectionBaseUrl ?? process.env.THUMBNAIL_PROJECTION_BASE_URL ?? '';
+    const historyKind = options.historyKind ?? 'entry-efficiency';
+    const cacheKey = `${key}|${origin}|${baseUrl}|${projectionBase}|${historyKind}`;
     const cached = fetcher === fetch && cache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now()) return cached.value;
-    const instrument = instruments.get(key);
+    const instrument = instruments.get(key) ?? pricePaths.get(key);
     const indexRow = distributions.get(key);
-    const history = await loadOfficialHistory(key, origin, fetcher);
-    const priceHistory = await loadPriceHistory(key, fetcher, baseUrl).catch(() => null);
+    let priceError;
+    const [historyResult, priceResult] = await Promise.allSettled([
+        loadOfficialHistory(key, origin, fetcher),
+        (async () => {
+            const projection = await loadProjection(key, projectionBase, fetcher, historyKind).catch(() => null);
+            if (projection) return projection;
+            const legacy = await loadPriceHistory(key, fetcher, baseUrl, historyKind, options.asOfDate ?? new Date().toISOString().slice(0, 10)).catch(() => null);
+            if (legacy?.backtestData?.some(row => !row.forecasted && Number(row.close) > 0)) return { ...legacy, source: 'r2_projection' };
+            return loadYahooQuote(key, fetcher);
+        })(),
+    ]);
+    const history = historyResult.status === 'fulfilled' ? historyResult.value : [];
+    const priceHistory = priceResult.status === 'fulfilled' ? priceResult.value : null;
+    if (priceResult.status === 'rejected') priceError = priceResult.reason;
     const backtestData = priceHistory ? toPriceRows(priceHistory, history) : toBacktestData(history);
     const latest = latestClose(backtestData);
+    const currentPrice = priceHistory?.price ?? latest?.close ?? null;
+    const priceDate = priceHistory?.priceDate ?? latest?.date ?? null;
+    const reviewSplits = (priceHistory?.tickerInfo?.events?.splits ?? []).some(event => event.date >= priceHistory?.backtestData?.[0]?.date && event.date <= (options.asOfDate ?? new Date().toISOString().slice(0, 10)));
     const value = {
         symbol: key,
         tickerInfo: {
             symbol: key,
-            longName: instrument?.longName ?? instrument?.koName ?? null,
-            currency: instrument?.currency ?? indexRow?.latest?.currency ?? null,
-            market: instrument?.market ?? null,
-            regularMarketPrice: latest?.close ?? null,
-            price: latest?.close ?? null,
+            longName: instrument?.longName ?? instrument?.koName ?? priceHistory?.tickerInfo?.longName ?? null,
+            currency: instrument?.currency ?? priceHistory?.tickerInfo?.currency ?? indexRow?.latest?.currency ?? null,
+            market: instrument?.market ?? priceHistory?.tickerInfo?.market ?? null,
+            regularMarketPrice: currentPrice,
+            price: currentPrice,
         },
         backtestData,
         sourceStatus: {
-            dividends: indexRow ? 'official_projection' : 'unavailable',
+            dividends: historyResult.status === 'rejected' ? 'unavailable' : history.length ? 'official_projection' : 'none',
             dividendSourceUrl: indexRow?.historyUrl ?? null,
-            price: priceHistory ? 'r2_projection' : 'unavailable',
-            priceDate: latest?.date ?? null,
+            price: priceHistory?.source ?? 'unavailable',
+            priceDate,
+            quoteTime: priceHistory?.quoteTime ?? null,
+            priceErrorCode: priceError?.statusCode ?? null,
+            corporateActionReview: reviewSplits,
+            adjustmentBasis: priceHistory?.adjustmentBasis ?? 'upstream_unverified',
             asOf: new Date().toISOString(),
-            freshness: priceHistory ? 'fresh' : 'partial',
+            freshness: currentPrice ? (historyResult.status === 'rejected' ? 'partial' : priceFreshness(priceDate, options.asOfDate)) : 'partial',
         },
     };
-    if (fetcher === fetch) cache.set(cacheKey, { value, expiresAt: Date.now() + CACHE_TTL_MS });
+    if (fetcher === fetch) {
+        if (cache.size >= 200) cache.delete(cache.keys().next().value);
+        cache.set(cacheKey, { value, expiresAt: Date.now() + CACHE_TTL_MS });
+    }
     return value;
 }
 
-async function loadTickerWithSnapshot(symbol, origin, options = {}) {
+export function loadTicker(symbol, origin, options = {}) {
+    if (options.fetcher && options.fetcher !== fetch) return fetchTicker(symbol, origin, options);
+    const key = JSON.stringify([normalize(symbol), origin, options.priceDataBaseUrl, options.projectionBaseUrl, options.historyKind]);
+    if (!inFlight.has(key)) {
+        const pending = fetchTicker(symbol, origin, options).finally(() => inFlight.delete(key));
+        inFlight.set(key, pending);
+    }
+    return inFlight.get(key);
+}
+
+export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
+    const readSnapshot = options.readSnapshot ?? readTickerSnapshot;
+    const writeSnapshot = options.writeSnapshot ?? writeTickerSnapshot;
     try {
         const value = await loadTicker(symbol, origin, options);
         if (value.sourceStatus.price === 'unavailable') {
-            const snapshot = await readTickerSnapshot(symbol).catch((error) => {
+            const snapshot = await readSnapshot(symbol).catch((error) => {
                 console.warn(`Snapshot read failed for ${symbol}`, error.message);
                 return null;
             });
-            if (snapshot?.value?.sourceStatus?.price !== 'unavailable') {
+            if (snapshot?.value && ['r2_projection', 'thumbnail_projection', 'yahoo_quote'].includes(snapshot.value.sourceStatus?.price)) {
                 return { ...snapshot.value, sourceStatus: { ...(snapshot.value.sourceStatus ?? {}), freshness: 'stale', staleSince: snapshot.savedAt, reason: 'price_source_unavailable' } };
             }
         }
         // Snapshot persistence is optional locally, but mandatory where R2 credentials exist.
-        await writeTickerSnapshot(symbol, value).catch((error) => console.warn(`Snapshot write failed for ${symbol}`, error.message));
+        await writeSnapshot(symbol, value).catch((error) => console.warn(`Snapshot write failed for ${symbol}`, error.message));
         return value;
     } catch (error) {
-        const snapshot = await readTickerSnapshot(symbol).catch((snapshotError) => {
+        const snapshot = await readSnapshot(symbol).catch((snapshotError) => {
             console.warn(`Snapshot read failed for ${symbol}`, snapshotError.message);
             return null;
         });
@@ -167,24 +219,33 @@ export async function buildThumbnailPayload(ticker, requestedRivals = [], loader
     const entry = catalogEntry(ticker);
     const allowed = new Set(rivalOptions(entry));
     const rivals = requestedRivals.map(normalize).filter((symbol) => allowed.has(symbol)).slice(0, 3);
-    const symbols = [entry.symbol, ...rivals, ...(entry.underlying ? [entry.underlying] : [])];
+    const symbols = [entry.symbol, ...rivals, ...(entry.underlying && rivals.length ? [entry.underlying] : [])];
     const activeLoader = loader ?? ((symbol) => loadTickerWithSnapshot(symbol, 'http://localhost'));
     const settled = await Promise.allSettled(symbols.map(activeLoader));
     const loaded = Object.fromEntries(symbols.map((symbol, index) => [symbol, settled[index].status === 'fulfilled' ? settled[index].value : null]));
-    const unavailable = symbols.filter((symbol) => !loaded[symbol]);
-    if (!loaded[entry.symbol]) throw new Error(`공식 배당 원장을 불러올 수 없습니다: ${entry.symbol}`);
+    const unavailable = symbols.filter((symbol) => !loaded[symbol] || (loaded[symbol].tickerInfo?.price == null && !(loaded[symbol].backtestData ?? []).some(row => row.amount)));
+    if (!loaded[entry.symbol]) throw new PriceError(`종목 데이터를 불러올 수 없습니다: ${entry.symbol}`);
+    if (loaded[entry.symbol].sourceStatus?.price === 'unavailable' && !loaded[entry.symbol].backtestData?.length) {
+        throw new PriceError('종목 시세를 확인할 수 없습니다.', loaded[entry.symbol].sourceStatus.priceErrorCode ?? 503);
+    }
     const instrument = instruments.get(entry.symbol);
     const seriesStatus = Object.fromEntries(symbols.map((symbol) => [symbol, loaded[symbol]?.sourceStatus ?? { freshness: 'unavailable' }]));
     const freshness = Object.values(seriesStatus).some((status) => status.freshness === 'stale') ? 'stale' : unavailable.length ? 'partial' : loaded[entry.symbol].sourceStatus?.freshness ?? 'fresh';
-    return { ticker: loaded[entry.symbol], catalog: { ...entry, company: instrument?.officialProvider ?? null }, rivalOptions: rivalOptions(entry), rivals, series: loaded, partial: unavailable.length > 0, unavailable, dataStatus: freshness, seriesStatus };
+    return { ticker: loaded[entry.symbol], catalog: { ...entry, company: instrument?.officialProvider ?? null }, rivalOptions: rivalOptions(entry), rivals, series: Object.fromEntries(Object.entries(loaded).filter(([symbol]) => symbol !== entry.symbol)), partial: unavailable.length > 0, unavailable, dataStatus: freshness, seriesStatus };
 }
 
 async function handler(req, res) {
     const ticker = normalize(req.query.ticker);
-    if (!/^[A-Z0-9.-]{1,15}$/.test(ticker)) return res.status(400).json({ error: 'A valid ticker is required.' });
+    if (!validSymbol(ticker)) return res.status(400).json({ error: 'A valid ticker is required.' });
     const rivals = String(req.query.rivals ?? '').split(',').filter(Boolean);
     const origin = requestOrigin(req);
-    const payload = await buildThumbnailPayload(ticker, rivals, (symbol) => loadTickerWithSnapshot(symbol, origin));
+    let payload;
+    try {
+        payload = await buildThumbnailPayload(ticker, rivals, (symbol) => loadTickerWithSnapshot(symbol, origin, { historyKind: symbol === ticker ? 'entry-efficiency' : 'comparison-1y' }));
+    } catch (error) {
+        if (error instanceof PriceError) return res.status(error.statusCode).json({ error: error.message });
+        throw error;
+    }
     res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
     return res.status(200).json(payload);
 }

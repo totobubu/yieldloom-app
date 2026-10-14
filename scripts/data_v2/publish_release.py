@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import re
+import subprocess
 from pathlib import Path
 
 
@@ -33,7 +35,17 @@ def main() -> int:
     client, bucket = get_r2_client()
     if not client or not bucket:
         raise RuntimeError("R2 credentials are required")
+    if not re.fullmatch(r"[A-Za-z0-9._-]+", args.release_id):
+        raise ValueError("Invalid release ID")
+    subprocess.run([sys.executable, str(ROOT / "scripts/data_v2/validate_snapshot.py"), "--data-dir", str(data_dir)], check=True)
     release_prefix = f"{PREFIX}/releases/{args.release_id}"
+    try:
+        client.head_object(Bucket=bucket, Key=f"{release_prefix}/manifest.json")
+    except Exception as error:
+        if getattr(error, "response", {}).get("Error", {}).get("Code") not in {"404", "NoSuchKey", "NotFound"}:
+            raise
+    else:
+        raise ValueError("Immutable release already exists; choose a new release ID")
     for entry in manifest["files"]:
         relative = Path(entry["path"])
         body = (data_dir / relative).read_bytes()

@@ -42,7 +42,7 @@ const presets = ref(loadLocalPresets());
 
 const publicUrl = computed(() => typeof window === 'undefined' ? '' : `${window.location.origin}${route.fullPath}`);
 
-const normalize = (value) => String(value ?? '').trim().toUpperCase().replace(/\./g, '-');
+const normalize = (value) => String(value ?? '').trim().toUpperCase();
 const dividendRows = (rows) =>
     (rows ?? [])
         .filter(
@@ -97,7 +97,7 @@ useHead({
     link: [{ rel: 'canonical', href: publicUrl }],
 });
 const entryEfficiency = computed(() =>
-    calculateEntryIncomeEfficiency(selectedData.value, {
+    selectedData.value?.sourceStatus?.corporateActionReview ? { available: false, reason: '분할 이후 가격과 배당의 보정 기준을 확인 중입니다.', samples: [] } : calculateEntryIncomeEfficiency(selectedData.value, {
         asOfDate: new Date().toISOString().slice(0, 10),
     })
 );
@@ -119,22 +119,27 @@ const refreshComparison = async () => {
 const syncRivalsToUrl = () => router.replace({ query: { ...route.query, rivals: rivals.value.length ? rivals.value.join(',') : undefined } });
 watch(rivals, async () => { syncRivalsToUrl(); await refreshComparison(); }, { deep: true });
 
+let loadSequence = 0;
 const load = async (rivalSymbols = String(route.query.rivals ?? '').split(',').filter(Boolean)) => {
+    const sequence = ++loadSequence;
     loading.value = true; error.value = ''; comparison.value = null;
     try {
         const requested = normalize(route.params.ticker);
         const response = await fetch(apiUrl(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}&rivals=${encodeURIComponent(rivalSymbols.join(','))}`), { cache: 'no-store' });
         const payload = await response.json();
-        if (!response.ok) throw new Error(payload.error ?? response.status);
+        if (sequence !== loadSequence) return;
+        if (!response.ok) throw new Error(response.status === 404 ? '해당 티커를 찾을 수 없습니다. 티커를 확인해 주세요.' : response.status === 503 ? '시세 제공 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.' : payload.error ?? '종목 데이터를 불러오지 못했습니다.');
         selectedInfo.value = { ...payload.catalog, ...payload.ticker.tickerInfo, symbol: payload.ticker.symbol, rivalOptions: payload.rivalOptions };
         selectedData.value = payload.ticker;
         dataStatus.value = payload.dataStatus ?? payload.ticker.sourceStatus?.freshness ?? 'partial';
         trackAggregate('card_open', 'summary');
-        comparison.value = payload.catalog.underlying && payload.rivals.length && payload.series[payload.catalog.underlying] && payload.rivals.every((symbol) => payload.series[symbol]) ? calculateRivalComparison([payload.ticker, ...payload.rivals.map((symbol) => payload.series[symbol])], payload.series[payload.catalog.underlying], new Date().toISOString().slice(0, 10)) : null;
-        schedule.value = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
+        comparison.value = !Object.values({ ...payload.series, primary: payload.ticker }).some(value => value?.sourceStatus?.corporateActionReview) && payload.catalog.underlying && payload.rivals.length && payload.series[payload.catalog.underlying] && payload.rivals.every((symbol) => payload.series[symbol]) ? calculateRivalComparison([payload.ticker, ...payload.rivals.map((symbol) => payload.series[symbol])], payload.series[payload.catalog.underlying], new Date().toISOString().slice(0, 10)) : null;
+        const loadedSchedule = await loadDividendSchedule(selectedInfo.value.symbol).catch((reason) => { console.warn('Dividend schedule could not load', reason); return null; });
+        if (sequence !== loadSequence) return;
+        schedule.value = loadedSchedule;
         const loadedRivals = payload.rivals ?? [];
         if (loadedRivals.join(',') !== rivals.value.join(',')) rivals.value = loadedRivals;
-    } catch (e) { error.value = '썸네일 데이터를 불러오지 못했습니다.'; console.error(e); } finally { loading.value = false; }
+    } catch (e) { if (sequence === loadSequence) error.value = e.message || '썸네일 데이터를 불러오지 못했습니다.'; console.error(e); } finally { if (sequence === loadSequence) loading.value = false; }
 };
 const downloadArtwork = async (kind) => {
     const element = document.querySelector(`[data-thumbnail-kind="${kind}"]`);
@@ -197,10 +202,10 @@ onMounted(load); watch(() => route.params.ticker, () => load());
 <template>
     <main class="ticker-thumbnail-page">
         <div v-if="loading" class="state"><ProgressSpinner /><p>썸네일 데이터를 불러오는 중…</p></div>
-        <div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p></div>
+        <div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p><Button label="다시 시도" @click="load()" /></div>
         <template v-else>
             <header class="page-header">
-                <div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1></div>
+                <div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1><p v-if="selectedInfo.price != null" class="latest-price">최근 시세 {{ selectedInfo.currency }} {{ Number(selectedInfo.price).toLocaleString(undefined, { maximumFractionDigits: 4 }) }} · {{ selectedData.sourceStatus.priceDate }}</p></div>
                 <div class="data-toolbar"><p class="data-status" :class="dataStatus">{{ dataStatus === 'fresh' ? '데이터 최신' : dataStatus === 'stale' ? '마지막 정상 데이터 · 갱신 지연' : '일부 데이터 확인 필요' }}</p><label>문구 톤 <select v-model="selectedTone"><option value="informative">정보형</option><option value="concise">간결형</option><option value="friendly">친근형</option></select></label><Button label="프리셋 저장" icon="pi pi-bookmark" @click="saveCurrentPreset" /><Button label="게시 패키지 ZIP" icon="pi pi-box" :loading="packaging" @click="downloadPublishPackage" /></div>
                 <div v-if="presets.length" class="preset-row" aria-label="저장된 콘텐츠 프리셋"><span>저장한 조합</span><template v-for="preset in presets" :key="preset.id"><button type="button" @click="openPreset(preset)">{{ preset.name }}</button><button type="button" class="preset-delete" :aria-label="`${preset.name} 삭제`" @click="deletePreset(preset)">×</button></template></div>
                 <section v-if="selectedInfo.underlying && rivalOptions.length" class="rival-candidate-picker" :aria-label="`${selectedInfo.symbol} 라이벌 카드 후보`">

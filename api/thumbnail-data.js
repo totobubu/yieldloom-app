@@ -104,7 +104,8 @@ async function loadPriceHistory(symbol, fetcher, baseUrl, historyKind, asOf) {
     const rows = actualPrices(payload, asOf);
     const cutoff = new Date(`${asOf.slice(0, 7)}-01T00:00:00Z`);
     cutoff.setUTCMonth(cutoff.getUTCMonth() - (historyKind === 'comparison-1y' ? 13 : 37));
-    return { ...payload, backtestData: rows.filter(row => row.date >= cutoff.toISOString().slice(0, 10)) };
+    const marketCap = payload.tickerInfo?.marketCap ?? [...(payload.backtestData ?? [])].reverse().find(row => !row.forecasted && row.date <= asOf && Number(row.marketCap) > 0)?.marketCap;
+    return { ...payload, tickerInfo: { ...payload.tickerInfo, marketCap }, backtestData: rows.filter(row => row.date >= cutoff.toISOString().slice(0, 10)) };
 }
 
 const latestClose = (rows) => [...rows].reverse().find((row) => Number.isFinite(Number(row.close)) && Number(row.close) > 0) ?? null;
@@ -125,7 +126,13 @@ async function fetchTicker(symbol, origin, options = {}) {
         loadOfficialHistory(key, origin, fetcher),
         (async () => {
             const projection = await loadProjection(key, projectionBase, fetcher, historyKind).catch(() => null);
-            if (projection) return projection;
+            if (projection) {
+                if (!projection.tickerInfo?.marketCap) {
+                    const legacy = await loadPriceHistory(key, fetcher, baseUrl, historyKind, options.asOfDate ?? new Date().toISOString().slice(0, 10)).catch(() => null);
+                    projection.tickerInfo.marketCap = legacy?.tickerInfo?.marketCap ?? null;
+                }
+                return projection;
+            }
             const legacy = await loadPriceHistory(key, fetcher, baseUrl, historyKind, options.asOfDate ?? new Date().toISOString().slice(0, 10)).catch(() => null);
             if (legacy?.backtestData?.some(row => !row.forecasted && Number(row.close) > 0)) return { ...legacy, source: 'r2_projection' };
             return loadYahooQuote(key, fetcher);
@@ -146,6 +153,7 @@ async function fetchTicker(symbol, origin, options = {}) {
             longName: instrument?.longName ?? instrument?.koName ?? priceHistory?.tickerInfo?.longName ?? null,
             currency: instrument?.currency ?? priceHistory?.tickerInfo?.currency ?? indexRow?.latest?.currency ?? null,
             market: instrument?.market ?? priceHistory?.tickerInfo?.market ?? null,
+            marketCap: priceHistory?.tickerInfo?.marketCap ?? null,
             regularMarketPrice: currentPrice,
             price: currentPrice,
         },
@@ -215,13 +223,25 @@ export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
     }
 }
 
-export async function buildThumbnailPayload(ticker, requestedRivals = [], loader) {
+export async function buildThumbnailPayload(ticker, requestedRivals, loader) {
     const entry = catalogEntry(ticker);
     const allowed = new Set(rivalOptions(entry));
-    const rivals = requestedRivals.map(normalize).filter((symbol) => allowed.has(symbol)).slice(0, 3);
-    const symbols = [entry.symbol, ...rivals, ...(entry.underlying && rivals.length ? [entry.underlying] : [])];
     const activeLoader = loader ?? ((symbol) => loadTickerWithSnapshot(symbol, 'http://localhost'));
-    const settled = await Promise.allSettled(symbols.map(activeLoader));
+    const candidates = new Map();
+    let defaults = [...allowed];
+    if (requestedRivals == null && defaults.length > 3) {
+        await Promise.all(defaults.map(async symbol => {
+            candidates.set(symbol, await activeLoader(symbol).catch(() => null));
+        }));
+        const cap = symbol => {
+            const value = Number(candidates.get(symbol)?.tickerInfo?.marketCap);
+            return Number.isFinite(value) && value > 0 ? value : 0;
+        };
+        defaults.sort((a, b) => cap(b) - cap(a));
+    }
+    const rivals = [...new Set((requestedRivals ?? defaults).map(normalize))].filter((symbol) => allowed.has(symbol)).slice(0, 3);
+    const symbols = [entry.symbol, ...rivals, ...(entry.underlying && rivals.length ? [entry.underlying] : [])];
+    const settled = await Promise.allSettled(symbols.map(symbol => candidates.has(symbol) ? Promise.resolve(candidates.get(symbol)) : activeLoader(symbol)));
     const loaded = Object.fromEntries(symbols.map((symbol, index) => [symbol, settled[index].status === 'fulfilled' ? settled[index].value : null]));
     const unavailable = symbols.filter((symbol) => !loaded[symbol] || (loaded[symbol].tickerInfo?.price == null && !(loaded[symbol].backtestData ?? []).some(row => row.amount)));
     if (!loaded[entry.symbol]) throw new PriceError(`종목 데이터를 불러올 수 없습니다: ${entry.symbol}`);
@@ -237,7 +257,7 @@ export async function buildThumbnailPayload(ticker, requestedRivals = [], loader
 async function handler(req, res) {
     const ticker = normalize(req.query.ticker);
     if (!validSymbol(ticker)) return res.status(400).json({ error: 'A valid ticker is required.' });
-    const rivals = String(req.query.rivals ?? '').split(',').filter(Boolean);
+    const rivals = req.query.rivals == null ? undefined : String(req.query.rivals).split(',').filter(Boolean);
     const origin = requestOrigin(req);
     let payload;
     try {

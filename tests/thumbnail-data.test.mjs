@@ -137,3 +137,28 @@ test('cross checked official ledger events are usable but review-only events are
     const events=['official','cross_checked','needs_review'].map((verification_status,index)=>({ex_date:`2026-10-0${index+1}`,distribution_per_share:'0.1000',verification_status}));
     assert.equal(toBacktestData(events).length,2);
 });
+
+test('default rivals select every candidate when there are at most three', async () => {
+    for (const ticker of ['ABNY', 'APLY', 'AMDY', 'QQQM']) {
+        const payload = await buildThumbnailPayload(ticker, undefined, async symbol => ({ symbol, tickerInfo: { price: 100 }, backtestData: [] }));
+        assert.deepEqual(payload.rivals, rivalOptions(catalogEntry(ticker)));
+    }
+});
+
+test('default rivals select the three largest market caps and load candidates once', async () => {
+    const caps = { CRSH: null, TEST: 10, TSII: 500, TSLW: 100, TSYY: 300 };
+    const calls = [];
+    const payload = await buildThumbnailPayload('TSLY', undefined, async symbol => {
+        calls.push(symbol);
+        return { symbol, tickerInfo: { price: 100, marketCap: caps[symbol] }, backtestData: [] };
+    });
+    assert.deepEqual(payload.rivals, ['TSII', 'TSYY', 'TSLW']);
+    assert.equal(calls.length, new Set(calls).size);
+    assert.deepEqual(Object.keys(payload.series), ['TSII', 'TSYY', 'TSLW', 'TSLA']);
+});
+
+test('explicit selection including an empty list overrides automatic defaults', async () => {
+    const loader = async symbol => ({ symbol, tickerInfo: { price: 100 }, backtestData: [] });
+    assert.deepEqual((await buildThumbnailPayload('TSLY', [], loader)).rivals, []);
+    assert.deepEqual((await buildThumbnailPayload('TSLY', ['TEST'], loader)).rivals, ['TEST']);
+});

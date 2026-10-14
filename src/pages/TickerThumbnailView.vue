@@ -30,6 +30,8 @@ const selectedData = ref(null);
 const loading = ref(true);
 const error = ref('');
 const rivals = ref([]);
+const draftRivals = ref([]);
+const rivalPickerOpen = ref(true);
 const exporting = ref('');
 const schedule = ref(null);
 const artworkSize = 720;
@@ -105,27 +107,32 @@ const rivalOptions = computed(() => {
     return (selectedInfo.value?.rivalOptions ?? []).map((symbol) => ({ label: symbol, value: symbol }));
 });
 const toggleRival = (symbol) => {
-    if (rivals.value.includes(symbol)) {
-        rivals.value = rivals.value.filter((rival) => rival !== symbol);
+    if (draftRivals.value.includes(symbol)) {
+        draftRivals.value = draftRivals.value.filter((rival) => rival !== symbol);
         return;
     }
-    if (rivals.value.length < maxRivals) rivals.value = [...rivals.value, symbol];
+    if (draftRivals.value.length < maxRivals) draftRivals.value = [...draftRivals.value, symbol];
 };
 
 const comparison = ref(null);
-const refreshComparison = async () => {
-    await load(rivals.value);
+const openRivalPicker = () => {
+    draftRivals.value = [...rivals.value];
+    rivalPickerOpen.value = true;
 };
-const syncRivalsToUrl = () => router.replace({ query: { ...route.query, rivals: rivals.value.length ? rivals.value.join(',') : undefined } });
-watch(rivals, async () => { syncRivalsToUrl(); await refreshComparison(); }, { deep: true });
+const confirmRivals = async () => {
+    const selection = [...draftRivals.value];
+    rivalPickerOpen.value = false;
+    await router.replace({ query: { ...route.query, rivals: selection.join(',') } });
+    if (selection.join(',') !== rivals.value.join(',')) await load(selection);
+};
 
 let loadSequence = 0;
-const load = async (rivalSymbols = String(route.query.rivals ?? '').split(',').filter(Boolean)) => {
+const load = async (rivalSymbols = route.query.rivals == null ? undefined : String(route.query.rivals).split(',').filter(Boolean)) => {
     const sequence = ++loadSequence;
     loading.value = true; error.value = ''; comparison.value = null;
     try {
         const requested = normalize(route.params.ticker);
-        const response = await fetch(apiUrl(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}&rivals=${encodeURIComponent(rivalSymbols.join(','))}`), { cache: 'no-store' });
+        const response = await fetch(apiUrl(`/api/thumbnail-data?ticker=${encodeURIComponent(requested)}${rivalSymbols == null ? '' : `&rivals=${encodeURIComponent(rivalSymbols.join(','))}`}`), { cache: 'no-store' });
         const payload = await response.json();
         if (sequence !== loadSequence) return;
         if (!response.ok) throw new Error(response.status === 404 ? '해당 티커를 찾을 수 없습니다. 티커를 확인해 주세요.' : response.status === 503 ? '시세 제공 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.' : payload.error ?? '종목 데이터를 불러오지 못했습니다.');
@@ -138,7 +145,8 @@ const load = async (rivalSymbols = String(route.query.rivals ?? '').split(',').f
         if (sequence !== loadSequence) return;
         schedule.value = loadedSchedule;
         const loadedRivals = payload.rivals ?? [];
-        if (loadedRivals.join(',') !== rivals.value.join(',')) rivals.value = loadedRivals;
+        rivals.value = loadedRivals;
+        draftRivals.value = [...loadedRivals];
     } catch (e) { if (sequence === loadSequence) error.value = e.message || '썸네일 데이터를 불러오지 못했습니다.'; console.error(e); } finally { if (sequence === loadSequence) loading.value = false; }
 };
 const downloadArtwork = async (kind) => {
@@ -196,7 +204,7 @@ const saveCurrentPreset = async () => {
 };
 const openPreset = async (preset) => { selectedTone.value = preset.tone || 'informative'; await router.push({ path: `/thumbnail/${preset.ticker}`, query: preset.rivals.length ? { rivals: preset.rivals.join(',') } : {} }); };
 const deletePreset = (preset) => { removeLocalPreset(preset.id); presets.value = presets.value.filter((item) => item.id !== preset.id); };
-onMounted(load); watch(() => route.params.ticker, () => load());
+onMounted(load); watch(() => route.params.ticker, () => { rivalPickerOpen.value = true; load(); });
 </script>
 
 <template>
@@ -209,10 +217,12 @@ onMounted(load); watch(() => route.params.ticker, () => load());
                 <div class="data-toolbar"><p class="data-status" :class="dataStatus">{{ dataStatus === 'fresh' ? '데이터 최신' : dataStatus === 'stale' ? '마지막 정상 데이터 · 갱신 지연' : '일부 데이터 확인 필요' }}</p><label>문구 톤 <select v-model="selectedTone"><option value="informative">정보형</option><option value="concise">간결형</option><option value="friendly">친근형</option></select></label><Button label="프리셋 저장" icon="pi pi-bookmark" @click="saveCurrentPreset" /><Button label="게시 패키지 ZIP" icon="pi pi-box" :loading="packaging" @click="downloadPublishPackage" /></div>
                 <div v-if="presets.length" class="preset-row" aria-label="저장된 콘텐츠 프리셋"><span>저장한 조합</span><template v-for="preset in presets" :key="preset.id"><button type="button" @click="openPreset(preset)">{{ preset.name }}</button><button type="button" class="preset-delete" :aria-label="`${preset.name} 삭제`" @click="deletePreset(preset)">×</button></template></div>
                 <section v-if="selectedInfo.underlying && rivalOptions.length" class="rival-candidate-picker" :aria-label="`${selectedInfo.symbol} 라이벌 카드 후보`">
-                    <div class="candidate-heading"><p>라이벌 카드 후보</p><strong>{{ selectedInfo.underlying }} 기반 · 최대 {{ maxRivals }}종</strong></div>
-                    <div class="candidate-buttons">
-                        <button v-for="option in rivalOptions" :key="option.value" type="button" :class="{ selected: rivals.includes(option.value) }" :aria-pressed="rivals.includes(option.value)" :title="option.label" :disabled="!rivals.includes(option.value) && rivals.length >= maxRivals" @click="toggleRival(option.value)">{{ option.value }}</button>
+                    <div class="candidate-heading"><p>라이벌 카드 후보</p><strong>{{ selectedInfo.underlying }} 기반 · 최대 {{ maxRivals }}종</strong><Button label="추가" icon="pi pi-plus" :aria-expanded="rivalPickerOpen" aria-controls="rival-candidates" @click="openRivalPicker" /></div>
+                    <p v-if="!rivalPickerOpen" class="hint">선택한 라이벌: {{ rivals.length ? rivals.join(', ') : '없음' }}</p>
+                    <div v-if="rivalPickerOpen" id="rival-candidates" class="candidate-buttons">
+                        <button v-for="option in rivalOptions" :key="option.value" type="button" :class="{ selected: draftRivals.includes(option.value) }" :aria-pressed="draftRivals.includes(option.value)" :title="option.label" :disabled="!draftRivals.includes(option.value) && draftRivals.length >= maxRivals" @click="toggleRival(option.value)">{{ option.value }}</button>
                     </div>
+                    <div v-if="rivalPickerOpen" class="candidate-actions"><span class="hint">{{ draftRivals.length }}/{{ maxRivals }}종 선택 · 확인 후 반영됩니다.</span><Button label="확인" icon="pi pi-check" @click="confirmRivals" /></div>
                 </section>
             </header>
             <section class="artwork-grid">
@@ -236,6 +246,7 @@ onMounted(load); watch(() => route.params.ticker, () => load());
 </template>
 
 <style scoped>
+.candidate-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}.candidate-actions .hint{font-size:.75rem}
 .ticker-thumbnail-page{min-height:100vh;padding:32px;color:#17212b}.state{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}.page-header{display:flex;justify-content:space-between;align-items:center;gap:20px;max-width:2208px;margin:0 auto 24px}.page-header p{margin:0;color:#0064ff;font-size:.75rem;font-weight:800;letter-spacing:.12em}.page-header h1{margin:5px 0 0}.rival-candidate-picker{min-width:340px;padding:14px 16px;border:1px solid #cbd5e1;border-radius:14px;background:#fff;box-shadow:0 4px 14px #15212b0d}.candidate-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}.candidate-heading strong{color:#64748b;font-size:.72rem}.candidate-buttons{display:flex;flex-wrap:wrap;gap:7px}.candidate-buttons button{min-width:52px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#334155;font:800 .8rem/1 ui-monospace,monospace;cursor:pointer}.candidate-buttons button:hover:not(:disabled){border-color:#2563eb;color:#1d4ed8}.candidate-buttons button.selected{border-color:#2563eb;background:#2563eb;color:#fff;box-shadow:0 2px 6px #2563eb3d}.candidate-buttons button:disabled{opacity:.42;cursor:not-allowed}.artwork-grid{display:grid;grid-template-columns:repeat(auto-fit,720px);justify-content:center;gap:24px;max-width:2208px;margin:auto}.artwork-panel{display:grid;width:720px;gap:12px}.artwork-panel>button{justify-self:start}.share-copy-notice{position:sticky;bottom:16px;z-index:2;display:flex;justify-content:center;align-items:center;gap:12px;width:max-content;max-width:calc(100% - 32px);margin:24px auto;padding:12px 15px;border-radius:12px;background:#17212b;color:#fff;box-shadow:0 10px 28px #17212b40}.share-copy-notice button{border:0;border-radius:7px;background:#fee500;color:#191919;padding:8px 10px;font:700 .78rem inherit;cursor:pointer}.content-grid{display:grid;grid-template-columns:minmax(0,520px) minmax(360px,1fr);gap:24px;max-width:1520px;margin:32px auto 0;align-items:start}.rivals{padding:24px;border-radius:18px;background:#dfe8f2}.hint{margin:0;color:#526274}@media(max-width:1000px){.page-header{align-items:flex-start;flex-direction:column}.rival-candidate-picker{width:100%;min-width:0;box-sizing:border-box}.content-grid{grid-template-columns:1fr}.artwork-grid{justify-content:start;overflow-x:auto;padding-bottom:12px}}@media(max-width:600px){.ticker-thumbnail-page{padding:16px}.candidate-heading{align-items:flex-start;flex-direction:column;gap:3px}.share-copy-notice{align-items:flex-start;flex-direction:column}}
 .ticker-thumbnail-page{color:var(--app-text)}.page-header p{color:var(--app-accent)}.data-toolbar{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:10px}.data-toolbar label{font-size:.78rem;font-weight:700}.data-toolbar select{margin-left:5px;padding:7px;border:1px solid var(--app-border);border-radius:7px;background:var(--app-surface);color:var(--app-text)}.data-status{padding:8px 10px;border-radius:8px;background:var(--app-surface-muted);color:var(--app-muted)!important;letter-spacing:0!important}.data-status.stale,.data-status.partial{background:#fff7ed;color:#9a3412!important}.preset-row{display:flex;align-items:center;flex-wrap:wrap;gap:5px;max-width:2208px;margin:0 auto 18px;font-size:.75rem}.preset-row span{margin-right:5px;color:var(--app-muted);font-weight:700}.preset-row button{padding:6px 8px;border:1px solid var(--app-border);border-radius:7px;background:var(--app-surface);color:var(--app-text);cursor:pointer}.preset-row .preset-delete{margin-left:-6px;border-left:0;color:var(--app-muted)}.rival-candidate-picker{border-color:var(--app-border);background:var(--app-surface);box-shadow:none}.candidate-heading strong,.hint{color:var(--app-muted)}.candidate-buttons button{border-color:var(--app-border);background:var(--app-surface-muted);color:var(--app-text)}.candidate-buttons button:hover:not(:disabled){border-color:var(--app-accent);color:var(--app-accent)}.candidate-buttons button.selected{border-color:var(--app-accent);background:var(--app-accent);color:var(--app-accent-contrast);box-shadow:none}.share-copy-notice{background:var(--app-surface);color:var(--app-text);border:1px solid var(--app-border);box-shadow:0 10px 28px var(--app-overlay)}.share-copy-notice button{background:var(--app-accent);color:var(--app-accent-contrast)}.rivals{background:var(--app-surface-muted);border:1px solid var(--app-border-subtle)}
 </style>

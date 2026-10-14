@@ -36,13 +36,13 @@ async function currentRelease() {
             const pointerResponse = await fetch(urlForKey('core/current.json'));
             if (!pointerResponse.ok) throw new Error(`Core release pointer unavailable (${pointerResponse.status})`);
             const pointer = await pointerResponse.json() as CorePointer;
-            if (!pointer.releaseId || !pointer.manifestKey?.startsWith('core/releases/')) {
+            if (!pointer.releaseId || !/^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(pointer.manifestKey || '')) {
                 throw new Error('Core release pointer is invalid');
             }
             const manifestResponse = await fetch(urlForKey(pointer.manifestKey));
             if (!manifestResponse.ok) throw new Error(`Core manifest unavailable (${manifestResponse.status})`);
             const manifest = await manifestResponse.json() as CoreManifest;
-            if (manifest.releaseId !== pointer.releaseId || !manifest.catalogSearchIndexPath) {
+            if (manifest.releaseId !== pointer.releaseId || manifest.catalogSearchIndexPath !== 'catalog/search-index.json') {
                 throw new Error('Core manifest is invalid');
             }
             return { pointer, manifest };

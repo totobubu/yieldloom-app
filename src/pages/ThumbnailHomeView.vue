@@ -3,6 +3,8 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { useHead } from '@vueuse/head';
 import { getDataUrl, getR2Url } from '@/utils/dataUrl';
 import { isDivgrowReleaseConfigured, loadDivgrowTickerIndex } from '@/services/divgrowRelease';
+import { loadCoreDirectory } from '@/services/coreRelease';
+import { loadDataReleaseIndex } from '@/services/dataRelease';
 import AdSlot from '@/components/ads/AdSlot.vue';
 useHead({ title: 'ETF·주식 검색' });
 const query = ref(''), company = ref(''), securityType = ref(''), sort = ref('symbol');
@@ -42,8 +44,9 @@ async function fetchJson(path) {
 }
 async function load() {
     loading.value = true; error.value = '';
-    const indexLoader = isDivgrowReleaseConfigured() ? loadDivgrowTickerIndex() : fetchJson('ticker-index.json');
-    const [index, dividend] = await Promise.allSettled([indexLoader, fetchJson('content-studio/distribution-index.json')]);
+    const coreConfigured = Boolean(import.meta.env.VITE_DATA_RELEASE_BASE_URL);
+    const indexLoader = coreConfigured ? loadCoreDirectory().then(instruments => ({ nav: instruments.filter(row => row.active !== false).map(row => ({ ...row, company: row.officialProvider, securityType: 'etf' })) })) : isDivgrowReleaseConfigured() ? loadDivgrowTickerIndex() : fetchJson('ticker-index.json');
+    const [index, dividend] = await Promise.allSettled([indexLoader, coreConfigured ? loadDataReleaseIndex() : fetchJson('content-studio/distribution-index.json')]);
     if (index.status === 'fulfilled') rows.value = (index.value.nav ?? []).filter(row => row.symbol);
     else error.value = '종목 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
     if (dividend.status === 'fulfilled') distributions.value = Object.fromEntries((dividend.value.tickers ?? []).map(row => [row.ticker, row.latest]));

@@ -4,6 +4,7 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
+        "thumbnail:refresh": "node scripts/thumbnail_pipeline/refresh.mjs",
         "data:audit-size": "python scripts/data_pipeline/compact_history.py",
         "data:compact": "python scripts/data_pipeline/compact_history.py --apply",
         "data:register": "python scripts/data_pipeline/register_history.py",

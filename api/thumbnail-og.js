@@ -1,6 +1,7 @@
+import { normalizeSymbol, validSymbol } from '../lib/thumbnail-projection.js';
 import distributionIndex from '../public/content-studio/distribution-index.json' with { type: 'json' };
 
-const normalize = (value) => String(value ?? '').trim().toUpperCase().replace(/\./g, '-');
+const normalize = normalizeSymbol;
 const escapeXml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' })[character]);
 const latest = (ticker) => {
     const row = (distributionIndex.tickers ?? []).find((item) => normalize(item.ticker) === ticker);
@@ -14,9 +15,9 @@ const date = (value) => /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? '')) ? `${Num
 
 export default function handler(req, res) {
     const ticker = normalize(req.query.ticker);
-    if (!/^[A-Z0-9.-]{1,15}$/.test(ticker)) return res.status(400).send('Invalid ticker');
+    if (!validSymbol(ticker)) return res.status(400).send('Invalid ticker');
     const candidate = latest(ticker);
-    const dividend = candidate?.verification_status === 'official' ? candidate : null;
+    const dividend = ['official', 'cross_checked'].includes(candidate?.verification_status) ? candidate : null;
     const dividendAmount = amount(dividend?.distribution_per_share ?? dividend?.amount);
     const exDate = date(dividend?.ex_date ?? dividend?.exDate);
     const label = `${ticker} 최신 배당`;

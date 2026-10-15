@@ -17,12 +17,12 @@ for (const row of index.tickers ?? []) {
     if (!/^[A-Z0-9.-]{1,15}$/.test(ticker)) continue;
     const latest = row.latest?.verification_status === 'official' ? row.latest : {};
     const description = `${ticker} 최신 배당 ${amount(latest.distribution_per_share)} · 배당락일 ${exDate(latest.ex_date)} · Yieldloom에서 확인`;
-    const canonical = `${siteUrl}/thumbnail/${encodeURIComponent(ticker)}`;
+    const canonical = `${siteUrl}/stock/${encodeURIComponent(ticker)}`;
     const head = [
-        `<title>${escapeHtml(ticker)} 최신 배당 | Yieldloom</title>`,
+        `<title>${escapeHtml(ticker)} 주식 상세정보 · 시세와 배당 | Yieldloom</title>`,
         `<meta name="description" content="${escapeHtml(description)}">`,
         `<link rel="canonical" href="${canonical}">`,
-        `<meta property="og:title" content="${escapeHtml(ticker)} 최신 배당 | Yieldloom">`,
+        `<meta property="og:title" content="${escapeHtml(ticker)} 주식 상세정보 · 시세와 배당 | Yieldloom">`,
         `<meta property="og:description" content="${escapeHtml(description)}">`,
         `<meta property="og:type" content="website">`,
         `<meta property="og:url" content="${canonical}">`,
@@ -33,7 +33,7 @@ for (const row of index.tickers ?? []) {
     ].join('');
     // Vercel serves a concrete asset before the SPA fallback, allowing crawlers to read this without JavaScript.
     const html = appHtml.replace(/<title>[^<]*<\/title>/, head);
-    const output = join(root, 'dist', 'thumbnail', ticker, 'index.html');
+    const output = join(root, 'dist', 'stock', ticker, 'index.html');
     await mkdir(dirname(output), { recursive: true });
     await writeFile(output, html, 'utf8');
 }

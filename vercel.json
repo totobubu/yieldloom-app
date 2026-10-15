@@ -7,8 +7,8 @@
     },
     "redirects": [
         {
-            "source": "/stock/:ticker",
-            "destination": "/:ticker",
+            "source": "/thumbnail/:ticker",
+            "destination": "/stock/:ticker",
             "permanent": true
         }
     ],

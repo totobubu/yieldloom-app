@@ -1,6 +1,6 @@
 const TAX_RATE = 0.15;
 const MAX_SAMPLES = 24;
-const MIN_SAMPLES = 6;
+const MIN_SAMPLES = 1;
 
 const asDate = (value) => new Date(`${value}T12:00:00Z`);
 const dateKey = (value) => value.toISOString().slice(0, 10);
@@ -53,7 +53,11 @@ export function calculateEntryIncomeEfficiency(ticker, options = {}) {
         .sort((left, right) => left.date.localeCompare(right.date));
 
     if (!prices.length) {
-        return { available: false, reason: '유효한 실제 종가 이력이 없습니다.', samples: [] };
+        return {
+            available: false,
+            reason: '유효한 실제 종가 이력이 없습니다.',
+            samples: [],
+        };
     }
 
     const firstPriceDate = prices[0].date;
@@ -83,7 +87,9 @@ export function calculateEntryIncomeEfficiency(ticker, options = {}) {
     if (samples.length < MIN_SAMPLES) {
         return {
             available: false,
-            reason: '최근 24개월 중 1년 배당 이력이 확인된 매수 시점이 부족합니다.',
+            reason: `수집된 시세 이력(${firstPriceDate}~${prices.at(-1).date})에서 매수일 이전 12개월을 확인할 수 있는 표본이 없습니다. 실제 보유 기간과는 별개입니다.`,
+            asOfDate,
+            firstPriceDate,
             samples,
         };
     }
@@ -93,6 +99,7 @@ export function calculateEntryIncomeEfficiency(ticker, options = {}) {
     );
     return {
         available: true,
+        limitedHistory: samples.length < 6,
         symbol: ticker?.symbol ?? ticker?.tickerInfo?.symbol ?? '',
         asOfDate,
         taxRate: TAX_RATE,

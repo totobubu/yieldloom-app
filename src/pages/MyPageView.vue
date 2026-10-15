@@ -422,7 +422,7 @@
                         <button @click="openDetail(asset)">거래 상세</button
                         ><router-link
                             v-if="asset.ticker"
-                            :to="`/thumbnail/${asset.ticker}`"
+                            :to="`/stock/${asset.ticker}`"
                             >썸네일 보기 <i class="pi pi-arrow-right"
                         /></router-link>
                     </footer>
@@ -562,7 +562,7 @@
                 <router-link
                     v-if="selectedAsset.ticker"
                     class="thumbnail-link"
-                    :to="`/thumbnail/${selectedAsset.ticker}`"
+                    :to="`/stock/${selectedAsset.ticker}`"
                     @click="closeDetail"
                     >{{ selectedAsset.ticker }} 썸네일 페이지 바로가기
                     <i class="pi pi-arrow-right"

@@ -60,6 +60,9 @@ def normalized_date(value):
 
 
 def stable_id(item):
+    if item.get("kind") == "cash":
+        fields = ["toss-cash-v1", item.get("accountId"), item["date"], item["rawType"], item["currency"], item["amount"], item.get("balance"), item.get("occurrence", 0)]
+        return hashlib.sha256("|".join(map(str, fields)).encode()).hexdigest()[:32]
     fields = ["toss-pdf", item["code"], item["date"], item["rawType"], item.get("quantity"), item.get("amount")]
     return hashlib.sha256("|".join(map(str, fields)).encode()).hexdigest()[:32]
 
@@ -100,11 +103,27 @@ def parse_statement(uploaded, password):
             "nativeAmount": number(raw.get("transaction_amount_usd")), "nativePrice": number(raw.get("unit_price_usd")),
             "name": raw.get("stock_name") or None, "balanceQuantity": number(raw.get("balance_quantity")),
         })
+    account_number = extraction.get("metadata", {}).get("account_number")
+    account_id = hashlib.sha256(str(account_number).encode()).hexdigest()[:24] if account_number else None
+    for item in items:
+        if account_id:
+            item["accountId"] = account_id
+    occurrences = defaultdict(int)
+    for raw in extraction.get("cash_transactions", []):
+        item = {**raw, "date": normalized_date(raw["date"]), "kind": "cash", "code": "CASH", "type": "cash", "accountId": account_id}
+        signature = stable_id(item)
+        item["occurrence"] = occurrences[signature]
+        occurrences[signature] += 1
+        items.append(item)
+    # Return a small warning with the preview, not PDF text or personal metadata.
+    if extraction.get("cash_unparsed_count"):
+        items.append({"kind": "cash_warning", "code": "CASH", "date": "", "rawType": "", "amount": 0, "quantity": None, "count": extraction["cash_unparsed_count"]})
     return items
 
 
 def review_rows(db, uid, items):
-    mappings = {code: security_mapping(db, code) for code in {item["code"] for item in items}}
+    items = [item for item in items if item.get("kind") != "cash_warning"]
+    mappings = {code: security_mapping(db, code) for code in {item["code"] for item in items if item.get("kind") != "cash"}}
     portfolio = db.collection("portfolios").document(uid)
     existing = {}
     for code, mapping in mappings.items():
@@ -114,7 +133,11 @@ def review_rows(db, uid, items):
         if asset_id not in existing:
             existing[asset_id] = {doc.id for doc in portfolio.collection("assets").document(asset_id).collection("transactions").stream()}
     rows = []
+    existing_cash = {doc.id for doc in portfolio.collection("cashEntries").stream()} if any(item.get("kind") == "cash" for item in items) else set()
     for item in items:
+        if item.get("kind") == "cash":
+            rows.append({**{key: item.get(key) for key in ["date", "rawType", "currency", "amount", "type", "kind"]}, "id": stable_id(item), "status": "duplicate" if stable_id(item) in existing_cash else "ready", "name": item["rawType"]})
+            continue
         mapping = mappings[item["code"]]
         asset_id = mapping.get("isin") or item["code"]
         duplicate = stable_id(item) in existing.get(asset_id, set())
@@ -123,6 +146,8 @@ def review_rows(db, uid, items):
 
 
 def persist_items(db, claims, items):
+    cash_items = [item for item in items if item.get("kind") == "cash"]
+    items = [item for item in items if not item.get("kind")]
     codes = sorted({item["code"] for item in items})
     mappings = {code: security_mapping(db, code) for code in codes}
     by_code = defaultdict(list)
@@ -131,6 +156,10 @@ def persist_items(db, claims, items):
     portfolio = db.collection("portfolios").document(claims["uid"])
     now = datetime.now(timezone.utc)
     writes = [(portfolio, {"ownerUid": claims["uid"], "ownerEmail": claims.get("email"), "portfolioSources": ["toss-pdf"], "updatedAt": now}, True)]
+    for item in cash_items:
+        data = {key: value for key, value in item.items() if key not in {"code", "kind", "type"}}
+        data.update({"source": "toss-pdf", "importedAt": now})
+        writes.append((portfolio.collection("cashEntries").document(stable_id(item)), data, True))
     current_assets = 0
     for code, asset_transactions in by_code.items():
         mapping = mappings[code]
@@ -152,7 +181,7 @@ def persist_items(db, claims, items):
         for reference, data, merge in writes[offset:offset + 450]:
             batch.set(reference, data, merge=merge)
         batch.commit()
-    return {"transactionCount": len(items), "assetCount": len(by_code), "currentAssetCount": current_assets}
+    return {"transactionCount": len(items) + len(cash_items), "cashCount": len(cash_items), "assetCount": len(by_code), "currentAssetCount": current_assets}
 
 
 @app.post("/api/portfolio-import")

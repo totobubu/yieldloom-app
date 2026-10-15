@@ -32,6 +32,46 @@ def extract_ticker_code(text):
     return None
 
 
+def parse_cash_transaction_lines(lines, start_idx):
+    """Read non-security rows only when the statement's monetary columns align.
+
+    The statement's KRW column is a translated value for foreign cash too;
+    never treat both it and the dollar amount as two separate deposits.
+    """
+    first = lines[start_idx].strip()
+    match = re.match(r"^(\d{4}\.\d{2}\.\d{2})\s+(\S+)\s+(.+)$", first)
+    if not match:
+        return None
+    date, raw_type, tail = match.groups()
+    if not re.search(r"입금|출금|환전|이체|대체|이자", raw_type):
+        return None
+    text = first
+    for line in lines[start_idx + 1:start_idx + 3]:
+        if re.match(r"^\d{4}\.\d{2}\.\d{2}", line.strip()):
+            break
+        text += " " + line.strip()
+    if extract_ticker_code(text):
+        return None
+    # Cash rows use the same nine columns, optionally preceded by an FX rate.
+    plain = re.sub(r"\([^)]*\)", "", tail).strip()
+    numeric_tail = re.search(r"((?:-?[\d,]+(?:\.\d+)?\s+){8,9}-?[\d,]+(?:\.\d+)?)$", plain)
+    if not numeric_tail or re.search(r"\d", plain[:numeric_tail.start()]):
+        return {"unparsed": True}
+    numbers = [parse_number(v) for v in numeric_tail.group(1).split()]
+    rate = numbers.pop(0) if len(numbers) == 10 else None
+    dollars = [parse_number(v) for v in re.findall(r"\(\$\s*([\d,.-]+)\)", text)]
+    foreign = bool(re.search(r"외화|달러|USD", raw_type, re.I))
+    if (foreign and (len(dollars) != 7 or "원화" in raw_type)) or ("환전" in raw_type and not foreign and "원화" not in raw_type):
+        return {"unparsed": True}
+    amount = (dollars[1] or dollars[0]) if foreign else (numbers[2] or numbers[1])
+    if not amount:
+        return None
+    # A suggestion needs the owner's confirmation before affecting principal.
+    suggested = "unknown" if re.search(r"취소|정정|반환", raw_type) else "exchange" if "환전" in raw_type else "interest" if "이자" in raw_type else "transfer" if re.search(r"대체|이체", raw_type) else "dividend" if "배당" in raw_type else "sale" if re.search(r"매도|판매", raw_type) else "external_deposit" if "입금" in raw_type else "external_withdrawal" if "출금" in raw_type else "unknown"
+    return {"date": date, "rawType": raw_type, "currency": "USD" if foreign else "KRW", "amount": abs(amount), "exchangeRate": rate if rate and rate > 0 else None,
+            "balance": dollars[-1] if foreign else numbers[-1], "suggestedKind": suggested}
+
+
 def parse_transaction_lines(lines, start_idx):
     """
     주어진 시작 위치부터 하나의 거래 데이터를 파싱
@@ -170,6 +210,8 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
     """PDF에서 모든 거래 데이터 추출"""
 
     transactions = []
+    cash_transactions = []
+    cash_unparsed_count = 0
     metadata = {}
     rejected_rows = []
 
@@ -214,6 +256,12 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
 
             i = 0
             while i < len(lines):
+                cash = parse_cash_transaction_lines(lines, i)
+                if cash:
+                    if cash.get("unparsed"):
+                        cash_unparsed_count += 1
+                    else:
+                        cash_transactions.append(cash)
                 transaction, next_i = parse_transaction_lines(lines, i)
                 if transaction:
                     transactions.append(transaction)
@@ -235,6 +283,8 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
         "metadata": metadata,
         "rejected_rows": rejected_rows,
         "transactions": transactions,
+        "cash_transactions": cash_transactions,
+        "cash_unparsed_count": cash_unparsed_count,
         "total_count": len(transactions),
         "extracted_at": datetime.now().isoformat(),
     }

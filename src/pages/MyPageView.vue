@@ -1,6 +1,10 @@
 <script setup>
     import { computed, nextTick, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
+    import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
+    import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
+    import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
+    import { purchaseBasis } from '../../lib/portfolio-capital.js';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import { loadPortfolioDashboard } from '@/services/portfolio';
     import { summarizePortfolio } from '@/services/portfolioSummary';
@@ -26,6 +30,82 @@
         error = ref(''),
         loading = ref(false);
     const dashboard = ref({ assets: [], transactions: [], summary: {} });
+    const capital = ref({ entries: [], classifications: [], allocations: [] });
+    const capitalLoading = ref(false),
+        capitalError = ref(''),
+        fundingTransaction = ref(null),
+        fundingEditor = ref(null),
+        fundingMessage = ref('');
+    let capitalRequestId = 0,
+        capitalOwnerUid = '';
+    async function loadCapital() {
+        const user = firebaseUser.value,
+            requestId = ++capitalRequestId;
+        capitalError.value = '';
+        capitalLoading.value = true;
+        if (capitalOwnerUid !== user?.uid) {
+            capital.value = {
+                entries: [],
+                classifications: [],
+                allocations: [],
+            };
+            capitalOwnerUid = user?.uid || '';
+        }
+        if (!user) {
+            capital.value = {
+                entries: [],
+                classifications: [],
+                allocations: [],
+            };
+            capitalLoading.value = false;
+            return;
+        }
+        try {
+            const state = await portfolioCapitalRequest(user);
+            if (
+                requestId === capitalRequestId &&
+                firebaseUser.value?.uid === user.uid
+            )
+                capital.value = state;
+        } catch (reason) {
+            if (requestId === capitalRequestId)
+                capitalError.value = reason.message;
+        } finally {
+            if (requestId === capitalRequestId) capitalLoading.value = false;
+        }
+    }
+    async function fundingSaved() {
+        await loadCapital();
+        fundingMessage.value = capitalError.value
+            ? ''
+            : '자금 구성을 저장했습니다.';
+    }
+    async function openFunding(transaction) {
+        fundingTransaction.value = transaction;
+        fundingMessage.value = '';
+        await nextTick();
+        fundingEditor.value?.$el?.scrollIntoView({ block: 'start' });
+    }
+    const fundingLabel = (transaction) => {
+        const allocation = capital.value.allocations.find(
+            (row) =>
+                row.assetId === selectedAssetId.value &&
+                row.transactionId === transaction.id
+        );
+        if (allocation?.status && allocation.status !== 'reset') {
+            try {
+                if (allocation.basisKey !== purchaseBasis(transaction).basisKey)
+                    return '자금 구성 · 재확인 필요';
+            } catch {
+                return '자금 구성 · 재확인 필요';
+            }
+        }
+        return allocation?.status === 'confirmed'
+            ? '자금 구성 · 확인 완료'
+            : allocation?.status === 'partial'
+              ? '자금 구성 · 일부 확인 필요'
+              : '자금 구성 확인';
+    };
     const period = ref('all');
     const today = new Date().toLocaleDateString('sv-SE', {
         timeZone: 'Asia/Seoul',
@@ -172,6 +252,7 @@
             sell: '매도',
             dividend: '배당',
             dividend_reversal: '배당 취소',
+            cash: '계좌 입출금·환전',
         })[v] ?? '기타';
     const typeClass = (v) =>
         ({ buy: 'buy', sell: 'sell', dividend: 'dividend' })[v] ?? 'unknown';
@@ -180,19 +261,22 @@
         loading.value = true;
         error.value = '';
         try {
-            await loadPortfolioDashboard(firebaseUser.value.uid)
-                .then((portfolio) => {
-                    dashboard.value = portfolio;
-                })
-                .catch((reason) => {
-                    error.value =
-                        reason.code === 'permission-denied'
-                            ? '현재 보유 종목 조회 권한이 없습니다. 관리자에게 문의해 주세요.'
-                            : reason.code === 'unavailable'
-                              ? '포트폴리오 서버에 연결하지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.'
-                              : '포트폴리오를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
-                    console.error(reason);
-                });
+            await Promise.all([
+                loadCapital(),
+                loadPortfolioDashboard(firebaseUser.value.uid)
+                    .then((portfolio) => {
+                        dashboard.value = portfolio;
+                    })
+                    .catch((reason) => {
+                        error.value =
+                            reason.code === 'permission-denied'
+                                ? '현재 보유 종목 조회 권한이 없습니다. 관리자에게 문의해 주세요.'
+                                : reason.code === 'unavailable'
+                                  ? '포트폴리오 서버에 연결하지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.'
+                                  : '포트폴리오를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+                        console.error(reason);
+                    }),
+            ]);
         } finally {
             loading.value = false;
         }
@@ -201,8 +285,11 @@
         [firebaseUser, authLoading],
         async ([user, waiting]) => {
             if (waiting) return;
-            if (!user) router.replace('/login');
-            else await refresh();
+            if (!user) {
+                await loadCapital();
+                dashboard.value = { assets: [], transactions: [], summary: {} };
+                router.replace('/login');
+            } else await refresh();
         },
         { immediate: true }
     );
@@ -220,6 +307,8 @@
         dashboard.value.assets.filter((asset) => asset.ticker)
     );
     async function openDetail(asset) {
+        fundingTransaction.value = null;
+        fundingMessage.value = '';
         selectedAssetId.value = asset.id;
         await nextTick();
         detailDialog.value?.showModal();
@@ -333,6 +422,7 @@
                 }}</strong>
             </article>
         </section>
+        <PortfolioCapitalPanel :user="firebaseUser" :state="capital" :loading="capitalLoading" :error="capitalError" @refresh="loadCapital" />
         <section class="panel">
             <h2>이전 단일 계좌 자료</h2>
             <p>
@@ -813,6 +903,19 @@
                     구분합니다. 이 정보만으로 원화 자동환전 여부를 판단하지
                     않습니다.
                 </p>
+                <p v-if="fundingMessage" role="status">{{ fundingMessage }}</p>
+                <PurchaseFundingEditor
+                    v-if="fundingTransaction"
+                    ref="fundingEditor"
+                    :key="`${selectedAsset.id}-${fundingTransaction.id}`"
+                    :user="firebaseUser"
+                    :transaction="fundingTransaction"
+                    :asset="selectedAsset"
+                    :state="capital"
+                    :loading="capitalLoading"
+                    :load-error="capitalError"
+                    @saved="fundingSaved"
+                    @close="fundingTransaction = null" />
                 <div class="table-wrap detail-table">
                     <table>
                         <thead>
@@ -825,6 +928,7 @@
                                 <th class="numeric">환율 (원/USD)</th>
                                 <th class="numeric">수수료</th>
                                 <th class="numeric">세금</th>
+                                <th>매수 자금</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -862,13 +966,24 @@
                                 <td class="numeric">
                                     {{ won(transaction.tax) }}
                                 </td>
+                                <td>
+                                    <button
+                                        v-if="
+                                            transaction.type === 'buy' &&
+                                            transaction.id
+                                        "
+                                        type="button"
+                                        @click="openFunding(transaction)">
+                                        {{ fundingLabel(transaction) }}</button
+                                    ><span v-else>—</span>
+                                </td>
                             </tr>
                             <tr
                                 v-if="
                                     periodError ||
                                     !selectedAsset.transactions.length
                                 ">
-                                <td colspan="8" class="empty">
+                                <td colspan="9" class="empty">
                                     {{
                                         periodError ||
                                         (selectedAsset.ledgerUnavailable

@@ -19,6 +19,8 @@ declare module 'vue' {
     DividendSummaryThumbnail: typeof import('./src/components/thumbnail/DividendSummaryThumbnail.vue')['default']
     ErrorBoundary: typeof import('./src/components/ErrorBoundary.vue')['default']
     HoldingDividendThumbnail: typeof import('./src/components/thumbnail/HoldingDividendThumbnail.vue')['default']
+    PortfolioCapitalPanel: typeof import('./src/components/portfolio/PortfolioCapitalPanel.vue')['default']
+    PurchaseFundingEditor: typeof import('./src/components/portfolio/PurchaseFundingEditor.vue')['default']
     RivalThumbnail: typeof import('./src/components/thumbnail/RivalThumbnail.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

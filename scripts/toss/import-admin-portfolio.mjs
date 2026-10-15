@@ -68,8 +68,9 @@ function stableId(parts) {
 }
 
 function normalizeType(rawType) {
-    if (/매수|buy/i.test(rawType || '')) return 'buy';
-    if (/매도|sell/i.test(rawType || '')) return 'sell';
+    if (/매수|구매|buy/i.test(rawType || '')) return 'buy';
+    if (/매도|판매|sell/i.test(rawType || '')) return 'sell';
+    if (/배당.*취소|dividend_reversal/i.test(rawType || '')) return 'dividend_reversal';
     if (/배당|dividend/i.test(rawType || '')) return 'dividend';
     return 'unknown';
 }

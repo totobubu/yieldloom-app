@@ -34,10 +34,12 @@ def reject(message, status=400):
 
 def transaction_type(value):
     value = str(value or "")
-    if "매수" in value or "buy" in value.lower():
+    if "매수" in value or "구매" in value or "buy" in value.lower():
         return "buy"
-    if "매도" in value or "sell" in value.lower():
+    if "매도" in value or "판매" in value or "sell" in value.lower():
         return "sell"
+    if "배당" in value and "취소" in value or "dividend_reversal" in value.lower():
+        return "dividend_reversal"
     if "배당" in value or "dividend" in value.lower():
         return "dividend"
     return "unknown"

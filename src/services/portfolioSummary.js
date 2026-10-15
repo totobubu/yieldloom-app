@@ -21,19 +21,29 @@ export function summarizeAsset(asset) {
     const transactions = sortTransactions(
         (asset.transactions ?? []).map((transaction) => ({
             ...transaction,
-            type: /배당|dividend/i.test(
-                transaction.type || transaction.rawType || ''
+            type: /배당.*취소|dividend_reversal/i.test(
+                transaction.rawType || transaction.type || ''
             )
-                ? 'dividend'
-                : /매수|buy/i.test(
-                        transaction.type || transaction.rawType || ''
+                ? 'dividend_reversal'
+                : /배당|dividend/i.test(
+                        (transaction.type && transaction.type !== 'unknown'
+                            ? transaction.type
+                            : transaction.rawType) || ''
                     )
-                  ? 'buy'
-                  : /매도|sell/i.test(
-                          transaction.type || transaction.rawType || ''
+                  ? 'dividend'
+                  : /매수|구매|buy/i.test(
+                          (transaction.type && transaction.type !== 'unknown'
+                              ? transaction.type
+                              : transaction.rawType) || ''
                       )
-                    ? 'sell'
-                    : 'unknown',
+                    ? 'buy'
+                    : /매도|판매|sell/i.test(
+                            (transaction.type && transaction.type !== 'unknown'
+                                ? transaction.type
+                                : transaction.rawType) || ''
+                        )
+                      ? 'sell'
+                      : 'unknown',
             date: transaction.date,
             amount: number(
                 transaction.amount ?? transaction.transaction_amount_krw
@@ -50,6 +60,8 @@ export function summarizeAsset(asset) {
         if (transaction.type in counts) counts[transaction.type] += 1;
         if (transaction.type === 'dividend')
             dividends += Math.abs(number(transaction.amount));
+        if (transaction.type === 'dividend_reversal')
+            dividends -= Math.abs(number(transaction.amount));
     }
     return {
         ...asset,

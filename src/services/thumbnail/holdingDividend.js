@@ -17,6 +17,7 @@ export function calculateHoldingDividend(asset, schedule) {
             }
         }
         if (transaction.type === 'dividend') dividends += Math.abs(numeric(transaction.amount));
+        if (transaction.type === 'dividend_reversal') dividends -= Math.abs(numeric(transaction.amount));
     }
     const remainingCost = lots.reduce((sum, lot) => sum + lot.cost, 0);
     const shares = numeric(asset.holdingShares ?? asset.holdings?.toss?.amount);

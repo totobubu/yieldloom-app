@@ -56,7 +56,12 @@
     const date = (v) =>
         v ? String(v).replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '—';
     const typeLabel = (v) =>
-        ({ buy: '매수', sell: '매도', dividend: '배당' })[v] ?? '기타';
+        ({
+            buy: '매수',
+            sell: '매도',
+            dividend: '배당',
+            dividend_reversal: '배당 취소',
+        })[v] ?? '기타';
     const typeClass = (v) =>
         ({ buy: 'buy', sell: 'sell', dividend: 'dividend' })[v] ?? 'unknown';
     async function refresh() {
@@ -460,6 +465,7 @@
                         <option value="buy">매수</option>
                         <option value="sell">매도</option>
                         <option value="dividend">배당</option>
+                        <option value="dividend_reversal">배당 취소</option>
                     </select>
                 </div>
             </div>

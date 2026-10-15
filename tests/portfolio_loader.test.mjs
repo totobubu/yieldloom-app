@@ -120,6 +120,7 @@ test('denied legacy lookup preserves current holdings and reports a warning', as
     }, 'legacy-denied');
     assert.equal(dashboard.summary.currentCount, 1);
     assert.equal(dashboard.assets[0].holdingShares, 10);
+    assert.equal(dashboard.summary.historicalCount, null);
     assert.deepEqual(dashboard.warnings, [
         { stage: 'legacy', code: 'permission-denied' },
     ]);
@@ -147,4 +148,13 @@ test('denied primary holdings lookup remains an error with its stage', async () 
             error.code === 'permission-denied' &&
             error.portfolioStage === 'assets'
     );
+});
+
+test('successful empty legacy lookup reports a confirmed zero history count', async () => {
+    const dashboard = await dashboardWith(async (path) => {
+        if (path === 'portfolios/owner/assets') return holdingSnapshot;
+        return { empty: true, docs: [] };
+    }, 'legacy-empty');
+    assert.equal(dashboard.summary.historicalCount, 0);
+    assert.deepEqual(dashboard.warnings, []);
 });

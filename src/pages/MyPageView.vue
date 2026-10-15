@@ -32,6 +32,16 @@
     const review = ref(null),
         acceptedIds = ref([]),
         committing = ref(false);
+    const historyUnavailable = computed(() =>
+        (dashboard.value.warnings || []).some((item) => item.stage === 'legacy')
+    );
+    const historicalCountLabel = computed(() =>
+        historyUnavailable.value
+            ? '확인 필요'
+            : loading.value || error.value
+              ? '—'
+              : (dashboard.value.summary.historicalCount ?? 0)
+    );
     const holdingTab = ref('current');
     const visibleAssets = computed(() =>
         dashboard.value.assets.filter(
@@ -204,8 +214,10 @@
             <article>
                 <small>과거 보유</small
                 ><strong
-                    >{{ dashboard.summary.historicalCount ?? 0
-                    }}<em>종목</em></strong
+                    >{{ historicalCountLabel
+                    }}<em v-if="typeof historicalCountLabel === 'number'"
+                        >종목</em
+                    ></strong
                 >
             </article>
             <article>
@@ -349,9 +361,7 @@
                 <button
                     :aria-pressed="holdingTab === 'historical'"
                     @click="holdingTab = 'historical'">
-                    예전에 보유했던 내역 ({{
-                        dashboard.summary.historicalCount ?? 0
-                    }})
+                    과거 보유 ({{ historicalCountLabel }})
                 </button>
             </div>
             <div v-if="loading" class="empty">
@@ -363,6 +373,21 @@
                 role="status">
                 조회에 실패했습니다. 새로고침으로 다시 시도해 주세요.
             </div>
+            <div
+                v-else-if="holdingTab === 'historical' && historyUnavailable"
+                class="empty"
+                role="status">
+                <p>
+                    과거 보유 내역을 불러오지 못했습니다. 조회 권한을 확인한 뒤
+                    다시 시도해 주세요.
+                </p>
+                <button
+                    class="history-retry"
+                    :disabled="loading"
+                    @click="refresh">
+                    다시 조회
+                </button>
+            </div>
             <div v-else-if="!dashboard.assets.length" class="empty">
                 아직 거래내역이 없습니다. 토스 거래내역서를 추가해 주세요.
             </div>
@@ -370,7 +395,7 @@
                 {{
                     holdingTab === 'current'
                         ? '현재 보유한 종목이 없습니다.'
-                        : '예전에 보유했던 종목이 없습니다.'
+                        : '과거 보유 종목이 없습니다.'
                 }}
             </div>
             <div v-else class="asset-grid">
@@ -889,6 +914,9 @@
     }
     .dividend {
         color: #39ad7c;
+    }
+    .history-retry {
+        margin-top: 12px;
     }
     .holding-tabs {
         display: flex;

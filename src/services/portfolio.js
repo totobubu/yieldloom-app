@@ -115,7 +115,12 @@ export async function loadPortfolioDashboard(uid) {
                 asset.ledgerUnavailable = true;
         }
     }
-    return { ...summarizePortfolio(withTransactions), warnings };
+    const dashboard = summarizePortfolio(withTransactions);
+    if (warnings.some((item) => item.stage === 'legacy')) {
+        // Unknown history must not be reported as a confirmed empty portfolio.
+        dashboard.summary.historicalCount = null;
+    }
+    return { ...dashboard, warnings };
 }
 
 export async function previewTossStatement(user, file, password) {

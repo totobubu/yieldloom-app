@@ -11,6 +11,7 @@
     import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
     import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
     import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
+    import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
     import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
     import { getAssetUrl } from '@/utils/dataUrl';
     import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
@@ -623,7 +624,7 @@
                 </button>
             </nav>
             <section v-if="activeTab === 'details'" class="stock-section">
-                <h2>{{ selectedInfo.symbol }} 누적 데이터</h2>
+                <h2>{{ selectedInfo.symbol }} 종목 개요</h2>
                 <p class="hint">
                     시세 기준
                     {{ selectedData.sourceStatus.priceDate || '미확인' }} ·
@@ -708,6 +709,9 @@
                     0으로 간주하지 않습니다.
                 </p>
             </section>
+            <div v-show="activeTab === 'details'" class="stock-insights">
+                <SecurityInsights :symbol="normalize(route.params.ticker)" />
+            </div>
             <section v-if="activeTab === 'prices'" class="stock-section">
                 <h2>시세 이력</h2>
                 <p class="hint">
@@ -876,6 +880,10 @@
 </template>
 
 <style scoped>
+    .stock-insights {
+        max-width: 1520px;
+        margin: 0 auto;
+    }
     .stock-tabs {
         display: flex;
         gap: 8px;
@@ -1004,8 +1012,8 @@
         }
         .stock-tabs button {
             padding: 14px 8px;
-        flex: 1;
-        font-size: .9rem;
+            flex: 1;
+            font-size: 0.9rem;
         }
     }
     @media (max-width: 400px) {

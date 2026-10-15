@@ -45,6 +45,11 @@ class IncrementalStateTests(unittest.TestCase):
         source = {"schedule": {"mode": "observation", "confidence": "unconfirmed"}, "lastCheckedAt": "2026-10-02T10:00:00+00:00"}
         self.assertEqual(due_reason(source, datetime(2026, 10, 3, 7, tzinfo=timezone.utc)), "daily_safety")
 
+    def test_retry_backoff_is_respected_across_midnight(self):
+        source = {"lastCheckedAt": "2026-10-02T23:30:00Z", "nextRetryAt": "2026-10-03T01:30:00Z"}
+        self.assertIsNone(due_reason(source, datetime(2026, 10, 3, 0, tzinfo=timezone.utc)))
+        self.assertEqual(due_reason(source, datetime(2026, 10, 3, 2, tzinfo=timezone.utc)), "retry")
+
     def test_v1_state_upgrades_without_discarding_approved_events(self):
         state = upgrade_state({"schemaVersion": 1, "generatedAt": None, "sources": {"neos|https://neosfunds.com/spyi/": {"provider": "neos", "url": "https://neosfunds.com/spyi/", "events": [event("0.25660")]}}})
         self.assertEqual(state["schemaVersion"], 2)

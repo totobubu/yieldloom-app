@@ -22,6 +22,7 @@ declare module 'vue' {
     RivalThumbnail: typeof import('./src/components/thumbnail/RivalThumbnail.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SecurityInsights: typeof import('./src/components/thumbnail/SecurityInsights.vue')['default']
     ThumbnailCardShell: typeof import('./src/components/thumbnail/ThumbnailCardShell.vue')['default']
     ThumbnailPreview: typeof import('./src/components/thumbnail/ThumbnailPreview.vue')['default']
     TossCommunityCopy: typeof import('./src/components/thumbnail/TossCommunityCopy.vue')['default']

@@ -19,7 +19,8 @@ def commands(workers: int, resume: bool) -> list[list[str]]:
     return [discovery,
             [sys.executable, str(ROOT / "scripts/utils/export_us_dividend_catalog.py")],
             [sys.executable, str(ROOT / "scripts/utils/collect_security_insights.py"),
-             "--resume", "--workers", str(workers)]]
+             "--resume", "--workers", str(workers)],
+            [sys.executable, str(ROOT / "scripts/utils/export_security_insights.py")]]
 
 
 def main(argv=None) -> int:

@@ -9,6 +9,9 @@ try {
     const page = await browser.newPage({
         viewport: { width: 1440, height: 1000 },
     });
+    page.setDefaultTimeout(15000);
+    page.setDefaultNavigationTimeout(15000);
+    await page.route('**/security-insights/*.json', r => r.fulfill({ json: { securities: {}, asOfDate: '2026-10-15' } }));
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     const rows = Array.from({ length: 16 }, (_, i) => ({
@@ -81,7 +84,7 @@ try {
         })
     );
     await page.goto('http://127.0.0.1:5173/thumbnail/TOPW?rivals=');
-    await page.getByRole('heading', { name: 'TOPW 누적 데이터' }).waitFor();
+    await page.getByRole('heading', { name: 'TOPW 종목 개요' }).waitFor();
     assert.match(page.url(), /\/stock\/TOPW\?rivals=/);
     await page.getByRole('button', { name: '시세정보', exact: true }).click();
     await page

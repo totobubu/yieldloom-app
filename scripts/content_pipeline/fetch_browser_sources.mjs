@@ -42,6 +42,15 @@ try {
     for (let index = 0; index < sources.length; index += 1) {
         const source = sources[index];
         try {
+            // Register before navigation: data can arrive before the page heading.
+            const dataResponse = source.responsePath
+                ? page.waitForResponse((response) => {
+                    const url = new URL(response.url());
+                    return url.origin === new URL(source.url).origin && url.pathname === source.responsePath;
+                }, { timeout: timeoutMs })
+                : null;
+            // Navigation may fail before this promise is awaited.
+            dataResponse?.catch(() => {});
             const response = await page.goto(source.url, {
                 waitUntil: 'domcontentloaded',
                 timeout: timeoutMs,
@@ -65,8 +74,14 @@ try {
                 });
                 continue;
             }
-            if (source.readyText) {
-                await page.getByText(source.readyText, { exact: true }).waitFor({ timeout: timeoutMs });
+            let responseContent;
+            if (dataResponse) {
+                const data = await dataResponse;
+                if (!data.ok()) throw new Error(`official data response returned HTTP ${data.status()}`);
+                responseContent = await data.text();
+                JSON.parse(responseContent);
+            } else if (source.readyText) {
+                await page.getByText(source.readyText, { exact: source.readyTextExact !== false }).waitFor({ timeout: timeoutMs });
             } else {
                 await page.waitForLoadState('networkidle', { timeout: Math.min(timeoutMs, 15_000) }).catch(() => {});
             }
@@ -82,7 +97,7 @@ try {
                 });
                 continue;
             }
-            const content = source.content === 'text' ? bodyText : await page.content();
+            const content = responseContent ?? (source.content === 'text' ? bodyText : await page.content());
             if (!content.trim()) {
                 results.push({ ok: false, code: 'empty_document', retryable: true, message: 'rendered document was empty' });
                 continue;

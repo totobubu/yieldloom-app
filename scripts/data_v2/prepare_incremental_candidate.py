@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.content_pipeline.providers import NoDataError, PROVIDERS, SourceCandidate
+from scripts.content_pipeline.providers import CollectionError, NoDataError, PROVIDERS, SourceCandidate
 from scripts.data_v2.collection_schedule import due_reason, retry_at, schedule_for, source_key
 from scripts.data_v2.collection_state import load_local, load_r2, save_r2
 
@@ -64,6 +64,23 @@ def to_candidate(event: Any, document: Any) -> dict[str, Any]:
 
 def comparable(event: dict[str, Any]) -> dict[str, Any]:
     return {field: event.get(field) for field in ("amount", "recordDate", "payableDate", "frequency", "currency", "sourceSha256")}
+
+
+def checked_source(previous: dict[str, Any] | None, slug: str, candidate: SourceCandidate,
+                   now: str, content_sha256: str | None = None) -> dict[str, Any]:
+    """Persist successful checks even when there is no publishable announcement."""
+    source = dict(previous or {})
+    ticker = candidate_ticker(candidate)
+    source.update(provider=slug, ticker=ticker, url=candidate.url,
+                  sourceKey=source_key(slug, ticker, candidate.url), lastCheckedAt=now,
+                  candidate={"url": candidate.url, "sourceType": candidate.source_type,
+                             "publishedAt": candidate.published_at, "metadata": candidate.metadata})
+    source.setdefault("events", [])
+    source.setdefault("schedule", {"mode": "observation", "confidence": "unconfirmed"})
+    if content_sha256 is not None:
+        source.update(contentSha256=content_sha256, lastSuccessAt=now, failureCount=0)
+        source.pop("nextRetryAt", None)
+    return source
 
 
 def update_source(previous: dict[str, Any] | None, events: list[dict[str, Any]], content_sha256: str, now: str, candidate: SourceCandidate | None = None, official_published_at: str | None = None) -> tuple[dict[str, Any], dict[str, list[dict[str, Any]]]]:
@@ -131,7 +148,7 @@ def main() -> int:
     clock = clock.astimezone(timezone.utc).replace(microsecond=0)
     now = clock.isoformat()
     for slug in providers:
-        provider_report: dict[str, Any] = {"status": "success", "sources": [], "new": [], "changed": [], "suspectedRemoved": [], "errors": []}
+        provider_report: dict[str, Any] = {"status": "success", "sources": [], "new": [], "changed": [], "suspectedRemoved": [], "errors": [], "warnings": [], "needsReview": []}
         adapter = PROVIDERS[slug]()
         known = [source for source in next_state["sources"].values() if source.get("provider") == slug]
         catalog = next_state["catalogs"].get(slug, {})
@@ -140,8 +157,8 @@ def main() -> int:
         if not known or catalog_checked != clock.date():
             try:
                 discovered = list(adapter.discover())
-                candidates = list({(item.url, str(item.metadata)): item for item in [*candidates, *discovered]}.values())
-                next_state["catalogs"][slug] = {"lastDiscoveryAt": now}
+                candidates = list({(item.url, candidate_ticker(item)): item for item in [*candidates, *discovered]}.values())
+                next_state["catalogs"].setdefault(slug, {})["lastDiscoveryAt"] = now
             except Exception as error:
                 provider_report.update(status="failed", errors=[f"catalog discovery: {error}"])
                 report["providers"][slug] = provider_report
@@ -158,12 +175,16 @@ def main() -> int:
                 report["summary"]["skippedSources"] += 1
                 continue
             report["summary"]["selectedSources"] += 1
+            document = None
             try:
                 document = adapter.fetch(candidate)
                 if previous and previous.get("contentSha256") == document.content_sha256:
                     previous = dict(previous)
                     previous["lastCheckedAt"] = now
+                    previous["failureCount"] = 0
+                    previous.pop("nextRetryAt", None)
                     next_state["sources"][key] = previous
+                    provider_report["needsReview"].extend(previous.get("reviewEvents", []))
                     provider_report["sources"].append({"url": candidate.url, "ticker": ticker, "reason": reason, "status": "unchanged", "sha256": document.content_sha256})
                     report["summary"]["unchangedSources"] += 1
                     continue
@@ -172,10 +193,26 @@ def main() -> int:
                     published_at=candidate.published_at or document.published_at,
                     metadata={**document.metadata, **candidate.metadata},
                 )
-                events = [to_candidate(event, document) for event in adapter.parse(document) if event.verification_status in {"official", "cross_checked"}]
+                if candidate.metadata.get("catalogOnly") is True:
+                    catalog_candidates = adapter.parse_catalog(document)
+                    next_state["catalogs"].setdefault(slug, {})["tickers"] = sorted({
+                        candidate_ticker(item) for item in catalog_candidates
+                    })
+                    next_state["sources"][key] = checked_source(previous, slug, candidate, now, document.content_sha256)
+                    provider_report["sources"].append({"url": candidate.url, "status": "catalog", "funds": len(catalog_candidates)})
+                    continue
+                parsed_events = adapter.parse(document)
+                review_events = [to_candidate(event, document) for event in parsed_events if event.verification_status == "needs_review"]
+                provider_report["needsReview"].extend(review_events)
+                events = [to_candidate(event, document) for event in parsed_events if event.verification_status in {"official", "cross_checked"}]
                 if not events:
-                    raise NoDataError("No releasable official events")
+                    checked = checked_source(previous, slug, candidate, now, document.content_sha256)
+                    checked["reviewEvents"] = review_events
+                    next_state["sources"][key] = checked
+                    provider_report["sources"].append({"url": candidate.url, "ticker": ticker, "reason": reason, "status": "needs_review" if review_events else "no_change", "events": len(review_events)})
+                    continue
                 updated, diff = update_source(previous, events, document.content_sha256, now, candidate, document.published_at)
+                updated["reviewEvents"] = review_events
                 next_state["sources"][updated["sourceKey"]] = updated
                 if key != updated["sourceKey"]:
                     next_state["sources"].pop(key, None)
@@ -184,18 +221,28 @@ def main() -> int:
                     provider_report[name].extend(values)
                     report["summary"][name] += len(values)
             except NoDataError as error:
+                next_state["sources"][key] = checked_source(previous, slug, candidate, now, document.content_sha256 if document else None)
                 provider_report["sources"].append({"url": candidate.url, "ticker": ticker, "reason": reason, "status": "no_change", "detail": str(error)})
             except Exception as error:
+                # Catalog evidence is separate from distribution evidence. A reviewed
+                # seed can preserve coverage during a blocked catalog-only request.
+                seeds = list(adapter.catalog_seed()) if candidate.metadata.get("catalogOnly") is True and isinstance(error, CollectionError) and error.code == "blocked" else []
+                if seeds:
+                    next_state["catalogs"].setdefault(slug, {})["tickers"] = sorted({candidate_ticker(item) for item in seeds})
+                    next_state["sources"][key] = checked_source(previous, slug, candidate, now)
+                    provider_report["sources"].append({"url": candidate.url, "status": "catalog_fallback", "funds": len(seeds)})
+                    provider_report["warnings"].append(f"{candidate.url}: {error}; using reviewed catalog seed, not distribution evidence")
+                    continue
                 provider_report["status"] = "partial" if provider_report["sources"] else "failed"
                 provider_report["errors"].append(f"{candidate.url}: {error}")
-                if previous:
-                    previous = dict(previous)
-                    previous["lastCheckedAt"] = now
-                    previous["failureCount"] = int(previous.get("failureCount", 0)) + 1
-                    previous["nextRetryAt"] = retry_at(clock, previous["failureCount"])
-                    previous["schedule"] = {"mode": "observation", "confidence": "retry_pending"}
-                    next_state["sources"][key] = previous
+                failed = checked_source(previous, slug, candidate, now)
+                failed["failureCount"] = int(failed.get("failureCount", 0)) + 1
+                failed["nextRetryAt"] = retry_at(clock, failed["failureCount"])
+                failed["schedule"] = {"mode": "observation", "confidence": "retry_pending"}
+                next_state["sources"][key] = failed
                 report["summary"]["failedSources"] += 1
+        if provider_report["errors"]:
+            provider_report["status"] = "partial" if provider_report["sources"] else "failed"
         report["providers"][slug] = provider_report
     candidate = all_events(next_state)
     for path, payload in ((args.candidate_output, candidate), (args.report_output, report), (args.state_output, next_state)):

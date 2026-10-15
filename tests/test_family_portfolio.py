@@ -148,6 +148,17 @@ class FamilyApiTest(unittest.TestCase):
     def commit(self, review, account=None, uid='alice'):
         return self.post('commit', {'accountId': account or self.account, 'reviewId': review['reviewId'], 'rows': review['rows']}, uid)
 
+    def test_personal_account_setup_is_repeatable_and_private(self):
+        first = self.post('ensurePersonal', {'profileName': 'Alice'})
+        second = self.post('ensurePersonal', {'profileName': 'Different'})
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(first.json, second.json)
+        space = self.db.data['familySpaces/' + first.json['familyId']]
+        self.assertEqual(space['kind'], 'personal')
+        self.assertEqual(space['participantUids'], ['alice'])
+        self.assertEqual(list(space['profiles'].values())[0]['name'], 'Alice')
+        self.assertEqual(self.get('familyId=' + first.json['familyId'], 'bob').status_code, 403)
+
     def test_authentication_and_cross_family_denied(self):
         self.assertEqual(self.client.get('/api/family-portfolio').status_code, 401)
         self.assertEqual(self.get('familyId=' + self.family, 'outsider').status_code, 403)
@@ -267,6 +278,48 @@ class FamilyApiTest(unittest.TestCase):
         self.assertEqual(self.get('familyId=' + self.family).json['summary']['positions'], [])
 
 
+    def test_large_pdf_batches_retry_without_duplicates_and_validate_all_rows(self):
+        rows = [{'date': '2026-10-15', 'symbol': 'CASH', 'quantity': None, 'amount': 100, 'currency': 'KRW',
+                 'type': 'cash_in', 'externalId': f'pdf-{i}'} for i in range(405)]
+        with patch.object(api, 'pdf_rows', return_value=rows):
+            review = self.preview(b'%PDF-1.4', file=(io.BytesIO(b'%PDF-1.4'), 'statement.pdf'), format='toss-pdf', password='123456').json
+        self.assertEqual(len(review['batches']), 3)
+        invalid = copy.deepcopy(rows);invalid[-1]['amount'] = -1
+        payload = {'accountId': self.account, 'reviewId': review['reviewId'], 'rows': invalid}
+        self.assertEqual(self.post('validateImport', payload).status_code, 400)
+        payload['rows'] = rows
+        self.assertEqual(self.post('validateImport', payload).status_code, 200)
+        for batch in review['batches']:
+            part = {**review, 'reviewId': batch['reviewId'], 'rows': rows[batch['start']:batch['start'] + batch['count']]}
+            self.assertEqual(self.commit(part).json['inserted'], len(part['rows']))
+            self.assertTrue(self.commit(part).json['alreadyImported'])
+        self.assertEqual(len(list(self.db.collection(f'investmentAccounts/{self.account}/entries').stream())), 405)
+
+    def test_pdf_default_is_encrypted_scoped_owner_only_and_never_returned(self):
+        from cryptography.hazmat.primitives.asymmetric import rsa
+        from api.portfolio_pdf_secret import open_password
+        private = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        with patch('api.portfolio_pdf_secret._key', return_value=private):
+            result = self.post('pdfPassword', {'accountId': self.account, 'password': '123456'})
+            self.assertEqual(result.json, {'configured': True})
+            path = f'investmentAccounts/{self.account}/secrets/tossPdfPassword'
+            envelope = self.db.data[path]['envelope']
+            self.assertNotIn('123456', str(envelope))
+            self.assertEqual(open_password(envelope, 'toss:' + self.account), '123456')
+            with self.assertRaises(Exception):
+                open_password(envelope, 'toss:other-account')
+            self.join_bob()
+            self.post('grant', {'accountId': self.account, 'uid': 'bob', 'role': 'editor'})
+            self.assertEqual(self.post('pdfPassword', {'accountId': self.account, 'password': '123456'}, 'bob').status_code, 403)
+            with patch.object(api, 'pdf_rows', return_value=[{'date': '2026-10-15', 'symbol': 'CASH', 'quantity': None, 'amount': 100, 'currency': 'KRW', 'type': 'cash_in', 'externalId': 'default-pwd'}]) as parser:
+                response = self.preview(b'%PDF-1.4', file=(io.BytesIO(b'%PDF-1.4'), 'statement.pdf'), format='toss-pdf')
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(parser.call_args.args[1], '123456')
+                self.assertNotIn('123456', response.get_data(as_text=True))
+            self.assertNotIn('envelope', self.get('familyId=' + self.family).get_data(as_text=True))
+            self.assertEqual(self.post('pdfPassword', {'accountId': self.account, 'remove': True}).json, {'configured': False})
+            self.assertNotIn(path, self.db.data)
+
 class DomainTest(unittest.TestCase):
     def test_corporate_actions_and_transfer_events_do_not_generate_valuation(self):
         for kind in ['transfer_in', 'transfer_out', 'dividend', 'cash_in', 'cash_out', 'split']:
@@ -279,6 +332,7 @@ class DomainTest(unittest.TestCase):
             rows = api.pdf_rows(b'%PDF-1.4', '')
         self.assertEqual(len(rows), 1)
         self.assertTrue(validate_rows(rows, 'transactions', '2026-10-15')[1])
+
         rows[0].update({'symbol': None, 'date': '2026-10-15', 'type': 'buy', 'amount': 10})
         self.assertTrue(validate_rows(rows, 'transactions', '2026-10-15')[1])
 

@@ -1,9 +1,12 @@
 <script setup>
-    import { computed, ref, watch } from 'vue';
+    import { computed, nextTick, ref, watch } from 'vue';
+    import WithdrawalSplit from './WithdrawalSplit.vue';
     import {
         capitalSummary,
         capitalRecovery,
         cashKinds,
+        cashClassification,
+        cashNeedsReview,
     } from '../../../lib/portfolio-capital.js';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
 
@@ -15,6 +18,8 @@
         accountId: String,
         readOnly: Boolean,
     });
+    const panel = ref(null),
+        cashReview = ref(null);
     const emit = defineEmits(['refresh']);
     const summary = computed(() =>
         capitalSummary(props.state.entries, props.state.classifications)
@@ -65,6 +70,12 @@
                                 entry.suggestedKind ||
                                 'unknown',
                             note: confirmed?.note || '',
+                            withdrawalParts: confirmed?.withdrawalParts || {
+                                principal: 0,
+                                dividend: 0,
+                                profit: 0,
+                                unknown: entry.amount,
+                            },
                             revision: confirmed?.revision || 0,
                         },
                     ];
@@ -83,10 +94,11 @@
             .filter(
                 (entry) =>
                     filter.value !== 'pending' ||
-                    !props.state.classifications.some(
-                        (row) =>
-                            row.id === entry.id &&
-                            row.classification !== 'unknown'
+                    cashNeedsReview(
+                        entry,
+                        props.state.classifications.find(
+                            (row) => row.id === entry.id
+                        )
                     )
             )
     );
@@ -110,6 +122,7 @@
         amount: '',
         classification: 'external_deposit',
         exchangeRate: '',
+        withdrawalParts: { principal: 0, dividend: 0, profit: 0, unknown: 0 },
         note: '',
     });
     const form = ref(null);
@@ -117,6 +130,44 @@
         form.value = newEntry();
         adding.value = true;
     }
+    function classificationError(input, entry) {
+        try {
+            cashClassification(input, entry);
+            return '';
+        } catch (reason) {
+            return reason.message;
+        }
+    }
+    function seedSplit(input, amount) {
+        if (
+            input.classification === 'mixed_withdrawal' &&
+            !Object.values(input.withdrawalParts || {}).some(
+                (value) => Number(value) > 0
+            )
+        )
+            input.withdrawalParts = {
+                principal: 0,
+                dividend: 0,
+                profit: 0,
+                unknown: amount,
+            };
+    }
+    async function openEntry(id) {
+        filter.value = 'all';
+        await nextTick();
+        const index = entries.value.findIndex((entry) => entry.id === id);
+        if (index >= 0) page.value = Math.floor(index / 10) + 1;
+        await nextTick();
+        if (!cashReview.value) return;
+        cashReview.value.open = true;
+        await nextTick();
+        const row = [...panel.value.querySelectorAll('[data-cash-id]')].find(
+            (row) => row.dataset.cashId === id
+        );
+        (row || panel.value).scrollIntoView({ block: 'center' });
+        row?.querySelector('select')?.focus({ preventScroll: true });
+    }
+    defineExpose({ openEntry });
     async function save(input) {
         busy.value = true;
         error.value = '';
@@ -135,12 +186,17 @@
 </script>
 
 <template>
-    <section class="capital-panel" aria-label="투자 원금 대비 회수 현황">
+    <section
+        ref="panel"
+        class="capital-panel"
+        aria-label="투자 원금 대비 회수 현황">
         <div class="heading">
             <div>
                 <h2>투자 원금 대비 얼마나 회수했나요?</h2>
                 <p>
-                    누적 투자 원금 중 지금까지 회수한 금액과 비율을 확인하세요.
+                    확인한 외부 입금에서 원금 회수분만 차감합니다. 배당을 출금해
+                    쓴 금액은 원금 회수와 구분하고, 배당·매도대금·계좌 내 환전을
+                    새 원금으로 더하지 않습니다.
                 </p>
             </div>
             <button
@@ -220,15 +276,49 @@
             <p class="help">순입금은 확정한 외부 입금 − 외부 출금입니다.</p>
             <div class="totals">
                 <article v-for="currency in ['KRW', 'USD']" :key="currency">
-                    <small>저장된 내역 기준 순입금 · {{ currency }}</small>
+                    <small>저장된 내역 기준 원금 · {{ currency }}</small>
                     <strong>{{
-                        state.entries.length
-                            ? money(summary[currency].net, currency)
-                            : '내역 필요'
+                        !state.entries.length
+                            ? '내역 필요'
+                            : summary.pending ||
+                                summary[currency].capitalAfterRecovery < 0
+                              ? '확인 필요'
+                              : money(
+                                    summary[currency].capitalAfterRecovery,
+                                    currency
+                                )
                     }}</strong>
                     <span
-                        >외부 입금
-                        {{ money(summary[currency].deposits, currency) }} · 외부
+                        >확인한 외부 입금
+                        {{ money(summary[currency].deposits, currency) }} · 원금
+                        회수
+                        {{
+                            money(
+                                summary[currency].principalWithdrawals,
+                                currency
+                            )
+                        }}</span
+                    >
+                    <span
+                        >배당 사용
+                        {{ money(summary[currency].dividendUsed, currency) }} ·
+                        기타 수익 사용
+                        {{
+                            money(summary[currency].profitUsed, currency)
+                        }}</span
+                    >
+                    <span
+                        >출금 출처 미확인
+                        {{
+                            money(
+                                summary[currency].unknownWithdrawals,
+                                currency
+                            )
+                        }}</span
+                    >
+                    <span class="cash-net"
+                        >순입금 (현금 흐름)
+                        {{ money(summary[currency].net, currency) }} · 전체 외부
                         출금
                         {{
                             money(summary[currency].withdrawals, currency)
@@ -237,9 +327,12 @@
                 </article>
             </div>
             <p class="help">
-                전체 계좌 개설 이후 원금이 아닐 수 있습니다. 조회 시작 전
-                자금·누락된 내역을 확인해 주세요. 달러 입출금은 달러로 집계하며
-                임의의 환율로 원화에 합산하지 않습니다.
+                순입금은 전체 외부 입금 − 전체 외부 출금으로 원금과 다릅니다.
+                배당 사용은 누적 수령 배당에서 차감하지 않으며, 나머지를
+                재투자로 가정하지 않습니다. 미확인 내역이 있으면 원금 확정을
+                보류합니다. 전체 계좌 개설 이후 원금이 아닐 수 있습니다. 조회
+                시작 전 자금·누락된 내역을 확인해 주세요. 달러 입출금은 달러로
+                집계하며 임의의 환율로 원화에 합산하지 않습니다.
             </p>
             <p v-if="summary.dates.length" class="help">
                 저장된 계좌 거래일 {{ date(summary.dates[0]) }} ~
@@ -260,7 +353,10 @@
                 조회 권한으로 열었습니다. 수정하려면 계좌 편집 권한이
                 필요합니다.
             </p>
-            <details class="cash-review" :open="adding || undefined">
+            <details
+                ref="cashReview"
+                class="cash-review"
+                :open="adding || undefined">
                 <summary>계좌 내역 검토 · {{ state.entries.length }}건</summary>
                 <p class="help">
                     PDF 분류는 후보입니다. 원본에서 외부 입출금인지 확인한 뒤
@@ -288,14 +384,15 @@
                         >금액<input
                             v-model="form.amount"
                             type="number"
-                            min="0.000001"
+                            :min="form.currency === 'KRW' ? '1' : '0.000001'"
                             :step="form.currency === 'KRW' ? '1' : '0.000001'"
                             required
                     /></label>
                     <label
                         >구분<select
                             v-model="form.classification"
-                            aria-label="계좌 거래 구분">
+                            aria-label="계좌 거래 구분"
+                            @change="seedSplit(form, form.amount)">
                             <option
                                 v-for="(label, kind) in cashKinds"
                                 :key="kind"
@@ -311,6 +408,19 @@
                             min="0.000001"
                             step="0.000001"
                     /></label>
+                    <WithdrawalSplit
+                        v-if="form.classification === 'mixed_withdrawal'"
+                        v-model="form.withdrawalParts"
+                        class="wide"
+                        :amount="form.amount"
+                        :currency="form.currency"
+                        :disabled="busy || loading || readOnly" />
+                    <p
+                        v-if="classificationError(form, form)"
+                        class="error wide"
+                        role="status">
+                        {{ classificationError(form, form) }}
+                    </p>
                     <label class="wide"
                         >확인 근거·메모<input
                             v-model="form.note"
@@ -319,7 +429,10 @@
                             required
                     /></label>
                     <div class="actions wide">
-                        <button :disabled="busy">
+                        <button
+                            :disabled="
+                                busy || !!classificationError(form, form)
+                            ">
                             {{ busy ? '저장 중' : '확인 후 추가' }}</button
                         ><button
                             type="button"
@@ -346,7 +459,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="entry in visible" :key="entry.id">
+                            <tr
+                                v-for="entry in visible"
+                                :key="entry.id"
+                                :data-cash-id="entry.id">
                                 <td>
                                     {{ date(entry.date)
                                     }}<small
@@ -369,7 +485,13 @@
                                     <select
                                         v-model="edits[entry.id].classification"
                                         :disabled="readOnly || busy || loading"
-                                        :aria-label="`${date(entry.date)} 계좌 내역 분류`">
+                                        :aria-label="`${date(entry.date)} 계좌 내역 분류`"
+                                        @change="
+                                            seedSplit(
+                                                edits[entry.id],
+                                                entry.amount
+                                            )
+                                        ">
                                         <option
                                             v-for="(label, kind) in cashKinds"
                                             :key="kind"
@@ -382,11 +504,47 @@
                                         maxlength="500"
                                         aria-label="분류 메모"
                                         placeholder="확인 근거·메모" />
+                                    <WithdrawalSplit
+                                        v-if="
+                                            edits[entry.id].classification ===
+                                            'mixed_withdrawal'
+                                        "
+                                        v-model="
+                                            edits[entry.id].withdrawalParts
+                                        "
+                                        :amount="entry.amount"
+                                        :currency="entry.currency"
+                                        :disabled="
+                                            busy || loading || readOnly
+                                        " />
+                                    <small
+                                        v-if="
+                                            classificationError(
+                                                edits[entry.id],
+                                                entry
+                                            )
+                                        "
+                                        class="error"
+                                        >{{
+                                            classificationError(
+                                                edits[entry.id],
+                                                entry
+                                            )
+                                        }}</small
+                                    >
                                 </td>
                                 <td>
                                     <button
                                         type="button"
-                                        :disabled="busy || loading || readOnly"
+                                        :disabled="
+                                            busy ||
+                                            loading ||
+                                            readOnly ||
+                                            !!classificationError(
+                                                edits[entry.id],
+                                                entry
+                                            )
+                                        "
                                         @click="
                                             save({
                                                 action: 'classifyCash',

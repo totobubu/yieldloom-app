@@ -278,7 +278,7 @@
                             v-model="part.amount"
                             :aria-label="`자금 ${index + 1} 사용 금액`"
                             type="number"
-                            min="0.000001"
+                            :min="basis.currency === 'KRW' ? '1' : '0.000001'"
                             :step="basis.currency === 'KRW' ? '1' : '0.000001'"
                             required
                             @input="accepted = false"

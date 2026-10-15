@@ -12,7 +12,8 @@
     const families = ref([]),
         familyId = ref(''),
         accounts = ref([]),
-        summary = ref(null);
+        rawSummary = ref(null);
+    const portfolioScope = ref('personal');
     const busy = ref(false),
         error = ref(''),
         message = ref(''),
@@ -33,6 +34,14 @@
         kind = ref('transactions'),
         asOf = ref(''),
         format = ref('standard-csv');
+    const rememberPassword = ref(true),
+        reviewPage = ref(0);
+    const visibleReviewRows = computed(() =>
+        (review.value?.rows || []).slice(
+            reviewPage.value * 200,
+            (reviewPage.value + 1) * 200
+        )
+    );
     const capital = ref({ entries: [], classifications: [], allocations: [] });
     const capitalLoading = ref(false),
         capitalError = ref(''),
@@ -129,8 +138,64 @@
                 p.guardianUid === firebaseUser.value?.uid
         )
     );
+    const selfProfile = computed(() =>
+        profiles.value.find((p) => p.uid === ownUid.value)
+    );
+    const visibleAccounts = computed(() =>
+        accounts.value.filter(
+            (a) =>
+                portfolioScope.value === 'family' ||
+                space.value?.profiles[a.ownerId]?.uid === ownUid.value
+        )
+    );
+    const summary = computed(() => {
+        if (!rawSummary.value) return null;
+        const ids = new Set(visibleAccounts.value.map((a) => a.id));
+        const positions = rawSummary.value.positions.filter((p) =>
+            ids.has(p.accountId)
+        );
+        const dates = visibleAccounts.value
+            .filter((a) => a.snapshot)
+            .map((a) => a.snapshot.asOf)
+            .sort();
+        const missing = visibleAccounts.value
+            .filter((a) => !a.snapshot)
+            .map((a) => a.id);
+        const totals = {};
+        for (const p of positions)
+            if (p.amount !== null)
+                totals[p.currency] = (totals[p.currency] || 0) + p.amount;
+        return {
+            ...rawSummary.value,
+            positions,
+            knownValueByCurrency: totals,
+            missingSnapshotAccounts: missing,
+            mixedDates: new Set(dates).size > 1,
+            oldestAsOf: dates[0] || null,
+            newestAsOf: dates.at(-1) || null,
+            valueComplete:
+                !missing.length && positions.every((p) => p.amount !== null),
+            notice:
+                portfolioScope.value === 'personal'
+                    ? '본인 명의 계좌의 잔고 자료입니다. 현재 평가액·수익률이 아니며 통화별로 구분합니다.'
+                    : rawSummary.value.notice,
+        };
+    });
+    watch([visibleAccounts, selfProfile], () => {
+        if (!visibleAccounts.value.some((a) => a.id === selectedAccount.value))
+            selectedAccount.value = visibleAccounts.value[0]?.id || '';
+        if (
+            portfolioScope.value === 'personal' ||
+            !ownProfiles.value.some((p) => p.id === accountForm.value.ownerId)
+        )
+            accountForm.value.ownerId = selfProfile.value?.id || '';
+    });
+    watch(portfolioScope, () => {
+        accountFilter.value = '';
+        ownerFilter.value = '';
+    });
     const activeAccount = computed(() =>
-        accounts.value.find((a) => a.id === selectedAccount.value)
+        visibleAccounts.value.find((a) => a.id === selectedAccount.value)
     );
     const editableAccounts = computed(() =>
         accounts.value.filter((a) =>
@@ -198,7 +263,11 @@
         );
         if (firebaseUser.value?.uid !== requestedUid) return;
         if (!familyId.value && data.families.length) {
-            familyId.value = data.families[0].id;
+            familyId.value = (
+                data.families.find((f) => f.kind === 'personal') ||
+                data.families.find((f) => f.adminUid === requestedUid) ||
+                data.families[0]
+            ).id;
             data = await familyRequest('', undefined, {
                 familyId: familyId.value,
             });
@@ -206,11 +275,11 @@
         }
         families.value = data.families;
         accounts.value = data.accounts || [];
-        summary.value = data.summary || null;
+        rawSummary.value = data.summary || null;
         if (!familyId.value && families.value.length)
             familyId.value = families.value[0].id;
-        if (!accounts.value.some((a) => a.id === selectedAccount.value))
-            selectedAccount.value = accounts.value[0]?.id || '';
+        if (!visibleAccounts.value.some((a) => a.id === selectedAccount.value))
+            selectedAccount.value = visibleAccounts.value[0]?.id || '';
         await loadCapital();
     }
     watch(
@@ -219,13 +288,14 @@
             // Clear private state when the authenticated identity changes.
             families.value = [];
             accounts.value = [];
-            summary.value = null;
+            rawSummary.value = null;
             entries.value = [];
             review.value = null;
             familyId.value = '';
             selectedAccount.value = '';
             invitation.value = '';
             password.value = '';
+            portfolioScope.value = 'personal';
             if (waiting) return;
             if (!user) router.replace('/login');
             else run(refresh);
@@ -234,7 +304,7 @@
     );
     watch(familyId, () => {
         accounts.value = [];
-        summary.value = null;
+        rawSummary.value = null;
         invitation.value = '';
         nextCursor.value = null;
         review.value = null;
@@ -249,6 +319,9 @@
         confirmed.value = false;
         singleAccountConfirmed.value = false;
         nextCursor.value = null;
+        password.value = '';
+        rememberPassword.value = true;
+        reviewPage.value = 0;
     });
     async function createFamily() {
         await run(async () => {
@@ -284,6 +357,15 @@
     }
     async function createAccount() {
         await run(async () => {
+            if (!space.value) {
+                const result = await familyRequest('ensurePersonal', {
+                    profileName: firebaseUser.value?.displayName || '본인',
+                });
+                familyId.value = result.familyId;
+                await refresh();
+            }
+            if (portfolioScope.value === 'personal')
+                accountForm.value.ownerId = selfProfile.value.id;
             const result = await familyRequest('createAccount', {
                 ...accountForm.value,
                 familyId: familyId.value,
@@ -312,25 +394,66 @@
                 format: format.value,
                 identityConfirmed: 'true',
                 password: password.value,
+                rememberPassword:
+                    rememberPassword.value &&
+                    a.permissions?.[ownUid.value] === 'owner'
+                        ? 'true'
+                        : 'false',
             }).forEach(([key, value]) => form.append(key, value));
             form.append('file', file);
             const result = await familyRequest('preview', form);
             if (selectedAccount.value === a.id)
                 review.value = { ...result, accountId: a.id };
+            reviewPage.value = 0;
             password.value = '';
             fileInput.value.value = '';
+            if (rememberPassword.value && format.value === 'toss-pdf')
+                await refresh();
         });
     }
     async function commit() {
         await run(async () => {
-            const result = await familyRequest('commit', {
-                accountId: review.value.accountId,
-                reviewId: review.value.reviewId,
-                rows: review.value.rows,
+            const current = review.value;
+            const batches = current.batches || [
+                {
+                    reviewId: current.reviewId,
+                    start: 0,
+                    count: current.rows.length,
+                },
+            ];
+            const result = { inserted: 0, duplicates: 0 };
+            await familyRequest('validateImport', {
+                accountId: current.accountId,
+                reviewId: current.reviewId,
+                rows: current.rows,
             });
+            for (const [index, batch] of batches.entries()) {
+                message.value = `저장 중 ${index + 1}/${batches.length} · 실패하면 같은 미리보기에서 다시 시도할 수 있습니다.`;
+                const saved = await familyRequest('commit', {
+                    accountId: current.accountId,
+                    reviewId: batch.reviewId,
+                    rows: current.rows.slice(
+                        batch.start,
+                        batch.start + batch.count
+                    ),
+                });
+                result.inserted += saved.inserted;
+                result.duplicates += saved.duplicates;
+            }
             review.value = null;
             message.value = `저장 ${result.inserted}행 · 중복 ${result.duplicates}행`;
             await refresh();
+        });
+    }
+    async function removePdfPassword() {
+        await run(async () => {
+            await familyRequest('pdfPassword', {
+                accountId: selectedAccount.value,
+                remove: true,
+            });
+            password.value = '';
+            await refresh();
+            message.value = '저장된 PDF 기본 비밀번호를 삭제했습니다.';
         });
     }
     watch(legacy, () => {
@@ -357,11 +480,8 @@
 <template>
     <div class="family-page">
         <header>
-            <h1>가족 포트폴리오</h1>
-            <p>
-                가족 공간 참여와 계좌 공유 권한은 별개입니다. 허용받은 계좌만
-                조회합니다.
-            </p>
+            <h1>내 포트폴리오</h1>
+            <p>본인 명의 계좌를 등록하고 보유·거래 내역을 확인하세요.</p>
             <router-link to="/mypage/legacy"
                 >이전 단일 계좌 자료 보기</router-link
             >
@@ -370,40 +490,33 @@
         <p v-if="error" role="alert" class="error">{{ error }}</p>
         <p v-if="message" role="status">{{ message }}</p>
         <p v-if="busy" role="status">처리 중…</p>
-        <section>
-            <h2>가족 공간 만들기 / 참여</h2>
-            <label
-                >내 프로필 이름 <input v-model="myName" maxlength="100"
-            /></label>
-            <form @submit.prevent="createFamily">
-                <label
-                    >가족 이름
-                    <input
-                        v-model="newFamily"
-                        required
-                        maxlength="100" /></label
-                ><button :disabled="busy">공간 만들기</button>
-            </form>
-            <form @submit.prevent="join">
-                <label
-                    >초대 코드
-                    <input
-                        v-model="joinToken"
-                        required
-                        autocomplete="off" /></label
-                ><button :disabled="busy">본인 계정으로 참여</button>
-            </form>
-        </section>
+        <nav v-if="space" aria-label="포트폴리오 범위">
+            <button
+                :disabled="busy"
+                :aria-pressed="portfolioScope === 'personal'"
+                @click="portfolioScope = 'personal'">
+                내 계좌
+            </button>
+            <button
+                :disabled="busy"
+                :aria-pressed="portfolioScope === 'family'"
+                @click="portfolioScope = 'family'">
+                가족 포트폴리오
+            </button>
+        </nav>
         <template v-if="space">
             <AccountRecoveryOverview
                 :user="firebaseUser"
-                :accounts="accounts"
+                :accounts="visibleAccounts"
                 :refresh-state="capital" />
             <section v-if="activeAccount" aria-label="회수 현황 계좌 선택">
                 <label
                     >회수 현황을 볼 계좌
                     <select v-model="selectedAccount" :disabled="busy">
-                        <option v-for="a in accounts" :key="a.id" :value="a.id">
+                        <option
+                            v-for="a in visibleAccounts"
+                            :key="a.id"
+                            :value="a.id">
                             {{ ownerName(a.ownerId) }} / {{ a.alias }}
                         </option>
                     </select>
@@ -422,8 +535,34 @@
                     !editableAccounts.some((a) => a.id === selectedAccount)
                 "
                 @refresh="loadCapital" />
-
+        </template>
+        <details class="family-options">
+            <summary>가족 추가·관리 (선택)</summary>
             <section>
+                <h2>가족 공간 만들기 / 참여</h2>
+                <label
+                    >내 프로필 이름 <input v-model="myName" maxlength="100"
+                /></label>
+                <form @submit.prevent="createFamily">
+                    <label
+                        >가족 이름
+                        <input
+                            v-model="newFamily"
+                            required
+                            maxlength="100" /></label
+                    ><button :disabled="busy">공간 만들기</button>
+                </form>
+                <form @submit.prevent="join">
+                    <label
+                        >초대 코드
+                        <input
+                            v-model="joinToken"
+                            required
+                            autocomplete="off" /></label
+                    ><button :disabled="busy">본인 계정으로 참여</button>
+                </form>
+            </section>
+            <section v-if="space">
                 <h2>가족·구성원 관리</h2>
                 <label
                     >가족 공간
@@ -498,82 +637,92 @@
                     ><button :disabled="busy">미성년 프로필 추가</button>
                 </form>
             </section>
-            <section>
-                <h2>계좌 등록</h2>
-                <p>
-                    성인은 본인 계좌, 보호자는 자녀 계좌를 등록합니다. 전체
-                    계좌번호는 입력하지 마세요.
+        </details>
+        <section>
+            <h2>
+                {{
+                    portfolioScope === 'personal' ? '내 계좌 등록' : '계좌 등록'
+                }}
+            </h2>
+            <p>
+                여러 금융기관의 본인 계좌를 등록할 수 있습니다. 전체 계좌번호는
+                입력하지 마세요.
+            </p>
+            <form @submit.prevent="createAccount">
+                <p v-if="portfolioScope === 'personal'">
+                    명의자:
+                    {{
+                        selfProfile?.name || firebaseUser?.displayName || '본인'
+                    }}
                 </p>
-                <form @submit.prevent="createAccount">
-                    <label
-                        >명의자
-                        <select v-model="accountForm.ownerId" required>
-                            <option value="">선택</option>
-                            <option
-                                v-for="p in ownProfiles"
-                                :key="p.id"
-                                :value="p.id">
-                                {{ p.name }}
-                            </option>
-                        </select></label
-                    >
-                    <label
-                        >금융기관
-                        <input
-                            v-model="accountForm.institution"
-                            required
-                            maxlength="100"
-                            placeholder="예: 토스증권"
-                    /></label>
-                    <label
-                        >유형
-                        <select v-model="accountForm.type">
-                            <option value="general">일반</option>
-                            <option value="isa">ISA</option>
-                            <option value="pension">연금</option>
-                            <option value="other">기타</option>
-                        </select></label
-                    >
-                    <label
-                        >별칭
-                        <input
-                            v-model="accountForm.alias"
-                            required
-                            maxlength="100"
-                    /></label>
-                    <label
-                        >계좌 끝 4자리 (선택)
-                        <input
-                            v-model="accountForm.last4"
-                            maxlength="4"
-                            pattern="[0-9]{4}"
-                            inputmode="numeric"
-                            autocomplete="off"
-                    /></label>
-                    <button :disabled="busy">계좌 등록</button>
-                </form>
-                <ul>
-                    <li v-for="a in accounts" :key="a.id">
-                        <button
-                            :disabled="busy"
-                            @click="selectedAccount = a.id">
-                            {{ ownerName(a.ownerId) }} · {{ a.institution }} ·
-                            {{ a.alias }} · {{ a.type }} · {{ a.maskedNumber }}
-                        </button>
-                        · 자료 기준일 {{ a.asOf || '미확인' }} · {{ a.source }}
-                    </li>
-                </ul>
-                <p v-if="!accounts.length">
-                    접근 가능한 계좌가 없습니다. 등록하거나 명의자에게 공유를
-                    요청하세요.
-                </p>
-            </section>
+                <label v-else
+                    >명의자
+                    <select v-model="accountForm.ownerId" required>
+                        <option value="">선택</option>
+                        <option
+                            v-for="p in ownProfiles"
+                            :key="p.id"
+                            :value="p.id">
+                            {{ p.name }}
+                        </option>
+                    </select></label
+                >
+                <label
+                    >금융기관
+                    <input
+                        v-model="accountForm.institution"
+                        required
+                        maxlength="100"
+                        placeholder="예: 토스증권"
+                /></label>
+                <label
+                    >유형
+                    <select v-model="accountForm.type">
+                        <option value="general">일반</option>
+                        <option value="isa">ISA</option>
+                        <option value="pension">연금</option>
+                        <option value="other">기타</option>
+                    </select></label
+                >
+                <label
+                    >별칭
+                    <input v-model="accountForm.alias" required maxlength="100"
+                /></label>
+                <label
+                    >계좌 끝 4자리 (선택)
+                    <input
+                        v-model="accountForm.last4"
+                        maxlength="4"
+                        pattern="[0-9]{4}"
+                        inputmode="numeric"
+                        autocomplete="off"
+                /></label>
+                <button :disabled="busy">계좌 등록</button>
+            </form>
+            <ul>
+                <li v-for="a in visibleAccounts" :key="a.id">
+                    <button :disabled="busy" @click="selectedAccount = a.id">
+                        {{ ownerName(a.ownerId) }} · {{ a.institution }} ·
+                        {{ a.alias }} · {{ a.type }} · {{ a.maskedNumber }}
+                    </button>
+                    · 자료 기준일 {{ a.asOf || '미확인' }} · {{ a.source }}
+                </li>
+            </ul>
+            <p v-if="!visibleAccounts.length">
+                등록된 계좌가 없습니다. 위에서 본인 계좌를 추가하세요. 가족
+                계좌는 가족 포트폴리오에서 확인할 수 있습니다.
+            </p>
+        </section>
+        <template v-if="space">
             <section v-if="activeAccount">
                 <h2>선택 계좌: {{ activeAccount.alias }}</h2>
                 <label
                     >계좌
                     <select v-model="selectedAccount" :disabled="busy">
-                        <option v-for="a in accounts" :key="a.id" :value="a.id">
+                        <option
+                            v-for="a in visibleAccounts"
+                            :key="a.id"
+                            :value="a.id">
                             {{ ownerName(a.ownerId) }} / {{ a.institution }} /
                             {{ a.alias }} / {{ a.maskedNumber }}
                         </option>
@@ -595,49 +744,52 @@
                                 maxlength="100" /></label
                         ><button :disabled="busy">별칭 저장</button>
                     </form>
-                    <h3>계좌별 공유 권한</h3>
-                    <p>
-                        가족 관리자에게 자동 공유되지 않습니다. 편집자는
-                        업로드할 수 있습니다.
-                    </p>
-                    <ul>
-                        <li
-                            v-for="(role, uid) in activeAccount.permissions"
-                            :key="uid">
-                            {{
-                                profiles.find((p) => p.uid === uid)?.name ||
-                                uid
-                            }}: {{ role }}
-                        </li>
-                    </ul>
-                    <form
-                        @submit.prevent="
-                            mutate('grant', {
-                                accountId: selectedAccount,
-                                uid: shareUid,
-                                role: shareRole,
-                            })
-                        ">
-                        <label
-                            >성인 구성원
-                            <select v-model="shareUid" required>
-                                <option value="">선택</option>
-                                <option
-                                    v-for="p in otherAdults"
-                                    :key="p.id"
-                                    :value="p.uid">
-                                    {{ p.name }}
-                                </option>
-                            </select></label
-                        ><label
-                            >권한
-                            <select v-model="shareRole">
-                                <option value="viewer">조회</option>
-                                <option value="editor">조회·업로드</option>
-                                <option value="none">공유 취소</option>
-                            </select></label
-                        ><button :disabled="busy">권한 저장</button>
-                    </form>
+                    <details class="sharing-options">
+                        <summary>가족에게 계좌 공유 (선택)</summary>
+                        <h3>계좌별 공유 권한</h3>
+                        <p>
+                            가족 관리자에게 자동 공유되지 않습니다. 편집자는
+                            업로드할 수 있습니다.
+                        </p>
+                        <ul>
+                            <li
+                                v-for="(role, uid) in activeAccount.permissions"
+                                :key="uid">
+                                {{
+                                    profiles.find((p) => p.uid === uid)?.name ||
+                                    uid
+                                }}: {{ role }}
+                            </li>
+                        </ul>
+                        <form
+                            @submit.prevent="
+                                mutate('grant', {
+                                    accountId: selectedAccount,
+                                    uid: shareUid,
+                                    role: shareRole,
+                                })
+                            ">
+                            <label
+                                >성인 구성원
+                                <select v-model="shareUid" required>
+                                    <option value="">선택</option>
+                                    <option
+                                        v-for="p in otherAdults"
+                                        :key="p.id"
+                                        :value="p.uid">
+                                        {{ p.name }}
+                                    </option>
+                                </select></label
+                            ><label
+                                >권한
+                                <select v-model="shareRole">
+                                    <option value="viewer">조회</option>
+                                    <option value="editor">조회·업로드</option>
+                                    <option value="none">공유 취소</option>
+                                </select></label
+                            ><button :disabled="busy">권한 저장</button>
+                        </form>
+                    </details>
                     <details>
                         <summary>이전 단일 계좌 데이터 보존 이전</summary>
                         <p>
@@ -754,9 +906,10 @@
                 ">
                 <h2>파일 업로드·저장 전 검토</h2>
                 <p>
-                    표준 UTF-8 CSV와 토스 거래내역 PDF를 지원합니다. 2MB·200행
-                    이하. 잔고 CSV는 기준일의 전체 보유 종목을 넣으세요. 새
-                    잔고는 해당 계좌의 이전 잔고를 대체합니다.
+                    표준 UTF-8 CSV(200행)와 토스 거래내역 PDF(10,000행)를
+                    지원합니다. 파일은 2MB 이하이며 PDF는 200행씩 나누어
+                    저장합니다. 잔고 CSV는 기준일의 전체 보유 종목을 넣으세요.
+                    새 잔고는 해당 계좌의 이전 잔고를 대체합니다.
                 </p>
                 <details>
                     <summary>CSV 양식과 거래 유형</summary>
@@ -808,8 +961,38 @@ date,symbol,quantity,amount,currency,type,externalId
                         <input
                             v-model="password"
                             type="password"
-                            autocomplete="off" /></label
+                            autocomplete="off"
+                            :placeholder="
+                                activeAccount.pdfPasswordConfigured
+                                    ? '저장된 비밀번호 사용 · 변경할 때만 입력'
+                                    : '생년월일 6자리'
+                            " /></label
                     ><label
+                        v-if="
+                            format === 'toss-pdf' &&
+                            activeAccount.permissions?.[ownUid] === 'owner'
+                        ">
+                        <input v-model="rememberPassword" type="checkbox" />
+                        이 계좌의 기본 비밀번호로 암호화 저장
+                    </label>
+                    <p
+                        v-if="
+                            format === 'toss-pdf' &&
+                            activeAccount.pdfPasswordConfigured
+                        ">
+                        계좌 기본 비밀번호가 암호화 저장되어 있습니다. 입력란을
+                        비우면 자동 사용합니다.
+                        <button
+                            v-if="
+                                activeAccount.permissions?.[ownUid] === 'owner'
+                            "
+                            type="button"
+                            :disabled="busy"
+                            @click="removePdfPassword">
+                            저장된 비밀번호 삭제
+                        </button>
+                    </p>
+                    <label
                         ><input v-model="confirmed" type="checkbox" required />
                         {{ ownerName(activeAccount.ownerId) }} ·
                         {{ activeAccount.institution }} ·
@@ -824,6 +1007,25 @@ date,symbol,quantity,amount,currency,type,externalId
                     <p>
                         표의 오류를 수정한 뒤 전체 행을 저장합니다. 오류가
                         남으면 저장되지 않습니다. 검토는 1시간 유효합니다.
+                    </p>
+                    <p v-if="review.rows.length > 200">
+                        전체 {{ review.rows.length }}행 ·
+                        {{ reviewPage + 1 }}/{{
+                            Math.ceil(review.rows.length / 200)
+                        }}쪽
+                        <button
+                            :disabled="busy || reviewPage === 0"
+                            @click="reviewPage--">
+                            이전
+                        </button>
+                        <button
+                            :disabled="
+                                busy ||
+                                (reviewPage + 1) * 200 >= review.rows.length
+                            "
+                            @click="reviewPage++">
+                            다음
+                        </button>
                     </p>
                     <ul class="error">
                         <li v-for="(e, i) in review.errors" :key="i">
@@ -851,8 +1053,10 @@ date,symbol,quantity,amount,currency,type,externalId
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(row, i) in review.rows" :key="i">
-                                    <td>{{ i + 1 }}</td>
+                                <tr
+                                    v-for="(row, i) in visibleReviewRows"
+                                    :key="reviewPage * 200 + i">
+                                    <td>{{ reviewPage * 200 + i + 1 }}</td>
                                     <td
                                         v-for="col in [
                                             'date',
@@ -880,7 +1084,14 @@ date,symbol,quantity,amount,currency,type,externalId
                 >
             </section>
             <section v-if="summary">
-                <h2>가족 합산 · 접근 가능한 {{ accounts.length }}개 계좌</h2>
+                <h2>
+                    {{
+                        portfolioScope === 'personal'
+                            ? '내 포트폴리오 합산'
+                            : '가족 합산'
+                    }}
+                    · {{ visibleAccounts.length }}개 계좌
+                </h2>
                 <p>{{ summary.notice }}</p>
                 <p>
                     자료 기준일: {{ summary.oldestAsOf || '미확인' }} ~
@@ -916,7 +1127,10 @@ date,symbol,quantity,amount,currency,type,externalId
                     >계좌
                     <select v-model="accountFilter">
                         <option value="">전체</option>
-                        <option v-for="a in accounts" :key="a.id" :value="a.id">
+                        <option
+                            v-for="a in visibleAccounts"
+                            :key="a.id"
+                            :value="a.id">
                             {{ a.alias }}
                         </option>
                     </select></label

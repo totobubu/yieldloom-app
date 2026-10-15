@@ -4,16 +4,22 @@
     import StockRecoveryPanel from '@/components/portfolio/StockRecoveryPanel.vue';
     import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
+    import TransactionAmount from '@/components/portfolio/TransactionAmount.vue';
+    import {
+        portfolioActivity,
+        activityTypeLabel,
+    } from '@/services/portfolioActivity.js';
+    import {
+        transactionAmountRows,
+        transactionMoney,
+    } from '@/services/transactionAmount.js';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { purchaseBasis } from '../../lib/portfolio-capital.js';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import { loadPortfolioDashboard } from '@/services/portfolio';
     import { summarizePortfolio } from '@/services/portfolioSummary';
     import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
-    import {
-        closedPositionPerformance,
-        transactionExchangeRate,
-    } from '@/services/portfolioPerformance';
+    import { closedPositionPerformance } from '@/services/portfolioPerformance';
     import {
         formatPortfolioQuantity,
         portfolioAssetsInPeriod,
@@ -32,6 +38,7 @@
         loading = ref(false);
     const dashboard = ref({ assets: [], transactions: [], summary: {} });
     const capital = ref({ entries: [], classifications: [], allocations: [] });
+    const capitalPanel = ref(null);
     const capitalLoading = ref(false),
         capitalError = ref(''),
         fundingTransaction = ref(null),
@@ -128,7 +135,7 @@
     const years = computed(() =>
         [
             ...new Set(
-                dashboard.value.transactions
+                [...dashboard.value.transactions, ...capital.value.entries]
                     .map((t) => String(t.date).replace(/\D/g, '').slice(0, 4))
                     .filter((y) => /^\d{4}$/.test(y))
             ),
@@ -152,23 +159,29 @@
               ? `${startDate.value} ~ ${endDate.value}`
               : `${period.value}년`
     );
-    const periodDashboard = computed(() => {
-        const start =
+    const periodBounds = computed(() => ({
+        start:
             period.value === 'all'
                 ? ''
                 : period.value === 'custom'
                   ? startDate.value
-                  : `${period.value}-01-01`;
-        const end =
+                  : `${period.value}-01-01`,
+        end:
             period.value === 'all'
                 ? ''
                 : period.value === 'custom'
                   ? endDate.value
-                  : `${period.value}-12-31`;
-        return summarizePortfolio(
-            portfolioAssetsInPeriod(dashboard.value.assets, start, end)
-        );
-    });
+                  : `${period.value}-12-31`,
+    }));
+    const periodDashboard = computed(() =>
+        summarizePortfolio(
+            portfolioAssetsInPeriod(
+                dashboard.value.assets,
+                periodBounds.value.start,
+                periodBounds.value.end
+            )
+        )
+    );
     const performanceAssets = computed(() => {
         const performances = new Map(
             dashboard.value.assets.map((asset) => [
@@ -250,12 +263,6 @@
             ? `${value > 0 ? '+' : value < 0 ? '−' : ''}${usd(Math.abs(value))}`
             : usd(value);
     };
-    const exchange = (transaction) => {
-        const rate = transactionExchangeRate(transaction);
-        return rate
-            ? `${rate.value.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${rate.recorded ? '' : ' (참고)'}`
-            : '—';
-    };
     const quantity = formatPortfolioQuantity;
     const date = (v) =>
         v ? String(v).replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '—';
@@ -266,7 +273,9 @@
             dividend: '배당',
             dividend_reversal: '배당 취소',
             cash: '계좌 입출금·환전',
-        })[v] ?? '기타';
+        })[v] ??
+        activityTypeLabel(v) ??
+        '기타';
     const typeClass = (v) =>
         ({ buy: 'buy', sell: 'sell', dividend: 'dividend' })[v] ?? 'unknown';
     async function refresh() {
@@ -306,15 +315,60 @@
         },
         { immediate: true }
     );
+    const periodActivities = computed(() =>
+        periodError.value
+            ? []
+            : portfolioActivity(
+                  dashboard.value.transactions,
+                  capitalError.value
+                      ? { entries: [], classifications: [] }
+                      : capital.value,
+                  periodBounds.value
+              )
+    );
     const filteredTransactions = computed(() =>
-        (periodError.value ? [] : periodDashboard.value.transactions)
-            .filter(
-                (t) =>
-                    (!tickerFilter.value ||
-                        t.asset.ticker === tickerFilter.value) &&
-                    (!typeFilter.value || t.type === typeFilter.value)
+        periodError.value
+            ? []
+            : portfolioActivity(
+                  dashboard.value.transactions,
+                  capitalError.value
+                      ? { entries: [], classifications: [] }
+                      : capital.value,
+                  {
+                      ...periodBounds.value,
+                      ticker: tickerFilter.value,
+                      type: typeFilter.value,
+                  }
+              ).slice(0, 20)
+    );
+    const allocationsByTrade = computed(
+        () =>
+            new Map(
+                capital.value.allocations.map((row) => [
+                    `${row.assetId}|${row.transactionId}`,
+                    row,
+                ])
             )
-            .slice(0, 20)
+    );
+    const amountGroups = (transactions, assetId) =>
+        transactions.map((transaction, index) => ({
+            transaction,
+            key: `${assetId || transaction.asset?.id}-${transaction.id || index}`,
+            amounts: transactionAmountRows(
+                transaction,
+                allocationsByTrade.value.get(
+                    `${assetId || transaction.asset?.id}|${transaction.id}`
+                )
+            ),
+        }));
+    const recentAmountGroups = computed(() =>
+        amountGroups(filteredTransactions.value)
+    );
+    const detailAmountGroups = computed(() =>
+        amountGroups(
+            periodError.value ? [] : selectedAsset.value?.transactions || [],
+            selectedAssetId.value
+        )
     );
     const tickers = computed(() =>
         dashboard.value.assets.filter((asset) => asset.ticker)
@@ -351,6 +405,7 @@
         </p>
         <p v-if="message" class="notice success">{{ message }}</p>
         <PortfolioCapitalPanel
+            ref="capitalPanel"
             :user="firebaseUser"
             :state="capital"
             :loading="capitalLoading"
@@ -405,9 +460,7 @@
             </p>
             <p v-else class="period-label" role="status">
                 {{ periodLabel }} · 거래
-                {{
-                    periodDashboard.transactions.length.toLocaleString('ko-KR')
-                }}건
+                {{ periodActivities.length.toLocaleString('ko-KR') }}건
             </p>
         </section>
         <section class="summary-grid" aria-label="포트폴리오 요약">
@@ -438,9 +491,7 @@
             <article>
                 <small>최근 거래일</small
                 ><strong>{{
-                    periodError
-                        ? '—'
-                        : date(periodDashboard.summary.latestTransactionDate)
+                    periodError ? '—' : date(periodActivities[0]?.date)
                 }}</strong>
             </article>
         </section>
@@ -656,8 +707,10 @@
                 <div>
                     <h2>기간별 거래내역</h2>
                     <p>
-                        선택한 기간의 최근 20건을 표시합니다. 종목 상세에서는
-                        해당 기간의 전체 거래를 볼 수 있습니다.
+                        주식 거래와 계좌 입출금·환전 중 선택한 기간의 최근
+                        20건입니다. 출금에는 배당 사용·원금 회수 등 확인한
+                        구분을 표시합니다. 종목 필터를 선택하면 계좌 내역은
+                        제외합니다.
                     </p>
                 </div>
                 <div class="filters">
@@ -675,11 +728,37 @@
                         <option value="sell">매도</option>
                         <option value="dividend">배당</option>
                         <option value="dividend_reversal">배당 취소</option>
+                        <option value="cash_in">계좌 입금</option>
+                        <option value="cash_out">출금 전체</option>
+                        <option value="dividend_withdrawal">
+                            배당 사용 출금
+                        </option>
+                        <option value="principal_withdrawal">
+                            원금 회수 출금
+                        </option>
+                        <option value="profit_withdrawal">
+                            기타 수익 사용 출금
+                        </option>
+                        <option value="exchange">환전</option>
+                        <option value="cash_transfer">계좌 내 이동</option>
                     </select>
                 </div>
             </div>
+            <p v-if="capitalError" class="notice warning" role="status">
+                계좌 내역을 읽지 못해 입출금·환전이 제외되었습니다. 투자 원금
+                확인에서 다시 조회해 주세요.
+            </p>
+            <p
+                v-else-if="!capitalLoading && !capital.entries.length"
+                class="notice warning"
+                role="status">
+                저장된 계좌 내역이 없어 출금·환전이 아직 포함되지 않았습니다.
+                투자 원금 확인에서 실제 입출금을 직접 추가하거나, 가족
+                포트폴리오의 해당 계좌에 내역을 가져와 주세요. 이전 계좌와 새
+                계좌는 별도로 집계합니다.
+            </p>
             <div class="table-wrap">
-                <table>
+                <table aria-label="기간별 거래내역">
                     <thead>
                         <tr>
                             <th>날짜</th>
@@ -692,41 +771,89 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr
-                            v-for="transaction in filteredTransactions"
-                            :key="
-                                transaction.id ||
-                                `${transaction.asset.id}-${transaction.date}-${transaction.type}-${transaction.amount}`
-                            ">
-                            <td>{{ date(transaction.date) }}</td>
-                            <td>
-                                <button
-                                    class="asset-link"
-                                    @click="openDetail(transaction.asset)">
+                        <template
+                            v-for="group in recentAmountGroups"
+                            :key="group.key">
+                            <tr
+                                v-for="(amountRow, rowIndex) in group.amounts"
+                                :key="rowIndex">
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length">
+                                    {{ date(group.transaction.date) }}
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length">
+                                    <button
+                                        v-if="group.transaction.asset"
+                                        class="asset-link"
+                                        @click="
+                                            openDetail(group.transaction.asset)
+                                        ">
+                                        {{
+                                            group.transaction.asset.ticker ||
+                                            group.transaction.asset.displayName
+                                        }}
+                                    </button>
+                                    <template v-else
+                                        ><button
+                                            class="asset-link"
+                                            type="button"
+                                            @click="
+                                                capitalPanel?.openEntry(
+                                                    group.transaction
+                                                        .cashEntryId
+                                                )
+                                            ">
+                                            계좌 내역 · 분류</button
+                                        ><small class="cash-detail">{{
+                                            group.transaction.cashDetail
+                                        }}</small></template
+                                    >
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length">
+                                    <span
+                                        class="type"
+                                        :class="
+                                            typeClass(group.transaction.type)
+                                        "
+                                        >{{
+                                            typeLabel(group.transaction.type)
+                                        }}</span
+                                    >
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length"
+                                    class="numeric">
+                                    {{ quantity(group.transaction.quantity) }}
+                                </td>
+                                <td class="numeric">
+                                    <TransactionAmount :row="amountRow" />
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length"
+                                    class="numeric">
                                     {{
-                                        transaction.asset.ticker ||
-                                        transaction.asset.displayName
+                                        transactionMoney(
+                                            group.transaction.commission
+                                        )
                                     }}
-                                </button>
-                            </td>
-                            <td>
-                                <span
-                                    class="type"
-                                    :class="typeClass(transaction.type)"
-                                    >{{ typeLabel(transaction.type) }}</span
-                                >
-                            </td>
-                            <td class="numeric">
-                                {{ quantity(transaction.quantity) }}
-                            </td>
-                            <td class="numeric">
-                                {{ won(transaction.amount) }}
-                            </td>
-                            <td class="numeric">
-                                {{ won(transaction.commission) }}
-                            </td>
-                            <td class="numeric">{{ won(transaction.tax) }}</td>
-                        </tr>
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length"
+                                    class="numeric">
+                                    {{
+                                        transactionMoney(group.transaction.tax)
+                                    }}
+                                </td>
+                            </tr>
+                        </template>
                         <tr v-if="!filteredTransactions.length">
                             <td colspan="7" class="empty">
                                 {{
@@ -919,10 +1046,11 @@
                     <i class="pi pi-arrow-right"
                 /></router-link>
                 <p class="performance-note">
-                    원화 금액은 명세서의 원화 환산 금액입니다. 환율은 명세서
-                    기록을 우선 표시하며, 금액 비율로 계산한 값은 ‘참고’로
-                    구분합니다. 이 정보만으로 원화 자동환전 여부를 판단하지
-                    않습니다.
+                    금액 아래에는 반대 통화의 가치와 환율을 표시합니다. 확인된
+                    매수 자금은 수수료·세금을 포함한 정산액 기준으로 달러 잔액과
+                    원화 환전 사용분을 나눕니다. 결제 구성이 미확인된 거래는
+                    원문 거래금액을 표시합니다. 환산 금액만으로 원화 자동환전
+                    여부를 판단하지 않습니다.
                 </p>
                 <p v-if="fundingMessage" role="status">{{ fundingMessage }}</p>
                 <PurchaseFundingEditor
@@ -938,73 +1066,106 @@
                     @saved="fundingSaved"
                     @close="fundingTransaction = null" />
                 <div class="table-wrap detail-table">
-                    <table>
+                    <table aria-label="종목 거래내역">
                         <thead>
                             <tr>
                                 <th>날짜</th>
                                 <th>유형</th>
                                 <th class="numeric">수량</th>
-                                <th class="numeric">원화 거래금액</th>
-                                <th class="numeric">달러 거래금액</th>
-                                <th class="numeric">환율 (원/USD)</th>
+                                <th class="numeric">거래·결제 금액</th>
                                 <th class="numeric">수수료</th>
                                 <th class="numeric">세금</th>
                                 <th>매수 자금</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
-                                v-for="transaction in periodError
-                                    ? []
-                                    : selectedAsset.transactions"
-                                :key="
-                                    transaction.id ||
-                                    `${transaction.date}-${transaction.type}-${transaction.amount}`
-                                ">
-                                <td>{{ date(transaction.date) }}</td>
-                                <td>
-                                    <span
-                                        class="type"
-                                        :class="typeClass(transaction.type)"
-                                        >{{ typeLabel(transaction.type) }}</span
-                                    >
-                                </td>
-                                <td class="numeric">
-                                    {{ quantity(transaction.quantity) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ won(transaction.amount) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ usd(transaction.nativeAmount, 6) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ exchange(transaction) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ won(transaction.commission) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ won(transaction.tax) }}
-                                </td>
-                                <td>
-                                    <button
-                                        v-if="
-                                            transaction.type === 'buy' &&
-                                            transaction.id
-                                        "
-                                        type="button"
-                                        @click="openFunding(transaction)">
-                                        {{ fundingLabel(transaction) }}</button
-                                    ><span v-else>—</span>
-                                </td>
-                            </tr>
+                            <template
+                                v-for="group in detailAmountGroups"
+                                :key="group.key">
+                                <tr
+                                    v-for="(
+                                        amountRow, rowIndex
+                                    ) in group.amounts"
+                                    :key="rowIndex">
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length">
+                                        {{ date(group.transaction.date) }}
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length">
+                                        <span
+                                            class="type"
+                                            :class="
+                                                typeClass(
+                                                    group.transaction.type
+                                                )
+                                            "
+                                            >{{
+                                                typeLabel(
+                                                    group.transaction.type
+                                                )
+                                            }}</span
+                                        >
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length"
+                                        class="numeric">
+                                        {{
+                                            quantity(group.transaction.quantity)
+                                        }}
+                                    </td>
+                                    <td class="numeric">
+                                        <TransactionAmount :row="amountRow" />
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length"
+                                        class="numeric">
+                                        {{
+                                            transactionMoney(
+                                                group.transaction.commission
+                                            )
+                                        }}
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length"
+                                        class="numeric">
+                                        {{
+                                            transactionMoney(
+                                                group.transaction.tax
+                                            )
+                                        }}
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length">
+                                        <button
+                                            v-if="
+                                                group.transaction.type ===
+                                                    'buy' &&
+                                                group.transaction.id
+                                            "
+                                            type="button"
+                                            @click="
+                                                openFunding(group.transaction)
+                                            ">
+                                            {{
+                                                fundingLabel(group.transaction)
+                                            }}</button
+                                        ><span v-else>-</span>
+                                    </td>
+                                </tr>
+                            </template>
                             <tr
                                 v-if="
                                     periodError ||
                                     !selectedAsset.transactions.length
                                 ">
-                                <td colspan="9" class="empty">
+                                <td colspan="7" class="empty">
                                     {{
                                         periodError ||
                                         (selectedAsset.ledgerUnavailable
@@ -1284,6 +1445,14 @@
     .numeric {
         text-align: right;
     }
+    .cash-detail {
+        display: block;
+        white-space: normal;
+        max-width: 280px;
+        color: var(--app-muted);
+        font-size: 0.78rem;
+    }
+
     .asset-link {
         padding: 0;
         border: 0;

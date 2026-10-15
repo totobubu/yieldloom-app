@@ -16,6 +16,7 @@ from api.family_portfolio_service import (DETAIL_NUMBERS, DETAIL_TEXT, Portfolio
                                       parse_csv, require, row_key, summarize, text, validate_rows)
 from api.server_cors import configure_cors
 from api.firebase_credential import parse_firebase_credential
+from api.portfolio_pdf_secret import seal_password, open_password
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
@@ -82,6 +83,9 @@ def pdf_rows(content, password):
             continue
         raw_type = str(raw.get('type', ''))
         kind = 'dividend_reversal' if '배당' in raw_type and '취소' in raw_type else 'dividend' if '배당' in raw_type else 'buy' if '매수' in raw_type or '구매' in raw_type else 'sell' if '매도' in raw_type or '판매' in raw_type else 'unknown'
+        if kind == 'unknown':
+            kind = ('transfer_in' if '입고' in raw_type else 'transfer_out' if '출고' in raw_type
+                    else 'cash_in' if '세금환급' in raw_type else 'cash_out' if '세액출금' in raw_type else 'unknown')
         day = str(raw.get('date', '')).replace('.', '-').strip()
         row = {'date': day, 'symbol': raw.get('ticker', ''), 'type': kind,
                'quantity': raw.get('quantity'), 'amount': raw.get('transaction_amount_krw'), 'currency': 'KRW'}
@@ -93,10 +97,12 @@ def pdf_rows(content, password):
             'nativeSettlementAmount':'settlement_amount_usd', 'exchangeRate':'exchange_rate',
             'nativeCommission':'commission_usd', 'nativeTax':'tax_usd',
         }.items() if raw.get(source) is not None})
+        row['originalCode'] = raw['ticker']
+        row['securityName'] = raw.get('stock_name') or raw['ticker']
         rows.append(row)
     for raw in result.get('cash_transactions', []):
         row = {'date':raw['date'].replace('.','-'), 'symbol':'CASH', 'quantity':None, 'amount':raw['amount'], 'currency':raw['currency'],
-               'type':'cash_out' if '출금' in raw['rawType'] else 'cash_in', 'rawType':raw['rawType'], 'cashKind':raw['suggestedKind']}
+               'type':'cash_out' if raw.get('direction', 'out' if '출금' in raw['rawType'] else 'in') == 'out' else 'cash_in', 'rawType':raw['rawType'], 'cashKind':raw['suggestedKind']}
         if raw.get('exchangeRate'):
             row['exchangeRate'] = raw['exchangeRate']
         identity = digest({**row,'balance':raw.get('balance')})
@@ -116,6 +122,24 @@ def create_family(db, uid, body):
             'participantUids': [uid], 'profiles': {profile: {'name': text(body.get('profileName'), '내 이름'), 'kind': 'adult', 'uid': uid}}, 'createdAt': now()}
     ref.set(data)
     return {'familyId': ref.id}
+
+
+def ensure_personal_space(db, uid, body):
+    """Create the user's private account container once, only on explicit account registration."""
+    ref = db.collection('familySpaces').document('personal_' + hashlib.sha256(uid.encode()).hexdigest()[:32])
+    profile_id = 'self_' + hashlib.sha256(uid.encode()).hexdigest()[:24]
+    @firestore.transactional
+    def apply(tx):
+        existing = ref.get(transaction=tx)
+        if existing.exists:
+            require(uid in existing.to_dict()['participantUids'], '공간 접근 권한이 없습니다.', 403)
+        else:
+            tx.set(ref, {'schemaVersion': 2, 'kind': 'personal', 'name': '내 포트폴리오',
+                         'adminUid': uid, 'participantUids': [uid], 'createdAt': now(),
+                         'profiles': {profile_id: {'name': text(body.get('profileName') or '본인', '내 이름'),
+                                               'kind': 'adult', 'uid': uid}}})
+        return {'familyId': ref.id}
+    return apply(db.transaction())
 
 
 def mutate_family(db, uid, action, body):
@@ -223,23 +247,66 @@ def preview(db, uid):
         source = 'standard-csv-v1'
     else:
         require(filename.endswith('.pdf') and content.startswith(b'%PDF-') and kind == 'transactions' and request.form.get('format') == 'toss-pdf', '표준 CSV 또는 토스 거래내역 PDF만 지원합니다.')
-        rows = pdf_rows(content, request.form.get('password', ''))
+        password = request.form.get('password', '')
+        if not password:
+            saved = ref.collection('secrets').document('tossPdfPassword').get()
+            if saved.exists:
+                try:
+                    password = open_password(saved.to_dict()['envelope'], 'toss:' + ref.id)
+                except Exception:
+                    raise PortfolioError('저장된 PDF 비밀번호를 사용할 수 없습니다. 비밀번호를 다시 입력해 저장하세요.')
+        require(password, '토스 PDF 비밀번호를 입력하거나 계좌 기본값을 저장하세요.')
+        rows = pdf_rows(content, password)
+        if request.form.get('rememberPassword') == 'true':
+            save_pdf_password(db, uid, {'accountId': ref.id, 'password': password})
         source = 'toss-pdf'
+        mapping_cache = {}
         for row in rows:
             code = row.get('symbol')
-            if code:
-                mapping = db.collection('stockMappings').document(identifier(code)).get()
-                if mapping.exists and mapping.to_dict().get('symbol'):
-                    row['symbol'] = mapping.to_dict()['symbol']
-    require(len(rows) <= 200 and len(json.dumps(rows)) < 400000, '200행 이하의 자료로 나누어 주세요.')
-    _, errors = validate_rows(rows, kind, as_of)
-    # Save only editable normalized columns, never raw files, passwords or arbitrary extra columns.
+            if code and code != 'CASH':
+                if code not in mapping_cache:
+                    mapping = db.collection('stockMappings').document(identifier(code)).get()
+                    mapping_cache[code] = mapping.to_dict().get('symbol') if mapping.exists else None
+                if mapping_cache[code]:
+                    row['symbol'] = mapping_cache[code]
+    limit = 10000 if source == 'toss-pdf' else 200
+    require(len(rows) <= limit and len(json.dumps(rows)) < 4000000, '자료가 너무 큽니다. 조회 기간을 나누어 주세요.')
+    _, errors = validate_rows(rows, kind, as_of, max_rows=limit)
+    # Review sessions contain only normalized rows; secrets live separately.
     columns = {'date', 'symbol', 'quantity', 'amount', 'currency', 'type', 'externalId'} | DETAIL_NUMBERS | DETAIL_TEXT
     rows = [{key: value for key, value in row.items() if key in columns} for row in rows]
-    session = ref.collection('reviews').document()
-    session.set({'uid': uid, 'rows': rows, 'kind': kind, 'asOf': as_of, 'source': source,
-                 'fileHash': hashlib.sha256(content).hexdigest(), 'expiresAt': now() + timedelta(hours=1)})
-    return {'reviewId': session.id, 'rows': rows, 'errors': errors, 'source': source}
+    file_hash = hashlib.sha256(content).hexdigest()
+    batches = []
+    for start in range(0, len(rows), 200):
+        session = ref.collection('reviews').document()
+        receipt_key = file_hash if len(rows) <= 200 else f'{file_hash}-{start // 200}'
+        session.set({'uid': uid, 'rows': rows[start:start + 200], 'kind': kind, 'asOf': as_of, 'source': source,
+                     'fileHash': receipt_key, 'expiresAt': now() + timedelta(hours=1)})
+        batches.append({'reviewId': session.id, 'start': start, 'count': min(200, len(rows) - start)})
+    return {'reviewId': batches[0]['reviewId'], 'batches': batches, 'rows': rows, 'errors': errors, 'source': source}
+
+
+def save_pdf_password(db, uid, body):
+    ref, data = account(db, body.get('accountId'), uid, True)
+    require(data.get('permissions', {}).get(uid) == 'owner', '계좌 소유자만 PDF 기본 비밀번호를 변경할 수 있습니다.', 403)
+    remove = body.get('remove') is True
+    try:
+        envelope = None if remove else seal_password(body.get('password'), 'toss:' + ref.id)
+    except ValueError:
+        raise PortfolioError('토스 PDF 비밀번호는 생년월일 6자리로 입력하세요.')
+    @firestore.transactional
+    def apply(tx):
+        current = load(ref, tx)
+        require(current.get('permissions', {}).get(uid) == 'owner', '계좌 소유 권한이 변경되었습니다.', 403)
+        secret = ref.collection('secrets').document('tossPdfPassword')
+        if remove:
+            tx.delete(secret)
+        else:
+            tx.set(secret, {'envelope': envelope, 'updatedAt': now(), 'updatedBy': uid})
+        current['pdfPasswordConfigured'] = not remove
+        tx.set(ref, current)
+        return {'configured': not remove}
+    return apply(db.transaction())
 
 
 def commit(db, uid, body):
@@ -259,7 +326,11 @@ def commit(db, uid, body):
             return {'inserted': 0, 'duplicates': len(rows), 'alreadyImported': True}
         if review['kind'] == 'transactions':
             refs = [ref.collection('entries').document(row_key(row)) for row in rows]
-            existing = [item.get(transaction=tx) for item in refs]
+            if hasattr(db, 'get_all'):
+                snapshots = {item.reference.path: item for item in db.get_all(refs, transaction=tx)}
+                existing = [snapshots[item.path] for item in refs]
+            else:
+                existing = [item.get(transaction=tx) for item in refs]
             for row, old in zip(rows, existing):
                 require(not old.exists or old.to_dict()['row'] == row, '같은 거래 고유번호의 내용이 다릅니다. 원장을 확인하세요.', 409)
             inserted = sum(not old.exists for old in existing)
@@ -278,9 +349,19 @@ def commit(db, uid, body):
             data.update({'asOf': review['asOf'], 'source': review['source']})
         tx.set(ref, data)
         tx.set(receipt, {'source': review['source'], 'asOf': review['asOf'], 'importedAt': now(), 'count': len(rows)})
-        tx.delete(session)
+        # Retain the expiring review so a partially completed multi-batch import
+        # can retry completed batches through their existing receipts.
         return {'inserted': inserted, 'duplicates': len(rows) - inserted}
     return apply(db.transaction())
+
+
+def validate_import(db, uid, body):
+    ref, _ = account(db, body.get('accountId'), uid, True)
+    review = load(ref.collection('reviews').document(identifier(body.get('reviewId'))))
+    require(review['uid'] == uid and review['expiresAt'] > now(), '검토 세션이 만료되었거나 권한이 없습니다.', 410)
+    _, errors = validate_rows(body.get('rows'), review['kind'], review['asOf'], max_rows=10000 if review['source'] == 'toss-pdf' else 200)
+    require(not errors, '오류 행을 모두 수정하세요: ' + json.dumps(errors, ensure_ascii=False))
+    return {'valid': True}
 
 
 def overview(db, uid, family_id):
@@ -351,6 +432,8 @@ def route():
         require(isinstance(body, dict), '요청 형식이 잘못되었습니다.')
         if action == 'preview':
             result = preview(db, uid)
+        elif action == 'ensurePersonal':
+            result = ensure_personal_space(db, uid, body)
         elif action == 'createFamily':
             result = create_family(db, uid, body)
         elif action in {'renameFamily', 'renameProfile', 'addMinor', 'invite'}:
@@ -363,6 +446,10 @@ def route():
             result = edit_account(db, uid, body, action == 'grant')
         elif action == 'commit':
             result = commit(db, uid, body)
+        elif action == 'pdfPassword':
+            result = save_pdf_password(db, uid, body)
+        elif action == 'validateImport':
+            result = validate_import(db, uid, body)
         elif action == 'migrateLegacy':
             result = migrate_legacy(db, uid, body)
         else:

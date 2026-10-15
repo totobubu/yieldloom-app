@@ -43,6 +43,8 @@ def parse_cash_transaction_lines(lines, start_idx):
     if not match:
         return None
     date, raw_type, tail = match.groups()
+    if raw_type == '이벤트' and tail.startswith('입금 '):
+        raw_type, tail = '이벤트입금', tail[3:]
     if not re.search(r"입금|출금|환전|이체|대체|이자", raw_type):
         return None
     text = first
@@ -52,24 +54,30 @@ def parse_cash_transaction_lines(lines, start_idx):
         text += " " + line.strip()
     if extract_ticker_code(text):
         return None
-    # Cash rows use the same nine columns, optionally preceded by an FX rate.
+    # KRW rows include a separate repayment/overdue column (ten columns).
+    # Foreign rows have nine KRW columns plus seven native-currency columns.
     plain = re.sub(r"\([^)]*\)", "", tail).strip()
-    numeric_tail = re.search(r"((?:-?[\d,]+(?:\.\d+)?\s+){8,9}-?[\d,]+(?:\.\d+)?)$", plain)
+    numeric_tail = re.search(r"((?:-?[\d,]+(?:\.\d+)?\s+){8,10}-?[\d,]+(?:\.\d+)?)$", plain)
     if not numeric_tail or re.search(r"\d", plain[:numeric_tail.start()]):
         return {"unparsed": True}
     numbers = [parse_number(v) for v in numeric_tail.group(1).split()]
-    rate = numbers.pop(0) if len(numbers) == 10 else None
+    first_token = numeric_tail.group(1).split()[0]
+    has_rate = len(numbers) == 11 or (len(numbers) == 10 and '.' in first_token)
+    rate = numbers.pop(0) if has_rate else None
+    if len(numbers) not in (9, 10) or numbers[0] != 0:
+        return {"unparsed": True}
     dollars = [parse_number(v) for v in re.findall(r"\(\$\s*([\d,.-]+)\)", text)]
-    foreign = bool(re.search(r"외화|달러|USD", raw_type, re.I))
+    foreign = bool(re.search(r"외화|달러|USD", raw_type, re.I)) and not ('세금' in raw_type and not dollars)
     if (foreign and (len(dollars) != 7 or "원화" in raw_type)) or ("환전" in raw_type and not foreign and "원화" not in raw_type):
         return {"unparsed": True}
     amount = (dollars[1] or dollars[0]) if foreign else (numbers[2] or numbers[1])
     if not amount:
         return None
     # A suggestion needs the owner's confirmation before affecting principal.
-    suggested = "unknown" if re.search(r"취소|정정|반환", raw_type) else "exchange" if "환전" in raw_type else "interest" if "이자" in raw_type else "transfer" if re.search(r"대체|이체", raw_type) else "dividend" if "배당" in raw_type else "sale" if re.search(r"매도|판매", raw_type) else "external_deposit" if "입금" in raw_type else "external_withdrawal" if "출금" in raw_type else "unknown"
+    suggested = "unknown" if re.search(r"취소|정정|반환", raw_type) else "exchange" if "환전" in raw_type else "tax" if re.search(r"세금|배당세", raw_type) else "reward" if '이벤트' in raw_type else "interest" if "이자" in raw_type else "transfer" if '대체' in raw_type else "dividend" if "배당" in raw_type else "sale" if re.search(r"매도|판매", raw_type) else "external_deposit" if "입금" in raw_type else "external_withdrawal" if "출금" in raw_type else "unknown"
     return {"date": date, "rawType": raw_type, "currency": "USD" if foreign else "KRW", "amount": abs(amount), "exchangeRate": rate if rate and rate > 0 else None,
-            "balance": dollars[-1] if foreign else numbers[-1], "suggestedKind": suggested}
+            "balance": dollars[-1] if foreign else numbers[-1], "suggestedKind": suggested,
+            "direction": 'out' if (('출금' in raw_type) != ('취소' in raw_type)) else 'in'}
 
 
 def parse_transaction_lines(lines, start_idx):
@@ -132,7 +140,18 @@ def parse_transaction_lines(lines, start_idx):
         exchange_rate_match = re.search(exchange_rate_pattern, temp_text)
 
         if not exchange_rate_match:
-            return None, next_idx
+            domestic = re.match(r'^\d{4}\.\d{2}\.\d{2}\s+(구매|판매)\s+(.+?)\(A(\d{6})\)\s+(.+)$', line1)
+            if not domestic:
+                return None, next_idx
+            raw_numbers = domestic.group(4).split()
+            if len(raw_numbers) != 10 or not all(re.fullmatch(r'[\d,]+(?:\.\d+)?', n) for n in raw_numbers):
+                return None, next_idx
+            ns = [parse_number(n) for n in raw_numbers]
+            return {'date': trade_date, 'type': trade_type, 'stock_name': domestic.group(2),
+                    'ticker': 'A' + domestic.group(3), 'quantity': ns[0],
+                    'transaction_amount_krw': ns[1], 'settlement_amount_krw': ns[2],
+                    'unit_price_krw': ns[3], 'commission_krw': ns[4], 'tax_krw': ns[5] + ns[6],
+                    'delinquency_krw': ns[7], 'balance_quantity': ns[8], 'balance_krw': ns[9]}, next_idx
 
         exchange_rate = parse_number(exchange_rate_match.group(1))
 

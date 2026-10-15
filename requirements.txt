@@ -1,5 +1,6 @@
 Flask
 firebase-admin
 pdfplumber
+cryptography
 pytesseract
 Pillow

@@ -8,6 +8,7 @@ import {
     purchaseBasis,
     validateFunding,
     fundingCandidates,
+    withdrawalBreakdown,
 } from '../lib/portfolio-capital.js';
 import { capitalHandler } from '../lib/portfolio-capital-handler.js';
 
@@ -69,7 +70,7 @@ test('net contributed capital excludes unconfirmed cash, conversions, internal t
     const result = capitalSummary(entries, classifications);
     assert.equal(result.KRW.net, 800000);
     assert.equal(result.USD.net, 100);
-    assert.equal(result.pending, 1);
+    assert.equal(result.pending, 2); // Legacy generic withdrawals still need their source confirmed.
     classifications.push({ id: 'pending', classification: 'unknown' });
     assert.equal(capitalSummary(entries, classifications).KRW.net, 800000);
 });
@@ -561,4 +562,128 @@ test('overseas trades with KRW equivalents report USD settlement and USD funding
     assert.equal(row.currency, 'USD');
     assert.equal(row.purchaseCost, 100.1);
     assert.equal(row.funding['배당금 (출처 종목 미확인)'], 70);
+});
+test('spending dividends changes cash flow without reducing invested principal or counting as reinvestment', () => {
+    const entries = [
+        { id: 'D', date: '20261001', currency: 'KRW', amount: 1000000 },
+        { id: 'W', date: '20261015', currency: 'KRW', amount: 30000 },
+    ];
+    const annotations = [
+        { id: 'D', classification: 'external_deposit' },
+        { id: 'W', classification: 'dividend_withdrawal' },
+    ];
+    const s = capitalSummary(entries, annotations);
+    assert.equal(s.KRW.capitalAfterRecovery, 1000000);
+    assert.equal(s.KRW.net, 970000);
+    assert.equal(s.KRW.dividendUsed, 30000);
+    assert.equal(s.KRW.principalWithdrawals, 0);
+    assert.equal(s.pending, 0);
+});
+test('mixed withdrawals preserve separate sources, unknown amounts and currencies', () => {
+    const entries = [
+        { id: 'D', date: '20261001', currency: 'USD', amount: 100 },
+        { id: 'W', date: '20261015', currency: 'USD', amount: 30 },
+    ];
+    const annotation = {
+        id: 'W',
+        classification: 'mixed_withdrawal',
+        withdrawalParts: { principal: 10, dividend: 15, profit: 3, unknown: 2 },
+    };
+    const s = capitalSummary(entries, [
+        { id: 'D', classification: 'external_deposit' },
+        annotation,
+    ]);
+    assert.equal(s.USD.capitalAfterRecovery, 90);
+    assert.equal(s.USD.net, 70);
+    assert.equal(s.USD.dividendUsed, 15);
+    assert.equal(s.USD.profitUsed, 3);
+    assert.equal(s.USD.unknownWithdrawals, 2);
+    assert.equal(s.pending, 1);
+    assert.equal(s.KRW.net, 0);
+    const old = capitalSummary(entries, [
+        { id: 'D', classification: 'external_deposit' },
+        { id: 'W', classification: 'external_withdrawal' },
+    ]);
+    assert.equal(old.USD.principalWithdrawals, 0);
+    assert.equal(old.USD.unknownWithdrawals, 30);
+    assert.equal(old.pending, 1);
+    assert.throws(
+        () =>
+            withdrawalBreakdown(entries[1], {
+                ...annotation,
+                withdrawalParts: { principal: 31 },
+            }),
+        /합계/
+    );
+    assert.throws(
+        () =>
+            withdrawalBreakdown(entries[1], {
+                ...annotation,
+                withdrawalParts: { principal: -1, dividend: 31 },
+            }),
+        /0 이상/
+    );
+    assert.throws(
+        () =>
+            withdrawalBreakdown(entries[1], {
+                ...annotation,
+                withdrawalParts: { principal: 'Infinity' },
+            }),
+        /0 이상/
+    );
+});
+test('withdrawal source annotations save atomically, reject mismatched totals and leave the cash ledger untouched', async () => {
+    const f = fixture();
+    const before = structuredClone(
+        f.records.get('portfolios/owner/cashEntries/E')
+    );
+    const input = {
+        action: 'classifyCash',
+        id: 'E',
+        classification: 'mixed_withdrawal',
+        revision: 0,
+        withdrawalParts: {
+            principal: 10000,
+            dividend: 30000,
+            profit: 2140,
+            unknown: 0,
+        },
+    };
+    assert.equal((await f.call(input)).status, 200);
+    assert.equal(
+        f.records.get('portfolios/owner/cashClassifications/E').withdrawalParts
+            .dividend,
+        30000
+    );
+    assert.equal(
+        (
+            await f.call({
+                ...input,
+                revision: 1,
+                withdrawalParts: { dividend: 1 },
+            })
+        ).status,
+        400
+    );
+    assert.equal(
+        f.records.get('portfolios/owner/cashClassifications/E').revision,
+        1
+    );
+    assert.deepEqual(f.records.get('portfolios/owner/cashEntries/E'), before);
+    assert.equal(
+        (
+            await f.call({
+                action: 'classifyCash',
+                id: 'E',
+                classification: 'dividend_withdrawal',
+                revision: 1,
+            })
+        ).status,
+        200
+    );
+    assert.equal(
+        f.records.get('portfolios/owner/cashClassifications/E').withdrawalParts
+            .dividend,
+        42140
+    );
 });

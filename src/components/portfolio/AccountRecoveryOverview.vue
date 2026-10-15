@@ -80,7 +80,7 @@
     <section class="account-overview" aria-label="전체 계좌 원금 회수 현황">
         <h2>전체 계좌 · 내 돈을 얼마나 회수했나요?</h2>
         <p>
-            현재 가족 공간에서 접근 가능한 {{ accounts?.length || 0 }}개 계좌의
+            선택한 범위에서 접근 가능한 {{ accounts?.length || 0 }}개 계좌의
             전체 저장 내역입니다.
         </p>
         <p v-if="loading" role="status">
@@ -114,7 +114,7 @@
                             <dd>{{ money(item.recovered, item.currency) }}</dd>
                         </div>
                         <div>
-                            <dt>아직 회수하지 않은 원금</dt>
+                            <dt>입금 대비 미출금액</dt>
                             <dd>
                                 {{
                                     item.rate === null

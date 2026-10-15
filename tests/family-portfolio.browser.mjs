@@ -17,17 +17,29 @@ try {
         route.fulfill({
             contentType: 'application/javascript',
             body: `import { ref, computed } from '/node_modules/.vite/deps/vue.js';
-            export const firebaseUser = ref({ uid: '${uid}', email: 'test@example.test', getIdToken: async () => '${uid}' });
+            export const firebaseUser = ref({ uid: '${uid}', displayName: '홍길동', email: 'test@example.test', getIdToken: async () => '${uid}' });
             export const authLoading = ref(false), signedIn = computed(() => true);
             export const firebaseReady = false, db = null, auth = null, googleProvider = null;`,
         })
     );
+    await page.route('**/api/portfolio-capital*', (route) =>
+        route.fulfill({
+            json: { entries: [], classifications: [], allocations: [] },
+        })
+    );
     await page.goto('http://127.0.0.1:5173/mypage');
-    await page.getByLabel('내 프로필 이름').fill('홍길동');
-    await page.getByLabel('가족 이름', { exact: true }).fill('테스트 가족');
-    await page.getByRole('button', { name: '공간 만들기' }).click();
-    await page.getByRole('heading', { name: '가족·구성원 관리' }).waitFor();
-    await page.getByLabel('명의자').first().selectOption({ label: '홍길동' });
+    await page
+        .getByRole('heading', { name: '내 포트폴리오', exact: true })
+        .waitFor();
+    assert.equal(
+        await page
+            .getByRole('heading', { name: '가족 공간 만들기 / 참여' })
+            .isVisible(),
+        false
+    );
+    await page
+        .getByRole('heading', { name: '내 계좌 등록', exact: true })
+        .waitFor();
     await page.getByLabel('금융기관', { exact: true }).fill('테스트증권');
     await page.getByLabel('별칭', { exact: true }).fill('장기투자');
     await page.getByLabel('계좌 끝 4자리 (선택)').fill('4321');
@@ -70,6 +82,41 @@ try {
     await page
         .getByText('확인된 자료 평가액: 500 USD', { exact: true })
         .waitFor();
+    await page.getByText('가족 추가·관리 (선택)', { exact: true }).click();
+    await page.getByLabel('자녀 이름', { exact: true }).fill('자녀');
+    await page.getByLabel('법정 보호자로 관리할 권한이 있습니다').check();
+    await page.getByRole('button', { name: '미성년 프로필 추가' }).click();
+    await page
+        .getByText('자녀 · 미성년 · 보호자 관리', { exact: false })
+        .waitFor();
+    await page
+        .getByRole('button', { name: '가족 포트폴리오', exact: true })
+        .click();
+    await page.getByLabel('명의자').first().selectOption({ label: '자녀' });
+    await page.getByLabel('별칭', { exact: true }).fill('자녀 계좌');
+    await page.getByRole('button', { name: '계좌 등록', exact: true }).click();
+    await page.getByRole('heading', { name: '선택 계좌: 자녀 계좌' }).waitFor();
+    await upload();
+    await page
+        .getByText('확인된 자료 평가액: 1,000 USD', { exact: true })
+        .waitFor();
+    await page.getByRole('button', { name: '내 계좌', exact: true }).click();
+    await page.getByRole('heading', { name: '선택 계좌: 장기투자' }).waitFor();
+    await page
+        .getByText('확인된 자료 평가액: 500 USD', { exact: true })
+        .waitFor();
+    assert.equal(
+        await page.getByRole('button', { name: /자녀 계좌/ }).count(),
+        0
+    );
+    await page.reload();
+    await page.getByRole('heading', { name: '선택 계좌: 장기투자' }).waitFor();
+    assert.equal(
+        await page
+            .getByRole('heading', { name: '가족 공간 만들기 / 참여' })
+            .isVisible(),
+        false
+    );
     await page.setViewportSize({ width: 390, height: 844 });
     assert.equal(
         await page.evaluate(
@@ -79,7 +126,7 @@ try {
     );
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: create family/account → upload → correct invalid row → save → replay duplicate → persisted snapshot → mobile layout'
+        'PASS: personal account without family setup → optional family accounts → personal-only totals → upload → correct invalid row → save → replay duplicate → persisted snapshot → mobile layout'
     );
 } finally {
     await browser.close();

@@ -1,13 +1,20 @@
 // Run with the Vite dev server at CAPITAL_TEST_URL (default localhost:5173).
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
-import { writeFile, rm } from 'node:fs/promises';
+import { readFile, writeFile, rm } from 'node:fs/promises';
 import { capitalHandler } from '../lib/portfolio-capital-handler.js';
 
 const harness = new URL('../.tmp-capital-test.html', import.meta.url);
+const layoutSource = await readFile(
+    new URL('../src/layouts/ThumbnailLayout.vue', import.meta.url),
+    'utf8'
+);
+const layoutStyles = layoutSource
+    .split('<style scoped>')[1]
+    .split('</style>')[0];
 await writeFile(
     harness,
-    `<!doctype html><html><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><div id="app"></div><script type="module">
+    `<!doctype html><html><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${layoutStyles}</style><div id="app" class="thumbnail-app"></div><script type="module">
 import {createApp,h} from 'vue'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import MyPage from '/src/pages/MyPageView.vue'; import FamilyPage from '/src/pages/FamilyPortfolioView.vue';
 const router=createRouter({history:createMemoryHistory(),routes:[{path:'/',component:new URLSearchParams(location.search).has('family')?FamilyPage:MyPage},{path:'/login',component:{template:'<p>login</p>'}}]});
 createApp({render:()=>h(RouterView)}).use(router).mount('#app');</script></html>`
@@ -226,6 +233,52 @@ try {
         .getByRole('region', { name: '종목별 투자 비용 회수' })
         .getByText('SCHD 배당금 재투자', { exact: false })
         .waitFor();
+    const ledger = dialog.locator('.detail-table');
+    assert.equal(await ledger.locator('tbody tr').count(), 2);
+    const first = ledger.locator('tbody tr').first();
+    assert.equal(
+        await first.locator('td').first().getAttribute('rowspan'),
+        '2'
+    );
+    assert.equal(
+        await first
+            .locator('td')
+            .nth(3)
+            .locator('.transaction-amount > span')
+            .innerText(),
+        '$70.00'
+    );
+    assert.equal(await first.locator('td').nth(4).innerText(), '-');
+    assert.equal(await first.locator('td').nth(5).innerText(), '-');
+    const second = ledger.locator('tbody tr').nth(1);
+    assert.equal(await second.locator('td').count(), 1);
+    assert.equal(
+        await second.locator('.transaction-amount > span').innerText(),
+        '₩42,140'
+    );
+    assert.ok((await second.innerText()).includes('$30.10'));
+    assert.equal(
+        await page
+            .locator('table[aria-label="기간별 거래내역"] tbody tr')
+            .count(),
+        4
+    );
+    await editor.getByRole('button', { name: '닫기', exact: true }).click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await ledger.scrollIntoViewIfNeeded();
+    assert.equal(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth > innerWidth
+        ),
+        false
+    );
+    await dialog.screenshot({ path: '/tmp/yieldloom-transaction-mobile.png' });
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await ledger.scrollIntoViewIfNeeded();
+    await dialog.screenshot({ path: '/tmp/yieldloom-transaction-desktop.png' });
+    await dialog
+        .getByRole('button', { name: '자금 구성 · 확인 완료', exact: true })
+        .click();
     await editor.getByLabel('자금 1 사용 금액', { exact: true }).fill('29');
     await editor
         .getByRole('checkbox', { name: '계좌 내역과 금액을 확인했습니다.' })
@@ -235,6 +288,8 @@ try {
     await dialog
         .getByRole('button', { name: '자금 구성 확인', exact: true })
         .waitFor();
+    assert.equal(await ledger.locator('tbody tr').count(), 1);
+    assert.ok((await ledger.innerText()).includes('결제 구성 확인 필요'));
     await page.setViewportSize({ width: 390, height: 844 });
     assert.equal(
         await page.evaluate(
@@ -269,6 +324,113 @@ try {
         false
     );
 
+    // Dividend spending is an external cash outflow, not a recovery of principal.
+    const portfolioSummaryBefore = await page
+        .locator('.summary-grid')
+        .innerText();
+    await panel.getByRole('button', { name: '계좌 내역 직접 추가' }).click();
+    const withdrawalForm = panel.locator('form');
+    await withdrawalForm.getByLabel('금액', { exact: true }).fill('30000');
+    await withdrawalForm
+        .getByLabel('계좌 거래 구분')
+        .selectOption('dividend_withdrawal');
+    await withdrawalForm
+        .getByLabel('확인 근거·메모', { exact: true })
+        .fill('수령 배당에서 생활비로 출금한 내역 확인');
+    await withdrawalForm.getByRole('button', { name: '확인 후 추가' }).click();
+    await panel.getByText('배당 사용 ₩30,000', { exact: false }).waitFor();
+    assert.equal(
+        await panel
+            .locator('.totals article')
+            .first()
+            .locator('strong')
+            .innerText(),
+        '₩1,000,000'
+    );
+    assert.ok(
+        (await panel.innerText()).includes('순입금 (현금 흐름) ₩970,000')
+    );
+    assert.equal(
+        await page.locator('.summary-grid').innerText(),
+        portfolioSummaryBefore
+    );
+    const activity = page.getByRole('table', {
+        name: '기간별 거래내역',
+        exact: true,
+    });
+    await page.getByLabel('거래 유형 필터').selectOption('cash_out');
+    await activity.getByText('출금 · 배당 사용', { exact: true }).waitFor();
+    assert.equal(await activity.locator('tbody tr').count(), 1);
+    assert.ok((await activity.innerText()).includes('₩-30,000'));
+    await activity.getByRole('button', { name: '계좌 내역 · 분류' }).click();
+    const withdrawalPath = [...records.keys()].find(
+        (path) =>
+            path.startsWith('portfolios/owner/cashEntries/') &&
+            records.get(path).amount === 30000
+    );
+    const withdrawalId = withdrawalPath.split('/').at(-1);
+    const withdrawalRow = panel.locator(`[data-cash-id="${withdrawalId}"]`);
+    await withdrawalRow.locator('select').selectOption('mixed_withdrawal');
+    await withdrawalRow
+        .getByLabel('출금 원금 회수', { exact: true })
+        .fill('10000');
+    await withdrawalRow
+        .getByLabel('출금 배당 사용', { exact: true })
+        .fill('20001');
+    assert.equal(
+        await withdrawalRow
+            .getByRole('button', { name: '수정 저장' })
+            .isDisabled(),
+        true
+    );
+    await withdrawalRow
+        .getByLabel('출금 배당 사용', { exact: true })
+        .fill('20000');
+    await withdrawalRow.getByRole('button', { name: '수정 저장' }).click();
+    await panel.getByText('배당 사용 ₩20,000', { exact: false }).waitFor();
+    assert.equal(
+        await panel
+            .locator('.totals article')
+            .first()
+            .locator('strong')
+            .innerText(),
+        '₩990,000'
+    );
+    assert.equal(records.get(withdrawalPath).amount, 30000);
+    assert.equal(
+        records.get(`portfolios/owner/cashClassifications/${withdrawalId}`)
+            .withdrawalParts.principal,
+        10000
+    );
+    await page.getByLabel('거래 유형 필터').selectOption('dividend_withdrawal');
+    await activity.getByText('출금 · 금액 나눔', { exact: true }).waitFor();
+    assert.ok((await activity.innerText()).includes('원금 회수 ₩10,000'));
+    assert.ok((await activity.innerText()).includes('배당 사용 ₩20,000'));
+    await page.setViewportSize({ width: 390, height: 844 });
+    assert.equal(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth > innerWidth
+        ),
+        false
+    );
+    await panel.screenshot({ path: '/tmp/yieldloom-withdrawal-mobile.png' });
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await panel.screenshot({ path: '/tmp/yieldloom-withdrawal-desktop.png' });
+    await withdrawalRow.locator('select').selectOption('external_withdrawal');
+    await withdrawalRow.getByRole('button', { name: '수정 저장' }).click();
+    await panel
+        .getByText('출금 출처 미확인 ₩30,000', { exact: false })
+        .waitFor();
+    assert.equal(
+        await panel
+            .locator('.totals article')
+            .first()
+            .locator('strong')
+            .innerText(),
+        '확인 필요'
+    );
+    await page.getByLabel('거래 유형 필터').selectOption('cash_out');
+    await activity.getByText('출금 출처 확인 필요', { exact: true }).waitFor();
     const family = {
         id: 'FA',
         name: '검증 가족',

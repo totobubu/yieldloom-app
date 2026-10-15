@@ -10,7 +10,7 @@ from datetime import date
 MAX_ROWS = 200
 TYPES = {'buy', 'sell', 'dividend', 'dividend_reversal', 'cash_in', 'cash_out', 'transfer_in', 'transfer_out', 'split'}
 DETAIL_NUMBERS = {'settlementAmount', 'nativeAmount', 'nativeSettlementAmount', 'exchangeRate', 'nativeCommission', 'nativeTax'}
-DETAIL_TEXT = {'rawType', 'cashKind'}
+DETAIL_TEXT = {'rawType', 'cashKind', 'originalCode', 'securityName'}
 
 
 class PortfolioError(Exception):
@@ -102,9 +102,9 @@ def parse_csv(content):
         raise PortfolioError('UTF-8 표준 CSV를 확인하세요.')
 
 
-def validate_rows(rows, kind, as_of):
+def validate_rows(rows, kind, as_of, max_rows=MAX_ROWS):
     require(kind in {'transactions', 'holdings'}, '자료 종류를 선택하세요.')
-    require(isinstance(rows, list) and 0 < len(rows) <= MAX_ROWS, '행 개수를 확인하세요.')
+    require(isinstance(rows, list) and 0 < len(rows) <= max_rows, '행 개수를 확인하세요.')
     normalized, errors = [], []
     for index, raw in enumerate(rows):
         try:

@@ -225,7 +225,7 @@ try {
         false
     );
     await page.screenshot({
-        path: '/tmp/yieldloom-capital/mobile.png',
+        path: '/tmp/yieldloom-capital-mobile.png',
         fullPage: true,
     });
     await dialog

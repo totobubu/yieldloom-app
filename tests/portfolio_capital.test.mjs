@@ -12,6 +12,34 @@ import {
 } from '../lib/portfolio-capital.js';
 import { capitalHandler } from '../lib/portfolio-capital-handler.js';
 
+test('capital API reports database quota exhaustion as 429', async () => {
+    const handler = capitalHandler({
+        verify: async () => ({ uid: 'owner' }),
+        database: () => {
+            throw Object.assign(new Error('Quota exceeded'), { code: 8 });
+        },
+        timestamp: () => null,
+    });
+    let status, data;
+    await handler(
+        { method: 'GET' },
+        {
+            setHeader() {},
+            status(value) {
+                status = value;
+                return this;
+            },
+            json(value) {
+                data = value;
+                return this;
+            },
+        }
+    );
+    assert.equal(status, 429);
+    assert.equal(data.code, 'DATA_QUOTA_EXCEEDED');
+    assert.equal(data.entries, undefined);
+});
+
 const trade = {
     type: 'buy',
     rawType: '구매',

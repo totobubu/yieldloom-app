@@ -13,6 +13,21 @@ const monthlyRows = () => {
     return rows;
 };
 
+test('split review blocks calculations with an explicit reason and analysis date', () => {
+    const result = calculateEntryIncomeEfficiency(
+        {
+            backtestData: monthlyRows(),
+            sourceStatus: { corporateActionReview: true },
+        },
+        { asOfDate: '2025-12-31' }
+    );
+    assert.equal(result.available, false);
+    assert.deepEqual(result.samples, []);
+    assert.equal(result.asOfDate, '2025-12-31');
+    assert.match(result.reason, /분할·병합/);
+    assert.match(result.reason, /개인 보유량 조회와는 별개/);
+});
+
 test('entry efficiency only uses distributions known before each entry date', () => {
     const rows = monthlyRows();
     rows.push({

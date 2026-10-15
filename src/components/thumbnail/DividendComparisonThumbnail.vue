@@ -37,10 +37,10 @@ const rows = computed(() => [
 		current: date(props.data.exDate),
 	},
 	{
-		label: '배당락일 종가',
+		label: props.data.usesLatestPrice ? '기준 주가' : '배당락일 종가',
 		icon: 'trend',
 		previous: usd(props.data.previousExDividendClose, 2),
-		current: usd(props.data.exDividendClose, 2),
+		current: usd(props.data.exDividendClose, 2) + (props.data.usesLatestPrice ? ` (${props.data.referencePriceDate} 최신)` : ''),
 	},
 	{
 		label: '세전 배당금',
@@ -148,7 +148,7 @@ const rows = computed(() => [
 		<p v-else class="unavailable">
 			최근 실제 배당 데이터를 찾지 못했습니다.
 		</p>
-		<template #footer>주당 USD 기준 · 수익률은 해당 1회 배당금의 배당락일 종가
+		<template #footer>주당 USD 기준 · 수익률은 해당 1회 배당금의 기준 주가
 			대비</template>
 	</ThumbnailCardShell>
 </template>

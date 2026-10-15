@@ -6,6 +6,7 @@ import { isDivgrowReleaseConfigured, loadDivgrowTickerIndex } from '@/services/d
 import { loadCoreDirectory } from '@/services/coreRelease';
 import { loadDataReleaseIndex } from '@/services/dataRelease';
 import { mergeDiscoveredStocks } from '../../lib/discovered-stocks.js';
+import { inferSecurityType, matchesProductType, productTypeOptions, topProviders } from '../../lib/security-filters.js';
 import AdSlot from '@/components/ads/AdSlot.vue';
 useHead({ title: 'ETF·주식 검색' });
 const query = ref(''), company = ref(''), securityType = ref(''), sort = ref('symbol');
@@ -13,10 +14,11 @@ const homeAdSlot = String(import.meta.env.VITE_ADSENSE_HOME_SLOT || '');
 const page = ref(1), rows = ref([]), distributions = ref({}), loading = ref(true), error = ref('');
 const pageSize = 25;
 const companies = computed(() => [...new Set(rows.value.map(row => row.company?.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b)));
+const popularCompanies = computed(() => topProviders(rows.value));
 const filtered = computed(() => {
     const needle = query.value.trim().toLowerCase();
     return rows.value.filter(row => (!company.value || row.company?.trim() === company.value)
-        && (!securityType.value || row.securityType === securityType.value)
+        && matchesProductType(row, securityType.value, distributions.value[row.symbol])
         && [row.symbol, row.koName, row.longName, row.company, row.underlying, ...(row.dividendEtfs ?? []).map(etf => etf.ticker)].some(value => String(value ?? '').toLowerCase().includes(needle)))
         .sort((a, b) => {
             return sort.value === 'ipoDate' ? String(b.ipoDate ?? '').localeCompare(String(a.ipoDate ?? '')) : String(a[sort.value] ?? '').localeCompare(String(b[sort.value] ?? ''), 'ko');
@@ -47,7 +49,7 @@ async function fetchJson(path) {
 async function load() {
     loading.value = true; error.value = '';
     const coreConfigured = Boolean(import.meta.env.VITE_DATA_RELEASE_BASE_URL);
-    const indexLoader = coreConfigured ? loadCoreDirectory().then(instruments => ({ nav: instruments.filter(row => row.active !== false).map(row => ({ ...row, company: row.officialProvider, securityType: 'etf' })) })) : isDivgrowReleaseConfigured() ? loadDivgrowTickerIndex() : fetchJson('ticker-index.json');
+    const indexLoader = coreConfigured ? loadCoreDirectory().then(instruments => ({ nav: instruments.filter(row => row.active !== false).map(row => ({ ...row, company: row.officialProvider, securityType: inferSecurityType(row) })) })) : isDivgrowReleaseConfigured() ? loadDivgrowTickerIndex() : fetchJson('ticker-index.json');
     const [index, dividend, discovered] = await Promise.allSettled([indexLoader, coreConfigured ? loadDataReleaseIndex() : fetchJson('content-studio/distribution-index.json'), fetchJson('us-dividend-stocks.json')]);
     if (index.status === 'fulfilled') rows.value = mergeDiscoveredStocks(index.value.nav ?? [], discovered.status === 'fulfilled' ? discovered.value : {}).filter(row => row.symbol && row.active !== false);
     else error.value = '종목 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
@@ -63,8 +65,8 @@ onMounted(load);
         <header class="page-title"><div><p>DIVIDEND EXPLORER</p><h1>ETF·주식 검색</h1><span>관심 있는 종목을 찾고, 배당 콘텐츠를 만들어 보세요.</span></div><span class="universe-count">{{ rows.length.toLocaleString() }}<small>등록 종목</small></span></header>
         <section class="filter-panel" aria-label="종목 검색 필터">
             <label class="search-box" for="ticker-search"><i class="pi pi-search" aria-hidden="true" /><input id="ticker-search" v-model="query" type="search" placeholder="종목명, 티커 또는 운용사를 검색하세요" /></label>
-            <div class="filter-row"><span class="filter-label">상품 유형</span><div class="chips"><button v-for="option in [{ value: '', label: '전체 종목' }, { value: 'etf', label: 'ETF' }, { value: 'stock', label: '주식' }]" :key="option.value" :aria-pressed="securityType === option.value" :class="{ active: securityType === option.value }" @click="securityType = option.value">{{ option.label }}</button></div></div>
-            <div class="filter-row provider-row"><label class="filter-label" for="company-filter">운용사</label><select id="company-filter" v-model="company"><option value="">전체 운용사</option><option v-for="name in companies" :key="name" :value="name">{{ name }}</option></select><button class="reset" @click="reset"><i class="pi pi-refresh" aria-hidden="true" /> 필터 초기화<span v-if="filterCount"> ({{ filterCount }})</span></button></div>
+            <div class="filter-row"><span class="filter-label">상품 유형</span><div class="product-filters"><div class="chips"><button v-for="option in productTypeOptions" :key="option.value" :aria-pressed="securityType === option.value" :class="{ active: securityType === option.value }" @click="securityType = option.value">{{ option.label }}</button></div><details class="filter-guide"><summary>상품 유형 분류 기준</summary><p>일반 주식은 전체 개별 주식입니다. 배당 ETF·배당주는 저장된 배당 이력·배당 주기 또는 상품 정보를 기준으로 분류합니다. 레버리지 ETF는 상품명 또는 유형 정보를 기준으로 분류합니다. 성장주는 대표 성장 종목 목록 기준이며, 배당성장주는 DGRO·VIG, 고배당주는 SCHD·VYM·HDV 편입 정보 기준입니다. 유형은 서로 중복될 수 있습니다.</p></details></div></div>
+            <div class="filter-row provider-row"><label class="filter-label" for="company-filter">운용사</label><div class="provider-filters"><div class="chips" role="group" aria-label="운용사 빠른 선택"><button :aria-pressed="company === ''" :class="{ active: company === '' }" @click="company = ''">전체 운용사</button><button v-for="provider in popularCompanies" :key="provider.name" :aria-pressed="company === provider.name" :class="{ active: company === provider.name }" :title="`등록 ETF ${provider.count.toLocaleString()}개`" @click="company = provider.name">{{ provider.name }}</button></div><div class="provider-select"><select id="company-filter" v-model="company"><option value="">전체 운용사</option><option v-for="name in companies" :key="name" :value="name">{{ name }}</option></select><span class="provider-hint">빠른 선택은 등록 ETF 수 상위 5개 운용사 기준</span></div></div><button class="reset" @click="reset"><i class="pi pi-refresh" aria-hidden="true" /> 필터 초기화<span v-if="filterCount"> ({{ filterCount }})</span></button></div>
         </section>
         <div v-if="loading" class="empty" role="status">종목 목록을 불러오는 중입니다.</div>
         <div v-else-if="error" class="empty" role="alert">{{ error }} <button @click="load">다시 시도</button></div>
@@ -96,4 +98,7 @@ onMounted(load);
 .search-box:focus-within,a:focus-visible,button:focus-visible,select:focus-visible,.table-wrap:focus-visible{outline-color:var(--app-accent)}
 .chips button.active{background:var(--app-accent);border-color:var(--app-accent);color:var(--app-accent-contrast)}
 .frequency.monthly,.frequency.weekly,.holding-badge{background:color-mix(in srgb,var(--app-accent),transparent 88%)}
+.table-wrap{position:relative}
+.product-filters,.provider-filters{flex:1;min-width:0}.filter-guide{margin-top:12px;color:var(--muted);font-size:11px;line-height:1.7}.filter-guide summary{cursor:pointer;width:fit-content}.filter-guide summary:focus-visible{outline:2px solid var(--app-accent);outline-offset:3px}.filter-guide p{margin:8px 0 0;max-width:800px}.provider-row{align-items:flex-start}.provider-row>.filter-label{padding-top:9px}.provider-select{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:12px}.provider-hint{color:var(--muted);font-size:11px;line-height:1.6}.provider-row>.reset{padding-top:9px}
+@media(max-width:700px){.product-filters,.provider-filters{width:100%}.provider-row{flex-direction:column;align-items:flex-start}.provider-row>.filter-label{padding-top:0}.provider-row select{flex-basis:100%;width:100%}.provider-row>.reset{align-self:flex-end;padding-top:0}}
 </style>

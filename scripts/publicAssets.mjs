@@ -1,13 +1,14 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { mergeDiscoveredStocks } from '../lib/discovered-stocks.js';
+import { inferSecurityType, matchesProductType, productTypeOptions } from '../lib/security-filters.js';
 
 export const excludedPublicDirectories = new Set([
     'logos', 'calendar', 'sidebar', 'popularity', 'brokerage', 'flags', 'holidays',
     // Source metadata is retained locally for the legacy data generators.
     'nav',
 ]);
-const indexFields = ['symbol', 'koName', 'longName', 'company', 'underlying', 'market', 'currency', 'dividendEtfs', 'dividendEvidence'];
+const indexFields = ['symbol', 'koName', 'longName', 'company', 'underlying', 'market', 'currency', 'dividendEtfs', 'dividendEvidence', 'noDividends', 'ipoDate'];
 
 export function createTickerIndex(payload, relationships = {}, discovered = {}) {
     const underlyingByTicker = new Map(Object.entries(relationships).flatMap(([underlying, tickers]) =>
@@ -16,7 +17,8 @@ export function createTickerIndex(payload, relationships = {}, discovered = {}) 
         ...Object.fromEntries(indexFields.filter(key => row[key] != null).map(key => [key, row[key]])),
         company: row.officialProvider ?? row.company,
         underlying: underlyingByTicker.get(row.symbol) ?? row.underlying,
-        securityType: row.securityType ?? (row.market === 'KR' ? 'stock' : 'etf'),
+        securityType: inferSecurityType(row),
+        productTypes: productTypeOptions.filter(option => option.value && !['stock', 'etf'].includes(option.value) && matchesProductType(row, option.value)).map(option => option.value),
     })) };
 }
 
@@ -25,12 +27,16 @@ export function publicAssetsPlugin() {
     let configRoot;
     let base;
     const readIndex = async () => {
-        const [seed, catalog, discovered] = await Promise.all([
+        const [seed, catalog, discovered, nav] = await Promise.all([
             fs.readFile(path.join(configRoot, 'data-v2', 'catalog-seed.json'), 'utf8'),
             fs.readFile(path.join(publicRoot, 'thumbnail-catalog.json'), 'utf8'),
             fs.readFile(path.join(publicRoot, 'us-dividend-stocks.json'), 'utf8'),
+            fs.readFile(path.join(publicRoot, 'nav.json'), 'utf8'),
         ]);
-        return JSON.stringify(createTickerIndex(JSON.parse(seed), JSON.parse(catalog).relationships, JSON.parse(discovered)));
+        const metadata = new Map(JSON.parse(nav).nav.map(row => [row.symbol, row]));
+        const payload = JSON.parse(seed);
+        payload.instruments = payload.instruments.map(row => ({ ...metadata.get(row.symbol), ...row }));
+        return JSON.stringify(createTickerIndex(payload, JSON.parse(catalog).relationships, JSON.parse(discovered)));
     };
     return {
         name: 'thumbnail-public-assets',

@@ -13,3 +13,15 @@ test('summarizes holdings and orders all ledger rows by date', () => {
     assert.equal(dashboard.assets[0].ticker, 'ALPHA');
     assert.equal(dashboard.transactions[0].date, '20240301');
 });
+
+test('normalizes legacy PDF ledger fields for dividends, counts, and recent activity', () => {
+    const dashboard = summarizePortfolio([{ id: 'A', symbol: 'TOPW', portfolioPriority: 'current', transactions: [
+        { type: '해외주식매수', date: '2026.09.01', transaction_amount_krw: '10,000' },
+        { type: '배당금입금', date: '2026.10.01', transaction_amount_krw: '1,250', tax_krw: '150' },
+    ] }]);
+    assert.equal(dashboard.summary.dividendTotal, 1250);
+    assert.equal(dashboard.assets[0].transactionCounts.buy, 1);
+    assert.equal(dashboard.assets[0].transactionCounts.dividend, 1);
+    assert.equal(dashboard.transactions[0].tax, 150);
+    assert.equal(dashboard.summary.latestTransactionDate, '2026.10.01');
+});

@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 import firebase_admin
+from google.api_core.exceptions import ResourceExhausted
 from firebase_admin import auth, credentials, firestore
 from flask import Flask, jsonify, request
 from werkzeug.exceptions import RequestEntityTooLarge
@@ -459,6 +460,8 @@ def route():
         return jsonify({'error': '요청 크기는 3MB 이하이어야 합니다.'}), 413
     except PortfolioError as error:
         return jsonify({'error': str(error)}), error.status
+    except ResourceExhausted:
+        return jsonify({'code': 'DATA_QUOTA_EXCEEDED', 'error': '현재 데이터베이스 사용량 한도를 초과하여 자료를 불러오거나 저장할 수 없습니다. 기존 계좌와 거래내역은 유지됩니다.'}), 429
     except Exception:
         # Never echo provider errors, file contents or identifiers to clients/logs.
         return jsonify({'error': '처리하지 못했습니다. 잠시 후 다시 시도하세요.'}), 503

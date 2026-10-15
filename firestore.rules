@@ -2,6 +2,12 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Family/account v2 is exclusively accessed through the authenticated API.
+    // Use distinct names from assets to avoid the legacy collectionGroup admin rule.
+    match /familySpaces/{document=**} { allow read, write: if false; }
+    match /familyInvitations/{document=**} { allow read, write: if false; }
+    match /investmentAccounts/{document=**} { allow read, write: if false; }
+
     // Helper function: 사용자가 인증되었는지 확인
     function isAuthenticated() {
       return request.auth != null;

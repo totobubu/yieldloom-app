@@ -6,7 +6,8 @@
 
 - `/`: 티커·종목명·운용사 검색 및 종목 선택.
 - `/login`: 이메일·비밀번호 또는 Google 로그인.
-- `/mypage`: 인증된 고객의 PDF 기반 거래 원장, 보유 종목 및 배당 요약.
+- `/mypage`: 가족 구성원·다계좌 관리, 파일 검토·수정, 계좌별 거래와 기준일 잔고 합산.
+- `/mypage/legacy`: 이전 단일 계좌 자료 조회.
 - `/thumbnail/:ticker`: 배당 요약, 배당 비교, 라이벌 비교, 배당 일정, 매수 효율 카드와 PNG 다운로드, 토스 게시 문구 복사.
 - `/legal`: 데이터 출처·갱신·투자 면책 및 개인정보 안내.
 - `?rivals=CRSH,TSII`: 라이벌 선택 공유. 최대 3종.
@@ -18,7 +19,7 @@
 npm ci
 npm run dev
 npm run build
-node --test tests/rival_comparison.test.mjs tests/entry_income_efficiency.test.mjs tests/toss_portfolio.test.mjs tests/toss_statement_parser.test.mjs tests/recovery_ledger.test.mjs tests/content_refresh_input.test.mjs
+node --test tests/*.test.mjs
 python -m unittest discover -s tests/content_pipeline -p 'test_*.py'
 ```
 
@@ -55,7 +56,9 @@ npm run thumbnail:refresh -- --dry-run --symbols AMDY,TSLY,TOPW,AAPL,TSLA
 
 ## 개인화 포트폴리오
 
-인증된 고객은 토스 거래내역 PDF를 업로드해 검토 후 자신의 원장에 반영할 수 있습니다. PDF 원본과 비밀번호는 저장하지 않으며, 서버는 정규화한 거래만 사용자별 `portfolios/{uid}`에 저장합니다. Toss API는 고객별 공식 동의 방식이 확인되기 전까지 읽기 전용 준비 상태만 표시합니다.
+가족 공간의 성인 본인 참여와 계좌별 공유 권한을 분리합니다. 표준 CSV/토스 거래 PDF의 검토·수정·중복 차단, 자료 기준일 잔고 합산을 지원합니다. 전체 계좌번호·원본 파일·비밀번호는 저장하지 않습니다. 이전 단일 계좌 업로드는 종료했고 원본은 보존합니다.
+
+구조·제품 기본값·지원 형식·보존 이전·Firestore 규칙/TTL 적용·검증 방법은 [가족 포트폴리오 v2 안내](docs/architecture/FAMILY_PORTFOLIO_V2.md)를 참조하세요. 실제 증권사 API는 새 가족 기능에 연동하지 않았습니다.
 
 테마 전환·로컬 설정 저장, 오류 경계·Sentry, Android 구성도 유지합니다. Vercel Analytics는 기존 패키지 상태를 유지하며 새로 활성화하지 않았습니다.
 

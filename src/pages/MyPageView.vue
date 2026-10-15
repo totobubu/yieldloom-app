@@ -2,12 +2,7 @@
     import { computed, nextTick, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
-    import {
-        commitTossStatement,
-        loadPortfolioDashboard,
-        previewTossStatement,
-        refreshTossStatementReview,
-    } from '@/services/portfolio';
+    import { loadPortfolioDashboard } from '@/services/portfolio';
     import { summarizePortfolio } from '@/services/portfolioSummary';
     import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
     import {
@@ -19,12 +14,6 @@
         portfolioAssetsInPeriod,
     } from '@/services/portfolioPeriod';
     const router = useRouter();
-    const broker = ref('toss');
-    const brokers = [
-        { id: 'toss', label: '토스증권' },
-        { id: 'kis', label: '한국투자증권' },
-        { id: 'kiwoom', label: '키움증권' },
-    ];
     const portfolioWarning = computed(() => {
         const warnings = dashboard.value.warnings || [];
         if (warnings.some((item) => item.stage === 'transactions'))
@@ -33,11 +22,8 @@
             return '이전 거래 원장을 조회하지 못했습니다. 현재 보유 종목은 표시하며, 이전 배당·거래내역은 확인이 필요합니다.';
         return '';
     });
-    const file = ref(null),
-        password = ref(''),
-        message = ref(''),
+    const message = ref(''),
         error = ref(''),
-        importing = ref(false),
         loading = ref(false);
     const dashboard = ref({ assets: [], transactions: [], summary: {} });
     const period = ref('all');
@@ -113,9 +99,6 @@
                 (a) => a.id === selectedAssetId.value
             ) || null
     );
-    const review = ref(null),
-        acceptedIds = ref([]),
-        committing = ref(false);
     const historyUnavailable = computed(() =>
         (dashboard.value.warnings || []).some((item) => item.stage === 'legacy')
     );
@@ -197,21 +180,19 @@
         loading.value = true;
         error.value = '';
         try {
-            await Promise.all([
-                loadPortfolioDashboard(firebaseUser.value.uid)
-                    .then((portfolio) => {
-                        dashboard.value = portfolio;
-                    })
-                    .catch((reason) => {
-                        error.value =
-                            reason.code === 'permission-denied'
-                                ? '현재 보유 종목 조회 권한이 없습니다. 관리자에게 문의해 주세요.'
-                                : reason.code === 'unavailable'
-                                  ? '포트폴리오 서버에 연결하지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.'
-                                  : '포트폴리오를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
-                        console.error(reason);
-                    }),
-            ]);
+            await loadPortfolioDashboard(firebaseUser.value.uid)
+                .then((portfolio) => {
+                    dashboard.value = portfolio;
+                })
+                .catch((reason) => {
+                    error.value =
+                        reason.code === 'permission-denied'
+                            ? '현재 보유 종목 조회 권한이 없습니다. 관리자에게 문의해 주세요.'
+                            : reason.code === 'unavailable'
+                              ? '포트폴리오 서버에 연결하지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.'
+                              : '포트폴리오를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+                    console.error(reason);
+                });
         } finally {
             loading.value = false;
         }
@@ -245,79 +226,6 @@
     }
     function closeDetail() {
         detailDialog.value?.close();
-    }
-    async function upload() {
-        error.value = '';
-        message.value = '';
-        if (broker.value !== 'toss') {
-            error.value =
-                '선택한 증권사의 거래내역서 가져오기는 준비 중입니다.';
-            return;
-        }
-        if (!/^\d{6}$/.test(password.value)) {
-            error.value = '토스 PDF 비밀번호인 생년월일 6자리를 입력해 주세요.';
-            return;
-        }
-        if (!file.value) {
-            error.value = '토스 거래내역 PDF를 선택해 주세요.';
-            return;
-        }
-        importing.value = true;
-        try {
-            review.value = await previewTossStatement(
-                firebaseUser.value,
-                file.value,
-                password.value
-            );
-            acceptedIds.value = review.value.rows
-                .filter((row) => row.status === 'ready')
-                .map((row) => row.id);
-            password.value = '';
-            file.value = null;
-            message.value = `거래 ${review.value.rows.length}건을 검토해 주세요.`;
-        } catch (reason) {
-            error.value = reason.message;
-        } finally {
-            importing.value = false;
-        }
-    }
-    async function refreshReview() {
-        if (!review.value) return;
-        committing.value = true;
-        error.value = '';
-        try {
-            review.value = await refreshTossStatementReview(
-                firebaseUser.value,
-                review.value.sessionId
-            );
-            acceptedIds.value = review.value.rows
-                .filter((row) => row.status === 'ready')
-                .map((row) => row.id);
-        } catch (reason) {
-            error.value = reason.message;
-        } finally {
-            committing.value = false;
-        }
-    }
-    async function commitReview() {
-        if (!review.value) return;
-        committing.value = true;
-        error.value = '';
-        try {
-            const result = await commitTossStatement(
-                firebaseUser.value,
-                review.value.sessionId,
-                acceptedIds.value
-            );
-            review.value = result.remainingReview || null;
-            acceptedIds.value = [];
-            message.value = `${result.transactionCount}건의 거래내역을 저장했습니다.${review.value ? ' 남은 거래는 검토 목록에 유지됩니다.' : ''}`;
-            await refresh();
-        } catch (reason) {
-            error.value = reason.message;
-        } finally {
-            committing.value = false;
-        }
     }
 </script>
 <template>
@@ -425,146 +333,16 @@
                 }}</strong>
             </article>
         </section>
-        <section class="panel import-panel">
-            <div>
-                <h2>증권사 거래내역서 첨부</h2>
-                <p>
-                    PDF 원본과 비밀번호는 저장하지 않고 거래 원장만 반영합니다.
-                </p>
-            </div>
-            <div class="broker-options" role="group" aria-label="증권사 선택">
-                <button
-                    v-for="item in brokers"
-                    :key="item.id"
-                    type="button"
-                    :aria-pressed="broker === item.id"
-                    :disabled="importing || committing || !!review"
-                    @click="
-                        broker = item.id;
-                        password = '';
-                    ">
-                    {{ item.label }}
-                </button>
-            </div>
-            <p v-if="broker !== 'toss'" class="broker-help" role="status">
-                선택한 증권사의 거래내역서 가져오기는 준비 중입니다.
+        <section class="panel">
+            <h2>이전 단일 계좌 자료</h2>
+            <p>
+                기준일이 확인되지 않은 이전 데이터입니다. 현재 보유량과
+                평가액으로 확정하지 마세요.
             </p>
-            <p v-else id="pdf-password-help" class="broker-help">
-                토스증권 PDF 비밀번호는 생년월일 6자리(YYMMDD)입니다.
-            </p>
-            <form v-if="broker === 'toss'" @submit.prevent="upload">
-                <input
-                    type="file"
-                    accept="application/pdf"
-                    aria-label="토스증권 거래내역서 PDF"
-                    @change="file = $event.target.files?.[0] || null" /><input
-                    v-model="password"
-                    type="password"
-                    autocomplete="off"
-                    inputmode="numeric"
-                    maxlength="6"
-                    pattern="[0-9]{6}"
-                    aria-label="PDF 비밀번호: 생년월일 6자리"
-                    aria-describedby="pdf-password-help"
-                    placeholder="생년월일 6자리 (YYMMDD)" /><button
-                    :disabled="importing">
-                    {{ importing ? '가져오는 중' : '가져오기' }}
-                </button>
-            </form>
-        </section>
-        <section v-if="review" class="panel review-panel">
-            <div class="section-heading">
-                <div>
-                    <h2>가져오기 검토</h2>
-                    <p>
-                        준비된 행만 기본 선택됩니다. 중복·미매핑 행은 이번
-                        저장에서 제외됩니다. 미매핑 ISIN은 관리자 연결 대기열에
-                        수집됩니다.
-                    </p>
-                    <button
-                        type="button"
-                        :disabled="committing"
-                        @click="refreshReview">
-                        종목 연결 상태 다시 확인
-                    </button>
-                    <button
-                        type="button"
-                        :disabled="committing"
-                        @click="
-                            review = null;
-                            acceptedIds = [];
-                        ">
-                        검토 닫기
-                    </button>
-                    <p
-                        v-if="
-                            review.rows.some((row) => row.status === 'unmapped')
-                        ">
-                        미매핑 거래는 관리자 연결 후 상태를 다시 확인해 저장할
-                        수 있습니다.
-                    </p>
-                </div>
-                <button
-                    :disabled="committing || !acceptedIds.length"
-                    @click="commitReview">
-                    {{
-                        committing
-                            ? '저장 중'
-                            : `${acceptedIds.length}건 확정 저장`
-                    }}
-                </button>
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>선택</th>
-                            <th>상태</th>
-                            <th>날짜</th>
-                            <th>종목</th>
-                            <th>유형</th>
-                            <th class="numeric">수량</th>
-                            <th class="numeric">금액</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="row in review.rows" :key="row.id">
-                            <td>
-                                <input
-                                    v-if="row.status === 'ready'"
-                                    v-model="acceptedIds"
-                                    type="checkbox"
-                                    :value="row.id" /><span v-else>—</span>
-                            </td>
-                            <td>
-                                <span class="type" :class="row.status">{{
-                                    row.status === 'ready'
-                                        ? '저장 가능'
-                                        : row.status === 'duplicate'
-                                          ? '중복'
-                                          : '미매핑'
-                                }}</span>
-                            </td>
-                            <td>{{ date(row.date) }}</td>
-                            <td>
-                                {{
-                                    row.symbol ||
-                                    row.name ||
-                                    row.isin ||
-                                    '티커 연결 필요'
-                                }}<small v-if="row.status === 'unmapped'"
-                                    >ISIN {{ row.isin }}</small
-                                >
-                            </td>
-                            <td>{{ typeLabel(row.type) }}</td>
-                            <td class="numeric">
-                                {{ quantity(row.quantity) }}
-                            </td>
-                            <td class="numeric">{{ won(row.amount) }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <router-link to="/mypage"
+                >가족 포트폴리오에서 계좌 등록·자료 이전·새 업로드
+                →</router-link
+            >
         </section>
         <section class="panel">
             <div class="section-heading">

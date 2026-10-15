@@ -171,6 +171,7 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
 
     transactions = []
     metadata = {}
+    rejected_rows = []
 
     if verbose:
         print(f"\n{'=' * 80}", file=sys.stderr)
@@ -186,6 +187,7 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
             # Default tolerance merges them ("0 243.428075" -> "0243.428075").
             text = page.extract_text(x_tolerance=0.5)
             if not text:
+                rejected_rows.append({"page": page_num, "line": 0, "date": "", "error": "텍스트를 읽을 수 없는 페이지입니다."})
                 continue
 
             lines = text.split("\n")
@@ -215,6 +217,8 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
                 transaction, next_i = parse_transaction_lines(lines, i)
                 if transaction:
                     transactions.append(transaction)
+                elif re.match(r"^\d{4}\.\d{2}\.\d{2}", lines[i].strip()):
+                    rejected_rows.append({"page": page_num, "line": i + 1, "date": lines[i].strip()[:10], "error": "거래 행을 해석하지 못했습니다."})
                 i = next_i
 
             if verbose and (page_num % 10 == 0 or page_num == len(pdf.pages)):
@@ -229,6 +233,7 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
 
     return {
         "metadata": metadata,
+        "rejected_rows": rejected_rows,
         "transactions": transactions,
         "total_count": len(transactions),
         "extracted_at": datetime.now().isoformat(),

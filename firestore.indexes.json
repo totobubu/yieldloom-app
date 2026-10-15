@@ -71,6 +71,18 @@
                     "queryScope": "COLLECTION_GROUP"
                 }
             ]
+        },
+        {
+            "collectionGroup": "reviews",
+            "fieldPath": "expiresAt",
+            "ttl": true,
+            "indexes": []
+        },
+        {
+            "collectionGroup": "familyInvitations",
+            "fieldPath": "expiresAt",
+            "ttl": true,
+            "indexes": []
         }
     ]
 }

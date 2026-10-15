@@ -18,6 +18,10 @@ class UploadedPdf:
 
 
 class PortfolioImportTest(unittest.TestCase):
+    def test_legacy_upload_endpoint_is_retired_without_touching_data(self):
+        response = portfolio_import.app.test_client().post('/api/portfolio-import')
+        self.assertEqual(response.status_code, 410)
+
     def test_parse_statement_reads_transactions_from_extractor_result(self):
         extraction = {"transactions": [{"ticker": "US88636J6423", "date": "2026.10.13", "type": "매수", "quantity": "2", "transaction_amount_krw": "1000"}]}
         with patch.object(portfolio_import, "extract_transactions_from_pdf", return_value=extraction):

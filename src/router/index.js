@@ -15,6 +15,11 @@ export default createRouter({
         {
             path: '/mypage',
             name: 'mypage',
+            component: () => import('../pages/FamilyPortfolioView.vue'),
+        },
+        {
+            path: '/mypage/legacy',
+            name: 'legacy-mypage',
             component: () => import('../pages/MyPageView.vue'),
         },
         {

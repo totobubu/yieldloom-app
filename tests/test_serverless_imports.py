@@ -10,7 +10,7 @@ class ServerlessImportsTest(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         code = """
 import importlib.util
-for filename in ['portfolio-import', 'toss-connection', 'analytics']:
+for filename in ['portfolio-import', 'toss-connection', 'analytics', 'family-portfolio']:
     spec = importlib.util.spec_from_file_location('api.' + filename, 'api/' + filename + '.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

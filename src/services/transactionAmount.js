@@ -9,6 +9,15 @@ export function transactionMoney(value, currency = 'KRW') {
         (currency === 'KRW' && Math.round(amount) === 0)
     )
         return '-';
+    if (currency !== 'USD' && currency !== 'KRW') {
+        if (/^[A-Z]{3}$/.test(currency || ''))
+            return new Intl.NumberFormat('ko-KR', {
+                style: 'currency',
+                currency,
+                maximumFractionDigits: 6,
+            }).format(amount);
+        return `${amount.toLocaleString('ko-KR', { maximumFractionDigits: 6 })} (통화 확인 필요)`;
+    }
     return currency === 'USD'
         ? `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 })}`
         : `₩${Math.round(amount).toLocaleString('ko-KR')}`;
@@ -30,6 +39,20 @@ export function transactionAmountRows(transaction, allocation) {
     const rate = fx
         ? { value: fx.value, kind: fx.recorded ? 'statement' : 'reference' }
         : null;
+    if (transaction.cashEntryId)
+        return [
+            {
+                currency: transaction.cashCurrency,
+                amount: transaction.cashAmount,
+                secondary:
+                    transaction.cashCurrency === 'USD' && rate
+                        ? { currency: 'KRW', amount: transaction.amount }
+                        : null,
+                rate: transaction.cashCurrency === 'USD' ? rate : null,
+                label: '',
+                note: transaction.cashNote || '',
+            },
+        ];
     if (
         transaction.type === 'buy' &&
         ['confirmed', 'partial'].includes(allocation?.status)
@@ -105,7 +128,10 @@ export function transactionAmountRows(transaction, allocation) {
                     : null,
             rate: native !== null && native !== 0 ? rate : null,
             label: '',
-            note: transaction.type === 'buy' ? '결제 구성 확인 필요' : '',
+            note:
+                transaction.type === 'buy'
+                    ? '결제 구성 확인 필요'
+                    : transaction.cashNote || '',
         },
     ];
 }

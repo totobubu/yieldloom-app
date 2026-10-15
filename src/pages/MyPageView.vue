@@ -5,6 +5,10 @@
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
     import TransactionAmount from '@/components/portfolio/TransactionAmount.vue';
     import {
+        portfolioActivity,
+        activityTypeLabel,
+    } from '@/services/portfolioActivity.js';
+    import {
         transactionAmountRows,
         transactionMoney,
     } from '@/services/transactionAmount.js';
@@ -33,6 +37,7 @@
         loading = ref(false);
     const dashboard = ref({ assets: [], transactions: [], summary: {} });
     const capital = ref({ entries: [], classifications: [], allocations: [] });
+    const capitalPanel = ref(null);
     const capitalLoading = ref(false),
         capitalError = ref(''),
         fundingTransaction = ref(null),
@@ -117,7 +122,7 @@
     const years = computed(() =>
         [
             ...new Set(
-                dashboard.value.transactions
+                [...dashboard.value.transactions, ...capital.value.entries]
                     .map((t) => String(t.date).replace(/\D/g, '').slice(0, 4))
                     .filter((y) => /^\d{4}$/.test(y))
             ),
@@ -141,23 +146,29 @@
               ? `${startDate.value} ~ ${endDate.value}`
               : `${period.value}년`
     );
-    const periodDashboard = computed(() => {
-        const start =
+    const periodBounds = computed(() => ({
+        start:
             period.value === 'all'
                 ? ''
                 : period.value === 'custom'
                   ? startDate.value
-                  : `${period.value}-01-01`;
-        const end =
+                  : `${period.value}-01-01`,
+        end:
             period.value === 'all'
                 ? ''
                 : period.value === 'custom'
                   ? endDate.value
-                  : `${period.value}-12-31`;
-        return summarizePortfolio(
-            portfolioAssetsInPeriod(dashboard.value.assets, start, end)
-        );
-    });
+                  : `${period.value}-12-31`,
+    }));
+    const periodDashboard = computed(() =>
+        summarizePortfolio(
+            portfolioAssetsInPeriod(
+                dashboard.value.assets,
+                periodBounds.value.start,
+                periodBounds.value.end
+            )
+        )
+    );
     const performanceAssets = computed(() => {
         const performances = new Map(
             dashboard.value.assets.map((asset) => [
@@ -249,7 +260,9 @@
             dividend: '배당',
             dividend_reversal: '배당 취소',
             cash: '계좌 입출금·환전',
-        })[v] ?? '기타';
+        })[v] ??
+        activityTypeLabel(v) ??
+        '기타';
     const typeClass = (v) =>
         ({ buy: 'buy', sell: 'sell', dividend: 'dividend' })[v] ?? 'unknown';
     async function refresh() {
@@ -289,15 +302,31 @@
         },
         { immediate: true }
     );
+    const periodActivities = computed(() =>
+        periodError.value
+            ? []
+            : portfolioActivity(
+                  dashboard.value.transactions,
+                  capitalError.value
+                      ? { entries: [], classifications: [] }
+                      : capital.value,
+                  periodBounds.value
+              )
+    );
     const filteredTransactions = computed(() =>
-        (periodError.value ? [] : periodDashboard.value.transactions)
-            .filter(
-                (t) =>
-                    (!tickerFilter.value ||
-                        t.asset.ticker === tickerFilter.value) &&
-                    (!typeFilter.value || t.type === typeFilter.value)
-            )
-            .slice(0, 20)
+        periodError.value
+            ? []
+            : portfolioActivity(
+                  dashboard.value.transactions,
+                  capitalError.value
+                      ? { entries: [], classifications: [] }
+                      : capital.value,
+                  {
+                      ...periodBounds.value,
+                      ticker: tickerFilter.value,
+                      type: typeFilter.value,
+                  }
+              ).slice(0, 20)
     );
     const allocationsByTrade = computed(
         () =>
@@ -408,9 +437,7 @@
             </p>
             <p v-else class="period-label" role="status">
                 {{ periodLabel }} · 거래
-                {{
-                    periodDashboard.transactions.length.toLocaleString('ko-KR')
-                }}건
+                {{ periodActivities.length.toLocaleString('ko-KR') }}건
             </p>
         </section>
         <section class="summary-grid" aria-label="포트폴리오 요약">
@@ -441,13 +468,12 @@
             <article>
                 <small>최근 거래일</small
                 ><strong>{{
-                    periodError
-                        ? '—'
-                        : date(periodDashboard.summary.latestTransactionDate)
+                    periodError ? '—' : date(periodActivities[0]?.date)
                 }}</strong>
             </article>
         </section>
         <PortfolioCapitalPanel
+            ref="capitalPanel"
             :user="firebaseUser"
             :state="capital"
             :loading="capitalLoading"
@@ -665,8 +691,10 @@
                 <div>
                     <h2>기간별 거래내역</h2>
                     <p>
-                        선택한 기간의 최근 20건을 표시합니다. 종목 상세에서는
-                        해당 기간의 전체 거래를 볼 수 있습니다.
+                        주식 거래와 계좌 입출금·환전 중 선택한 기간의 최근
+                        20건입니다. 출금에는 배당 사용·원금 회수 등 확인한
+                        구분을 표시합니다. 종목 필터를 선택하면 계좌 내역은
+                        제외합니다.
                     </p>
                 </div>
                 <div class="filters">
@@ -684,9 +712,35 @@
                         <option value="sell">매도</option>
                         <option value="dividend">배당</option>
                         <option value="dividend_reversal">배당 취소</option>
+                        <option value="cash_in">계좌 입금</option>
+                        <option value="cash_out">출금 전체</option>
+                        <option value="dividend_withdrawal">
+                            배당 사용 출금
+                        </option>
+                        <option value="principal_withdrawal">
+                            원금 회수 출금
+                        </option>
+                        <option value="profit_withdrawal">
+                            기타 수익 사용 출금
+                        </option>
+                        <option value="exchange">환전</option>
+                        <option value="cash_transfer">계좌 내 이동</option>
                     </select>
                 </div>
             </div>
+            <p v-if="capitalError" class="notice warning" role="status">
+                계좌 내역을 읽지 못해 입출금·환전이 제외되었습니다. 투자 원금
+                확인에서 다시 조회해 주세요.
+            </p>
+            <p
+                v-else-if="!capitalLoading && !capital.entries.length"
+                class="notice warning"
+                role="status">
+                저장된 계좌 내역이 없어 출금·환전이 아직 포함되지 않았습니다.
+                투자 원금 확인에서 실제 입출금을 직접 추가하거나, 가족
+                포트폴리오의 해당 계좌에 내역을 가져와 주세요. 이전 계좌와 새
+                계좌는 별도로 집계합니다.
+            </p>
             <div class="table-wrap">
                 <table aria-label="기간별 거래내역">
                     <thead>
@@ -716,6 +770,7 @@
                                     v-if="rowIndex === 0"
                                     :rowspan="group.amounts.length">
                                     <button
+                                        v-if="group.transaction.asset"
                                         class="asset-link"
                                         @click="
                                             openDetail(group.transaction.asset)
@@ -725,6 +780,21 @@
                                             group.transaction.asset.displayName
                                         }}
                                     </button>
+                                    <template v-else
+                                        ><button
+                                            class="asset-link"
+                                            type="button"
+                                            @click="
+                                                capitalPanel?.openEntry(
+                                                    group.transaction
+                                                        .cashEntryId
+                                                )
+                                            ">
+                                            계좌 내역 · 분류</button
+                                        ><small class="cash-detail">{{
+                                            group.transaction.cashDetail
+                                        }}</small></template
+                                    >
                                 </td>
                                 <td
                                     v-if="rowIndex === 0"
@@ -1359,6 +1429,14 @@
     .numeric {
         text-align: right;
     }
+    .cash-detail {
+        display: block;
+        white-space: normal;
+        max-width: 280px;
+        color: var(--app-muted);
+        font-size: 0.78rem;
+    }
+
     .asset-link {
         padding: 0;
         border: 0;

@@ -153,11 +153,19 @@ try {
     );
     const panel = page.getByRole('region', { name: '투자 원금 확인' });
     await panel.getByText('분류 확인 필요 2건', { exact: false }).waitFor();
-    assert.equal(await panel.getByText('₩0', { exact: true }).count(), 1);
+    assert.equal(
+        await panel
+            .locator('.totals strong')
+            .filter({ hasText: '확인 필요' })
+            .count(),
+        2
+    );
     await panel.locator('summary').click();
     const deposit = panel.locator('tr').filter({ hasText: '원화입금' });
     await deposit.getByRole('button', { name: '분류 확정' }).click();
-    await panel.getByText('₩1,000,000', { exact: true }).waitFor();
+    await panel
+        .getByText('확인한 외부 입금 ₩1,000,000', { exact: false })
+        .waitFor();
     await panel.getByText('분류 확인 필요 1건', { exact: false }).waitFor();
     const fx = panel.locator('tr').filter({ hasText: '환전원화출금' });
     await fx.getByRole('button', { name: '분류 확정' }).click();
@@ -243,7 +251,7 @@ try {
         await page
             .locator('table[aria-label="기간별 거래내역"] tbody tr')
             .count(),
-        2
+        4
     );
     await editor.getByRole('button', { name: '닫기', exact: true }).click();
     await page.setViewportSize({ width: 390, height: 844 });
@@ -306,6 +314,113 @@ try {
         false
     );
 
+    // Dividend spending is an external cash outflow, not a recovery of principal.
+    const portfolioSummaryBefore = await page
+        .locator('.summary-grid')
+        .innerText();
+    await panel.getByRole('button', { name: '계좌 내역 직접 추가' }).click();
+    const withdrawalForm = panel.locator('form');
+    await withdrawalForm.getByLabel('금액', { exact: true }).fill('30000');
+    await withdrawalForm
+        .getByLabel('계좌 거래 구분')
+        .selectOption('dividend_withdrawal');
+    await withdrawalForm
+        .getByLabel('확인 근거·메모', { exact: true })
+        .fill('수령 배당에서 생활비로 출금한 내역 확인');
+    await withdrawalForm.getByRole('button', { name: '확인 후 추가' }).click();
+    await panel.getByText('배당 사용 ₩30,000', { exact: false }).waitFor();
+    assert.equal(
+        await panel
+            .locator('.totals article')
+            .first()
+            .locator('strong')
+            .innerText(),
+        '₩1,000,000'
+    );
+    assert.ok(
+        (await panel.innerText()).includes('순입금 (현금 흐름) ₩970,000')
+    );
+    assert.equal(
+        await page.locator('.summary-grid').innerText(),
+        portfolioSummaryBefore
+    );
+    const activity = page.getByRole('table', {
+        name: '기간별 거래내역',
+        exact: true,
+    });
+    await page.getByLabel('거래 유형 필터').selectOption('cash_out');
+    await activity.getByText('출금 · 배당 사용', { exact: true }).waitFor();
+    assert.equal(await activity.locator('tbody tr').count(), 1);
+    assert.ok((await activity.innerText()).includes('₩-30,000'));
+    await activity.getByRole('button', { name: '계좌 내역 · 분류' }).click();
+    const withdrawalPath = [...records.keys()].find(
+        (path) =>
+            path.startsWith('portfolios/owner/cashEntries/') &&
+            records.get(path).amount === 30000
+    );
+    const withdrawalId = withdrawalPath.split('/').at(-1);
+    const withdrawalRow = panel.locator(`[data-cash-id="${withdrawalId}"]`);
+    await withdrawalRow.locator('select').selectOption('mixed_withdrawal');
+    await withdrawalRow
+        .getByLabel('출금 원금 회수', { exact: true })
+        .fill('10000');
+    await withdrawalRow
+        .getByLabel('출금 배당 사용', { exact: true })
+        .fill('20001');
+    assert.equal(
+        await withdrawalRow
+            .getByRole('button', { name: '수정 저장' })
+            .isDisabled(),
+        true
+    );
+    await withdrawalRow
+        .getByLabel('출금 배당 사용', { exact: true })
+        .fill('20000');
+    await withdrawalRow.getByRole('button', { name: '수정 저장' }).click();
+    await panel.getByText('배당 사용 ₩20,000', { exact: false }).waitFor();
+    assert.equal(
+        await panel
+            .locator('.totals article')
+            .first()
+            .locator('strong')
+            .innerText(),
+        '₩990,000'
+    );
+    assert.equal(records.get(withdrawalPath).amount, 30000);
+    assert.equal(
+        records.get(`portfolios/owner/cashClassifications/${withdrawalId}`)
+            .withdrawalParts.principal,
+        10000
+    );
+    await page.getByLabel('거래 유형 필터').selectOption('dividend_withdrawal');
+    await activity.getByText('출금 · 금액 나눔', { exact: true }).waitFor();
+    assert.ok((await activity.innerText()).includes('원금 회수 ₩10,000'));
+    assert.ok((await activity.innerText()).includes('배당 사용 ₩20,000'));
+    await page.setViewportSize({ width: 390, height: 844 });
+    assert.equal(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth > innerWidth
+        ),
+        false
+    );
+    await panel.screenshot({ path: '/tmp/yieldloom-withdrawal-mobile.png' });
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await panel.screenshot({ path: '/tmp/yieldloom-withdrawal-desktop.png' });
+    await withdrawalRow.locator('select').selectOption('external_withdrawal');
+    await withdrawalRow.getByRole('button', { name: '수정 저장' }).click();
+    await panel
+        .getByText('출금 출처 미확인 ₩30,000', { exact: false })
+        .waitFor();
+    assert.equal(
+        await panel
+            .locator('.totals article')
+            .first()
+            .locator('strong')
+            .innerText(),
+        '확인 필요'
+    );
+    await page.getByLabel('거래 유형 필터').selectOption('cash_out');
+    await activity.getByText('출금 출처 확인 필요', { exact: true }).waitFor();
     const family = {
         id: 'FA',
         name: '검증 가족',

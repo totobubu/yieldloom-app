@@ -312,15 +312,9 @@
         ],
     });
     const entryEfficiency = computed(() =>
-        selectedData.value?.sourceStatus?.corporateActionReview
-            ? {
-                  available: false,
-                  reason: '분할 이후 가격과 배당의 보정 기준을 확인 중입니다.',
-                  samples: [],
-              }
-            : calculateEntryIncomeEfficiency(selectedData.value, {
-                  asOfDate: new Date().toISOString().slice(0, 10),
-              })
+        calculateEntryIncomeEfficiency(selectedData.value, {
+            asOfDate: new Date().toISOString().slice(0, 10),
+        })
     );
     const rivalOptions = computed(() => {
         return (selectedInfo.value?.rivalOptions ?? []).map((symbol) => ({

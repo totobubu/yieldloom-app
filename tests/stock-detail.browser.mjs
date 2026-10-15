@@ -11,13 +11,15 @@ try {
     });
     page.setDefaultTimeout(15000);
     page.setDefaultNavigationTimeout(15000);
-    await page.route('**/security-insights/*.json', r => r.fulfill({ json: { securities: {}, asOfDate: '2026-10-15' } }));
+    await page.route('**/security-insights/*.json', (r) =>
+        r.fulfill({ json: { securities: {}, asOfDate: '2026-10-15' } })
+    );
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     const rows = Array.from({ length: 16 }, (_, i) => ({
         date: new Date(Date.UTC(2025, i, 2)).toISOString().slice(0, 10),
         close: 30 + i / 10,
-        amount: 0.22,
+        amount: i === 15 ? 0.219894 : 0.253607,
     }));
     await page.route('**/api/thumbnail-data?*', (r) =>
         r.fulfill({
@@ -86,7 +88,48 @@ try {
     await page.goto('http://127.0.0.1:5173/thumbnail/TOPW?rivals=');
     await page.getByRole('heading', { name: 'TOPW 종목 개요' }).waitFor();
     assert.match(page.url(), /\/stock\/TOPW\?rivals=/);
+    const candleRows = Array.from({ length: 150 }, (_, i) => ({
+        date: new Date(Date.UTC(2026, 0, i + 1)).toISOString().slice(0, 10),
+        open: 30 + i / 10,
+        high: 32 + i / 10,
+        low: 29 + i / 10,
+        close: 31 + i / 10,
+        volume: 1000 + i,
+    }));
+    await page.route('**/api/stock-prices?*', (r) =>
+        r.fulfill({
+            json: {
+                symbol: 'TOPW',
+                currency: 'USD',
+                source: 'Yahoo Finance',
+                candles: candleRows,
+            },
+        })
+    );
     await page.getByRole('button', { name: '시세정보', exact: true }).click();
+    await page.locator('.candle-plot').waitFor();
+    const threeMonths = await page.locator('.candle').count();
+    await page.getByRole('button', { name: '1개월', exact: true }).click();
+    assert.ok((await page.locator('.candle').count()) < threeMonths);
+    await page.locator('.candle-plot').focus();
+    await page.keyboard.press('Home');
+    assert.ok(
+        (await page.locator('.quote-summary').innerText()).includes(
+            '2026-04-30'
+        )
+    );
+    await page.setViewportSize({ width: 390, height: 844 });
+    assert.ok(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth
+        )
+    );
+    await page.screenshot({
+        path: '/tmp/candlestick-mobile.png',
+        fullPage: true,
+    });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.getByText('일별 종가 표 보기', { exact: true }).click();
     await page
         .getByRole('heading', { name: '시세 이력', exact: true })
         .waitFor();
@@ -109,6 +152,14 @@ try {
             '확인 가능한 4개 월별 표본만 표시합니다. 실제 보유 기간과는 별개입니다.'
         )
         .waitFor();
+    for (const name of ['summary', 'comparison']) {
+        const card = page.locator(`[data-thumbnail-kind="${name}"]`).first();
+        await card.screenshot({ path: `/tmp/${name}-larger-type.png` });
+        assert.ok(
+            await card.evaluate((el) => el.scrollHeight <= el.clientHeight + 1),
+            `${name} overflow`
+        );
+    }
     await page.getByRole('button', { name: '상세정보', exact: true }).click();
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(

@@ -274,7 +274,7 @@ const rows = computed(() => [
 	min-height: 0;
 	padding: 0 20px;
 	border-bottom: 1px solid #f1f5f9;
-	font-size: 15px;
+	font-size: 17px;
 }
 
 .table>div:not(.head) {
@@ -290,12 +290,13 @@ const rows = computed(() => [
 	padding: 0 20px;
 	background: #f8fafccc;
 	color: #64748b;
-	font-size: 14px;
+	font-size: 15px;
 	font-weight: 800;
 }
 
 .table .head b {
 	text-align: right;
+	white-space: nowrap;
 }
 
 .table .head b:last-child {
@@ -317,6 +318,7 @@ const rows = computed(() => [
 .table>div:not(.head)>strong {
 	font-family: 'Plus Jakarta Sans', 'Pretendard', sans-serif;
 	text-align: right;
+	white-space: nowrap;
 }
 
 .table .row-label {

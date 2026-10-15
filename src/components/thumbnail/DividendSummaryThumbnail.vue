@@ -44,10 +44,12 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 </template>
 
 <style scoped lang="scss">
+.summary-card :deep(.thumbnail-card-footer) { font-size: 14px; }
+
 .metrics small {
 	display: block;
 	color: #94a3b8;
-	font-size: 14px;
+	font-size: 16px;
 	font-weight: 600
 }
 
@@ -165,13 +167,13 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 	margin: 7px 0 3px;
 	color: #0f172a;
 	font-family: 'Plus Jakarta Sans', 'Pretendard', sans-serif;
-	font-size: 24px;
+	font-size: 26px;
 	font-weight: 800;
 }
 
 .metrics em {
 	color: #94a3b8;
-	font-size: 12px;
+	font-size: 14px;
 	font-style: normal;
 	font-weight: 500
 }
@@ -196,7 +198,7 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 
 .history header b {
 	color: #94a3b8;
-	font-size: 14px;
+	font-size: 16px;
 	font-weight: 600;
 }
 
@@ -204,7 +206,7 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 	display: flex;
 	align-items: center;
 	gap: 6px;
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 500;
 }
 
@@ -245,7 +247,7 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 .history-cells span {
 	display: block;
 	color: #94a3b8;
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: 700
 }
 
@@ -253,7 +255,7 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 	display: block;
 	margin-top: 6px;
 	color: #334155;
-	font-size: 18px;
+	font-size: 20px;
 	font-family: 'Plus Jakarta Sans', 'Pretendard', sans-serif;
 	font-weight: 800;
 }
@@ -285,7 +287,7 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 	border-radius: 4px;
 	background: #0003;
 	color: #fff;
-	font-size: 10px;
+	font-size: 12px;
 	font-style: normal
 }
 

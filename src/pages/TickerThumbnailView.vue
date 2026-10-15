@@ -11,6 +11,7 @@
     import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
     import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
     import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
+    import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
     import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
     import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
     import { getAssetUrl } from '@/utils/dataUrl';
@@ -713,33 +714,42 @@
                 <SecurityInsights :symbol="normalize(route.params.ticker)" />
             </div>
             <section v-if="activeTab === 'prices'" class="stock-section">
-                <h2>시세 이력</h2>
-                <p class="hint">
-                    최근 {{ Math.min(priceRows.length, 120) }}개 실제 종가 ·
-                    {{ selectedInfo.currency }} 기준 · 가격 보정
-                    {{ selectedData.sourceStatus.adjustmentBasis || '미확인' }}
-                </p>
-                <div class="stock-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>기준일</th>
-                                <th>종가</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="row in priceRows.slice(0, 120)"
-                                :key="row.date">
-                                <td>{{ row.date }}</td>
-                                <td>{{ displayNumber(row.close, 4) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p v-if="!priceRows.length" class="hint">
-                    확인 가능한 실제 종가가 없습니다.
-                </p>
+                <StockCandlestickChart
+                    :symbol="selectedInfo.symbol"
+                    :currency="selectedInfo.currency || ''" />
+                <details class="price-history">
+                    <summary>일별 종가 표 보기</summary>
+                    <h2>시세 이력</h2>
+                    <p class="hint">
+                        최근 {{ Math.min(priceRows.length, 120) }}개 실제 종가 ·
+                        {{ selectedInfo.currency }} 기준 · 가격 보정
+                        {{
+                            selectedData.sourceStatus.adjustmentBasis ||
+                            '미확인'
+                        }}
+                    </p>
+                    <div class="stock-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>기준일</th>
+                                    <th>종가</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="row in priceRows.slice(0, 120)"
+                                    :key="row.date">
+                                    <td>{{ row.date }}</td>
+                                    <td>{{ displayNumber(row.close, 4) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p v-if="!priceRows.length" class="hint">
+                        확인 가능한 실제 종가가 없습니다.
+                    </p>
+                </details>
             </section>
             <section v-if="activeTab === 'dividends'" class="stock-section">
                 <h2>배당 이력</h2>
@@ -880,6 +890,16 @@
 </template>
 
 <style scoped>
+    .price-history {
+        margin-top: 24px;
+        border-top: 1px solid var(--app-border);
+        padding-top: 20px;
+    }
+    .price-history summary {
+        cursor: pointer;
+        font-weight: 700;
+        margin-bottom: 16px;
+    }
     .stock-insights {
         max-width: 1520px;
         margin: 0 auto;

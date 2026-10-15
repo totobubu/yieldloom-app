@@ -79,11 +79,20 @@ Use a separate destination bucket/token if storage-level isolation is needed;
 a prefix guard in application code is not an R2 token permission boundary.
 
 The `Refresh thumbnail projections` workflow publishes only from main, with a
-single concurrency group, at 01:30 UTC Tuesday–Saturday (10:30 KST). It reads
+single concurrency group, at 03:30 UTC Tuesday–Saturday (12:30 KST). It reads
 `vars.THUMBNAIL_SOURCE_BASE_URL`, then `secrets.R2_PUBLIC_URL`, then
-`vars.VITE_R2_PUBLIC_URL`. It defaults to the five pilot tickers. The dispatch input or
-`vars.THUMBNAIL_PROJECTION_SYMBOLS` selects tickers; explicitly set `ALL` only
+`vars.VITE_R2_PUBLIC_URL`. A nonempty dispatch input overrides
+`vars.THUMBNAIL_PROJECTION_SYMBOLS`; leaving the input blank uses that repository
+variable. When both are unset, it falls back to the five pilot tickers. Set `ALL`
 after reviewing the pilot to expand to the source directory.
+
+The upstream collector is scheduled at 23:00 UTC Monday–Friday, but GitHub
+schedule delays can push its R2 publication into the following UTC day. On
+October 15, 2026 it finished at 01:54 UTC, after our previous 01:30 UTC schedule.
+The later schedule provides room for those observed delays; it is not an
+upstream-completion dependency. If collection finishes later still, compare
+source price dates with the published summary and rerun the refresh after the
+upstream upload. Scheduled Actions can also start later than their cron time.
 No generated data is committed or attached as artifacts.
 
 ## API migration and rollout

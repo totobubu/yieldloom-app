@@ -1,5 +1,5 @@
 <script setup>
-    import { computed, ref, watch } from 'vue';
+    import { computed, nextTick, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import {
@@ -27,6 +27,15 @@
         tossSnapshot = ref(null),
         tossLoading = ref(false),
         tossError = ref('');
+    const holdingTab = ref('current');
+    const visibleAssets = computed(() =>
+        dashboard.value.assets.filter(
+            (asset) =>
+                (asset.portfolioPriority === 'current'
+                    ? 'current'
+                    : 'historical') === holdingTab.value
+        )
+    );
     const tickerFilter = ref(''),
         typeFilter = ref(''),
         selectedAsset = ref(null),
@@ -99,8 +108,9 @@
     const tickers = computed(() =>
         dashboard.value.assets.filter((asset) => asset.ticker)
     );
-    function openDetail(asset) {
+    async function openDetail(asset) {
         selectedAsset.value = asset;
+        await nextTick();
         detailDialog.value?.showModal();
     }
     function closeDetail() {
@@ -359,6 +369,20 @@
                 </div>
                 <span>{{ dashboard.assets.length }}종목</span>
             </div>
+            <div class="holding-tabs" role="group" aria-label="보유 내역 구분">
+                <button
+                    :aria-pressed="holdingTab === 'current'"
+                    @click="holdingTab = 'current'">
+                    보유 현황 ({{ dashboard.summary.currentCount ?? 0 }})
+                </button>
+                <button
+                    :aria-pressed="holdingTab === 'historical'"
+                    @click="holdingTab = 'historical'">
+                    예전에 보유했던 내역 ({{
+                        dashboard.summary.historicalCount ?? 0
+                    }})
+                </button>
+            </div>
             <div v-if="loading" class="empty">
                 포트폴리오를 불러오는 중입니다.
             </div>
@@ -371,9 +395,16 @@
             <div v-else-if="!dashboard.assets.length" class="empty">
                 아직 거래내역이 없습니다. 토스 거래내역서를 추가해 주세요.
             </div>
+            <div v-else-if="!visibleAssets.length" class="empty">
+                {{
+                    holdingTab === 'current'
+                        ? '현재 보유한 종목이 없습니다.'
+                        : '예전에 보유했던 종목이 없습니다.'
+                }}
+            </div>
             <div v-else class="asset-grid">
                 <article
-                    v-for="asset in dashboard.assets"
+                    v-for="asset in visibleAssets"
                     :key="asset.id"
                     class="asset-card">
                     <header>
@@ -513,6 +544,8 @@
         <dialog
             ref="detailDialog"
             class="detail-dialog"
+            aria-label="종목 거래 상세"
+            @click="$event.target === detailDialog && closeDetail()"
             @close="selectedAsset = null">
             <section v-if="selectedAsset">
                 <header>
@@ -602,6 +635,13 @@
                                 </td>
                                 <td class="numeric">
                                     {{ won(transaction.tax) }}
+                                </td>
+                            </tr>
+                            <tr v-if="!selectedAsset.transactions.length">
+                                <td colspan="6" class="empty">
+                                    저장된 거래 원장이 없습니다. 토스
+                                    거래내역서를 추가하면 배당과 거래내역을
+                                    확인할 수 있습니다.
                                 </td>
                             </tr>
                         </tbody>
@@ -838,7 +878,22 @@
     .dividend {
         color: #39ad7c;
     }
+    .holding-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+    .holding-tabs button[aria-pressed='true'] {
+        background: var(--app-accent);
+        color: var(--app-accent-contrast);
+        border-color: var(--app-accent);
+    }
     .detail-dialog {
+        position: fixed;
+        inset: 0;
+        margin: auto;
+        overflow: auto;
         width: min(900px, calc(100% - 32px));
         max-height: 85vh;
         padding: 24px;

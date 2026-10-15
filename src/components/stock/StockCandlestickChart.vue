@@ -1,6 +1,7 @@
 <script setup>
     import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
     import { apiUrl } from '@/services/apiUrl';
+    import { aggregateCandles } from '@/services/stockAnalysis';
     const chartHost = ref(null),
         chartWidth = ref(1000);
     let observer;
@@ -14,12 +15,23 @@
     const props = defineProps({
         symbol: { type: String, required: true },
         currency: { type: String, default: '' },
+        events: { type: Array, default: () => [] },
     });
     const data = ref(null),
         loading = ref(false),
         error = ref(''),
         period = ref(3),
         selected = ref(null);
+    const interval = ref('day'),
+        visibleCount = ref(null),
+        windowEnd = ref(null);
+    const intervalLabels = { day: '일봉', week: '주봉', month: '월봉' };
+    const resetWindow = () => {
+        visibleCount.value = null;
+        windowEnd.value = null;
+        selected.value = null;
+    };
+    watch(interval, resetWindow);
     const periods = [
         { label: '1개월', months: 1 },
         { label: '3개월', months: 3 },
@@ -62,15 +74,78 @@
     };
     watch(() => props.symbol, load, { immediate: true });
     watch(period, () => {
-        selected.value = null;
+        resetWindow();
     });
-    const candles = computed(() => {
+    const periodCandles = computed(() => {
         const rows = data.value?.candles ?? [];
         if (!rows.length) return [];
         const cutoff = new Date(`${rows.at(-1).date}T12:00:00Z`);
         cutoff.setUTCMonth(cutoff.getUTCMonth() - period.value);
         return rows.filter(
             (row) => row.date >= cutoff.toISOString().slice(0, 10)
+        );
+    });
+    const allAggregated = computed(() =>
+        aggregateCandles(data.value?.candles ?? [], interval.value)
+    );
+    const aggregated = computed(() =>
+        periodCandles.value.length
+            ? allAggregated.value.filter(
+                  (row) => row.endDate >= periodCandles.value[0].date
+              )
+            : []
+    );
+    const endIndex = computed(() =>
+        Math.min(
+            aggregated.value.length,
+            windowEnd.value ?? aggregated.value.length
+        )
+    );
+    const candles = computed(() =>
+        aggregated.value.slice(
+            Math.max(
+                0,
+                endIndex.value - (visibleCount.value ?? aggregated.value.length)
+            ),
+            endIndex.value
+        )
+    );
+    const zoom = (factor) => {
+        const length = aggregated.value.length;
+        visibleCount.value = Math.min(
+            length,
+            Math.max(
+                Math.min(10, length),
+                Math.round((visibleCount.value ?? length) * factor)
+            )
+        );
+        if (endIndex.value < visibleCount.value)
+            windowEnd.value = visibleCount.value;
+        selected.value = null;
+    };
+    const pan = (direction) => {
+        const count = visibleCount.value ?? aggregated.value.length;
+        windowEnd.value = Math.max(
+            count,
+            Math.min(
+                aggregated.value.length,
+                endIndex.value + direction * Math.max(1, Math.round(count / 2))
+            )
+        );
+        selected.value = null;
+    };
+    const chartEvents = computed(() => {
+        const seen = new Set();
+        return [...props.events, ...(data.value?.events ?? [])].flatMap(
+            (event) => {
+                const key = `${event.date}-${event.kind}`;
+                if (seen.has(key)) return [];
+                seen.add(key);
+                const index = candles.value.findIndex(
+                    (row) => event.date >= row.date && event.date <= row.endDate
+                );
+                return index < 0 ? [] : [{ ...event, index, key }];
+            }
         );
     });
     const currentIndex = computed(() =>
@@ -85,10 +160,10 @@
     const current = computed(() => candles.value[currentIndex.value]);
     const previous = computed(() => {
         if (!current.value) return null;
-        const index = data.value.candles.findIndex(
+        const index = allAggregated.value.findIndex(
             (row) => row.date === current.value.date
         );
-        return data.value.candles[index - 1]?.close ?? null;
+        return allAggregated.value[index - 1]?.close ?? null;
     });
     const change = computed(() =>
         previous.value ? (current.value.close / previous.value - 1) * 100 : null
@@ -166,7 +241,9 @@
         aria-label="일봉 캔들 차트">
         <header class="chart-heading">
             <div>
-                <h2>주가 차트 <span>일봉</span></h2>
+                <h2>
+                    주가 차트 <span>{{ intervalLabels[interval] }}</span>
+                </h2>
                 <p>시가·고가·저가·종가 · {{ data?.currency || currency }}</p>
             </div>
             <div class="periods" aria-label="차트 기간">
@@ -180,6 +257,42 @@
                 </button>
             </div>
         </header>
+        <div class="chart-navigation">
+            <div class="interval-controls" aria-label="봉 주기">
+                <button
+                    v-for="(label, key) in intervalLabels"
+                    :key="key"
+                    :aria-pressed="interval === key"
+                    @click="interval = key">
+                    {{ label }}
+                </button>
+            </div>
+            <div class="zoom-controls" aria-label="차트 확대와 이동">
+                <button
+                    aria-label="차트 왼쪽 이동"
+                    :disabled="endIndex <= (visibleCount ?? aggregated.length)"
+                    @click="pan(-1)">
+                    ←</button
+                ><button
+                    aria-label="차트 축소"
+                    :disabled="
+                        !candles.length || candles.length >= aggregated.length
+                    "
+                    @click="zoom(1.5)">
+                    −</button
+                ><button
+                    aria-label="차트 확대"
+                    :disabled="candles.length <= 10"
+                    @click="zoom(0.65)">
+                    ＋</button
+                ><button
+                    aria-label="차트 오른쪽 이동"
+                    :disabled="endIndex >= aggregated.length"
+                    @click="pan(1)">
+                    →</button
+                ><button @click="resetWindow">전체 보기</button>
+            </div>
+        </div>
         <div v-if="loading" class="chart-state" role="status">
             일봉 데이터를 불러오는 중…
         </div>
@@ -190,7 +303,13 @@
         <template v-else-if="current">
             <div class="quote-summary">
                 <div>
-                    <span>{{ current.date }}</span
+                    <span
+                        >{{ current.date
+                        }}{{
+                            current.endDate !== current.date
+                                ? ` ~ ${current.endDate}`
+                                : ''
+                        }}</span
                     ><strong
                         :class="{
                             up: current.close >= current.open,
@@ -202,7 +321,11 @@
                         v-if="change != null"
                         :class="change >= 0 ? 'up' : 'down'"
                         >{{ change >= 0 ? '+' : '' }}{{ format(change) }}%
-                        <small>전일 종가 대비</small></span
+                        <small>{{
+                            interval === 'day'
+                                ? '전일 종가 대비'
+                                : '직전 봉 종가 대비'
+                        }}</small></span
                     >
                 </div>
                 <dl>
@@ -229,7 +352,7 @@
                 preserveAspectRatio="none"
                 role="img"
                 tabindex="0"
-                :aria-label="`${symbol} ${period}개월 일봉 캔들 차트. 좌우 방향키로 날짜별 가격 확인`"
+                :aria-label="`${symbol} ${period}개월 ${intervalLabels[interval]} 캔들 차트. 좌우 방향키로 날짜별 가격 확인`"
                 @pointermove="selectAt"
                 @pointerdown="selectAt"
                 @pointerleave="selected = null"
@@ -274,12 +397,26 @@
                     <rect
                         v-if="row.volume != null"
                         :x="x(index) - bodyWidth / 2"
-                        :y="378 - (row.volume / maxVolume) * 50"
+                        :y="378 - (row.volume / maxVolume) * 40"
                         :width="bodyWidth"
-                        :height="(row.volume / maxVolume) * 50"
+                        :height="(row.volume / maxVolume) * 40"
                         opacity=".35" />
                 </g>
-                <text x="16" y="320" class="axis">거래량</text>
+                <g
+                    v-for="event in chartEvents"
+                    :key="event.key"
+                    class="chart-event">
+                    <title>{{ event.date }} · {{ event.label }}</title>
+                    <circle
+                        :cx="x(event.index)"
+                        cy="313"
+                        r="8"
+                        :class="event.kind" />
+                    <text :x="x(event.index)" y="317" text-anchor="middle">
+                        {{ event.kind === 'split' ? 'S' : 'D' }}
+                    </text>
+                </g>
+                <text x="16" y="334" class="axis">거래량</text>
                 <line
                     :x1="x(currentIndex)"
                     :x2="x(currentIndex)"
@@ -317,6 +454,10 @@
                     있습니다.</span
                 >
             </footer>
+            <p v-if="chartEvents.length" class="event-legend">
+                D 배당락 · S 주식분할 · 표시된 이벤트에 마우스를 올리면 날짜와
+                내용을 확인할 수 있습니다.
+            </p>
             <p class="basis-note">
                 분할·배당 조정 여부는 제공처 기준입니다. 배당을 포함한
                 총수익률과는 다릅니다.
@@ -326,6 +467,49 @@
 </template>
 
 <style scoped>
+    .chart-navigation {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
+    .interval-controls,
+    .zoom-controls {
+        display: flex;
+        gap: 4px;
+    }
+    .chart-navigation button {
+        border: 1px solid var(--app-border);
+        border-radius: 6px;
+        background: var(--app-surface);
+        color: var(--app-muted);
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+    .chart-navigation button[aria-pressed='true'] {
+        color: var(--app-accent);
+        border-color: var(--app-accent);
+    }
+    .chart-navigation button:disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+    .chart-event circle {
+        fill: var(--app-accent);
+    }
+    .chart-event circle.split {
+        fill: #a855f7;
+    }
+    .chart-event text {
+        fill: white;
+        font-size: 9px;
+        font-weight: 700;
+    }
+    .event-legend {
+        font-size: 0.75rem;
+        color: var(--app-muted);
+    }
     .stock-candlestick {
         color: var(--app-text);
     }

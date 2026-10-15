@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
+import { unzipSync } from 'fflate';
 const browser = await chromium.launch({
     headless: true,
     executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
@@ -103,12 +104,34 @@ try {
                 currency: 'USD',
                 source: 'Yahoo Finance',
                 candles: candleRows,
+                events: [
+                    { date: '2026-05-12', kind: 'split', label: '분할 2:1' },
+                ],
             },
         })
     );
     await page.getByRole('button', { name: '시세정보', exact: true }).click();
     await page.locator('.candle-plot').waitFor();
+    assert.ok(await page.locator('.stock-overview').isVisible());
+    assert.equal(await page.locator('.chart-event circle.split').count(), 1);
     const threeMonths = await page.locator('.candle').count();
+    await page.getByRole('button', { name: '주봉', exact: true }).click();
+    assert.ok((await page.locator('.candle').count()) < threeMonths);
+    await page.getByRole('button', { name: '월봉', exact: true }).click();
+    assert.ok((await page.locator('.candle').count()) <= 4);
+    await page.getByRole('button', { name: '일봉', exact: true }).click();
+    await page.getByRole('button', { name: '차트 확대', exact: true }).click();
+    assert.ok((await page.locator('.candle').count()) < threeMonths);
+    const lastDateBefore = await page.locator('.quote-summary').innerText();
+    await page
+        .getByRole('button', { name: '차트 왼쪽 이동', exact: true })
+        .click();
+    assert.notEqual(
+        await page.locator('.quote-summary').innerText(),
+        lastDateBefore
+    );
+    await page.getByRole('button', { name: '전체 보기', exact: true }).click();
+    assert.equal(await page.locator('.candle').count(), threeMonths);
     await page.getByRole('button', { name: '1개월', exact: true }).click();
     assert.ok((await page.locator('.candle').count()) < threeMonths);
     await page.locator('.candle-plot').focus();
@@ -135,6 +158,12 @@ try {
         .waitFor();
     assert.equal(await page.locator('.stock-table tbody tr').count(), 16);
     await page.getByRole('button', { name: '배당정보', exact: true }).click();
+    await page
+        .getByRole('heading', { name: '월별 배당 흐름', exact: true })
+        .waitFor();
+    assert.equal(await page.locator('.month-bar').count(), 12);
+    await page.getByRole('button', { name: '24개월', exact: true }).click();
+    assert.equal(await page.locator('.month-bar').count(), 24);
     await page.locator('.cycle article').first().waitFor();
     assert.equal(await page.locator('.cycle article').count(), 5);
     assert.ok(await page.getByText('W-2', { exact: true }).isVisible());
@@ -148,6 +177,12 @@ try {
         .getByRole('button', { name: '요약 PNG 다운로드', exact: true })
         .waitFor({ state: 'visible' });
     await page
+        .getByRole('checkbox', { name: '배당 비교', exact: true })
+        .check();
+    await page
+        .getByRole('checkbox', { name: '과거 매수 시점별 배당률', exact: true })
+        .check();
+    await page
         .getByText(
             '확인 가능한 4개 월별 표본만 표시합니다. 실제 보유 기간과는 별개입니다.'
         )
@@ -160,7 +195,40 @@ try {
             `${name} overflow`
         );
     }
+    await page
+        .getByRole('checkbox', { name: '과거 매수 시점별 배당률', exact: true })
+        .uncheck();
+    await page.setViewportSize({ width: 390, height: 844 });
+    assert.ok(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth
+        ),
+        'Shared previews overflow'
+    );
+    const zipDownload = page.waitForEvent('download');
+    await page
+        .getByRole('button', { name: '선택 카드 ZIP (2)', exact: true })
+        .click();
+    const stream = await (await zipDownload).createReadStream(),
+        chunks = [];
+    for await (const chunk of stream) chunks.push(chunk);
+    const files = unzipSync(Buffer.concat(chunks));
+    assert.equal(
+        Object.keys(files).filter((name) => name.endsWith('.png')).length,
+        2
+    );
+    for (const [name, bytes] of Object.entries(files).filter(([name]) =>
+        name.endsWith('.png')
+    )) {
+        const png = Buffer.from(bytes);
+        assert.equal(png.readUInt32BE(16), 720, name);
+        assert.equal(png.readUInt32BE(20), 720, name);
+    }
     await page.getByRole('button', { name: '상세정보', exact: true }).click();
+    await page
+        .locator('.holding-panel')
+        .getByText('로그인', { exact: true })
+        .waitFor();
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(
         await page.evaluate(
@@ -170,6 +238,33 @@ try {
     );
     await page.screenshot({
         path: '/tmp/stock-detail-mobile.png',
+        fullPage: true,
+    });
+    await page.route('**/src/services/firebaseClient.js*', (r) =>
+        r.fulfill({
+            contentType: 'application/javascript',
+            body: "import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'fixture-owner'}),authLoading=ref(false),firebaseReady=false,db=null,auth=null;export const signedIn=computed(()=>true);",
+        })
+    );
+    await page.route('**/src/services/portfolio.js*', (r) =>
+        r.fulfill({
+            contentType: 'application/javascript',
+            body: `export async function loadPortfolioAsset(uid,ticker){if(uid!=='fixture-owner')throw new Error('wrong owner');return {symbol:ticker,portfolioPriority:'current',holdingShares:10,transactions:[{date:'20240101',type:'buy',quantity:10,amount:1300000,nativeAmount:1000,currency:'USD'},{date:'20260201',type:'dividend',amount:13000,nativeAmount:10,currency:'USD'}]};}`,
+        })
+    );
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page
+        .locator('.holding-panel')
+        .getByText('10주', { exact: true })
+        .waitFor();
+    assert.ok(
+        (await page.locator('.holding-panel').innerText()).includes('13,000')
+    );
+    assert.ok(
+        (await page.locator('.holding-panel').innerText()).includes('100 USD')
+    );
+    await page.screenshot({
+        path: '/tmp/stock-holding-mobile.png',
         fullPage: true,
     });
     assert.deepEqual(errors, []);

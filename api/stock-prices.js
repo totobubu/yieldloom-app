@@ -19,7 +19,7 @@ export async function loadStockCandles(symbol, fetcher = fetch) {
     ]) {
         try {
             payload = await fetchJson(
-                `https://${host}/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=2y&interval=1d`,
+                `https://${host}/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=2y&interval=1d&events=div%2Csplits`,
                 (url, init) =>
                     fetcher(url, {
                         ...init,
@@ -93,6 +93,19 @@ export async function loadStockCandles(symbol, fetcher = fetch) {
         timezone: zone,
         source: 'Yahoo Finance',
         candles,
+        events: [
+            ...Object.values(result.events?.splits ?? {})
+                .filter(
+                    (row) =>
+                        Number.isFinite(row.date) &&
+                        row.date * 1000 <= Date.now()
+                )
+                .map((row) => ({
+                    date: formatter.format(new Date(row.date * 1000)),
+                    kind: 'split',
+                    label: `분할 ${row.splitRatio || `${row.numerator}:${row.denominator}`}`,
+                })),
+        ],
         asOf: new Date().toISOString(),
     };
     if (fetcher === fetch) {

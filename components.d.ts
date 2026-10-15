@@ -24,6 +24,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SecurityInsights: typeof import('./src/components/thumbnail/SecurityInsights.vue')['default']
     StockCandlestickChart: typeof import('./src/components/stock/StockCandlestickChart.vue')['default']
+    StockDividendTrend: typeof import('./src/components/stock/StockDividendTrend.vue')['default']
+    StockHoldingPanel: typeof import('./src/components/stock/StockHoldingPanel.vue')['default']
     ThumbnailCardShell: typeof import('./src/components/thumbnail/ThumbnailCardShell.vue')['default']
     ThumbnailPreview: typeof import('./src/components/thumbnail/ThumbnailPreview.vue')['default']
     TossCommunityCopy: typeof import('./src/components/thumbnail/TossCommunityCopy.vue')['default']

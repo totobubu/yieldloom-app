@@ -3,6 +3,30 @@ import { db } from './firebaseClient';
 import { summarizePortfolio } from './portfolioSummary';
 import { apiUrl } from './apiUrl.js';
 
+export async function loadPortfolioAssets(uid) {
+    if (!db || !uid) return [];
+    const snapshot = await getDocs(
+        query(collection(db, 'portfolios', uid, 'assets'))
+    );
+    return snapshot.docs.map((item) => ({ ...item.data(), id: item.id }));
+}
+
+export function portfolioTickerStates(assets) {
+    const states = new Map();
+    for (const asset of assets) {
+        const ticker = String(asset.symbol || '')
+            .trim()
+            .toUpperCase();
+        if (!ticker) continue;
+        if (!states.has(ticker) || asset.portfolioPriority === 'current')
+            states.set(
+                ticker,
+                asset.portfolioPriority === 'current' ? 'current' : 'historical'
+            );
+    }
+    return states;
+}
+
 // Some older imports kept the ledger inline; do not erase it with an empty subcollection.
 async function loadAssetTransactions(uid, asset, store = 'portfolios') {
     const snapshot = await getDocs(

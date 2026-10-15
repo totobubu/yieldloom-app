@@ -83,3 +83,26 @@ test('invalid tickers never request upstream and upstream failures remain retrya
         (e) => e.statusCode === 503
     );
 });
+
+test('split markers retain source ratios and exclude future events', async () => {
+    const payload = response({
+        open: [100, 101],
+        high: [110, 111],
+        low: [99, 100],
+        close: [105, 106],
+        volume: [10, 20],
+    });
+    payload.chart.result[0].events = {
+        splits: {
+            past: { date: 1767272400, splitRatio: '2:1' },
+            future: { date: 4102444800, splitRatio: '3:1' },
+        },
+    };
+    const result = await loadStockCandles('SPLT', async () => ({
+        ok: true,
+        json: async () => payload,
+    }));
+    assert.deepEqual(result.events, [
+        { date: '2026-01-01', kind: 'split', label: '분할 2:1' },
+    ]);
+});

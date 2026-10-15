@@ -53,13 +53,13 @@
         class="entry-efficiency-card"
         :title="data.symbol"
         context-label="과거 진입 시점 비교"
-        badge="배당 효율"
+        badge="과거 매수 시점별 배당률"
         date-label="분석 기준일"
         :date-value="date(data.asOfDate)"
         data-thumbnail-kind="entry-efficiency">
         <template v-if="data.available">
             <section class="intro">
-                <h2>언제 샀을 때 배당 효율이 높았을까?</h2>
+                <h2>과거 매수 시점별 배당률은 어땠을까?</h2>
                 <p>
                     각 가상 매수일 직전 12개월 배당금과 당시 종가로 비교합니다.
                 </p>
@@ -183,7 +183,7 @@
                 </div>
             </section>
             <section class="definition">
-                <b>배당 효율을 어떻게 비교하나요?</b>
+                <b>매수 시점별 배당률을 어떻게 비교하나요?</b>
                 <p>매수일 직전 12개월 배당금 × 0.85 ÷ 당시 종가 × 100</p>
                 <span
                     >매수 이후 실제 받은 배당이나 주가 수익률을 비교하는 지표는

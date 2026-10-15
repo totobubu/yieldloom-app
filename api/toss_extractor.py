@@ -116,47 +116,31 @@ def parse_transaction_lines(lines, start_idx):
         number_pattern = r"[\d,]+\.?\d*"
         numbers = re.findall(number_pattern, numbers_text)
 
-        if len(numbers) < 8:
+        if len(numbers) < 9:
             return None, next_idx
 
         quantity = parse_number(numbers[0])
         transaction_amount_krw = parse_number(numbers[1])
-        unit_price_krw = parse_number(numbers[2])
-        commission_krw = parse_number(numbers[3])
-        tax_krw = parse_number(numbers[4])
-        delinquency_krw = parse_number(numbers[5])
-        balance_quantity = parse_number(numbers[6])
-        balance_krw = parse_number(numbers[7])
+        settlement_amount_krw = parse_number(numbers[2])
+        unit_price_krw = parse_number(numbers[3])
+        commission_krw = parse_number(numbers[4])
+        tax_krw = parse_number(numbers[5])
+        delinquency_krw = parse_number(numbers[6])
+        balance_quantity = parse_number(numbers[7])
+        balance_krw = parse_number(numbers[8])
 
         # 달러 값 추출 (괄호 안의 $ 값들)
         dollar_pattern = r"\(\$\s*([\d,.-]+)\)"
         dollar_matches = re.findall(dollar_pattern, full_text)
 
-        dollar_values = {}
-        if len(dollar_matches) >= 6:
-            dollar_values = {
-                "unit_price_usd": parse_number(dollar_matches[0]),
-                "transaction_amount_usd": parse_number(dollar_matches[1]),
-                "commission_usd": parse_number(dollar_matches[2]),
-                "tax_usd": parse_number(dollar_matches[3]),
-                "delinquency_usd": parse_number(dollar_matches[4]),
-                "balance_usd": parse_number(dollar_matches[5]),
-            }
-        elif len(dollar_matches) >= 1:
-            if len(dollar_matches) >= 1:
-                dollar_values["unit_price_usd"] = parse_number(dollar_matches[0])
-            if len(dollar_matches) >= 2:
-                dollar_values["transaction_amount_usd"] = parse_number(
-                    dollar_matches[1]
-                )
-            if len(dollar_matches) >= 3:
-                dollar_values["commission_usd"] = parse_number(dollar_matches[2])
-            if len(dollar_matches) >= 4:
-                dollar_values["tax_usd"] = parse_number(dollar_matches[3])
-            if len(dollar_matches) >= 5:
-                dollar_values["delinquency_usd"] = parse_number(dollar_matches[4])
-            if len(dollar_matches) >= 6:
-                dollar_values["balance_usd"] = parse_number(dollar_matches[5])
+        dollar_columns = [
+            "transaction_amount_usd", "settlement_amount_usd", "unit_price_usd",
+            "commission_usd", "tax_usd", "delinquency_usd", "balance_usd",
+        ]
+        dollar_values = {
+            column: parse_number(value)
+            for column, value in zip(dollar_columns, dollar_matches)
+        }
 
         transaction = {
             "date": trade_date,
@@ -166,6 +150,7 @@ def parse_transaction_lines(lines, start_idx):
             "exchange_rate": exchange_rate,
             "quantity": quantity,
             "transaction_amount_krw": transaction_amount_krw,
+            "settlement_amount_krw": settlement_amount_krw,
             "unit_price_krw": unit_price_krw,
             "commission_krw": commission_krw,
             "tax_krw": tax_krw,
@@ -197,7 +182,9 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
             print(f"총 페이지 수: {len(pdf.pages)}", file=sys.stderr)
 
         for page_num, page in enumerate(pdf.pages, 1):
-            text = page.extract_text()
+            # The final zero and fractional balance can be less than 3pt apart.
+            # Default tolerance merges them ("0 243.428075" -> "0243.428075").
+            text = page.extract_text(x_tolerance=0.5)
             if not text:
                 continue
 

@@ -7,6 +7,11 @@
         loadPortfolioDashboard,
         previewTossStatement,
     } from '@/services/portfolio';
+    import { summarizePortfolio } from '@/services/portfolioSummary';
+    import {
+        formatPortfolioQuantity,
+        portfolioAssetsInPeriod,
+    } from '@/services/portfolioPeriod';
     const router = useRouter();
     const broker = ref('toss');
     const brokers = [
@@ -29,6 +34,63 @@
         importing = ref(false),
         loading = ref(false);
     const dashboard = ref({ assets: [], transactions: [], summary: {} });
+    const period = ref('all');
+    const today = new Date().toLocaleDateString('sv-SE', {
+        timeZone: 'Asia/Seoul',
+    });
+    const startDate = ref(`${today.slice(0, 4)}-01-01`);
+    const endDate = ref(today);
+    const years = computed(() =>
+        [
+            ...new Set(
+                dashboard.value.transactions
+                    .map((t) => String(t.date).replace(/\D/g, '').slice(0, 4))
+                    .filter((y) => /^\d{4}$/.test(y))
+            ),
+        ]
+            .sort()
+            .reverse()
+    );
+    const periodError = computed(() =>
+        period.value === 'custom'
+            ? !startDate.value || !endDate.value
+                ? '시작일과 종료일을 선택해 주세요.'
+                : startDate.value > endDate.value
+                  ? '종료일은 시작일 이후로 선택해 주세요.'
+                  : ''
+            : ''
+    );
+    const periodLabel = computed(() =>
+        period.value === 'all'
+            ? '전체 기간'
+            : period.value === 'custom'
+              ? `${startDate.value} ~ ${endDate.value}`
+              : `${period.value}년`
+    );
+    const periodDashboard = computed(() => {
+        const start =
+            period.value === 'all'
+                ? ''
+                : period.value === 'custom'
+                  ? startDate.value
+                  : `${period.value}-01-01`;
+        const end =
+            period.value === 'all'
+                ? ''
+                : period.value === 'custom'
+                  ? endDate.value
+                  : `${period.value}-12-31`;
+        return summarizePortfolio(
+            portfolioAssetsInPeriod(dashboard.value.assets, start, end)
+        );
+    });
+    const selectedAssetId = ref(null);
+    const selectedAsset = computed(
+        () =>
+            periodDashboard.value.assets.find(
+                (a) => a.id === selectedAssetId.value
+            ) || null
+    );
     const review = ref(null),
         acceptedIds = ref([]),
         committing = ref(false);
@@ -44,7 +106,7 @@
     );
     const holdingTab = ref('current');
     const visibleAssets = computed(() =>
-        dashboard.value.assets.filter(
+        periodDashboard.value.assets.filter(
             (asset) =>
                 (asset.portfolioPriority === 'current'
                     ? 'current'
@@ -53,16 +115,12 @@
     );
     const tickerFilter = ref(''),
         typeFilter = ref(''),
-        selectedAsset = ref(null),
         detailDialog = ref(null);
     const won = (v) =>
         Number.isFinite(Number(v))
             ? `₩${Math.round(Number(v)).toLocaleString('ko-KR')}`
             : '—';
-    const quantity = (v) =>
-        Number.isFinite(Number(v))
-            ? Number(v).toLocaleString('ko-KR', { maximumFractionDigits: 4 })
-            : '—';
+    const quantity = formatPortfolioQuantity;
     const date = (v) =>
         v ? String(v).replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '—';
     const typeLabel = (v) =>
@@ -108,7 +166,7 @@
         { immediate: true }
     );
     const filteredTransactions = computed(() =>
-        dashboard.value.transactions
+        (periodError.value ? [] : periodDashboard.value.transactions)
             .filter(
                 (t) =>
                     (!tickerFilter.value ||
@@ -121,7 +179,7 @@
         dashboard.value.assets.filter((asset) => asset.ticker)
     );
     async function openDetail(asset) {
-        selectedAsset.value = asset;
+        selectedAssetId.value = asset.id;
         await nextTick();
         detailDialog.value?.showModal();
     }
@@ -203,6 +261,57 @@
             {{ portfolioWarning }}
         </p>
         <p v-if="message" class="notice success">{{ message }}</p>
+        <section class="panel period-panel" aria-label="조회 기간">
+            <div class="section-heading">
+                <div>
+                    <h2>조회 기간</h2>
+                    <p>
+                        배당 합계와 거래내역에 적용됩니다. 보유 수량은 현재
+                        기준입니다.
+                    </p>
+                </div>
+                <div class="filters">
+                    <label
+                        >기간
+                        <select v-model="period" aria-label="조회 기간 선택">
+                            <option value="all">전체 기간</option>
+                            <option
+                                v-for="year in years"
+                                :key="year"
+                                :value="year">
+                                {{ year }}년
+                            </option>
+                            <option value="custom">직접 선택</option>
+                        </select>
+                    </label>
+                    <template v-if="period === 'custom'">
+                        <label
+                            >시작일
+                            <input
+                                v-model="startDate"
+                                type="date"
+                                aria-label="조회 시작일"
+                        /></label>
+                        <label
+                            >종료일
+                            <input
+                                v-model="endDate"
+                                type="date"
+                                aria-label="조회 종료일"
+                        /></label>
+                    </template>
+                </div>
+            </div>
+            <p v-if="periodError" class="error" role="alert">
+                {{ periodError }}
+            </p>
+            <p v-else class="period-label" role="status">
+                {{ periodLabel }} · 거래
+                {{
+                    periodDashboard.transactions.length.toLocaleString('ko-KR')
+                }}건
+            </p>
+        </section>
         <section class="summary-grid" aria-label="포트폴리오 요약">
             <article>
                 <small>현재 보유</small
@@ -221,17 +330,19 @@
                 >
             </article>
             <article>
-                <small>누적 실수령 배당</small
+                <small>실수령 배당 · {{ periodLabel }}</small
                 ><strong>{{
-                    portfolioWarning
+                    portfolioWarning || periodError
                         ? '—'
-                        : won(dashboard.summary.dividendTotal)
+                        : won(periodDashboard.summary.dividendTotal)
                 }}</strong>
             </article>
             <article>
                 <small>최근 거래일</small
                 ><strong>{{
-                    date(dashboard.summary.latestTransactionDate)
+                    periodError
+                        ? '—'
+                        : date(periodDashboard.summary.latestTransactionDate)
                 }}</strong>
             </article>
         </section>
@@ -433,11 +544,11 @@
                             <dd>{{ date(asset.latestTransactionDate) }}</dd>
                         </div>
                         <div>
-                            <dt>누적 배당</dt>
+                            <dt>기간 배당</dt>
                             <dd>
                                 {{
-                                    asset.ledgerUnavailable
-                                        ? '조회 실패'
+                                    asset.ledgerUnavailable || periodError
+                                        ? '확인 필요'
                                         : won(asset.dividendTotal)
                                 }}
                             </dd>
@@ -470,10 +581,10 @@
         <section class="panel">
             <div class="section-heading">
                 <div>
-                    <h2>최근 거래내역</h2>
+                    <h2>기간별 거래내역</h2>
                     <p>
-                        최근 20건만 표시합니다. 종목 상세에서는 전체 원장을 볼
-                        수 있습니다.
+                        선택한 기간의 최근 20건을 표시합니다. 종목 상세에서는
+                        해당 기간의 전체 거래를 볼 수 있습니다.
                     </p>
                 </div>
                 <div class="filters">
@@ -510,7 +621,10 @@
                     <tbody>
                         <tr
                             v-for="transaction in filteredTransactions"
-                            :key="`${transaction.asset.id}-${transaction.date}-${transaction.type}-${transaction.amount}`">
+                            :key="
+                                transaction.id ||
+                                `${transaction.asset.id}-${transaction.date}-${transaction.type}-${transaction.amount}`
+                            ">
                             <td>{{ date(transaction.date) }}</td>
                             <td>
                                 <button
@@ -543,9 +657,10 @@
                         <tr v-if="!filteredTransactions.length">
                             <td colspan="7" class="empty">
                                 {{
-                                    portfolioWarning
+                                    periodError ||
+                                    (portfolioWarning
                                         ? '거래 원장 조회가 완료되지 않았습니다. 위 안내를 확인해 주세요.'
-                                        : '표시할 거래내역이 없습니다.'
+                                        : '선택한 기간에 거래내역이 없습니다.')
                                 }}
                             </td>
                         </tr>
@@ -558,7 +673,7 @@
             class="detail-dialog"
             aria-label="종목 거래 상세"
             @click="$event.target === detailDialog && closeDetail()"
-            @close="selectedAsset = null">
+            @close="selectedAssetId = null">
             <section v-if="selectedAsset">
                 <header>
                     <div>
@@ -594,18 +709,18 @@
                         >
                     </article>
                     <article>
-                        <small>누적 배당</small
+                        <small>기간 배당 · {{ periodLabel }}</small
                         ><strong>{{
-                            selectedAsset.ledgerUnavailable
-                                ? '조회 실패'
+                            selectedAsset.ledgerUnavailable || periodError
+                                ? '확인 필요'
                                 : won(selectedAsset.dividendTotal)
                         }}</strong>
                     </article>
                     <article>
                         <small>거래 건수</small
                         ><strong>{{
-                            selectedAsset.ledgerUnavailable
-                                ? '조회 실패'
+                            selectedAsset.ledgerUnavailable || periodError
+                                ? '확인 필요'
                                 : `${selectedAsset.transactions.length}건`
                         }}</strong>
                     </article>
@@ -632,8 +747,13 @@
                         </thead>
                         <tbody>
                             <tr
-                                v-for="transaction in selectedAsset.transactions"
-                                :key="`${transaction.date}-${transaction.type}-${transaction.amount}`">
+                                v-for="transaction in periodError
+                                    ? []
+                                    : selectedAsset.transactions"
+                                :key="
+                                    transaction.id ||
+                                    `${transaction.date}-${transaction.type}-${transaction.amount}`
+                                ">
                                 <td>{{ date(transaction.date) }}</td>
                                 <td>
                                     <span
@@ -655,12 +775,17 @@
                                     {{ won(transaction.tax) }}
                                 </td>
                             </tr>
-                            <tr v-if="!selectedAsset.transactions.length">
+                            <tr
+                                v-if="
+                                    periodError ||
+                                    !selectedAsset.transactions.length
+                                ">
                                 <td colspan="6" class="empty">
                                     {{
-                                        selectedAsset.ledgerUnavailable
+                                        periodError ||
+                                        (selectedAsset.ledgerUnavailable
                                             ? '거래 원장을 조회하지 못했습니다. 잠시 후 다시 시도해 주세요.'
-                                            : '저장된 거래 원장이 없습니다. 토스 거래내역서를 추가하면 배당과 거래내역을 확인할 수 있습니다.'
+                                            : '선택한 기간에 거래내역이 없습니다.')
                                     }}
                                 </td>
                             </tr>
@@ -831,6 +956,15 @@
     }
     .section-heading {
         margin-bottom: 18px;
+    }
+    .period-panel label {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .period-label {
+        font-size: 0.9rem;
     }
     .filters {
         display: flex;

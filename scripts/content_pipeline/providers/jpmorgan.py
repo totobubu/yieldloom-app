@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import json
 
 from ..models import SourceDocument
 from .base import SourceCandidate
@@ -18,6 +19,7 @@ class JPMorganAdapter(OfficialHTTPAdapter):
     fetch_mode = "browser"
     browser_ready_text = "Dividend Schedule"
     browser_content = "text"
+    browser_response_path = "/FundsMarketingHandler/historicalData"
     timeout_seconds = 90
     fund_urls = {
         "JEPI": "https://am.jpmorgan.com/us/en/asset-management/adv/products/jpmorgan-equity-premium-income-etf-46641q332#/dividends",
@@ -34,6 +36,24 @@ class JPMorganAdapter(OfficialHTTPAdapter):
             match = re.search(r"jpmorgan-(?:nasdaq-)?equity-premium-income-etf", document.source_url)
             ticker = "JEPQ" if match and "nasdaq" in match.group(0) else "JEPI"
         text = document.content.decode("utf-8", errors="replace")
+        if text.lstrip().startswith("{"):
+            payload = json.loads(text, parse_float=str)
+            events = []
+            for row in payload["dividendsDistributionHistoryList"]:
+                amount = row["dividendAmount"]
+                if amount is None or float(amount) <= 0:
+                    continue
+                ex_date = parse_date(row["exDate"])
+                events.append(DistributionEvent(
+                    provider_slug=self.slug, ticker=ticker, distribution_per_share=amount,
+                    declared_date=ex_date, ex_date=ex_date,
+                    record_date=parse_date(row["recordDate"]),
+                    payable_date=parse_date(row["payDate"]), frequency="monthly",
+                    official_url=document.source_url, verification_status="needs_review",
+                ))
+            if not events:
+                raise ValueError("J.P. Morgan official dividend history contained no rows")
+            return events
         schedule = text.split("Dividend Schedule", 1)[-1].split("Capital Gains Schedule", 1)[0]
         pattern = re.compile(
             r"(\d{1,2}/\d{1,2}/\d{4})\s+"

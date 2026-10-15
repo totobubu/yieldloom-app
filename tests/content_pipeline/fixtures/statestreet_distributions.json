@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "frequencyData": [
+        {
+          "fund": [
+            {
+              "fundName": "State Street\u00ae Blackstone High Income ETF",
+              "fundTicker": "HYBL",
+              "cusip": "78470P846",
+              "frequency": "Monthly",
+              "keywords": "State Street\u00ae Blackstone High Income ETF, HYBL, Fixed Income, US78470P8462, 78470P846, Multi-Sector, High Yield",
+              "domicile": "US",
+              "fundUri": "/us/en/individual/etfs/state-street-blackstone-high-income-etf-hybl",
+              "tickerCode": "HYBL",
+              "exDate": "10/01/2026",
+              "recordDate": "10/01/2026",
+              "dividend": "0.164532",
+              "payableDate": "10/06/2026",
+              "historyDataSize": "56",
+              "shortTeamCapital": "-",
+              "longTeamCapital": "-"
+            },
+            {
+              "fundName": "State Street\u00ae Blackstone Senior Loan ETF",
+              "fundTicker": "SRLN",
+              "cusip": "78467V608",
+              "frequency": "Monthly",
+              "keywords": "State Street\u00ae Blackstone Senior Loan ETF, SRLN, Fixed Income, SRLN US, US78467V6083, 78467V608, Bank Loan, High Yield",
+              "domicile": "US",
+              "fundUri": "/us/en/individual/etfs/state-street-blackstone-senior-loan-etf-srln",
+              "tickerCode": "SRLN",
+              "exDate": "10/01/2026",
+              "recordDate": "10/01/2026",
+              "dividend": "0.245696",
+              "payableDate": "10/06/2026",
+              "historyDataSize": "162",
+              "shortTeamCapital": "-",
+              "longTeamCapital": "-"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

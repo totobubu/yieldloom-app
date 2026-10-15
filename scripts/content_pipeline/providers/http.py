@@ -21,6 +21,7 @@ class OfficialHTTPAdapter(ProviderAdapter):
     fetch_mode = "http"
     browser_ready_text = ""
     browser_content = "html"
+    browser_response_path = ""
     browser_min_delay_ms = 5_000
     browser_max_delay_ms = 15_000
     http_min_delay_seconds = 1.0
@@ -94,7 +95,9 @@ class OfficialHTTPAdapter(ProviderAdapter):
                 {
                     "url": candidate.url,
                     "readyText": candidate.metadata.get("browserReadyText", self.browser_ready_text),
+                    "readyTextExact": candidate.metadata.get("browserReadyExact", True),
                     "content": candidate.metadata.get("browserContent", self.browser_content),
+                    "responsePath": candidate.metadata.get("browserResponsePath", self.browser_response_path),
                 }
                 for candidate in candidates
             ],

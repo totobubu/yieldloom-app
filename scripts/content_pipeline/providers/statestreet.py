@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import re
+import json
+from decimal import Decimal
 
 from ..models import DistributionEvent, SourceDocument
 from .base import SourceCandidate
@@ -18,6 +20,7 @@ class StateStreetAdapter(OfficialHTTPAdapter):
     allowed_hosts = ("ssga.com",)
     fetch_mode = "browser"
     browser_content = "text"
+    browser_response_path = "/bin/v1/ssmp/fund/dividend-distribution"
     browser_ready_text = "SPDR Dividend Distributions"
     timeout_seconds = 90
     distributions_url = (
@@ -48,6 +51,28 @@ class StateStreetAdapter(OfficialHTTPAdapter):
 
     def parse(self, document: SourceDocument) -> list[DistributionEvent]:
         text = document.content.decode("utf-8", errors="replace").replace("\r\n", "\n")
+        if text.lstrip().startswith("{"):
+            payload = json.loads(text)
+            events = []
+            for domicile in payload["data"]:
+                for group in domicile["frequencyData"]:
+                    for row in group["fund"]:
+                        amount = row["dividend"]
+                        if amount in (None, "", "-") or Decimal(amount) <= 0:
+                            continue
+                        ex_date = parse_date(row["exDate"])
+                        events.append(DistributionEvent(
+                            provider_slug=self.slug, ticker=row["fundTicker"],
+                            fund_name=row["fundName"], distribution_per_share=amount,
+                            declared_date=ex_date, ex_date=ex_date,
+                            record_date=parse_date(row["recordDate"]),
+                            payable_date=parse_date(row["payableDate"]),
+                            frequency=row["frequency"].lower(), official_url=document.source_url,
+                            verification_status="needs_review",
+                        ))
+            if not events:
+                raise ValueError("State Street official data contained no positive distributions")
+            return events
         if "Historical Distributions" not in text:
             raise ValueError("State Street distribution table was not found")
         pattern = re.compile(

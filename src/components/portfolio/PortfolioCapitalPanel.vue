@@ -11,6 +11,8 @@
         state: Object,
         loading: Boolean,
         error: String,
+        accountId: String,
+        readOnly: Boolean,
     });
     const emit = defineEmits(['refresh']);
     const summary = computed(() =>
@@ -38,6 +40,12 @@
                     const confirmed = state.classifications.find(
                         (row) => row.id === entry.id
                     );
+                    const previous = edits.value[entry.id];
+                    if (
+                        previous &&
+                        previous.revision === (confirmed?.revision || 0)
+                    )
+                        return [entry.id, previous];
                     return [
                         entry.id,
                         {
@@ -56,7 +64,11 @@
     );
     const entries = computed(() =>
         [...props.state.entries]
-            .sort((a, b) => b.date.localeCompare(a.date))
+            .sort((a, b) =>
+                String(b.date)
+                    .replace(/\D/g, '')
+                    .localeCompare(String(a.date).replace(/\D/g, ''))
+            )
             .filter(
                 (entry) =>
                     filter.value !== 'pending' ||
@@ -99,7 +111,7 @@
         error.value = '';
         success.value = '';
         try {
-            await portfolioCapitalRequest(props.user, input);
+            await portfolioCapitalRequest(props.user, input, props.accountId);
             if (input.action === 'addCash') adding.value = false;
             success.value = '계좌 내역을 저장했습니다.';
             emit('refresh');
@@ -121,7 +133,10 @@
                     환전은 원금에 더하지 않습니다.
                 </p>
             </div>
-            <button type="button" :disabled="loading || busy" @click="openAdd">
+            <button
+                type="button"
+                :disabled="loading || busy || readOnly"
+                @click="openAdd">
                 계좌 내역 직접 추가
             </button>
         </div>
@@ -160,10 +175,18 @@
                 {{ summary.pending }}건 · 마이페이지 기간 필터와 별도로 전체
                 저장 내역 기준
             </p>
-            <p v-else class="help">
+            <p v-else-if="accountId" class="help">
                 아직 계좌 내역이 없습니다. 입출금·환전이 포함된 PDF를
                 업로드하거나 실제 계좌 내역을 직접 추가해 주세요. 기존 주식
                 거래만으로 원금을 추정하지 않습니다.
+            </p>
+            <p v-if="!state.entries.length && !accountId" class="help">
+                이전 계좌의 입출금 내역은 직접 추가해 주세요. 가족 포트폴리오의
+                새 계좌와는 별도로 집계합니다.
+            </p>
+            <p v-if="readOnly" class="help">
+                조회 권한으로 열었습니다. 수정하려면 계좌 편집 권한이
+                필요합니다.
             </p>
             <details class="cash-review" :open="adding || undefined">
                 <summary>계좌 내역 검토 · {{ state.entries.length }}건</summary>
@@ -273,6 +296,7 @@
                                 <td v-if="edits[entry.id]">
                                     <select
                                         v-model="edits[entry.id].classification"
+                                        :disabled="readOnly || busy || loading"
                                         :aria-label="`${date(entry.date)} 계좌 내역 분류`">
                                         <option
                                             v-for="(label, kind) in cashKinds"
@@ -282,6 +306,7 @@
                                         </option></select
                                     ><input
                                         v-model="edits[entry.id].note"
+                                        :disabled="readOnly || busy || loading"
                                         maxlength="500"
                                         aria-label="분류 메모"
                                         placeholder="확인 근거·메모" />
@@ -289,7 +314,7 @@
                                 <td>
                                     <button
                                         type="button"
-                                        :disabled="busy || loading"
+                                        :disabled="busy || loading || readOnly"
                                         @click="
                                             save({
                                                 action: 'classifyCash',

@@ -422,7 +422,12 @@
                 }}</strong>
             </article>
         </section>
-        <PortfolioCapitalPanel :user="firebaseUser" :state="capital" :loading="capitalLoading" :error="capitalError" @refresh="loadCapital" />
+        <PortfolioCapitalPanel
+            :user="firebaseUser"
+            :state="capital"
+            :loading="capitalLoading"
+            :error="capitalError"
+            @refresh="loadCapital" />
         <section class="panel">
             <h2>이전 단일 계좌 자료</h2>
             <p>

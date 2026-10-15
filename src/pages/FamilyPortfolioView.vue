@@ -1,5 +1,8 @@
 <script setup>
-    import { computed, ref, watch } from 'vue';
+    import { computed, nextTick, ref, watch } from 'vue';
+    import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
+    import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
+    import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { useRouter } from 'vue-router';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import { familyRequest } from '@/services/familyPortfolio';
@@ -29,6 +32,72 @@
         kind = ref('transactions'),
         asOf = ref(''),
         format = ref('standard-csv');
+    const capital = ref({ entries: [], classifications: [], allocations: [] });
+    const capitalLoading = ref(false),
+        capitalError = ref(''),
+        fundingEntry = ref(null),
+        fundingDialog = ref(null),
+        fundingMessage = ref('');
+    let capitalGeneration = 0,
+        capitalScope = '';
+    async function loadCapital() {
+        const user = firebaseUser.value,
+            accountId = selectedAccount.value,
+            generation = ++capitalGeneration;
+        const scope = `${user?.uid}:${accountId}`;
+        if (scope !== capitalScope) {
+            capital.value = {
+                entries: [],
+                classifications: [],
+                allocations: [],
+            };
+            capitalScope = scope;
+        }
+        capitalError.value = '';
+        if (!user || !accountId) {
+            capitalLoading.value = false;
+            return;
+        }
+        capitalLoading.value = true;
+        try {
+            const state = await portfolioCapitalRequest(
+                user,
+                undefined,
+                accountId
+            );
+            if (generation === capitalGeneration) capital.value = state;
+        } catch (reason) {
+            if (generation === capitalGeneration)
+                capitalError.value = reason.message;
+        } finally {
+            if (generation === capitalGeneration) capitalLoading.value = false;
+        }
+    }
+    watch(
+        [selectedAccount, firebaseUser],
+        () => {
+            fundingEntry.value = null;
+            fundingDialog.value?.close();
+            loadCapital();
+        },
+        { immediate: true }
+    );
+    async function openFunding(entry) {
+        fundingEntry.value = {
+            ...entry.row,
+            id: entry.id,
+            accountId: selectedAccount.value,
+        };
+        fundingMessage.value = '';
+        await nextTick();
+        fundingDialog.value?.showModal();
+    }
+    async function fundingSaved() {
+        await loadCapital();
+        fundingMessage.value = capitalError.value
+            ? ''
+            : '자금 구성을 저장했습니다.';
+    }
     const fileInput = ref(null),
         password = ref(''),
         confirmed = ref(false),
@@ -141,6 +210,7 @@
             familyId.value = families.value[0].id;
         if (!accounts.value.some((a) => a.id === selectedAccount.value))
             selectedAccount.value = accounts.value[0]?.id || '';
+        await loadCapital();
     }
     watch(
         [firebaseUser, authLoading],
@@ -599,12 +669,67 @@
                                 </td>
                                 <td>
                                     <pre>{{ entry.row || entry }}</pre>
+                                    <button
+                                        v-if="
+                                            !legacy && entry.row?.type === 'buy'
+                                        "
+                                        type="button"
+                                        @click="openFunding(entry)">
+                                        자금 구성 확인
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </section>
+            <PortfolioCapitalPanel
+                v-if="activeAccount"
+                :key="`${ownUid}-${selectedAccount}`"
+                :user="firebaseUser"
+                :account-id="selectedAccount"
+                :state="capital"
+                :loading="capitalLoading"
+                :error="capitalError"
+                :read-only="
+                    !editableAccounts.some((a) => a.id === selectedAccount)
+                "
+                @refresh="loadCapital" />
+            <dialog
+                ref="fundingDialog"
+                aria-label="계좌 매수 자금 상세"
+                class="funding-dialog">
+                <template v-if="fundingEntry && activeAccount">
+                    <div class="funding-title">
+                        <h2>
+                            {{ activeAccount.alias }} ·
+                            {{ fundingEntry.symbol }} · {{ fundingEntry.date }}
+                        </h2>
+                        <button type="button" @click="fundingDialog.close()">
+                            상세 창 닫기
+                        </button>
+                    </div>
+                    <p v-if="fundingMessage" role="status">
+                        {{ fundingMessage }}
+                    </p>
+                    <PurchaseFundingEditor
+                        :key="`${selectedAccount}-${fundingEntry.id}`"
+                        :user="firebaseUser"
+                        :transaction="fundingEntry"
+                        :asset="{ id: 'ACCOUNT' }"
+                        :account-id="selectedAccount"
+                        :state="capital"
+                        :loading="capitalLoading"
+                        :load-error="capitalError"
+                        :read-only="
+                            !editableAccounts.some(
+                                (a) => a.id === selectedAccount
+                            )
+                        "
+                        @saved="fundingSaved"
+                        @close="fundingDialog.close()" />
+                </template>
+            </dialog>
             <section
                 v-if="
                     activeAccount &&
@@ -622,7 +747,11 @@
                         잔고 amount는 기준일 평가액이며 모르면 비워둡니다. 거래
                         amount는 거래 금액입니다. 현금 종목은 CASH를 사용하세요.
                         거래 고유번호 externalId는 같은 계좌에서
-                        재업로드·조회기간 변경에도 같아야 합니다.
+                        재업로드·조회기간 변경에도 같아야 합니다. 매수 자금
+                        배분에는 수수료 포함 정산액이 필요합니다. CSV에
+                        nativeSettlementAmount(USD) 또는 settlementAmount(KRW)를
+                        추가할 수 있습니다. 현금 CASH 행의 cashKind가
+                        exchange이면 계좌 내 환전 후보로 분류합니다.
                     </p>
                     <pre>
 date,symbol,quantity,amount,currency,type,externalId
@@ -836,6 +965,26 @@ date,symbol,quantity,amount,currency,type,externalId
 </template>
 
 <style scoped>
+    .funding-dialog {
+        width: min(850px, calc(100vw - 24px));
+        max-height: 90dvh;
+        overflow-y: auto;
+        border: 1px solid var(--app-border, #ddd);
+        border-radius: 14px;
+        padding: 16px;
+        color: var(--app-text);
+        background: var(--app-surface, #fff);
+    }
+    .funding-dialog::backdrop {
+        background: rgba(0, 0, 0, 0.45);
+    }
+    .funding-title {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
     .family-page {
         max-width: 1200px;
         margin: auto;

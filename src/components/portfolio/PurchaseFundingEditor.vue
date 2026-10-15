@@ -16,6 +16,8 @@
         state: Object,
         loading: Boolean,
         loadError: String,
+        accountId: String,
+        readOnly: Boolean,
     });
     const emit = defineEmits(['saved', 'close']);
     const basis = computed(() => {
@@ -171,7 +173,8 @@
                           transactionId: props.transaction.id,
                           revision: stored.value?.revision || 0,
                       }
-                    : input.value
+                    : input.value,
+                props.accountId
             );
             emit('saved');
         } catch (reason) {
@@ -225,7 +228,9 @@
                             v-model="evidenceIds"
                             type="checkbox"
                             :value="entry.id"
-                            :disabled="busy || loading || !!loadError"
+                            :disabled="
+                                busy || loading || !!loadError || readOnly
+                            "
                             @change="accepted = false" />{{ entry.date }} ·
                         {{ entry.rawType }} ·
                         {{ money(entry.amount, entry.currency)
@@ -242,7 +247,7 @@
                     <button
                         v-if="canSuggestConversion(entry)"
                         type="button"
-                        :disabled="busy || loading || !!loadError"
+                        :disabled="busy || loading || !!loadError || readOnly"
                         @click="useConversion(entry)">
                         환전 금액을 참고해 분할 입력
                     </button>
@@ -252,7 +257,7 @@
                 <fieldset
                     v-for="(part, index) in parts"
                     :key="index"
-                    :disabled="busy || loading || !!loadError">
+                    :disabled="busy || loading || !!loadError || readOnly">
                     <legend>자금 {{ index + 1 }}</legend>
                     <label
                         >결제 구성<select
@@ -322,7 +327,11 @@
                 <button
                     type="button"
                     :disabled="
-                        parts.length >= 12 || busy || loading || !!loadError
+                        parts.length >= 12 ||
+                        busy ||
+                        loading ||
+                        !!loadError ||
+                        readOnly
                     "
                     @click="
                         parts.push(blankPart());
@@ -360,6 +369,7 @@
                             busy ||
                             loading ||
                             !!loadError ||
+                            readOnly ||
                             !accepted ||
                             !!validation
                         ">
@@ -367,7 +377,7 @@
                     ><button
                         v-if="stored && stored.status !== 'reset'"
                         type="button"
-                        :disabled="busy || loading || !!loadError"
+                        :disabled="busy || loading || !!loadError || readOnly"
                         @click="save(true)">
                         확정 해제
                     </button>

@@ -8,8 +8,8 @@ const harness = new URL('../.tmp-capital-test.html', import.meta.url);
 await writeFile(
     harness,
     `<!doctype html><html><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><div id="app"></div><script type="module">
-import {createApp,h} from 'vue'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import MyPage from '/src/pages/MyPageView.vue';
-const router=createRouter({history:createMemoryHistory(),routes:[{path:'/',component:MyPage},{path:'/login',component:{template:'<p>login</p>'}}]});
+import {createApp,h} from 'vue'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import MyPage from '/src/pages/MyPageView.vue'; import FamilyPage from '/src/pages/FamilyPortfolioView.vue';
+const router=createRouter({history:createMemoryHistory(),routes:[{path:'/',component:new URLSearchParams(location.search).has('family')?FamilyPage:MyPage},{path:'/login',component:{template:'<p>login</p>'}}]});
 createApp({render:()=>h(RouterView)}).use(router).mount('#app');</script></html>`
 );
 const trade = {
@@ -57,18 +57,29 @@ const snap = (path) => ({
     data: () => records.get(path),
 });
 const db = {
-    doc: (path) => ({ path }),
-    collection: (path) => ({
-        get: async () => ({
+    doc: (path) => ({ path, get: async () => snap(path) }),
+    collection: (path) => {
+        const get = async (field, value) => ({
             docs: [...records.keys()]
                 .filter(
                     (k) =>
                         k.startsWith(path + '/') &&
-                        !k.slice(path.length + 1).includes('/')
+                        !k.slice(path.length + 1).includes('/') &&
+                        (!field ||
+                            field
+                                .split('.')
+                                .reduce(
+                                    (v, key) => v?.[key],
+                                    records.get(k)
+                                ) === value)
                 )
                 .map(snap),
-        }),
-    }),
+        });
+        return {
+            get: () => get(),
+            where: (field, op, value) => ({ get: () => get(field, value) }),
+        };
+    },
     runTransaction: async (fn) => {
         const writes = [];
         await fn({
@@ -105,13 +116,14 @@ try {
             body: `import {summarizePortfolio} from '/src/services/portfolioSummary.js'; export async function loadPortfolioDashboard(){return summarizePortfolio([{id:'A',symbol:'TEST',name:'검증 종목',portfolioPriority:'current',holdingShares:1,transactions:[${JSON.stringify(trade)}]}]);} export const commitTossStatement=async()=>({}); export const previewTossStatement=async()=>({}); export const refreshTossStatementReview=async()=>({});`,
         })
     );
-    await page.route('**/api/portfolio-capital', async (route) => {
+    await page.route('**/api/portfolio-capital*', async (route) => {
         const req = route.request();
         let status = 200,
             payload;
         await handler(
             {
                 method: req.method(),
+                query: Object.fromEntries(new URL(req.url()).searchParams),
                 body: req.method() === 'POST' ? req.postDataJSON() : null,
             },
             {
@@ -238,9 +250,149 @@ try {
         ),
         false
     );
+
+    const family = {
+        id: 'FA',
+        name: '검증 가족',
+        adminUid: 'owner',
+        participantUids: ['owner'],
+        profiles: { P: { name: '본인', uid: 'owner', kind: 'adult' } },
+    };
+    const account = {
+        id: 'AA',
+        familyId: 'FA',
+        ownerId: 'P',
+        authorityUid: 'owner',
+        permissions: { owner: 'owner' },
+        alias: '검증 계좌',
+        institution: '검증 증권',
+        maskedNumber: '****1234',
+        type: 'general',
+        source: 'manual',
+    };
+    const viewer = {
+        ...account,
+        id: 'BB',
+        alias: '조회 전용 계좌',
+        permissions: { owner: 'viewer' },
+    };
+    records.set('familySpaces/FA', family);
+    records.set('investmentAccounts/AA', account);
+    records.set('investmentAccounts/BB', viewer);
+    records.set('investmentAccounts/AA/entries/T', {
+        row: { ...trade, date: '2026-10-15', symbol: 'TEST' },
+        source: 'toss-pdf',
+    });
+    records.set('investmentAccounts/AA/entries/E', {
+        row: {
+            date: '2026-10-15',
+            symbol: 'CASH',
+            type: 'cash_out',
+            cashKind: 'exchange',
+            amount: 42140,
+            currency: 'KRW',
+            exchangeRate: 1400,
+            rawType: '환전원화출금',
+        },
+        source: 'toss-pdf',
+    });
+    await page.route('**/api/family-portfolio?**', (route) => {
+        const params = new URL(route.request().url()).searchParams;
+        const payload = params.get('accountId')
+            ? {
+                  entries: [
+                      {
+                          id: 'T',
+                          row: { ...trade, date: '2026-10-15', symbol: 'TEST' },
+                          source: 'toss-pdf',
+                      },
+                  ],
+                  nextCursor: null,
+              }
+            : params.get('familyId')
+              ? {
+                    families: [family],
+                    accounts: [account, viewer],
+                    summary: null,
+                }
+              : { families: [family] };
+        return route.fulfill({ json: payload });
+    });
+    await page.goto(
+        (process.env.CAPITAL_TEST_URL || 'http://127.0.0.1:5173') +
+            '/.tmp-capital-test.html?family'
+    );
+    await page
+        .getByRole('heading', { name: '선택 계좌: 검증 계좌', exact: true })
+        .waitFor();
+    const familyPanel = page.getByRole('region', { name: '투자 원금 확인' });
+    await familyPanel
+        .getByText('분류 확인 필요 1건', { exact: false })
+        .waitFor();
+    await page.getByRole('button', { name: '조회', exact: true }).click();
+    await page
+        .getByRole('button', { name: '자금 구성 확인', exact: true })
+        .click();
+    const familyDialog = page.getByRole('dialog', {
+        name: '계좌 매수 자금 상세',
+    });
+    const familyEditor = familyDialog.getByRole('region', {
+        name: '매수 자금 구성 확인',
+    });
+    await familyEditor.locator('summary').click();
+    await familyEditor
+        .getByRole('button', { name: '환전 금액을 참고해 분할 입력' })
+        .click();
+    await familyEditor.getByLabel('자금 1 자금 출처').selectOption('principal');
+    await familyEditor
+        .getByLabel('자금 2 결제 구성')
+        .selectOption('usd_balance');
+    await familyEditor.getByLabel('자금 2 자금 출처').selectOption('dividend');
+    await familyEditor
+        .getByRole('checkbox', { name: '계좌 내역과 금액을 확인했습니다.' })
+        .check();
+    await familyEditor
+        .getByRole('button', { name: '자금 구성 저장', exact: true })
+        .click();
+    await familyDialog
+        .getByText('자금 구성을 저장했습니다.', { exact: true })
+        .waitFor();
+    assert.equal(
+        records.get('investmentAccounts/AA/fundingAllocations/ACCOUNT.T')
+            .status,
+        'confirmed'
+    );
+    assert.equal(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth > innerWidth
+        ),
+        false
+    );
+    await familyDialog
+        .getByRole('button', { name: '상세 창 닫기', exact: true })
+        .click();
+    const selectedSection = page
+        .locator('section')
+        .filter({
+            has: page.getByRole('heading', {
+                name: '선택 계좌: 검증 계좌',
+                exact: true,
+            }),
+        });
+    await selectedSection.locator('select').first().selectOption('BB');
+    await familyPanel
+        .getByText('조회 권한으로 열었습니다.', { exact: false })
+        .waitFor();
+    assert.equal(
+        await familyPanel
+            .getByRole('button', { name: '계좌 내역 직접 추가' })
+            .isDisabled(),
+        true
+    );
+    await familyPanel.getByText('내역 필요', { exact: true }).first().waitFor();
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: real MyPage cash review, principal exclusion, mixed funding, consent, exact settlement, reset, USD separation and mobile layout'
+        'PASS: legacy and family account cash review, principal exclusion, mixed funding, consent, exact settlement, reset, USD separation and mobile layout'
     );
 } finally {
     await browser.close();

@@ -10,14 +10,14 @@ function firebaseApp() {
     });
 }
 
-export async function verifyFirebaseBearer(req) {
+export async function verifyFirebaseBearer(req, checkRevoked = false) {
     const header = String(req.headers.authorization ?? '');
     if (!header.startsWith('Bearer ')) {
         const error = new Error('로그인이 확인되지 않았습니다.');
         error.status = 401;
         throw error;
     }
-    return admin.auth(firebaseApp()).verifyIdToken(header.slice(7));
+    return admin.auth(firebaseApp()).verifyIdToken(header.slice(7), checkRevoked);
 }
 
 export function requireAllowedTossUser(claims) {

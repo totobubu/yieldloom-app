@@ -265,7 +265,7 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
                 transaction, next_i = parse_transaction_lines(lines, i)
                 if transaction:
                     transactions.append(transaction)
-                elif re.match(r"^\d{4}\.\d{2}\.\d{2}", lines[i].strip()):
+                elif not (cash and not cash.get('unparsed')) and re.match(r"^\d{4}\.\d{2}\.\d{2}", lines[i].strip()):
                     rejected_rows.append({"page": page_num, "line": i + 1, "date": lines[i].strip()[:10], "error": "거래 행을 해석하지 못했습니다."})
                 i = next_i
 

@@ -9,6 +9,8 @@ from datetime import date
 
 MAX_ROWS = 200
 TYPES = {'buy', 'sell', 'dividend', 'dividend_reversal', 'cash_in', 'cash_out', 'transfer_in', 'transfer_out', 'split'}
+DETAIL_NUMBERS = {'settlementAmount', 'nativeAmount', 'nativeSettlementAmount', 'exchangeRate', 'nativeCommission', 'nativeTax'}
+DETAIL_TEXT = {'rawType', 'cashKind'}
 
 
 class PortfolioError(Exception):
@@ -68,6 +70,12 @@ def normalize_row(raw, kind):
         require(row['type'] in TYPES, '지원하지 않는 거래 유형입니다. 이동·배당·분할 유형을 확인하세요.')
         row['externalId'] = text(raw.get('externalId'), '거래 고유번호', 120)
         require(row['quantity'] is not None or row['amount'] is not None, '수량 또는 금액이 필요합니다.')
+        for key in DETAIL_NUMBERS:
+            if raw.get(key) not in (None, ''):
+                row[key] = numeric(raw[key], nonnegative=True)
+        for key in DETAIL_TEXT:
+            if raw.get(key) not in (None, ''):
+                row[key] = text(raw[key], key, 100)
     return row
 
 

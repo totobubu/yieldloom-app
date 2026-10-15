@@ -5,7 +5,7 @@ import { verifyFirebaseBearer } from './_utils/firebase-auth.js';
 
 export default createApiHandler(
     capitalHandler({
-        verify: verifyFirebaseBearer,
+        verify: (req) => verifyFirebaseBearer(req, true),
         database: () => admin.firestore(),
         timestamp: () => admin.firestore.FieldValue.serverTimestamp(),
     })

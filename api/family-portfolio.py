@@ -12,7 +12,7 @@ from firebase_admin import auth, credentials, firestore
 from flask import Flask, jsonify, request
 from werkzeug.exceptions import RequestEntityTooLarge
 
-from api.family_portfolio_service import (PortfolioError, can_access, digest, identifier, iso_date,
+from api.family_portfolio_service import (DETAIL_NUMBERS, DETAIL_TEXT, PortfolioError, can_access, digest, identifier, iso_date,
                                       parse_csv, require, row_key, summarize, text, validate_rows)
 from api.server_cors import configure_cors
 from api.firebase_credential import parse_firebase_credential
@@ -78,6 +78,8 @@ def pdf_rows(content, password):
     rows = []
     occurrences = {}
     for raw in result.get('transactions', []):
+        if not raw.get('ticker'):
+            continue
         raw_type = str(raw.get('type', ''))
         kind = 'dividend_reversal' if '배당' in raw_type and '취소' in raw_type else 'dividend' if '배당' in raw_type else 'buy' if '매수' in raw_type or '구매' in raw_type else 'sell' if '매도' in raw_type or '판매' in raw_type else 'unknown'
         day = str(raw.get('date', '')).replace('.', '-').strip()
@@ -86,6 +88,20 @@ def pdf_rows(content, password):
         key = digest(row)
         occurrences[key] = occurrences.get(key, 0) + 1
         row['externalId'] = f'toss-pdf:{key}:{occurrences[key]}'
+        row.update({key: raw.get(source) for key, source in {
+            'rawType':'type', 'settlementAmount':'settlement_amount_krw', 'nativeAmount':'transaction_amount_usd',
+            'nativeSettlementAmount':'settlement_amount_usd', 'exchangeRate':'exchange_rate',
+            'nativeCommission':'commission_usd', 'nativeTax':'tax_usd',
+        }.items() if raw.get(source) is not None})
+        rows.append(row)
+    for raw in result.get('cash_transactions', []):
+        row = {'date':raw['date'].replace('.','-'), 'symbol':'CASH', 'quantity':None, 'amount':raw['amount'], 'currency':raw['currency'],
+               'type':'cash_out' if '출금' in raw['rawType'] else 'cash_in', 'rawType':raw['rawType'], 'cashKind':raw['suggestedKind']}
+        if raw.get('exchangeRate'):
+            row['exchangeRate'] = raw['exchangeRate']
+        identity = digest({**row,'balance':raw.get('balance')})
+        occurrences[identity] = occurrences.get(identity,0) + 1
+        row['externalId'] = f'toss-cash:{identity}:{occurrences[identity]}'
         rows.append(row)
     for rejected in result.get('rejected_rows', []):
         rows.append({'date': rejected.get('date', '').replace('.', '-'), 'symbol': '', 'quantity': None, 'amount': None, 'currency': 'KRW', 'type': 'unknown', 'externalId': f"unparsed-page-{rejected['page']}-line-{rejected['line']}"})
@@ -218,7 +234,7 @@ def preview(db, uid):
     require(len(rows) <= 200 and len(json.dumps(rows)) < 400000, '200행 이하의 자료로 나누어 주세요.')
     _, errors = validate_rows(rows, kind, as_of)
     # Save only editable normalized columns, never raw files, passwords or arbitrary extra columns.
-    columns = {'date', 'symbol', 'quantity', 'amount', 'currency', 'type', 'externalId'}
+    columns = {'date', 'symbol', 'quantity', 'amount', 'currency', 'type', 'externalId'} | DETAIL_NUMBERS | DETAIL_TEXT
     rows = [{key: value for key, value in row.items() if key in columns} for row in rows]
     session = ref.collection('reviews').document()
     session.set({'uid': uid, 'rows': rows, 'kind': kind, 'asOf': as_of, 'source': source,

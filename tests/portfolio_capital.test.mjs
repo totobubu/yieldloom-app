@@ -130,7 +130,7 @@ function fixture(uid = 'owner') {
             { amount: 42140, currency: 'KRW', date: trade.date },
         ],
     ]);
-    const ref = (path) => ({ path });
+    const ref = (path) => ({ path, get: async () => snapshot(path) });
     const snapshot = (path) => ({
         id: path.split('/').at(-1),
         exists: records.has(path),
@@ -138,17 +138,28 @@ function fixture(uid = 'owner') {
     });
     const db = {
         doc: ref,
-        collection: (path) => ({
-            get: async () => ({
+        collection: (path) => {
+            const get = async (field, value) => ({
                 docs: [...records.keys()]
                     .filter(
                         (k) =>
                             k.startsWith(path + '/') &&
-                            k.slice(path.length + 1).indexOf('/') < 0
+                            !k.slice(path.length + 1).includes('/') &&
+                            (!field ||
+                                field
+                                    .split('.')
+                                    .reduce(
+                                        (v, key) => v?.[key],
+                                        records.get(k)
+                                    ) === value)
                     )
                     .map(snapshot),
-            }),
-        }),
+            });
+            return {
+                get: () => get(),
+                where: (field, op, value) => ({ get: () => get(field, value) }),
+            };
+        },
         runTransaction: async (fn) => {
             const writes = [];
             const result = await fn({
@@ -167,10 +178,10 @@ function fixture(uid = 'owner') {
         database: () => db,
         timestamp: () => 'now',
     });
-    const call = async (body, method = 'POST') => {
+    const call = async (body, method = 'POST', query = {}) => {
         let status, data;
         await handler(
-            { method, body },
+            { method, body, query },
             {
                 setHeader() {},
                 status(s) {
@@ -295,4 +306,103 @@ test('cash additions are idempotent, separate from imported entries, and invalid
         409
     );
     assert.deepEqual(f.records.get('portfolios/owner/cashEntries/E'), original);
+});
+
+function accountFixture(uid = 'owner') {
+    const f = fixture(uid);
+    f.records.set('investmentAccounts/AC', {
+        familyId: 'F',
+        permissions: { owner: 'owner', viewer: 'viewer', editor: 'editor' },
+    });
+    f.records.set('familySpaces/F', {
+        participantUids: ['owner', 'viewer', 'editor', 'admin'],
+        adminUid: 'admin',
+    });
+    f.records.set('investmentAccounts/AC/entries/T', {
+        row: trade,
+        source: 'toss-pdf',
+    });
+    f.records.set('investmentAccounts/AC/entries/E', {
+        row: {
+            date: '2026-10-15',
+            symbol: 'CASH',
+            type: 'cash_out',
+            cashKind: 'exchange',
+            currency: 'KRW',
+            amount: 42140,
+            exchangeRate: 1400,
+        },
+        source: 'toss-pdf',
+    });
+    return f;
+}
+test('account-scoped capital uses family membership AND account ACL; viewer cannot edit and family administrator has no implicit account access', async () => {
+    const viewer = accountFixture('viewer');
+    const read = await viewer.call(undefined, 'GET', { accountId: 'AC' });
+    assert.equal(read.status, 200);
+    assert.equal(read.data.entries[0].id, 'E');
+    assert.equal(
+        (
+            await viewer.call({
+                action: 'classifyCash',
+                accountId: 'AC',
+                id: 'E',
+                classification: 'exchange',
+                revision: 0,
+            })
+        ).status,
+        403
+    );
+    assert.equal(
+        (
+            await accountFixture('admin').call(undefined, 'GET', {
+                accountId: 'AC',
+            })
+        ).status,
+        403
+    );
+    const removed = accountFixture('owner');
+    removed.records.set('familySpaces/F', { participantUids: [] });
+    assert.equal(
+        (await removed.call(undefined, 'GET', { accountId: 'AC' })).status,
+        403
+    );
+});
+test('editable account funding reads exact settlement from the account ledger and annotations stay separate', async () => {
+    const f = accountFixture('editor');
+    const input = {
+        ...request(),
+        action: 'saveFunding',
+        assetId: 'ACCOUNT',
+        transactionId: 'T',
+        revision: 0,
+        accountId: 'AC',
+        evidenceIds: ['E'],
+    };
+    assert.equal((await f.call(input)).status, 200);
+    assert.equal(
+        f.records.get('investmentAccounts/AC/fundingAllocations/ACCOUNT.T')
+            .status,
+        'confirmed'
+    );
+    assert.deepEqual(
+        f.records.get('investmentAccounts/AC/entries/T').row,
+        trade
+    );
+    assert.equal(
+        (
+            await f.call({
+                action: 'classifyCash',
+                accountId: 'AC',
+                id: 'E',
+                classification: 'exchange',
+                revision: 0,
+            })
+        ).status,
+        200
+    );
+    assert.equal(
+        (await f.call({ ...input, accountId: 'missing' })).status,
+        404
+    );
 });

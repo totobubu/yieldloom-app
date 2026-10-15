@@ -149,4 +149,18 @@ test('a manual withdrawal reset to unknown stays in the withdrawal filter and fo
     assert.equal(amount.currency, 'EUR');
     assert.equal(amount.amount, -30);
     assert.ok(!transactionMoney(amount.amount, amount.currency).includes('₩'));
+    const unconfirmed = portfolioActivity(
+        [],
+        { ...state, classifications: [] },
+        { type: 'cash_out' }
+    );
+    assert.equal(unconfirmed[0].type, 'external_withdrawal');
+    assert.equal(
+        portfolioActivity(
+            [],
+            { ...state, classifications: [] },
+            { type: 'dividend_withdrawal' }
+        ).length,
+        0
+    );
 });

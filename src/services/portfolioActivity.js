@@ -14,8 +14,10 @@ export function accountActivities(state) {
     );
     return state.entries.map((entry) => {
         const annotation = annotations.get(entry.id);
+        const suggested = entry.suggestedKind || 'unknown';
         const kind =
-            annotation?.classification || entry.suggestedKind || 'unknown';
+            annotation?.classification ||
+            (isWithdrawal(suggested) ? 'external_withdrawal' : suggested);
         const withdrawal =
             isWithdrawal(kind) ||
             (kind === 'unknown' &&

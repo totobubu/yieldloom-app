@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import firebase_admin
 from firebase_admin import credentials, firestore
 from flask import Flask, jsonify, request
-from server_cors import configure_cors
+from api.server_cors import configure_cors
 
 app = Flask(__name__)
 configure_cors(app)

@@ -11,10 +11,10 @@ import firebase_admin
 from firebase_admin import auth, credentials, firestore
 from flask import Flask, jsonify, request
 
-from toss_extractor import extract_transactions_from_pdf
-from portfolio_mapping import security_mapping, record_candidates
-from server_cors import configure_cors
-from firebase_credential import parse_firebase_credential
+from api.toss_extractor import extract_transactions_from_pdf
+from api.portfolio_mapping import security_mapping, record_candidates
+from api.server_cors import configure_cors
+from api.firebase_credential import parse_firebase_credential
 
 app = Flask(__name__)
 configure_cors(app)

@@ -7,8 +7,6 @@
         loadPortfolioDashboard,
         previewTossStatement,
     } from '@/services/portfolio';
-    import { getTossConnectionStatus } from '@/services/tossConnection';
-    import { getTossAccounts, getTossSnapshot } from '@/services/tossPortfolio';
     const router = useRouter();
     const file = ref(null),
         password = ref(''),
@@ -20,13 +18,6 @@
     const review = ref(null),
         acceptedIds = ref([]),
         committing = ref(false);
-    const tossConnection = ref(null),
-        tossConnectionError = ref('');
-    const tossAccounts = ref([]),
-        selectedTossAccount = ref(''),
-        tossSnapshot = ref(null),
-        tossLoading = ref(false),
-        tossError = ref('');
     const holdingTab = ref('current');
     const visibleAssets = computed(() =>
         dashboard.value.assets.filter(
@@ -58,7 +49,6 @@
         if (!firebaseUser.value) return;
         loading.value = true;
         error.value = '';
-        tossConnectionError.value = '';
         try {
             await Promise.all([
                 loadPortfolioDashboard(firebaseUser.value.uid)
@@ -73,13 +63,6 @@
                                   ? '포트폴리오 서버에 연결하지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.'
                                   : '포트폴리오를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
                         console.error(reason);
-                    }),
-                getTossConnectionStatus(firebaseUser.value)
-                    .then((connection) => {
-                        tossConnection.value = connection;
-                    })
-                    .catch((reason) => {
-                        tossConnectionError.value = reason.message;
                     }),
             ]);
         } finally {
@@ -161,36 +144,6 @@
             committing.value = false;
         }
     }
-    async function loadTossAccounts() {
-        tossLoading.value = true;
-        tossError.value = '';
-        try {
-            const payload = await getTossAccounts(firebaseUser.value);
-            tossAccounts.value = payload.accounts;
-            selectedTossAccount.value = payload.accounts[0]?.accountSeq
-                ? String(payload.accounts[0].accountSeq)
-                : '';
-        } catch (reason) {
-            tossError.value = reason.message;
-        } finally {
-            tossLoading.value = false;
-        }
-    }
-    async function loadTossSnapshot() {
-        if (!selectedTossAccount.value) return;
-        tossLoading.value = true;
-        tossError.value = '';
-        try {
-            tossSnapshot.value = await getTossSnapshot(
-                firebaseUser.value,
-                Number(selectedTossAccount.value)
-            );
-        } catch (reason) {
-            tossError.value = reason.message;
-        } finally {
-            tossLoading.value = false;
-        }
-    }
 </script>
 <template>
     <section class="mypage">
@@ -254,50 +207,6 @@
                     {{ importing ? '가져오는 중' : '가져오기' }}
                 </button>
             </form>
-        </section>
-        <section class="panel connection-panel">
-            <div>
-                <h2>토스 API 연결</h2>
-                <p v-if="tossConnection">{{ tossConnection.message }}</p>
-                <p v-else-if="tossConnectionError">
-                    연결 상태를 확인하지 못했습니다. PDF 업로드는 계속 이용할 수
-                    있습니다.
-                </p>
-                <p v-else>연결 상태를 확인하는 중입니다.</p>
-                <p v-if="tossError" class="notice error">{{ tossError }}</p>
-                <div
-                    v-if="tossConnection?.serverConnectionReady"
-                    class="toss-controls">
-                    <button :disabled="tossLoading" @click="loadTossAccounts">
-                        {{
-                            tossLoading ? '조회 중' : '읽기 전용 계좌 조회'
-                        }}</button
-                    ><template v-if="tossAccounts.length"
-                        ><select
-                            v-model="selectedTossAccount"
-                            aria-label="Toss 계좌 선택">
-                            <option
-                                v-for="account in tossAccounts"
-                                :key="account.accountSeq"
-                                :value="String(account.accountSeq)">
-                                {{ account.label }}
-                            </option></select
-                        ><button
-                            :disabled="tossLoading || !selectedTossAccount"
-                            @click="loadTossSnapshot">
-                            보유 종목 스냅샷 보기
-                        </button></template
-                    >
-                </div>
-                <p v-if="tossSnapshot">
-                    {{ tossSnapshot.syncedAt }} 기준
-                    {{ tossSnapshot.holdings.length }}개 보유 종목을 읽었습니다.
-                    이 스냅샷은 원장에 자동 반영되지 않습니다.
-                </p>
-            </div>
-            <span class="connection-status">{{
-                tossConnection?.enabled ? '연결됨' : '읽기 전용 준비 중'
-            }}</span>
         </section>
         <section v-if="review" class="panel review-panel">
             <div class="section-heading">

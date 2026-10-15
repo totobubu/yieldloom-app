@@ -5,9 +5,15 @@ import { apiUrl } from './apiUrl.js';
 
 export async function loadPortfolioAssets(uid) {
     if (!db || !uid) return [];
-    const snapshot = await getDocs(
-        query(collection(db, 'portfolios', uid, 'assets'))
-    );
+    let snapshot;
+    try {
+        snapshot = await getDocs(
+            query(collection(db, 'portfolios', uid, 'assets'))
+        );
+    } catch (error) {
+        error.portfolioStage = 'assets';
+        throw error;
+    }
     return snapshot.docs.map((item) => ({ ...item.data(), id: item.id }));
 }
 
@@ -51,44 +57,65 @@ export async function loadPortfolioAsset(uid, ticker) {
 export async function loadPortfolioDashboard(uid) {
     const assets = await loadPortfolioAssets(uid);
     if (!db || !uid) return summarizePortfolio([]);
+    const warnings = [];
     const withTransactions = await Promise.all(
-        assets.map(async (asset) => ({
-            ...asset,
-            transactions: await loadAssetTransactions(uid, asset),
-        }))
+        assets.map(async (asset) => {
+            try {
+                return {
+                    ...asset,
+                    transactions: await loadAssetTransactions(uid, asset),
+                };
+            } catch (error) {
+                warnings.push({
+                    stage: 'transactions',
+                    code: error.code || 'unknown',
+                });
+                return { ...asset, transactions: [], ledgerUnavailable: true };
+            }
+        })
     );
     // Legacy migrations sometimes copied only holdings. Read the owner's old ledger
     // when the active store has no rows, without writing or fabricating transactions.
-    if (!withTransactions.some((asset) => asset.transactions.length)) {
-        const legacy = await getDocs(
-            collection(db, 'adminPortfolios', uid, 'assets')
-        );
-        const legacyAssets = await Promise.all(
-            legacy.docs.map(async (item) => {
-                const asset = { ...item.data(), id: item.id };
-                return {
-                    ...asset,
-                    transactions: await loadAssetTransactions(
-                        uid,
-                        asset,
-                        'adminPortfolios'
-                    ),
-                };
-            })
-        );
-        for (const old of legacyAssets) {
-            const current = withTransactions.find(
-                (asset) =>
-                    asset.id === old.id ||
-                    (asset.symbol &&
-                        old.symbol &&
-                        asset.symbol.toUpperCase() === old.symbol.toUpperCase())
+    if (
+        !warnings.length &&
+        !withTransactions.some((asset) => asset.transactions.length)
+    ) {
+        try {
+            const legacy = await getDocs(
+                collection(db, 'adminPortfolios', uid, 'assets')
             );
-            if (current) current.transactions = old.transactions;
-            else withTransactions.push(old);
+            const legacyAssets = await Promise.all(
+                legacy.docs.map(async (item) => {
+                    const asset = { ...item.data(), id: item.id };
+                    return {
+                        ...asset,
+                        transactions: await loadAssetTransactions(
+                            uid,
+                            asset,
+                            'adminPortfolios'
+                        ),
+                    };
+                })
+            );
+            for (const old of legacyAssets) {
+                const current = withTransactions.find(
+                    (asset) =>
+                        asset.id === old.id ||
+                        (asset.symbol &&
+                            old.symbol &&
+                            asset.symbol.toUpperCase() ===
+                                old.symbol.toUpperCase())
+                );
+                if (current) current.transactions = old.transactions;
+                else withTransactions.push(old);
+            }
+        } catch (error) {
+            warnings.push({ stage: 'legacy', code: error.code || 'unknown' });
+            for (const asset of withTransactions)
+                asset.ledgerUnavailable = true;
         }
     }
-    return summarizePortfolio(withTransactions);
+    return { ...summarizePortfolio(withTransactions), warnings };
 }
 
 export async function previewTossStatement(user, file, password) {

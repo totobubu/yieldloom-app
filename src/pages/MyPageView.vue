@@ -8,6 +8,20 @@
         previewTossStatement,
     } from '@/services/portfolio';
     const router = useRouter();
+    const broker = ref('toss');
+    const brokers = [
+        { id: 'toss', label: '토스증권' },
+        { id: 'kis', label: '한국투자증권' },
+        { id: 'kiwoom', label: '키움증권' },
+    ];
+    const portfolioWarning = computed(() => {
+        const warnings = dashboard.value.warnings || [];
+        if (warnings.some((item) => item.stage === 'transactions'))
+            return '보유 종목은 조회했지만 일부 거래 원장을 읽지 못했습니다. 배당과 거래내역이 불완전할 수 있습니다.';
+        if (warnings.some((item) => item.stage === 'legacy'))
+            return '이전 거래 원장을 조회하지 못했습니다. 현재 보유 종목은 표시하며, 이전 배당·거래내역은 확인이 필요합니다.';
+        return '';
+    });
     const file = ref(null),
         password = ref(''),
         message = ref(''),
@@ -58,7 +72,7 @@
                     .catch((reason) => {
                         error.value =
                             reason.code === 'permission-denied'
-                                ? '포트폴리오 읽기 권한이 없습니다. Firebase Firestore 보안 규칙 배포 상태를 확인해 주세요.'
+                                ? '현재 보유 종목 조회 권한이 없습니다. 관리자에게 문의해 주세요.'
                                 : reason.code === 'unavailable'
                                   ? '포트폴리오 서버에 연결하지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.'
                                   : '포트폴리오를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
@@ -102,6 +116,15 @@
     async function upload() {
         error.value = '';
         message.value = '';
+        if (broker.value !== 'toss') {
+            error.value =
+                '선택한 증권사의 거래내역서 가져오기는 준비 중입니다.';
+            return;
+        }
+        if (!/^\d{6}$/.test(password.value)) {
+            error.value = '토스 PDF 비밀번호인 생년월일 6자리를 입력해 주세요.';
+            return;
+        }
         if (!file.value) {
             error.value = '토스 거래내역 PDF를 선택해 주세요.';
             return;
@@ -161,6 +184,9 @@
             </button>
         </header>
         <p v-if="error" class="notice error">{{ error }}</p>
+        <p v-if="portfolioWarning" class="notice warning" role="status">
+            {{ portfolioWarning }}
+        </p>
         <p v-if="message" class="notice success">{{ message }}</p>
         <section class="summary-grid" aria-label="포트폴리오 요약">
             <article>
@@ -179,7 +205,11 @@
             </article>
             <article>
                 <small>누적 실수령 배당</small
-                ><strong>{{ won(dashboard.summary.dividendTotal) }}</strong>
+                ><strong>{{
+                    portfolioWarning
+                        ? '—'
+                        : won(dashboard.summary.dividendTotal)
+                }}</strong>
             </article>
             <article>
                 <small>최근 거래일</small
@@ -190,20 +220,47 @@
         </section>
         <section class="panel import-panel">
             <div>
-                <h2>토스 거래내역서 추가</h2>
+                <h2>증권사 거래내역서 첨부</h2>
                 <p>
                     PDF 원본과 비밀번호는 저장하지 않고 거래 원장만 반영합니다.
                 </p>
             </div>
-            <form @submit.prevent="upload">
+            <div class="broker-options" role="group" aria-label="증권사 선택">
+                <button
+                    v-for="item in brokers"
+                    :key="item.id"
+                    type="button"
+                    :aria-pressed="broker === item.id"
+                    :disabled="importing || committing || !!review"
+                    @click="
+                        broker = item.id;
+                        password = '';
+                    ">
+                    {{ item.label }}
+                </button>
+            </div>
+            <p v-if="broker !== 'toss'" class="broker-help" role="status">
+                선택한 증권사의 거래내역서 가져오기는 준비 중입니다.
+            </p>
+            <p v-else id="pdf-password-help" class="broker-help">
+                토스증권 PDF 비밀번호는 생년월일 6자리(YYMMDD)입니다.
+            </p>
+            <form v-if="broker === 'toss'" @submit.prevent="upload">
                 <input
                     type="file"
                     accept="application/pdf"
+                    aria-label="토스증권 거래내역서 PDF"
                     @change="file = $event.target.files?.[0] || null" /><input
                     v-model="password"
                     type="password"
-                    autocomplete="current-password"
-                    placeholder="PDF 비밀번호" /><button :disabled="importing">
+                    autocomplete="off"
+                    inputmode="numeric"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    aria-label="PDF 비밀번호: 생년월일 6자리"
+                    aria-describedby="pdf-password-help"
+                    placeholder="생년월일 6자리 (YYMMDD)" /><button
+                    :disabled="importing">
                     {{ importing ? '가져오는 중' : '가져오기' }}
                 </button>
             </form>
@@ -347,14 +404,25 @@
                         </div>
                         <div>
                             <dt>누적 배당</dt>
-                            <dd>{{ won(asset.dividendTotal) }}</dd>
+                            <dd>
+                                {{
+                                    asset.ledgerUnavailable
+                                        ? '조회 실패'
+                                        : won(asset.dividendTotal)
+                                }}
+                            </dd>
                         </div>
                         <div>
                             <dt>원장 건수</dt>
                             <dd>
-                                매수 {{ asset.transactionCounts.buy }} · 매도
-                                {{ asset.transactionCounts.sell }} · 배당
-                                {{ asset.transactionCounts.dividend }}
+                                <span v-if="asset.ledgerUnavailable"
+                                    >조회 실패</span
+                                ><span v-else
+                                    >매수 {{ asset.transactionCounts.buy }} ·
+                                    매도 {{ asset.transactionCounts.sell }} ·
+                                    배당
+                                    {{ asset.transactionCounts.dividend }}</span
+                                >
                             </dd>
                         </div>
                     </dl>
@@ -443,7 +511,11 @@
                         </tr>
                         <tr v-if="!filteredTransactions.length">
                             <td colspan="7" class="empty">
-                                표시할 거래내역이 없습니다.
+                                {{
+                                    portfolioWarning
+                                        ? '거래 원장 조회가 완료되지 않았습니다. 위 안내를 확인해 주세요.'
+                                        : '표시할 거래내역이 없습니다.'
+                                }}
                             </td>
                         </tr>
                     </tbody>
@@ -492,13 +564,19 @@
                     </article>
                     <article>
                         <small>누적 배당</small
-                        ><strong>{{ won(selectedAsset.dividendTotal) }}</strong>
+                        ><strong>{{
+                            selectedAsset.ledgerUnavailable
+                                ? '조회 실패'
+                                : won(selectedAsset.dividendTotal)
+                        }}</strong>
                     </article>
                     <article>
                         <small>거래 건수</small
-                        ><strong
-                            >{{ selectedAsset.transactions.length }}건</strong
-                        >
+                        ><strong>{{
+                            selectedAsset.ledgerUnavailable
+                                ? '조회 실패'
+                                : `${selectedAsset.transactions.length}건`
+                        }}</strong>
                     </article>
                 </div>
                 <router-link
@@ -548,9 +626,11 @@
                             </tr>
                             <tr v-if="!selectedAsset.transactions.length">
                                 <td colspan="6" class="empty">
-                                    저장된 거래 원장이 없습니다. 토스
-                                    거래내역서를 추가하면 배당과 거래내역을
-                                    확인할 수 있습니다.
+                                    {{
+                                        selectedAsset.ledgerUnavailable
+                                            ? '거래 원장을 조회하지 못했습니다. 잠시 후 다시 시도해 주세요.'
+                                            : '저장된 거래 원장이 없습니다. 토스 거래내역서를 추가하면 배당과 거래내역을 확인할 수 있습니다.'
+                                    }}
                                 </td>
                             </tr>
                         </tbody>
@@ -673,6 +753,23 @@
         padding: 24px;
         margin-bottom: 20px;
         min-width: 0;
+    }
+    .broker-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 16px 0 10px;
+    }
+    .broker-options button[aria-pressed='true'] {
+        background: var(--app-accent);
+        color: var(--app-accent-contrast);
+        border-color: var(--app-accent);
+    }
+    .broker-help {
+        font-size: 0.9rem;
+    }
+    .warning {
+        color: var(--app-muted);
     }
     .import-panel form {
         display: flex;
@@ -855,6 +952,23 @@
         }
         .connection-status {
             align-self: flex-start;
+        }
+        .broker-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 16px 0 10px;
+        }
+        .broker-options button[aria-pressed='true'] {
+            background: var(--app-accent);
+            color: var(--app-accent-contrast);
+            border-color: var(--app-accent);
+        }
+        .broker-help {
+            font-size: 0.9rem;
+        }
+        .warning {
+            color: var(--app-muted);
         }
         .import-panel form {
             flex-direction: column;

@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import ThumbnailCardShell from './ThumbnailCardShell.vue';
 
 const props = defineProps({ data: { type: Object, required: true } });
-const usd = (value, digits = 4) => Number.isFinite(Number(value)) ? `$${Number(value).toFixed(digits).replace(/\.?(0+)$/, '')}` : '데이터 없음';
+const usd = (value, digits = 4) => value != null && Number.isFinite(Number(value)) ? `$${Number(value).toFixed(digits).replace(/\.?(0+)$/, '')}` : '데이터 없음';
 const date = (value) => value ? String(value).replace(/-/g, '.') : '날짜 미정';
 const change = computed(() => Number(props.data.dividendDifference ?? 0));
 const changePercent = computed(() => Number(props.data.dividendChangePercent));
@@ -24,9 +24,9 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 			</section>
 			<section class="metrics">
 				<div><small>예상 세후 실수령</small><b>{{ usd(data.afterTaxDividendAmount, 6) }}</b><em>15% 원천징수</em></div>
-				<div><small>배당락일 종가</small><b>{{ usd(data.exDividendClose, 2) }}</b><em>USD 기준</em></div>
+				<div><small>{{ data.referencePriceLabel || '배당락일 종가' }}</small><b>{{ usd(data.exDividendClose, 2) }}</b><em>{{ data.usesLatestPrice ? `${data.referencePriceDate} 기준` : 'USD 기준' }}</em></div>
 				<div><small>세전 배당률</small><b>{{ data.exDividendYield != null ?
-					`${Number(data.exDividendYield).toFixed(2)}%` : '—' }}</b><em>배당락일 종가 기준</em></div>
+					`${Number(data.exDividendYield).toFixed(2)}%` : '—' }}</b><em>{{ data.referencePriceLabel || '배당락일 종가' }} 기준</em></div>
 			</section>
 		</template>
 		<p v-else class="unavailable">최근 실제 배당 데이터를 찾지 못했습니다.</p>

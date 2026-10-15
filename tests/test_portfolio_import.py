@@ -28,31 +28,16 @@ class PortfolioImportTest(unittest.TestCase):
             rows = portfolio_import.parse_statement(UploadedPdf(), "password")
         self.assertEqual(rows, [{"code": "US88636J6423", "date": "20261013", "rawType": "매수", "type": "buy", "quantity": 2.0, "amount": 1000.0, "settlementAmount": None, "nativeSettlementAmount": None, "exchangeRate": None, "nativeCommission": None, "nativeTax": None, "price": None, "commission": None, "tax": None, "currency": "KRW", "nativeAmount": None, "nativePrice": None, "name": None, "balanceQuantity": None}])
 
-class ReviewLifecycleTest(unittest.TestCase):
-    def setUp(self):
-        from datetime import datetime, timedelta, timezone
-        from unittest.mock import MagicMock
-        self.db=MagicMock()
-        self.session=self.db.collection.return_value.document.return_value.collection.return_value.document.return_value
-        self.session.get.return_value.exists=True
-        self.first={'code':'US35953D4016','date':'20260101','rawType':'구매','type':'buy','quantity':1.0,'amount':100.0}
-        self.second={'code':'US26923N4135','date':'20260101','rawType':'구매','type':'buy','quantity':1.0,'amount':200.0}
-        self.session.get.return_value.to_dict.return_value={'expiresAt':datetime.now(timezone.utc)+timedelta(hours=1),'items':[self.first,self.second]}
-        self.client=portfolio_import.app.test_client()
-
-    def test_partial_commit_retains_unmapped_rows_for_later_confirmation(self):
-        ready=[{'id':portfolio_import.stable_id(self.first),'status':'ready'}]
-        remaining=[{'id':portfolio_import.stable_id(self.second),'status':'unmapped'}]
-        with patch.object(portfolio_import,'firebase_db',return_value=self.db),patch.object(portfolio_import,'get_user',return_value={'uid':'owner'}),patch.object(portfolio_import,'review_rows',side_effect=[ready,remaining]),patch.object(portfolio_import,'persist_items',return_value={'transactionCount':1}):
-            response=self.client.post('/api/portfolio-import?action=commit',json={'sessionId':'session','acceptedIds':[portfolio_import.stable_id(self.first)]})
-        self.assertEqual(response.status_code,200)
-        self.assertEqual(response.json['remainingReview']['rows'],remaining)
-        self.session.update.assert_called_once_with({'items':[self.second]})
-        self.session.delete.assert_not_called()
-
-    def test_refresh_rechecks_mapping_without_uploading_or_storing_trades(self):
-        with patch.object(portfolio_import,'firebase_db',return_value=self.db),patch.object(portfolio_import,'get_user',return_value={'uid':'owner'}),patch.object(portfolio_import,'review_rows',return_value=[{'id':'ready','status':'ready'}]),patch.object(portfolio_import,'persist_items') as persist:
-            response=self.client.post('/api/portfolio-import?action=refresh',json={'sessionId':'session'})
-        self.assertEqual(response.status_code,200)
-        self.assertEqual(response.json['rows'][0]['status'],'ready')
+class RetiredReviewLifecycleTest(unittest.TestCase):
+    def test_retired_commit_cannot_modify_legacy_data(self):
+        with patch.object(portfolio_import, 'firebase_db') as db, patch.object(portfolio_import, 'persist_items') as persist:
+            response = portfolio_import.app.test_client().post('/api/portfolio-import?action=commit', json={'sessionId': 'old', 'acceptedIds': ['row']})
+        self.assertEqual(response.status_code, 410)
+        db.assert_not_called()
         persist.assert_not_called()
+
+    def test_retired_refresh_directs_clients_to_account_scoped_import(self):
+        with patch.object(portfolio_import, 'firebase_db') as db:
+            response = portfolio_import.app.test_client().post('/api/portfolio-import?action=refresh', json={'sessionId': 'old'})
+        self.assertEqual(response.status_code, 410)
+        db.assert_not_called()

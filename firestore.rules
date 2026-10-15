@@ -1,92 +1,62 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
+
     // Family/account v2 is exclusively accessed through the authenticated API.
     // Use distinct names from assets to avoid the legacy collectionGroup admin rule.
     match /familySpaces/{document=**} { allow read, write: if false; }
     match /familyInvitations/{document=**} { allow read, write: if false; }
     match /investmentAccounts/{document=**} { allow read, write: if false; }
 
+
     // Helper function: 사용자가 인증되었는지 확인
     function isAuthenticated() {
       return request.auth != null;
     }
-    
+
     // Helper function: 사용자가 자신의 데이터에만 접근 가능
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-    
-    // Shared Firestore policy for DivGrow (collection) and Yieldloom (service).
-    // Keep the two repositories' firestore.rules files byte-for-byte aligned.
-    // Move these addresses to Firebase custom claims before the administrator list grows.
+
+    // Helper function: 관리자 여부 확인
     function isAdmin() {
-      return isAuthenticated() && 
+      return isAuthenticated() &&
              request.auth.token.email != null &&
-             (request.auth.token.email == 'jomalkeun@gmail.com' ||
-              request.auth.token.email == 'totobubu.lab@gmail.com');
+             request.auth.token.email == 'totobubu.lab@gmail.com';
     }
-    
+
     // userBookmarks 컬렉션 규칙 (기존)
     match /userBookmarks/{userId} {
       allow read, write: if isOwner(userId);
     }
-    
-    // Shared personal asset ledger.
+
+    // userAssets 컬렉션 규칙
     match /userAssets/{userId} {
-      allow read, write: if isOwner(userId) || isAdmin();
-    }
-    match /userAssets/{userId}/{document=**} {
-      allow read, write: if isOwner(userId) || isAdmin();
-    }
-
-    // 관리자 전용 토스 포트폴리오 가져오기 데이터
-    match /adminPortfolios/{userId} {
+      // 관리자는 모든 사용자 데이터 접근 가능, 일반 사용자는 본인 데이터만
       allow read, write: if isOwner(userId) || isAdmin();
 
+      // 가족 멤버 하위 컬렉션
+      match /familyMembers/{memberId} {
+        allow read, write: if isOwner(userId) || isAdmin();
+
+        // Accounts directly under familyMember
+        match /accounts/{accountId} {
+          allow read, write: if isOwner(userId) || isAdmin();
+        }
+      }
+
+      // [New Asset-Centric Structure] Assets directly under user
       match /assets/{assetId} {
         allow read, write: if isOwner(userId) || isAdmin();
 
+        // Transactions for each asset
         match /transactions/{transactionId} {
           allow read, write: if isOwner(userId) || isAdmin();
         }
       }
     }
 
-    // Active member portfolio store. PDFs are parsed server-side; the browser
-    // may only read its own normalized portfolio data.
-    match /portfolios/{userId} {
-      allow read: if isOwner(userId) || isAdmin();
-      allow write: if isAdmin();
-
-      match /assets/{assetId} {
-        allow read: if isOwner(userId) || isAdmin();
-        allow write: if isAdmin();
-
-        match /transactions/{transactionId} {
-          allow read: if isOwner(userId) || isAdmin();
-          allow write: if isAdmin();
-        }
-      }
-    }
-
-    // Older DivGrow portfolio screen. Keep it available while data is shared.
-    match /users/{userId}/holdings/{holdingId} {
-      allow read, write: if isOwner(userId) || isAdmin();
-    }
-
-    // A signed-in user may only create or manage their own search history.
-    match /searchData/{searchId} {
-      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
-      allow read, update, delete: if isAdmin() ||
-        (isAuthenticated() && resource.data.uid == request.auth.uid);
-    }
-
-    match /contentPresets/{userId}/items/{presetId} {
-      allow read, write: if isOwner(userId);
-    }
-    
     // collectionGroup 쿼리를 위한 별도 규칙
     // 모든 assets 컬렉션에 대한 관리자 접근 권한
     match /{path=**}/assets/{assetId} {
@@ -98,5 +68,15 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated();
     }
+    match /portfolios/{userId}/{document=**} {
+      allow read: if request.auth != null
+              && request.auth.uid == userId;
+      }
+    // Owner and existing administrators can read the legacy portfolio ledger.
+    match /adminPortfolios/{userId}/{document=**} {
+      allow read: if isOwner(userId) || isAdmin();
+    }
+
   }
+
 }

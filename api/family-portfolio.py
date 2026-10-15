@@ -118,6 +118,24 @@ def create_family(db, uid, body):
     return {'familyId': ref.id}
 
 
+def ensure_personal_space(db, uid, body):
+    """Create the user's private account container once, only on explicit account registration."""
+    ref = db.collection('familySpaces').document('personal_' + hashlib.sha256(uid.encode()).hexdigest()[:32])
+    profile_id = 'self_' + hashlib.sha256(uid.encode()).hexdigest()[:24]
+    @firestore.transactional
+    def apply(tx):
+        existing = ref.get(transaction=tx)
+        if existing.exists:
+            require(uid in existing.to_dict()['participantUids'], '공간 접근 권한이 없습니다.', 403)
+        else:
+            tx.set(ref, {'schemaVersion': 2, 'kind': 'personal', 'name': '내 포트폴리오',
+                         'adminUid': uid, 'participantUids': [uid], 'createdAt': now(),
+                         'profiles': {profile_id: {'name': text(body.get('profileName') or '본인', '내 이름'),
+                                               'kind': 'adult', 'uid': uid}}})
+        return {'familyId': ref.id}
+    return apply(db.transaction())
+
+
 def mutate_family(db, uid, action, body):
     ref, _ = family(db, body.get('familyId'), uid)
     @firestore.transactional
@@ -351,6 +369,8 @@ def route():
         require(isinstance(body, dict), '요청 형식이 잘못되었습니다.')
         if action == 'preview':
             result = preview(db, uid)
+        elif action == 'ensurePersonal':
+            result = ensure_personal_space(db, uid, body)
         elif action == 'createFamily':
             result = create_family(db, uid, body)
         elif action in {'renameFamily', 'renameProfile', 'addMinor', 'invite'}:

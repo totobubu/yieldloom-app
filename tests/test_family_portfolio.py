@@ -148,6 +148,17 @@ class FamilyApiTest(unittest.TestCase):
     def commit(self, review, account=None, uid='alice'):
         return self.post('commit', {'accountId': account or self.account, 'reviewId': review['reviewId'], 'rows': review['rows']}, uid)
 
+    def test_personal_account_setup_is_repeatable_and_private(self):
+        first = self.post('ensurePersonal', {'profileName': 'Alice'})
+        second = self.post('ensurePersonal', {'profileName': 'Different'})
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(first.json, second.json)
+        space = self.db.data['familySpaces/' + first.json['familyId']]
+        self.assertEqual(space['kind'], 'personal')
+        self.assertEqual(space['participantUids'], ['alice'])
+        self.assertEqual(list(space['profiles'].values())[0]['name'], 'Alice')
+        self.assertEqual(self.get('familyId=' + first.json['familyId'], 'bob').status_code, 403)
+
     def test_authentication_and_cross_family_denied(self):
         self.assertEqual(self.client.get('/api/family-portfolio').status_code, 401)
         self.assertEqual(self.get('familyId=' + self.family, 'outsider').status_code, 403)

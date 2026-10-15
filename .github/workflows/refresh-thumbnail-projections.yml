@@ -1,13 +1,14 @@
 name: Refresh thumbnail projections
 on:
   schedule:
-    - cron: '30 1 * * 2-6'
+    # Leave room for the upstream 23:00 UTC collection and delayed R2 uploads.
+    - cron: '30 3 * * 2-6'
   workflow_dispatch:
     inputs:
       symbols:
-        description: 'Comma-separated tickers, or ALL for the reviewed source directory'
+        description: 'Leave blank to use repository settings; comma-separated tickers or ALL to override'
         required: false
-        default: 'AMDY,TSLY,TOPW,AAPL,TSLA'
+        default: ''
         type: string
 permissions:
   contents: read

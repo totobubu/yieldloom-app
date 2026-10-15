@@ -2,6 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
     capitalSummary,
+    capitalRecovery,
+    combineCapitalStates,
+    stockRecovery,
     purchaseBasis,
     validateFunding,
     fundingCandidates,
@@ -405,4 +408,157 @@ test('editable account funding reads exact settlement from the account ledger an
         (await f.call({ ...input, accountId: 'missing' })).status,
         404
     );
+});
+
+test('recovery uses gross deposits, confirmed proceeds and separate currencies', () => {
+    const entries = [
+        { id: 'in', currency: 'KRW', amount: 1000 },
+        { id: 'out', currency: 'KRW', amount: 300 },
+        { id: 'div', currency: 'KRW', amount: 200 },
+        { id: 'sale', currency: 'KRW', amount: 1000 },
+        { id: 'usd', currency: 'USD', amount: 50 },
+        { id: 'pending', currency: 'KRW', amount: 9000 },
+        { id: 'fx', currency: 'KRW', amount: 5000 },
+    ].map((row) => ({ ...row, date: '20261015' }));
+    const classifications = [
+        { id: 'in', classification: 'external_deposit' },
+        { id: 'out', classification: 'external_withdrawal' },
+        { id: 'div', classification: 'dividend' },
+        { id: 'sale', classification: 'sale' },
+        { id: 'usd', classification: 'dividend' },
+        { id: 'fx', classification: 'exchange' },
+    ];
+    const [krw, usd] = capitalRecovery(entries, classifications, 'proceeds');
+    assert.equal(krw.principal, 1000);
+    assert.equal(krw.recovered, 1200);
+    assert.equal(krw.rate, 120);
+    assert.equal(krw.remaining, 0);
+    assert.equal(usd.recovered, 50);
+    assert.equal(usd.rate, null);
+    assert.equal(
+        capitalRecovery(entries, classifications, 'withdrawals')[0].rate,
+        30
+    );
+    assert.equal(
+        capitalRecovery(entries, classifications, 'dividends')[0].rate,
+        20
+    );
+    assert.equal(capitalRecovery([], [])[0].rate, null);
+});
+
+test('whole-account recovery defaults to actual withdrawals and namespaces identical local IDs', () => {
+    const state = (classification) => ({
+        entries: [
+            { id: 'same', currency: 'KRW', date: '20261015', amount: 100 },
+        ],
+        classifications: [{ id: 'same', classification }],
+    });
+    const combined = combineCapitalStates([
+        { accountId: 'a', state: state('external_deposit') },
+        { accountId: 'b', state: state('transfer') },
+        { accountId: 'c', state: state('external_withdrawal') },
+    ]);
+    const [krw] = capitalRecovery(combined.entries, combined.classifications);
+    assert.equal(krw.principal, 100);
+    assert.equal(krw.recovered, 100);
+    assert.equal(krw.rate, 100);
+});
+
+test('A dividend reinvested in B remains A performance and B purchase cost, with stored origin', () => {
+    const buy = {
+        id: 'buy-b',
+        accountId: 'a',
+        assetId: 'ACCOUNT',
+        symbol: 'B',
+        type: 'buy',
+        date: '20261015',
+        currency: 'KRW',
+        amount: 100000,
+        settlementAmount: 100000,
+    };
+    const input = {
+        basisKey: purchaseBasis(buy).basisKey,
+        parts: [
+            {
+                method: 'krw_cash',
+                amount: 100000,
+                source: 'other_dividend',
+                sourceSymbol: 'a',
+            },
+        ],
+    };
+    const allocation = {
+        ...validateFunding(input, buy),
+        accountId: 'a',
+        assetId: 'ACCOUNT',
+        transactionId: buy.id,
+    };
+    assert.equal(allocation.parts[0].sourceSymbol, 'A');
+    assert.throws(
+        () =>
+            validateFunding(
+                { ...input, parts: [{ ...input.parts[0], sourceSymbol: '' }] },
+                buy
+            ),
+        /종목 코드/
+    );
+    const result = stockRecovery(
+        [
+            {
+                id: 'div-a',
+                accountId: 'a',
+                symbol: 'A',
+                currency: 'KRW',
+                type: 'dividend',
+                amount: 100000,
+            },
+            {
+                id: 'reversal',
+                accountId: 'a',
+                symbol: 'A',
+                currency: 'KRW',
+                type: 'dividend_reversal',
+                amount: 10000,
+            },
+            buy,
+        ],
+        [allocation]
+    );
+    assert.equal(result.find((row) => row.symbol === 'A').dividends, 90000);
+    const b = result.find((row) => row.symbol === 'B');
+    assert.equal(b.purchaseCost, 100000);
+    assert.equal(b.dividends, 0);
+    assert.equal(b.funding['A 배당금 재투자'], 100000);
+    assert.equal(b.rate, 0);
+    assert.equal(stockRecovery([buy])[0].unknownFunding, 100000);
+    assert.equal(
+        stockRecovery([buy], [{ ...allocation, basisKey: 'old' }])[0]
+            .unknownFunding,
+        100000
+    );
+    assert.equal(
+        stockRecovery([{ ...buy, settlementAmount: null }])[0].rate,
+        null
+    );
+});
+
+test('overseas trades with KRW equivalents report USD settlement and USD funding together', () => {
+    const imported = {
+        ...trade,
+        id: 'T',
+        assetId: 'ACCOUNT',
+        accountId: 'a',
+        symbol: 'B',
+        currency: 'KRW',
+    };
+    const allocation = {
+        ...validateFunding(request(), imported),
+        transactionId: 'T',
+        assetId: 'ACCOUNT',
+        accountId: 'a',
+    };
+    const [row] = stockRecovery([imported], [allocation]);
+    assert.equal(row.currency, 'USD');
+    assert.equal(row.purchaseCost, 100.1);
+    assert.equal(row.funding['배당금 (출처 종목 미확인)'], 70);
 });

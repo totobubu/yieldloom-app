@@ -144,20 +144,28 @@ try {
         (process.env.CAPITAL_TEST_URL || 'http://127.0.0.1:5173') +
             '/.tmp-capital-test.html'
     );
-    const panel = page.getByRole('region', { name: '투자 원금 확인' });
-    await panel.getByText('분류 확인 필요 2건', { exact: false }).waitFor();
-    assert.equal(await panel.getByText('₩0', { exact: true }).count(), 1);
+    const panel = page.getByRole('region', {
+        name: '투자 원금 대비 회수 현황',
+    });
+    await panel
+        .getByText('분류 확인 필요 2건', { exact: false })
+        .first()
+        .waitFor();
+    assert.ok(await panel.getByText('₩0', { exact: true }).count());
     await panel.locator('summary').click();
     const deposit = panel.locator('tr').filter({ hasText: '원화입금' });
     await deposit.getByRole('button', { name: '분류 확정' }).click();
-    await panel.getByText('₩1,000,000', { exact: true }).waitFor();
-    await panel.getByText('분류 확인 필요 1건', { exact: false }).waitFor();
+    await panel.getByText('₩1,000,000', { exact: true }).first().waitFor();
+    await panel
+        .getByText('분류 확인 필요 1건', { exact: false })
+        .first()
+        .waitFor();
     const fx = panel.locator('tr').filter({ hasText: '환전원화출금' });
     await fx.getByRole('button', { name: '분류 확정' }).click();
     await panel.getByText('분류 확인 필요 0건', { exact: false }).waitFor();
     assert.equal(
-        await panel.getByText('₩1,000,000', { exact: true }).count(),
-        1
+        (await panel.getByText('₩1,000,000', { exact: true }).count()) > 0,
+        true
     ); // FX is not added to principal.
     await page.getByRole('button', { name: '거래 상세', exact: true }).click();
     const dialog = page.locator('dialog[open]');
@@ -183,7 +191,8 @@ try {
     );
     await editor.getByLabel('자금 1 자금 출처').selectOption('principal');
     await editor.getByLabel('자금 2 결제 구성').selectOption('usd_balance');
-    await editor.getByLabel('자금 2 자금 출처').selectOption('dividend');
+    await editor.getByLabel('자금 2 자금 출처').selectOption('other_dividend');
+    await editor.getByLabel('자금 2 배당 출처 종목').fill('SCHD');
     const save = editor.getByRole('button', {
         name: '자금 구성 저장',
         exact: true,
@@ -208,6 +217,15 @@ try {
         records.get('portfolios/owner/assets/A/transactions/T'),
         trade
     );
+    assert.equal(
+        records.get('portfolios/owner/fundingAllocations/A.T').parts[1]
+            .sourceSymbol,
+        'SCHD'
+    );
+    await page
+        .getByRole('region', { name: '종목별 투자 비용 회수' })
+        .getByText('SCHD 배당금 재투자', { exact: false })
+        .waitFor();
     await editor.getByLabel('자금 1 사용 금액', { exact: true }).fill('29');
     await editor
         .getByRole('checkbox', { name: '계좌 내역과 금액을 확인했습니다.' })
@@ -239,10 +257,10 @@ try {
         .getByLabel('확인 근거·메모', { exact: true })
         .fill('계좌의 외화 외부입금 확인');
     await add.getByRole('button', { name: '확인 후 추가' }).click();
-    await panel.getByText('US$100.00', { exact: true }).waitFor();
+    await panel.getByText('US$100.00', { exact: true }).first().waitFor();
     assert.equal(
-        await panel.getByText('₩1,000,000', { exact: true }).count(),
-        1
+        (await panel.getByText('₩1,000,000', { exact: true }).count()) > 0,
+        true
     );
     assert.equal(
         await page.evaluate(
@@ -296,6 +314,22 @@ try {
         },
         source: 'toss-pdf',
     });
+    for (const [id, amount, classification] of [
+        ['AA', 1000000, 'external_deposit'],
+        ['BB', 200000, 'external_withdrawal'],
+    ]) {
+        records.set(`investmentAccounts/${id}/cashEntries/same`, {
+            date: '20261015',
+            currency: 'KRW',
+            amount,
+            rawType: '검증',
+            source: 'manual',
+        });
+        records.set(`investmentAccounts/${id}/cashClassifications/same`, {
+            classification,
+            revision: 1,
+        });
+    }
     await page.route('**/api/family-portfolio?**', (route) => {
         const params = new URL(route.request().url()).searchParams;
         const payload = params.get('accountId')
@@ -325,9 +359,22 @@ try {
     await page
         .getByRole('heading', { name: '선택 계좌: 검증 계좌', exact: true })
         .waitFor();
-    const familyPanel = page.getByRole('region', { name: '투자 원금 확인' });
+    const overview = page.getByRole('region', {
+        name: '전체 계좌 원금 회수 현황',
+        exact: true,
+    });
+    await overview.getByText('20%', { exact: true }).waitFor();
+    await overview
+        .getByRole('region', { name: '종목별 투자 비용 회수' })
+        .getByText('TEST', { exact: false })
+        .first()
+        .waitFor();
+    const familyPanel = page.getByRole('region', {
+        name: '투자 원금 대비 회수 현황',
+    });
     await familyPanel
         .getByText('분류 확인 필요 1건', { exact: false })
+        .first()
         .waitFor();
     await page.getByRole('button', { name: '조회', exact: true }).click();
     await page
@@ -371,14 +418,12 @@ try {
     await familyDialog
         .getByRole('button', { name: '상세 창 닫기', exact: true })
         .click();
-    const selectedSection = page
-        .locator('section')
-        .filter({
-            has: page.getByRole('heading', {
-                name: '선택 계좌: 검증 계좌',
-                exact: true,
-            }),
-        });
+    const selectedSection = page.locator('section').filter({
+        has: page.getByRole('heading', {
+            name: '선택 계좌: 검증 계좌',
+            exact: true,
+        }),
+    });
     await selectedSection.locator('select').first().selectOption('BB');
     await familyPanel
         .getByText('조회 권한으로 열었습니다.', { exact: false })
@@ -389,7 +434,7 @@ try {
             .isDisabled(),
         true
     );
-    await familyPanel.getByText('내역 필요', { exact: true }).first().waitFor();
+    await familyPanel.getByText('₩200,000', { exact: true }).first().waitFor();
     assert.deepEqual(errors, []);
     console.log(
         'PASS: legacy and family account cash review, principal exclusion, mixed funding, consent, exact settlement, reset, USD separation and mobile layout'

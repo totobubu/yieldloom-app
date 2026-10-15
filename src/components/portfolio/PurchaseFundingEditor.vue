@@ -52,6 +52,7 @@
             amount,
             paidKrw: '',
             source: 'unknown',
+            sourceSymbol: '',
         };
     }
     watch(
@@ -314,6 +315,16 @@
                             </option>
                         </select></label
                     >
+                    <label v-if="part.source === 'other_dividend'"
+                        >배당금을 받은 종목 코드
+                        <input
+                            v-model="part.sourceSymbol"
+                            required
+                            maxlength="40"
+                            placeholder="예: SCHD"
+                            :aria-label="`자금 ${index + 1} 배당 출처 종목`"
+                            @input="accepted = false" />
+                    </label>
                     <button
                         v-if="parts.length > 1"
                         type="button"
@@ -355,9 +366,10 @@
                         @input="accepted = false" />
                 </label>
                 <p class="help">
-                    이 배분은 해당 매수의 설명으로 저장됩니다. 순입금 원금에
-                    다시 더하지 않습니다. ‘확인 필요’ 금액은 미확정으로
-                    남습니다.
+                    배당금 재투자도 이 종목의 매수원가에 포함됩니다. 배당 성과는
+                    배당을 지급한 종목에 남습니다. 이 배분은 해당 매수의
+                    설명으로 저장됩니다. 순입금 원금에 다시 더하지 않습니다.
+                    ‘확인 필요’ 금액은 미확정으로 남습니다.
                 </p>
                 <label class="evidence"
                     ><input v-model="accepted" type="checkbox" />계좌 내역과

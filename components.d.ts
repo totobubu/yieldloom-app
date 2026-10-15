@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AccountRecoveryOverview: typeof import('./src/components/portfolio/AccountRecoveryOverview.vue')['default']
     AdSlot: typeof import('./src/components/ads/AdSlot.vue')['default']
     CardShareActions: typeof import('./src/components/thumbnail/CardShareActions.vue')['default']
     DividendCalendarThumbnail: typeof import('./src/components/thumbnail/DividendCalendarThumbnail.vue')['default']
@@ -28,6 +29,7 @@ declare module 'vue' {
     StockCandlestickChart: typeof import('./src/components/stock/StockCandlestickChart.vue')['default']
     StockDividendTrend: typeof import('./src/components/stock/StockDividendTrend.vue')['default']
     StockHoldingPanel: typeof import('./src/components/stock/StockHoldingPanel.vue')['default']
+    StockRecoveryPanel: typeof import('./src/components/portfolio/StockRecoveryPanel.vue')['default']
     ThumbnailCardShell: typeof import('./src/components/thumbnail/ThumbnailCardShell.vue')['default']
     ThumbnailPreview: typeof import('./src/components/thumbnail/ThumbnailPreview.vue')['default']
     TossCommunityCopy: typeof import('./src/components/thumbnail/TossCommunityCopy.vue')['default']

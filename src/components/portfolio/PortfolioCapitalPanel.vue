@@ -2,6 +2,7 @@
     import { computed, ref, watch } from 'vue';
     import {
         capitalSummary,
+        capitalRecovery,
         cashKinds,
     } from '../../../lib/portfolio-capital.js';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
@@ -18,6 +19,16 @@
     const summary = computed(() =>
         capitalSummary(props.state.entries, props.state.classifications)
     );
+    const recoveryMode = ref('withdrawals');
+    const recovery = computed(() =>
+        capitalRecovery(
+            props.state.entries,
+            props.state.classifications,
+            recoveryMode.value
+        )
+    );
+    const percent = (value) =>
+        `${value.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}%`;
     const money = (n, currency) =>
         new Intl.NumberFormat('ko-KR', {
             style: 'currency',
@@ -124,13 +135,12 @@
 </script>
 
 <template>
-    <section class="capital-panel" aria-label="투자 원금 확인">
+    <section class="capital-panel" aria-label="투자 원금 대비 회수 현황">
         <div class="heading">
             <div>
-                <h2>투자 원금 확인</h2>
+                <h2>투자 원금 대비 얼마나 회수했나요?</h2>
                 <p>
-                    확정한 외부 입금 − 외부 출금입니다. 배당·매도대금·계좌 내
-                    환전은 원금에 더하지 않습니다.
+                    누적 투자 원금 중 지금까지 회수한 금액과 비율을 확인하세요.
                 </p>
             </div>
             <button
@@ -146,6 +156,68 @@
             <button type="button" @click="emit('refresh')">다시 시도</button>
         </p>
         <template v-else-if="!loading || state.entries.length">
+            <label class="recovery-filter"
+                >회수금 기준
+                <select v-model="recoveryMode">
+                    <option value="proceeds">배당금 + 매도 정산금</option>
+                    <option value="withdrawals">실제 외부 출금액</option>
+                    <option value="dividends">배당금만</option>
+                </select>
+            </label>
+            <div class="recovery-grid">
+                <article
+                    v-for="item in recovery"
+                    :key="item.currency"
+                    class="recovery-card">
+                    <small>계좌 회수율 · {{ item.currency }}</small>
+                    <strong class="recovery-rate">{{
+                        item.rate === null
+                            ? '원금 확인 필요'
+                            : percent(item.rate)
+                    }}</strong>
+                    <progress
+                        v-if="item.rate !== null"
+                        :value="Math.min(item.rate, 100)"
+                        max="100"
+                        :aria-label="`${item.currency} 원금 회수 진행률`" />
+                    <dl>
+                        <div>
+                            <dt>누적 투자 원금</dt>
+                            <dd>{{ money(item.principal, item.currency) }}</dd>
+                        </div>
+                        <div>
+                            <dt>누적 회수금</dt>
+                            <dd>{{ money(item.recovered, item.currency) }}</dd>
+                        </div>
+                        <div>
+                            <dt>원금까지 남은 금액</dt>
+                            <dd>
+                                {{
+                                    item.rate === null
+                                        ? '—'
+                                        : money(item.remaining, item.currency)
+                                }}
+                            </dd>
+                        </div>
+                    </dl>
+                    <span v-if="item.rate >= 100"
+                        >투자 원금 이상 회수했습니다.</span
+                    >
+                </article>
+            </div>
+            <p class="help">
+                확정한 계좌 입출금 내역만 집계합니다. 종목별 거래 원장은 별도
+                합산하지 않습니다. 회수율 = 선택한 기준의 누적 회수금 ÷ 확정한
+                외부 입금 × 100. 배당·매도대금의 재투자는 원금에 더하지
+                않습니다. 배당·매도 기준은 계좌 안에서 받은 금액이며 수익률과는
+                다릅니다. 반복 매매 시 같은 자금의 매도대금도 누적됩니다. 실제
+                출금액과 중복 합산하지 않습니다.
+            </p>
+            <p v-if="summary.pending" class="help" role="status">
+                분류 확인 필요 {{ summary.pending }}건을 제외한 잠정 수치입니다.
+            </p>
+            <h3>투자 원금 확인</h3>
+            <p class="help">순입금은 확정한 외부 입금 − 외부 출금입니다.</p>
             <div class="totals">
                 <article v-for="currency in ['KRW', 'USD']" :key="currency">
                     <small>저장된 내역 기준 순입금 · {{ currency }}</small>
@@ -365,6 +437,46 @@
         padding: 24px;
         margin: 24px 0;
     }
+    .recovery-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin: 16px 0;
+    }
+    .recovery-card {
+        background: var(--app-surface-muted);
+        min-width: 0;
+    }
+    .recovery-rate {
+        font-size: clamp(1.6rem, 4vw, 2.6rem);
+        color: var(--app-accent);
+        overflow-wrap: anywhere;
+    }
+    .recovery-filter {
+        margin-top: 16px;
+    }
+    progress {
+        width: 100%;
+        height: 10px;
+        accent-color: var(--app-accent);
+    }
+    dl {
+        margin: 16px 0 0;
+    }
+    dl > div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 8px;
+    }
+    dt {
+        color: var(--app-muted);
+    }
+    dd {
+        margin: 0;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
     .heading,
     .actions {
         display: flex;
@@ -489,6 +601,7 @@
         .capital-panel {
             padding: 16px;
         }
+        .recovery-grid,
         .totals,
         .cash-form {
             grid-template-columns: 1fr;

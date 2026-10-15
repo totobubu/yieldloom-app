@@ -1,5 +1,6 @@
 <script setup>
     import { computed, nextTick, ref, watch } from 'vue';
+    import AccountRecoveryOverview from '@/components/portfolio/AccountRecoveryOverview.vue';
     import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
@@ -394,6 +395,34 @@
             </form>
         </section>
         <template v-if="space">
+            <AccountRecoveryOverview
+                :user="firebaseUser"
+                :accounts="accounts"
+                :refresh-state="capital" />
+            <section v-if="activeAccount" aria-label="회수 현황 계좌 선택">
+                <label
+                    >회수 현황을 볼 계좌
+                    <select v-model="selectedAccount" :disabled="busy">
+                        <option v-for="a in accounts" :key="a.id" :value="a.id">
+                            {{ ownerName(a.ownerId) }} / {{ a.alias }}
+                        </option>
+                    </select>
+                </label>
+                <p>선택한 계좌의 전체 저장 내역 기준입니다.</p>
+            </section>
+            <PortfolioCapitalPanel
+                v-if="activeAccount"
+                :key="`${ownUid}-${selectedAccount}`"
+                :user="firebaseUser"
+                :account-id="selectedAccount"
+                :state="capital"
+                :loading="capitalLoading"
+                :error="capitalError"
+                :read-only="
+                    !editableAccounts.some((a) => a.id === selectedAccount)
+                "
+                @refresh="loadCapital" />
+
             <section>
                 <h2>가족·구성원 관리</h2>
                 <label
@@ -683,18 +712,6 @@
                     </table>
                 </div>
             </section>
-            <PortfolioCapitalPanel
-                v-if="activeAccount"
-                :key="`${ownUid}-${selectedAccount}`"
-                :user="firebaseUser"
-                :account-id="selectedAccount"
-                :state="capital"
-                :loading="capitalLoading"
-                :error="capitalError"
-                :read-only="
-                    !editableAccounts.some((a) => a.id === selectedAccount)
-                "
-                @refresh="loadCapital" />
             <dialog
                 ref="fundingDialog"
                 aria-label="계좌 매수 자금 상세"

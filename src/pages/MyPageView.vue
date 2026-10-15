@@ -1,6 +1,7 @@
 <script setup>
     import { computed, nextTick, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
+    import StockRecoveryPanel from '@/components/portfolio/StockRecoveryPanel.vue';
     import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
@@ -106,6 +107,18 @@
               ? '자금 구성 · 일부 확인 필요'
               : '자금 구성 확인';
     };
+    const recoveryTrades = computed(() =>
+        dashboard.value.assets.flatMap((asset) =>
+            (asset.transactions || []).map((trade) => ({
+                ...trade,
+                assetId: asset.id,
+                symbol: asset.symbol || asset.ticker || asset.id,
+                currency:
+                    trade.currency ||
+                    (trade.nativeAmount != null ? 'USD' : 'KRW'),
+            }))
+        )
+    );
     const period = ref('all');
     const today = new Date().toLocaleDateString('sv-SE', {
         timeZone: 'Asia/Seoul',
@@ -337,6 +350,15 @@
             {{ portfolioWarning }}
         </p>
         <p v-if="message" class="notice success">{{ message }}</p>
+        <PortfolioCapitalPanel
+            :user="firebaseUser"
+            :state="capital"
+            :loading="capitalLoading"
+            :error="capitalError"
+            @refresh="loadCapital" />
+        <StockRecoveryPanel
+            :trades="recoveryTrades"
+            :allocations="capital.allocations" />
         <section class="panel period-panel" aria-label="조회 기간">
             <div class="section-heading">
                 <div>
@@ -422,12 +444,6 @@
                 }}</strong>
             </article>
         </section>
-        <PortfolioCapitalPanel
-            :user="firebaseUser"
-            :state="capital"
-            :loading="capitalLoading"
-            :error="capitalError"
-            @refresh="loadCapital" />
         <section class="panel">
             <h2>이전 단일 계좌 자료</h2>
             <p>

@@ -19,6 +19,10 @@ def main() -> int:
         lines += [f"## {provider} — {details['status']}", ""]
         if details["errors"]:
             lines += ["Failures:", *[f"- {item}" for item in details["errors"]], ""]
+        if details.get("warnings"):
+            lines += ["Warnings:", *[f"- {item}" for item in details["warnings"]], ""]
+        if details.get("needsReview"):
+            lines += [f"{len(details['needsReview'])} distribution rows require review and were excluded from the publishable candidate.", ""]
         if details["changed"]:
             lines += ["Corrections requiring review:", *[f"- `{item['after']['ticker']}` {item['after']['declaredDate']} / {item['after']['exDate']}: `{item['before']['amount']}` → `{item['after']['amount']}`" for item in details["changed"]], ""]
         if details["suspectedRemoved"]:

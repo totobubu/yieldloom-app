@@ -47,7 +47,9 @@ jobs:
           python scripts/data_v2/validate_snapshot.py --data-dir candidate-release
       - name: Render review summary
         if: always()
-        run: python scripts/data_v2/render_incremental_report.py
+        run: |
+          python scripts/data_v2/render_incremental_report.py
+          cat data-v2/review/incremental-report.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload review artifact
         if: always()
         uses: actions/upload-artifact@v4
@@ -73,6 +75,9 @@ jobs:
               report = json.loads(path.read_text(encoding='utf-8'))
               failures = report.get('summary', {}).get('failedSources', 0)
               if failures:
+                  for provider, details in report.get('providers', {}).items():
+                      for error in details.get('errors', []):
+                          print(f'{provider}: {error}')
                   print(f'::error::{failures} source collections failed; inspect the review artifact before publishing.')
                   raise SystemExit(1)
           PY

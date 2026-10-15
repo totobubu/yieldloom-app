@@ -206,7 +206,7 @@ class PipelineTests(unittest.TestCase):
         with patch.object(run_us_collection.subprocess, 'run') as run:
             run.return_value.returncode = 2
             self.assertEqual(run_us_collection.main(['--resume']), 2)
-            self.assertEqual(run.call_count, 3)
+            self.assertEqual(run.call_count, 4)
         with patch.object(run_us_collection.subprocess, 'run') as run:
             run.return_value.returncode = 1
             self.assertEqual(run_us_collection.main([]), 1)

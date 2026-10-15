@@ -1,0 +1,52 @@
+{
+  "dividendsDistributionHistoryList": [
+    {
+      "dividendAmount": 0.34134,
+      "capitalGainShortTerm": null,
+      "capitalGainLongTerm": null,
+      "reinvestNavPr": "55.904293",
+      "navPrice": null,
+      "exDate": "2026-10-01",
+      "recordDate": "2026-10-01",
+      "payDate": "2026-10-05",
+      "distributionTypeCode": "DVDYLD",
+      "capitalGain": null,
+      "distributionPeriodIncomeProportionPercentage": null,
+      "distributionPeriodCapitalProportionPercentage": null,
+      "distributionYearIncomeProportionPercentage": null,
+      "distributionYearCapitalProportionPercentage": null,
+      "annualizedDividendYieldPercentage": null,
+      "cumulativeNoLoadPercentage": null,
+      "currentRateOfReturn": null,
+      "dividendRate": null,
+      "reinvestmentNavPriceDate": null,
+      "annualizedDividendYieldF2Percentage": null,
+      "currentDividendRationPercentage": null,
+      "calculatedPeriod": null
+    },
+    {
+      "dividendAmount": 0.37142,
+      "capitalGainShortTerm": null,
+      "capitalGainLongTerm": null,
+      "reinvestNavPr": "56.98145298",
+      "navPrice": null,
+      "exDate": "2026-09-01",
+      "recordDate": "2026-09-01",
+      "payDate": "2026-09-03",
+      "distributionTypeCode": "DVDYLD",
+      "capitalGain": null,
+      "distributionPeriodIncomeProportionPercentage": null,
+      "distributionPeriodCapitalProportionPercentage": null,
+      "distributionYearIncomeProportionPercentage": null,
+      "distributionYearCapitalProportionPercentage": null,
+      "annualizedDividendYieldPercentage": null,
+      "cumulativeNoLoadPercentage": null,
+      "currentRateOfReturn": null,
+      "dividendRate": null,
+      "reinvestmentNavPriceDate": null,
+      "annualizedDividendYieldF2Percentage": null,
+      "currentDividendRationPercentage": null,
+      "calculatedPeriod": null
+    }
+  ]
+}

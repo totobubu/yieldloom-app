@@ -12,6 +12,7 @@ import RivalThumbnail from '@/components/thumbnail/RivalThumbnail.vue';
 import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
 import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
 import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
+import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
 import { getAssetUrl } from '@/utils/dataUrl';
 import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
 import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
@@ -213,7 +214,7 @@ onMounted(load); watch(() => route.params.ticker, () => { rivalPickerOpen.value 
         <div v-else-if="error" class="state"><h1>종목을 열 수 없습니다</h1><p>{{ error }}</p><Button label="다시 시도" @click="load()" /></div>
         <template v-else>
             <header class="page-header">
-                <div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1><p v-if="selectedInfo.price != null" class="latest-price">최근 시세 {{ selectedInfo.currency }} {{ Number(selectedInfo.price).toLocaleString(undefined, { maximumFractionDigits: 4 }) }} · {{ selectedData.sourceStatus.priceDate }}</p></div>
+                <div><p>토토부부 배당 스튜디오</p><h1>{{ selectedInfo.symbol }} 배당 콘텐츠</h1><a href="#insights-heading">ROC·누적 데이터 보기 ↓</a><p v-if="selectedInfo.price != null" class="latest-price">최근 시세 {{ selectedInfo.currency }} {{ Number(selectedInfo.price).toLocaleString(undefined, { maximumFractionDigits: 4 }) }} · {{ selectedData.sourceStatus.priceDate }}</p></div>
                 <div class="data-toolbar"><p class="data-status" :class="dataStatus">{{ dataStatus === 'fresh' ? '데이터 최신' : dataStatus === 'stale' ? '마지막 정상 데이터 · 갱신 지연' : '일부 데이터 확인 필요' }}</p><label>문구 톤 <select v-model="selectedTone"><option value="informative">정보형</option><option value="concise">간결형</option><option value="friendly">친근형</option></select></label><Button label="프리셋 저장" icon="pi pi-bookmark" @click="saveCurrentPreset" /><Button label="게시 패키지 ZIP" icon="pi pi-box" :loading="packaging" @click="downloadPublishPackage" /></div>
                 <div v-if="presets.length" class="preset-row" aria-label="저장된 콘텐츠 프리셋"><span>저장한 조합</span><template v-for="preset in presets" :key="preset.id"><button type="button" @click="openPreset(preset)">{{ preset.name }}</button><button type="button" class="preset-delete" :aria-label="`${preset.name} 삭제`" @click="deletePreset(preset)">×</button></template></div>
                 <section v-if="selectedInfo.underlying && rivalOptions.length" class="rival-candidate-picker" :aria-label="`${selectedInfo.symbol} 라이벌 카드 후보`">
@@ -242,6 +243,7 @@ onMounted(load); watch(() => route.params.ticker, () => { rivalPickerOpen.value 
                 </section>
             </section>
         </template>
+        <SecurityInsights :symbol="normalize(route.params.ticker)" />
     </main>
 </template>
 

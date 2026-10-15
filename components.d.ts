@@ -31,5 +31,6 @@ declare module 'vue' {
     ThumbnailCardShell: typeof import('./src/components/thumbnail/ThumbnailCardShell.vue')['default']
     ThumbnailPreview: typeof import('./src/components/thumbnail/ThumbnailPreview.vue')['default']
     TossCommunityCopy: typeof import('./src/components/thumbnail/TossCommunityCopy.vue')['default']
+    TransactionAmount: typeof import('./src/components/portfolio/TransactionAmount.vue')['default']
   }
 }

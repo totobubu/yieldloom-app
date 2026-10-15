@@ -1,13 +1,20 @@
 // Run with the Vite dev server at CAPITAL_TEST_URL (default localhost:5173).
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
-import { writeFile, rm } from 'node:fs/promises';
+import { readFile, writeFile, rm } from 'node:fs/promises';
 import { capitalHandler } from '../lib/portfolio-capital-handler.js';
 
 const harness = new URL('../.tmp-capital-test.html', import.meta.url);
+const layoutSource = await readFile(
+    new URL('../src/layouts/ThumbnailLayout.vue', import.meta.url),
+    'utf8'
+);
+const layoutStyles = layoutSource
+    .split('<style scoped>')[1]
+    .split('</style>')[0];
 await writeFile(
     harness,
-    `<!doctype html><html><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><div id="app"></div><script type="module">
+    `<!doctype html><html><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${layoutStyles}</style><div id="app" class="thumbnail-app"></div><script type="module">
 import {createApp,h} from 'vue'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import MyPage from '/src/pages/MyPageView.vue'; import FamilyPage from '/src/pages/FamilyPortfolioView.vue';
 const router=createRouter({history:createMemoryHistory(),routes:[{path:'/',component:new URLSearchParams(location.search).has('family')?FamilyPage:MyPage},{path:'/login',component:{template:'<p>login</p>'}}]});
 createApp({render:()=>h(RouterView)}).use(router).mount('#app');</script></html>`
@@ -208,6 +215,52 @@ try {
         records.get('portfolios/owner/assets/A/transactions/T'),
         trade
     );
+    const ledger = dialog.locator('.detail-table');
+    assert.equal(await ledger.locator('tbody tr').count(), 2);
+    const first = ledger.locator('tbody tr').first();
+    assert.equal(
+        await first.locator('td').first().getAttribute('rowspan'),
+        '2'
+    );
+    assert.equal(
+        await first
+            .locator('td')
+            .nth(3)
+            .locator('.transaction-amount > span')
+            .innerText(),
+        '$70.00'
+    );
+    assert.equal(await first.locator('td').nth(4).innerText(), '-');
+    assert.equal(await first.locator('td').nth(5).innerText(), '-');
+    const second = ledger.locator('tbody tr').nth(1);
+    assert.equal(await second.locator('td').count(), 1);
+    assert.equal(
+        await second.locator('.transaction-amount > span').innerText(),
+        '₩42,140'
+    );
+    assert.ok((await second.innerText()).includes('$30.10'));
+    assert.equal(
+        await page
+            .locator('table[aria-label="기간별 거래내역"] tbody tr')
+            .count(),
+        2
+    );
+    await editor.getByRole('button', { name: '닫기', exact: true }).click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await ledger.scrollIntoViewIfNeeded();
+    assert.equal(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth > innerWidth
+        ),
+        false
+    );
+    await dialog.screenshot({ path: '/tmp/yieldloom-transaction-mobile.png' });
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await ledger.scrollIntoViewIfNeeded();
+    await dialog.screenshot({ path: '/tmp/yieldloom-transaction-desktop.png' });
+    await dialog
+        .getByRole('button', { name: '자금 구성 · 확인 완료', exact: true })
+        .click();
     await editor.getByLabel('자금 1 사용 금액', { exact: true }).fill('29');
     await editor
         .getByRole('checkbox', { name: '계좌 내역과 금액을 확인했습니다.' })
@@ -217,6 +270,8 @@ try {
     await dialog
         .getByRole('button', { name: '자금 구성 확인', exact: true })
         .waitFor();
+    assert.equal(await ledger.locator('tbody tr').count(), 1);
+    assert.ok((await ledger.innerText()).includes('결제 구성 확인 필요'));
     await page.setViewportSize({ width: 390, height: 844 });
     assert.equal(
         await page.evaluate(
@@ -371,14 +426,12 @@ try {
     await familyDialog
         .getByRole('button', { name: '상세 창 닫기', exact: true })
         .click();
-    const selectedSection = page
-        .locator('section')
-        .filter({
-            has: page.getByRole('heading', {
-                name: '선택 계좌: 검증 계좌',
-                exact: true,
-            }),
-        });
+    const selectedSection = page.locator('section').filter({
+        has: page.getByRole('heading', {
+            name: '선택 계좌: 검증 계좌',
+            exact: true,
+        }),
+    });
     await selectedSection.locator('select').first().selectOption('BB');
     await familyPanel
         .getByText('조회 권한으로 열었습니다.', { exact: false })

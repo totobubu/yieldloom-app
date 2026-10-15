@@ -3,16 +3,18 @@
     import { useRouter } from 'vue-router';
     import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
+    import TransactionAmount from '@/components/portfolio/TransactionAmount.vue';
+    import {
+        transactionAmountRows,
+        transactionMoney,
+    } from '@/services/transactionAmount.js';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { purchaseBasis } from '../../lib/portfolio-capital.js';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import { loadPortfolioDashboard } from '@/services/portfolio';
     import { summarizePortfolio } from '@/services/portfolioSummary';
     import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
-    import {
-        closedPositionPerformance,
-        transactionExchangeRate,
-    } from '@/services/portfolioPerformance';
+    import { closedPositionPerformance } from '@/services/portfolioPerformance';
     import {
         formatPortfolioQuantity,
         portfolioAssetsInPeriod,
@@ -237,12 +239,6 @@
             ? `${value > 0 ? '+' : value < 0 ? '−' : ''}${usd(Math.abs(value))}`
             : usd(value);
     };
-    const exchange = (transaction) => {
-        const rate = transactionExchangeRate(transaction);
-        return rate
-            ? `${rate.value.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${rate.recorded ? '' : ' (참고)'}`
-            : '—';
-    };
     const quantity = formatPortfolioQuantity;
     const date = (v) =>
         v ? String(v).replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '—';
@@ -302,6 +298,35 @@
                     (!typeFilter.value || t.type === typeFilter.value)
             )
             .slice(0, 20)
+    );
+    const allocationsByTrade = computed(
+        () =>
+            new Map(
+                capital.value.allocations.map((row) => [
+                    `${row.assetId}|${row.transactionId}`,
+                    row,
+                ])
+            )
+    );
+    const amountGroups = (transactions, assetId) =>
+        transactions.map((transaction, index) => ({
+            transaction,
+            key: `${assetId || transaction.asset?.id}-${transaction.id || index}`,
+            amounts: transactionAmountRows(
+                transaction,
+                allocationsByTrade.value.get(
+                    `${assetId || transaction.asset?.id}|${transaction.id}`
+                )
+            ),
+        }));
+    const recentAmountGroups = computed(() =>
+        amountGroups(filteredTransactions.value)
+    );
+    const detailAmountGroups = computed(() =>
+        amountGroups(
+            periodError.value ? [] : selectedAsset.value?.transactions || [],
+            selectedAssetId.value
+        )
     );
     const tickers = computed(() =>
         dashboard.value.assets.filter((asset) => asset.ticker)
@@ -663,7 +688,7 @@
                 </div>
             </div>
             <div class="table-wrap">
-                <table>
+                <table aria-label="기간별 거래내역">
                     <thead>
                         <tr>
                             <th>날짜</th>
@@ -676,41 +701,73 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr
-                            v-for="transaction in filteredTransactions"
-                            :key="
-                                transaction.id ||
-                                `${transaction.asset.id}-${transaction.date}-${transaction.type}-${transaction.amount}`
-                            ">
-                            <td>{{ date(transaction.date) }}</td>
-                            <td>
-                                <button
-                                    class="asset-link"
-                                    @click="openDetail(transaction.asset)">
+                        <template
+                            v-for="group in recentAmountGroups"
+                            :key="group.key">
+                            <tr
+                                v-for="(amountRow, rowIndex) in group.amounts"
+                                :key="rowIndex">
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length">
+                                    {{ date(group.transaction.date) }}
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length">
+                                    <button
+                                        class="asset-link"
+                                        @click="
+                                            openDetail(group.transaction.asset)
+                                        ">
+                                        {{
+                                            group.transaction.asset.ticker ||
+                                            group.transaction.asset.displayName
+                                        }}
+                                    </button>
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length">
+                                    <span
+                                        class="type"
+                                        :class="
+                                            typeClass(group.transaction.type)
+                                        "
+                                        >{{
+                                            typeLabel(group.transaction.type)
+                                        }}</span
+                                    >
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length"
+                                    class="numeric">
+                                    {{ quantity(group.transaction.quantity) }}
+                                </td>
+                                <td class="numeric">
+                                    <TransactionAmount :row="amountRow" />
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length"
+                                    class="numeric">
                                     {{
-                                        transaction.asset.ticker ||
-                                        transaction.asset.displayName
+                                        transactionMoney(
+                                            group.transaction.commission
+                                        )
                                     }}
-                                </button>
-                            </td>
-                            <td>
-                                <span
-                                    class="type"
-                                    :class="typeClass(transaction.type)"
-                                    >{{ typeLabel(transaction.type) }}</span
-                                >
-                            </td>
-                            <td class="numeric">
-                                {{ quantity(transaction.quantity) }}
-                            </td>
-                            <td class="numeric">
-                                {{ won(transaction.amount) }}
-                            </td>
-                            <td class="numeric">
-                                {{ won(transaction.commission) }}
-                            </td>
-                            <td class="numeric">{{ won(transaction.tax) }}</td>
-                        </tr>
+                                </td>
+                                <td
+                                    v-if="rowIndex === 0"
+                                    :rowspan="group.amounts.length"
+                                    class="numeric">
+                                    {{
+                                        transactionMoney(group.transaction.tax)
+                                    }}
+                                </td>
+                            </tr>
+                        </template>
                         <tr v-if="!filteredTransactions.length">
                             <td colspan="7" class="empty">
                                 {{
@@ -903,10 +960,11 @@
                     <i class="pi pi-arrow-right"
                 /></router-link>
                 <p class="performance-note">
-                    원화 금액은 명세서의 원화 환산 금액입니다. 환율은 명세서
-                    기록을 우선 표시하며, 금액 비율로 계산한 값은 ‘참고’로
-                    구분합니다. 이 정보만으로 원화 자동환전 여부를 판단하지
-                    않습니다.
+                    금액 아래에는 반대 통화의 가치와 환율을 표시합니다. 확인된
+                    매수 자금은 수수료·세금을 포함한 정산액 기준으로 달러 잔액과
+                    원화 환전 사용분을 나눕니다. 결제 구성이 미확인된 거래는
+                    원문 거래금액을 표시합니다. 환산 금액만으로 원화 자동환전
+                    여부를 판단하지 않습니다.
                 </p>
                 <p v-if="fundingMessage" role="status">{{ fundingMessage }}</p>
                 <PurchaseFundingEditor
@@ -922,73 +980,106 @@
                     @saved="fundingSaved"
                     @close="fundingTransaction = null" />
                 <div class="table-wrap detail-table">
-                    <table>
+                    <table aria-label="종목 거래내역">
                         <thead>
                             <tr>
                                 <th>날짜</th>
                                 <th>유형</th>
                                 <th class="numeric">수량</th>
-                                <th class="numeric">원화 거래금액</th>
-                                <th class="numeric">달러 거래금액</th>
-                                <th class="numeric">환율 (원/USD)</th>
+                                <th class="numeric">거래·결제 금액</th>
                                 <th class="numeric">수수료</th>
                                 <th class="numeric">세금</th>
                                 <th>매수 자금</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
-                                v-for="transaction in periodError
-                                    ? []
-                                    : selectedAsset.transactions"
-                                :key="
-                                    transaction.id ||
-                                    `${transaction.date}-${transaction.type}-${transaction.amount}`
-                                ">
-                                <td>{{ date(transaction.date) }}</td>
-                                <td>
-                                    <span
-                                        class="type"
-                                        :class="typeClass(transaction.type)"
-                                        >{{ typeLabel(transaction.type) }}</span
-                                    >
-                                </td>
-                                <td class="numeric">
-                                    {{ quantity(transaction.quantity) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ won(transaction.amount) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ usd(transaction.nativeAmount, 6) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ exchange(transaction) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ won(transaction.commission) }}
-                                </td>
-                                <td class="numeric">
-                                    {{ won(transaction.tax) }}
-                                </td>
-                                <td>
-                                    <button
-                                        v-if="
-                                            transaction.type === 'buy' &&
-                                            transaction.id
-                                        "
-                                        type="button"
-                                        @click="openFunding(transaction)">
-                                        {{ fundingLabel(transaction) }}</button
-                                    ><span v-else>—</span>
-                                </td>
-                            </tr>
+                            <template
+                                v-for="group in detailAmountGroups"
+                                :key="group.key">
+                                <tr
+                                    v-for="(
+                                        amountRow, rowIndex
+                                    ) in group.amounts"
+                                    :key="rowIndex">
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length">
+                                        {{ date(group.transaction.date) }}
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length">
+                                        <span
+                                            class="type"
+                                            :class="
+                                                typeClass(
+                                                    group.transaction.type
+                                                )
+                                            "
+                                            >{{
+                                                typeLabel(
+                                                    group.transaction.type
+                                                )
+                                            }}</span
+                                        >
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length"
+                                        class="numeric">
+                                        {{
+                                            quantity(group.transaction.quantity)
+                                        }}
+                                    </td>
+                                    <td class="numeric">
+                                        <TransactionAmount :row="amountRow" />
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length"
+                                        class="numeric">
+                                        {{
+                                            transactionMoney(
+                                                group.transaction.commission
+                                            )
+                                        }}
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length"
+                                        class="numeric">
+                                        {{
+                                            transactionMoney(
+                                                group.transaction.tax
+                                            )
+                                        }}
+                                    </td>
+                                    <td
+                                        v-if="rowIndex === 0"
+                                        :rowspan="group.amounts.length">
+                                        <button
+                                            v-if="
+                                                group.transaction.type ===
+                                                    'buy' &&
+                                                group.transaction.id
+                                            "
+                                            type="button"
+                                            @click="
+                                                openFunding(group.transaction)
+                                            ">
+                                            {{
+                                                fundingLabel(group.transaction)
+                                            }}</button
+                                        ><span v-else>-</span>
+                                    </td>
+                                </tr>
+                            </template>
                             <tr
                                 v-if="
                                     periodError ||
                                     !selectedAsset.transactions.length
                                 ">
-                                <td colspan="9" class="empty">
+                                <td colspan="7" class="empty">
                                     {{
                                         periodError ||
                                         (selectedAsset.ledgerUnavailable

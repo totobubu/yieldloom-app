@@ -33,6 +33,14 @@
         kind = ref('transactions'),
         asOf = ref(''),
         format = ref('standard-csv');
+    const rememberPassword = ref(true),
+        reviewPage = ref(0);
+    const visibleReviewRows = computed(() =>
+        (review.value?.rows || []).slice(
+            reviewPage.value * 200,
+            (reviewPage.value + 1) * 200
+        )
+    );
     const capital = ref({ entries: [], classifications: [], allocations: [] });
     const capitalLoading = ref(false),
         capitalError = ref(''),
@@ -310,6 +318,9 @@
         confirmed.value = false;
         singleAccountConfirmed.value = false;
         nextCursor.value = null;
+        password.value = '';
+        rememberPassword.value = true;
+        reviewPage.value = 0;
     });
     async function createFamily() {
         await run(async () => {
@@ -382,25 +393,66 @@
                 format: format.value,
                 identityConfirmed: 'true',
                 password: password.value,
+                rememberPassword:
+                    rememberPassword.value &&
+                    a.permissions?.[ownUid.value] === 'owner'
+                        ? 'true'
+                        : 'false',
             }).forEach(([key, value]) => form.append(key, value));
             form.append('file', file);
             const result = await familyRequest('preview', form);
             if (selectedAccount.value === a.id)
                 review.value = { ...result, accountId: a.id };
+            reviewPage.value = 0;
             password.value = '';
             fileInput.value.value = '';
+            if (rememberPassword.value && format.value === 'toss-pdf')
+                await refresh();
         });
     }
     async function commit() {
         await run(async () => {
-            const result = await familyRequest('commit', {
-                accountId: review.value.accountId,
-                reviewId: review.value.reviewId,
-                rows: review.value.rows,
+            const current = review.value;
+            const batches = current.batches || [
+                {
+                    reviewId: current.reviewId,
+                    start: 0,
+                    count: current.rows.length,
+                },
+            ];
+            const result = { inserted: 0, duplicates: 0 };
+            await familyRequest('validateImport', {
+                accountId: current.accountId,
+                reviewId: current.reviewId,
+                rows: current.rows,
             });
+            for (const [index, batch] of batches.entries()) {
+                message.value = `저장 중 ${index + 1}/${batches.length} · 실패하면 같은 미리보기에서 다시 시도할 수 있습니다.`;
+                const saved = await familyRequest('commit', {
+                    accountId: current.accountId,
+                    reviewId: batch.reviewId,
+                    rows: current.rows.slice(
+                        batch.start,
+                        batch.start + batch.count
+                    ),
+                });
+                result.inserted += saved.inserted;
+                result.duplicates += saved.duplicates;
+            }
             review.value = null;
             message.value = `저장 ${result.inserted}행 · 중복 ${result.duplicates}행`;
             await refresh();
+        });
+    }
+    async function removePdfPassword() {
+        await run(async () => {
+            await familyRequest('pdfPassword', {
+                accountId: selectedAccount.value,
+                remove: true,
+            });
+            password.value = '';
+            await refresh();
+            message.value = '저장된 PDF 기본 비밀번호를 삭제했습니다.';
         });
     }
     watch(legacy, () => {
@@ -833,9 +885,10 @@
                 ">
                 <h2>파일 업로드·저장 전 검토</h2>
                 <p>
-                    표준 UTF-8 CSV와 토스 거래내역 PDF를 지원합니다. 2MB·200행
-                    이하. 잔고 CSV는 기준일의 전체 보유 종목을 넣으세요. 새
-                    잔고는 해당 계좌의 이전 잔고를 대체합니다.
+                    표준 UTF-8 CSV(200행)와 토스 거래내역 PDF(10,000행)를
+                    지원합니다. 파일은 2MB 이하이며 PDF는 200행씩 나누어
+                    저장합니다. 잔고 CSV는 기준일의 전체 보유 종목을 넣으세요.
+                    새 잔고는 해당 계좌의 이전 잔고를 대체합니다.
                 </p>
                 <details>
                     <summary>CSV 양식과 거래 유형</summary>
@@ -887,8 +940,38 @@ date,symbol,quantity,amount,currency,type,externalId
                         <input
                             v-model="password"
                             type="password"
-                            autocomplete="off" /></label
+                            autocomplete="off"
+                            :placeholder="
+                                activeAccount.pdfPasswordConfigured
+                                    ? '저장된 비밀번호 사용 · 변경할 때만 입력'
+                                    : '생년월일 6자리'
+                            " /></label
                     ><label
+                        v-if="
+                            format === 'toss-pdf' &&
+                            activeAccount.permissions?.[ownUid] === 'owner'
+                        ">
+                        <input v-model="rememberPassword" type="checkbox" />
+                        이 계좌의 기본 비밀번호로 암호화 저장
+                    </label>
+                    <p
+                        v-if="
+                            format === 'toss-pdf' &&
+                            activeAccount.pdfPasswordConfigured
+                        ">
+                        계좌 기본 비밀번호가 암호화 저장되어 있습니다. 입력란을
+                        비우면 자동 사용합니다.
+                        <button
+                            v-if="
+                                activeAccount.permissions?.[ownUid] === 'owner'
+                            "
+                            type="button"
+                            :disabled="busy"
+                            @click="removePdfPassword">
+                            저장된 비밀번호 삭제
+                        </button>
+                    </p>
+                    <label
                         ><input v-model="confirmed" type="checkbox" required />
                         {{ ownerName(activeAccount.ownerId) }} ·
                         {{ activeAccount.institution }} ·
@@ -903,6 +986,25 @@ date,symbol,quantity,amount,currency,type,externalId
                     <p>
                         표의 오류를 수정한 뒤 전체 행을 저장합니다. 오류가
                         남으면 저장되지 않습니다. 검토는 1시간 유효합니다.
+                    </p>
+                    <p v-if="review.rows.length > 200">
+                        전체 {{ review.rows.length }}행 ·
+                        {{ reviewPage + 1 }}/{{
+                            Math.ceil(review.rows.length / 200)
+                        }}쪽
+                        <button
+                            :disabled="busy || reviewPage === 0"
+                            @click="reviewPage--">
+                            이전
+                        </button>
+                        <button
+                            :disabled="
+                                busy ||
+                                (reviewPage + 1) * 200 >= review.rows.length
+                            "
+                            @click="reviewPage++">
+                            다음
+                        </button>
                     </p>
                     <ul class="error">
                         <li v-for="(e, i) in review.errors" :key="i">
@@ -930,8 +1032,10 @@ date,symbol,quantity,amount,currency,type,externalId
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(row, i) in review.rows" :key="i">
-                                    <td>{{ i + 1 }}</td>
+                                <tr
+                                    v-for="(row, i) in visibleReviewRows"
+                                    :key="reviewPage * 200 + i">
+                                    <td>{{ reviewPage * 200 + i + 1 }}</td>
                                     <td
                                         v-for="col in [
                                             'date',

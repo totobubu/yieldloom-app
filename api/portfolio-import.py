@@ -12,6 +12,7 @@ from firebase_admin import auth, credentials, firestore
 from flask import Flask, jsonify, request
 
 from toss_extractor import extract_transactions_from_pdf
+from portfolio_mapping import security_mapping
 from server_cors import configure_cors
 
 app = Flask(__name__)
@@ -102,7 +103,7 @@ def parse_statement(uploaded, password):
 
 def persist_items(db, claims, items):
     codes = sorted({item["code"] for item in items})
-    mappings = {code: (db.collection("stockMappings").document(code).get().to_dict() or {}) for code in codes}
+    mappings = {code: security_mapping(db, code) for code in codes}
     by_code = defaultdict(list)
     for item in items:
         by_code[item["code"]].append(item)
@@ -120,7 +121,7 @@ def persist_items(db, claims, items):
         status = "current" if balance and balance > 0 else "historical"
         current_assets += status == "current"
         asset = portfolio.collection("assets").document(asset_id)
-        writes.append((asset, {"type": "주식", "isin": mapping.get("isin") or code, "symbol": mapping.get("symbol"), "name": mapping.get("koName") or latest.get("name"), "portfolioPriority": status, "prioritySource": "toss-pdf", "holdingShares": balance or 0, "updatedAt": now}, True))
+        writes.append((asset, {"type": "주식", "isin": mapping.get("isin") or code, "symbol": mapping.get("symbol"), "canonicalIsin": mapping.get("canonicalIsin") or mapping.get("isin") or code, "portfolioCatalogMatched": mapping.get("catalogMatched", True), "name": mapping.get("koName") or latest.get("name"), "portfolioPriority": status, "prioritySource": "toss-pdf", "holdingShares": balance or 0, "updatedAt": now}, True))
         for item in asset_transactions:
             transaction = {key: value for key, value in item.items() if key not in {"code", "name", "balanceQuantity"}}
             transaction.update({"source": "toss-pdf", "importedAt": now})
@@ -158,7 +159,7 @@ def import_portfolio():
         if not payload or not expires_at or expires_at < datetime.now(timezone.utc):
             return reject("검토 세션이 만료되었습니다. PDF를 다시 확인해 주세요.", 410)
         selected = [item for item in payload.get("items", []) if stable_id(item) in accepted_ids]
-        mappings = {item["code"]: (db.collection("stockMappings").document(item["code"]).get().to_dict() or {}) for item in selected}
+        mappings = {item["code"]: security_mapping(db, item["code"]) for item in selected}
         portfolio = db.collection("portfolios").document(claims["uid"])
         selected = [item for item in selected if mappings[item["code"]].get("symbol") and not portfolio.collection("assets").document(mappings[item["code"]].get("isin") or item["code"]).collection("transactions").document(stable_id(item)).get().exists]
         if not selected:
@@ -180,7 +181,7 @@ def import_portfolio():
     if not items:
         return reject("가져올 수 있는 거래내역이 없습니다.")
     if action == "preview":
-        mappings = {code: (db.collection("stockMappings").document(code).get().to_dict() or {}) for code in {item["code"] for item in items}}
+        mappings = {code: security_mapping(db, code) for code in {item["code"] for item in items}}
         portfolio = db.collection("portfolios").document(claims["uid"])
         rows = []
         for item in items:

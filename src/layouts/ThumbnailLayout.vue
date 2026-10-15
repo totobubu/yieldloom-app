@@ -1,4 +1,6 @@
 <script setup>
+    import { firebaseUser } from '@/services/firebaseClient';
+    import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
     import { useLayout } from '@/composables/shared/useLayout';
     import Button from 'primevue/button';
     import Toast from 'primevue/toast';
@@ -12,6 +14,11 @@
             <router-link to="/">토또부부 배당 스튜디오 · 종목 선택</router-link>
             <div class="header-actions">
                 <router-link to="/mypage">내 포트폴리오</router-link>
+                <router-link
+                    v-if="isPortfolioAdmin(firebaseUser)"
+                    to="/admin/portfolio-mappings"
+                    >종목 식별 관리</router-link
+                >
                 <router-link to="/legal">이용 안내</router-link>
                 <Button
                     :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"

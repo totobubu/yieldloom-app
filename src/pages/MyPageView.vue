@@ -8,6 +8,8 @@
         previewTossStatement,
     } from '@/services/portfolio';
     import { summarizePortfolio } from '@/services/portfolioSummary';
+    import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
+    import { closedPositionPerformance } from '@/services/portfolioPerformance';
     import {
         formatPortfolioQuantity,
         portfolioAssetsInPeriod,
@@ -84,10 +86,22 @@
             portfolioAssetsInPeriod(dashboard.value.assets, start, end)
         );
     });
+    const performanceAssets = computed(() => {
+        const performances = new Map(
+            dashboard.value.assets.map((asset) => [
+                asset.id,
+                closedPositionPerformance(asset),
+            ])
+        );
+        return periodDashboard.value.assets.map((asset) => ({
+            ...asset,
+            performance: performances.get(asset.id),
+        }));
+    });
     const selectedAssetId = ref(null);
     const selectedAsset = computed(
         () =>
-            periodDashboard.value.assets.find(
+            performanceAssets.value.find(
                 (a) => a.id === selectedAssetId.value
             ) || null
     );
@@ -106,7 +120,7 @@
     );
     const holdingTab = ref('current');
     const visibleAssets = computed(() =>
-        periodDashboard.value.assets.filter(
+        performanceAssets.value.filter(
             (asset) =>
                 (asset.portfolioPriority === 'current'
                     ? 'current'
@@ -120,6 +134,16 @@
         Number.isFinite(Number(v))
             ? `₩${Math.round(Number(v)).toLocaleString('ko-KR')}`
             : '—';
+    const signedWon = (value) =>
+        value == null
+            ? '—'
+            : `${value > 0 ? '+' : value < 0 ? '−' : ''}${won(Math.abs(value))}`;
+    const profitClass = (value) =>
+        value > 0 ? 'profit-positive' : value < 0 ? 'profit-negative' : '';
+    const percent = (value) =>
+        value == null
+            ? '—'
+            : `${value > 0 ? '+' : ''}${value.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}%`;
     const quantity = formatPortfolioQuantity;
     const date = (v) =>
         v ? String(v).replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '—';
@@ -459,7 +483,11 @@
             <div class="section-heading">
                 <div>
                     <h2>종목별 요약</h2>
-                    <p>선택하면 전체 거래내역을 확인할 수 있습니다.</p>
+                    <p v-if="holdingTab === 'historical'">
+                        손익은 기간 선택과 별개로 저장된 전체 보유기간의 원화
+                        정산액을 기준으로 계산합니다.
+                    </p>
+                    <p v-else>선택하면 거래내역을 확인할 수 있습니다.</p>
                 </div>
                 <span>{{ dashboard.assets.length }}종목</span>
             </div>
@@ -517,9 +545,10 @@
                     <header>
                         <div>
                             <span class="ticker">{{
-                                asset.ticker || '미식별'
+                                asset.ticker || asset.isin || asset.id
                             }}</span>
                             <h3>{{ asset.displayName }}</h3>
+                            <small v-if="!asset.ticker">티커 연결 필요</small>
                         </div>
                         <b
                             :class="
@@ -535,7 +564,54 @@
                         >
                     </header>
                     <dl>
-                        <div>
+                        <template v-if="asset.portfolioPriority !== 'current'">
+                            <div>
+                                <dt>누적 매매손익</dt>
+                                <dd
+                                    :class="
+                                        profitClass(
+                                            asset.performance?.tradingProfit
+                                        )
+                                    ">
+                                    {{
+                                        signedWon(
+                                            asset.performance?.tradingProfit
+                                        )
+                                    }}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>배당 포함 손익</dt>
+                                <dd
+                                    :class="
+                                        profitClass(
+                                            asset.performance?.totalProfit
+                                        )
+                                    ">
+                                    {{
+                                        signedWon(
+                                            asset.performance?.totalProfit
+                                        )
+                                    }}
+                                </dd>
+                            </div>
+                            <div v-if="asset.performance?.available">
+                                <dt>배당 포함 수익률</dt>
+                                <dd
+                                    :class="
+                                        profitClass(
+                                            asset.performance.totalReturnPercent
+                                        )
+                                    ">
+                                    {{
+                                        percent(
+                                            asset.performance.totalReturnPercent
+                                        )
+                                    }}
+                                </dd>
+                            </div>
+                        </template>
+                        <div v-else>
                             <dt>보유 수량</dt>
                             <dd>{{ quantity(asset.holdingShares) }}주</dd>
                         </div>
@@ -567,10 +643,31 @@
                             </dd>
                         </div>
                     </dl>
+                    <p
+                        v-if="
+                            asset.portfolioPriority !== 'current' &&
+                            !asset.performance?.available
+                        "
+                        class="performance-note">
+                        {{ asset.performance?.reason }}
+                    </p>
                     <footer>
+                        <router-link
+                            v-if="
+                                !asset.ticker && isPortfolioAdmin(firebaseUser)
+                            "
+                            :to="{
+                                path: '/admin/portfolio-mappings',
+                                query: { isin: asset.isin || asset.id },
+                            }"
+                            >종목 연결</router-link
+                        >
                         <button @click="openDetail(asset)">거래 상세</button
                         ><router-link
-                            v-if="asset.ticker"
+                            v-if="
+                                asset.ticker &&
+                                asset.portfolioCatalogMatched !== false
+                            "
                             :to="`/stock/${asset.ticker}`"
                             >썸네일 보기 <i class="pi pi-arrow-right"
                         /></router-link>
@@ -677,7 +774,13 @@
             <section v-if="selectedAsset">
                 <header>
                     <div>
-                        <p>{{ selectedAsset.ticker || '미식별 종목' }}</p>
+                        <p>
+                            {{
+                                selectedAsset.ticker ||
+                                selectedAsset.isin ||
+                                selectedAsset.id
+                            }}
+                        </p>
                         <h2>{{ selectedAsset.displayName }}</h2>
                         <span
                             :class="
@@ -701,12 +804,32 @@
                 </header>
                 <div class="detail-metrics">
                     <article>
-                        <small>보유 수량</small
-                        ><strong
-                            >{{
-                                quantity(selectedAsset.holdingShares)
-                            }}주</strong
-                        >
+                        <template
+                            v-if="
+                                selectedAsset.portfolioPriority !== 'current'
+                            ">
+                            <small>배당 포함 손익 · 전체 보유기간</small>
+                            <strong
+                                :class="
+                                    profitClass(
+                                        selectedAsset.performance?.totalProfit
+                                    )
+                                "
+                                >{{
+                                    signedWon(
+                                        selectedAsset.performance?.totalProfit
+                                    )
+                                }}</strong
+                            >
+                        </template>
+                        <template v-else>
+                            <small>보유 수량</small
+                            ><strong
+                                >{{
+                                    quantity(selectedAsset.holdingShares)
+                                }}주</strong
+                            >
+                        </template>
                     </article>
                     <article>
                         <small>기간 배당 · {{ periodLabel }}</small
@@ -725,8 +848,81 @@
                         }}</strong>
                     </article>
                 </div>
+                <section
+                    v-if="selectedAsset.portfolioPriority !== 'current'"
+                    class="performance-detail"
+                    aria-label="과거 보유 손익">
+                    <h3>전체 보유기간 손익</h3>
+                    <p>
+                        기간 필터와 별개로 전체 매수·매도를 대조한 참고
+                        손익입니다. 수수료·세금은 정산액에 반영하며,
+                        양도소득세는 포함하지 않습니다.
+                    </p>
+                    <dl v-if="selectedAsset.performance?.available">
+                        <div>
+                            <dt>매수 정산액 합계</dt>
+                            <dd>
+                                {{
+                                    won(selectedAsset.performance.purchaseCost)
+                                }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>매도 정산액 합계</dt>
+                            <dd>
+                                {{
+                                    won(selectedAsset.performance.saleProceeds)
+                                }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>누적 매매손익</dt>
+                            <dd
+                                :class="
+                                    profitClass(
+                                        selectedAsset.performance.tradingProfit
+                                    )
+                                ">
+                                {{
+                                    signedWon(
+                                        selectedAsset.performance.tradingProfit
+                                    )
+                                }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>누적 실수령 배당</dt>
+                            <dd>
+                                {{ won(selectedAsset.performance.dividends) }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>배당 포함 수익률</dt>
+                            <dd
+                                :class="
+                                    profitClass(
+                                        selectedAsset.performance
+                                            .totalReturnPercent
+                                    )
+                                ">
+                                {{
+                                    percent(
+                                        selectedAsset.performance
+                                            .totalReturnPercent
+                                    )
+                                }}
+                            </dd>
+                        </div>
+                    </dl>
+                    <p v-else class="performance-note">
+                        {{ selectedAsset.performance?.reason }}
+                    </p>
+                </section>
                 <router-link
-                    v-if="selectedAsset.ticker"
+                    v-if="
+                        selectedAsset.ticker &&
+                        selectedAsset.portfolioCatalogMatched !== false
+                    "
                     class="thumbnail-link"
                     :to="`/stock/${selectedAsset.ticker}`"
                     @click="closeDetail"
@@ -1008,9 +1204,37 @@
         text-align: right;
     }
     .asset-card footer {
+        flex-wrap: wrap;
         padding-top: 14px;
         border-top: 1px solid;
         font-size: 0.85rem;
+    }
+    .profit-positive {
+        color: #c62828;
+    }
+    .profit-negative {
+        color: #2563b8;
+    }
+    .performance-note {
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+    }
+    .performance-detail {
+        margin-bottom: 18px;
+    }
+    .performance-detail p {
+        margin: 8px 0;
+        font-size: 0.85rem;
+    }
+    .performance-detail dl > div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 8px;
+    }
+    .performance-detail dd {
+        margin: 0;
+        text-align: right;
     }
     .table-wrap {
         overflow-x: auto;
@@ -1190,6 +1414,33 @@
     .summary-grid article,
     .panel,
     .asset-card,
+    .profit-positive {
+        color: #c62828;
+    }
+    .profit-negative {
+        color: #2563b8;
+    }
+    .performance-note {
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+    }
+    .performance-detail {
+        margin-bottom: 18px;
+    }
+    .performance-detail p {
+        margin: 8px 0;
+        font-size: 0.85rem;
+    }
+    .performance-detail dl > div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 8px;
+    }
+    .performance-detail dd {
+        margin: 0;
+        text-align: right;
+    }
     .table-wrap {
         border-color: var(--app-border-subtle);
         background: var(--app-surface);
@@ -1221,6 +1472,7 @@
         margin-top: 10px;
     }
     .asset-card footer {
+        flex-wrap: wrap;
         border-color: var(--app-border-subtle);
     }
     th,

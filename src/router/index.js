@@ -18,6 +18,11 @@ export default createRouter({
             component: () => import('../pages/MyPageView.vue'),
         },
         {
+            path: '/admin/portfolio-mappings',
+            name: 'portfolio-mappings',
+            component: () => import('../pages/PortfolioMappingsView.vue'),
+        },
+        {
             path: '/thumbnail/:ticker',
             redirect: (to) => ({
                 path: `/stock/${to.params.ticker}`,

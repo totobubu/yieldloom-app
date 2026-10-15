@@ -6,10 +6,14 @@
         commitTossStatement,
         loadPortfolioDashboard,
         previewTossStatement,
+        refreshTossStatementReview,
     } from '@/services/portfolio';
     import { summarizePortfolio } from '@/services/portfolioSummary';
     import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
-    import { closedPositionPerformance } from '@/services/portfolioPerformance';
+    import {
+        closedPositionPerformance,
+        transactionExchangeRate,
+    } from '@/services/portfolioPerformance';
     import {
         formatPortfolioQuantity,
         portfolioAssetsInPeriod,
@@ -96,6 +100,10 @@
         return periodDashboard.value.assets.map((asset) => ({
             ...asset,
             performance: performances.get(asset.id),
+            usdPerformance: closedPositionPerformance(
+                dashboard.value.assets.find((full) => full.id === asset.id),
+                'USD'
+            ),
         }));
     });
     const selectedAssetId = ref(null);
@@ -144,6 +152,34 @@
         value == null
             ? '—'
             : `${value > 0 ? '+' : ''}${value.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}%`;
+    const usd = (value, digits = 2) =>
+        value == null || !Number.isFinite(Number(value))
+            ? '—'
+            : `$${Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: digits })}`;
+    const performanceRows = [
+        { key: 'purchaseCost', label: '매수 정산액 합계' },
+        { key: 'saleProceeds', label: '매도 정산액 합계' },
+        { key: 'tradingProfit', label: '누적 매매손익', signed: true },
+        { key: 'dividends', label: '누적 실수령 배당' },
+        { key: 'totalProfit', label: '배당 포함 손익', signed: true },
+        { key: 'totalReturnPercent', label: '배당 포함 수익률', rate: true },
+    ];
+    const performanceValue = (performance, row, currency) => {
+        if (!performance?.available) return '—';
+        const value = performance[row.key];
+        if (row.rate) return percent(value);
+        if (currency === 'KRW')
+            return row.signed ? signedWon(value) : won(value);
+        return row.signed
+            ? `${value > 0 ? '+' : value < 0 ? '−' : ''}${usd(Math.abs(value))}`
+            : usd(value);
+    };
+    const exchange = (transaction) => {
+        const rate = transactionExchangeRate(transaction);
+        return rate
+            ? `${rate.value.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${rate.recorded ? '' : ' (참고)'}`
+            : '—';
+    };
     const quantity = formatPortfolioQuantity;
     const date = (v) =>
         v ? String(v).replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3') : '—';
@@ -245,6 +281,24 @@
             importing.value = false;
         }
     }
+    async function refreshReview() {
+        if (!review.value) return;
+        committing.value = true;
+        error.value = '';
+        try {
+            review.value = await refreshTossStatementReview(
+                firebaseUser.value,
+                review.value.sessionId
+            );
+            acceptedIds.value = review.value.rows
+                .filter((row) => row.status === 'ready')
+                .map((row) => row.id);
+        } catch (reason) {
+            error.value = reason.message;
+        } finally {
+            committing.value = false;
+        }
+    }
     async function commitReview() {
         if (!review.value) return;
         committing.value = true;
@@ -255,8 +309,9 @@
                 review.value.sessionId,
                 acceptedIds.value
             );
-            review.value = null;
-            message.value = `${result.transactionCount}건의 거래내역을 저장했습니다.`;
+            review.value = result.remainingReview || null;
+            acceptedIds.value = [];
+            message.value = `${result.transactionCount}건의 거래내역을 저장했습니다.${review.value ? ' 남은 거래는 검토 목록에 유지됩니다.' : ''}`;
             await refresh();
         } catch (reason) {
             error.value = reason.message;
@@ -423,7 +478,30 @@
                     <h2>가져오기 검토</h2>
                     <p>
                         준비된 행만 기본 선택됩니다. 중복·미매핑 행은 이번
-                        저장에서 제외됩니다.
+                        저장에서 제외됩니다. 미매핑 ISIN은 관리자 연결 대기열에
+                        수집됩니다.
+                    </p>
+                    <button
+                        type="button"
+                        :disabled="committing"
+                        @click="refreshReview">
+                        종목 연결 상태 다시 확인
+                    </button>
+                    <button
+                        type="button"
+                        :disabled="committing"
+                        @click="
+                            review = null;
+                            acceptedIds = [];
+                        ">
+                        검토 닫기
+                    </button>
+                    <p
+                        v-if="
+                            review.rows.some((row) => row.status === 'unmapped')
+                        ">
+                        미매핑 거래는 관리자 연결 후 상태를 다시 확인해 저장할
+                        수 있습니다.
                     </p>
                 </div>
                 <button
@@ -468,7 +546,16 @@
                                 }}</span>
                             </td>
                             <td>{{ date(row.date) }}</td>
-                            <td>{{ row.symbol || row.name || '미식별' }}</td>
+                            <td>
+                                {{
+                                    row.symbol ||
+                                    row.name ||
+                                    row.isin ||
+                                    '티커 연결 필요'
+                                }}<small v-if="row.status === 'unmapped'"
+                                    >ISIN {{ row.isin }}</small
+                                >
+                            </td>
                             <td>{{ typeLabel(row.type) }}</td>
                             <td class="numeric">
                                 {{ quantity(row.quantity) }}
@@ -858,64 +945,77 @@
                         손익입니다. 수수료·세금은 정산액에 반영하며,
                         양도소득세는 포함하지 않습니다.
                     </p>
-                    <dl v-if="selectedAsset.performance?.available">
-                        <div>
-                            <dt>매수 정산액 합계</dt>
-                            <dd>
-                                {{
-                                    won(selectedAsset.performance.purchaseCost)
-                                }}
-                            </dd>
-                        </div>
-                        <div>
-                            <dt>매도 정산액 합계</dt>
-                            <dd>
-                                {{
-                                    won(selectedAsset.performance.saleProceeds)
-                                }}
-                            </dd>
-                        </div>
-                        <div>
-                            <dt>누적 매매손익</dt>
-                            <dd
-                                :class="
-                                    profitClass(
-                                        selectedAsset.performance.tradingProfit
-                                    )
-                                ">
-                                {{
-                                    signedWon(
-                                        selectedAsset.performance.tradingProfit
-                                    )
-                                }}
-                            </dd>
-                        </div>
-                        <div>
-                            <dt>누적 실수령 배당</dt>
-                            <dd>
-                                {{ won(selectedAsset.performance.dividends) }}
-                            </dd>
-                        </div>
-                        <div>
-                            <dt>배당 포함 수익률</dt>
-                            <dd
-                                :class="
-                                    profitClass(
-                                        selectedAsset.performance
-                                            .totalReturnPercent
-                                    )
-                                ">
-                                {{
-                                    percent(
-                                        selectedAsset.performance
-                                            .totalReturnPercent
-                                    )
-                                }}
-                            </dd>
-                        </div>
-                    </dl>
-                    <p v-else class="performance-note">
-                        {{ selectedAsset.performance?.reason }}
+                    <div class="table-wrap">
+                        <table aria-label="원화 달러 손익 비교">
+                            <thead>
+                                <tr>
+                                    <th>항목</th>
+                                    <th class="numeric">원화 (KRW)</th>
+                                    <th class="numeric">달러 (USD)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="row in performanceRows"
+                                    :key="row.key">
+                                    <td>{{ row.label }}</td>
+                                    <td
+                                        class="numeric"
+                                        :class="
+                                            row.signed
+                                                ? profitClass(
+                                                      selectedAsset
+                                                          .performance?.[
+                                                          row.key
+                                                      ]
+                                                  )
+                                                : ''
+                                        ">
+                                        {{
+                                            performanceValue(
+                                                selectedAsset.performance,
+                                                row,
+                                                'KRW'
+                                            )
+                                        }}
+                                    </td>
+                                    <td
+                                        class="numeric"
+                                        :class="
+                                            row.signed
+                                                ? profitClass(
+                                                      selectedAsset
+                                                          .usdPerformance?.[
+                                                          row.key
+                                                      ]
+                                                  )
+                                                : ''
+                                        ">
+                                        {{
+                                            performanceValue(
+                                                selectedAsset.usdPerformance,
+                                                row,
+                                                'USD'
+                                            )
+                                        }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p
+                        v-if="!selectedAsset.performance?.available"
+                        class="performance-note">
+                        원화: {{ selectedAsset.performance?.reason }}
+                    </p>
+                    <p
+                        v-if="!selectedAsset.usdPerformance?.available"
+                        class="performance-note">
+                        달러: {{ selectedAsset.usdPerformance?.reason }}
+                    </p>
+                    <p>
+                        원화와 달러 손익은 각각 명세서의 정산액으로 계산합니다.
+                        현재 환율로 환산한 금액이 아닙니다.
                     </p>
                 </section>
                 <router-link
@@ -929,6 +1029,12 @@
                     >{{ selectedAsset.ticker }} 썸네일 페이지 바로가기
                     <i class="pi pi-arrow-right"
                 /></router-link>
+                <p class="performance-note">
+                    원화 금액은 명세서의 원화 환산 금액입니다. 환율은 명세서
+                    기록을 우선 표시하며, 금액 비율로 계산한 값은 ‘참고’로
+                    구분합니다. 이 정보만으로 원화 자동환전 여부를 판단하지
+                    않습니다.
+                </p>
                 <div class="table-wrap detail-table">
                     <table>
                         <thead>
@@ -936,7 +1042,9 @@
                                 <th>날짜</th>
                                 <th>유형</th>
                                 <th class="numeric">수량</th>
-                                <th class="numeric">금액</th>
+                                <th class="numeric">원화 거래금액</th>
+                                <th class="numeric">달러 거래금액</th>
+                                <th class="numeric">환율 (원/USD)</th>
                                 <th class="numeric">수수료</th>
                                 <th class="numeric">세금</th>
                             </tr>
@@ -965,6 +1073,12 @@
                                     {{ won(transaction.amount) }}
                                 </td>
                                 <td class="numeric">
+                                    {{ usd(transaction.nativeAmount, 6) }}
+                                </td>
+                                <td class="numeric">
+                                    {{ exchange(transaction) }}
+                                </td>
+                                <td class="numeric">
                                     {{ won(transaction.commission) }}
                                 </td>
                                 <td class="numeric">
@@ -976,7 +1090,7 @@
                                     periodError ||
                                     !selectedAsset.transactions.length
                                 ">
-                                <td colspan="6" class="empty">
+                                <td colspan="8" class="empty">
                                     {{
                                         periodError ||
                                         (selectedAsset.ledgerUnavailable

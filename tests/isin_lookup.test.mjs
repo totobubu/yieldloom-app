@@ -17,6 +17,7 @@ test('exact ISIN plus independent Yahoo agreement is a cross-checked match', () 
     assert.equal(r.candidates.length, 1);
     assert.equal(r.candidates[0].crossChecked, true);
     assert.equal(r.candidates[0].canonicalIsin, isin);
+    assert.equal(r.candidates[0].figi, 'BBG002CV4Q74');
     assert.equal(r.candidates[0].sources.length, 2);
 });
 test('Yahoo-only or disagreeing or ambiguous results are never called verified', () => {

@@ -165,3 +165,23 @@ export async function commitTossStatement(user, sessionId, acceptedIds) {
 
 // Compatibility entry point for integrations that intentionally skip the review UI.
 export const importTossStatement = previewTossStatement;
+
+export async function refreshTossStatementReview(user, sessionId) {
+    const response = await fetch(
+        apiUrl('/api/portfolio-import?action=refresh'),
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${await user.getIdToken()}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ sessionId }),
+        }
+    );
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok)
+        throw new Error(
+            payload.error || '종목 연결 상태를 확인하지 못했습니다.'
+        );
+    return payload;
+}

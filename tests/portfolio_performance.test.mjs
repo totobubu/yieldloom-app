@@ -90,3 +90,32 @@ test('missing basis, stock events and incomplete or failed ledgers never produce
         assert.ok(result.reason);
     }
 });
+
+test('KRW profit and USD profit use their own settled cash amounts, even with opposite signs', () => {
+    const asset = closed([
+        {
+            type: 'buy',
+            quantity: 1,
+            amount: 100000,
+            settlementAmount: 100000,
+            nativeAmount: 100,
+            nativeSettlementAmount: 100,
+        },
+        {
+            type: 'sell',
+            quantity: 1,
+            amount: 120000,
+            settlementAmount: 120000,
+            nativeAmount: 90,
+            nativeSettlementAmount: 90,
+        },
+        { type: 'dividend', amount: 2000, nativeAmount: 2 },
+    ]);
+    assert.equal(closedPositionPerformance(asset).totalProfit, 22000);
+    assert.equal(closedPositionPerformance(asset, 'USD').totalProfit, -8);
+    const incomplete = closed([
+        { type: 'buy', quantity: 1, amount: 100 },
+        { type: 'sell', quantity: 1, amount: 200 },
+    ]);
+    assert.equal(closedPositionPerformance(incomplete, 'USD').available, false);
+});

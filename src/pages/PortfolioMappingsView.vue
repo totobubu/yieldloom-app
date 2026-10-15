@@ -218,7 +218,13 @@
                             item.names.join(' / ') || '종목명 없음'
                         }}</strong
                         ><span>{{ item.isin }}</span
-                        ><small>원장 {{ item.assetCount }}개</small>
+                        ><small
+                            >{{
+                                item.discoveredInUploads
+                                    ? '고객 업로드에서 발견 · '
+                                    : ''
+                            }}원장 {{ item.assetCount }}개</small
+                        >
                     </button>
                 </div>
             </section>
@@ -409,6 +415,10 @@
                         <dt>연결할 종목 ISIN</dt>
                         <dd>{{ review.mapping.canonicalIsin }}</dd>
                     </div>
+                    <div v-if="review.mapping.figi">
+                        <dt>FIGI</dt>
+                        <dd>{{ review.mapping.figi }}</dd>
+                    </div>
                     <div>
                         <dt>기존 원장 반영</dt>
                         <dd>{{ review.affectedAssets }}개</dd>
@@ -443,6 +453,7 @@
                             >{{ item.isin }} → {{ item.symbol }} ·
                             {{ item.koName }}</strong
                         ><span>종목 ISIN {{ item.canonicalIsin }}</span>
+                        <span v-if="item.figi">FIGI {{ item.figi }}</span>
                         <p>{{ item.evidence }}</p>
                         <button :disabled="busy" @click="chooseSource(item)">
                             다시 검토

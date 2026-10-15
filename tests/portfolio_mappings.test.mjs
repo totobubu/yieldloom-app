@@ -53,6 +53,19 @@ function fixture(claims = admin, lookup) {
     });
     const collection = (name) => ({
         doc: (id) => ref(`${name}/${id || `review${++counter}`}`),
+        where: () => ({
+            limit: () => ({
+                get: async () => ({
+                    docs: [...records.keys()]
+                        .filter(
+                            (path) =>
+                                path.startsWith(name + '/') &&
+                                records.get(path).status === 'pending'
+                        )
+                        .map(snapshot),
+                }),
+            }),
+        }),
         orderBy: () => ({ limit: () => ({ get: async () => ({ docs: [] }) }) }),
     });
     const db = {
@@ -243,4 +256,20 @@ test('automatic preview independently verifies providers and retains the exact I
         candidates: [],
     })).call('POST', { action: 'preview', ...request, autoLookup: true });
     assert.equal(rejected.code, 409);
+});
+
+test('unmapped instruments discovered in uploads appear even without committed assets', async () => {
+    const f = fixture();
+    f.records.set('portfolioIsinCandidates/US26923N4135', {
+        status: 'pending',
+        names: ['T-REX 역방향 ETF'],
+        uploadCount: 1,
+        privateAmount: 999,
+    });
+    const r = await f.call('GET');
+    const queued = r.body.pending.find((row) => row.isin === 'US26923N4135');
+    assert.equal(queued.assetCount, 0);
+    assert.equal(queued.discoveredInUploads, true);
+    assert.deepEqual(queued.names, ['T-REX 역방향 ETF']);
+    assert.equal(queued.privateAmount, undefined);
 });

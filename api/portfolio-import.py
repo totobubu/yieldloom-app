@@ -12,8 +12,9 @@ from firebase_admin import auth, credentials, firestore
 from flask import Flask, jsonify, request
 
 from toss_extractor import extract_transactions_from_pdf
-from portfolio_mapping import security_mapping
+from portfolio_mapping import security_mapping, record_candidates
 from server_cors import configure_cors
+from firebase_credential import parse_firebase_credential
 
 app = Flask(__name__)
 configure_cors(app)
@@ -25,7 +26,7 @@ def firebase_db():
         raw = os.environ.get("FIRESTORE_SA_KEY")
         if not raw:
             raise RuntimeError("FIRESTORE_SA_KEY is not configured")
-        firebase_admin.initialize_app(credentials.Certificate(json.loads(raw)))
+        firebase_admin.initialize_app(credentials.Certificate(parse_firebase_credential(raw)))
     return firestore.client()
 
 
@@ -93,12 +94,32 @@ def parse_statement(uploaded, password):
         items.append({
             "code": str(code).upper(), "date": date, "rawType": raw.get("type") or "", "type": transaction_type(raw.get("type")),
             "quantity": number(raw.get("quantity")), "amount": number(raw.get("transaction_amount_krw")),
+            "settlementAmount": number(raw.get("settlement_amount_krw")), "nativeSettlementAmount": number(raw.get("settlement_amount_usd")), "exchangeRate": number(raw.get("exchange_rate")), "nativeCommission": number(raw.get("commission_usd")), "nativeTax": number(raw.get("tax_usd")),
             "price": number(raw.get("unit_price_krw")), "commission": number(raw.get("commission_krw")),
             "tax": number(raw.get("tax_krw")), "currency": "USD" if raw.get("unit_price_usd") else "KRW",
             "nativeAmount": number(raw.get("transaction_amount_usd")), "nativePrice": number(raw.get("unit_price_usd")),
             "name": raw.get("stock_name") or None, "balanceQuantity": number(raw.get("balance_quantity")),
         })
     return items
+
+
+def review_rows(db, uid, items):
+    mappings = {code: security_mapping(db, code) for code in {item["code"] for item in items}}
+    portfolio = db.collection("portfolios").document(uid)
+    existing = {}
+    for code, mapping in mappings.items():
+        if not mapping.get("symbol"):
+            continue
+        asset_id = mapping.get("isin") or code
+        if asset_id not in existing:
+            existing[asset_id] = {doc.id for doc in portfolio.collection("assets").document(asset_id).collection("transactions").stream()}
+    rows = []
+    for item in items:
+        mapping = mappings[item["code"]]
+        asset_id = mapping.get("isin") or item["code"]
+        duplicate = stable_id(item) in existing.get(asset_id, set())
+        rows.append({"id": stable_id(item), "isin": item["code"], "status": "duplicate" if duplicate else "unmapped" if not mapping.get("symbol") else "ready", "symbol": mapping.get("symbol"), "name": item.get("name"), "date": item["date"], "type": item["type"], "quantity": item.get("quantity"), "amount": item.get("amount")})
+    return rows
 
 
 def persist_items(db, claims, items):
@@ -121,7 +142,7 @@ def persist_items(db, claims, items):
         status = "current" if balance and balance > 0 else "historical"
         current_assets += status == "current"
         asset = portfolio.collection("assets").document(asset_id)
-        writes.append((asset, {"type": "주식", "isin": mapping.get("isin") or code, "symbol": mapping.get("symbol"), "canonicalIsin": mapping.get("canonicalIsin") or mapping.get("isin") or code, "portfolioCatalogMatched": mapping.get("catalogMatched", True), "name": mapping.get("koName") or latest.get("name"), "portfolioPriority": status, "prioritySource": "toss-pdf", "holdingShares": balance or 0, "updatedAt": now}, True))
+        writes.append((asset, {"type": "주식", "isin": mapping.get("isin") or code, "symbol": mapping.get("symbol"), "canonicalIsin": mapping.get("canonicalIsin") or mapping.get("isin") or code, "portfolioCatalogMatched": mapping.get("catalogMatched", True), "figi": mapping.get("figi"), "compositeFigi": mapping.get("compositeFigi"), "shareClassFigi": mapping.get("shareClassFigi"), "name": mapping.get("koName") or latest.get("name"), "portfolioPriority": status, "prioritySource": "toss-pdf", "holdingShares": balance or 0, "updatedAt": now}, True))
         for item in asset_transactions:
             transaction = {key: value for key, value in item.items() if key not in {"code", "name", "balanceQuantity"}}
             transaction.update({"source": "toss-pdf", "importedAt": now})
@@ -146,11 +167,11 @@ def import_portfolio():
     if not claims:
         return reject("로그인이 확인되지 않았습니다.", 401)
     action = request.args.get("action", "import")
-    if action == "commit":
+    if action in {"commit", "refresh"}:
         body = request.get_json(silent=True) or {}
         session_id = str(body.get("sessionId") or "")
         accepted_ids = {str(value) for value in body.get("acceptedIds", [])}
-        if not session_id or not accepted_ids:
+        if not session_id or (action == "commit" and not accepted_ids):
             return reject("확정할 검토 행을 선택해 주세요.")
         session = db.collection("portfolioImportSessions").document(claims["uid"]).collection("sessions").document(session_id)
         snapshot = session.get()
@@ -158,14 +179,25 @@ def import_portfolio():
         expires_at = payload.get("expiresAt") if payload else None
         if not payload or not expires_at or expires_at < datetime.now(timezone.utc):
             return reject("검토 세션이 만료되었습니다. PDF를 다시 확인해 주세요.", 410)
+        if action == "refresh":
+            return jsonify({"sessionId": session_id, "expiresAt": expires_at.isoformat(), "rows": review_rows(db, claims["uid"], payload.get("items", []))})
         selected = [item for item in payload.get("items", []) if stable_id(item) in accepted_ids]
-        mappings = {item["code"]: security_mapping(db, item["code"]) for item in selected}
-        portfolio = db.collection("portfolios").document(claims["uid"])
-        selected = [item for item in selected if mappings[item["code"]].get("symbol") and not portfolio.collection("assets").document(mappings[item["code"]].get("isin") or item["code"]).collection("transactions").document(stable_id(item)).get().exists]
+        ready_ids = {row["id"] for row in review_rows(db, claims["uid"], selected) if row["status"] == "ready"}
+        selected = [item for item in selected if stable_id(item) in ready_ids]
         if not selected:
             return reject("매핑된 새 거래만 확정할 수 있습니다.")
         result = persist_items(db, claims, selected)
-        session.delete()
+        stored_ids = {stable_id(item) for item in selected}
+        remaining = [item for item in payload.get("items", []) if stable_id(item) not in stored_ids]
+        if remaining:
+            rows = review_rows(db, claims["uid"], remaining)
+            if any(row["status"] != "duplicate" for row in rows):
+                session.update({"items": remaining})
+                result["remainingReview"] = {"sessionId": session_id, "expiresAt": expires_at.isoformat(), "rows": rows}
+            else:
+                session.delete()
+        else:
+            session.delete()
         return jsonify(result)
     uploaded = request.files.get("file")
     password = request.form.get("password", "")
@@ -180,15 +212,10 @@ def import_portfolio():
         return reject("PDF를 열지 못했습니다. 비밀번호와 파일을 확인해 주세요.")
     if not items:
         return reject("가져올 수 있는 거래내역이 없습니다.")
+    mappings = {code: security_mapping(db, code) for code in {item["code"] for item in items}}
+    record_candidates(db, items, mappings, datetime.now(timezone.utc))
     if action == "preview":
-        mappings = {code: security_mapping(db, code) for code in {item["code"] for item in items}}
-        portfolio = db.collection("portfolios").document(claims["uid"])
-        rows = []
-        for item in items:
-            mapping = mappings[item["code"]]
-            asset_id = mapping.get("isin") or item["code"]
-            duplicate = bool(mapping.get("symbol")) and portfolio.collection("assets").document(asset_id).collection("transactions").document(stable_id(item)).get().exists
-            rows.append({"id": stable_id(item), "status": "duplicate" if duplicate else "unmapped" if not mapping.get("symbol") else "ready", "symbol": mapping.get("symbol"), "name": item.get("name"), "date": item["date"], "type": item["type"], "quantity": item.get("quantity"), "amount": item.get("amount")})
+        rows = review_rows(db, claims["uid"], items)
         session_id = uuid4().hex
         now = datetime.now(timezone.utc)
         db.collection("portfolioImportSessions").document(claims["uid"]).collection("sessions").document(session_id).set({"createdAt": now, "expiresAt": now + timedelta(hours=24), "items": items})

@@ -7,18 +7,44 @@ import { loadCoreDirectory } from '@/services/coreRelease';
 import { loadDataReleaseIndex } from '@/services/dataRelease';
 import { mergeDiscoveredStocks } from '../../lib/discovered-stocks.js';
 import { inferSecurityType, matchesProductType, productTypeOptions, topProviders } from '../../lib/security-filters.js';
+import { authLoading, firebaseUser } from '@/services/firebaseClient';
+import { loadPortfolioAssets, portfolioTickerStates } from '@/services/portfolio';
 import AdSlot from '@/components/ads/AdSlot.vue';
 useHead({ title: 'ETF·주식 검색' });
 const query = ref(''), company = ref(''), securityType = ref(''), sort = ref('symbol');
 const homeAdSlot = String(import.meta.env.VITE_ADSENSE_HOME_SLOT || '');
 const page = ref(1), rows = ref([]), distributions = ref({}), loading = ref(true), error = ref('');
+const holdingStates = ref(new Map()), holdingsLoading = ref(false), holdingsError = ref('');
+let holdingsRequest = 0;
+watch([firebaseUser, authLoading], async ([user, pending]) => {
+    const request = ++holdingsRequest;
+    holdingStates.value = new Map();
+    holdingsError.value = '';
+    holdingsLoading.value = false;
+    if (pending || !user) return;
+    holdingsLoading.value = true;
+    try {
+        const assets = await loadPortfolioAssets(user.uid);
+        if (request === holdingsRequest) holdingStates.value = portfolioTickerStates(assets);
+    } catch {
+        if (request === holdingsRequest) holdingsError.value = '보유이력을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+    } finally {
+        if (request === holdingsRequest) holdingsLoading.value = false;
+    }
+}, { immediate: true });
+const holdingMessage = computed(() => {
+    if (securityType.value !== 'holding-history') return '';
+    if (authLoading.value || holdingsLoading.value) return '보유이력을 불러오는 중입니다.';
+    if (!firebaseUser.value) return '보유이력을 보려면 로그인해 주세요.';
+    return holdingsError.value;
+});
 const pageSize = 25;
 const companies = computed(() => [...new Set(rows.value.map(row => row.company?.trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b)));
 const popularCompanies = computed(() => topProviders(rows.value));
 const filtered = computed(() => {
     const needle = query.value.trim().toLowerCase();
     return rows.value.filter(row => (!company.value || row.company?.trim() === company.value)
-        && matchesProductType(row, securityType.value, distributions.value[row.symbol])
+        && matchesProductType(row, securityType.value, distributions.value[row.symbol], holdingStates.value)
         && [row.symbol, row.koName, row.longName, row.company, row.underlying, ...(row.dividendEtfs ?? []).map(etf => etf.ticker)].some(value => String(value ?? '').toLowerCase().includes(needle)))
         .sort((a, b) => {
             return sort.value === 'ipoDate' ? String(b.ipoDate ?? '').localeCompare(String(a.ipoDate ?? '')) : String(a[sort.value] ?? '').localeCompare(String(b[sort.value] ?? ''), 'ko');
@@ -65,11 +91,12 @@ onMounted(load);
         <header class="page-title"><div><p>DIVIDEND EXPLORER</p><h1>ETF·주식 검색</h1><span>관심 있는 종목을 찾고, 배당 콘텐츠를 만들어 보세요.</span></div><span class="universe-count">{{ rows.length.toLocaleString() }}<small>등록 종목</small></span></header>
         <section class="filter-panel" aria-label="종목 검색 필터">
             <label class="search-box" for="ticker-search"><i class="pi pi-search" aria-hidden="true" /><input id="ticker-search" v-model="query" type="search" placeholder="종목명, 티커 또는 운용사를 검색하세요" /></label>
-            <div class="filter-row"><span class="filter-label">상품 유형</span><div class="product-filters"><div class="chips"><button v-for="option in productTypeOptions" :key="option.value" :aria-pressed="securityType === option.value" :class="{ active: securityType === option.value }" @click="securityType = option.value">{{ option.label }}</button></div><details class="filter-guide"><summary>상품 유형 분류 기준</summary><p>일반 주식은 전체 개별 주식입니다. 배당 ETF·배당주는 저장된 배당 이력·배당 주기 또는 상품 정보를 기준으로 분류합니다. 레버리지 ETF는 상품명 또는 유형 정보를 기준으로 분류합니다. 성장주는 대표 성장 종목 목록 기준이며, 배당성장주는 DGRO·VIG, 고배당주는 SCHD·VYM·HDV 편입 정보 기준입니다. 유형은 서로 중복될 수 있습니다.</p></details></div></div>
+            <div class="filter-row"><span class="filter-label">상품 유형</span><div class="product-filters"><div class="chips"><button v-for="option in productTypeOptions" :key="option.value" :aria-pressed="securityType === option.value" :class="{ active: securityType === option.value }" @click="securityType = option.value">{{ option.label }}</button></div><details class="filter-guide"><summary>상품 유형 분류 기준</summary><p>일반 주식은 전체 개별 주식입니다. 배당 ETF·배당주는 저장된 배당 이력·배당 주기 또는 상품 정보를 기준으로 분류합니다. 레버리지 ETF는 상품명 또는 유형 정보를 기준으로 분류합니다. 성장주는 대표 성장 종목 목록 기준이며, 배당성장주는 DGRO·VIG, 고배당주는 SCHD·VYM·HDV 편입 정보 기준입니다. 보유이력은 로그인한 계정의 현재·과거 보유 종목을 표시합니다. 유형은 서로 중복될 수 있습니다.</p></details></div></div>
             <div class="filter-row provider-row"><label class="filter-label" for="company-filter">운용사</label><div class="provider-filters"><div class="chips" role="group" aria-label="운용사 빠른 선택"><button :aria-pressed="company === ''" :class="{ active: company === '' }" @click="company = ''">전체 운용사</button><button v-for="provider in popularCompanies" :key="provider.name" :aria-pressed="company === provider.name" :class="{ active: company === provider.name }" :title="`등록 ETF ${provider.count.toLocaleString()}개`" @click="company = provider.name">{{ provider.name }}</button></div><div class="provider-select"><select id="company-filter" v-model="company"><option value="">전체 운용사</option><option v-for="name in companies" :key="name" :value="name">{{ name }}</option></select><span class="provider-hint">빠른 선택은 등록 ETF 수 상위 5개 운용사 기준</span></div></div><button class="reset" @click="reset"><i class="pi pi-refresh" aria-hidden="true" /> 필터 초기화<span v-if="filterCount"> ({{ filterCount }})</span></button></div>
         </section>
         <div v-if="loading" class="empty" role="status">종목 목록을 불러오는 중입니다.</div>
         <div v-else-if="error" class="empty" role="alert">{{ error }} <button @click="load">다시 시도</button></div>
+        <div v-else-if="holdingMessage" class="empty" :role="holdingsError ? 'alert' : 'status'">{{ holdingMessage }}</div>
         <template v-else>
             <div class="results-toolbar"><h2>검색 결과 <b>{{ filtered.length.toLocaleString() }}</b><small>개 종목</small></h2><label for="sort-order">정렬 <select id="sort-order" v-model="sort"><option value="symbol">티커순</option><option value="company">운용사순</option><option value="ipoDate">최근 상장순</option></select></label></div>
             <div class="table-wrap" tabindex="0" role="region" aria-label="종목 검색 결과 표">

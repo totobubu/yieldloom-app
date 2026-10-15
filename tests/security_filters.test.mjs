@@ -48,3 +48,12 @@ test('provider shortcuts rank active ETFs by count with deterministic ties', () 
     assert.equal(topProviders(rows)[0].count, 3);
     assert.deepEqual(topProviders([]), []);
 });
+
+test('holding history includes current and former holdings across product types', () => {
+    const states = new Map([['MSFT', 'current'], ['SCHD', 'historical']]);
+    assert.equal(matchesProductType(stock, 'holding-history', undefined, states), true);
+    assert.equal(matchesProductType({ symbol: ' schd ', securityType: 'etf' }, 'holding-history', undefined, states), true);
+    assert.equal(matchesProductType({ symbol: 'TSLA' }, 'holding-history', undefined, states), false);
+    assert.equal(matchesProductType(stock, 'holding-history'), false);
+    assert.equal(matchesProductType(stock, '', undefined, states), true);
+});

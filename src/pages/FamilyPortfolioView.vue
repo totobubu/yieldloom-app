@@ -8,6 +8,7 @@
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { useRoute, useRouter } from 'vue-router';
     import PortfolioDividendCalendar from '@/components/portfolio/PortfolioDividendCalendar.vue';
+    import PortfolioValuation from '@/components/portfolio/PortfolioValuation.vue';
     import Button from 'primevue/button';
     import Card from 'primevue/card';
     import Panel from 'primevue/panel';
@@ -750,6 +751,19 @@
                             >계좌 등록 → 자료 업로드 → 검토 후 저장</small
                         >
                     </div>
+                    <PortfolioValuation
+                        v-if="
+                            portfolioTab === 'overview' &&
+                            accountsState === 'ready' &&
+                            summary &&
+                            visibleAccounts.length
+                        "
+                        :key="`${ownUid}:${familyId}:${portfolioScope}`"
+                        :positions="summary.positions"
+                        :accounts="visibleAccounts"
+                        :missing-accounts="
+                            summary.missingSnapshotAccounts.length
+                        " />
                     <div
                         v-if="
                             summary &&

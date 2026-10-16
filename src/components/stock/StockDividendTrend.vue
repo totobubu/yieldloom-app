@@ -1,4 +1,5 @@
 <script setup>
+    import Button from 'primevue/button';
     import { computed, ref } from 'vue';
     import { monthlyDividendSeries } from '@/services/stockAnalysis';
     const props = defineProps({
@@ -40,13 +41,15 @@
                 <p>주당 세전 {{ currency }} · 배당락일 기준</p>
             </div>
             <div class="trend-controls">
-                <button
+                <Button
+                    :severity="length === n ? undefined : 'secondary'"
+                    :outlined="length !== n"
                     v-for="n in [12, 24]"
                     :key="n"
                     :aria-pressed="length === n"
                     @click="length = n">
                     {{ n }}개월
-                </button>
+                </Button>
             </div>
         </header>
         <div
@@ -135,18 +138,6 @@
     .trend-controls {
         display: flex;
         gap: 6px;
-    }
-    .trend-controls button {
-        padding: 7px 12px;
-        border: 1px solid var(--app-border);
-        border-radius: 8px;
-        background: var(--app-surface);
-        color: var(--app-muted);
-        cursor: pointer;
-    }
-    .trend-controls button[aria-pressed='true'] {
-        background: var(--app-accent);
-        color: var(--app-accent-contrast);
     }
     .trend-chart {
         display: flex;

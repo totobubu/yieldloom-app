@@ -1,4 +1,5 @@
 <script setup>
+    import Button from 'primevue/button';
     import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
     import { apiUrl } from '@/services/apiUrl';
     import { aggregateCandles } from '@/services/stockAnalysis';
@@ -247,50 +248,64 @@
                 <p>시가·고가·저가·종가 · {{ data?.currency || currency }}</p>
             </div>
             <div class="periods" aria-label="차트 기간">
-                <button
+                <Button
+                    severity="secondary"
+                    outlined
                     v-for="item in periods"
                     :key="item.months"
                     :aria-pressed="period === item.months"
                     :class="{ active: period === item.months }"
                     @click="period = item.months">
                     {{ item.label }}
-                </button>
+                </Button>
             </div>
         </header>
         <div class="chart-navigation">
             <div class="interval-controls" aria-label="봉 주기">
-                <button
+                <Button
+                    severity="secondary"
+                    outlined
                     v-for="(label, key) in intervalLabels"
                     :key="key"
                     :aria-pressed="interval === key"
                     @click="interval = key">
                     {{ label }}
-                </button>
+                </Button>
             </div>
             <div class="zoom-controls" aria-label="차트 확대와 이동">
-                <button
+                <Button
+                    severity="secondary"
+                    outlined
                     aria-label="차트 왼쪽 이동"
                     :disabled="endIndex <= (visibleCount ?? aggregated.length)"
                     @click="pan(-1)">
-                    ←</button
-                ><button
+                    ←</Button
+                ><Button
+                    severity="secondary"
+                    outlined
                     aria-label="차트 축소"
                     :disabled="
                         !candles.length || candles.length >= aggregated.length
                     "
                     @click="zoom(1.5)">
-                    −</button
-                ><button
+                    −</Button
+                ><Button
+                    severity="secondary"
+                    outlined
                     aria-label="차트 확대"
                     :disabled="candles.length <= 10"
                     @click="zoom(0.65)">
-                    ＋</button
-                ><button
+                    ＋</Button
+                ><Button
+                    severity="secondary"
+                    outlined
                     aria-label="차트 오른쪽 이동"
                     :disabled="endIndex >= aggregated.length"
                     @click="pan(1)">
-                    →</button
-                ><button @click="resetWindow">전체 보기</button>
+                    →</Button
+                ><Button severity="secondary" outlined @click="resetWindow"
+                    >전체 보기</Button
+                >
             </div>
         </div>
         <div v-if="loading" class="chart-state" role="status">
@@ -298,7 +313,9 @@
         </div>
         <div v-else-if="error" class="chart-state" role="alert">
             <p>{{ error }}</p>
-            <button @click="load">다시 시도</button>
+            <Button severity="secondary" outlined @click="load"
+                >다시 시도</Button
+            >
         </div>
         <template v-else-if="current">
             <div class="quote-summary">

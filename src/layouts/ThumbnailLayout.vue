@@ -1,99 +1,448 @@
 <script setup>
-    import { firebaseUser } from '@/services/firebaseClient';
+    import { computed, ref, watch } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
+    import { signOut } from 'firebase/auth';
+    import { auth, firebaseUser } from '@/services/firebaseClient';
     import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
     import { useLayout } from '@/composables/shared/useLayout';
     import Button from 'primevue/button';
+    import Drawer from 'primevue/drawer';
+    import Divider from 'primevue/divider';
+    import Message from 'primevue/message';
     import Toast from 'primevue/toast';
     import ConfirmDialog from 'primevue/confirmdialog';
+
+    const route = useRoute();
+    const router = useRouter();
     const { isDarkMode, toggleDarkMode } = useLayout();
+    const accountOpen = ref(false);
+    const signingOut = ref(false);
+    const accountError = ref('');
+    const isAuth = computed(() => route.name === 'login');
+    const inPortfolio = computed(() => route.path.startsWith('/mypage'));
+    watch(
+        () => route.fullPath,
+        () => {
+            accountOpen.value = false;
+            accountError.value = '';
+        }
+    );
+    async function logout() {
+        signingOut.value = true;
+        accountError.value = '';
+        try {
+            await signOut(auth);
+            accountOpen.value = false;
+            await router.push('/');
+        } catch {
+            accountError.value = '로그아웃하지 못했습니다. 다시 시도해 주세요.';
+        } finally {
+            signingOut.value = false;
+        }
+    }
 </script>
+
 <template>
-    <Toast /><ConfirmDialog />
-    <div class="thumbnail-app" :class="{ 'p-dark': isDarkMode }">
-        <header>
-            <router-link to="/">토또부부 배당 스튜디오 · 종목 선택</router-link>
-            <div class="header-actions">
-                <router-link to="/mypage">내 포트폴리오</router-link>
+    <div class="thumbnail-app studio-shell" :class="{ 'p-dark': isDarkMode }">
+        <a class="skip-link" href="#studio-main">본문으로 바로가기</a>
+        <header class="studio-header">
+            <div class="header-inner">
                 <router-link
-                    v-if="isPortfolioAdmin(firebaseUser)"
-                    to="/admin/portfolio-mappings"
-                    >종목 식별 관리</router-link
+                    class="studio-brand"
+                    to="/"
+                    aria-label="토또부부 배당 스튜디오 홈"
+                    ><span class="brand-mark"
+                        ><i class="pi pi-chart-bar" aria-hidden="true" /></span
+                    ><span
+                        >토또부부
+                        <span class="brand-secondary">배당 스튜디오</span></span
+                    ></router-link
                 >
-                <router-link to="/legal">이용 안내</router-link>
-                <Button
-                    :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
-                    :label="isDarkMode ? '라이트 모드' : '다크 모드'"
-                    :aria-pressed="isDarkMode"
-                    severity="secondary"
-                    @click="toggleDarkMode" />
+                <nav class="desktop-nav" aria-label="주요 메뉴">
+                    <router-link
+                        to="/"
+                        :aria-current="
+                            !inPortfolio && !isAuth && route.name !== 'legal'
+                                ? 'page'
+                                : undefined
+                        "
+                        :class="{
+                            active:
+                                route.name === 'thumbnail-home' ||
+                                route.name === 'ticker-stock',
+                        }"
+                        >종목 검색</router-link
+                    >
+                    <router-link
+                        to="/mypage"
+                        :aria-current="inPortfolio ? 'page' : undefined"
+                        :class="{ active: inPortfolio }"
+                        >내 포트폴리오</router-link
+                    >
+                </nav>
+                <div class="header-actions">
+                    <router-link class="guide-link" to="/legal"
+                        >이용 안내</router-link
+                    >
+                    <Button
+                        :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
+                        :aria-label="isDarkMode ? '라이트 모드' : '다크 모드'"
+                        :aria-pressed="isDarkMode"
+                        text
+                        rounded
+                        severity="secondary"
+                        @click="toggleDarkMode" />
+                    <router-link
+                        v-if="!firebaseUser && !isAuth"
+                        class="login-link"
+                        :to="{
+                            path: '/login',
+                            query: { redirect: route.fullPath },
+                        }"
+                        >로그인</router-link
+                    >
+                    <Button
+                        icon="pi pi-user"
+                        aria-label="계정 및 설정"
+                        outlined
+                        rounded
+                        severity="secondary"
+                        :aria-expanded="accountOpen"
+                        aria-controls="account-drawer"
+                        @click="accountOpen = true" />
+                </div>
             </div>
         </header>
-        <main><router-view /></main>
+        <main id="studio-main" class="studio-main" tabindex="-1">
+            <router-view />
+        </main>
+        <footer class="studio-footer">
+            <span>토또부부 배당 스튜디오</span
+            ><router-link to="/legal">데이터 출처 · 이용 안내</router-link>
+            <p>
+                공개된 자료를 정리한 정보입니다. 기준일과 원문을 확인해 주세요.
+            </p>
+        </footer>
+        <nav v-if="!isAuth" class="mobile-nav" aria-label="모바일 주요 메뉴">
+            <router-link
+                to="/"
+                :class="{ active: !inPortfolio && route.name !== 'legal' }"
+                :aria-current="
+                    !inPortfolio && route.name !== 'legal' ? 'page' : undefined
+                "
+                ><i class="pi pi-search" aria-hidden="true" /><span
+                    >종목 검색</span
+                ></router-link
+            >
+            <router-link
+                to="/mypage"
+                :class="{ active: inPortfolio }"
+                :aria-current="inPortfolio ? 'page' : undefined"
+                ><i class="pi pi-wallet" aria-hidden="true" /><span
+                    >내 포트폴리오</span
+                ></router-link
+            >
+        </nav>
+        <Drawer
+            id="account-drawer"
+            v-model:visible="accountOpen"
+            header="계정 및 설정"
+            position="right"
+            :style="{ width: 'min(380px, 100vw)' }">
+            <div class="account-summary">
+                <span class="brand-mark"
+                    ><i class="pi pi-user" aria-hidden="true"
+                /></span>
+                <div>
+                    <strong>{{
+                        firebaseUser ? '내 계정' : '로그인하고 시작하세요'
+                    }}</strong>
+                    <p>
+                        {{
+                            firebaseUser?.email ||
+                            '계좌와 배당 기록을 한곳에서 관리하세요.'
+                        }}
+                    </p>
+                </div>
+            </div>
+            <Message v-if="accountError" severity="error" :closable="false">{{
+                accountError
+            }}</Message>
+            <div class="account-links">
+                <Button
+                    v-if="!firebaseUser"
+                    label="로그인 / 회원가입"
+                    icon="pi pi-sign-in"
+                    @click="router.push('/login')" />
+                <Button
+                    label="내 포트폴리오"
+                    icon="pi pi-wallet"
+                    severity="secondary"
+                    outlined
+                    @click="router.push('/mypage')" />
+                <Button
+                    :label="
+                        isDarkMode ? '라이트 모드로 보기' : '다크 모드로 보기'
+                    "
+                    :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
+                    severity="secondary"
+                    text
+                    @click="toggleDarkMode" />
+                <Divider />
+                <Button
+                    label="이용 안내 · 데이터 출처"
+                    icon="pi pi-info-circle"
+                    severity="secondary"
+                    text
+                    @click="router.push('/legal')" />
+                <Button
+                    v-if="firebaseUser"
+                    label="이전 단일 계좌 자료"
+                    icon="pi pi-history"
+                    severity="secondary"
+                    text
+                    @click="router.push('/mypage/legacy')" />
+                <Button
+                    v-if="isPortfolioAdmin(firebaseUser)"
+                    label="종목 식별 관리"
+                    icon="pi pi-cog"
+                    severity="secondary"
+                    text
+                    @click="router.push('/admin/portfolio-mappings')" />
+                <Button
+                    v-if="firebaseUser"
+                    label="로그아웃"
+                    icon="pi pi-sign-out"
+                    severity="secondary"
+                    outlined
+                    :loading="signingOut"
+                    @click="logout" />
+            </div>
+        </Drawer>
+        <Toast /><ConfirmDialog />
     </div>
 </template>
+
 <style scoped>
-    .thumbnail-app {
-        --app-bg: #f5f5f5;
-        --app-surface: #fff;
-        --app-surface-muted: #ececec;
-        --app-text: #161616;
-        --app-muted: #5f5f5f;
-        --app-border: #a3a3a3;
-        --app-border-subtle: #d4d4d4;
-        --app-accent: #1d4ed8;
-        --app-accent-contrast: #fff;
-        --app-overlay: #000000a8;
-        min-height: 100vh;
-        background: var(--app-bg);
-        color: var(--app-text);
+    .studio-header {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: var(--app-surface);
+        border-bottom: 1px solid var(--app-border);
     }
-    .thumbnail-app.p-dark {
-        --app-bg: #0b0b0b;
-        --app-surface: #161616;
-        --app-surface-muted: #252525;
-        --app-text: #f5f5f5;
-        --app-muted: #c2c2c2;
-        --app-border: #858585;
-        --app-border-subtle: #414141;
-        --app-accent: #8ab4ff;
-        --app-accent-contrast: #101010;
-        --app-overlay: #000000c7;
-    }
-    header {
+    .header-inner {
+        max-width: 1344px;
+        height: 72px;
+        padding: 0 32px;
+        margin: auto;
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        padding: 1rem;
-        border-bottom: 1px solid var(--app-border-subtle);
+        gap: 24px;
     }
-    header a {
-        color: inherit;
-        font-weight: 700;
+    .studio-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         text-decoration: none;
+        color: var(--app-text);
+        font-size: 17px;
+        font-weight: 750;
+        white-space: nowrap;
+        letter-spacing: -0.04em;
+    }
+    .brand-mark {
+        width: 36px;
+        height: 36px;
+        background: var(--app-accent);
+        color: var(--app-accent-contrast);
+        border-radius: 10px;
+        display: inline-grid;
+        place-items: center;
+        flex-shrink: 0;
+    }
+    .desktop-nav {
+        height: 100%;
+        display: flex;
+        gap: 28px;
+    }
+    .desktop-nav a {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        color: var(--app-muted);
+        text-decoration: none;
+        border-bottom: 3px solid transparent;
+        font-weight: 600;
+    }
+    .desktop-nav a.active {
+        color: var(--app-accent);
+        border-bottom-color: var(--app-accent);
     }
     .header-actions {
         display: flex;
         align-items: center;
-        gap: 0.65rem;
+        gap: 8px;
     }
-    .header-actions a {
-        font-size: 0.86rem;
+    .guide-link {
+        color: var(--app-muted);
+        text-decoration: none;
+        font-size: 13px;
+        padding: 12px 8px;
     }
-    main {
-        padding: 1rem;
+    .login-link {
+        background: var(--app-surface-muted);
+        color: var(--app-accent);
+        text-decoration: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: 650;
     }
-    @media (max-width: 640px) {
-        main {
-            padding: 0;
+    .studio-main {
+        max-width: 1344px;
+        margin: auto;
+        padding: 32px;
+        min-height: calc(100dvh - 220px);
+        outline: none;
+    }
+    .studio-footer {
+        max-width: 1280px;
+        margin: 24px auto 0;
+        padding: 24px 0 32px;
+        border-top: 1px solid var(--app-border);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 24px;
+        color: var(--app-muted);
+        font-size: 13px;
+    }
+    .studio-footer a {
+        color: inherit;
+        margin-left: auto;
+    }
+    .studio-footer p {
+        width: 100%;
+        margin: 0;
+    }
+    .mobile-nav {
+        display: none;
+    }
+    .account-summary {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 8px 0 24px;
+    }
+    .account-summary p {
+        font-size: 13px;
+        color: var(--app-muted);
+        overflow-wrap: anywhere;
+        margin: 4px 0 0;
+    }
+    .account-links {
+        display: grid;
+        gap: 12px;
+    }
+    .account-links :deep(.p-button) {
+        justify-content: flex-start;
+    }
+    .skip-link {
+        position: fixed;
+        top: -80px;
+        left: 16px;
+        z-index: 1000;
+        padding: 12px;
+        background: var(--app-surface);
+        color: var(--app-accent);
+    }
+    .skip-link:focus {
+        top: 8px;
+    }
+    @media (max-width: 1000px) {
+        .brand-secondary {
+            display: none;
         }
-        header {
-            padding: 12px;
-            gap: 12px;
+        .desktop-nav {
+            gap: 16px;
+        }
+        .guide-link {
+            display: none;
+        }
+    }
+    @media (max-width: 767px) {
+        .header-inner {
+            height: 60px;
+            padding: 0 16px;
+            gap: 8px;
+        }
+        .studio-brand {
+            font-size: 15px;
+            gap: 8px;
+        }
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+        }
+        .brand-secondary {
+            display: inline;
+        }
+        .desktop-nav,
+        .login-link {
+            display: none;
         }
         .header-actions {
-            flex-wrap: wrap;
+            gap: 0;
+        }
+        .header-actions :deep(.p-button) {
+            width: 44px;
+            height: 44px;
+        }
+        .studio-main {
+            padding: 24px 16px;
+        }
+        .studio-footer {
+            margin: 16px 16px 0;
+            padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+        }
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            inset-inline: 0;
+            z-index: 30;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: var(--app-surface);
+            border-top: 1px solid var(--app-border);
+            padding: 6px 16px calc(6px + env(safe-area-inset-bottom, 0px));
+        }
+        .mobile-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-height: 52px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--app-muted);
+            border-radius: 10px;
+        }
+        .mobile-nav a.active {
+            color: var(--app-accent);
+            background: var(--app-surface-muted);
+        }
+        .mobile-nav i {
+            font-size: 18px;
+        }
+    }
+    @media (max-width: 370px) {
+        .studio-brand {
+            font-size: 13px;
+        }
+        .header-inner {
+            padding-inline: 12px;
         }
     }
 </style>

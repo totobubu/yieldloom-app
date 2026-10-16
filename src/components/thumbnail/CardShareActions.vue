@@ -1,36 +1,125 @@
 <script setup>
-import { computed, ref } from 'vue';
+    import { computed, ref } from 'vue';
+    import Button from 'primevue/button';
+    import Dialog from 'primevue/dialog';
+    import InputText from 'primevue/inputtext';
+    import Message from 'primevue/message';
 
-const props = defineProps({ title: { type: String, required: true }, text: { type: String, required: true }, url: { type: String, required: true } });
-const copied = ref(false);
-const canWebShare = computed(() => typeof navigator !== 'undefined' && typeof navigator.share === 'function');
-const encodedUrl = computed(() => encodeURIComponent(props.url));
-const encodedText = computed(() => encodeURIComponent(props.text));
+    const props = defineProps({
+        title: { type: String, required: true },
+        text: { type: String, required: true },
+        url: { type: String, required: true },
+    });
+    const copied = ref(false);
+    const manualCopyOpen = ref(false),
+        shareError = ref('');
+    const canWebShare = computed(
+        () =>
+            typeof navigator !== 'undefined' &&
+            typeof navigator.share === 'function'
+    );
+    const encodedUrl = computed(() => encodeURIComponent(props.url));
+    const encodedText = computed(() => encodeURIComponent(props.text));
 
-const copyLink = async () => {
-    try {
-        await navigator.clipboard.writeText(props.url);
-        copied.value = true;
-        window.setTimeout(() => (copied.value = false), 1800);
-    } catch { window.prompt('링크를 복사하세요.', props.url); }
-};
-const webShare = async () => {
-    try { await navigator.share({ title: props.title, text: props.text, url: props.url }); } catch (error) { if (error?.name !== 'AbortError') console.warn('Web Share failed', error); }
-};
-const open = (url) => window.open(url, '_blank', 'noopener,noreferrer,width=640,height=560');
+    const copyLink = async () => {
+        try {
+            await navigator.clipboard.writeText(props.url);
+            copied.value = true;
+            window.setTimeout(() => (copied.value = false), 1800);
+        } catch {
+            manualCopyOpen.value = true;
+        }
+    };
+    const webShare = async () => {
+        shareError.value = '';
+        try {
+            await navigator.share({
+                title: props.title,
+                text: props.text,
+                url: props.url,
+            });
+        } catch (error) {
+            if (error?.name !== 'AbortError')
+                shareError.value =
+                    '공유 창을 열지 못했습니다. 링크를 복사해 주세요.';
+        }
+    };
+    const open = (url) =>
+        window.open(url, '_blank', 'noopener,noreferrer,width=640,height=560');
 </script>
 
 <template>
     <nav class="card-share-actions" :aria-label="`${title} 공유`">
-        <button v-if="canWebShare" type="button" class="web-share" @click="webShare">공유</button>
-        <button type="button" class="kakao" @click="open(`https://sharer.kakao.com/talk/friends/picker/link?url=${encodedUrl}`)">카카오톡</button>
-        <button type="button" class="x" @click="open(`https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`)">X</button>
-        <button type="button" class="facebook" @click="open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`)">Facebook</button>
-        <button type="button" @click="copyLink">{{ copied ? '링크 복사됨' : '링크 복사' }}</button>
+        <Button
+            v-if="canWebShare"
+            label="공유"
+            icon="pi pi-share-alt"
+            severity="secondary"
+            outlined
+            @click="webShare" />
+        <Button
+            label="카카오톡"
+            severity="secondary"
+            outlined
+            @click="
+                open(
+                    `https://sharer.kakao.com/talk/friends/picker/link?url=${encodedUrl}`
+                )
+            " />
+        <Button
+            label="X"
+            severity="secondary"
+            outlined
+            @click="
+                open(
+                    `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`
+                )
+            " />
+        <Button
+            label="Facebook"
+            severity="secondary"
+            outlined
+            @click="
+                open(
+                    `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`
+                )
+            " />
+        <Button
+            :label="copied ? '링크 복사됨' : '링크 복사'"
+            :icon="copied ? 'pi pi-check' : 'pi pi-link'"
+            severity="secondary"
+            outlined
+            @click="copyLink" />
     </nav>
+    <Message v-if="shareError" severity="warn" :closable="false">{{
+        shareError
+    }}</Message>
+    <Dialog
+        v-model:visible="manualCopyOpen"
+        modal
+        header="링크 직접 복사"
+        :style="{ width: '460px' }"
+        :breakpoints="{ '600px': '92vw' }"
+        ><p>아래 링크를 선택해 복사해 주세요.</p>
+        <label for="manual-share-url" class="studio-sr-only">공유 링크</label
+        ><InputText
+            id="manual-share-url"
+            :model-value="url"
+            readonly
+            fluid
+            autofocus
+            @focus="$event.target.select()" /><template #footer
+            ><Button label="닫기" @click="manualCopyOpen = false" /></template
+    ></Dialog>
 </template>
 
 <style scoped>
-.card-share-actions{display:flex;flex-wrap:wrap;gap:7px}.card-share-actions button{border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#334155;padding:8px 10px;font:700 .75rem/1 inherit;cursor:pointer}.card-share-actions button:hover{border-color:#2563eb;color:#1d4ed8}.card-share-actions .kakao{background:#fee500;border-color:#fee500;color:#191919}.card-share-actions .x{background:#111827;border-color:#111827;color:#fff}.card-share-actions .facebook{background:#1877f2;border-color:#1877f2;color:#fff}.card-share-actions .web-share{background:#2563eb;border-color:#2563eb;color:#fff}
-.card-share-actions button{border-color:var(--app-border);background:var(--app-surface);color:var(--app-text)}.card-share-actions button:hover{border-color:var(--app-accent);color:var(--app-accent)}.card-share-actions .web-share{background:var(--app-accent);border-color:var(--app-accent);color:var(--app-accent-contrast)}
+    .card-share-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .card-share-actions :deep(.p-button) {
+        font-size: 13px;
+    }
 </style>

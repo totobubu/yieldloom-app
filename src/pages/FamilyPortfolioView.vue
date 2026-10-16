@@ -3,6 +3,8 @@
     import AccountRecoveryOverview from '@/components/portfolio/AccountRecoveryOverview.vue';
     import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
+    import PortfolioExportDialog from '@/components/portfolio/PortfolioExportDialog.vue';
+    import PortfolioImportResult from '@/components/portfolio/PortfolioImportResult.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { useRouter } from 'vue-router';
     import Button from 'primevue/button';
@@ -26,6 +28,9 @@
 
     const router = useRouter();
     const portfolioTab = ref('overview');
+    const exportVisible = ref(false),
+        exportKind = ref('holdings'),
+        importReceipt = ref(null);
     const scopeOptions = [
         { label: '내 계좌', value: 'personal' },
         { label: '가족 포트폴리오', value: 'family' },
@@ -348,6 +353,8 @@
             rawSummary.value = null;
             entries.value = [];
             review.value = null;
+            importReceipt.value = null;
+            exportVisible.value = false;
             familyId.value = '';
             selectedAccount.value = '';
             invitation.value = '';
@@ -366,6 +373,8 @@
         { immediate: true }
     );
     watch(familyId, () => {
+        importReceipt.value = null;
+        exportVisible.value = false;
         accountsState.value = 'loading';
         accountLoadError.value = '';
         accounts.value = [];
@@ -379,6 +388,7 @@
         run(refresh);
     });
     watch(selectedAccount, () => {
+        importReceipt.value = null;
         review.value = null;
         entries.value = [];
         confirmed.value = false;
@@ -442,7 +452,11 @@
     }
     async function preview() {
         await run(async () => {
+            importReceipt.value = null;
             const a = activeAccount.value;
+            const uid = ownUid.value;
+            const importKind = kind.value,
+                importAsOf = asOf.value;
             const file = fileInput.value?.files?.[0];
             if (!a || !file) throw new Error('계좌와 파일을 선택하세요.');
             if (!confirmed.value)
@@ -467,8 +481,14 @@
             }).forEach(([key, value]) => form.append(key, value));
             form.append('file', file);
             const result = await familyRequest('preview', form);
-            if (selectedAccount.value === a.id)
-                review.value = { ...result, accountId: a.id };
+            if (ownUid.value === uid && selectedAccount.value === a.id)
+                review.value = {
+                    ...result,
+                    accountId: a.id,
+                    kind: importKind,
+                    asOf: importAsOf,
+                    accountAlias: a.alias,
+                };
             reviewPage.value = 0;
             password.value = '';
             fileInput.value.value = '';
@@ -479,6 +499,9 @@
     async function commit() {
         await run(async () => {
             const current = review.value;
+            if (!current) throw new Error('저장할 자료를 먼저 검토해 주세요.');
+            const uid = ownUid.value;
+            importReceipt.value = null;
             const batches = current.batches || [
                 {
                     reviewId: current.reviewId,
@@ -505,10 +528,39 @@
                 result.inserted += saved.inserted;
                 result.duplicates += saved.duplicates;
             }
+            if (
+                ownUid.value !== uid ||
+                selectedAccount.value !== current.accountId
+            )
+                return;
             review.value = null;
             message.value = `저장 ${result.inserted}행 · 중복 ${result.duplicates}행`;
+            importReceipt.value = {
+                ...result,
+                accountAlias: current.accountAlias,
+                kind: current.kind,
+                asOf: current.asOf,
+            };
             await refresh();
         });
+    }
+    function openExport(selectedKind = 'holdings') {
+        exportKind.value = selectedKind;
+        exportVisible.value = true;
+    }
+    async function viewImported() {
+        if (importReceipt.value?.kind === 'holdings')
+            portfolioTab.value = 'overview';
+        else {
+            portfolioTab.value = 'accounts';
+            legacy.value = false;
+            await loadEntries();
+        }
+    }
+    async function anotherFile() {
+        importReceipt.value = null;
+        await nextTick();
+        fileInput.value?.focus();
     }
     async function removePdfPassword() {
         await run(async () => {
@@ -554,6 +606,17 @@
                 <p>내 계좌의 기록을 모아, 투자 흐름을 살펴보세요.</p>
             </div>
             <div class="portfolio-actions">
+                <Button
+                    label="CSV 내보내기"
+                    icon="pi pi-download"
+                    severity="secondary"
+                    outlined
+                    :disabled="
+                        busy ||
+                        accountsState !== 'ready' ||
+                        !visibleAccounts.length
+                    "
+                    @click="openExport()" />
                 <Button
                     label="새로고침"
                     icon="pi pi-refresh"
@@ -1198,7 +1261,18 @@
                         </Dialog>
                     </template> </TabPanel
                 ><TabPanel value="upload"
-                    ><Message
+                    ><PortfolioImportResult
+                        v-if="importReceipt"
+                        :receipt="importReceipt"
+                        :busy="busy"
+                        :accounts-state="accountsState"
+                        :latest-holdings-date="
+                            activeAccount?.snapshot?.asOf || ''
+                        "
+                        @view="viewImported"
+                        @export="openExport(importReceipt.kind)"
+                        @another="anotherFile" />
+                    <Message
                         v-if="
                             !activeAccount ||
                             !editableAccounts.some(
@@ -1578,6 +1652,12 @@ date,symbol,quantity,amount,currency,type,externalId
                 <i class="pi pi-arrow-right" aria-hidden="true"
             /></router-link>
         </div>
+        <PortfolioExportDialog
+            v-model:visible="exportVisible"
+            :accounts="visibleAccounts"
+            :family-id="familyId"
+            :initial-account-id="selectedAccount"
+            :initial-kind="exportKind" />
     </div>
 </template>
 
@@ -1604,6 +1684,7 @@ date,symbol,quantity,amount,currency,type,externalId
     }
     .portfolio-actions {
         display: flex;
+        flex-wrap: wrap;
         gap: 10px;
     }
     .portfolio-scope {

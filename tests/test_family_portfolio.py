@@ -189,10 +189,13 @@ class FamilyApiTest(unittest.TestCase):
         content = b'date,symbol,quantity,amount,currency,type,externalId\n2026-10-14,AAPL,2,100,USD,buy,t1\n'
         first = self.preview(content).json
         self.assertEqual(self.commit(first).json['inserted'], 1)
+        self.assertEqual(self.db.data[f'investmentAccounts/{self.account}']['entriesRevision'], 1)
         self.assertTrue(self.commit(self.preview(content).json).json['alreadyImported'])
+        self.assertEqual(self.db.data[f'investmentAccounts/{self.account}']['entriesRevision'], 1)
         overlap = content + b'2026-10-15,AAPL,3,150,USD,buy,t2\n'
         result = self.commit(self.preview(overlap).json).json
         self.assertEqual(result, {'inserted': 1, 'duplicates': 1})
+        self.assertEqual(self.db.data[f'investmentAccounts/{self.account}']['entriesRevision'], 2)
         other = self.new_account()
         self.assertEqual(self.commit(self.preview(content, account=other).json, account=other).json['inserted'], 1)
         self.assertEqual(len(self.get('accountId=' + self.account).json['entries']), 2)

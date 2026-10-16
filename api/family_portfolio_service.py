@@ -97,6 +97,18 @@ def parse_csv(content):
         rows = list(reader)
         require(0 < len(rows) <= MAX_ROWS, f'파일당 1~{MAX_ROWS}행을 지원합니다. 기간을 나누어 주세요.')
         require(all(None not in row and all(v is not None for v in row.values()) for row in rows), 'CSV 열 개수가 맞지 않습니다.')
+        for row in rows:
+            marker = row.get('csvEscaped', '')
+            if not marker:
+                continue
+            require(marker.startswith('v1:'), 'CSV 안전 처리 표시의 버전을 확인하세요.')
+            fields = marker[3:].split('|')
+            require(len(fields) == len(set(fields)) and all(key in row and key != 'csvEscaped' for key in fields), 'CSV 안전 처리 표시의 열을 확인하세요.')
+            for key in fields:
+                require(row[key].startswith("'"), 'CSV 안전 처리 표시와 셀 값이 일치하지 않습니다.')
+                # Only the explicitly marked protective quote is removed. A
+                # genuine leading apostrophe remains part of the original id.
+                row[key] = row[key][1:]
         return rows
     except (UnicodeError, csv.Error):
         raise PortfolioError('UTF-8 표준 CSV를 확인하세요.')

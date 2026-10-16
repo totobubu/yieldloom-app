@@ -69,7 +69,9 @@
       "classification": "import_success_state",
       "classificationKo": "엑셀 등록 반영 완료 상태",
       "decision": "저장 완료 상태는 재사용 가능, 실제 xlsx 입력은 미지원",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "functional",
+      "implementationNotes": "CSV/PDF 검토 후 신규·중복 행 수와 기준일, 과거 잔고 보관 상태를 보여주는 완료 카드와 잔고·거래 확인/CSV 내보내기 동선 구현. 전용 XLSX 경로는 미구현."
     },
     {
       "screenId": "2de598b30c7147368846b7c8e0cd5a40",
@@ -78,7 +80,9 @@
       "classification": "import_success_state",
       "classificationKo": "엑셀 등록 반영 완료 상태",
       "decision": "저장 완료 상태는 재사용 가능, 실제 xlsx 입력은 미지원",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "functional",
+      "implementationNotes": "CSV/PDF 검토 후 신규·중복 행 수와 기준일, 과거 잔고 보관 상태를 보여주는 완료 카드와 잔고·거래 확인/CSV 내보내기 동선 구현. 전용 XLSX 경로는 미구현."
     },
     {
       "screenId": "d96ead1030474a2a8f2f2a739d163aa6",
@@ -501,7 +505,9 @@
       "classification": "spreadsheet_io",
       "classificationKo": "엑셀 일괄 등록·내보내기",
       "decision": "CSV/PDF 업로드를 확장, xlsx 파서/작성기와 검증 추가",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "계좌별 UTF-8 CSV 잔고·전체 거래 내보내기 구현. CSV/PDF 업로드는 기존 경로 유지. 실제 XLSX 입출력은 미구현."
     },
     {
       "screenId": "90545a6bce0949128ed656438e974f8d",
@@ -510,7 +516,9 @@
       "classification": "spreadsheet_io",
       "classificationKo": "엑셀 일괄 등록·내보내기",
       "decision": "CSV/PDF 업로드를 확장, xlsx 파서/작성기와 검증 추가",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "계좌별 UTF-8 CSV 잔고·전체 거래 내보내기 구현. CSV/PDF 업로드는 기존 경로 유지. 실제 XLSX 입출력은 미구현."
     },
     {
       "screenId": "fb93ea28550d4e87a0a923a7b005daea",
@@ -519,7 +527,9 @@
       "classification": "spreadsheet_io",
       "classificationKo": "엑셀 일괄 등록·내보내기",
       "decision": "CSV/PDF 업로드를 확장, xlsx 파서/작성기와 검증 추가",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "계좌별 UTF-8 CSV 잔고·전체 거래 내보내기 구현. CSV/PDF 업로드는 기존 경로 유지. 실제 XLSX 입출력은 미구현."
     }
   ]
 }

@@ -24,13 +24,8 @@
     const summary = computed(() =>
         capitalSummary(props.state.entries, props.state.classifications)
     );
-    const recoveryMode = ref('withdrawals');
     const recovery = computed(() =>
-        capitalRecovery(
-            props.state.entries,
-            props.state.classifications,
-            recoveryMode.value
-        )
+        capitalRecovery(props.state.entries, props.state.classifications)
     );
     const percent = (value) =>
         `${value.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}%`;
@@ -194,9 +189,9 @@
             <div>
                 <h2>투자 원금 대비 얼마나 회수했나요?</h2>
                 <p>
-                    확인한 외부 입금에서 원금 회수분만 차감합니다. 배당을 출금해
-                    쓴 금액은 원금 회수와 구분하고, 배당·매도대금·계좌 내 환전을
-                    새 원금으로 더하지 않습니다.
+                    현금 회수율은 실제 외부 출금 기준입니다. 배당·수익의 출금도
+                    포함하며, 계좌 안의 재투자·환전은 새 원금이나 회수금으로
+                    더하지 않습니다. 아래 출금 원천별 분류와 구분합니다.
                 </p>
             </div>
             <button
@@ -212,14 +207,7 @@
             <button type="button" @click="emit('refresh')">다시 시도</button>
         </p>
         <template v-else-if="!loading || state.entries.length">
-            <label class="recovery-filter"
-                >회수금 기준
-                <select v-model="recoveryMode">
-                    <option value="proceeds">배당금 + 매도 정산금</option>
-                    <option value="withdrawals">실제 외부 출금액</option>
-                    <option value="dividends">배당금만</option>
-                </select>
-            </label>
+            <p class="recovery-filter">회수금 기준 · 실제 외부 출금액</p>
             <div class="recovery-grid">
                 <article
                     v-for="item in recovery"
@@ -263,11 +251,10 @@
             </div>
             <p class="help">
                 확정한 계좌 입출금 내역만 집계합니다. 종목별 거래 원장은 별도
-                합산하지 않습니다. 회수율 = 선택한 기준의 누적 회수금 ÷ 확정한
-                외부 입금 × 100. 배당·매도대금의 재투자는 원금에 더하지
-                않습니다. 배당·매도 기준은 계좌 안에서 받은 금액이며 수익률과는
-                다릅니다. 반복 매매 시 같은 자금의 매도대금도 누적됩니다. 실제
-                출금액과 중복 합산하지 않습니다.
+                합산하지 않습니다. 회수율 = 실제 외부 출금액 ÷ 확정한 외부 입금
+                × 100. 배당·매도대금의 재투자는 원금에 더하지 않습니다. 계좌
+                안에서 받은 배당·매도금은 현금 회수와 다릅니다. 미회수액은
+                손실이 아니며 추가 입금 시 회수율이 낮아질 수 있습니다.
             </p>
             <p v-if="summary.pending" class="help" role="status">
                 분류 확인 필요 {{ summary.pending }}건을 제외한 잠정 수치입니다.

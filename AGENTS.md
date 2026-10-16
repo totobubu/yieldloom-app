@@ -14,6 +14,11 @@
 다음 작업을 시작하기 전에
 [스킬 지침](.agents/skills/vue-primevue-best-practices/SKILL.md)을 읽고 적용한다.
 
+UI 개발·퍼블리싱·테마 커스터마이징·컴포넌트 재사용 작업에는
+[PrimeVue 4 UI 스킬](.agents/skills/primevue4-ui/SKILL.md)도 함께 적용한다.
+PrimeVue 문서는 https://v4.primevue.org/ 를 사용하고, 설치 버전을 확인하며
+PrimeVue 5 전용 API를 도입하지 않는다.
+
 - Vue 컴포넌트·페이지·레이아웃·composable의 신규 구현, 동작 수정, 리팩터링, 코드 리뷰.
 - PrimeVue의 props, emits, slots, Pass Through, 폼, 테이블, Dialog 사용 변경.
 - Vue 화면에 연결되는 상태 관리, 라우팅, 비동기 데이터 흐름 설계.

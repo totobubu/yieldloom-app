@@ -10,7 +10,7 @@
         accountsState: { type: String, default: 'loading' },
         latestHoldingsDate: { type: String, default: '' },
     });
-    defineEmits(['view', 'export', 'another']);
+    defineEmits(['view', 'export', 'another', 'calendar']);
     const explanation = computed(() => {
         if (props.accountsState !== 'ready')
             return '저장은 완료되었습니다. 계좌 목록 갱신 상태를 확인해 주세요.';
@@ -82,6 +82,13 @@
                     outlined
                     :disabled="busy || accountsState !== 'ready'"
                     @click="$emit('export')" />
+                <Button
+                    label="배당 캘린더 확인"
+                    icon="pi pi-calendar"
+                    severity="secondary"
+                    outlined
+                    :disabled="busy || accountsState !== 'ready'"
+                    @click="$emit('calendar')" />
                 <Button
                     label="다른 파일 등록"
                     severity="secondary"

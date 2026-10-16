@@ -92,7 +92,9 @@
       "classification": "portfolio_calendar",
       "classificationKo": "개인 배당 캘린더·연간 타임라인",
       "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "functional",
+      "implementationNotes": "마이페이지 배당 캘린더: 월간/연간, 계좌·통화·지급일/배당락일 필터, 공시/잔고 기준 세전 예상과 저장된 배당 거래 분리, 수량 기준일·미확인·추정·원문 상세, 업로드 후 캘린더 동선 구현. XLSX는 미지원."
     },
     {
       "screenId": "7d1ceba7c2b14150b5fd56ff127a0123",
@@ -101,7 +103,9 @@
       "classification": "portfolio_calendar",
       "classificationKo": "개인 배당 캘린더·연간 타임라인",
       "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "functional",
+      "implementationNotes": "마이페이지 배당 캘린더: 월간/연간, 계좌·통화·지급일/배당락일 필터, 공시/잔고 기준 세전 예상과 저장된 배당 거래 분리, 수량 기준일·미확인·추정·원문 상세, 업로드 후 캘린더 동선 구현. XLSX는 미지원."
     },
     {
       "screenId": "e1b068d9248449738a8adf924f87e5ef",
@@ -110,7 +114,9 @@
       "classification": "portfolio_calendar",
       "classificationKo": "개인 배당 캘린더·연간 타임라인",
       "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "functional",
+      "implementationNotes": "마이페이지 배당 캘린더: 월간/연간, 계좌·통화·지급일/배당락일 필터, 공시/잔고 기준 세전 예상과 저장된 배당 거래 분리, 수량 기준일·미확인·추정·원문 상세, 업로드 후 캘린더 동선 구현. XLSX는 미지원."
     },
     {
       "screenId": "0dab3d96c3b246319533add429aa03b7",
@@ -119,7 +125,9 @@
       "classification": "portfolio_calendar",
       "classificationKo": "개인 배당 캘린더·연간 타임라인",
       "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "functional",
+      "implementationNotes": "마이페이지 배당 캘린더: 월간/연간, 계좌·통화·지급일/배당락일 필터, 공시/잔고 기준 세전 예상과 저장된 배당 거래 분리, 수량 기준일·미확인·추정·원문 상세, 업로드 후 캘린더 동선 구현. XLSX는 미지원."
     },
     {
       "screenId": "e7437771785341b88431c651cadd6e70",
@@ -128,7 +136,9 @@
       "classification": "portfolio_calendar",
       "classificationKo": "개인 배당 캘린더·연간 타임라인",
       "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "functional",
+      "implementationNotes": "마이페이지 배당 캘린더: 월간/연간, 계좌·통화·지급일/배당락일 필터, 공시/잔고 기준 세전 예상과 저장된 배당 거래 분리, 수량 기준일·미확인·추정·원문 상세, 업로드 후 캘린더 동선 구현. XLSX는 미지원."
     },
     {
       "screenId": "64030daa7a6548c299ac6ac4ca0b655f",
@@ -155,7 +165,9 @@
       "classification": "simulation_tax_comparison",
       "classificationKo": "시뮬레이터·세무 비교 결합",
       "decision": "시뮬레이터와 제한된 세금 계산 계약 확정 후 통합",
-      "priority": "P3"
+      "priority": "P3",
+      "implementationStatus": "partial",
+      "implementationNotes": "시뮬레이터에서 동일 조건에 원천징수율만 달리하는 세전·세후 가정 비교를 구현. 실제 연간 세금 신고, 종합과세·공제·조세조약·ISA/연금 혜택·절세 확정 계산은 미구현."
     },
     {
       "screenId": "5823bb37327948a4aae27e755818dca3",
@@ -164,7 +176,9 @@
       "classification": "dividend_simulator",
       "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
       "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
-      "priority": "P2"
+      "priority": "P2",
+      "implementationStatus": "functional",
+      "implementationNotes": "공개 /simulator: 명목 가정 A/B, 월 초 납입, 월/분기/반기/연간 지급, 원천징수, 수수료, 소수주, 주가 변화, 월말 세후 재투자, 월별 표·자산 추이·로컬 가정 저장. 실제 시세·개인 계좌 연동, 배당락 조정·ROC·환율·물가는 제외. 시안의 12개월 지급 보장 문구는 적용하지 않음."
     },
     {
       "screenId": "2c5a9bb741604efd8c19c2c2940f0fc9",
@@ -173,7 +187,9 @@
       "classification": "dividend_simulator",
       "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
       "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
-      "priority": "P2"
+      "priority": "P2",
+      "implementationStatus": "functional",
+      "implementationNotes": "공개 /simulator: 명목 가정 A/B, 월 초 납입, 월/분기/반기/연간 지급, 원천징수, 수수료, 소수주, 주가 변화, 월말 세후 재투자, 월별 표·자산 추이·로컬 가정 저장. 실제 시세·개인 계좌 연동, 배당락 조정·ROC·환율·물가는 제외. 시안의 12개월 지급 보장 문구는 적용하지 않음."
     },
     {
       "screenId": "cc1e1fdc33b348458f7feac1bb6e4720",
@@ -182,7 +198,9 @@
       "classification": "dividend_simulator",
       "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
       "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
-      "priority": "P2"
+      "priority": "P2",
+      "implementationStatus": "functional",
+      "implementationNotes": "공개 /simulator: 명목 가정 A/B, 월 초 납입, 월/분기/반기/연간 지급, 원천징수, 수수료, 소수주, 주가 변화, 월말 세후 재투자, 월별 표·자산 추이·로컬 가정 저장. 실제 시세·개인 계좌 연동, 배당락 조정·ROC·환율·물가는 제외. 시안의 12개월 지급 보장 문구는 적용하지 않음."
     },
     {
       "screenId": "e0f63a32c9744f5a93462bd3f40ec556",
@@ -191,7 +209,9 @@
       "classification": "dividend_simulator",
       "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
       "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
-      "priority": "P2"
+      "priority": "P2",
+      "implementationStatus": "functional",
+      "implementationNotes": "공개 /simulator: 명목 가정 A/B, 월 초 납입, 월/분기/반기/연간 지급, 원천징수, 수수료, 소수주, 주가 변화, 월말 세후 재투자, 월별 표·자산 추이·로컬 가정 저장. 실제 시세·개인 계좌 연동, 배당락 조정·ROC·환율·물가는 제외. 시안의 12개월 지급 보장 문구는 적용하지 않음."
     },
     {
       "screenId": "50474d1de7b94975bd5efa76fec79ea5",
@@ -200,7 +220,9 @@
       "classification": "dividend_simulator",
       "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
       "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
-      "priority": "P2"
+      "priority": "P2",
+      "implementationStatus": "functional",
+      "implementationNotes": "공개 /simulator: 명목 가정 A/B, 월 초 납입, 월/분기/반기/연간 지급, 원천징수, 수수료, 소수주, 주가 변화, 월말 세후 재투자, 월별 표·자산 추이·로컬 가정 저장. 실제 시세·개인 계좌 연동, 배당락 조정·ROC·환율·물가는 제외. 시안의 12개월 지급 보장 문구는 적용하지 않음."
     },
     {
       "screenId": "0656f26d986a426798678a3527b133cc",
@@ -209,7 +231,9 @@
       "classification": "dividend_simulator",
       "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
       "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
-      "priority": "P2"
+      "priority": "P2",
+      "implementationStatus": "functional",
+      "implementationNotes": "공개 /simulator: 명목 가정 A/B, 월 초 납입, 월/분기/반기/연간 지급, 원천징수, 수수료, 소수주, 주가 변화, 월말 세후 재투자, 월별 표·자산 추이·로컬 가정 저장. 실제 시세·개인 계좌 연동, 배당락 조정·ROC·환율·물가는 제외. 시안의 12개월 지급 보장 문구는 적용하지 않음."
     },
     {
       "screenId": "311411b415e54ffe941cb268c9acd7a2",
@@ -236,7 +260,9 @@
       "classification": "tax_calculator",
       "classificationKo": "배당 세무·절세 계산기",
       "decision": "단순 세후 예상과 연간 실제 세무 계산을 분리",
-      "priority": "P3"
+      "priority": "P3",
+      "implementationStatus": "partial",
+      "implementationNotes": "시뮬레이터에서 동일 조건에 원천징수율만 달리하는 세전·세후 가정 비교를 구현. 실제 연간 세금 신고, 종합과세·공제·조세조약·ISA/연금 혜택·절세 확정 계산은 미구현."
     },
     {
       "screenId": "5e81158ac72c4e278b3d41d535b75b25",
@@ -245,7 +271,9 @@
       "classification": "tax_calculator",
       "classificationKo": "배당 세무·절세 계산기",
       "decision": "단순 세후 예상과 연간 실제 세무 계산을 분리",
-      "priority": "P3"
+      "priority": "P3",
+      "implementationStatus": "partial",
+      "implementationNotes": "시뮬레이터에서 동일 조건에 원천징수율만 달리하는 세전·세후 가정 비교를 구현. 실제 연간 세금 신고, 종합과세·공제·조세조약·ISA/연금 혜택·절세 확정 계산은 미구현."
     },
     {
       "screenId": "9d71572c7a3d49e9984ec2cc2c45cd56",

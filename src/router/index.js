@@ -45,6 +45,11 @@ export default createRouter({
             component: () => import('../pages/TickerThumbnailView.vue'),
         },
         {
+            path: '/simulator',
+            name: 'dividend-simulator',
+            component: () => import('../pages/DividendSimulatorView.vue'),
+        },
+        {
             path: '/legal',
             name: 'legal',
             component: () => import('../pages/LegalView.vue'),

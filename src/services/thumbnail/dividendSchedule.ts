@@ -1,6 +1,6 @@
 import Holidays from 'date-holidays';
 import { normalizeFrequency } from './frequency';
-import { partitionScheduleHistory } from './scheduleVerification';
+import { currentScheduleEvent, partitionScheduleHistory } from './scheduleVerification';
 import { getAssetUrl } from '@/utils/dataUrl';
 import {
     isDataReleaseConfigured,
@@ -123,8 +123,8 @@ async function loadHistory(ticker: string): Promise<DividendScheduleEvent[]> {
 export async function loadDividendSchedule(ticker: string, fallbackFrequency?: string | null): Promise<DividendSchedule> {
     const { confirmed: events, review: reviewHistory } = partitionScheduleHistory(await loadHistory(ticker.toUpperCase()));
     const reference = today();
-    const announcedNext = events.find((event) => event.exDate >= reference) ?? null;
-    const current = announcedNext ?? events[0] ?? null;
+    const current = currentScheduleEvent(events, reference);
+    const announcedNext = current && current.exDate >= reference ? current : null;
     const frequency = current?.frequency ?? events[0]?.frequency ?? normalizeFrequency(fallbackFrequency) ?? reviewHistory[0]?.frequency ?? null;
     const isWeekly = frequency === 'weekly';
     const displayedEvents = events.filter((event) =>

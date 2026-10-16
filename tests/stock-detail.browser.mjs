@@ -243,26 +243,37 @@ try {
     await page.route('**/src/services/firebaseClient.js*', (r) =>
         r.fulfill({
             contentType: 'application/javascript',
-            body: "import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'fixture-owner'}),authLoading=ref(false),firebaseReady=false,db=null,auth=null;export const signedIn=computed(()=>true);",
+            body: "import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'fixture-owner',getIdToken:async()=> 'fixture-token'}),authLoading=ref(false),firebaseReady=false,db=null,auth=null;export const signedIn=computed(()=>true);",
         })
     );
-    await page.route('**/src/services/portfolio.js*', (r) =>
-        r.fulfill({
-            contentType: 'application/javascript',
-            body: `export async function loadPortfolioAsset(uid,ticker){if(uid!=='fixture-owner')throw new Error('wrong owner');return {symbol:ticker,portfolioPriority:'current',holdingShares:10,transactions:[{date:'20240101',type:'buy',quantity:10,amount:1300000,nativeAmount:1000,currency:'USD'},{date:'20260201',type:'dividend',amount:13000,nativeAmount:10,currency:'USD'}]};}`,
-        })
-    );
+    let familyRequests = 0;
+    await page.route('**/api/family-portfolio**', (r) => {
+        assert.equal(r.request().headers().authorization, 'Bearer fixture-token');
+        familyRequests++;
+        return r.fulfill({ json: {
+            families: [{ id: 'fixture-family', profiles: {
+                'fixture-profile': { uid: 'fixture-owner', name: '테스트 본인' },
+            } }],
+            accounts: [{ id: 'fixture-account', alias: '테스트 계좌' }],
+            summary: { positions: [{ familyId: 'fixture-family', ownerId: 'fixture-profile',
+                accountId: 'fixture-account', symbol: 'TOPW', quantity: 10,
+                amount: 13000, currency: 'KRW', asOf: '2026-10-15', source: '테스트 잔고 자료',
+            }] },
+        } });
+    });
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page
         .locator('.holding-panel')
-        .getByText('10주', { exact: true })
+        .getByText('테스트 본인 · 테스트 계좌 · 10주', { exact: false })
         .waitFor();
     assert.ok(
         (await page.locator('.holding-panel').innerText()).includes('13,000')
     );
     assert.ok(
-        (await page.locator('.holding-panel').innerText()).includes('100 USD')
+        (await page.locator('.holding-panel').innerText()).includes('KRW')
     );
+    assert.equal(familyRequests, 2);
+    assert.ok((await page.locator('.holding-panel').innerText()).includes('2026-10-15'));
     await page.screenshot({
         path: '/tmp/stock-holding-mobile.png',
         fullPage: true,

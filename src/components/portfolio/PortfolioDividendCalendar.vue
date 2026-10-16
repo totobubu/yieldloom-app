@@ -308,11 +308,13 @@
                     :options="accountOptions"
                     option-label="label"
                     option-value="value"
+                    placeholder="모든 계좌"
                     aria-label="배당 계좌 필터" /><Select
                     v-model="currency"
                     :options="currencyOptions"
                     option-label="label"
                     option-value="value"
+                    placeholder="모든 통화"
                     aria-label="배당 통화 필터" />
             </div>
         </div>

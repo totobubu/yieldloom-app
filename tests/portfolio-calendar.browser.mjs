@@ -172,6 +172,10 @@ try {
     const calendar = page.getByRole('region', { name: '개인 배당 캘린더' });
     await calendar.waitFor();
     await page
+        .getByRole('combobox', { name: '배당 통화 필터', exact: true })
+        .getByText('모든 통화', { exact: true })
+        .waitFor();
+    await page
         .getByText('일정을 확인하지 못한 종목 1개', { exact: true })
         .waitFor();
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
@@ -231,7 +235,10 @@ try {
             ),
             `overflow ${width}`
         );
-        await calendar.scrollIntoViewIfNeeded();
+        await page.evaluate(() => {
+            document.activeElement?.blur();
+            window.scrollTo(0, 0);
+        });
         await page.screenshot({ path: `${out}/${width}.png`, fullPage: true });
     }
     await page.getByRole('button', { name: '다크 모드', exact: true }).click();

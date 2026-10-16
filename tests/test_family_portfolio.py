@@ -328,6 +328,10 @@ class FamilyApiTest(unittest.TestCase):
             response = self.get('')
         self.assertEqual(response.status_code, 429)
         self.assertEqual(response.json['code'], 'DATA_RESOURCE_EXHAUSTED')
+        self.assertEqual(response.headers['Retry-After'], '60')
+        self.assertEqual(response.json['retryAfterSeconds'], 60)
+        self.assertEqual(response.json['retryTiming'], 'recommended')
+        self.assertEqual(response.json['limitType'], 'unknown')
         self.assertNotIn('accounts', response.json)
         self.assertIn('기존 계좌와 거래내역은 유지됩니다', response.json['error'])
 

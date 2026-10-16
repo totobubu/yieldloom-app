@@ -463,7 +463,7 @@ def route():
     except PortfolioError as error:
         return jsonify({'error': str(error)}), error.status
     except ResourceExhausted:
-        response = jsonify({'code': 'DATA_RESOURCE_EXHAUSTED', 'error': '데이터베이스 요청이 제한되었습니다. 일시적인 요청 제한 또는 사용량 한도 문제일 수 있습니다. 잠시 후 다시 시도해 주세요. 기존 계좌와 거래내역은 유지됩니다.'})
+        response = jsonify({'code': 'DATA_RESOURCE_EXHAUSTED', 'error': '데이터베이스 요청이 제한되었습니다. 일시적인 요청 제한 또는 사용량 한도 문제일 수 있습니다. 기존 계좌와 거래내역은 유지됩니다.', 'retryAfterSeconds': 60, 'retryTiming': 'recommended', 'limitType': 'unknown'})
         response.headers['Retry-After'] = '60'
         return response, 429
     except Exception:

@@ -335,6 +335,8 @@ def commit(db, uid, body):
             for row, old in zip(rows, existing):
                 require(not old.exists or old.to_dict()['row'] == row, '같은 거래 고유번호의 내용이 다릅니다. 원장을 확인하세요.', 409)
             inserted = sum(not old.exists for old in existing)
+            if inserted:
+                data['entriesRevision'] = data.get('entriesRevision', 0) + 1
             for row, entry, old in zip(rows, refs, existing):
                 if not old.exists:
                     tx.set(entry, {'row': row, 'source': review['source'], 'asOf': review['asOf'], 'importedAt': now()})

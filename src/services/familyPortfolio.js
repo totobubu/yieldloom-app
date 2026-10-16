@@ -1,7 +1,12 @@
 import { apiUrl } from './apiUrl';
 import { firebaseUser } from './firebaseClient';
 
-export async function familyRequest(action = '', body, query = {}) {
+export async function familyRequest(
+    action = '',
+    body,
+    query = {},
+    { signal } = {}
+) {
     const user = firebaseUser.value;
     if (!user) throw new Error('로그인이 필요합니다.');
     const params = new URLSearchParams({
@@ -11,6 +16,7 @@ export async function familyRequest(action = '', body, query = {}) {
     const response = await fetch(apiUrl(`/api/family-portfolio?${params}`), {
         method: body === undefined ? 'GET' : 'POST',
         cache: 'no-store',
+        signal,
         headers: {
             Authorization: `Bearer ${await user.getIdToken()}`,
             ...(body instanceof FormData || body === undefined

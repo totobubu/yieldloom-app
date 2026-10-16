@@ -115,22 +115,25 @@ export async function loadStockCandles(symbol, fetcher = fetch) {
     return value;
 }
 
-export default createApiHandler(async (req, res) => {
-    try {
-        const payload = await loadStockCandles(req.query.ticker);
-        res.setHeader(
-            'Cache-Control',
-            's-maxage=300, stale-while-revalidate=600'
-        );
-        return res.status(200).json(payload);
-    } catch (error) {
-        return res
-            .status(error instanceof PriceError ? error.statusCode : 503)
-            .json({
-                error:
-                    error instanceof PriceError
-                        ? error.message
-                        : '일봉 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.',
-            });
-    }
-});
+export default createApiHandler(
+    async (req, res) => {
+        try {
+            const payload = await loadStockCandles(req.query.ticker);
+            res.setHeader(
+                'Cache-Control',
+                's-maxage=300, stale-while-revalidate=600'
+            );
+            return res.status(200).json(payload);
+        } catch (error) {
+            return res
+                .status(error instanceof PriceError ? error.statusCode : 503)
+                .json({
+                    error:
+                        error instanceof PriceError
+                            ? error.message
+                            : '일봉 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.',
+                });
+        }
+    },
+    { publicCors: true }
+);

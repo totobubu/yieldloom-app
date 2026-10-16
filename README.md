@@ -8,7 +8,7 @@
 - `/login`: 이메일·비밀번호 또는 Google 로그인.
 - `/mypage`: 본인 계좌 포트폴리오(기본), 선택형 가족 추가·관리, 파일 검토·수정 및 기준일 잔고 합산.
 - `/mypage/legacy`: 이전 단일 계좌 자료 조회.
-- `/thumbnail/:ticker`: 배당 요약, 배당 비교, 라이벌 비교, 배당 일정, 매수 효율 카드와 PNG 다운로드, 토스 게시 문구 복사.
+- `/stock/:ticker`: 종목 상세·시세·배당 정보와 배당 카드 PNG·게시 패키지 다운로드, 게시 문구 복사. `/thumbnail/:ticker`는 이 경로로 이동합니다.
 - `/legal`: 데이터 출처·갱신·투자 면책 및 개인정보 안내.
 - `?rivals=CRSH,TSII`: 라이벌 선택 공유. 최대 3종.
 - 그 외 주소는 `/`로 이동합니다. `VITE_APP_MODE`에 따른 화면 전환은 제거했습니다.
@@ -22,6 +22,13 @@ npm run build
 node --test tests/*.test.mjs
 python -m unittest discover -s tests/content_pipeline -p 'test_*.py'
 ```
+
+## 공용 개발 스킬
+
+Vue·PrimeVue 구현과 리뷰 기준은 저장소의
+[공용 스킬](.agents/skills/vue-primevue-best-practices/SKILL.md)에서 관리합니다.
+Low-level composition, 반응성·수명주기, 테마·접근성 및 검증 기준을 포함하며,
+[AGENTS.md](AGENTS.md)에 작업별 적용 시점을 명시합니다.
 
 ## 데이터 공급
 

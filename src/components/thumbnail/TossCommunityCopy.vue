@@ -23,7 +23,7 @@
             `${d.symbol} | ${d.exDate} 주당 ${usd(d.currentDividendAmount, 6)} 배당 정보`,
             '',
             `• 배당락일: ${d.exDate}`,
-            `• 배당락일 종가: ${usd(d.exDividendClose, 2)}`,
+            `• ${d.referencePriceLabel || '배당락일 종가'}: ${usd(d.exDividendClose, 2)}${d.usesLatestPrice ? ` (${d.referencePriceDate} 기준)` : ''}`,
             `• 세전 배당금: ${usd(d.currentDividendAmount, 6)}`,
             `• 세후 배당금(15% 원천징수 가정): ${usd(d.afterTaxDividendAmount, 6)}`,
         ];
@@ -40,7 +40,7 @@
         lines.push(
             '',
             '배당금은 운용사의 향후 공시에 따라 달라질 수 있습니다.',
-            '* 주가 대비 배당률은 연환산 수익률이 아닌 해당 1회 배당금의 배당락일 종가 대비 비율입니다.',
+            '* 주가 대비 배당률은 연환산 수익률이 아닌 해당 1회 배당금의 기준 주가 대비 비율입니다.',
             '* 투자 판단은 본인의 확인과 책임하에 진행해 주세요.'
         );
         return lines.join('\n');

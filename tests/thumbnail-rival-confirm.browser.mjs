@@ -38,8 +38,7 @@ try {
     await page.route('**/distribution-ticker-*.json', (route) =>
         route.fulfill({ json: { history: [] } })
     );
-    await page.goto('http://127.0.0.1:5173/thumbnail/TSLY');
-    await page.getByRole('tab', { name: '공유정보', exact: true }).click();
+    await page.goto('http://127.0.0.1:5173/stock/TSLY?tab=share');
     await page
         .getByRole('button', { name: '비교 종목 선택', exact: true })
         .click();
@@ -66,6 +65,36 @@ try {
         .click();
     await picker.getByRole('button', { name: 'CRSH', exact: true }).waitFor();
     assert.equal(calls.length, before + 1);
+    const changed = page.waitForRequest(
+        (r) =>
+            r.url().includes('/api/thumbnail-data?') &&
+            new URL(r.url()).searchParams.get('rivals') === 'TEST'
+    );
+    await page.evaluate(async () => {
+        const router =
+            document.querySelector('#app').__vue_app__.config.globalProperties
+                .$router;
+        await router.push({
+            query: { ...router.currentRoute.value.query, rivals: 'TEST' },
+        });
+    });
+    await changed;
+    await page.getByRole('tab', { name: '공유정보', exact: true }).waitFor();
+    assert.equal(calls.length, before + 2);
+    assert.equal(new URL(calls.at(-1)).searchParams.get('rivals'), 'TEST');
+    const restored = page.waitForRequest(
+        (r) =>
+            r.url().includes('/api/thumbnail-data?') &&
+            new URL(r.url()).searchParams.get('rivals') === 'TSLW,TSYY,CRSH'
+    );
+    await page.goBack();
+    await restored;
+    await page.getByRole('tab', { name: '공유정보', exact: true }).waitFor();
+    assert.equal(calls.length, before + 3);
+    assert.equal(
+        new URL(calls.at(-1)).searchParams.get('rivals'),
+        'TSLW,TSYY,CRSH'
+    );
     console.log(
         'PASS: selection sends no request; confirmation sends one request; add reopens picker without loading'
     );

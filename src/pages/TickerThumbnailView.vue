@@ -1,5 +1,5 @@
 <script setup>
-    import { computed, onMounted, ref, watch } from 'vue';
+    import { computed, onScopeDispose, ref, watch } from 'vue';
     import { useHead } from '@vueuse/head';
     import { useRoute, useRouter } from 'vue-router';
     import html2canvas from 'html2canvas';
@@ -35,6 +35,7 @@
     import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
     import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
     import { calculateEntryIncomeEfficiency } from '@/services/thumbnail/entryIncomeEfficiency';
+    import { dividendPrice } from '@/services/thumbnail/dividendPrice';
     import { createShareText } from '@/services/thumbnail/shareText';
     import { createCardShareText } from '@/services/thumbnail/shareText';
     import {
@@ -247,7 +248,15 @@
         const previous = rows.at(-2);
         const currentAmount = amount(current);
         const previousAmount = amount(previous);
-        const exClose = Number(current?.close);
+        const referencePrice = dividendPrice(
+            current,
+            {
+                price: selectedInfo.value?.price,
+                date: selectedData.value?.sourceStatus?.priceDate,
+            },
+            priceRows.value
+        );
+        const exClose = referencePrice.price;
         const prevClose = Number(previous?.close);
         const validClose = Number.isFinite(exClose) && exClose > 0;
         const validPreviousClose = Number.isFinite(prevClose) && prevClose > 0;
@@ -282,6 +291,11 @@
                 ? previousAmount * 0.85
                 : null,
             exDividendClose: validClose ? exClose : null,
+            usesLatestPrice: referencePrice.latest,
+            referencePriceDate: referencePrice.date,
+            referencePriceLabel: referencePrice.latest
+                ? '최신 주가'
+                : '배당락일 종가',
             previousExDividendClose: validPreviousClose ? prevClose : null,
             exDividendYield: validClose
                 ? (currentAmount / exClose) * 100
@@ -345,15 +359,9 @@
         ],
     });
     const entryEfficiency = computed(() =>
-        selectedData.value?.sourceStatus?.corporateActionReview
-            ? {
-                  available: false,
-                  reason: '분할 이후 가격과 배당의 보정 기준을 확인 중입니다.',
-                  samples: [],
-              }
-            : calculateEntryIncomeEfficiency(selectedData.value, {
-                  asOfDate: new Date().toISOString().slice(0, 10),
-              })
+        calculateEntryIncomeEfficiency(selectedData.value, {
+            asOfDate: new Date().toISOString().slice(0, 10),
+        })
     );
     const rivalOptions = computed(() => {
         return (selectedInfo.value?.rivalOptions ?? []).map((symbol) => ({
@@ -383,8 +391,6 @@
         await router.replace({
             query: { ...route.query, rivals: selection.join(',') },
         });
-        if (selection.join(',') !== rivals.value.join(','))
-            await load(selection);
     };
 
     let loadSequence = 0;
@@ -629,13 +635,16 @@
         removeLocalPreset(preset.id);
         presets.value = presets.value.filter((item) => item.id !== preset.id);
     };
-    onMounted(load);
+    onScopeDispose(() => {
+        loadSequence++;
+    });
     watch(
-        () => route.params.ticker,
-        () => {
-            rivalPickerOpen.value = false;
+        [() => route.params.ticker, () => route.query.rivals],
+        ([ticker], [previousTicker] = []) => {
+            if (ticker !== previousTicker) rivalPickerOpen.value = false;
             load();
-        }
+        },
+        { immediate: true }
     );
 </script>
 

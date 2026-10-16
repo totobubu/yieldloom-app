@@ -4,6 +4,16 @@ import { unzipSync, strFromU8 } from 'fflate';
 import { createPublishPackage } from '../src/services/thumbnail/publishPackage.js';
 import { createCardShareText } from '../src/services/thumbnail/shareText.js';
 
+test('comparison copy preserves decreases, increases, zero and unknown amounts', () => {
+    const copy = dividendDifference => createCardShareText('comparison', { symbol: 'TEST', dividendDifference });
+    assert.match(copy(-0.1), /배당 -\$0\.1/);
+    assert.match(copy(0.1), /배당 \+\$0\.1/);
+    assert.match(copy(0), /변동 없음 \(\$0\)/);
+    assert.match(copy(null), /비교 데이터 준비 중/);
+    assert.match(copy(NaN), /비교 데이터 준비 중/);
+    assert.doesNotMatch(copy(0), /확정 배당 정보 없음/);
+});
+
 test('card copy is specific to the requested card and surfaces stale data', () => {
     const data = { symbol: 'TSLY', hasDividend: true, currentDividendAmount: 0.12, exDate: '2026-10-10', dividendDifference: 0.01 };
     assert.match(createCardShareText('calendar', data, { sourceStatus: 'stale' }), /다음 배당 일정/);

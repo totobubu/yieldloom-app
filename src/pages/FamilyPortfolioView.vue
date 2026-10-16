@@ -58,6 +58,8 @@
         error = ref(''),
         message = ref(''),
         invitation = ref('');
+    const accountsState = ref('loading'),
+        accountLoadError = ref('');
     const newFamily = ref(''),
         myName = ref(''),
         joinToken = ref(''),
@@ -91,6 +93,8 @@
     let capitalGeneration = 0,
         capitalScope = '';
     async function loadCapital() {
+        const nextScope = `${firebaseUser.value?.uid}:${selectedAccount.value}`;
+        if (capitalLoading.value && nextScope === capitalScope) return;
         const user = firebaseUser.value,
             accountId = selectedAccount.value,
             generation = ++capitalGeneration;
@@ -296,31 +300,44 @@
     }
     async function refresh() {
         const requestedUid = firebaseUser.value?.uid;
-        let data = await familyRequest(
-            '',
-            undefined,
-            familyId.value ? { familyId: familyId.value } : {}
-        );
-        if (firebaseUser.value?.uid !== requestedUid) return;
-        if (!familyId.value && data.families.length) {
-            familyId.value = (
-                data.families.find((f) => f.kind === 'personal') ||
-                data.families.find((f) => f.adminUid === requestedUid) ||
-                data.families[0]
-            ).id;
-            data = await familyRequest('', undefined, {
-                familyId: familyId.value,
-            });
+        accountsState.value = 'loading';
+        accountLoadError.value = '';
+        try {
+            let data = await familyRequest(
+                '',
+                undefined,
+                familyId.value ? { familyId: familyId.value } : {}
+            );
             if (firebaseUser.value?.uid !== requestedUid) return;
+            if (!familyId.value && data.families.length) {
+                familyId.value = (
+                    data.families.find((f) => f.kind === 'personal') ||
+                    data.families.find((f) => f.adminUid === requestedUid) ||
+                    data.families[0]
+                ).id;
+                data = await familyRequest('', undefined, {
+                    familyId: familyId.value,
+                });
+                if (firebaseUser.value?.uid !== requestedUid) return;
+            }
+            families.value = data.families;
+            accounts.value = data.accounts || [];
+            rawSummary.value = data.summary || null;
+            if (!familyId.value && families.value.length)
+                familyId.value = families.value[0].id;
+            if (
+                !visibleAccounts.value.some(
+                    (a) => a.id === selectedAccount.value
+                )
+            )
+                selectedAccount.value = visibleAccounts.value[0]?.id || '';
+            accountsState.value = 'ready';
+            await loadCapital();
+        } catch (reason) {
+            if (firebaseUser.value?.uid !== requestedUid) return;
+            accountsState.value = 'error';
+            accountLoadError.value = reason.message;
         }
-        families.value = data.families;
-        accounts.value = data.accounts || [];
-        rawSummary.value = data.summary || null;
-        if (!familyId.value && families.value.length)
-            familyId.value = families.value[0].id;
-        if (!visibleAccounts.value.some((a) => a.id === selectedAccount.value))
-            selectedAccount.value = visibleAccounts.value[0]?.id || '';
-        await loadCapital();
     }
     watch(
         [firebaseUser, authLoading],
@@ -336,6 +353,8 @@
             invitation.value = '';
             password.value = '';
             portfolioScope.value = 'personal';
+            accountsState.value = 'loading';
+            accountLoadError.value = '';
             if (waiting) return;
             if (!user)
                 router.replace({
@@ -347,6 +366,8 @@
         { immediate: true }
     );
     watch(familyId, () => {
+        accountsState.value = 'loading';
+        accountLoadError.value = '';
         accounts.value = [];
         rawSummary.value = null;
         invitation.value = '';
@@ -558,6 +579,22 @@
         <Message v-if="busy" severity="info" :closable="false"
             >자료를 처리하고 있습니다.</Message
         >
+        <Message
+            v-if="accountsState === 'error'"
+            severity="error"
+            :closable="false"
+            ><p>{{ accountLoadError }}</p>
+            <p>
+                계좌 목록 조회에 실패했습니다. 등록된 계좌가 없다는 뜻이
+                아닙니다. 기존 계좌나 PDF를 다시 등록할 필요는 없습니다.
+            </p>
+            <Button
+                label="계좌 목록 다시 시도"
+                severity="danger"
+                outlined
+                :loading="busy"
+                @click="run(refresh)"
+        /></Message>
         <div class="portfolio-scope">
             <SelectButton
                 v-model="portfolioScope"
@@ -579,7 +616,11 @@
             ><TabPanels
                 ><TabPanel value="overview"
                     ><div
-                        v-if="!busy && !visibleAccounts.length"
+                        v-if="
+                            accountsState === 'ready' &&
+                            !busy &&
+                            !visibleAccounts.length
+                        "
                         class="portfolio-empty studio-empty">
                         <i class="pi pi-wallet" aria-hidden="true" />
                         <h2>첫 계좌를 등록해 보세요</h2>
@@ -827,7 +868,8 @@
                         </section>
                     </template></TabPanel
                 ><TabPanel value="accounts">
-                    <section>
+                    <section
+                        v-if="accountsState === 'ready' || accounts.length">
                         <h2>
                             {{
                                 portfolioScope === 'personal'
@@ -918,7 +960,11 @@
                                 {{ a.source }}
                             </li>
                         </ul>
-                        <p v-if="!visibleAccounts.length">
+                        <p
+                            v-if="
+                                accountsState === 'ready' &&
+                                !visibleAccounts.length
+                            ">
                             등록된 계좌가 없습니다. 위에서 본인 계좌를
                             추가하세요. 가족 계좌는 가족 포트폴리오에서 확인할
                             수 있습니다.

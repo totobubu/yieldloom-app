@@ -40,6 +40,14 @@ const monthlyEntryRows = (rows) => {
  */
 export function calculateEntryIncomeEfficiency(ticker, options = {}) {
     const asOfDate = options.asOfDate ?? dateKey(new Date());
+    if (ticker?.sourceStatus?.corporateActionReview) {
+        return {
+            available: false,
+            reason: '조회 기간에 주식 분할·병합 이력이 있어 과거 매수 시점별 배당률을 제공하지 않습니다. 가격과 배당금의 조정 기준 검증이 필요합니다. 개인 보유량 조회와는 별개입니다.',
+            asOfDate,
+            samples: [],
+        };
+    }
     const rows = ticker?.backtestData ?? [];
     const prices = usablePriceRows(rows, asOfDate);
     const dividends = (rows ?? [])

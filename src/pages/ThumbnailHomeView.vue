@@ -30,6 +30,11 @@
         productTypeOptions,
         topProviders,
     } from '../../lib/security-filters.js';
+    import { authLoading, firebaseUser } from '@/services/firebaseClient';
+    import {
+        loadPortfolioAssets,
+        portfolioTickerStates,
+    } from '@/services/portfolio';
     import AdSlot from '@/components/ads/AdSlot.vue';
     useHead({ title: 'ETF·주식 검색' });
     const route = useRoute(),
@@ -62,6 +67,40 @@
         distributions = ref({}),
         loading = ref(true),
         error = ref('');
+    const holdingStates = ref(new Map()),
+        holdingsLoading = ref(false),
+        holdingsError = ref('');
+    let holdingsRequest = 0;
+    watch(
+        [firebaseUser, authLoading],
+        async ([user, pending]) => {
+            const request = ++holdingsRequest;
+            holdingStates.value = new Map();
+            holdingsError.value = '';
+            holdingsLoading.value = false;
+            if (pending || !user) return;
+            holdingsLoading.value = true;
+            try {
+                const assets = await loadPortfolioAssets(user.uid);
+                if (request === holdingsRequest)
+                    holdingStates.value = portfolioTickerStates(assets);
+            } catch {
+                if (request === holdingsRequest)
+                    holdingsError.value =
+                        '보유이력을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+            } finally {
+                if (request === holdingsRequest) holdingsLoading.value = false;
+            }
+        },
+        { immediate: true }
+    );
+    const holdingMessage = computed(() => {
+        if (securityType.value !== 'holding-history') return '';
+        if (authLoading.value || holdingsLoading.value)
+            return '보유이력을 불러오는 중입니다.';
+        if (!firebaseUser.value) return '보유이력을 보려면 로그인해 주세요.';
+        return holdingsError.value;
+    });
     const pageSize = 25;
     const companies = computed(() =>
         [
@@ -80,7 +119,8 @@
                     matchesProductType(
                         row,
                         securityType.value,
-                        distributions.value[row.symbol]
+                        distributions.value[row.symbol],
+                        holdingStates.value
                     ) &&
                     [
                         row.symbol,
@@ -387,6 +427,12 @@
                     outlined
                     @click="load" /></div
         ></Message>
+        <Message
+            v-else-if="holdingMessage"
+            :severity="holdingsError ? 'error' : 'info'"
+            :closable="false"
+            >{{ holdingMessage }}</Message
+        >
         <Card v-else-if="!filtered.length"
             ><template #content
                 ><div class="studio-empty">

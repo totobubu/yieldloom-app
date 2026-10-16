@@ -258,46 +258,58 @@ try {
             body: "import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'fixture-owner',getIdToken:async()=> 'fixture-token'}),authLoading=ref(false),firebaseReady=false,db=null,auth=null,googleProvider=null;export const signedIn=computed(()=>true);",
         })
     );
-    await page.route('**/api/family-portfolio*', (r) =>
-        r.fulfill({
+    let familyRequests = 0;
+    await page.route('**/api/family-portfolio**', (r) => {
+        assert.equal(
+            r.request().headers().authorization,
+            'Bearer fixture-token'
+        );
+        familyRequests++;
+        return r.fulfill({
             json: {
                 families: [
                     {
                         id: 'fixture-family',
                         profiles: {
-                            owner: {
+                            'fixture-profile': {
                                 uid: 'fixture-owner',
-                                name: '검증 사용자',
+                                name: '테스트 본인',
                             },
                         },
                     },
                 ],
-                accounts: [{ id: 'fixture-account', alias: '검증 계좌' }],
+                accounts: [{ id: 'fixture-account', alias: '테스트 계좌' }],
                 summary: {
                     positions: [
                         {
-                            accountId: 'fixture-account',
                             familyId: 'fixture-family',
-                            ownerId: 'owner',
+                            ownerId: 'fixture-profile',
+                            accountId: 'fixture-account',
                             symbol: 'TOPW',
                             quantity: 10,
-                            amount: 1000,
-                            currency: 'USD',
+                            amount: 13000,
+                            currency: 'KRW',
                             asOf: '2026-10-15',
-                            source: 'fixture-csv',
+                            source: '테스트 잔고 자료',
                         },
                     ],
                 },
             },
-        })
-    );
+        });
+    });
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.locator('.holding-panel').getByText(/10주/).first().waitFor();
     assert.ok(
-        (await page.locator('.holding-panel').innerText()).includes('1,000')
+        (await page.locator('.holding-panel').innerText()).includes('13,000')
     );
     assert.ok(
-        (await page.locator('.holding-panel').innerText()).includes('USD')
+        (await page.locator('.holding-panel').innerText()).includes('KRW')
+    );
+    assert.equal(familyRequests, 2);
+    assert.ok(
+        (await page.locator('.holding-panel').innerText()).includes(
+            '2026-10-15'
+        )
     );
     await page.screenshot({
         path: '/tmp/stock-holding-mobile.png',

@@ -492,7 +492,16 @@ try {
             revision: 1,
         });
     }
+    let familyFailure = false;
     await page.route('**/api/family-portfolio?**', (route) => {
+        if (familyFailure)
+            return route.fulfill({
+                status: 429,
+                json: {
+                    code: 'DATA_QUOTA_EXCEEDED',
+                    error: '데이터베이스 사용량 한도를 초과했습니다. 기존 자료는 유지됩니다.',
+                },
+            });
         const params = new URL(route.request().url()).searchParams;
         const payload = params.get('accountId')
             ? {
@@ -597,6 +606,47 @@ try {
         true
     );
     await familyPanel.getByText('₩200,000', { exact: true }).first().waitFor();
+    familyFailure = true;
+    await page.reload();
+    await page
+        .getByRole('alert')
+        .filter({ hasText: '계좌 목록 조회에 실패했습니다' })
+        .waitFor();
+    assert.equal(
+        await page
+            .getByText('등록된 계좌가 없습니다.', { exact: false })
+            .count(),
+        0
+    );
+    assert.equal(
+        await page
+            .getByRole('button', { name: '계좌 등록', exact: true })
+            .count(),
+        0
+    );
+    familyFailure = false;
+    await page.getByRole('button', { name: '새로고침', exact: true }).click();
+    await page
+        .getByRole('heading', { name: '선택 계좌: 검증 계좌', exact: true })
+        .waitFor();
+    familyFailure = true;
+    await page.getByRole('button', { name: '새로고침', exact: true }).click();
+    await page
+        .getByRole('alert')
+        .filter({ hasText: '계좌 목록 조회에 실패했습니다' })
+        .waitFor();
+    assert.equal(
+        await page
+            .getByRole('heading', { name: '선택 계좌: 검증 계좌', exact: true })
+            .isVisible(),
+        true
+    );
+    assert.equal(
+        await page
+            .getByText('등록된 계좌가 없습니다.', { exact: false })
+            .count(),
+        0
+    );
     assert.deepEqual(errors, []);
     console.log(
         'PASS: legacy and family account cash review, principal exclusion, mixed funding, consent, exact settlement, reset, USD separation and mobile layout'

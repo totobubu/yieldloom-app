@@ -320,6 +320,15 @@ class FamilyApiTest(unittest.TestCase):
             self.assertEqual(self.post('pdfPassword', {'accountId': self.account, 'remove': True}).json, {'configured': False})
             self.assertNotIn(path, self.db.data)
 
+    def test_database_quota_failure_is_not_an_empty_account_list(self):
+        with patch.object(api, 'database', side_effect=api.ResourceExhausted('Quota exceeded.')):
+            response = self.get('')
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.json['code'], 'DATA_QUOTA_EXCEEDED')
+        self.assertNotIn('accounts', response.json)
+        self.assertIn('기존 계좌와 거래내역은 유지됩니다', response.json['error'])
+
+
 class DomainTest(unittest.TestCase):
     def test_corporate_actions_and_transfer_events_do_not_generate_valuation(self):
         for kind in ['transfer_in', 'transfer_out', 'dividend', 'cash_in', 'cash_out', 'split']:

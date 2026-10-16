@@ -8,6 +8,7 @@
 - `/login`: 이메일·비밀번호 또는 Google 로그인, 회원가입, 비밀번호 재설정. 로그인 유지 선택과 비밀번호 확인 입력을 제공합니다.
 - `/mypage`: 본인 계좌 포트폴리오(기본), 선택형 가족 추가·관리, 파일 검토·수정 및 기준일 잔고 합산.
 - `/mypage?tab=calendar`: 권한 있는 계좌의 월간 배당 캘린더·연간 타임라인. 공시/잔고 기준 세전 예상과 저장된 배당 거래를 구분합니다.
+- `/mypage?tab=insights`: 월별 저장 배당·전년 기록 비교, 목표·감소 가정, 배당 기여도와 자료 평가액 기준 자산 집중도.
 - `/simulator`: 최초 투자·납입·배당·재투자 A/B 및 원천징수율 가정 비교.
 - `/mypage/legacy`: 이전 단일 계좌 자료 조회.
 - `/stock/:ticker`: 종목 상세·시세·배당 정보와 배당 카드 PNG·게시 패키지 다운로드, 게시 문구 복사. `/thumbnail/:ticker`는 이 경로로 이동합니다.
@@ -50,7 +51,7 @@ Low-level composition, 반응성·수명주기, 테마·접근성 및 검증 기
 
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.
 
-GitHub Pages 배포는 `VITE_API_BASE_URL` 설정이 없으면 정식 웹앱 API인 `https://yieldloom-app.vercel.app`을 사용합니다. 인증·계좌용 Node·Python API는 기본 프런트엔드 origin `https://totobubu.github.io`와 로컬 개발 주소를 허용하며, 추가 사이트는 서버의 `PUBLIC_APP_ORIGINS`에 명시합니다. 익명 시장 데이터만 반환하는 `/api/thumbnail-data`는 CDN에 저장된 응답도 같은 방식으로 읽을 수 있도록 공개 CORS를 사용하며, 브라우저 자격증명은 허용하지 않습니다. `FIRESTORE_SA_KEY`·Toss 자격증명은 서버 전용으로 유지합니다. Pages에 Firebase 웹 설정이 없는 경우 로그인 화면에서 정식 웹앱으로 이동해 계좌 기능을 이용할 수 있습니다.
+GitHub Pages 배포는 `VITE_API_BASE_URL` 설정이 없으면 정식 웹앱 API인 `https://yieldloom-app.vercel.app`을 사용합니다. 인증·계좌용 Node·Python API는 기본 프런트엔드 origin `https://totobubu.github.io`와 로컬 개발 주소를 허용하며, 추가 사이트는 서버의 `PUBLIC_APP_ORIGINS`에 명시합니다. 익명 시장 데이터만 반환하는 `/api/thumbnail-data`·`/api/stock-prices`는 CDN에 저장된 응답도 같은 방식으로 읽을 수 있도록 공개 CORS를 사용하며, 브라우저 자격증명은 허용하지 않습니다. `FIRESTORE_SA_KEY`·Toss 자격증명은 서버 전용으로 유지합니다. Pages에 Firebase 웹 설정이 없는 경우 로그인 화면에서 정식 웹앱으로 이동해 계좌 기능을 이용할 수 있습니다.
 
 ## 광고 배치
 
@@ -114,6 +115,21 @@ node tests/portfolio-funding-trace.browser.mjs
 node --test tests/portfolio_valuation.test.mjs tests/stock-prices.test.mjs
 # 개발 서버 5173. 합성 계좌·시세 응답을 사용하며 실제 개인 자료는 조회하지 않습니다.
 node tests/portfolio-valuation.browser.mjs
+```
+
+`배당 분석`은 조회 권한이 있는 계좌의 모든 거래 페이지를 읽고 조회 전후 계좌 권한·원장 변경 번호를 확인합니다. 계좌·가족 범위·로그인 상태가 바뀌면 이전 조회를 취소하고 기록을 지웁니다. 선택 연도의 1월부터 분석 월까지 배당과 배당 취소를 통화별로 합산하며, 날짜 미확인·미래 날짜는 제외 건수를 안내합니다. 기록이 없는 달과 관측된 0원을 구분하고, 금액 누락이 있는 경우 확인된 금액만 표시합니다. 전년 동월 비교는 완료된 달에 양쪽 기록·금액이 확인되고 전년 금액이 양수인 경우만 제공합니다. 실제 지급 내역의 완전성이나 세전·세후 금액을 확정하는 지표는 아닙니다.
+
+누적 배당 기여도는 취소 차감 후 양수인 종목별 금액 합계를 분모로 사용합니다. 음수 순배당은 표에 남기고 비중에서는 제외하며, 상위 3종목 의존도를 표시합니다. 월 목표 달성률과 종목별 배당 감소 가정은 선택 월의 금액·통화가 확인될 때만 계산합니다. 입력은 화면에서만 유지하고 계좌·통화·월을 바꾸면 목표를 초기화합니다. 감소 가정은 과거 기록에 적용한 비교이며 미래 배당 예측이 아닙니다.
+
+자산 집중도는 최신 시세 평가와 별도로 **업로드한 잔고의 확인된 평가액**을 사용하고 현금·미확인·음수 평가액을 제외합니다. 종목·운용사·연결 기초자산별 비중을 제공하며 서로 다른 잔고 기준일과 누락 계좌를 안내합니다. 운용사·기초자산 미분류는 종목별로 남기고, 연결 기초자산 분류는 롱·인버스·레버리지 방향과 배수를 반영한 실질 노출도가 아닙니다. 분류 파일 조회가 실패해도 저장 배당과 종목별 분석은 유지합니다.
+
+`data-v2/catalog-seed.json`의 운용사 또는 `public/thumbnail-catalog.json`의 연결 관계를 바꿀 때 아래 명령으로 작은 공개 분류 파일을 함께 갱신합니다. 분류 파일에는 개인 자료가 없습니다.
+
+```sh
+npm run export:portfolio-classifications
+node --test tests/portfolio_insights.test.mjs tests/portfolio_calendar.test.mjs
+# Vite 5173. 합성 인증·계좌·시세로 검증하며 운영 계좌를 조회하지 않습니다.
+node tests/portfolio-insights.browser.mjs
 ```
 
 원금 회수·자금 상세는 패널을 펼칠 때만 조회합니다. 같은 로그인 세션의 계좌별 요청을 합치고 5초 동안 메모리에서 공유하며, 이후에는 매번 계좌·가족 권한을 확인하고 변경 번호가 같으면 원장을 다시 읽지 않습니다. 현금 분류·자금 구성 변경은 별도 변경 번호로 확인해 거래 원장을 재사용하고, 거래 업로드는 기존 `entriesRevision`으로 갱신을 감지합니다. 개인 원장을 브라우저 저장소나 공용 CDN에 캐시하지 않습니다. 요청 제한(429)은 일일 한도 소진으로 단정하지 않고, `Retry-After`에 따라 기본 60초 동안 재요청을 막습니다. 이미 소진된 서버 사용량은 이 변경으로 초기화되지 않습니다.

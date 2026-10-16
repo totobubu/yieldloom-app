@@ -9,6 +9,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import PortfolioDividendCalendar from '@/components/portfolio/PortfolioDividendCalendar.vue';
     import PortfolioValuation from '@/components/portfolio/PortfolioValuation.vue';
+    import PortfolioInsights from '@/components/portfolio/PortfolioInsights.vue';
     import Button from 'primevue/button';
     import Card from 'primevue/card';
     import Panel from 'primevue/panel';
@@ -34,6 +35,7 @@
     const portfolioTabs = [
         'overview',
         'calendar',
+        'insights',
         'accounts',
         'upload',
         'family',
@@ -794,6 +796,7 @@
             ><TabList
                 ><Tab value="overview">한눈에 보기</Tab
                 ><Tab value="calendar">배당 캘린더</Tab
+                ><Tab value="insights">배당 분석</Tab
                 ><Tab value="accounts">계좌 관리</Tab
                 ><Tab value="upload">자료 업로드</Tab
                 ><Tab value="family">가족 관리</Tab></TabList
@@ -1076,6 +1079,20 @@
                             accountsState === 'ready' &&
                             !busy
                         "
+                        :accounts="visibleAccounts"
+                        :positions="summary?.positions || []"
+                        :family-id="familyId" />
+                    <p v-else-if="accountsState === 'loading'" role="status">
+                        계좌 자료를 확인하고 있습니다.
+                    </p> </TabPanel
+                ><TabPanel value="insights">
+                    <PortfolioInsights
+                        v-if="
+                            portfolioTab === 'insights' &&
+                            accountsState === 'ready' &&
+                            !busy
+                        "
+                        :key="`${ownUid}:${familyId}:${portfolioScope}`"
                         :accounts="visibleAccounts"
                         :positions="summary?.positions || []"
                         :family-id="familyId" />

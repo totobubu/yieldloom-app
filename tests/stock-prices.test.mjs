@@ -1,6 +1,40 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { loadStockCandles } from '../api/stock-prices.js';
+import handler, { loadStockCandles } from '../api/stock-prices.js';
+test('anonymous price responses keep public CORS consistent for CDN and Pages', async () => {
+    for (const origin of [
+        undefined,
+        'https://totobubu.github.io',
+        'https://yieldloom-app.vercel.app',
+    ]) {
+        const headers = {};
+        const res = {
+            setHeader: (key, value) => {
+                headers[key] = value;
+            },
+            status(code) {
+                this.statusCode = code;
+                return this;
+            },
+            json(body) {
+                this.body = body;
+                return this;
+            },
+        };
+        await handler(
+            {
+                method: 'GET',
+                query: { ticker: '../invalid' },
+                headers: { origin },
+            },
+            res
+        );
+        assert.equal(res.statusCode, 400);
+        assert.equal(headers['Access-Control-Allow-Origin'], '*');
+        assert.equal(headers['Access-Control-Allow-Credentials'], undefined);
+        assert.equal(headers.Vary, undefined);
+    }
+});
 const response = (quote, timestamps = [1767272400, 1767358800]) => ({
     chart: {
         result: [

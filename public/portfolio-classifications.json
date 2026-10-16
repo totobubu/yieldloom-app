@@ -1,0 +1,6542 @@
+{
+  "schemaVersion": 1,
+  "source": "catalog-seed + thumbnail-catalog",
+  "securities": {
+    "AAAU": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "AAPB": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "AAPD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AAPL": {
+      "provider": null,
+      "underlying": "AAPL"
+    },
+    "AAPU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AAPW": {
+      "provider": "Roundhill Investments",
+      "underlying": "AAPL"
+    },
+    "AAPY": {
+      "provider": "Kurv",
+      "underlying": null
+    },
+    "AAXJ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ABNB": {
+      "provider": null,
+      "underlying": "ABNB"
+    },
+    "ABNW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "ABNY": {
+      "provider": "YieldMax",
+      "underlying": "ABNB"
+    },
+    "ACIO": {
+      "provider": "Aptus",
+      "underlying": null
+    },
+    "ACKY": {
+      "provider": "VistaShares",
+      "underlying": null
+    },
+    "ACSI": {
+      "provider": "American",
+      "underlying": null
+    },
+    "ACWI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ACWV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ACWX": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "AFK": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "AGG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "AGGY": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "AGIQ": {
+      "provider": "SoFi",
+      "underlying": null
+    },
+    "AGNG": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "AGQ": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "AI": {
+      "provider": null,
+      "underlying": "AI"
+    },
+    "AIA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "AIBD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AIBU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AIPI": {
+      "provider": "Rex",
+      "underlying": null
+    },
+    "AIPO": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "AIQ": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "AIRR": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "AIS": {
+      "provider": "VistaShares",
+      "underlying": null
+    },
+    "AIYY": {
+      "provider": "YieldMax",
+      "underlying": "AI"
+    },
+    "AMD": {
+      "provider": null,
+      "underlying": "AMD"
+    },
+    "AMDD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AMDL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "AMDW": {
+      "provider": "Roundhill Investments",
+      "underlying": "AMD"
+    },
+    "AMDY": {
+      "provider": "YieldMax",
+      "underlying": "AMD"
+    },
+    "AMLP": {
+      "provider": "Alerian",
+      "underlying": null
+    },
+    "AMUU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AMYY": {
+      "provider": "GraniteShares",
+      "underlying": "AMD"
+    },
+    "AMZD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AMZN": {
+      "provider": null,
+      "underlying": "AMZN"
+    },
+    "AMZP": {
+      "provider": "Kurv",
+      "underlying": null
+    },
+    "AMZU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AMZW": {
+      "provider": "Roundhill Investments",
+      "underlying": "AMZN"
+    },
+    "AMZY": {
+      "provider": "YieldMax",
+      "underlying": "AMZN"
+    },
+    "AMZZ": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "ANEL": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "ANGL": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "AOA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "AOM": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "AOR": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "APCB": {
+      "provider": "ActivePassive",
+      "underlying": null
+    },
+    "APIE": {
+      "provider": "ActivePassive",
+      "underlying": null
+    },
+    "APLY": {
+      "provider": "YieldMax",
+      "underlying": "AAPL"
+    },
+    "APUE": {
+      "provider": "ActivePassive",
+      "underlying": null
+    },
+    "ARGT": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "ARKB": {
+      "provider": "ARK ETF Trust",
+      "underlying": null
+    },
+    "ARKF": {
+      "provider": "ARK ETF Trust",
+      "underlying": null
+    },
+    "ARKG": {
+      "provider": "ARK ETF Trust",
+      "underlying": null
+    },
+    "ARKK": {
+      "provider": "ARK ETF Trust",
+      "underlying": "ARKK"
+    },
+    "ARKQ": {
+      "provider": "ARK ETF Trust",
+      "underlying": null
+    },
+    "ARKT": {
+      "provider": "ARK ETF Trust",
+      "underlying": null
+    },
+    "ARKW": {
+      "provider": "ARK ETF Trust",
+      "underlying": null
+    },
+    "ARKX": {
+      "provider": "ARK ETF Trust",
+      "underlying": null
+    },
+    "ARMW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "ARTY": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ASHR": {
+      "provider": "Xtrackers",
+      "underlying": null
+    },
+    "ASMW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "AUSF": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "AVDE": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVDV": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVEM": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVES": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVGO": {
+      "provider": null,
+      "underlying": "AVGO"
+    },
+    "AVGU": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "AVGW": {
+      "provider": "Roundhill Investments",
+      "underlying": "AVGO"
+    },
+    "AVGX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "AVIG": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVIV": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AVLC": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVLV": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "AVSC": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVUS": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVUV": {
+      "provider": "Avantis",
+      "underlying": null
+    },
+    "AVXX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "AZTD": {
+      "provider": "Aztlan",
+      "underlying": null
+    },
+    "AZYY": {
+      "provider": "GraniteShares",
+      "underlying": "AMZN"
+    },
+    "BAB": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BABA": {
+      "provider": null,
+      "underlying": "BABA"
+    },
+    "BABO": {
+      "provider": "YieldMax",
+      "underlying": "BABA"
+    },
+    "BABW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "BABX": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "BAFE": {
+      "provider": "Brown",
+      "underlying": null
+    },
+    "BAI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "BALI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "BALT": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "BAR": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "BBAG": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "BBAX": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "BBCA": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "BBEU": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "BBH": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "BBIN": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "BBJP": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "BBMC": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "BBRE": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "BBUS": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "BBYY": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "BCI": {
+      "provider": "abrdn",
+      "underlying": null
+    },
+    "BEEX": {
+      "provider": "Beehive",
+      "underlying": null
+    },
+    "BETE": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "BETH": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "BETZ": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "BFRE": {
+      "provider": "Westwood",
+      "underlying": null
+    },
+    "BHYB": {
+      "provider": "Xtrackers",
+      "underlying": null
+    },
+    "BIGY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "BIL": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "BILS": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "BILZ": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "BINC": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "BITB": {
+      "provider": "Bitwise",
+      "underlying": null
+    },
+    "BITI": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "BITO": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "BITU": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "BITX": {
+      "provider": "2x",
+      "underlying": null
+    },
+    "BIV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "BIZD": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "BKAG": {
+      "provider": "BNY",
+      "underlying": null
+    },
+    "BKCH": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "BKIE": {
+      "provider": "BNY",
+      "underlying": null
+    },
+    "BKLC": {
+      "provider": "BNY",
+      "underlying": null
+    },
+    "BKLN": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BLOK": {
+      "provider": "Amplify",
+      "underlying": null
+    },
+    "BLOX": {
+      "provider": "Nicholas",
+      "underlying": null
+    },
+    "BLV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "BMAX": {
+      "provider": "REX",
+      "underlying": null
+    },
+    "BND": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "BNDI": {
+      "provider": "Neos",
+      "underlying": null
+    },
+    "BNDW": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "BNDX": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "BOAT": {
+      "provider": "SonicShares",
+      "underlying": null
+    },
+    "BOED": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "BOEU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "BOIL": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "BOND": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "BOTZ": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "BOXX": {
+      "provider": "Alpha",
+      "underlying": null
+    },
+    "BRK.B": {
+      "provider": null,
+      "underlying": "BRK.B"
+    },
+    "BRKC": {
+      "provider": "YieldMax",
+      "underlying": "BRK.B"
+    },
+    "BRKD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "BRKU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "BRKW": {
+      "provider": "Roundhill Investments",
+      "underlying": "BRK.B"
+    },
+    "BRZU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "BSCP": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSCQ": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSCR": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSCS": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSCT": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSCU": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSCV": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSCW": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSCX": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSJQ": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "BSV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "BSVO": {
+      "provider": "EA",
+      "underlying": null
+    },
+    "BTC": {
+      "provider": "Grayscale",
+      "underlying": null
+    },
+    "BTCI": {
+      "provider": "Neos Funds",
+      "underlying": null
+    },
+    "BTGD": {
+      "provider": "STKd",
+      "underlying": null
+    },
+    "BUFC": {
+      "provider": "AB",
+      "underlying": null
+    },
+    "BUFD": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "BUFQ": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "BUFR": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "BUG": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "BULX": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "BUYW": {
+      "provider": "Main",
+      "underlying": null
+    },
+    "BUZZ": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "BWX": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "CALF": {
+      "provider": "Pacer",
+      "underlying": null
+    },
+    "CAM": {
+      "provider": "AB",
+      "underlying": null
+    },
+    "CATH": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "CCMG": {
+      "provider": "CCM",
+      "underlying": null
+    },
+    "CCSB": {
+      "provider": "Carbon",
+      "underlying": null
+    },
+    "CCSO": {
+      "provider": "Carbon",
+      "underlying": null
+    },
+    "CEPI": {
+      "provider": "Rex",
+      "underlying": null
+    },
+    "CGBL": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGCB": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGCP": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGCV": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGDG": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGDV": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGGE": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGGO": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGGR": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGHM": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGIE": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGMM": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGMS": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGMU": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGNG": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGRO": {
+      "provider": "CoreValues",
+      "underlying": null
+    },
+    "CGSD": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGSM": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGUS": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CGW": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "CGXU": {
+      "provider": "Capital",
+      "underlying": null
+    },
+    "CHAT": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "CHAU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "CHIQ": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "CHPY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "CIBR": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "CLIP": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "CLOA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "CLOB": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "CLOI": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "CLOU": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "CLOZ": {
+      "provider": "Eldridge",
+      "underlying": null
+    },
+    "CMF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "COII": {
+      "provider": "Rex",
+      "underlying": "COIN"
+    },
+    "COIN": {
+      "provider": null,
+      "underlying": "COIN"
+    },
+    "COIW": {
+      "provider": "Roundhill Investments",
+      "underlying": "COIN"
+    },
+    "COLO": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "COM": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "COMB": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "CONI": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "CONL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "CONY": {
+      "provider": "YieldMax",
+      "underlying": "COIN"
+    },
+    "COPX": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "CORP": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "COST": {
+      "provider": null,
+      "underlying": "COST"
+    },
+    "COSW": {
+      "provider": "Roundhill Investments",
+      "underlying": "COST"
+    },
+    "COWG": {
+      "provider": "Pacer",
+      "underlying": null
+    },
+    "COWZ": {
+      "provider": "Pacer",
+      "underlying": null
+    },
+    "COYY": {
+      "provider": "GraniteShares",
+      "underlying": "COIN"
+    },
+    "CPXR": {
+      "provider": "USCF",
+      "underlying": null
+    },
+    "CQQQ": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "CRBN": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "CRCL": {
+      "provider": null,
+      "underlying": "CRCL"
+    },
+    "CRCO": {
+      "provider": "YieldMax",
+      "underlying": "CRCL"
+    },
+    "CRSH": {
+      "provider": "YieldMax",
+      "underlying": "TSLA"
+    },
+    "CRWD": {
+      "provider": null,
+      "underlying": "CRWD"
+    },
+    "CRWL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "CRWV": {
+      "provider": null,
+      "underlying": "CRWV"
+    },
+    "CRWW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "CRY": {
+      "provider": "GraniteShares",
+      "underlying": "CRCL"
+    },
+    "CSCL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "CSCS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "CSHI": {
+      "provider": "Neos",
+      "underlying": null
+    },
+    "CSM": {
+      "provider": "Proshares",
+      "underlying": null
+    },
+    "CTA": {
+      "provider": "Simplify",
+      "underlying": null
+    },
+    "CURE": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "CVNA": {
+      "provider": null,
+      "underlying": "CVNA"
+    },
+    "CVNX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "CVNY": {
+      "provider": "YieldMax",
+      "underlying": "CVNA"
+    },
+    "CWB": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "CWEB": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "CWI": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "CWII": {
+      "provider": "REX",
+      "underlying": "CRWV"
+    },
+    "CWY": {
+      "provider": "GraniteShares",
+      "underlying": "CRWD"
+    },
+    "DADS": {
+      "provider": "Digital",
+      "underlying": null
+    },
+    "DAPP": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "DARP": {
+      "provider": "Grizzle",
+      "underlying": null
+    },
+    "DAX": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "DBA": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "DBC": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "DBEF": {
+      "provider": "Xtrackers",
+      "underlying": null
+    },
+    "DBMF": {
+      "provider": "iMGP",
+      "underlying": null
+    },
+    "DCOR": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DDM": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "DDWM": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DEFI": {
+      "provider": "Hashdex",
+      "underlying": null
+    },
+    "DEM": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DES": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DFAC": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFAE": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFAI": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFAR": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFAS": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFAT": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFAU": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFAW": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFAX": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFCF": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFEM": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFEN": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "DFEV": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFGP": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFGR": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFGX": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFIC": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFIP": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFIS": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFIV": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFLV": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFNM": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFSD": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFSI": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFSU": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFSV": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFUS": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DFUV": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DGRO": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "DGRW": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DGS": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DHS": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DIA": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "DIHP": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DIPS": {
+      "provider": "YieldMax",
+      "underlying": "NVDA"
+    },
+    "DIS": {
+      "provider": null,
+      "underlying": "DIS"
+    },
+    "DISO": {
+      "provider": "YieldMax",
+      "underlying": "DIS"
+    },
+    "DISV": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DIV": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "DIVB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "DIVE": {
+      "provider": "Dana",
+      "underlying": null
+    },
+    "DIVI": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "DIVO": {
+      "provider": "Amplify",
+      "underlying": null
+    },
+    "DIVY": {
+      "provider": "Sound",
+      "underlying": null
+    },
+    "DJIA": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "DKNG": {
+      "provider": null,
+      "underlying": "DKNG"
+    },
+    "DKNW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "DKNX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "DLLL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "DLN": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DLS": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DOG": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "DOJE": {
+      "provider": "REX",
+      "underlying": null
+    },
+    "DON": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DPST": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "DRAY": {
+      "provider": "YieldMax",
+      "underlying": "DKNG"
+    },
+    "DRIP": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "DRIV": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "DRKY": {
+      "provider": "VistaShares",
+      "underlying": null
+    },
+    "DRN": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "DRNZ": {
+      "provider": "REX",
+      "underlying": null
+    },
+    "DRSK": {
+      "provider": "Aptus",
+      "underlying": null
+    },
+    "DRUP": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "DRV": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "DSI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "DSTL": {
+      "provider": "Distillate",
+      "underlying": null
+    },
+    "DTCR": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "DTD": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DUHP": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DUNK": {
+      "provider": "Dana",
+      "underlying": null
+    },
+    "DUSA": {
+      "provider": "Davis",
+      "underlying": null
+    },
+    "DUSB": {
+      "provider": "Dimensional",
+      "underlying": null
+    },
+    "DUSL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "DUST": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "DVDN": {
+      "provider": "Kingsbarn",
+      "underlying": null
+    },
+    "DVY": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "DVYE": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "DXJ": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "DYNF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EAGG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EAGL": {
+      "provider": "Eagle",
+      "underlying": null
+    },
+    "EBND": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "ECH": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EDC": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "EDIV": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "EDV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "EDZ": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "EEM": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EEMA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EEMV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EETH": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "EFA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EFAD": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "EFAV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EFG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EFIV": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "EFV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EGGQ": {
+      "provider": "NestYield",
+      "underlying": null
+    },
+    "EGGS": {
+      "provider": "NestYield",
+      "underlying": null
+    },
+    "EGGY": {
+      "provider": "NestYield",
+      "underlying": null
+    },
+    "EHLS": {
+      "provider": "Even",
+      "underlying": null
+    },
+    "EINC": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "EIPI": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "ELIL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "ELIS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "EMB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EMBD": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "EMBX": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "EMC": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "EMCS": {
+      "provider": "Xtrackers",
+      "underlying": null
+    },
+    "EMDV": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "EMGF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EMLC": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "EMLP": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "EMXC": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EPI": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "EPP": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EPS": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "EQTY": {
+      "provider": "Kovitz",
+      "underlying": null
+    },
+    "EQWL": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "ERX": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "ERY": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "ESGD": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ESGE": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ESGU": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ESGV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "ESK": {
+      "provider": "REX",
+      "underlying": null
+    },
+    "ESML": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ESPO": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "ETH": {
+      "provider": "Grayscale",
+      "underlying": null
+    },
+    "ETHA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ETHE": {
+      "provider": "Grayscale",
+      "underlying": null
+    },
+    "ETHER": {
+      "provider": null,
+      "underlying": "ETHER"
+    },
+    "ETHT": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "ETHU": {
+      "provider": "2x",
+      "underlying": null
+    },
+    "ETHV": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "ETRL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "EUAD": {
+      "provider": "Select",
+      "underlying": null
+    },
+    "EUDV": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "EUFN": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EURL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "EUSA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EVLN": {
+      "provider": "Eaton",
+      "underlying": null
+    },
+    "EVTR": {
+      "provider": "Eaton",
+      "underlying": null
+    },
+    "EVX": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "EWA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWC": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWJ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWL": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWP": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWS": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWU": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWW": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWY": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EWZ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EXI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "EZM": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "EZU": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "FALN": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "FAPR": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FAS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "FAUG": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FAZ": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "FBCG": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FBL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "FBND": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FBT": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FBTC": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FBY": {
+      "provider": "YieldMax",
+      "underlying": "META"
+    },
+    "FBYY": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "FCOM": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FCUS": {
+      "provider": "Pinnacle",
+      "underlying": null
+    },
+    "FDAT": {
+      "provider": "Tactical",
+      "underlying": null
+    },
+    "FDEC": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FDIS": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FDL": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FDLO": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FDN": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FDVV": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FEAT": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "FELC": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FELG": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FELV": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FENI": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FENY": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FEPI": {
+      "provider": "Rex",
+      "underlying": null
+    },
+    "FESM": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FETH": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FEX": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FEZ": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "FFEB": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FFLC": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FGD": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FHLC": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FIAT": {
+      "provider": "YieldMax",
+      "underlying": "COIN"
+    },
+    "FIAX": {
+      "provider": "Nicholas",
+      "underlying": null
+    },
+    "FIDU": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FINX": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "FIVY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "FIW": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FIXD": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FIXP": {
+      "provider": "FolioBeyond",
+      "underlying": null
+    },
+    "FJAN": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FJUL": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FJUN": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FLBL": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "FLCB": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "FLDR": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FLGB": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "FLGV": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "FLIN": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "FLJP": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "FLMI": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "FLOT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "FLQL": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "FLQM": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "FLRN": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "FLTR": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "FLXR": {
+      "provider": "TCW",
+      "underlying": null
+    },
+    "FMAR": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FMAY": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FMB": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FMDE": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FMHI": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FMKT": {
+      "provider": "Free",
+      "underlying": null
+    },
+    "FNCL": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FNDA": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "FNDB": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "FNDC": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "FNDE": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "FNDF": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "FNDX": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "FNGG": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "FNGU": {
+      "provider": "MicroSectors",
+      "underlying": null
+    },
+    "FNOV": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FNX": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FOCT": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FPE": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FPEI": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FPX": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FQAL": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FRDD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "FRDM": {
+      "provider": "Freedom",
+      "underlying": null
+    },
+    "FRDU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "FREL": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FSEC": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FSEP": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "FSIG": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FSMD": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FSTA": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FTA": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FTC": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FTCB": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FTCS": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FTEC": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FTGC": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FTGS": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FTHI": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FTLS": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FTSL": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FTSM": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FUTY": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FV": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FVAL": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "FVD": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FWD": {
+      "provider": "AB",
+      "underlying": null
+    },
+    "FXED": {
+      "provider": "Sound",
+      "underlying": null
+    },
+    "FXH": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FXI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "FXL": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FXO": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FXR": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FXU": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "FYX": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "GARP": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "GBIL": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GBTC": {
+      "provider": "Grayscale",
+      "underlying": null
+    },
+    "GCOW": {
+      "provider": "Pacer",
+      "underlying": null
+    },
+    "GDE": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "GDX": {
+      "provider": "VanEck",
+      "underlying": "GDX"
+    },
+    "GDXJ": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "GDXW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "GDXY": {
+      "provider": "YieldMax",
+      "underlying": "GDX"
+    },
+    "GEM": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GGLL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "GGLS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "GIAX": {
+      "provider": "Nicholas",
+      "underlying": null
+    },
+    "GLD": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "GLDM": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "GLDW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "GLDY": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "GLIN": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "GLL": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "GLOV": {
+      "provider": "Activebeta",
+      "underlying": null
+    },
+    "GLTR": {
+      "provider": "abrdn",
+      "underlying": null
+    },
+    "GME": {
+      "provider": null,
+      "underlying": "GME"
+    },
+    "GMEY": {
+      "provider": "YieldMax",
+      "underlying": "GME"
+    },
+    "GMMA": {
+      "provider": "GammaRoad",
+      "underlying": null
+    },
+    "GNR": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "GOEX": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "GOOGL": {
+      "provider": null,
+      "underlying": "GOOGL"
+    },
+    "GOOP": {
+      "provider": "Kurv",
+      "underlying": null
+    },
+    "GOOW": {
+      "provider": "Roundhill Investments",
+      "underlying": "GOOGL"
+    },
+    "GOOY": {
+      "provider": "YieldMax",
+      "underlying": "GOOGL"
+    },
+    "GOP": {
+      "provider": "Unusual",
+      "underlying": null
+    },
+    "GOVI": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "GOVT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "GPIQ": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GPIX": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GPTY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "GPZ": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "GREK": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "GRID": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "GRNB": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "GRNY": {
+      "provider": "Fundstrat",
+      "underlying": null
+    },
+    "GSEW": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GSG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "GSID": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GSIE": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GSLC": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GSPY": {
+      "provider": "Gotham",
+      "underlying": null
+    },
+    "GSST": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GSUS": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GSY": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "GTO": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "GUNR": {
+      "provider": "FlexShares",
+      "underlying": null
+    },
+    "GUSA": {
+      "provider": "Goldman Sachs",
+      "underlying": null
+    },
+    "GUSH": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "GVI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "GVLU": {
+      "provider": "Gotham",
+      "underlying": null
+    },
+    "GWX": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "GXIG": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "GXPT": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "HACK": {
+      "provider": "Amplify",
+      "underlying": null
+    },
+    "HAP": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "HAUS": {
+      "provider": "Residential",
+      "underlying": null
+    },
+    "HAUZ": {
+      "provider": "DBX",
+      "underlying": null
+    },
+    "HBDC": {
+      "provider": "Hilton",
+      "underlying": null
+    },
+    "HCMT": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "HDEF": {
+      "provider": "Xtrackers",
+      "underlying": null
+    },
+    "HDV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "HEDJ": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "HEFA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "HELO": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "HERO": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "HF": {
+      "provider": "DGA",
+      "underlying": null
+    },
+    "HFEQ": {
+      "provider": "Unlimited",
+      "underlying": null
+    },
+    "HFMF": {
+      "provider": "Unlimited",
+      "underlying": null
+    },
+    "HFND": {
+      "provider": "Unlimited",
+      "underlying": null
+    },
+    "HFSP": {
+      "provider": "TradersAI",
+      "underlying": null
+    },
+    "HFXI": {
+      "provider": "NYLI",
+      "underlying": null
+    },
+    "HGER": {
+      "provider": "Harbor",
+      "underlying": null
+    },
+    "HIBL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "HIBS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "HIMS": {
+      "provider": null,
+      "underlying": "HIMS"
+    },
+    "HIMU": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "HIMZ": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "HIPS": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "HIYY": {
+      "provider": "YieldMax",
+      "underlying": "HIMS"
+    },
+    "HMYY": {
+      "provider": "GraniteShares",
+      "underlying": "HIMS"
+    },
+    "HODL": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "HOII": {
+      "provider": "REX",
+      "underlying": "HOOD"
+    },
+    "HOMZ": {
+      "provider": "Hoya",
+      "underlying": null
+    },
+    "HOOD": {
+      "provider": null,
+      "underlying": "HOOD"
+    },
+    "HOOW": {
+      "provider": "Roundhill Investments",
+      "underlying": "HOOD"
+    },
+    "HOOX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "HOOY": {
+      "provider": "YieldMax",
+      "underlying": "HOOD"
+    },
+    "HOYY": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "HTRB": {
+      "provider": "Hartford",
+      "underlying": null
+    },
+    "HTUS": {
+      "provider": "Capitol",
+      "underlying": null
+    },
+    "HUMN": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "HYBI": {
+      "provider": "Neos Funds",
+      "underlying": null
+    },
+    "HYD": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "HYDB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "HYDR": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "HYEM": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "HYG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "HYGV": {
+      "provider": "FlexShares",
+      "underlying": null
+    },
+    "HYHG": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "HYLB": {
+      "provider": "Xtrackers",
+      "underlying": null
+    },
+    "HYLS": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "HYMB": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "HYS": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "IAGG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IAI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IAU": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IAUI": {
+      "provider": "Neos Funds",
+      "underlying": null
+    },
+    "IAUM": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBDQ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBDR": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBDS": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBDT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBDU": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBDV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBDW": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBDX": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBDY": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBHF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBIT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBTF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBTG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBTH": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBTI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IBTJ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ICF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ICLN": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ICOW": {
+      "provider": "Pacer",
+      "underlying": null
+    },
+    "ICSH": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ICVT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IDEV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IDMO": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "IDU": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IDV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IDVO": {
+      "provider": "Amplify",
+      "underlying": null
+    },
+    "IEF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IEFA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IEI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IEMG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IETC": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IEUR": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IEV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IFRA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IGEB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IGF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IGHG": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "IGIB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IGLB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IGLD": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "IGM": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IGOV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IGRO": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IGSB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IGV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IHAK": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IHDG": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "IHF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IHI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IJH": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IJJ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IJK": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IJR": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IJS": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IJT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ILCB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ILCG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ILCV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ILF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ILOW": {
+      "provider": "AB",
+      "underlying": null
+    },
+    "IMCB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IMCG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IMCV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IMTM": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "INCM": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "INDA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "INDL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "INFL": {
+      "provider": "Horizon",
+      "underlying": null
+    },
+    "INTF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "INTW": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "IONL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "IONX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "IONZ": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "IOO": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IOYY": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "IPAC": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IQDF": {
+      "provider": "FlexShares",
+      "underlying": null
+    },
+    "IQLT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IQQQ": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "IRE": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "IRET": {
+      "provider": "iREIT",
+      "underlying": null
+    },
+    "ISCG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ISPY": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "ISRA": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "ISTB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ISUL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "ITA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ITB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ITM": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "ITOT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "ITWO": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "IUSB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IUSG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IUSV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IVE": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IVES": {
+      "provider": "Dan",
+      "underlying": null
+    },
+    "IVLU": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IVOG": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "IVOO": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "IVOV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "IVV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IVW": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWC": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWD": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWL": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWM": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWMI": {
+      "provider": "Neos Funds",
+      "underlying": null
+    },
+    "IWMY": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "IWN": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWO": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWP": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWR": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWS": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWX": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IWY": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IXC": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IXJ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IXN": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IXP": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IXUS": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYC": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYE": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYH": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYJ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYK": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYR": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYRI": {
+      "provider": "Neos Funds",
+      "underlying": null
+    },
+    "IYW": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IYY": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "IZRL": {
+      "provider": "ARK ETF Trust",
+      "underlying": null
+    },
+    "JAAA": {
+      "provider": "Janus",
+      "underlying": null
+    },
+    "JAVA": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JBBB": {
+      "provider": "Janus",
+      "underlying": null
+    },
+    "JBND": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JCPB": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JCPI": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JDST": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "JEDI": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "JEMA": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JEPI": {
+      "provider": "J.P. Morgan",
+      "underlying": null
+    },
+    "JEPQ": {
+      "provider": "J.P. Morgan",
+      "underlying": null
+    },
+    "JETS": {
+      "provider": "U.S.",
+      "underlying": null
+    },
+    "JFLX": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JGLO": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JGRO": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JHMD": {
+      "provider": "John",
+      "underlying": null
+    },
+    "JHML": {
+      "provider": "John",
+      "underlying": null
+    },
+    "JHMM": {
+      "provider": "John",
+      "underlying": null
+    },
+    "JIRE": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JIVE": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JMBS": {
+      "provider": "Janus",
+      "underlying": null
+    },
+    "JMEE": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JMOM": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JMST": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JMTG": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JMUB": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JNK": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "JNUG": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "JOJO": {
+      "provider": "ATAC",
+      "underlying": null
+    },
+    "JPEF": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JPHY": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JPIB": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JPIE": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JPLD": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JPM": {
+      "provider": null,
+      "underlying": "JPM"
+    },
+    "JPO": {
+      "provider": "YieldMax",
+      "underlying": "JPM"
+    },
+    "JPST": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JPX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "JQUA": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JSCP": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "JSI": {
+      "provider": "Janus",
+      "underlying": null
+    },
+    "JSTC": {
+      "provider": "Adasina",
+      "underlying": null
+    },
+    "JTEK": {
+      "provider": "JPMorgan",
+      "underlying": null
+    },
+    "KAT": {
+      "provider": "Scharf",
+      "underlying": null
+    },
+    "KBE": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "KBWB": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "KDRN": {
+      "provider": "Kingsbarn",
+      "underlying": null
+    },
+    "KGLD": {
+      "provider": "Kurv",
+      "underlying": null
+    },
+    "KLMN": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "KLMT": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "KNG": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "KOLD": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "KOMP": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "KORU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "KQQQ": {
+      "provider": "Kurv",
+      "underlying": null
+    },
+    "KRE": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "KRMA": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "KWEB": {
+      "provider": "KraneShares",
+      "underlying": null
+    },
+    "KXI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "LABD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "LABU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "LBAY": {
+      "provider": "Leatherback",
+      "underlying": null
+    },
+    "LCDL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "LCTU": {
+      "provider": "BlackRock",
+      "underlying": null
+    },
+    "LDUR": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "LFGY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "LGLV": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "LIT": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "LLII": {
+      "provider": "REX",
+      "underlying": "LLY"
+    },
+    "LLY": {
+      "provider": null,
+      "underlying": "LLY"
+    },
+    "LLYX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "LLYZ": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "LMBO": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "LMBS": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "LMNX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "LMTL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "LMTS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "LMTW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "LOGO": {
+      "provider": "Tidal",
+      "underlying": null
+    },
+    "LQD": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "LQPE": {
+      "provider": "PEO",
+      "underlying": null
+    },
+    "LRGF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "LVHI": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "MAAY": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "MAGC": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "MAGS": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "MAGX": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "MAGY": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "MARA": {
+      "provider": null,
+      "underlying": "MARA"
+    },
+    "MARO": {
+      "provider": "YieldMax",
+      "underlying": "MARA"
+    },
+    "MBB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "MCHI": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "MDST": {
+      "provider": "Westwood",
+      "underlying": null
+    },
+    "MDY": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "MDYG": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "MDYV": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "MEAR": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "MEME": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "META": {
+      "provider": null,
+      "underlying": "META"
+    },
+    "METD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "METU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "METV": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "METW": {
+      "provider": "Roundhill Investments",
+      "underlying": "META"
+    },
+    "MEXX": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "MFUT": {
+      "provider": "Cambria",
+      "underlying": null
+    },
+    "MGC": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "MGK": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "MGV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "MIDU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "MILN": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "MINT": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "MINY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "MLN": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "MLPA": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "MLPX": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "MMIT": {
+      "provider": "NYLI",
+      "underlying": null
+    },
+    "MOAT": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "MOO": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "MORT": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "MOTI": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "MPL": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "MRAL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "MRNA": {
+      "provider": null,
+      "underlying": "MRNA"
+    },
+    "MRNY": {
+      "provider": "YieldMax",
+      "underlying": "MRNA"
+    },
+    "MSDD": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "MSFD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "MSFL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "MSFO": {
+      "provider": "YieldMax",
+      "underlying": "MSFT"
+    },
+    "MSFT": {
+      "provider": null,
+      "underlying": "MSFT"
+    },
+    "MSFU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "MSFW": {
+      "provider": "Roundhill Investments",
+      "underlying": "MSFT"
+    },
+    "MSFY": {
+      "provider": "Kurv",
+      "underlying": null
+    },
+    "MSII": {
+      "provider": "Rex",
+      "underlying": "MSTR"
+    },
+    "MSLC": {
+      "provider": "Morgan",
+      "underlying": null
+    },
+    "MSOS": {
+      "provider": "AdvisorShares",
+      "underlying": null
+    },
+    "MSST": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "MST": {
+      "provider": "Defiance",
+      "underlying": "MSTR"
+    },
+    "MSTP": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "MSTR": {
+      "provider": null,
+      "underlying": "MSTR"
+    },
+    "MSTU": {
+      "provider": "T-Rex",
+      "underlying": null
+    },
+    "MSTW": {
+      "provider": "Roundhill Investments",
+      "underlying": "MSTR"
+    },
+    "MSTX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "MSTY": {
+      "provider": "YieldMax",
+      "underlying": "MSTR"
+    },
+    "MTBA": {
+      "provider": "Simplify",
+      "underlying": null
+    },
+    "MTUM": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "MTYY": {
+      "provider": "GraniteShares",
+      "underlying": "MSTR"
+    },
+    "MU": {
+      "provider": null,
+      "underlying": "MU"
+    },
+    "MUB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "MUD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "MULL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "MUNI": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "MUU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "MUYY": {
+      "provider": "GraniteShares",
+      "underlying": "MU"
+    },
+    "MVLL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "MVV": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "NACP": {
+      "provider": "Tidal",
+      "underlying": null
+    },
+    "NAIL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "NANC": {
+      "provider": "Unusual",
+      "underlying": null
+    },
+    "NBIL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "NEAR": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "NERD": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "NFLP": {
+      "provider": "Kurv",
+      "underlying": null
+    },
+    "NFLW": {
+      "provider": "Roundhill Investments",
+      "underlying": "NFLX"
+    },
+    "NFLX": {
+      "provider": null,
+      "underlying": "NFLX"
+    },
+    "NFLY": {
+      "provider": "YieldMax",
+      "underlying": "NFLX"
+    },
+    "NFRA": {
+      "provider": "FlexShares",
+      "underlying": null
+    },
+    "NFXL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "NFXS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "NLR": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "NMBL": {
+      "provider": "NovaTide",
+      "underlying": null
+    },
+    "NOBL": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "NODE": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "NOWL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "NRSH": {
+      "provider": "Aztlan",
+      "underlying": null
+    },
+    "NTSX": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "NUGO": {
+      "provider": "Nuveen",
+      "underlying": null
+    },
+    "NUGT": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "NUKZ": {
+      "provider": "Range",
+      "underlying": null
+    },
+    "NULG": {
+      "provider": "Nuveen",
+      "underlying": null
+    },
+    "NULV": {
+      "provider": "Nuveen",
+      "underlying": null
+    },
+    "NUSC": {
+      "provider": "Nuveen",
+      "underlying": null
+    },
+    "NVD": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "NVDA": {
+      "provider": null,
+      "underlying": "NVDA"
+    },
+    "NVDD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "NVDL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "NVDU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "NVDW": {
+      "provider": "Roundhill Investments",
+      "underlying": "NVDA"
+    },
+    "NVDY": {
+      "provider": "YieldMax",
+      "underlying": "NVDA"
+    },
+    "NVII": {
+      "provider": "Rex",
+      "underlying": "NVDA"
+    },
+    "NVIT": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "NVOX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "NVYY": {
+      "provider": "GraniteShares",
+      "underlying": "NVDA"
+    },
+    "NYF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "OARK": {
+      "provider": "YieldMax",
+      "underlying": "ARKK"
+    },
+    "OEF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "OIH": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "OKLL": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "OMAH": {
+      "provider": "VistaShares",
+      "underlying": null
+    },
+    "OMFL": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "ONEQ": {
+      "provider": "Fidelity",
+      "underlying": null
+    },
+    "ONEY": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "ONOF": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "ORCX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "OSCX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "OUNZ": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "OUSA": {
+      "provider": "ALPS",
+      "underlying": null
+    },
+    "OUSM": {
+      "provider": "ALPS",
+      "underlying": null
+    },
+    "OZEM": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "PAAA": {
+      "provider": "PGIM",
+      "underlying": null
+    },
+    "PABU": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "PALD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "PALL": {
+      "provider": "abrdn",
+      "underlying": null
+    },
+    "PALU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "PAPR": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "PAUG": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "PAVE": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "PBUS": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PCEF": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PCRB": {
+      "provider": "Putnam",
+      "underlying": null
+    },
+    "PCY": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PDBC": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PDDL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "PDEC": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "PDP": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PEY": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PFEB": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "PFF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "PFFA": {
+      "provider": "Virtus",
+      "underlying": null
+    },
+    "PFFD": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "PFFV": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "PFXF": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "PGF": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PGX": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PHO": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PICK": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "PID": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PIEQ": {
+      "provider": "Principal",
+      "underlying": null
+    },
+    "PILL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "PIT": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "PJAN": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "PJUL": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "PKW": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PLDR": {
+      "provider": "Putnam",
+      "underlying": null
+    },
+    "PLTD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "PLTI": {
+      "provider": "REX",
+      "underlying": "PLTR"
+    },
+    "PLTM": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "PLTR": {
+      "provider": null,
+      "underlying": "PLTR"
+    },
+    "PLTU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "PLTW": {
+      "provider": "Roundhill Investments",
+      "underlying": "PLTR"
+    },
+    "PLTY": {
+      "provider": "YieldMax",
+      "underlying": "PLTR"
+    },
+    "PLTZ": {
+      "provider": "Defiance",
+      "underlying": "PLTR"
+    },
+    "PLYY": {
+      "provider": "GraniteShares",
+      "underlying": "PLTR"
+    },
+    "PMBS": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "PNQI": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "POCT": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "POW": {
+      "provider": "VistaShares",
+      "underlying": null
+    },
+    "PPA": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PPH": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "PPLT": {
+      "provider": "abrdn",
+      "underlying": null
+    },
+    "PREF": {
+      "provider": "Principal",
+      "underlying": null
+    },
+    "PRF": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PRFZ": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PRNT": {
+      "provider": "ARK ETF Trust",
+      "underlying": null
+    },
+    "PSC": {
+      "provider": "Principal",
+      "underlying": null
+    },
+    "PSEP": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "PSI": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PSK": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "PSQ": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "PTIR": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "PTLC": {
+      "provider": "Pacer",
+      "underlying": null
+    },
+    "PTNQ": {
+      "provider": "Pacer",
+      "underlying": null
+    },
+    "PULS": {
+      "provider": "PGIM",
+      "underlying": null
+    },
+    "PVAL": {
+      "provider": "Putnam",
+      "underlying": null
+    },
+    "PWB": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PWV": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PWZ": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PXF": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PXH": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "PYLD": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "PYPL": {
+      "provider": null,
+      "underlying": "PYPL"
+    },
+    "PYPY": {
+      "provider": "YieldMax",
+      "underlying": "PYPL"
+    },
+    "PZA": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "QAI": {
+      "provider": "NYLI",
+      "underlying": null
+    },
+    "QBIG": {
+      "provider": "invesco",
+      "underlying": null
+    },
+    "QBTS": {
+      "provider": null,
+      "underlying": "QBTS"
+    },
+    "QBTZ": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "QBY": {
+      "provider": "GraniteShares",
+      "underlying": "QBTS"
+    },
+    "QCMD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "QCML": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "QCMU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "QDF": {
+      "provider": "FlexShares",
+      "underlying": null
+    },
+    "QDPL": {
+      "provider": "Pacer",
+      "underlying": null
+    },
+    "QDTE": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "QDTY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "QDVO": {
+      "provider": "Amplify",
+      "underlying": null
+    },
+    "QEFA": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "QGRO": {
+      "provider": "American",
+      "underlying": null
+    },
+    "QGRW": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "QID": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "QLD": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "QLDY": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "QLTA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "QLTY": {
+      "provider": "GMO",
+      "underlying": null
+    },
+    "QPUX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "QQEW": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "QQQ": {
+      "provider": "Invesco",
+      "underlying": "QQQ"
+    },
+    "QQQD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "QQQE": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "QQQH": {
+      "provider": "Neos Funds",
+      "underlying": null
+    },
+    "QQQI": {
+      "provider": "Neos Funds",
+      "underlying": null
+    },
+    "QQQM": {
+      "provider": "invesco",
+      "underlying": "QQQ"
+    },
+    "QQQT": {
+      "provider": "Defiance",
+      "underlying": "QQQ"
+    },
+    "QQQU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "QQQY": {
+      "provider": "Defiance",
+      "underlying": "QQQ"
+    },
+    "QQUP": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "QQXL": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "QQXT": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "QSU": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "QTEC": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "QTOP": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "QTUM": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "QUAL": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "QUS": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "QUSA": {
+      "provider": "VistaShares",
+      "underlying": null
+    },
+    "QVML": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "QVOY": {
+      "provider": "Q3",
+      "underlying": null
+    },
+    "QYLD": {
+      "provider": "Global X",
+      "underlying": null
+    },
+    "QYLG": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "RAAX": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "RAVI": {
+      "provider": "FlexShares",
+      "underlying": null
+    },
+    "RBLY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "RDDW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "RDIV": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "RDTE": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "RDTL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "RDTY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "RDVI": {
+      "provider": "FT",
+      "underlying": null
+    },
+    "RDVY": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "RDYY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "REAI": {
+      "provider": "Intelligent",
+      "underlying": null
+    },
+    "RECS": {
+      "provider": "Columbia",
+      "underlying": null
+    },
+    "REET": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "REGL": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "REKT": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "REMX": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "RETL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "REZ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "RGEF": {
+      "provider": "Rockefeller",
+      "underlying": null
+    },
+    "RGTI": {
+      "provider": null,
+      "underlying": "RGTI"
+    },
+    "RGTX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "RGTZ": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "RGYY": {
+      "provider": "GraniteShares",
+      "underlying": "RGTI"
+    },
+    "RING": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "RIOT": {
+      "provider": null,
+      "underlying": "RIOT"
+    },
+    "RIOX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "RISR": {
+      "provider": "FolioBeyond",
+      "underlying": null
+    },
+    "RKLX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "RMCA": {
+      "provider": "Rockefeller",
+      "underlying": null
+    },
+    "RMNY": {
+      "provider": "Rockefeller",
+      "underlying": null
+    },
+    "RMOP": {
+      "provider": "Rockefeller",
+      "underlying": null
+    },
+    "RNTY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "RODM": {
+      "provider": "Hartford",
+      "underlying": null
+    },
+    "ROM": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "RORO": {
+      "provider": "ATAC",
+      "underlying": null
+    },
+    "RPG": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "RPV": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "RSBA": {
+      "provider": "Return",
+      "underlying": null
+    },
+    "RSBT": {
+      "provider": "Return",
+      "underlying": null
+    },
+    "RSBY": {
+      "provider": "Return",
+      "underlying": null
+    },
+    "RSMC": {
+      "provider": "Rockefeller",
+      "underlying": null
+    },
+    "RSP": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "RSPT": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "RSSB": {
+      "provider": "Return",
+      "underlying": null
+    },
+    "RSSL": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "RSST": {
+      "provider": "Return",
+      "underlying": null
+    },
+    "RSSX": {
+      "provider": "Return",
+      "underlying": null
+    },
+    "RSSY": {
+      "provider": "Return",
+      "underlying": null
+    },
+    "RTH": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "RTYY": {
+      "provider": "GraniteShares",
+      "underlying": "RIOT"
+    },
+    "RVNL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "RWJ": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "RWK": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "RWL": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "RWM": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "RWO": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "RWR": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "RYLD": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "SAEF": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SBIL": {
+      "provider": "Simplify",
+      "underlying": null
+    },
+    "SCCR": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHA": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHB": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHC": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHD": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHE": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHF": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHG": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHH": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHI": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHJ": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHK": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHM": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHO": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHP": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHQ": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHR": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHV": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHX": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHY": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCHZ": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCLS": {
+      "provider": "Stoneport",
+      "underlying": null
+    },
+    "SCMB": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCO": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "SCUS": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCYB": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SCZ": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SDIV": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "SDOG": {
+      "provider": "ALPS",
+      "underlying": null
+    },
+    "SDOW": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "SDS": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "SDTY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "SDVY": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "SDY": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SECT": {
+      "provider": "Main",
+      "underlying": null
+    },
+    "SEIM": {
+      "provider": "SEI",
+      "underlying": null
+    },
+    "SEIV": {
+      "provider": "SEI",
+      "underlying": null
+    },
+    "SFLR": {
+      "provider": "Innovator",
+      "underlying": null
+    },
+    "SFY": {
+      "provider": "SoFi",
+      "underlying": null
+    },
+    "SFYF": {
+      "provider": "SoFi",
+      "underlying": null
+    },
+    "SFYX": {
+      "provider": "SoFi",
+      "underlying": null
+    },
+    "SGOL": {
+      "provider": "abrdn",
+      "underlying": null
+    },
+    "SGOV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SGRT": {
+      "provider": "SMART",
+      "underlying": null
+    },
+    "SGVT": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SH": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "SHLD": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "SHM": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SHNY": {
+      "provider": "MicroSectors",
+      "underlying": null
+    },
+    "SHOW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "SHPD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "SHPU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "SHRT": {
+      "provider": "Gotham",
+      "underlying": null
+    },
+    "SHV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SHY": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SHYD": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "SHYG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SIL": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "SILJ": {
+      "provider": "Amplify",
+      "underlying": null
+    },
+    "SIVR": {
+      "provider": "abrdn",
+      "underlying": null
+    },
+    "SIXG": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "SJNK": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SKYY": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "SLQD": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SLTY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "SLV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SLX": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "SLYG": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SLYV": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SMB": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "SMBS": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "SMCI": {
+      "provider": null,
+      "underlying": "SMCI"
+    },
+    "SMCL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "SMCO": {
+      "provider": "Hilton",
+      "underlying": null
+    },
+    "SMCX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "SMCY": {
+      "provider": "YieldMax",
+      "underlying": "SMCI"
+    },
+    "SMCZ": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "SMDV": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "SMH": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "SMHX": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "SMIG": {
+      "provider": "Bahl",
+      "underlying": null
+    },
+    "SMIN": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SMLF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SMMD": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SMMU": {
+      "provider": "PIMCO",
+      "underlying": null
+    },
+    "SMOG": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "SMOT": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "SMST": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "SMTH": {
+      "provider": "ALPS/SMITH",
+      "underlying": null
+    },
+    "SMYY": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "SNOW": {
+      "provider": null,
+      "underlying": "SNOW"
+    },
+    "SNOY": {
+      "provider": "YieldMax",
+      "underlying": "SNOW"
+    },
+    "SNPE": {
+      "provider": "Xtrackers",
+      "underlying": null
+    },
+    "SNSR": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "SNTH": {
+      "provider": "MRP",
+      "underlying": null
+    },
+    "SOCL": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "SOFX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "SOUX": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "SOXL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "SOXS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "SOXX": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SOXY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "SPAB": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPBO": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPDN": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "SPDW": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPEM": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPFF": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "SPGM": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPGP": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "SPHD": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "SPHQ": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "SPHY": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPIB": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPIP": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPLB": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPLV": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "SPMB": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPMD": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPMO": {
+      "provider": "invesco",
+      "underlying": null
+    },
+    "SPRE": {
+      "provider": "SP",
+      "underlying": null
+    },
+    "SPSB": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPSK": {
+      "provider": "SP",
+      "underlying": null
+    },
+    "SPSM": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPTI": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPTL": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPTM": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPTS": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPUS": {
+      "provider": "SP",
+      "underlying": null
+    },
+    "SPUU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "SPXL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "SPXM": {
+      "provider": "Azoria",
+      "underlying": null
+    },
+    "SPXS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "SPXT": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "SPXU": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "SPY": {
+      "provider": "SPDR",
+      "underlying": "SPY"
+    },
+    "SPYD": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPYG": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPYH": {
+      "provider": "Neos Funds",
+      "underlying": "SPY"
+    },
+    "SPYI": {
+      "provider": "Neos Funds",
+      "underlying": "SPY"
+    },
+    "SPYM": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPYT": {
+      "provider": "Defiance",
+      "underlying": "SPY"
+    },
+    "SPYV": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SPYX": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SQQQ": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "SRET": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "SRLN": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "SSK": {
+      "provider": "REX",
+      "underlying": null
+    },
+    "SSO": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "STCE": {
+      "provider": "Schwab",
+      "underlying": null
+    },
+    "STIP": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "STRN": {
+      "provider": "SMART",
+      "underlying": null
+    },
+    "STRV": {
+      "provider": "Strive",
+      "underlying": null
+    },
+    "SUB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SUSA": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SUSB": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SUSC": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SUSL": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "SVXY": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "SYFI": {
+      "provider": "AB",
+      "underlying": null
+    },
+    "SYLD": {
+      "provider": "Cambria",
+      "underlying": null
+    },
+    "TAFI": {
+      "provider": "AB",
+      "underlying": null
+    },
+    "TAGG": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "TAN": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "TBIL": {
+      "provider": "US",
+      "underlying": null
+    },
+    "TBLL": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "TBT": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "TBXU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TCAF": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "TCHP": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "TDAQ": {
+      "provider": "TappAlpha",
+      "underlying": null
+    },
+    "TDIV": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "TDTF": {
+      "provider": "FlexShares",
+      "underlying": null
+    },
+    "TDTT": {
+      "provider": "FlexShares",
+      "underlying": null
+    },
+    "TDV": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "TDVG": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "TECL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TECS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TEST": {
+      "provider": "YieldMax",
+      "underlying": "TSLA"
+    },
+    "TEXU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TFI": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "TFLO": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "TFPN": {
+      "provider": "Blueprint",
+      "underlying": null
+    },
+    "TGRT": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "TGRW": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "THRO": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "THTA": {
+      "provider": "SoFi",
+      "underlying": null
+    },
+    "THYF": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "TILT": {
+      "provider": "FlexShares",
+      "underlying": null
+    },
+    "TIME": {
+      "provider": "Clockwise",
+      "underlying": null
+    },
+    "TIP": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "TIPX": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "TLH": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "TLT": {
+      "provider": "iShares",
+      "underlying": "TLT"
+    },
+    "TLTI": {
+      "provider": "Neos Funds",
+      "underlying": null
+    },
+    "TLTW": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "TMDV": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "TMF": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TMFC": {
+      "provider": "Motley",
+      "underlying": null
+    },
+    "TMSL": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "TMV": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TMYY": {
+      "provider": "GraniteShares",
+      "underlying": "TSM"
+    },
+    "TNA": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TOLZ": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "TOPT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "TOPW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "TOTL": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "TOUS": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "TPAY": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "TPOR": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TQQQ": {
+      "provider": "ProSares",
+      "underlying": null
+    },
+    "TQQY": {
+      "provider": "GraniteShares",
+      "underlying": "QQQ"
+    },
+    "TRIL": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "TSDD": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "TSII": {
+      "provider": "Rex",
+      "underlying": "TSLA"
+    },
+    "TSL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "TSLA": {
+      "provider": null,
+      "underlying": "TSLA"
+    },
+    "TSLL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TSLP": {
+      "provider": "Kurv",
+      "underlying": null
+    },
+    "TSLR": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "TSLS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TSLW": {
+      "provider": "Roundhill Investments",
+      "underlying": "TSLA"
+    },
+    "TSLY": {
+      "provider": "YieldMax",
+      "underlying": "TSLA"
+    },
+    "TSM": {
+      "provider": null,
+      "underlying": "TSM"
+    },
+    "TSMU": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "TSMW": {
+      "provider": "Roundhill Investments",
+      "underlying": "TSM"
+    },
+    "TSMX": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TSMY": {
+      "provider": "YieldMax",
+      "underlying": "TSM"
+    },
+    "TSMZ": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TSPA": {
+      "provider": "T.",
+      "underlying": null
+    },
+    "TSPY": {
+      "provider": "TappAlpha",
+      "underlying": "SPY"
+    },
+    "TSXD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TSXU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TSYW": {
+      "provider": null,
+      "underlying": "TLT"
+    },
+    "TSYY": {
+      "provider": "GraniteShares",
+      "underlying": "TSLA"
+    },
+    "TTXD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TTXU": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TYD": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TYLG": {
+      "provider": "Global X",
+      "underlying": null
+    },
+    "TYO": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "TZA": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "UBEW": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "UBND": {
+      "provider": "VictoryShares",
+      "underlying": null
+    },
+    "UBOT": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "UBRL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "UBT": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "UCO": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "UCON": {
+      "provider": "First Trust",
+      "underlying": null
+    },
+    "UDOW": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "UGL": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "UITB": {
+      "provider": "VictoryShares",
+      "underlying": null
+    },
+    "ULTI": {
+      "provider": "REX",
+      "underlying": null
+    },
+    "ULTY": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "UNH": {
+      "provider": null,
+      "underlying": "UNH"
+    },
+    "UNHW": {
+      "provider": "Roundhill Investments",
+      "underlying": "UNH"
+    },
+    "UNIY": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "UPRO": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "URA": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "URAA": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "URNM": {
+      "provider": "Sprott",
+      "underlying": null
+    },
+    "URTH": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "URTY": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "USCA": {
+      "provider": "Xtrackers",
+      "underlying": null
+    },
+    "USCL": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "USD": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "USFR": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "USHY": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "USIG": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "USMC": {
+      "provider": "Principal",
+      "underlying": null
+    },
+    "USMV": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "USO": {
+      "provider": "United",
+      "underlying": null
+    },
+    "USOY": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "USPX": {
+      "provider": "Franklin",
+      "underlying": null
+    },
+    "USRT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "USTB": {
+      "provider": "VictoryShares",
+      "underlying": null
+    },
+    "USVM": {
+      "provider": "VictoryShares",
+      "underlying": null
+    },
+    "USXF": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "UTES": {
+      "provider": "Virtus",
+      "underlying": null
+    },
+    "UTSL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "UVXY": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "UWM": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "UX": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "UXRP": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "UYG": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "UYLD": {
+      "provider": "Angel",
+      "underlying": null
+    },
+    "VAW": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VB": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VBIL": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VBK": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VBR": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VCEB": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VCIT": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VCLT": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VCR": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VCRB": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VCSH": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VDC": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VDE": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VEA": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VETZ": {
+      "provider": "Academy",
+      "underlying": null
+    },
+    "VEU": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VFH": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VFLO": {
+      "provider": "VictoryShares",
+      "underlying": null
+    },
+    "VFMO": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VGIT": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VGK": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VGLT": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VGSH": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VGT": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VHT": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VIG": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VIGI": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VIOG": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VIOO": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VIOV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VIS": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VIXI": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "VIXY": {
+      "provider": "ProShares",
+      "underlying": null
+    },
+    "VLUE": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "VMBS": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VNLA": {
+      "provider": "Janus",
+      "underlying": null
+    },
+    "VNM": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "VNQ": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VNQI": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VO": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VOE": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VONE": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VONG": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VONV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VOO": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VOOG": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VOOV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VOT": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VOTE": {
+      "provider": "TCW",
+      "underlying": null
+    },
+    "VOX": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VPL": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VPLS": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VPU": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VRIG": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "VRP": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "VRTL": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "VSGX": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VSS": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VSTL": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "VT": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTC": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTEB": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTEC": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTEI": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTES": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTHR": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTI": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTIP": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTWG": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTWO": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VTWV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VUG": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VUSB": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VV": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VWO": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VWOB": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VXF": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VXUS": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VYM": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "VYMI": {
+      "provider": "Vanguard",
+      "underlying": null
+    },
+    "WANT": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "WDTE": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "WEBL": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "WEBS": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "WEED": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "WEEI": {
+      "provider": "Westwood",
+      "underlying": null
+    },
+    "WEEK": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "WEEL": {
+      "provider": "Peerless",
+      "underlying": null
+    },
+    "WINN": {
+      "provider": "Harbor",
+      "underlying": null
+    },
+    "WMT": {
+      "provider": null,
+      "underlying": "WMT"
+    },
+    "WMTI": {
+      "provider": "REX",
+      "underlying": "WMT"
+    },
+    "WNTR": {
+      "provider": "YieldMax",
+      "underlying": "MSTR"
+    },
+    "WOMN": {
+      "provider": "Impact",
+      "underlying": null
+    },
+    "WTV": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "XAR": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XBI": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XBIL": {
+      "provider": "US",
+      "underlying": null
+    },
+    "XBTY": {
+      "provider": "GraniteShares",
+      "underlying": null
+    },
+    "XCEM": {
+      "provider": "Columbia",
+      "underlying": null
+    },
+    "XDIV": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "XDTE": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "XEY": {
+      "provider": "GraniteShares",
+      "underlying": "ETHER"
+    },
+    "XHB": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XHLF": {
+      "provider": "BondBloxx",
+      "underlying": null
+    },
+    "XLB": {
+      "provider": "Materials",
+      "underlying": null
+    },
+    "XLC": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLE": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLF": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLG": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "XLI": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLK": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLP": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLRE": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLSR": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLU": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLV": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XLY": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XMAG": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "XME": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XMHQ": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "XMLV": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "XMMO": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "XMPT": {
+      "provider": "VanEck",
+      "underlying": null
+    },
+    "XNTK": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XOM": {
+      "provider": null,
+      "underlying": "XOM"
+    },
+    "XOMO": {
+      "provider": "YieldMax",
+      "underlying": "XOM"
+    },
+    "XOMW": {
+      "provider": "Roundhill Investments",
+      "underlying": "XOM"
+    },
+    "XOMX": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "XOMZ": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "XOP": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XPAY": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "XPM": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "XRPR": {
+      "provider": "REX",
+      "underlying": null
+    },
+    "XSD": {
+      "provider": "SPDR",
+      "underlying": null
+    },
+    "XSMO": {
+      "provider": "Invesco",
+      "underlying": null
+    },
+    "XSOE": {
+      "provider": "WisdomTree",
+      "underlying": null
+    },
+    "XT": {
+      "provider": "iShares",
+      "underlying": null
+    },
+    "XTEN": {
+      "provider": "BondBloxx",
+      "underlying": null
+    },
+    "XVOL": {
+      "provider": "Acruence",
+      "underlying": null
+    },
+    "XYLD": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "XYZ": {
+      "provider": null,
+      "underlying": "XYZ"
+    },
+    "XYZY": {
+      "provider": "YieldMax",
+      "underlying": "XYZ"
+    },
+    "YALL": {
+      "provider": "Tidal",
+      "underlying": null
+    },
+    "YANG": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "YBIT": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "YBMN": {
+      "provider": "Defiance",
+      "underlying": null
+    },
+    "YBTC": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "YEAR": {
+      "provider": "AB",
+      "underlying": null
+    },
+    "YETH": {
+      "provider": "Roundhill Investments",
+      "underlying": null
+    },
+    "YINN": {
+      "provider": "Direxion",
+      "underlying": null
+    },
+    "YMAG": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "YMAX": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "YQQQ": {
+      "provider": "YieldMax",
+      "underlying": null
+    },
+    "YSPY": {
+      "provider": "GraniteShares",
+      "underlying": "SPY"
+    },
+    "ZAP": {
+      "provider": "Global",
+      "underlying": null
+    },
+    "ZHDG": {
+      "provider": "Zega",
+      "underlying": null
+    },
+    "ZROZ": {
+      "provider": "PIMCO",
+      "underlying": null
+    }
+  }
+}

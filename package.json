@@ -15,6 +15,7 @@
         "discover:us-dividends": "python scripts/utils/discover_us_dividend_stocks.py",
         "register:us-dividends": "python scripts/utils/export_us_dividend_catalog.py",
         "export:security-insights": "python scripts/utils/export_security_insights.py",
+        "export:portfolio-classifications": "node scripts/utils/export_portfolio_classifications.mjs",
         "collect:security-insights": "python scripts/utils/collect_security_insights.py",
         "collect:us-data": "python scripts/utils/run_us_collection.py",
         "backfill-market-cap": "python scripts/data_pipeline/backfill_market_cap_approximate.py",

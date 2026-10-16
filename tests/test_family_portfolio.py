@@ -327,7 +327,7 @@ class FamilyApiTest(unittest.TestCase):
         with patch.object(api, 'database', side_effect=api.ResourceExhausted('Quota exceeded.')):
             response = self.get('')
         self.assertEqual(response.status_code, 429)
-        self.assertEqual(response.json['code'], 'DATA_QUOTA_EXCEEDED')
+        self.assertEqual(response.json['code'], 'DATA_RESOURCE_EXHAUSTED')
         self.assertNotIn('accounts', response.json)
         self.assertIn('기존 계좌와 거래내역은 유지됩니다', response.json['error'])
 

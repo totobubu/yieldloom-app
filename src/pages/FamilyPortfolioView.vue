@@ -105,6 +105,7 @@
         )
     );
     const capital = ref({ entries: [], classifications: [], allocations: [] });
+    const capitalCollapsed = ref(true);
     const capitalLoading = ref(false),
         capitalError = ref(''),
         fundingEntry = ref(null),
@@ -112,7 +113,7 @@
         fundingMessage = ref('');
     let capitalGeneration = 0,
         capitalScope = '';
-    async function loadCapital() {
+    async function loadCapital({ force = false } = {}) {
         const nextScope = `${firebaseUser.value?.uid}:${selectedAccount.value}`;
         if (capitalLoading.value && nextScope === capitalScope) return;
         const user = firebaseUser.value,
@@ -128,7 +129,12 @@
             capitalScope = scope;
         }
         capitalError.value = '';
-        if (!user || !accountId) {
+        if (
+            !user ||
+            !accountId ||
+            (!fundingDialog.value &&
+                (capitalCollapsed.value || portfolioTab.value !== 'overview'))
+        ) {
             capitalLoading.value = false;
             return;
         }
@@ -137,7 +143,8 @@
             const state = await portfolioCapitalRequest(
                 user,
                 undefined,
-                accountId
+                accountId,
+                { force }
             );
             if (generation === capitalGeneration) capital.value = state;
         } catch (reason) {
@@ -148,7 +155,7 @@
         }
     }
     watch(
-        [selectedAccount, firebaseUser],
+        [selectedAccount, firebaseUser, capitalCollapsed, portfolioTab],
         () => {
             fundingEntry.value = null;
             fundingDialog.value = false;
@@ -165,6 +172,7 @@
         fundingMessage.value = '';
         await nextTick();
         fundingDialog.value = true;
+        await loadCapital();
     }
     async function fundingSaved() {
         await loadCapital();
@@ -353,7 +361,7 @@
             )
                 selectedAccount.value = visibleAccounts.value[0]?.id || '';
             accountsState.value = 'ready';
-            await loadCapital();
+            await loadCapital({ force: true });
         } catch (reason) {
             if (firebaseUser.value?.uid !== requestedUid) return;
             accountsState.value = 'error';
@@ -787,47 +795,52 @@
                         v-if="space"
                         header="원금 회수 · 자금 상세"
                         toggleable
-                        collapsed
+                        v-model:collapsed="capitalCollapsed"
                         class="capital-details">
-                        <AccountRecoveryOverview
-                            :user="firebaseUser"
-                            :accounts="visibleAccounts"
-                            :refresh-state="capital" />
-                        <section
-                            v-if="activeAccount"
-                            aria-label="회수 현황 계좌 선택">
-                            <label
-                                >회수 현황을 볼 계좌
-                                <Select
-                                    v-model="selectedAccount"
-                                    :disabled="busy"
-                                    :options="
-                                        visibleAccounts.map((a) => ({
-                                            label: `${ownerName(a.ownerId)} / ${a.alias}`,
-                                            value: a.id,
-                                        }))
-                                    "
-                                    option-label="label"
-                                    option-value="value"
-                                    aria-label="계좌"
-                                    placeholder="선택" />
-                            </label>
-                            <p>선택한 계좌의 전체 저장 내역 기준입니다.</p>
-                        </section>
-                        <PortfolioCapitalPanel
-                            v-if="activeAccount"
-                            :key="`${ownUid}-${selectedAccount}`"
-                            :user="firebaseUser"
-                            :account-id="selectedAccount"
-                            :state="capital"
-                            :loading="capitalLoading"
-                            :error="capitalError"
-                            :read-only="
-                                !editableAccounts.some(
-                                    (a) => a.id === selectedAccount
-                                )
-                            "
-                            @refresh="loadCapital" />
+                        <template
+                            v-if="
+                                !capitalCollapsed && portfolioTab === 'overview'
+                            ">
+                            <AccountRecoveryOverview
+                                :user="firebaseUser"
+                                :accounts="visibleAccounts"
+                                :refresh-state="capital" />
+                            <section
+                                v-if="activeAccount"
+                                aria-label="회수 현황 계좌 선택">
+                                <label
+                                    >회수 현황을 볼 계좌
+                                    <Select
+                                        v-model="selectedAccount"
+                                        :disabled="busy"
+                                        :options="
+                                            visibleAccounts.map((a) => ({
+                                                label: `${ownerName(a.ownerId)} / ${a.alias}`,
+                                                value: a.id,
+                                            }))
+                                        "
+                                        option-label="label"
+                                        option-value="value"
+                                        aria-label="계좌"
+                                        placeholder="선택" />
+                                </label>
+                                <p>선택한 계좌의 전체 저장 내역 기준입니다.</p>
+                            </section>
+                            <PortfolioCapitalPanel
+                                v-if="activeAccount"
+                                :key="`${ownUid}-${selectedAccount}`"
+                                :user="firebaseUser"
+                                :account-id="selectedAccount"
+                                :state="capital"
+                                :loading="capitalLoading"
+                                :error="capitalError"
+                                :read-only="
+                                    !editableAccounts.some(
+                                        (a) => a.id === selectedAccount
+                                    )
+                                "
+                                @refresh="loadCapital" />
+                        </template>
                     </Panel>
                     <template v-if="space">
                         <section v-if="summary">

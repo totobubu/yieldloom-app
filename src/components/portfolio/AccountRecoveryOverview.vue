@@ -1,5 +1,5 @@
 <script setup>
-    import { computed, ref, watch } from 'vue';
+    import { computed, onScopeDispose, ref, watch } from 'vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import {
         capitalRecovery,
@@ -16,6 +16,9 @@
         loading = ref(false),
         error = ref('');
     let generation = 0;
+    onScopeDispose(() => {
+        generation++;
+    });
     async function refresh() {
         const request = ++generation;
         const user = props.user,
@@ -28,16 +31,18 @@
         }
         loading.value = true;
         try {
-            const results = await Promise.all(
-                accounts.map(async (account) => ({
+            const results = [];
+            for (const account of accounts) {
+                if (request !== generation) return;
+                results.push({
                     accountId: account.id,
                     state: await portfolioCapitalRequest(
                         user,
                         undefined,
                         account.id
                     ),
-                }))
-            );
+                });
+            }
             if (request === generation) states.value = results;
         } catch (reason) {
             if (request === generation) error.value = reason.message;
@@ -46,7 +51,18 @@
         }
     }
     watch(
-        () => [props.user?.uid, props.accounts, props.refreshState],
+        [
+            () => props.user?.uid,
+            () =>
+                JSON.stringify(
+                    (props.accounts || []).map((a) => [
+                        a.id,
+                        a.entriesRevision,
+                        a.capitalRevision,
+                    ])
+                ),
+            () => props.refreshState?.version,
+        ],
         refresh,
         { immediate: true }
     );

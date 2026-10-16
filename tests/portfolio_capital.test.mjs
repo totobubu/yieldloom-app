@@ -36,7 +36,7 @@ test('capital API reports database quota exhaustion as 429', async () => {
         }
     );
     assert.equal(status, 429);
-    assert.equal(data.code, 'DATA_QUOTA_EXCEEDED');
+    assert.equal(data.code, 'DATA_RESOURCE_EXHAUSTED');
     assert.equal(data.entries, undefined);
 });
 
@@ -162,7 +162,14 @@ function fixture(uid = 'owner') {
             { amount: 42140, currency: 'KRW', date: trade.date },
         ],
     ]);
-    const ref = (path) => ({ path, get: async () => snapshot(path) });
+    const reads = [];
+    const ref = (path) => ({
+        path,
+        get: async () => {
+            reads.push(path);
+            return snapshot(path);
+        },
+    });
     const snapshot = (path) => ({
         id: path.split('/').at(-1),
         exists: records.has(path),
@@ -171,22 +178,25 @@ function fixture(uid = 'owner') {
     const db = {
         doc: ref,
         collection: (path) => {
-            const get = async (field, value) => ({
-                docs: [...records.keys()]
-                    .filter(
-                        (k) =>
-                            k.startsWith(path + '/') &&
-                            !k.slice(path.length + 1).includes('/') &&
-                            (!field ||
-                                field
-                                    .split('.')
-                                    .reduce(
-                                        (v, key) => v?.[key],
-                                        records.get(k)
-                                    ) === value)
-                    )
-                    .map(snapshot),
-            });
+            const get = async (field, value) => {
+                reads.push(path);
+                return {
+                    docs: [...records.keys()]
+                        .filter(
+                            (k) =>
+                                k.startsWith(path + '/') &&
+                                !k.slice(path.length + 1).includes('/') &&
+                                (!field ||
+                                    field
+                                        .split('.')
+                                        .reduce(
+                                            (v, key) => v?.[key],
+                                            records.get(k)
+                                        ) === value)
+                        )
+                        .map(snapshot),
+                };
+            };
             return {
                 get: () => get(),
                 where: (field, op, value) => ({ get: () => get(field, value) }),
@@ -228,7 +238,7 @@ function fixture(uid = 'owner') {
         );
         return { status, data };
     };
-    return { call, records };
+    return { call, records, reads };
 }
 test('owner can save, reload and reset funding without modifying the financial ledger', async () => {
     const f = fixture();
@@ -714,4 +724,62 @@ test('withdrawal source annotations save atomically, reject mismatched totals an
             .dividend,
         42140
     );
+});
+
+test('unchanged account capital reads only authorization documents; revoked access cannot use a version', async () => {
+    const f = accountFixture();
+    const first = await f.call(undefined, 'GET', { accountId: 'AC' });
+    assert.equal(first.status, 200);
+    assert.ok(f.reads.includes('investmentAccounts/AC/entries'));
+    f.reads.length = 0;
+    const same = await f.call(undefined, 'GET', {
+        accountId: 'AC',
+        version: first.data.version,
+    });
+    assert.equal(same.data.unchanged, true);
+    assert.deepEqual(f.reads, ['investmentAccounts/AC', 'familySpaces/F']);
+    f.records.get('investmentAccounts/AC').permissions = {};
+    assert.equal(
+        (
+            await f.call(undefined, 'GET', {
+                accountId: 'AC',
+                version: first.data.version,
+            })
+        ).status,
+        403
+    );
+});
+
+test('annotation writes change capital version without re-reading the immutable ledger; imports change ledger version', async () => {
+    const f = accountFixture();
+    const first = await f.call(undefined, 'GET', { accountId: 'AC' });
+    const saved = await f.call({
+        action: 'classifyCash',
+        accountId: 'AC',
+        id: 'E',
+        classification: 'exchange',
+        revision: 0,
+    });
+    assert.equal(saved.status, 200);
+    f.reads.length = 0;
+    const updated = await f.call(undefined, 'GET', {
+        accountId: 'AC',
+        version: first.data.version,
+        ledgerVersion: first.data.ledgerVersion,
+    });
+    assert.equal(updated.status, 200);
+    assert.notEqual(updated.data.version, first.data.version);
+    assert.equal(updated.data.ledgerUnchanged, true);
+    assert.ok(!f.reads.includes('investmentAccounts/AC/entries'));
+    assert.equal(updated.data.classifications.length, 1);
+    f.records.get('investmentAccounts/AC').entriesRevision = 1;
+    f.reads.length = 0;
+    const imported = await f.call(undefined, 'GET', {
+        accountId: 'AC',
+        version: updated.data.version,
+        ledgerVersion: first.data.ledgerVersion,
+    });
+    assert.equal(imported.data.ledgerUnchanged, false);
+    assert.ok(f.reads.includes('investmentAccounts/AC/entries'));
+    assert.equal(imported.data.trades.length, 1);
 });

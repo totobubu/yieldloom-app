@@ -26,6 +26,7 @@
     import Column from 'primevue/column';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import { familyRequest } from '@/services/familyPortfolio';
+    import { useRequestCooldown } from '@/composables/useRequestCooldown.js';
 
     const router = useRouter();
     const route = useRoute();
@@ -80,6 +81,18 @@
         invitation = ref('');
     const accountsState = ref('loading'),
         accountLoadError = ref('');
+    const accountLoadIssue = ref(null);
+    const accountCooldown = useRequestCooldown(accountLoadIssue);
+    const retryTime = computed(() =>
+        accountCooldown.retryAt.value === null
+            ? ''
+            : new Intl.DateTimeFormat('ko-KR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  timeZoneName: 'short',
+              }).format(accountCooldown.retryAt.value)
+    );
     const newFamily = ref(''),
         myName = ref(''),
         joinToken = ref(''),
@@ -328,9 +341,17 @@
         }
     }
     async function refresh() {
+        if (accountCooldown.coolingDown.value) {
+            accountsState.value = 'error';
+            accountLoadError.value =
+                accountLoadIssue.value?.message ||
+                '권장 대기 시간 후 다시 시도해 주세요.';
+            return;
+        }
         const requestedUid = firebaseUser.value?.uid;
         accountsState.value = 'loading';
         accountLoadError.value = '';
+        accountLoadIssue.value = null;
         try {
             let data = await familyRequest(
                 '',
@@ -366,6 +387,7 @@
             if (firebaseUser.value?.uid !== requestedUid) return;
             accountsState.value = 'error';
             accountLoadError.value = reason.message;
+            accountLoadIssue.value = reason;
         }
     }
     watch(
@@ -386,6 +408,7 @@
             portfolioScope.value = 'personal';
             accountsState.value = 'loading';
             accountLoadError.value = '';
+            accountLoadIssue.value = null;
             if (waiting) return;
             if (!user)
                 router.replace({
@@ -673,6 +696,7 @@
                     severity="secondary"
                     outlined
                     :loading="busy"
+                    :disabled="accountCooldown.coolingDown.value"
                     @click="run(refresh)" /><Button
                     label="자료 업로드"
                     icon="pi pi-upload"
@@ -697,15 +721,60 @@
             severity="error"
             :closable="false"
             ><p>{{ accountLoadError }}</p>
+            <template v-if="accountLoadIssue?.status === 429">
+                <p>
+                    현재 응답만으로는 하루 사용량 소진 여부와 실제 제한 해제
+                    시각을 확인할 수 없습니다.
+                </p>
+                <p
+                    class="retry-countdown"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true">
+                    <strong>{{
+                        accountCooldown.coolingDown.value
+                            ? `권장 재시도 대기: ${accountCooldown.remainingSeconds.value}초`
+                            : '권장 대기 시간이 지났습니다. 계좌 목록을 다시 조회할 수 있습니다.'
+                    }}</strong>
+                    <span v-if="accountCooldown.coolingDown.value"
+                        >{{ retryTime }}부터 다시 시도할 수 있습니다.</span
+                    >
+                </p>
+                <details>
+                    <summary>대기시간 안내</summary>
+                    <p>
+                        이 시간은 복구 예정 시각이 아니라 재시도 간격입니다.
+                        다시 제한되면 더 기다려야 할 수 있습니다. 하루 한도에
+                        도달한 경우에는 한도 초기화 또는 관리자 확인이
+                        필요합니다.
+                    </p>
+                    <p>
+                        Firestore 무료 일일 한도에 해당한다면 미국 태평양 자정
+                        무렵(한국시간 오후 4~5시)에 초기화됩니다. 현재 오류가 이
+                        한도인지는 확인되지 않았습니다.
+                        <a
+                            href="https://firebase.google.com/docs/firestore/quotas#free-quota"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >공식 한도 안내</a
+                        >
+                    </p>
+                </details>
+            </template>
             <p>
                 계좌 목록 조회에 실패했습니다. 등록된 계좌가 없다는 뜻이
                 아닙니다. 기존 계좌나 PDF를 다시 등록할 필요는 없습니다.
             </p>
             <Button
-                label="계좌 목록 다시 시도"
+                :label="
+                    accountCooldown.coolingDown.value
+                        ? `${accountCooldown.remainingSeconds.value}초 후 다시 시도`
+                        : '계좌 목록 다시 시도'
+                "
                 severity="danger"
                 outlined
                 :loading="busy"
+                :disabled="accountCooldown.coolingDown.value"
                 @click="run(refresh)"
         /></Message>
         <div class="portfolio-scope">
@@ -1769,6 +1838,16 @@ date,symbol,quantity,amount,currency,type,externalId
 </template>
 
 <style scoped>
+    .retry-countdown {
+        margin: 12px 0;
+    }
+    .retry-countdown strong,
+    .retry-countdown span {
+        display: block;
+    }
+    .retry-countdown strong {
+        font-size: 1.1rem;
+    }
     .family-page {
         color: var(--app-text);
         line-height: 1.7;

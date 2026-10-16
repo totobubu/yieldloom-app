@@ -14,6 +14,7 @@ def configure_cors(app):
             response.headers["Access-Control-Allow-Origin"] = origin
             response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
             response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+            response.headers["Access-Control-Expose-Headers"] = "Retry-After"
             response.headers["Vary"] = "Origin"
         return response
 

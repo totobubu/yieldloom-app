@@ -1,7 +1,7 @@
 {
   "projectId": "8070217465176687716",
   "inventoryDateKst": "2026-10-16",
-  "totalScreens": 56,
+  "totalScreens": 63,
   "counts": {
     "spreadsheet_io": 3,
     "matched_core": 11,
@@ -14,7 +14,8 @@
     "manual_position_editor": 2,
     "simulation_tax_comparison": 1,
     "broker_connection": 2,
-    "tax_calculator": 2
+    "tax_calculator": 2,
+    "matched_auth": 7
   },
   "screens": [
     {
@@ -325,7 +326,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "8051543b69494aeda8065cb2dc9a2974",
@@ -334,7 +337,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "84bcde630069498f8b8ff67a28da19e6",
@@ -343,7 +348,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "0cd2a7d3f75c43da9043d84eb007ebc0",
@@ -352,7 +359,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "2d817467460342ae9c36ecde7e31bb15",
@@ -361,7 +370,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "a6b3e0f9e92249dcb68ffd3118360395",
@@ -370,7 +381,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "49c6bb70f5e54b568d0ab986639caa30",
@@ -379,7 +392,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "a3684b54b4614240a5b107e64358bb24",
@@ -388,7 +403,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "b851b862b725457e9d82209d15e48888",
@@ -397,7 +414,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "a291e50652da4be69ea6887456da0a47",
@@ -406,7 +425,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "03f0ba3a493344c388ed8a5598ffa087",
@@ -415,7 +436,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "4226d85e4ab5437b888dffafe73db679",
@@ -424,7 +447,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "316352aece0b40c7ada6f81e8b86ea8b",
@@ -433,7 +458,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "02cad378573448e8960e0173741611bd",
@@ -460,7 +487,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "779c8b10faa44366935a206309f852e4",
@@ -469,7 +498,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "2a5e3de2cdeb481f8e445b897cc17c88",
@@ -478,7 +509,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "01a94f9637784ffe91bcf7b91eb7bfe6",
@@ -487,7 +520,9 @@
       "classification": "card_design_variants",
       "classificationKo": "공유 카드 스타일·비율 변형",
       "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
-      "priority": "P1"
+      "priority": "P1",
+      "implementationStatus": "partial",
+      "implementationNotes": "기존 금융 카드 5종에 공통 비율 1:1(720×720), 16:9(1280×720), 9:16(720×1280)와 기본·페이퍼·네이비 디자인을 적용. PNG/ZIP manifest·프리셋에 반영. 시안 17개를 개별 템플릿이나 신규 금융 기능으로 모두 구현한 것은 아님."
     },
     {
       "screenId": "fe08a70e80604fcdbe20545c0faeca63",
@@ -530,6 +565,83 @@
       "priority": "P1",
       "implementationStatus": "partial",
       "implementationNotes": "계좌별 UTF-8 CSV 잔고·전체 거래 내보내기 구현. CSV/PDF 업로드는 기존 경로 유지. 실제 XLSX 입출력은 미구현."
+    },
+    {
+      "screenId": "002bf359078e4f648a0d70c805e87c01",
+      "title": "LOGIN-D01: 데스크톱 기본 로그인",
+      "deviceType": "DESKTOP",
+      "classification": "matched_auth",
+      "classificationKo": "인증 전용 화면·상태",
+      "decision": "기존 Firebase 인증과 재설정 링크 처리에 연결",
+      "priority": "반영 범위",
+      "implementationStatus": "functional",
+      "implementationNotes": "로그인·회원가입·재설정의 웹/모바일 배치, 비밀번호 확인, 로그인 유지, 요청·검증·만료·재시도·완료 상태 구현. 새 재설정 화면으로 메일을 연결하려면 Firebase 이메일 템플릿 작업 URL을 정식 웹앱 /login으로 설정해야 함. 실제 메일·계정 생성은 테스트에서 수행하지 않음."
+    },
+    {
+      "screenId": "f0efee6a6bf348eebd9089e2f7953e07",
+      "title": "01. 로그인 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "matched_auth",
+      "classificationKo": "인증 전용 화면·상태",
+      "decision": "기존 Firebase 인증과 재설정 링크 처리에 연결",
+      "priority": "반영 범위",
+      "implementationStatus": "functional",
+      "implementationNotes": "로그인·회원가입·재설정의 웹/모바일 배치, 비밀번호 확인, 로그인 유지, 요청·검증·만료·재시도·완료 상태 구현. 새 재설정 화면으로 메일을 연결하려면 Firebase 이메일 템플릿 작업 URL을 정식 웹앱 /login으로 설정해야 함. 실제 메일·계정 생성은 테스트에서 수행하지 않음."
+    },
+    {
+      "screenId": "5a01bb93a5824a8192fb5b84b196b0d4",
+      "title": "01. 로그인 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_auth",
+      "classificationKo": "인증 전용 화면·상태",
+      "decision": "기존 Firebase 인증과 재설정 링크 처리에 연결",
+      "priority": "반영 범위",
+      "implementationStatus": "functional",
+      "implementationNotes": "로그인·회원가입·재설정의 웹/모바일 배치, 비밀번호 확인, 로그인 유지, 요청·검증·만료·재시도·완료 상태 구현. 새 재설정 화면으로 메일을 연결하려면 Firebase 이메일 템플릿 작업 URL을 정식 웹앱 /login으로 설정해야 함. 실제 메일·계정 생성은 테스트에서 수행하지 않음."
+    },
+    {
+      "screenId": "7406e4985ec242d8a40f04086c86928c",
+      "title": "SIGNUP-D01: 데스크톱 기본 회원가입 및 인터랙션 상태",
+      "deviceType": "DESKTOP",
+      "classification": "matched_auth",
+      "classificationKo": "인증 전용 화면·상태",
+      "decision": "기존 Firebase 인증과 재설정 링크 처리에 연결",
+      "priority": "반영 범위",
+      "implementationStatus": "functional",
+      "implementationNotes": "로그인·회원가입·재설정의 웹/모바일 배치, 비밀번호 확인, 로그인 유지, 요청·검증·만료·재시도·완료 상태 구현. 새 재설정 화면으로 메일을 연결하려면 Firebase 이메일 템플릿 작업 URL을 정식 웹앱 /login으로 설정해야 함. 실제 메일·계정 생성은 테스트에서 수행하지 않음."
+    },
+    {
+      "screenId": "bf838fc3ed6b490084baa72c928920b3",
+      "title": "LOGIN-M01: 모바일 기본 로그인",
+      "deviceType": "MOBILE",
+      "classification": "matched_auth",
+      "classificationKo": "인증 전용 화면·상태",
+      "decision": "기존 Firebase 인증과 재설정 링크 처리에 연결",
+      "priority": "반영 범위",
+      "implementationStatus": "functional",
+      "implementationNotes": "로그인·회원가입·재설정의 웹/모바일 배치, 비밀번호 확인, 로그인 유지, 요청·검증·만료·재시도·완료 상태 구현. 새 재설정 화면으로 메일을 연결하려면 Firebase 이메일 템플릿 작업 URL을 정식 웹앱 /login으로 설정해야 함. 실제 메일·계정 생성은 테스트에서 수행하지 않음."
+    },
+    {
+      "screenId": "c69124beaf2c4acdad943537c5d00c1e",
+      "title": "SIGNUP-M01: 모바일 기본 회원가입 및 인터랙션 상태",
+      "deviceType": "MOBILE",
+      "classification": "matched_auth",
+      "classificationKo": "인증 전용 화면·상태",
+      "decision": "기존 Firebase 인증과 재설정 링크 처리에 연결",
+      "priority": "반영 범위",
+      "implementationStatus": "functional",
+      "implementationNotes": "로그인·회원가입·재설정의 웹/모바일 배치, 비밀번호 확인, 로그인 유지, 요청·검증·만료·재시도·완료 상태 구현. 새 재설정 화면으로 메일을 연결하려면 Firebase 이메일 템플릿 작업 URL을 정식 웹앱 /login으로 설정해야 함. 실제 메일·계정 생성은 테스트에서 수행하지 않음."
+    },
+    {
+      "screenId": "80ff31999801411a8a833de351be679a",
+      "title": "RESET-D01: 데스크톱 비밀번호 재설정 전체 흐름 & 상태 매트릭스",
+      "deviceType": "DESKTOP",
+      "classification": "matched_auth",
+      "classificationKo": "인증 전용 화면·상태",
+      "decision": "기존 Firebase 인증과 재설정 링크 처리에 연결",
+      "priority": "반영 범위",
+      "implementationStatus": "functional",
+      "implementationNotes": "로그인·회원가입·재설정의 웹/모바일 배치, 비밀번호 확인, 로그인 유지, 요청·검증·만료·재시도·완료 상태 구현. 새 재설정 화면으로 메일을 연결하려면 Firebase 이메일 템플릿 작업 URL을 정식 웹앱 /login으로 설정해야 함. 실제 메일·계정 생성은 테스트에서 수행하지 않음."
     }
   ]
 }

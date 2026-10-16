@@ -204,7 +204,7 @@
         color: #17212b;
     }
     .entry-efficiency-card :deep(.thumbnail-card-content) {
-        gap: 8px;
+        gap: 4px;
     }
     .entry-efficiency-card :deep(.thumbnail-card-footer) {
         font-size: 10px;
@@ -231,7 +231,7 @@
         gap: 12px;
     }
     .comparison article {
-        padding: 12px 18px;
+        padding: 9px 18px;
         border: 1px solid #dbe3ec;
         border-radius: 16px;
         background: #f8fafc;
@@ -357,7 +357,7 @@
     }
     .definition {
         margin-top: auto;
-        padding: 11px 14px;
+        padding: 7px 14px;
         border: 1px solid #e2e8f0;
         border-radius: 10px;
     }

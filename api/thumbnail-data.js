@@ -272,4 +272,6 @@ async function handler(req, res) {
     return res.status(200).json(payload);
 }
 
-export default createApiHandler(handler);
+// This endpoint only returns public market data; it never reads a session or
+// returns account data. Stable anonymous CORS also applies to cached responses.
+export default createApiHandler(handler, { publicCors: true });

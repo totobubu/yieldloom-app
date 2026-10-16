@@ -1,6 +1,22 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildThumbnailPayload, catalogEntry, loadTicker, loadTickerWithSnapshot, rivalOptions, toBacktestData } from '../api/thumbnail-data.js';
+import thumbnailHandler, { buildThumbnailPayload, catalogEntry, loadTicker, loadTickerWithSnapshot, rivalOptions, toBacktestData } from '../api/thumbnail-data.js';
+
+test('public endpoint CORS survives a cache warmed by a same-origin request', async () => {
+    const cached = {};
+    const response = {
+        setHeader(name, value) { cached[name] = value; },
+        status(value) { cached.status = value; return this; },
+        json(value) { cached.body = value; },
+        end() {},
+    };
+    // Invalid input avoids external data calls and checks the actual endpoint,
+    // including its error path, rather than only the wrapper's optional flag.
+    await thumbnailHandler({ method: 'GET', headers: {}, query: { ticker: '../private' } }, response);
+    assert.equal(cached.status, 400);
+    assert.equal(cached['Access-Control-Allow-Origin'], '*');
+    assert.equal(cached['Access-Control-Allow-Credentials'], undefined);
+});
 
 test('catalog limits rivals to the same verified underlying', () => {
     const entry = catalogEntry('tsly');

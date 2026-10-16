@@ -11,7 +11,29 @@ try {
     const handler = createApiHandler(async (_req, res) =>
         res.status(200).json({ ok: true })
     );
+    // CDN cache hits can reuse a response warmed without Origin. Public data
+    // must remain readable, while private API responses keep their allowlist.
+    const publicHandler = createApiHandler(async (_req, res) => {
+        res.setHeader('Cache-Control', 's-maxage=60');
+        return res.status(200).json({ symbol: 'TSLY' });
+    }, { publicCors: true });
+    for (const origin of [undefined, 'https://totobubu.github.io', 'https://unrelated.example']) {
+        for (const method of ['GET', 'OPTIONS']) {
+            const headers = {};
+            const response = {
+                setHeader(name, value) { headers[name] = value; },
+                status() { return this; },
+                json() {},
+                end() {},
+            };
+            await publicHandler({ method, headers: { origin } }, response);
+            assert.equal(headers['Access-Control-Allow-Origin'], '*', `${method} public response warmed with ${origin}`);
+            assert.equal(headers['Access-Control-Allow-Credentials'], undefined);
+            assert.equal(headers.Vary, undefined);
+        }
+    }
     for (const [origin, allowed] of [
+        [undefined, false],
         ['https://totobubu.github.io', true],
         ['https://configured.example', true],
         ['https://unrelated.example', false],

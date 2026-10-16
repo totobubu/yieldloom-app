@@ -66,6 +66,9 @@ description: Yieldloom 프로젝트의 Vue 3 및 PrimeVue 4 구현·리팩터링
 
 ## PrimeVue 4와 스타일
 
+- UI 개발·퍼블리싱·테마·컴포넌트 재사용 작업에는
+  [primevue4-ui](../primevue4-ui/SKILL.md)를 함께 적용한다.
+  공식 문서는 https://v4.primevue.org/ 를 기준으로 하고 PrimeVue 5 전용 API는 도입하지 않는다.
 - 설치 버전의 props·events·slots·Pass Through 타입을 확인한다. PrimeVue 3
   예제나 존재하지 않는 PT section 이름을 추측해 적용하지 않는다.
 - `src/main.js`의 PrimeVue, ToastService, ConfirmationService, Tooltip 설정과

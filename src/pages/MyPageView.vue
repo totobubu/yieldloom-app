@@ -3,6 +3,7 @@
     import { useRouter } from 'vue-router';
     import { usePortfolioDashboard } from '@/composables/usePortfolioDashboard';
     import StockRecoveryPanel from '@/components/portfolio/StockRecoveryPanel.vue';
+    import FundingTracePanel from '@/components/portfolio/FundingTracePanel.vue';
     import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
     import TransactionAmount from '@/components/portfolio/TransactionAmount.vue';
@@ -35,8 +36,12 @@
         return '';
     });
     const message = ref('');
-    const { dashboard, error, loading, refresh: refreshDashboard } =
-        usePortfolioDashboard(firebaseUser, loadPortfolioDashboard);
+    const {
+        dashboard,
+        error,
+        loading,
+        refresh: refreshDashboard,
+    } = usePortfolioDashboard(firebaseUser, loadPortfolioDashboard);
     const capital = ref({ entries: [], classifications: [], allocations: [] });
     const capitalPanel = ref(null);
     const capitalLoading = ref(false),
@@ -393,6 +398,12 @@
             :loading="capitalLoading"
             :error="capitalError"
             @refresh="loadCapital" />
+        <FundingTracePanel
+            v-if="!capitalLoading && !capitalError"
+            :entries="capital.entries"
+            :classifications="capital.classifications"
+            :trades="recoveryTrades"
+            :allocations="capital.allocations" />
         <StockRecoveryPanel
             :trades="recoveryTrades"
             :allocations="capital.allocations" />

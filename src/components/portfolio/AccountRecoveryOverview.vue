@@ -7,11 +7,18 @@
         combineCapitalStates,
     } from '../../../lib/portfolio-capital.js';
     import StockRecoveryPanel from './StockRecoveryPanel.vue';
+    import FundingTracePanel from './FundingTracePanel.vue';
     const props = defineProps({
         user: Object,
         accounts: Array,
         refreshState: Object,
     });
+    const traceAccount = ref('');
+    const traceCurrency = ref('USD');
+    function focusTrace(item) {
+        traceAccount.value = item.accountId;
+        traceCurrency.value = item.currency;
+    }
     const states = ref([]),
         loading = ref(false),
         error = ref('');
@@ -67,9 +74,42 @@
         { immediate: true }
     );
     const combined = computed(() => combineCapitalStates(states.value));
+    const traceState = computed(() =>
+        Object.fromEntries(
+            ['entries', 'classifications'].map((kind) => [
+                kind,
+                states.value.flatMap(({ accountId, state }) =>
+                    (state[kind] || []).map((row) => ({ ...row, accountId }))
+                ),
+            ])
+        )
+    );
     const recovery = computed(() =>
         capitalRecovery(combined.value.entries, combined.value.classifications)
     );
+    const accountRecovery = computed(() =>
+        states.value.flatMap(({ accountId, state }) => {
+            const pending = capitalSummary(
+                state.entries || [],
+                state.classifications || []
+            ).pending;
+            return capitalRecovery(
+                state.entries || [],
+                state.classifications || []
+            ).map((row) => ({
+                ...row,
+                accountId,
+                pending,
+                alias:
+                    props.accounts?.find((a) => a.id === accountId)?.alias ||
+                    accountId,
+            }));
+        })
+    );
+    const percent = (value) =>
+        value == null
+            ? '원금 확인 필요'
+            : `${value.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}%`;
     const pending = computed(
         () =>
             capitalSummary(
@@ -94,7 +134,7 @@
 </script>
 <template>
     <section class="account-overview" aria-label="전체 계좌 원금 회수 현황">
-        <h2>전체 계좌 · 내 돈을 얼마나 회수했나요?</h2>
+        <h2>전체 계좌 원금 회수율</h2>
         <p>
             선택한 범위에서 접근 가능한 {{ accounts?.length || 0 }}개 계좌의
             전체 저장 내역입니다.
@@ -155,6 +195,80 @@
                 전체 기초 자료가 확인되지 않아 전체 자산·손익으로 단정하지
                 않습니다.
             </p>
+            <section aria-label="계좌별 원금 회수율">
+                <h3>계좌별 원금 회수율</h3>
+                <p>
+                    전체 회수율은 계좌별 비율의 평균이 아니라, 같은 통화의 출금
+                    합계 ÷ 입금 합계입니다.
+                </p>
+                <div class="account-scroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>계좌</th>
+                                <th>통화</th>
+                                <th>외부 투입금</th>
+                                <th>실제 현금 회수</th>
+                                <th>미회수액</th>
+                                <th>회수율</th>
+                                <th>자료 상태</th>
+                                <th>상세</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="item in accountRecovery"
+                                :key="`${item.accountId}:${item.currency}`">
+                                <th scope="row">{{ item.alias }}</th>
+                                <td>{{ item.currency }}</td>
+                                <td>
+                                    {{ money(item.principal, item.currency) }}
+                                </td>
+                                <td>
+                                    {{ money(item.recovered, item.currency) }}
+                                </td>
+                                <td>
+                                    {{
+                                        item.rate == null
+                                            ? '—'
+                                            : money(
+                                                  item.remaining,
+                                                  item.currency
+                                              )
+                                    }}
+                                </td>
+                                <td>{{ percent(item.rate) }}</td>
+                                <td>
+                                    {{
+                                        item.pending
+                                            ? `분류 확인 ${item.pending}건 · 잠정`
+                                            : '저장된 분류 기준'
+                                    }}
+                                </td>
+                                <td>
+                                    <button
+                                        type="button"
+                                        :aria-label="`${item.alias} ${item.currency} 자금 추적 보기`"
+                                        @click="focusTrace(item)">
+                                        자금 추적
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr v-if="!accountRecovery.length">
+                                <td colspan="8">조회할 계좌가 없습니다.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <FundingTracePanel
+                v-model:account-id="traceAccount"
+                v-model:currency="traceCurrency"
+                :entries="traceState.entries"
+                :classifications="traceState.classifications"
+                :trades="trades"
+                :allocations="allocations"
+                :accounts="accounts" />
             <StockRecoveryPanel
                 :trades="trades"
                 :allocations="allocations"
@@ -186,6 +300,21 @@
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px;
+    }
+    .account-scroll {
+        overflow-x: auto;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+    th,
+    td {
+        min-width: 100px;
+        text-align: left;
+        padding: 10px;
+        border-bottom: 1px solid var(--app-border);
     }
     article {
         padding: 20px;

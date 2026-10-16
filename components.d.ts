@@ -19,6 +19,7 @@ declare module 'vue' {
     DividendEntryEfficiencyThumbnail: typeof import('./src/components/thumbnail/DividendEntryEfficiencyThumbnail.vue')['default']
     DividendSummaryThumbnail: typeof import('./src/components/thumbnail/DividendSummaryThumbnail.vue')['default']
     ErrorBoundary: typeof import('./src/components/ErrorBoundary.vue')['default']
+    FundingTracePanel: typeof import('./src/components/portfolio/FundingTracePanel.vue')['default']
     HoldingDividendThumbnail: typeof import('./src/components/thumbnail/HoldingDividendThumbnail.vue')['default']
     PortfolioCapitalPanel: typeof import('./src/components/portfolio/PortfolioCapitalPanel.vue')['default']
     PortfolioDividendCalendar: typeof import('./src/components/portfolio/PortfolioDividendCalendar.vue')['default']

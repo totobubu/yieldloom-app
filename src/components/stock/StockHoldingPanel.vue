@@ -1,4 +1,5 @@
 <script setup>
+    import Button from 'primevue/button';
     import { computed, ref, watch } from 'vue';
     import { firebaseUser, authLoading } from '@/services/firebaseClient';
     import { familyRequest } from '@/services/familyPortfolio';
@@ -79,7 +80,12 @@
         </p>
         <div v-else-if="error" role="alert">
             <p>{{ error }}</p>
-            <button @click="load">다시 시도</button>
+            <Button
+                label="다시 시도"
+                icon="pi pi-refresh"
+                severity="secondary"
+                outlined
+                @click="load" />
         </div>
         <template v-else>
             <p v-if="!positions.length">

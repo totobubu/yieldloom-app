@@ -145,7 +145,13 @@ $light-bg-colors: map.merge(
 );
 
 // Fonts
-$font-family-base: 'Nanum Gothic Coding', monospace !default;
+$font-family-base:
+    'Pretendard',
+    'Noto Sans KR',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif !default;
 
 // toto variables
 :root {

@@ -4,7 +4,21 @@
     import { useRoute, useRouter } from 'vue-router';
     import html2canvas from 'html2canvas';
     import Button from 'primevue/button';
-    import ProgressSpinner from 'primevue/progressspinner';
+    import Skeleton from 'primevue/skeleton';
+    import Tabs from 'primevue/tabs';
+    import TabList from 'primevue/tablist';
+    import Tab from 'primevue/tab';
+    import TabPanels from 'primevue/tabpanels';
+    import TabPanel from 'primevue/tabpanel';
+    import Dialog from 'primevue/dialog';
+    import InputText from 'primevue/inputtext';
+    import Select from 'primevue/select';
+    import Checkbox from 'primevue/checkbox';
+    import Tag from 'primevue/tag';
+    import Message from 'primevue/message';
+    import DataTable from 'primevue/datatable';
+    import Column from 'primevue/column';
+    import { useToast } from 'primevue/usetoast';
     import DividendSummaryThumbnail from '@/components/thumbnail/DividendSummaryThumbnail.vue';
     import DividendComparisonThumbnail from '@/components/thumbnail/DividendComparisonThumbnail.vue';
     import TossCommunityCopy from '@/components/thumbnail/TossCommunityCopy.vue';
@@ -38,13 +52,32 @@
 
     const route = useRoute();
     const router = useRouter();
+    const toast = useToast();
+    const presetDialogOpen = ref(false),
+        presetName = ref(''),
+        presetError = ref('');
+    const toneOptions = [
+        { label: '정보형', value: 'informative' },
+        { label: '간결형', value: 'concise' },
+        { label: '친근형', value: 'friendly' },
+    ];
+    const openPresetDialog = () => {
+        presetName.value = `${selectedInfo.value.symbol} 콘텐츠`;
+        presetError.value = '';
+        presetDialogOpen.value = true;
+    };
+    const backToSearch = () => {
+        const back = window.history.state?.back;
+        if (back === '/' || back?.startsWith('/?')) router.back();
+        else router.push('/');
+    };
     const selectedInfo = ref(null);
     const selectedData = ref(null);
     const loading = ref(true);
     const error = ref('');
     const rivals = ref([]);
     const draftRivals = ref([]);
-    const rivalPickerOpen = ref(true);
+    const rivalPickerOpen = ref(false);
     const exporting = ref('');
     const exportError = ref('');
     const schedule = ref(null);
@@ -215,10 +248,14 @@
         const previous = rows.at(-2);
         const currentAmount = amount(current);
         const previousAmount = amount(previous);
-        const referencePrice = dividendPrice(current, {
-            price: selectedInfo.value?.price,
-            date: selectedData.value?.sourceStatus?.priceDate,
-        }, priceRows.value);
+        const referencePrice = dividendPrice(
+            current,
+            {
+                price: selectedInfo.value?.price,
+                date: selectedData.value?.sourceStatus?.priceDate,
+            },
+            priceRows.value
+        );
         const exClose = referencePrice.price;
         const prevClose = Number(previous?.close);
         const validClose = Number.isFinite(exClose) && exClose > 0;
@@ -256,7 +293,9 @@
             exDividendClose: validClose ? exClose : null,
             usesLatestPrice: referencePrice.latest,
             referencePriceDate: referencePrice.date,
-            referencePriceLabel: referencePrice.latest ? '최신 주가' : '배당락일 종가',
+            referencePriceLabel: referencePrice.latest
+                ? '최신 주가'
+                : '배당락일 종가',
             previousExDividendClose: validPreviousClose ? prevClose : null,
             exDividendYield: validClose
                 ? (currentAmount / exClose) * 100
@@ -469,8 +508,12 @@
             link.href = canvas.toDataURL('image/png');
             link.click();
             // The download is normally initiated from a user gesture, so immediately offer its matching post copy.
-            await navigator.clipboard?.writeText(cardShareText(kind));
-            shareCopyReady.value = true;
+            try {
+                await navigator.clipboard.writeText(cardShareText(kind));
+                shareCopyReady.value = true;
+            } catch {
+                shareCopyReady.value = false;
+            }
             trackAggregate('png_download', kind);
         } catch (e) {
             exportError.value =
@@ -481,9 +524,14 @@
         }
     };
     const copyShareText = async (kind = 'summary') => {
-        await navigator.clipboard.writeText(cardShareText(kind));
-        shareCopyReady.value = true;
-        trackAggregate('share_copy', kind);
+        try {
+            await navigator.clipboard.writeText(cardShareText(kind));
+            shareCopyReady.value = true;
+            trackAggregate('share_copy', kind);
+        } catch {
+            exportError.value =
+                '문구를 복사하지 못했습니다. 게시 문구에서 직접 선택해 복사해 주세요.';
+        }
     };
     const downloadPublishPackage = async () => {
         exportError.value = '';
@@ -540,43 +588,60 @@
             packaging.value = false;
         }
     };
-    const saveCurrentPreset = async () => {
-        const name = window.prompt(
-            '프리셋 이름을 입력하세요.',
-            `${selectedInfo.value.symbol} 콘텐츠`
-        );
-        if (!name?.trim()) return;
-        const item = saveLocalPreset({
-            id: crypto.randomUUID?.() ?? `${Date.now()}`,
-            name,
-            ticker: selectedInfo.value.symbol,
-            rivals: rivals.value,
-            tone: selectedTone.value,
-            updatedAt: new Date().toISOString(),
-        });
-        presets.value = [
-            item,
-            ...presets.value.filter((preset) => preset.id !== item.id),
-        ];
+    const saveCurrentPreset = () => {
+        const name = presetName.value.trim();
+        if (!name) {
+            presetError.value = '프리셋 이름을 입력해 주세요.';
+            return;
+        }
+        try {
+            const item = saveLocalPreset({
+                id: crypto.randomUUID?.() ?? `${Date.now()}`,
+                name,
+                ticker: selectedInfo.value.symbol,
+                rivals: rivals.value,
+                tone: selectedTone.value,
+                updatedAt: new Date().toISOString(),
+            });
+            presets.value = [
+                item,
+                ...presets.value.filter((preset) => preset.id !== item.id),
+            ];
+            presetDialogOpen.value = false;
+            toast.add({
+                severity: 'success',
+                summary: '프리셋을 저장했습니다',
+                detail: '이 브라우저에서 다시 사용할 수 있습니다.',
+                life: 3000,
+            });
+        } catch {
+            presetError.value =
+                '브라우저 저장 공간을 확인하고 다시 시도해 주세요.';
+        }
     };
     const openPreset = async (preset) => {
         selectedTone.value = preset.tone || 'informative';
         await router.push({
             path: `/stock/${preset.ticker}`,
-            query: preset.rivals.length
-                ? { rivals: preset.rivals.join(',') }
-                : {},
+            query: {
+                tab: 'share',
+                ...(preset.rivals.length
+                    ? { rivals: preset.rivals.join(',') }
+                    : {}),
+            },
         });
     };
     const deletePreset = (preset) => {
         removeLocalPreset(preset.id);
         presets.value = presets.value.filter((item) => item.id !== preset.id);
     };
-    onScopeDispose(() => { loadSequence++; });
+    onScopeDispose(() => {
+        loadSequence++;
+    });
     watch(
         [() => route.params.ticker, () => route.query.rivals],
         ([ticker], [previousTicker] = []) => {
-            if (ticker !== previousTicker) rivalPickerOpen.value = true;
+            if (ticker !== previousTicker) rivalPickerOpen.value = false;
             load();
         },
         { immediate: true }
@@ -584,10 +649,20 @@
 </script>
 
 <template>
-    <main class="ticker-thumbnail-page">
-        <div v-if="loading" class="state">
-            <ProgressSpinner />
-            <p>종목 정보를 불러오는 중…</p>
+    <section class="ticker-thumbnail-page">
+        <div
+            v-if="loading"
+            class="stock-loading"
+            role="status"
+            aria-label="종목 정보를 불러오는 중">
+            <Skeleton width="8rem" height="1rem" /><Skeleton
+                width="60%"
+                height="3rem" /><Skeleton
+                height="8rem"
+                border-radius="16px" /><Skeleton height="3rem" /><Skeleton
+                height="20rem"
+                border-radius="16px" />
+            <p class="studio-muted">종목 정보를 불러오는 중…</p>
         </div>
         <div v-else-if="error" class="state">
             <h1>종목을 열 수 없습니다</h1>
@@ -597,126 +672,44 @@
         <template v-else>
             <header class="page-header">
                 <div>
-                    <p>토토부부 배당 스튜디오</p>
-                    <h1>
-                        {{ selectedInfo.symbol }}
-                        <small class="stock-name">{{
-                            selectedInfo.longName || selectedInfo.koName
-                        }}</small>
-                    </h1>
-                    <p v-if="selectedInfo.price != null" class="latest-price">
-                        최근 시세 {{ selectedInfo.currency }}
-                        {{
-                            Number(selectedInfo.price).toLocaleString(
-                                undefined,
-                                { maximumFractionDigits: 4 }
-                            )
-                        }}
-                        · {{ selectedData.sourceStatus.priceDate }}
-                    </p>
-                </div>
-                <div v-show="activeTab === 'share'" class="data-toolbar">
-                    <p class="data-status" :class="dataStatus">
-                        {{
-                            dataStatus === 'fresh'
-                                ? '데이터 최신'
-                                : dataStatus === 'stale'
-                                  ? '마지막 정상 데이터 · 갱신 지연'
-                                  : '일부 데이터 확인 필요'
-                        }}
-                    </p>
-                    <label
-                        >문구 톤
-                        <select v-model="selectedTone">
-                            <option value="informative">정보형</option>
-                            <option value="concise">간결형</option>
-                            <option value="friendly">친근형</option>
-                        </select></label
-                    ><Button
-                        label="프리셋 저장"
-                        icon="pi pi-bookmark"
-                        @click="saveCurrentPreset" /><Button
-                        :label="`선택 카드 ZIP (${selectedExportKinds.length})`"
-                        :disabled="!selectedExportKinds.length"
-                        icon="pi pi-box"
-                        :loading="packaging"
-                        @click="downloadPublishPackage" />
-                </div>
-                <div
-                    v-if="presets.length"
-                    v-show="activeTab === 'share'"
-                    class="preset-row"
-                    aria-label="저장된 콘텐츠 프리셋">
-                    <span>저장한 조합</span
-                    ><template v-for="preset in presets" :key="preset.id"
-                        ><button type="button" @click="openPreset(preset)">
-                            {{ preset.name }}</button
-                        ><button
-                            type="button"
-                            class="preset-delete"
-                            :aria-label="`${preset.name} 삭제`"
-                            @click="deletePreset(preset)">
-                            ×
-                        </button></template
-                    >
-                </div>
-                <section
-                    v-if="selectedInfo.underlying && rivalOptions.length"
-                    v-show="activeTab === 'share'"
-                    class="rival-candidate-picker"
-                    :aria-label="`${selectedInfo.symbol} 라이벌 카드 후보`">
-                    <div class="candidate-heading">
-                        <p>라이벌 카드 후보</p>
-                        <strong
-                            >{{ selectedInfo.underlying }} 기반 · 최대
-                            {{ maxRivals }}종</strong
-                        ><Button
-                            label="추가"
-                            icon="pi pi-plus"
-                            :aria-expanded="rivalPickerOpen"
-                            aria-controls="rival-candidates"
-                            @click="openRivalPicker" />
+                    <Button
+                        label="종목 검색"
+                        icon="pi pi-arrow-left"
+                        text
+                        severity="secondary"
+                        @click="backToSearch" />
+                    <div class="stock-identity">
+                        <span class="stock-mark">{{
+                            selectedInfo.symbol.slice(0, 1)
+                        }}</span>
+                        <div>
+                            <h1>{{ selectedInfo.symbol }}</h1>
+                            <p class="stock-full-name">
+                                {{
+                                    selectedInfo.longName || selectedInfo.koName
+                                }}
+                            </p>
+                            <span class="studio-muted"
+                                >{{ selectedInfo.company || '운용사 미확인' }} ·
+                                {{
+                                    selectedInfo.currency || '통화 미확인'
+                                }}</span
+                            >
+                        </div>
                     </div>
-                    <p v-if="!rivalPickerOpen" class="hint">
-                        선택한 라이벌:
-                        {{ rivals.length ? rivals.join(', ') : '없음' }}
-                    </p>
-                    <div
-                        v-if="rivalPickerOpen"
-                        id="rival-candidates"
-                        class="candidate-buttons">
-                        <button
-                            v-for="option in rivalOptions"
-                            :key="option.value"
-                            type="button"
-                            :class="{
-                                selected: draftRivals.includes(option.value),
-                            }"
-                            :aria-pressed="draftRivals.includes(option.value)"
-                            :title="option.label"
-                            :disabled="
-                                !draftRivals.includes(option.value) &&
-                                draftRivals.length >= maxRivals
-                            "
-                            @click="toggleRival(option.value)">
-                            {{ option.value }}
-                        </button>
-                    </div>
-                    <div v-if="rivalPickerOpen" class="candidate-actions">
-                        <span class="hint"
-                            >{{ draftRivals.length }}/{{ maxRivals }}종 선택 ·
-                            확인 후 반영됩니다.</span
-                        ><Button
-                            label="확인"
-                            icon="pi pi-check"
-                            @click="confirmRivals" />
-                    </div>
-                </section>
+                </div>
+                <Button
+                    v-if="activeTab !== 'share'"
+                    label="공유 카드 만들기"
+                    icon="pi pi-share-alt"
+                    severity="secondary"
+                    outlined
+                    @click="selectTab('share')" />
             </header>
             <section class="stock-overview" aria-label="종목 핵심 지표">
                 <article>
                     <span
-                        >현재가 ·
+                        >최근 시세 ·
                         {{ selectedInfo.currency || '통화 미확인' }}</span
                     ><strong>{{ displayNumber(selectedInfo.price, 4) }}</strong>
                 </article>
@@ -777,418 +770,739 @@
                     </p>
                 </details>
             </div>
-            <nav class="stock-tabs" aria-label="종목 정보">
-                <button
-                    v-for="tab in tabs"
-                    :key="tab.id"
-                    type="button"
-                    :aria-current="activeTab === tab.id ? 'page' : undefined"
-                    :class="{ selected: activeTab === tab.id }"
-                    @click="selectTab(tab.id)">
-                    {{ tab.label }}
-                </button>
-            </nav>
-            <section v-if="activeTab === 'details'" class="stock-section">
-                <h2>{{ selectedInfo.symbol }} 종목 개요</h2>
-                <p class="hint">
-                    시세 기준
-                    {{ selectedData.sourceStatus.priceDate || '미확인' }} ·
-                    수집된 실제 이력 기준
-                </p>
-                <div class="metric-grid">
-                    <article>
-                        <span>최근 시세</span
-                        ><strong
-                            >{{ displayNumber(selectedInfo.price, 4) }}
-                            <small>{{ selectedInfo.currency }}</small></strong
-                        >
-                    </article>
-                    <article>
-                        <span>최근 12개월 주당 배당</span
-                        ><strong
-                            >{{ displayNumber(trailingDividend, 4) }}
-                            <small>{{ selectedInfo.currency }}</small></strong
-                        ><small v-if="trailingDividend == null"
-                            >12개월 전체 이력 확인 필요</small
-                        >
-                    </article>
-                    <article>
-                        <span>최근 12개월 배당수익률</span
-                        ><strong
-                            >{{
-                                displayNumber(
-                                    trailingDividend != null &&
-                                        selectedInfo.price > 0
-                                        ? (trailingDividend /
-                                              selectedInfo.price) *
-                                              100
+            <Tabs
+                :value="activeTab"
+                @update:value="selectTab"
+                class="stock-tabs-root">
+                <TabList class="stock-tabs"
+                    ><Tab v-for="tab in tabs" :key="tab.id" :value="tab.id">{{
+                        tab.label
+                    }}</Tab></TabList
+                >
+                <TabPanels>
+                    <TabPanel value="details">
+                        <section
+                            v-if="activeTab === 'details'"
+                            class="stock-section">
+                            <h2>{{ selectedInfo.symbol }} 종목 개요</h2>
+                            <p class="hint">
+                                시세 기준
+                                {{
+                                    selectedData.sourceStatus.priceDate ||
+                                    '미확인'
+                                }}
+                                · 수집된 실제 이력 기준
+                            </p>
+                            <div class="metric-grid">
+                                <article>
+                                    <span>최근 시세</span
+                                    ><strong
+                                        >{{
+                                            displayNumber(selectedInfo.price, 4)
+                                        }}
+                                        <small>{{
+                                            selectedInfo.currency
+                                        }}</small></strong
+                                    >
+                                </article>
+                                <article>
+                                    <span>최근 12개월 주당 배당</span
+                                    ><strong
+                                        >{{
+                                            displayNumber(trailingDividend, 4)
+                                        }}
+                                        <small>{{
+                                            selectedInfo.currency
+                                        }}</small></strong
+                                    ><small v-if="trailingDividend == null"
+                                        >12개월 전체 이력 확인 필요</small
+                                    >
+                                </article>
+                                <article>
+                                    <span>최근 12개월 배당수익률</span
+                                    ><strong
+                                        >{{
+                                            displayNumber(
+                                                trailingDividend != null &&
+                                                    selectedInfo.price > 0
+                                                    ? (trailingDividend /
+                                                          selectedInfo.price) *
+                                                          100
+                                                    : null
+                                            )
+                                        }}%</strong
+                                    ><small>최근 시세 대비 · 세전</small>
+                                </article>
+                                <article>
+                                    <span>시가총액</span
+                                    ><strong>{{
+                                        displayNumber(selectedInfo.marketCap, 0)
+                                    }}</strong>
+                                </article>
+                            </div>
+                            <StockHoldingPanel
+                                :symbol="selectedInfo.symbol"
+                                :price="
+                                    selectedInfo.price != null
+                                        ? Number(selectedInfo.price)
                                         : null
-                                )
-                            }}%</strong
-                        ><small>최근 시세 대비 · 세전</small>
-                    </article>
-                    <article>
-                        <span>시가총액</span
-                        ><strong>{{
-                            displayNumber(selectedInfo.marketCap, 0)
-                        }}</strong>
-                    </article>
-                </div>
-                <StockHoldingPanel
-                    :symbol="selectedInfo.symbol"
-                    :price="
-                        selectedInfo.price != null
-                            ? Number(selectedInfo.price)
-                            : null
-                    "
-                    :currency="selectedInfo.currency || 'USD'"
-                    :next="schedule?.current" />
-                <h2>종목 기본정보</h2>
-                <dl class="stock-facts">
-                    <div>
-                        <dt>종목명</dt>
-                        <dd>
-                            {{
-                                selectedInfo.longName ||
-                                selectedInfo.koName ||
-                                selectedInfo.symbol
-                            }}
-                        </dd>
+                                "
+                                :currency="selectedInfo.currency || 'USD'"
+                                :next="schedule?.current" />
+                            <h2>종목 기본정보</h2>
+                            <dl class="stock-facts">
+                                <div>
+                                    <dt>종목명</dt>
+                                    <dd>
+                                        {{
+                                            selectedInfo.longName ||
+                                            selectedInfo.koName ||
+                                            selectedInfo.symbol
+                                        }}
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt>운용사</dt>
+                                    <dd>
+                                        {{ selectedInfo.company || '미확인' }}
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt>시장 / 통화</dt>
+                                    <dd>
+                                        {{ selectedInfo.market || '미확인' }} /
+                                        {{ selectedInfo.currency || '미확인' }}
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt>기초자산</dt>
+                                    <dd>
+                                        {{
+                                            selectedInfo.underlying || '미확인'
+                                        }}
+                                    </dd>
+                                </div>
+                                <div>
+                                    <dt>수집 시세 범위</dt>
+                                    <dd>
+                                        {{ priceRows.at(-1)?.date || '미확인' }}
+                                        ~
+                                        {{ priceRows[0]?.date || '미확인' }}
+                                    </dd>
+                                </div>
+                            </dl>
+                            <p class="hint">
+                                수집 이력은 실제 보유 기간과 다를 수 있습니다.
+                                미확인 수치는 0으로 간주하지 않습니다.
+                            </p>
+                        </section>
+                        <div
+                            v-show="activeTab === 'details'"
+                            class="stock-insights">
+                            <SecurityInsights
+                                :symbol="normalize(route.params.ticker)" />
+                        </div> </TabPanel
+                    ><TabPanel value="prices">
+                        <section
+                            v-if="activeTab === 'prices'"
+                            class="stock-section">
+                            <StockCandlestickChart
+                                :symbol="selectedInfo.symbol"
+                                :currency="selectedInfo.currency || ''"
+                                :events="stockEvents" />
+                            <details class="price-history">
+                                <summary>일별 종가 표 보기</summary>
+                                <h2>시세 이력</h2>
+                                <p class="hint">
+                                    최근 {{ Math.min(priceRows.length, 120) }}개
+                                    실제 종가 · {{ selectedInfo.currency }} 기준
+                                    · 가격 보정
+                                    {{
+                                        selectedData.sourceStatus
+                                            .adjustmentBasis || '미확인'
+                                    }}
+                                </p>
+                                <DataTable
+                                    :value="priceRows.slice(0, 120)"
+                                    class="stock-data-table"
+                                    striped-rows
+                                    scrollable
+                                    scroll-height="420px"
+                                    :table-props="{
+                                        'aria-label': '일별 종가 이력',
+                                    }"
+                                    ><Column
+                                        field="date"
+                                        header="기준일" /><Column header="종가"
+                                        ><template #body="{ data }"
+                                            >{{ displayNumber(data.close, 4) }}
+                                            {{
+                                                selectedInfo.currency
+                                            }}</template
+                                        ></Column
+                                    ></DataTable
+                                >
+                                <p v-if="!priceRows.length" class="hint">
+                                    확인 가능한 실제 종가가 없습니다.
+                                </p>
+                            </details>
+                        </section> </TabPanel
+                    ><TabPanel value="dividends">
+                        <section
+                            v-if="activeTab === 'dividends'"
+                            class="stock-section">
+                            <div class="dividend-next">
+                                <div class="section-heading">
+                                    <h2>배당 일정</h2>
+                                    <Tag
+                                        :value="
+                                            nextDividend?.confirmed
+                                                ? '공시 확정'
+                                                : nextDividend
+                                                  ? '주기 추정'
+                                                  : '공시 대기'
+                                        "
+                                        :severity="
+                                            nextDividend?.confirmed
+                                                ? 'success'
+                                                : 'secondary'
+                                        "
+                                        rounded />
+                                </div>
+                                <div class="schedule-metrics">
+                                    <div>
+                                        <span>다음 배당락일</span
+                                        ><strong>{{
+                                            nextDividend?.date || '공시 대기'
+                                        }}</strong>
+                                    </div>
+                                    <div>
+                                        <span>최근 공시 주당 배당 · 세전</span
+                                        ><strong>{{
+                                            schedule?.current?.amount != null
+                                                ? `${schedule.current.amount} ${selectedInfo.currency}`
+                                                : '미확인'
+                                        }}</strong>
+                                    </div>
+                                    <div>
+                                        <span>최근 공시 지급일</span
+                                        ><strong>{{
+                                            schedule?.current?.payableDate ||
+                                            '미확인'
+                                        }}</strong>
+                                    </div>
+                                </div>
+                                <p class="hint">
+                                    공시 전 일정은 최근 주기를 바탕으로 한
+                                    추정입니다. 증권사 입금일과 실제 수령액은
+                                    다를 수 있습니다.
+                                </p>
+                            </div>
+                            <StockDividendTrend
+                                :rows="selectedData.backtestData || []"
+                                :as-of="
+                                    selectedData.sourceStatus?.priceDate ||
+                                    today()
+                                "
+                                :currency="selectedInfo.currency || 'USD'" />
+                            <h2>배당 이력</h2>
+                            <p class="hint">
+                                배당락일 기준 · 주당 세전
+                                {{ selectedInfo.currency }} ·
+                                {{ historyRows.length }}회 수집
+                            </p>
+                            <DataTable
+                                :value="historyRows"
+                                class="stock-data-table"
+                                striped-rows
+                                paginator
+                                :rows="12"
+                                :page-link-size="3"
+                                paginator-template="PrevPageLink PageLinks NextPageLink"
+                                :table-props="{ 'aria-label': '배당 이력' }"
+                                ><Column
+                                    field="date"
+                                    header="배당락일" /><Column
+                                    header="주당 배당금 · 세전"
+                                    ><template #body="{ data }"
+                                        >{{ displayNumber(amount(data), 6) }}
+                                        {{ selectedInfo.currency }}</template
+                                    ></Column
+                                ></DataTable
+                            >
+                            <p v-if="!historyRows.length" class="hint">
+                                확인 가능한 배당 이력이 없습니다.
+                            </p>
+                            <p class="hint">
+                                공시 전 일정은 추정치입니다. 개인별 수령액은
+                                보유 수량과 세금에 따라 다릅니다.
+                            </p>
+                        </section> </TabPanel
+                    ><TabPanel value="share">
+                        <section class="share-workspace stock-section">
+                            <div class="section-heading">
+                                <div>
+                                    <span class="studio-eyebrow"
+                                        >CONTENT STUDIO</span
+                                    >
+                                    <h2>내가 고른 정보, 한 장의 카드로.</h2>
+                                    <p class="hint">
+                                        개인 보유 정보가 포함되지 않는 공개 종목
+                                        카드입니다.
+                                    </p>
+                                </div>
+                                <Button
+                                    :label="`선택 카드 ZIP (${selectedExportKinds.length})`"
+                                    :disabled="!selectedExportKinds.length"
+                                    icon="pi pi-box"
+                                    :loading="packaging"
+                                    @click="downloadPublishPackage" />
+                            </div>
+                            <div class="share-controls">
+                                <div class="studio-field">
+                                    <label for="share-tone">게시 문구 톤</label
+                                    ><Select
+                                        input-id="share-tone"
+                                        v-model="selectedTone"
+                                        :options="toneOptions"
+                                        option-label="label"
+                                        option-value="value" />
+                                </div>
+                                <Button
+                                    label="프리셋 저장"
+                                    icon="pi pi-bookmark"
+                                    severity="secondary"
+                                    outlined
+                                    @click="openPresetDialog" /><Button
+                                    v-if="
+                                        selectedInfo.underlying &&
+                                        rivalOptions.length
+                                    "
+                                    label="비교 종목 선택"
+                                    icon="pi pi-sliders-h"
+                                    severity="secondary"
+                                    outlined
+                                    @click="openRivalPicker" />
+                            </div>
+                            <div v-if="rivals.length" class="selected-rivals">
+                                <span>비교 종목</span
+                                ><Tag
+                                    v-for="rival in rivals"
+                                    :key="rival"
+                                    :value="rival"
+                                    severity="secondary" />
+                            </div>
+                            <div
+                                v-if="presets.length"
+                                class="preset-row"
+                                aria-label="저장된 콘텐츠 프리셋">
+                                <span>저장한 조합</span>
+                                <div
+                                    v-for="preset in presets"
+                                    :key="preset.id"
+                                    class="preset-item">
+                                    <Button
+                                        :label="preset.name"
+                                        severity="secondary"
+                                        outlined
+                                        size="small"
+                                        @click="openPreset(preset)" /><Button
+                                        icon="pi pi-times"
+                                        severity="secondary"
+                                        text
+                                        :aria-label="`${preset.name} 삭제`"
+                                        @click="deletePreset(preset)" />
+                                </div>
+                            </div>
+                        </section>
+                        <section
+                            v-if="activeTab === 'share'"
+                            class="share-selector stock-section">
+                            <h2>공유 카드 선택</h2>
+                            <p class="hint">
+                                필요한 카드만 선택해 미리 보고 PNG 또는 ZIP으로
+                                저장하세요. 개인 보유 정보는 공유 카드에
+                                포함하지 않습니다.
+                            </p>
+                            <fieldset>
+                                <legend>포함할 카드</legend>
+                                <label
+                                    v-for="card in availableCards"
+                                    :key="card.kind"
+                                    :class="{ unavailable: card.disabled }"
+                                    :for="`share-card-${card.kind}`"
+                                    ><Checkbox
+                                        v-model="selectedCardKinds"
+                                        :input-id="`share-card-${card.kind}`"
+                                        :value="card.kind"
+                                        :disabled="card.disabled" />{{
+                                        card.label
+                                    }}<small v-if="card.disabled"
+                                        >비교 데이터 확인 필요</small
+                                    ></label
+                                >
+                            </fieldset>
+                            <p v-if="!selectedExportKinds.length" class="hint">
+                                미리 볼 카드를 선택하세요.
+                            </p>
+                        </section>
+                        <section
+                            v-show="activeTab === 'share'"
+                            class="artwork-grid"
+                            :class="{
+                                'dividend-view': activeTab === 'dividends',
+                            }">
+                            <article
+                                v-show="showCard('summary')"
+                                class="artwork-panel">
+                                <ThumbnailPreview
+                                    ><DividendSummaryThumbnail
+                                        :data="thumbnailData"
+                                        data-thumbnail-kind="summary" /></ThumbnailPreview
+                                ><Button
+                                    label="요약 PNG 다운로드"
+                                    icon="pi pi-download"
+                                    :loading="exporting === 'summary'"
+                                    @click="
+                                        downloadArtwork('summary')
+                                    " /><CardShareActions
+                                    title="요약 카드"
+                                    :text="cardShareText('summary')"
+                                    :url="publicUrl" />
+                            </article>
+                            <article
+                                v-show="showCard('comparison')"
+                                class="artwork-panel">
+                                <ThumbnailPreview
+                                    ><DividendComparisonThumbnail
+                                        :data="thumbnailData"
+                                        data-thumbnail-kind="comparison" /></ThumbnailPreview
+                                ><Button
+                                    label="비교 PNG 다운로드"
+                                    icon="pi pi-download"
+                                    :loading="exporting === 'comparison'"
+                                    @click="
+                                        downloadArtwork('comparison')
+                                    " /><CardShareActions
+                                    title="비교 카드"
+                                    :text="cardShareText('comparison')"
+                                    :url="publicUrl" />
+                            </article>
+                            <article
+                                v-if="selectedInfo.underlying"
+                                v-show="showCard('rival')"
+                                class="artwork-panel">
+                                <ThumbnailPreview
+                                    ><RivalThumbnail
+                                        :data="
+                                            comparison
+                                                ? {
+                                                      comparison,
+                                                      underlying:
+                                                          selectedInfo.underlying,
+                                                      selectedTicker:
+                                                          selectedInfo.symbol,
+                                                  }
+                                                : null
+                                        "
+                                        data-thumbnail-kind="rival" /></ThumbnailPreview
+                                ><Button
+                                    label="라이벌 PNG 다운로드"
+                                    icon="pi pi-download"
+                                    :disabled="!comparison"
+                                    :loading="exporting === 'rival'"
+                                    @click="
+                                        downloadArtwork('rival')
+                                    " /><CardShareActions
+                                    title="라이벌 카드"
+                                    :text="cardShareText('rival')"
+                                    :url="publicUrl" />
+                            </article>
+                            <article
+                                v-show="showCard('calendar')"
+                                class="artwork-panel">
+                                <ThumbnailPreview
+                                    ><DividendCalendarThumbnail
+                                        :data="{
+                                            ...schedule,
+                                            symbol: selectedInfo.symbol,
+                                        }"
+                                        data-thumbnail-kind="calendar" /></ThumbnailPreview
+                                ><Button
+                                    label="일정 PNG 다운로드"
+                                    icon="pi pi-download"
+                                    :loading="exporting === 'calendar'"
+                                    @click="
+                                        downloadArtwork('calendar')
+                                    " /><CardShareActions
+                                    title="일정 카드"
+                                    :text="cardShareText('calendar')"
+                                    :url="publicUrl" />
+                            </article>
+                            <article
+                                v-show="showCard('entry-efficiency')"
+                                class="artwork-panel">
+                                <ThumbnailPreview
+                                    ><DividendEntryEfficiencyThumbnail
+                                        :data="{
+                                            ...entryEfficiency,
+                                            symbol: selectedInfo.symbol,
+                                        }"
+                                        data-thumbnail-kind="entry-efficiency" /></ThumbnailPreview
+                                ><Button
+                                    label="과거 매수 배당률 PNG 다운로드"
+                                    icon="pi pi-download"
+                                    :loading="exporting === 'entry-efficiency'"
+                                    @click="
+                                        downloadArtwork('entry-efficiency')
+                                    " /><CardShareActions
+                                    title="과거 매수 시점별 배당률 카드"
+                                    :text="cardShareText('entry-efficiency')"
+                                    :url="publicUrl" />
+                            </article>
+                        </section>
+                        <p v-if="exportError" class="export-error" role="alert">
+                            {{ exportError }}
+                        </p>
+                        <div v-if="shareCopyReady" class="share-copy-notice">
+                            <span
+                                >PNG 공유용 문구가 복사되었습니다.
+                                토스·카카오톡에 바로 붙여넣으세요.</span
+                            ><button type="button" @click="copyShareText">
+                                이미지 공유용 문구 복사
+                            </button>
+                        </div>
+                        <section
+                            v-show="activeTab === 'share'"
+                            class="content-grid">
+                            <TossCommunityCopy :data="thumbnailData" />
+                            <section
+                                v-if="selectedInfo.underlying"
+                                class="rivals">
+                                <p v-if="!rivalOptions.length" class="hint">
+                                    같은 기초자산으로 등록된 비교 후보가
+                                    없습니다.
+                                </p>
+                                <p v-else-if="!rivals.length" class="hint">
+                                    비교 종목 선택에서 라이벌 후보를 최대
+                                    {{ maxRivals }}종 선택하세요.
+                                </p>
+                                <p v-else-if="!comparison" class="hint">
+                                    공통 가격 이력을 계산하는 중이거나 데이터가
+                                    부족합니다.
+                                </p>
+                            </section>
+                        </section>
+                    </TabPanel></TabPanels
+                >
+            </Tabs>
+            <Dialog
+                v-model:visible="presetDialogOpen"
+                modal
+                header="프리셋 저장"
+                :style="{ width: '440px' }"
+                :breakpoints="{ '600px': '92vw' }">
+                <form
+                    id="preset-form"
+                    class="preset-form"
+                    @submit.prevent="saveCurrentPreset">
+                    <div class="studio-field">
+                        <label for="preset-name">프리셋 이름</label
+                        ><InputText
+                            id="preset-name"
+                            v-model="presetName"
+                            maxlength="40"
+                            required
+                            autofocus
+                            fluid
+                            :invalid="!!presetError" /><small
+                            class="studio-muted"
+                            >{{ presetName.length }}/40자 · 이 브라우저에
+                            저장됩니다.</small
+                        >
                     </div>
-                    <div>
-                        <dt>운용사</dt>
-                        <dd>{{ selectedInfo.company || '미확인' }}</dd>
-                    </div>
-                    <div>
-                        <dt>시장 / 통화</dt>
-                        <dd>
-                            {{ selectedInfo.market || '미확인' }} /
-                            {{ selectedInfo.currency || '미확인' }}
-                        </dd>
-                    </div>
-                    <div>
-                        <dt>기초자산</dt>
-                        <dd>{{ selectedInfo.underlying || '미확인' }}</dd>
-                    </div>
-                    <div>
-                        <dt>수집 시세 범위</dt>
-                        <dd>
-                            {{ priceRows.at(-1)?.date || '미확인' }} ~
-                            {{ priceRows[0]?.date || '미확인' }}
-                        </dd>
-                    </div>
-                </dl>
-                <p class="hint">
-                    수집 이력은 실제 보유 기간과 다를 수 있습니다. 미확인 수치는
-                    0으로 간주하지 않습니다.
-                </p>
-            </section>
-            <div v-show="activeTab === 'details'" class="stock-insights">
-                <SecurityInsights :symbol="normalize(route.params.ticker)" />
-            </div>
-            <section v-if="activeTab === 'prices'" class="stock-section">
-                <StockCandlestickChart
-                    :symbol="selectedInfo.symbol"
-                    :currency="selectedInfo.currency || ''"
-                    :events="stockEvents" />
-                <details class="price-history">
-                    <summary>일별 종가 표 보기</summary>
-                    <h2>시세 이력</h2>
-                    <p class="hint">
-                        최근 {{ Math.min(priceRows.length, 120) }}개 실제 종가 ·
-                        {{ selectedInfo.currency }} 기준 · 가격 보정
+                    <p class="studio-muted">
+                        {{ selectedInfo.symbol }} ·
+                        {{ rivals.join(', ') || '비교 종목 없음' }} ·
                         {{
-                            selectedData.sourceStatus.adjustmentBasis ||
-                            '미확인'
+                            toneOptions.find(
+                                (tone) => tone.value === selectedTone
+                            )?.label
                         }}
                     </p>
-                    <div class="stock-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>기준일</th>
-                                    <th>종가</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="row in priceRows.slice(0, 120)"
-                                    :key="row.date">
-                                    <td>{{ row.date }}</td>
-                                    <td>{{ displayNumber(row.close, 4) }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p v-if="!priceRows.length" class="hint">
-                        확인 가능한 실제 종가가 없습니다.
-                    </p>
-                </details>
-            </section>
-            <section v-if="activeTab === 'dividends'" class="stock-section">
-                <StockDividendTrend
-                    :rows="selectedData.backtestData || []"
-                    :as-of="selectedData.sourceStatus?.priceDate || today()"
-                    :currency="selectedInfo.currency || 'USD'" />
-                <h2>배당 이력</h2>
-                <p class="hint">
-                    배당락일 기준 · 주당 세전 {{ selectedInfo.currency }} ·
-                    {{ historyRows.length }}회 수집
-                </p>
-                <div class="stock-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>배당락일</th>
-                                <th>주당 배당금</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="row in historyRows" :key="row.date">
-                                <td>{{ row.date }}</td>
-                                <td>{{ displayNumber(amount(row), 6) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p v-if="!historyRows.length" class="hint">
-                    확인 가능한 배당 이력이 없습니다.
-                </p>
-                <p class="hint">
-                    공시 전 일정은 추정치입니다. 개인별 수령액은 보유 수량과
-                    세금에 따라 다릅니다.
-                </p>
-            </section>
-            <section
-                v-if="activeTab === 'share'"
-                class="share-selector stock-section">
-                <h2>공유 카드 선택</h2>
-                <p class="hint">
-                    필요한 카드만 선택해 미리 보고 PNG 또는 ZIP으로 저장하세요.
-                    개인 보유 정보는 공유 카드에 포함하지 않습니다.
-                </p>
-                <fieldset>
-                    <legend>포함할 카드</legend>
-                    <label
-                        v-for="card in availableCards"
-                        :key="card.kind"
-                        :class="{ unavailable: card.disabled }"
-                        ><input
-                            v-model="selectedCardKinds"
-                            type="checkbox"
-                            :value="card.kind"
-                            :disabled="card.disabled" />{{ card.label
-                        }}<small v-if="card.disabled"
-                            >비교 데이터 확인 필요</small
-                        ></label
+                    <Message
+                        v-if="presetError"
+                        severity="error"
+                        :closable="false"
+                        >{{ presetError }}</Message
                     >
-                </fieldset>
-                <p v-if="!selectedExportKinds.length" class="hint">
-                    미리 볼 카드를 선택하세요.
+                </form>
+                <template #footer
+                    ><Button
+                        label="취소"
+                        severity="secondary"
+                        text
+                        @click="presetDialogOpen = false" /><Button
+                        label="프리셋 저장"
+                        type="submit"
+                        form="preset-form"
+                        icon="pi pi-bookmark"
+                /></template>
+            </Dialog>
+            <Dialog
+                v-model:visible="rivalPickerOpen"
+                modal
+                header="비교 종목 선택"
+                :style="{ width: '520px' }"
+                :breakpoints="{ '600px': '92vw' }">
+                <p class="studio-muted">
+                    {{ selectedInfo.underlying }} 기반 종목을 최대
+                    {{ maxRivals }}개 선택하세요.
                 </p>
-            </section>
-            <section
-                v-show="activeTab === 'dividends' || activeTab === 'share'"
-                class="artwork-grid"
-                :class="{ 'dividend-view': activeTab === 'dividends' }">
-                <article v-show="showCard('summary')" class="artwork-panel">
-                    <ThumbnailPreview
-                        ><DividendSummaryThumbnail
-                            :data="thumbnailData"
-                            data-thumbnail-kind="summary" /></ThumbnailPreview
+                <div class="rival-dialog-options">
+                    <Button
+                        v-for="option in rivalOptions"
+                        :key="option.value"
+                        :label="option.label"
+                        :severity="
+                            draftRivals.includes(option.value)
+                                ? undefined
+                                : 'secondary'
+                        "
+                        :outlined="!draftRivals.includes(option.value)"
+                        :aria-pressed="draftRivals.includes(option.value)"
+                        :disabled="
+                            !draftRivals.includes(option.value) &&
+                            draftRivals.length >= maxRivals
+                        "
+                        @click="toggleRival(option.value)" />
+                </div>
+                <template #footer
+                    ><span class="studio-muted"
+                        >{{ draftRivals.length }}/{{ maxRivals }}개 선택</span
                     ><Button
-                        label="요약 PNG 다운로드"
-                        icon="pi pi-download"
-                        :loading="exporting === 'summary'"
-                        @click="downloadArtwork('summary')" /><CardShareActions
-                        title="요약 카드"
-                        :text="cardShareText('summary')"
-                        :url="publicUrl" />
-                </article>
-                <article v-show="showCard('comparison')" class="artwork-panel">
-                    <ThumbnailPreview
-                        ><DividendComparisonThumbnail
-                            :data="thumbnailData"
-                            data-thumbnail-kind="comparison" /></ThumbnailPreview
-                    ><Button
-                        label="비교 PNG 다운로드"
-                        icon="pi pi-download"
-                        :loading="exporting === 'comparison'"
-                        @click="
-                            downloadArtwork('comparison')
-                        " /><CardShareActions
-                        title="비교 카드"
-                        :text="cardShareText('comparison')"
-                        :url="publicUrl" />
-                </article>
-                <article
-                    v-if="selectedInfo.underlying"
-                    v-show="showCard('rival')"
-                    class="artwork-panel">
-                    <ThumbnailPreview
-                        ><RivalThumbnail
-                            :data="
-                                comparison
-                                    ? {
-                                          comparison,
-                                          underlying: selectedInfo.underlying,
-                                          selectedTicker: selectedInfo.symbol,
-                                      }
-                                    : null
-                            "
-                            data-thumbnail-kind="rival" /></ThumbnailPreview
-                    ><Button
-                        label="라이벌 PNG 다운로드"
-                        icon="pi pi-download"
-                        :disabled="!comparison"
-                        :loading="exporting === 'rival'"
-                        @click="downloadArtwork('rival')" /><CardShareActions
-                        title="라이벌 카드"
-                        :text="cardShareText('rival')"
-                        :url="publicUrl" />
-                </article>
-                <article v-show="showCard('calendar')" class="artwork-panel">
-                    <ThumbnailPreview
-                        ><DividendCalendarThumbnail
-                            :data="{ ...schedule, symbol: selectedInfo.symbol }"
-                            data-thumbnail-kind="calendar" /></ThumbnailPreview
-                    ><Button
-                        label="일정 PNG 다운로드"
-                        icon="pi pi-download"
-                        :loading="exporting === 'calendar'"
-                        @click="downloadArtwork('calendar')" /><CardShareActions
-                        title="일정 카드"
-                        :text="cardShareText('calendar')"
-                        :url="publicUrl" />
-                </article>
-                <article
-                    v-show="showCard('entry-efficiency')"
-                    class="artwork-panel">
-                    <ThumbnailPreview
-                        ><DividendEntryEfficiencyThumbnail
-                            :data="{
-                                ...entryEfficiency,
-                                symbol: selectedInfo.symbol,
-                            }"
-                            data-thumbnail-kind="entry-efficiency" /></ThumbnailPreview
-                    ><Button
-                        label="과거 매수 배당률 PNG 다운로드"
-                        icon="pi pi-download"
-                        :loading="exporting === 'entry-efficiency'"
-                        @click="
-                            downloadArtwork('entry-efficiency')
-                        " /><CardShareActions
-                        title="과거 매수 시점별 배당률 카드"
-                        :text="cardShareText('entry-efficiency')"
-                        :url="publicUrl" />
-                </article>
-            </section>
-            <p v-if="exportError" class="export-error" role="alert">
-                {{ exportError }}
-            </p>
-            <div v-if="shareCopyReady" class="share-copy-notice">
-                <span
-                    >PNG 공유용 문구가 복사되었습니다. 토스·카카오톡에 바로
-                    붙여넣으세요.</span
-                ><button type="button" @click="copyShareText">
-                    이미지 공유용 문구 복사
-                </button>
-            </div>
-            <section v-show="activeTab === 'share'" class="content-grid">
-                <TossCommunityCopy :data="thumbnailData" />
-                <section v-if="selectedInfo.underlying" class="rivals">
-                    <p v-if="!rivalOptions.length" class="hint">
-                        같은 기초자산으로 등록된 비교 후보가 없습니다.
-                    </p>
-                    <p v-else-if="!rivals.length" class="hint">
-                        페이지 헤더에서 라이벌 후보를 최대 {{ maxRivals }}종
-                        선택하세요.
-                    </p>
-                    <p v-else-if="!comparison" class="hint">
-                        공통 가격 이력을 계산하는 중이거나 데이터가 부족합니다.
-                    </p>
-                </section>
-            </section>
+                        label="취소"
+                        severity="secondary"
+                        text
+                        @click="rivalPickerOpen = false" /><Button
+                        label="선택 적용"
+                        icon="pi pi-check"
+                        @click="confirmRivals"
+                /></template>
+            </Dialog>
         </template>
-    </main>
+    </section>
 </template>
 
 <style scoped>
-    .export-error {
-        max-width: 1520px;
-        margin: 16px auto;
-        color: #dc2626;
+    .ticker-thumbnail-page {
+        color: var(--app-text);
+        min-width: 0;
+    }
+    .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+    .page-header > div > .p-button {
+        margin: 0 0 12px -12px;
+    }
+    .stock-identity {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+    }
+    .stock-mark {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 56px;
+        height: 56px;
+        border: 1px solid var(--app-border);
+        border-radius: 16px;
+        background: var(--app-surface);
+        color: var(--app-accent);
+        font-size: 26px;
+        font-weight: 750;
+    }
+    .stock-identity h1 {
+        margin: 0;
+        font-size: 32px;
+    }
+    .stock-full-name {
+        margin: 4px 0;
+        color: var(--app-muted);
+        font-size: 15px;
+    }
+    .stock-identity .studio-muted {
+        font-size: 13px;
     }
     .stock-overview {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
-        max-width: 1520px;
-        margin: 0 auto 12px;
-        position: sticky;
-        top: 0;
-        z-index: 5;
+        gap: 16px;
         background: var(--app-surface);
-        padding: 12px;
         border: 1px solid var(--app-border);
-        border-radius: 14px;
-        box-shadow: 0 4px 12px #00000008;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
     }
     .stock-overview article,
-    .stock-overview button {
+    .next-dividend {
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        padding: 10px;
+        gap: 10px;
         min-width: 0;
-        text-align: left;
     }
     .stock-overview span {
-        font-size: 0.75rem;
+        font-size: 13px;
         color: var(--app-muted);
     }
     .stock-overview strong {
-        font-size: 1.1rem;
+        font-size: 22px;
+        font-variant-numeric: tabular-nums;
         overflow-wrap: anywhere;
     }
     .next-dividend {
         border: 0;
-        border-radius: 9px;
+        text-align: left;
         background: var(--app-surface-muted);
+        border-radius: 12px;
+        padding: 12px;
         color: var(--app-text);
         cursor: pointer;
     }
+    .next-dividend strong {
+        font-size: 17px;
+    }
     .next-dividend em {
+        display: inline-block;
+        font-size: 11px;
         font-style: normal;
-        font-size: 0.65rem;
         color: var(--app-accent);
-        margin-left: 5px;
+        margin-left: 4px;
     }
     .price-up {
-        color: #ef4444;
+        color: var(--app-up);
     }
     .price-down {
-        color: #3b82f6;
+        color: var(--app-down);
     }
     .stock-data-banner {
-        max-width: 1520px;
-        margin: 0 auto 12px;
         display: flex;
-        align-items: center;
-        gap: 8px 18px;
         flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 16px;
         color: var(--app-muted);
-        font-size: 0.72rem;
-        line-height: 1.6;
+        font-size: 12px;
+        margin-bottom: 24px;
     }
     .stock-data-banner > span:first-child {
-        padding: 4px 8px;
         border-radius: 6px;
+        padding: 4px 8px;
         background: var(--app-surface-muted);
-    }
-    .stock-data-banner .stale,
-    .stock-data-banner .partial {
-        color: #b45309;
     }
     .stock-data-banner details {
         max-width: 100%;
@@ -1198,63 +1512,83 @@
     }
     .stock-data-banner p {
         max-width: 680px;
+        line-height: 1.8;
     }
-    .share-selector fieldset {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        border: 0;
-        padding: 18px 0 0;
-        margin: 0;
+    .stock-tabs-root :deep(.p-tabpanels) {
+        background: transparent;
+        padding: 24px 0 0;
     }
-    .share-selector legend {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        clip-path: inset(50%);
+    .stock-tabs-root :deep(.p-tablist-tab-list) {
+        background: transparent;
     }
-    .share-selector label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    .stock-tabs-root :deep(.p-tab) {
+        padding: 16px 24px;
+        min-height: 52px;
+    }
+    .stock-section {
+        padding: 28px;
+        background: var(--app-surface);
         border: 1px solid var(--app-border);
-        padding: 10px 14px;
-        border-radius: 9px;
-        font-size: 0.85rem;
-        cursor: pointer;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        min-width: 0;
     }
-    .share-selector label:has(input:checked) {
-        border-color: var(--app-accent);
+    .stock-section h2 {
+        font-size: 20px;
+        margin: 0 0 16px;
+    }
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin: 24px 0;
+    }
+    .metric-grid article {
+        display: grid;
+        gap: 8px;
         background: var(--app-surface-muted);
+        padding: 18px;
+        border-radius: 12px;
+        min-width: 0;
     }
-    .share-selector .unavailable {
-        opacity: 0.6;
+    .metric-grid span,
+    .metric-grid small {
+        font-size: 13px;
+        color: var(--app-muted);
     }
-    .share-selector small {
-        font-size: 0.65rem;
+    .metric-grid strong {
+        font-size: 22px;
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
     }
-    .share-selector input {
-        accent-color: var(--app-accent);
+    .stock-facts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 24px;
+        margin: 0 0 16px;
     }
-    @media (max-width: 800px) {
-        .stock-overview {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            position: static;
-            padding: 8px;
-            gap: 4px;
-        }
-        .stock-overview strong {
-            font-size: 0.95rem;
-        }
-        .stock-data-banner {
-            font-size: 0.7rem;
-        }
-        .share-selector fieldset {
-            gap: 8px;
-        }
+    .stock-facts div {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--app-border-subtle);
     }
-
+    .stock-facts dt {
+        color: var(--app-muted);
+        flex-shrink: 0;
+    }
+    .stock-facts dd {
+        text-align: right;
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+    .hint {
+        color: var(--app-muted);
+        font-size: 13px;
+        line-height: 1.8;
+        margin: 8px 0;
+    }
     .price-history {
         margin-top: 24px;
         border-top: 1px solid var(--app-border);
@@ -1262,446 +1596,296 @@
     }
     .price-history summary {
         cursor: pointer;
-        font-weight: 700;
+        font-weight: 650;
         margin-bottom: 16px;
     }
-    .stock-insights {
-        max-width: 1520px;
-        margin: 0 auto;
+    .stock-data-table {
+        margin-top: 20px;
+        font-variant-numeric: tabular-nums;
     }
-    .stock-tabs {
-        display: flex;
-        gap: 8px;
-        max-width: 1520px;
-        margin: 0 auto 24px;
-        border-bottom: 1px solid var(--app-border);
-        overflow-x: auto;
-    }
-    .stock-tabs button {
-        white-space: nowrap;
-        background: transparent;
-        color: var(--app-muted);
-        border: 0;
-        border-bottom: 3px solid transparent;
-        padding: 16px 22px;
-        font: inherit;
-        font-weight: 700;
-        cursor: pointer;
-    }
-    .stock-tabs button.selected {
-        color: var(--app-accent);
-        border-bottom-color: var(--app-accent);
-    }
-    .stock-section {
-        max-width: 1520px;
-        margin: 0 auto 24px;
-        padding: 28px;
-        border: 1px solid var(--app-border);
-        border-radius: 18px;
-        background: var(--app-surface);
-    }
-    .stock-section h2 {
-        font-size: 1.15rem;
-        margin: 0 0 16px;
-    }
-    .stock-name {
-        display: block;
-        font-size: 0.95rem;
-        font-weight: 500;
-        color: var(--app-muted);
-        margin-top: 8px;
-    }
-    .metric-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 14px;
-        margin: 24px 0 32px;
-    }
-    .metric-grid article {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 20px;
-        border-radius: 12px;
+    .stock-data-table :deep(th) {
         background: var(--app-surface-muted);
-        min-width: 0;
+        font-size: 13px;
     }
-    .metric-grid span,
-    .metric-grid small {
-        font-size: 0.8rem;
-        color: var(--app-muted);
+    .stock-data-table :deep(td) {
+        font-size: 14px;
+        padding: 14px;
     }
-    .metric-grid strong {
-        font-size: 1.5rem;
-        overflow-wrap: anywhere;
+    .dividend-next {
+        padding: 0 0 24px;
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--app-border);
     }
-    .stock-facts {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 24px;
-        margin: 0 0 24px;
-    }
-    .stock-facts div {
+    .section-heading {
         display: flex;
+        align-items: center;
         justify-content: space-between;
         gap: 16px;
-        padding: 16px 0;
-        border-bottom: 1px solid var(--app-border);
+        flex-wrap: wrap;
+        margin-bottom: 20px;
     }
-    .stock-facts dt {
+    .section-heading h2 {
+        margin: 8px 0;
+    }
+    .schedule-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin: 20px 0;
+    }
+    .schedule-metrics > div {
+        display: grid;
+        gap: 8px;
+    }
+    .schedule-metrics span {
         color: var(--app-muted);
-        flex-shrink: 0;
+        font-size: 13px;
     }
-    .stock-facts dd {
-        margin: 0;
-        text-align: right;
-        overflow-wrap: anywhere;
+    .schedule-metrics strong {
+        font-size: 20px;
+        font-variant-numeric: tabular-nums;
     }
-    .stock-table {
-        max-height: 480px;
-        overflow: auto;
+    .share-controls {
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    .share-controls .studio-field {
+        min-width: 180px;
+    }
+    .selected-rivals {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
         margin-top: 20px;
+        font-size: 13px;
+        color: var(--app-muted);
     }
-    .stock-table table {
-        width: 100%;
-        border-collapse: collapse;
+    .share-selector fieldset {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        border: 0;
+        padding: 8px 0;
+        margin: 0;
     }
-    .stock-table th,
-    .stock-table td {
-        padding: 14px;
-        text-align: left;
-        border-bottom: 1px solid var(--app-border);
+    .share-selector legend {
+        position: absolute;
+        clip-path: inset(50%);
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
     }
-    .stock-table th {
-        position: sticky;
-        top: 0;
+    .share-selector label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: 1px solid var(--app-border);
+        border-radius: 10px;
+        padding: 12px;
+        cursor: pointer;
+        min-height: 48px;
+        font-size: 14px;
+    }
+    .share-selector label:has(:checked) {
+        border-color: var(--app-accent);
         background: var(--app-surface-muted);
     }
-    .stock-table td:last-child,
-    .stock-table th:last-child {
-        text-align: right;
+    .share-selector small {
+        display: block;
+        font-size: 12px;
+        color: var(--app-muted);
     }
-    .dividend-view :deep(.card-share-actions),
-    .dividend-view .artwork-panel > button {
-        display: none;
+    .share-selector .unavailable {
+        opacity: 0.65;
     }
-    @media (max-width: 800px) {
+    .artwork-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr));
+        gap: 24px;
+    }
+    .artwork-panel {
+        display: grid;
+        gap: 12px;
+        min-width: 0;
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
+        padding: 16px;
+        border-radius: 16px;
+        align-content: start;
+    }
+    .artwork-panel :deep(.thumbnail-preview) {
+        margin: auto;
+    }
+    .artwork-panel > .p-button {
+        justify-self: start;
+    }
+    .content-grid {
+        margin-top: 24px;
+        display: grid;
+        gap: 20px;
+    }
+    .preset-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-top: 20px;
+        font-size: 13px;
+    }
+    .preset-row > span {
+        color: var(--app-muted);
+    }
+    .preset-item {
+        display: flex;
+        align-items: center;
+    }
+    .preset-form {
+        display: grid;
+        gap: 12px;
+    }
+    .rival-dialog-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 20px 0;
+    }
+    .share-copy-notice {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
+        padding: 16px;
+        border-radius: 12px;
+        margin-top: 20px;
+    }
+    .share-copy-notice button {
+        min-height: 44px;
+        background: var(--app-accent);
+        color: var(--app-accent-contrast);
+        border: 0;
+        border-radius: 8px;
+        padding: 10px 14px;
+        cursor: pointer;
+    }
+    .export-error {
+        color: var(--p-red-600);
+        margin-block: 20px;
+    }
+    .stock-loading {
+        display: grid;
+        gap: 20px;
+    }
+    .state {
+        min-height: 50vh;
+        display: grid;
+        align-content: center;
+        justify-items: center;
+        gap: 16px;
+        text-align: center;
+    }
+    @media (max-width: 900px) {
         .metric-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .stock-overview {
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
         .stock-facts {
             grid-template-columns: 1fr;
         }
-        .stock-section {
-            padding: 18px;
-        }
-        .stock-tabs button {
-            padding: 14px 8px;
-            flex: 1;
-            font-size: 0.9rem;
-        }
     }
-    @media (max-width: 400px) {
-        .metric-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .candidate-actions {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-top: 12px;
-    }
-    .candidate-actions .hint {
-        font-size: 0.75rem;
-    }
-    .ticker-thumbnail-page {
-        min-height: 100vh;
-        padding: 32px;
-        color: #17212b;
-    }
-    .state {
-        min-height: 60vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 14px;
-    }
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 20px;
-        max-width: 2208px;
-        margin: 0 auto 24px;
-    }
-    .page-header p {
-        margin: 0;
-        color: #0064ff;
-        font-size: 0.75rem;
-        font-weight: 800;
-        letter-spacing: 0.12em;
-    }
-    .page-header h1 {
-        margin: 5px 0 0;
-    }
-    .rival-candidate-picker {
-        min-width: 340px;
-        padding: 14px 16px;
-        border: 1px solid #cbd5e1;
-        border-radius: 14px;
-        background: #fff;
-        box-shadow: 0 4px 14px #15212b0d;
-    }
-    .candidate-heading {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 10px;
-    }
-    .candidate-heading strong {
-        color: #64748b;
-        font-size: 0.72rem;
-    }
-    .candidate-buttons {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 7px;
-    }
-    .candidate-buttons button {
-        min-width: 52px;
-        padding: 8px 10px;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        background: #f8fafc;
-        color: #334155;
-        font:
-            800 0.8rem/1 ui-monospace,
-            monospace;
-        cursor: pointer;
-    }
-    .candidate-buttons button:hover:not(:disabled) {
-        border-color: #2563eb;
-        color: #1d4ed8;
-    }
-    .candidate-buttons button.selected {
-        border-color: #2563eb;
-        background: #2563eb;
-        color: #fff;
-        box-shadow: 0 2px 6px #2563eb3d;
-    }
-    .candidate-buttons button:disabled {
-        opacity: 0.42;
-        cursor: not-allowed;
-    }
-    .artwork-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, 720px);
-        justify-content: center;
-        gap: 24px;
-        max-width: 2208px;
-        margin: auto;
-    }
-    .artwork-panel {
-        display: grid;
-        width: 720px;
-        gap: 12px;
-    }
-    .artwork-panel > button {
-        justify-self: start;
-    }
-    .share-copy-notice {
-        position: sticky;
-        bottom: 16px;
-        z-index: 2;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        width: max-content;
-        max-width: calc(100% - 32px);
-        margin: 24px auto;
-        padding: 12px 15px;
-        border-radius: 12px;
-        background: #17212b;
-        color: #fff;
-        box-shadow: 0 10px 28px #17212b40;
-    }
-    .share-copy-notice button {
-        border: 0;
-        border-radius: 7px;
-        background: #fee500;
-        color: #191919;
-        padding: 8px 10px;
-        font: 700 0.78rem inherit;
-        cursor: pointer;
-    }
-    .content-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 520px) minmax(360px, 1fr);
-        gap: 24px;
-        max-width: 1520px;
-        margin: 32px auto 0;
-        align-items: start;
-    }
-    .rivals {
-        padding: 24px;
-        border-radius: 18px;
-        background: #dfe8f2;
-    }
-    .hint {
-        margin: 0;
-        color: #526274;
-    }
-    @media (max-width: 1000px) {
+    @media (max-width: 767px) {
         .page-header {
             align-items: flex-start;
+            gap: 12px;
             flex-direction: column;
         }
-        .rival-candidate-picker {
+        .page-header > .p-button {
             width: 100%;
-            min-width: 0;
-            box-sizing: border-box;
         }
-        .content-grid {
+        .stock-mark {
+            width: 48px;
+            height: 48px;
+        }
+        .stock-identity {
+            gap: 12px;
+        }
+        .stock-identity h1 {
+            font-size: 28px;
+        }
+        .stock-full-name {
+            font-size: 14px;
+        }
+        .stock-overview {
+            padding: 16px;
+            gap: 20px 12px;
+        }
+        .stock-overview strong {
+            font-size: 20px;
+        }
+        .stock-overview span {
+            font-size: 12px;
+        }
+        .next-dividend {
+            padding: 10px;
+        }
+        .next-dividend strong {
+            font-size: 14px;
+        }
+        .stock-tabs-root :deep(.p-tab) {
+            flex: 1;
+            padding: 14px 8px;
+            font-size: 14px;
+        }
+        .stock-section {
+            padding: 20px 16px;
+        }
+        .stock-section h2 {
+            font-size: 18px;
+        }
+        .metric-grid article {
+            padding: 14px;
+        }
+        .metric-grid strong {
+            font-size: 20px;
+        }
+        .stock-facts div {
+            font-size: 14px;
+        }
+        .schedule-metrics {
             grid-template-columns: 1fr;
         }
-        .artwork-grid {
-            justify-content: start;
-            overflow-x: auto;
-            padding-bottom: 12px;
+        .schedule-metrics > div {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
         }
-    }
-    @media (max-width: 600px) {
-        .ticker-thumbnail-page {
-            padding: 16px;
+        .schedule-metrics strong {
+            font-size: 16px;
         }
-        .candidate-heading {
-            align-items: flex-start;
-            flex-direction: column;
-            gap: 3px;
+        .share-controls {
+            align-items: stretch;
         }
-        .share-copy-notice {
-            align-items: flex-start;
-            flex-direction: column;
+        .share-controls .studio-field {
+            width: 100%;
         }
-    }
-    .ticker-thumbnail-page {
-        color: var(--app-text);
-    }
-    .page-header p {
-        color: var(--app-accent);
-    }
-    .data-toolbar {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-    .data-toolbar label {
-        font-size: 0.78rem;
-        font-weight: 700;
-    }
-    .data-toolbar select {
-        margin-left: 5px;
-        padding: 7px;
-        border: 1px solid var(--app-border);
-        border-radius: 7px;
-        background: var(--app-surface);
-        color: var(--app-text);
-    }
-    .data-status {
-        padding: 8px 10px;
-        border-radius: 8px;
-        background: var(--app-surface-muted);
-        color: var(--app-muted) !important;
-        letter-spacing: 0 !important;
-    }
-    .data-status.stale,
-    .data-status.partial {
-        background: #fff7ed;
-        color: #9a3412 !important;
-    }
-    .preset-row {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 5px;
-        max-width: 2208px;
-        margin: 0 auto 18px;
-        font-size: 0.75rem;
-    }
-    .preset-row span {
-        margin-right: 5px;
-        color: var(--app-muted);
-        font-weight: 700;
-    }
-    .preset-row button {
-        padding: 6px 8px;
-        border: 1px solid var(--app-border);
-        border-radius: 7px;
-        background: var(--app-surface);
-        color: var(--app-text);
-        cursor: pointer;
-    }
-    .preset-row .preset-delete {
-        margin-left: -6px;
-        border-left: 0;
-        color: var(--app-muted);
-    }
-    .rival-candidate-picker {
-        border-color: var(--app-border);
-        background: var(--app-surface);
-        box-shadow: none;
-    }
-    .candidate-heading strong,
-    .hint {
-        color: var(--app-muted);
-    }
-    .candidate-buttons button {
-        border-color: var(--app-border);
-        background: var(--app-surface-muted);
-        color: var(--app-text);
-    }
-    .candidate-buttons button:hover:not(:disabled) {
-        border-color: var(--app-accent);
-        color: var(--app-accent);
-    }
-    .candidate-buttons button.selected {
-        border-color: var(--app-accent);
-        background: var(--app-accent);
-        color: var(--app-accent-contrast);
-        box-shadow: none;
-    }
-    .share-copy-notice {
-        background: var(--app-surface);
-        color: var(--app-text);
-        border: 1px solid var(--app-border);
-        box-shadow: 0 10px 28px var(--app-overlay);
-    }
-    .share-copy-notice button {
-        background: var(--app-accent);
-        color: var(--app-accent-contrast);
-    }
-    .rivals {
-        background: var(--app-surface-muted);
-        border: 1px solid var(--app-border-subtle);
-    }
-    .artwork-grid {
-        grid-template-columns: repeat(
-            auto-fit,
-            minmax(min(100%, 720px), 720px)
-        );
-        overflow-x: visible;
-        max-width: 1520px;
-    }
-    .artwork-panel {
-        width: 100%;
-        min-width: 0;
+        .share-selector label {
+            width: 100%;
+        }
+        .section-heading > .p-button {
+            width: 100%;
+        }
+        .artwork-panel {
+            padding: 12px;
+        }
+        .stock-data-banner {
+            font-size: 12px;
+            gap: 8px;
+        }
     }
 </style>

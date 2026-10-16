@@ -110,7 +110,7 @@ try {
             },
         })
     );
-    await page.getByRole('button', { name: '시세정보', exact: true }).click();
+    await page.getByRole('tab', { name: '시세정보', exact: true }).click();
     await page.locator('.candle-plot').waitFor();
     assert.ok(await page.locator('.stock-overview').isVisible());
     assert.equal(await page.locator('.chart-event circle.split').count(), 1);
@@ -156,14 +156,27 @@ try {
     await page
         .getByRole('heading', { name: '시세 이력', exact: true })
         .waitFor();
-    assert.equal(await page.locator('.stock-table tbody tr').count(), 16);
-    await page.getByRole('button', { name: '배당정보', exact: true }).click();
+    assert.equal(
+        await page
+            .getByRole('table', { name: '일별 종가 이력', exact: true })
+            .locator('tbody tr')
+            .count(),
+        16
+    );
+    await page.getByRole('tab', { name: '배당정보', exact: true }).click();
     await page
         .getByRole('heading', { name: '월별 배당 흐름', exact: true })
         .waitFor();
     assert.equal(await page.locator('.month-bar').count(), 12);
     await page.getByRole('button', { name: '24개월', exact: true }).click();
     assert.equal(await page.locator('.month-bar').count(), 24);
+    await page.getByRole('tab', { name: '공유정보', exact: true }).click();
+    await page
+        .getByRole('button', { name: '요약 PNG 다운로드', exact: true })
+        .waitFor({ state: 'visible' });
+    await page
+        .getByRole('checkbox', { name: '배당 일정', exact: true })
+        .check();
     await page.locator('.cycle article').first().waitFor();
     assert.equal(await page.locator('.cycle article').count(), 5);
     assert.ok(await page.getByText('W-2', { exact: true }).isVisible());
@@ -172,10 +185,9 @@ try {
         .click();
     assert.ok(await page.getByText('W+3', { exact: true }).isVisible());
     assert.equal(await page.locator('.cycle article').count(), 5);
-    await page.getByRole('button', { name: '공유정보', exact: true }).click();
     await page
-        .getByRole('button', { name: '요약 PNG 다운로드', exact: true })
-        .waitFor({ state: 'visible' });
+        .getByRole('checkbox', { name: '배당 일정', exact: true })
+        .uncheck();
     await page
         .getByRole('checkbox', { name: '배당 비교', exact: true })
         .check();
@@ -224,7 +236,7 @@ try {
         assert.equal(png.readUInt32BE(16), 720, name);
         assert.equal(png.readUInt32BE(20), 720, name);
     }
-    await page.getByRole('button', { name: '상세정보', exact: true }).click();
+    await page.getByRole('tab', { name: '상세정보', exact: true }).click();
     await page
         .locator('.holding-panel')
         .getByText('로그인', { exact: true })
@@ -243,29 +255,50 @@ try {
     await page.route('**/src/services/firebaseClient.js*', (r) =>
         r.fulfill({
             contentType: 'application/javascript',
-            body: "import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'fixture-owner',getIdToken:async()=> 'fixture-token'}),authLoading=ref(false),firebaseReady=false,db=null,auth=null;export const signedIn=computed(()=>true);",
+            body: "import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'fixture-owner',getIdToken:async()=> 'fixture-token'}),authLoading=ref(false),firebaseReady=false,db=null,auth=null,googleProvider=null;export const signedIn=computed(()=>true);",
         })
     );
     let familyRequests = 0;
     await page.route('**/api/family-portfolio**', (r) => {
-        assert.equal(r.request().headers().authorization, 'Bearer fixture-token');
+        assert.equal(
+            r.request().headers().authorization,
+            'Bearer fixture-token'
+        );
         familyRequests++;
-        return r.fulfill({ json: {
-            families: [{ id: 'fixture-family', profiles: {
-                'fixture-profile': { uid: 'fixture-owner', name: '테스트 본인' },
-            } }],
-            accounts: [{ id: 'fixture-account', alias: '테스트 계좌' }],
-            summary: { positions: [{ familyId: 'fixture-family', ownerId: 'fixture-profile',
-                accountId: 'fixture-account', symbol: 'TOPW', quantity: 10,
-                amount: 13000, currency: 'KRW', asOf: '2026-10-15', source: '테스트 잔고 자료',
-            }] },
-        } });
+        return r.fulfill({
+            json: {
+                families: [
+                    {
+                        id: 'fixture-family',
+                        profiles: {
+                            'fixture-profile': {
+                                uid: 'fixture-owner',
+                                name: '테스트 본인',
+                            },
+                        },
+                    },
+                ],
+                accounts: [{ id: 'fixture-account', alias: '테스트 계좌' }],
+                summary: {
+                    positions: [
+                        {
+                            familyId: 'fixture-family',
+                            ownerId: 'fixture-profile',
+                            accountId: 'fixture-account',
+                            symbol: 'TOPW',
+                            quantity: 10,
+                            amount: 13000,
+                            currency: 'KRW',
+                            asOf: '2026-10-15',
+                            source: '테스트 잔고 자료',
+                        },
+                    ],
+                },
+            },
+        });
     });
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await page
-        .locator('.holding-panel')
-        .getByText('테스트 본인 · 테스트 계좌 · 10주', { exact: false })
-        .waitFor();
+    await page.locator('.holding-panel').getByText(/10주/).first().waitFor();
     assert.ok(
         (await page.locator('.holding-panel').innerText()).includes('13,000')
     );
@@ -273,7 +306,11 @@ try {
         (await page.locator('.holding-panel').innerText()).includes('KRW')
     );
     assert.equal(familyRequests, 2);
-    assert.ok((await page.locator('.holding-panel').innerText()).includes('2026-10-15'));
+    assert.ok(
+        (await page.locator('.holding-panel').innerText()).includes(
+            '2026-10-15'
+        )
+    );
     await page.screenshot({
         path: '/tmp/stock-holding-mobile.png',
         fullPage: true,

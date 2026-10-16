@@ -39,20 +39,30 @@ try {
         route.fulfill({ json: { history: [] } })
     );
     await page.goto('http://127.0.0.1:5173/stock/TSLY?tab=share');
-    const picker = page.locator('.rival-candidate-picker');
+    await page
+        .getByRole('button', { name: '비교 종목 선택', exact: true })
+        .click();
+    const picker = page.getByRole('dialog', {
+        name: '비교 종목 선택',
+        exact: true,
+    });
     await picker.waitFor();
     const before = calls.length;
     await picker.getByRole('button', { name: 'TSII', exact: true }).click();
     await picker.getByRole('button', { name: 'CRSH', exact: true }).click();
     assert.equal(calls.length, before);
-    await picker.getByRole('button', { name: '확인', exact: true }).click();
-    await page.waitForFunction(() => !document.querySelector('.state'));
+    await picker
+        .getByRole('button', { name: '선택 적용', exact: true })
+        .click();
+    await page.getByRole('tab', { name: '공유정보', exact: true }).waitFor();
     assert.equal(calls.length, before + 1);
     assert.equal(
         new URL(calls.at(-1)).searchParams.get('rivals'),
         'TSLW,TSYY,CRSH'
     );
-    await picker.getByRole('button', { name: '추가', exact: true }).click();
+    await page
+        .getByRole('button', { name: '비교 종목 선택', exact: true })
+        .click();
     await picker.getByRole('button', { name: 'CRSH', exact: true }).waitFor();
     assert.equal(calls.length, before + 1);
     const changed = page.waitForRequest(
@@ -69,7 +79,7 @@ try {
         });
     });
     await changed;
-    await page.waitForFunction(() => !document.querySelector('.state'));
+    await page.getByRole('tab', { name: '공유정보', exact: true }).waitFor();
     assert.equal(calls.length, before + 2);
     assert.equal(new URL(calls.at(-1)).searchParams.get('rivals'), 'TEST');
     const restored = page.waitForRequest(
@@ -79,7 +89,7 @@ try {
     );
     await page.goBack();
     await restored;
-    await page.waitForFunction(() => !document.querySelector('.state'));
+    await page.getByRole('tab', { name: '공유정보', exact: true }).waitFor();
     assert.equal(calls.length, before + 3);
     assert.equal(
         new URL(calls.at(-1)).searchParams.get('rivals'),

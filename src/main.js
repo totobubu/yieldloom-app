@@ -12,7 +12,7 @@ import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
 import './styles/style.scss';
-
+import './styles/studio.scss';
 
 import { MyPreset } from '@/config/theme';
 import ko from '@/config/locale/ko';
@@ -37,6 +37,5 @@ app.use(PrimeVue, {
 app.use(ToastService);
 app.use(ConfirmationService);
 app.directive('tooltip', Tooltip);
-
 
 app.mount('#app');

@@ -1,0 +1,525 @@
+{
+  "projectId": "8070217465176687716",
+  "inventoryDateKst": "2026-10-16",
+  "totalScreens": 56,
+  "counts": {
+    "spreadsheet_io": 3,
+    "matched_core": 11,
+    "portfolio_calendar": 5,
+    "card_design_variants": 17,
+    "share_handoff": 2,
+    "import_success_state": 2,
+    "matched_share_workspace": 3,
+    "dividend_simulator": 6,
+    "manual_position_editor": 2,
+    "simulation_tax_comparison": 1,
+    "broker_connection": 2,
+    "tax_calculator": 2
+  },
+  "screens": [
+    {
+      "screenId": "418032bbedc34678b52464465ec5a9b1",
+      "title": "00 공통 디자인 가이드 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "aafb1c60331c44cfa99d6e8a901d1ebb",
+      "title": "05. ETF·주식 검색 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "6329d0b0844e49788987f4b9f982d413",
+      "title": "06. ETF·주식 검색 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "90966553fa7b4a4193c641d8c66ec085",
+      "title": "07. 내 포트폴리오 대시보드 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "12be0792a0a74eefaf3feb92349b0d86",
+      "title": "07. 내 포트폴리오 대시보드 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "98f5e8d0ead04fc08e72ad49bdfe118a",
+      "title": "07. 내 포트폴리오 대시보드 - 엑셀 등록 반영 완료 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "import_success_state",
+      "classificationKo": "엑셀 등록 반영 완료 상태",
+      "decision": "저장 완료 상태는 재사용 가능, 실제 xlsx 입력은 미지원",
+      "priority": "P1"
+    },
+    {
+      "screenId": "2de598b30c7147368846b7c8e0cd5a40",
+      "title": "07. 내 포트폴리오 대시보드 - 엑셀 등록 반영 완료 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "import_success_state",
+      "classificationKo": "엑셀 등록 반영 완료 상태",
+      "decision": "저장 완료 상태는 재사용 가능, 실제 xlsx 입력은 미지원",
+      "priority": "P1"
+    },
+    {
+      "screenId": "d96ead1030474a2a8f2f2a739d163aa6",
+      "title": "08. 배당 캘린더 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "portfolio_calendar",
+      "classificationKo": "개인 배당 캘린더·연간 타임라인",
+      "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
+      "priority": "P1"
+    },
+    {
+      "screenId": "7d1ceba7c2b14150b5fd56ff127a0123",
+      "title": "08. 배당 캘린더 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "portfolio_calendar",
+      "classificationKo": "개인 배당 캘린더·연간 타임라인",
+      "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
+      "priority": "P1"
+    },
+    {
+      "screenId": "e1b068d9248449738a8adf924f87e5ef",
+      "title": "08. 배당 캘린더 - 엑셀 등록 반영 완료 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "portfolio_calendar",
+      "classificationKo": "개인 배당 캘린더·연간 타임라인",
+      "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
+      "priority": "P1"
+    },
+    {
+      "screenId": "0dab3d96c3b246319533add429aa03b7",
+      "title": "08. 배당 캘린더 - 연간 타임라인 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "portfolio_calendar",
+      "classificationKo": "개인 배당 캘린더·연간 타임라인",
+      "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
+      "priority": "P1"
+    },
+    {
+      "screenId": "e7437771785341b88431c651cadd6e70",
+      "title": "08. 배당 캘린더 - 연간 타임라인 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "portfolio_calendar",
+      "classificationKo": "개인 배당 캘린더·연간 타임라인",
+      "decision": "종목 일정과 권한 있는 잔고를 연결하는 신규 화면",
+      "priority": "P1"
+    },
+    {
+      "screenId": "64030daa7a6548c299ac6ac4ca0b655f",
+      "title": "09. 포트폴리오 종목 추가/수정 모달 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "manual_position_editor",
+      "classificationKo": "포트폴리오 종목 직접 추가·수정",
+      "decision": "계좌 등록과 다른 기능, 잔고 스냅샷/거래 원장 정책 필요",
+      "priority": "P2"
+    },
+    {
+      "screenId": "43ee1b3bc3064f7f90f171104a865fec",
+      "title": "09. 포트폴리오 종목 추가/수정 모달 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "manual_position_editor",
+      "classificationKo": "포트폴리오 종목 직접 추가·수정",
+      "decision": "계좌 등록과 다른 기능, 잔고 스냅샷/거래 원장 정책 필요",
+      "priority": "P2"
+    },
+    {
+      "screenId": "897135fdad6b4d4d84b814080d4b84bd",
+      "title": "10 & 12. 배당 시뮬레이터 × 세무 계산기 연계 - 세후 실수령액 비교 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "simulation_tax_comparison",
+      "classificationKo": "시뮬레이터·세무 비교 결합",
+      "decision": "시뮬레이터와 제한된 세금 계산 계약 확정 후 통합",
+      "priority": "P3"
+    },
+    {
+      "screenId": "5823bb37327948a4aae27e755818dca3",
+      "title": "10. 배당 시뮬레이터 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "dividend_simulator",
+      "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
+      "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
+      "priority": "P2"
+    },
+    {
+      "screenId": "2c5a9bb741604efd8c19c2c2940f0fc9",
+      "title": "10. 배당 시뮬레이터 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "dividend_simulator",
+      "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
+      "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
+      "priority": "P2"
+    },
+    {
+      "screenId": "cc1e1fdc33b348458f7feac1bb6e4720",
+      "title": "10. 배당 시뮬레이터 - 12개월 무공백 복리 재투자 시뮬레이션 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "dividend_simulator",
+      "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
+      "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
+      "priority": "P2"
+    },
+    {
+      "screenId": "e0f63a32c9744f5a93462bd3f40ec556",
+      "title": "10. 배당 시뮬레이터 - 12개월 무공백 복리 재투자 시뮬레이션 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "dividend_simulator",
+      "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
+      "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
+      "priority": "P2"
+    },
+    {
+      "screenId": "50474d1de7b94975bd5efa76fec79ea5",
+      "title": "10. 배당 시뮬레이터 - A vs B 시나리오 비교 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "dividend_simulator",
+      "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
+      "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
+      "priority": "P2"
+    },
+    {
+      "screenId": "0656f26d986a426798678a3527b133cc",
+      "title": "10. 배당 시뮬레이터 - A vs B 시나리오 비교 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "dividend_simulator",
+      "classificationKo": "배당 시뮬레이터·A/B·복리 재투자",
+      "decision": "명시적 가정 기반의 별도 계산 엔진 필요",
+      "priority": "P2"
+    },
+    {
+      "screenId": "311411b415e54ffe941cb268c9acd7a2",
+      "title": "11. 마이데이터 증권사 계좌 연동 관리 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "broker_connection",
+      "classificationKo": "마이데이터 증권사 계좌 연동",
+      "decision": "공급자 계약·고객 동의·서버 토큰 관리 전제",
+      "priority": "P3"
+    },
+    {
+      "screenId": "d348e371ca8a43c29d87f2bfc6c824cb",
+      "title": "11. 마이데이터 증권사 계좌 연동 관리 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "broker_connection",
+      "classificationKo": "마이데이터 증권사 계좌 연동",
+      "decision": "공급자 계약·고객 동의·서버 토큰 관리 전제",
+      "priority": "P3"
+    },
+    {
+      "screenId": "4808a36666c3418e8ed6b3d8127e6d6f",
+      "title": "12. 배당 세무 및 절세 계산기 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "tax_calculator",
+      "classificationKo": "배당 세무·절세 계산기",
+      "decision": "단순 세후 예상과 연간 실제 세무 계산을 분리",
+      "priority": "P3"
+    },
+    {
+      "screenId": "5e81158ac72c4e278b3d41d535b75b25",
+      "title": "12. 배당 세무 및 절세 계산기 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "tax_calculator",
+      "classificationKo": "배당 세무·절세 계산기",
+      "decision": "단순 세후 예상과 연간 실제 세무 계산을 분리",
+      "priority": "P3"
+    },
+    {
+      "screenId": "9d71572c7a3d49e9984ec2cc2c45cd56",
+      "title": "13. 종목 상세 공통 헤더 및 4개 탭 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "20a54a408b1b47b5bac423c1819c0a10",
+      "title": "14. 종목 상세 - 상세정보 탭 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "6c0ef4a1f2104fb7bf6940cfccf52b99",
+      "title": "15. 종목 상세 - 시세정보 탭 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "d5ff600c1d7140379ad48c5a4ae59b34",
+      "title": "16. 종목 상세 - 배당정보 탭 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "8ab98754f6b5497288e08afd4fdb4413",
+      "title": "17. 종목 상세 - 공유정보 탭 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "f0e580683e394bc5a6e958d5008e8a7d",
+      "title": "18. 배당 카드 공유 스튜디오 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "matched_share_workspace",
+      "classificationKo": "공유 작업실과 부분 매칭",
+      "decision": "기존 공유 탭에 작업 흐름 반영, 전체 시안의 세부 기능은 별도",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "60aeaef765814c7aad16afd65f4d5b66",
+      "title": "18. 배당 카드 공유 스튜디오 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "matched_share_workspace",
+      "classificationKo": "공유 작업실과 부분 매칭",
+      "decision": "기존 공유 탭에 작업 흐름 반영, 전체 시안의 세부 기능은 별도",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "439fd22200d04075b86962da5d4c4df5",
+      "title": "18. 배당 카드 공유 스튜디오 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "matched_share_workspace",
+      "classificationKo": "공유 작업실과 부분 매칭",
+      "decision": "기존 공유 탭에 작업 흐름 반영, 전체 시안의 세부 기능은 별도",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "8a134cd0d792443f8386453df8262c39",
+      "title": "18. 배당 카드 공유 스튜디오 - 12개월 무공백 달성 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "8051543b69494aeda8065cb2dc9a2974",
+      "title": "18. 배당 카드 공유 스튜디오 - 12개월 무공백 달성 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "84bcde630069498f8b8ff67a28da19e6",
+      "title": "18. 배당 카드 공유 스튜디오 - 모던 글래스 블루 에디션 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "0cd2a7d3f75c43da9043d84eb007ebc0",
+      "title": "18. 배당 카드 공유 스튜디오 - 모던 글래스 블루 에디션 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "2d817467460342ae9c36ecde7e31bb15",
+      "title": "18. 배당 카드 공유 스튜디오 - 무공백 골드 에디션 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "a6b3e0f9e92249dcb68ffd3118360395",
+      "title": "18. 배당 카드 공유 스튜디오 - 영수증(Ticket) 달성률 100% 퍼센트 모드 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "49c6bb70f5e54b568d0ab986639caa30",
+      "title": "18. 배당 카드 공유 스튜디오 - 영수증(Ticket) 달성률 100% 퍼센트 모드 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "a3684b54b4614240a5b107e64358bb24",
+      "title": "18. 배당 카드 공유 스튜디오 - 영수증(Ticket) 절세 방어 에디션 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "b851b862b725457e9d82209d15e48888",
+      "title": "18. 배당 카드 공유 스튜디오 - 영수증(Ticket) 절세 방어 에디션 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "a291e50652da4be69ea6887456da0a47",
+      "title": "18. 배당 카드 공유 스튜디오 - 영수증(Ticket) 프라이버시 마스킹 에디션 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "03f0ba3a493344c388ed8a5598ffa087",
+      "title": "18. 배당 카드 공유 스튜디오 - 와이드 16:9 비율 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "4226d85e4ab5437b888dffafe73db679",
+      "title": "18. 배당 카드 공유 스튜디오 - 와이드 16:9 비율 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "316352aece0b40c7ada6f81e8b86ea8b",
+      "title": "18. 배당 카드 공유 스튜디오 - 월스트리트 다크 달성률 100% 퍼센트 모드 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "02cad378573448e8960e0173741611bd",
+      "title": "18. 배당 카드 공유 스튜디오 - 인스타그램 스토리 공유 완료 바텀시트 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "share_handoff",
+      "classificationKo": "공유 후 안내 확장",
+      "decision": "OS 공유/다운로드 안내 가능, 인스타 게시 완료 단정 불가",
+      "priority": "P1"
+    },
+    {
+      "screenId": "160ff5006b6b42fd9563f2c9c500c9ea",
+      "title": "18. 배당 카드 공유 스튜디오 - 인스타그램 스토리 공유 완료 팝업 및 토스트 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "share_handoff",
+      "classificationKo": "공유 후 안내 확장",
+      "decision": "OS 공유/다운로드 안내 가능, 인스타 게시 완료 단정 불가",
+      "priority": "P1"
+    },
+    {
+      "screenId": "7d6e92f835484764a4bc9bd2e9461041",
+      "title": "18. 배당 카드 공유 스튜디오 - 절세 방어 성공 에디션 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "779c8b10faa44366935a206309f852e4",
+      "title": "18. 배당 카드 공유 스튜디오 - 절세 방어 성공 에디션 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "2a5e3de2cdeb481f8e445b897cc17c88",
+      "title": "18. 배당 카드 공유 스튜디오 - 피드 1:1 정사각 비율 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "01a94f9637784ffe91bcf7b91eb7bfe6",
+      "title": "18. 배당 카드 공유 스튜디오 - 피드 1:1 정사각 비율 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "card_design_variants",
+      "classificationKo": "공유 카드 스타일·비율 변형",
+      "decision": "독립 신규 기능보다 카드 템플릿/출력 옵션 확장",
+      "priority": "P1"
+    },
+    {
+      "screenId": "fe08a70e80604fcdbe20545c0faeca63",
+      "title": "종목 상세 4개 탭 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "matched_core",
+      "classificationKo": "기존 화면과 매칭",
+      "decision": "공통 디자인과 현재 기능으로 반영",
+      "priority": "반영 범위"
+    },
+    {
+      "screenId": "b5d85cfbd853468c855f71b3ff54da17",
+      "title": "포트폴리오 엑셀 일괄 내보내기/다운로드 모달 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "spreadsheet_io",
+      "classificationKo": "엑셀 일괄 등록·내보내기",
+      "decision": "CSV/PDF 업로드를 확장, xlsx 파서/작성기와 검증 추가",
+      "priority": "P1"
+    },
+    {
+      "screenId": "90545a6bce0949128ed656438e974f8d",
+      "title": "포트폴리오 엑셀 일괄 등록 모달 (모바일)",
+      "deviceType": "MOBILE",
+      "classification": "spreadsheet_io",
+      "classificationKo": "엑셀 일괄 등록·내보내기",
+      "decision": "CSV/PDF 업로드를 확장, xlsx 파서/작성기와 검증 추가",
+      "priority": "P1"
+    },
+    {
+      "screenId": "fb93ea28550d4e87a0a923a7b005daea",
+      "title": "포트폴리오 엑셀 일괄 업로드/다운로드 모달 (데스크톱 1440px)",
+      "deviceType": "DESKTOP",
+      "classification": "spreadsheet_io",
+      "classificationKo": "엑셀 일괄 등록·내보내기",
+      "decision": "CSV/PDF 업로드를 확장, xlsx 파서/작성기와 검증 추가",
+      "priority": "P1"
+    }
+  ]
+}

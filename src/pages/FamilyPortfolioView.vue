@@ -5,10 +5,50 @@
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { useRouter } from 'vue-router';
+    import Button from 'primevue/button';
+    import Card from 'primevue/card';
+    import Panel from 'primevue/panel';
+    import InputText from 'primevue/inputtext';
+    import Select from 'primevue/select';
+    import SelectButton from 'primevue/selectbutton';
+    import Message from 'primevue/message';
+    import Tag from 'primevue/tag';
+    import Tabs from 'primevue/tabs';
+    import TabList from 'primevue/tablist';
+    import Tab from 'primevue/tab';
+    import TabPanels from 'primevue/tabpanels';
+    import TabPanel from 'primevue/tabpanel';
+    import Dialog from 'primevue/dialog';
+    import DataTable from 'primevue/datatable';
+    import Column from 'primevue/column';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import { familyRequest } from '@/services/familyPortfolio';
 
     const router = useRouter();
+    const portfolioTab = ref('overview');
+    const scopeOptions = [
+        { label: '내 계좌', value: 'personal' },
+        { label: '가족 포트폴리오', value: 'family' },
+    ];
+    const accountTypeOptions = [
+        { label: '일반', value: 'general' },
+        { label: 'ISA', value: 'isa' },
+        { label: '연금', value: 'pension' },
+        { label: '기타', value: 'other' },
+    ];
+    const roleOptions = [
+        { label: '조회', value: 'viewer' },
+        { label: '조회·업로드', value: 'editor' },
+        { label: '공유 취소', value: 'none' },
+    ];
+    const kindOptions = [
+        { label: '거래내역', value: 'transactions' },
+        { label: '잔고내역', value: 'holdings' },
+    ];
+    const formatOptions = [
+        { label: '표준 CSV', value: 'standard-csv' },
+        { label: '토스 거래내역 PDF', value: 'toss-pdf' },
+    ];
     const families = ref([]),
         familyId = ref(''),
         accounts = ref([]),
@@ -48,7 +88,7 @@
     const capitalLoading = ref(false),
         capitalError = ref(''),
         fundingEntry = ref(null),
-        fundingDialog = ref(null),
+        fundingDialog = ref(false),
         fundingMessage = ref('');
     let capitalGeneration = 0,
         capitalScope = '';
@@ -91,7 +131,7 @@
         [selectedAccount, firebaseUser],
         () => {
             fundingEntry.value = null;
-            fundingDialog.value?.close();
+            fundingDialog.value = false;
             loadCapital();
         },
         { immediate: true }
@@ -104,7 +144,7 @@
         };
         fundingMessage.value = '';
         await nextTick();
-        fundingDialog.value?.showModal();
+        fundingDialog.value = true;
     }
     async function fundingSaved() {
         await loadCapital();
@@ -316,7 +356,11 @@
             accountsState.value = 'loading';
             accountLoadError.value = '';
             if (waiting) return;
-            if (!user) router.replace('/login');
+            if (!user)
+                router.replace({
+                    path: '/login',
+                    query: { redirect: '/mypage' },
+                });
             else run(refresh);
         },
         { immediate: true }
@@ -500,850 +544,1302 @@
 
 <template>
     <div class="family-page">
-        <header>
-            <h1>내 포트폴리오</h1>
-            <p>본인 명의 계좌를 등록하고 보유·거래 내역을 확인하세요.</p>
-            <router-link to="/mypage/legacy"
-                >이전 단일 계좌 자료 보기</router-link
-            >
-            <button :disabled="busy" @click="run(refresh)">새로고침</button>
+        <header class="portfolio-heading">
+            <div>
+                <span class="studio-eyebrow"
+                    ><i class="pi pi-wallet" aria-hidden="true" /> MY
+                    PORTFOLIO</span
+                >
+                <h1>내 포트폴리오</h1>
+                <p>내 계좌의 기록을 모아, 투자 흐름을 살펴보세요.</p>
+            </div>
+            <div class="portfolio-actions">
+                <Button
+                    label="새로고침"
+                    icon="pi pi-refresh"
+                    severity="secondary"
+                    outlined
+                    :loading="busy"
+                    @click="run(refresh)" /><Button
+                    label="자료 업로드"
+                    icon="pi pi-upload"
+                    :disabled="
+                        !activeAccount ||
+                        !editableAccounts.some((a) => a.id === selectedAccount)
+                    "
+                    @click="portfolioTab = 'upload'" />
+            </div>
         </header>
-        <p v-if="error" role="alert" class="error">{{ error }}</p>
-        <p v-if="message" role="status">{{ message }}</p>
-        <p v-if="busy" role="status">처리 중…</p>
-        <div v-if="accountsState === 'error'" role="alert" class="error">
-            <p>{{ accountLoadError }}</p>
+        <Message v-if="error" severity="error" :closable="false">{{
+            error
+        }}</Message>
+        <Message v-if="message" severity="success" :closable="false">{{
+            message
+        }}</Message>
+        <Message v-if="busy" severity="info" :closable="false"
+            >자료를 처리하고 있습니다.</Message
+        >
+        <Message
+            v-if="accountsState === 'error'"
+            severity="error"
+            :closable="false"
+            ><p>{{ accountLoadError }}</p>
             <p>
                 계좌 목록 조회에 실패했습니다. 등록된 계좌가 없다는 뜻이
                 아닙니다. 기존 계좌나 PDF를 다시 등록할 필요는 없습니다.
             </p>
+            <Button
+                label="계좌 목록 다시 시도"
+                severity="danger"
+                outlined
+                :loading="busy"
+                @click="run(refresh)"
+        /></Message>
+        <div class="portfolio-scope">
+            <SelectButton
+                v-model="portfolioScope"
+                :options="scopeOptions"
+                option-label="label"
+                option-value="value"
+                :allow-empty="false"
+                :disabled="busy"
+                aria-label="포트폴리오 범위" /><Tag
+                value="업로드 자료 기준"
+                severity="secondary" />
         </div>
-        <nav v-if="space" aria-label="포트폴리오 범위">
-            <button
-                :disabled="busy"
-                :aria-pressed="portfolioScope === 'personal'"
-                @click="portfolioScope = 'personal'">
-                내 계좌
-            </button>
-            <button
-                :disabled="busy"
-                :aria-pressed="portfolioScope === 'family'"
-                @click="portfolioScope = 'family'">
-                가족 포트폴리오
-            </button>
-        </nav>
-        <template v-if="space">
-            <AccountRecoveryOverview
-                :user="firebaseUser"
-                :accounts="visibleAccounts"
-                :refresh-state="capital" />
-            <section v-if="activeAccount" aria-label="회수 현황 계좌 선택">
-                <label
-                    >회수 현황을 볼 계좌
-                    <select v-model="selectedAccount" :disabled="busy">
-                        <option
-                            v-for="a in visibleAccounts"
-                            :key="a.id"
-                            :value="a.id">
-                            {{ ownerName(a.ownerId) }} / {{ a.alias }}
-                        </option>
-                    </select>
-                </label>
-                <p>선택한 계좌의 전체 저장 내역 기준입니다.</p>
-            </section>
-            <PortfolioCapitalPanel
-                v-if="activeAccount"
-                :key="`${ownUid}-${selectedAccount}`"
-                :user="firebaseUser"
-                :account-id="selectedAccount"
-                :state="capital"
-                :loading="capitalLoading"
-                :error="capitalError"
-                :read-only="
-                    !editableAccounts.some((a) => a.id === selectedAccount)
-                "
-                @refresh="loadCapital" />
-        </template>
-        <details class="family-options">
-            <summary>가족 추가·관리 (선택)</summary>
-            <section>
-                <h2>가족 공간 만들기 / 참여</h2>
-                <label
-                    >내 프로필 이름 <input v-model="myName" maxlength="100"
-                /></label>
-                <form @submit.prevent="createFamily">
-                    <label
-                        >가족 이름
-                        <input
-                            v-model="newFamily"
-                            required
-                            maxlength="100" /></label
-                    ><button :disabled="busy">공간 만들기</button>
-                </form>
-                <form @submit.prevent="join">
-                    <label
-                        >초대 코드
-                        <input
-                            v-model="joinToken"
-                            required
-                            autocomplete="off" /></label
-                    ><button :disabled="busy">본인 계정으로 참여</button>
-                </form>
-            </section>
-            <section v-if="space">
-                <h2>가족·구성원 관리</h2>
-                <label
-                    >가족 공간
-                    <select v-model="familyId" :disabled="busy">
-                        <option v-for="f in families" :key="f.id" :value="f.id">
-                            {{ f.name }}
-                        </option>
-                    </select></label
-                >
-                <form
-                    v-if="space.adminUid === ownUid"
-                    @submit.prevent="
-                        mutate('renameFamily', { name: space.name })
-                    ">
-                    <label
-                        >공간 이름
-                        <input
-                            v-model="space.name"
-                            required
-                            maxlength="100" /></label
-                    ><button :disabled="busy">이름 저장</button>
-                </form>
-                <ul>
-                    <li v-for="p in profiles" :key="p.id">
-                        {{ p.name }} ·
-                        {{
-                            p.kind === 'minor'
-                                ? '미성년 · 보호자 관리'
-                                : '성인 · 본인 참여'
-                        }}
-                        <form
-                            v-if="ownProfiles.some((o) => o.id === p.id)"
-                            @submit.prevent="
-                                mutate('renameProfile', {
-                                    profileId: p.id,
-                                    name: p.name,
-                                })
-                            ">
-                            <label
-                                >프로필 이름
-                                <input v-model="p.name" required /></label
-                            ><button :disabled="busy">수정</button>
-                        </form>
-                    </li>
-                </ul>
-                <button
-                    v-if="space.adminUid === ownUid"
-                    :disabled="busy"
-                    @click="mutate('invite', {})">
-                    성인 초대 코드 발급
-                </button>
-                <p v-if="invitation">
-                    48시간 · 1회용 코드 (직접 전달):
-                    <code>{{ invitation }}</code>
-                </p>
-                <form
-                    @submit.prevent="
-                        mutate('addMinor', {
-                            name: childName,
-                            guardianAttestation: guardian,
-                        })
-                    ">
-                    <label
-                        >자녀 이름
-                        <input
-                            v-model="childName"
-                            required
-                            maxlength="100" /></label
-                    ><label
-                        ><input v-model="guardian" type="checkbox" required />
-                        법정 보호자로 관리할 권한이 있습니다</label
-                    ><button :disabled="busy">미성년 프로필 추가</button>
-                </form>
-            </section>
-        </details>
-        <section v-if="accountsState === 'ready' || accounts.length">
-            <h2>
-                {{
-                    portfolioScope === 'personal' ? '내 계좌 등록' : '계좌 등록'
-                }}
-            </h2>
-            <p>
-                여러 금융기관의 본인 계좌를 등록할 수 있습니다. 전체 계좌번호는
-                입력하지 마세요.
-            </p>
-            <form @submit.prevent="createAccount">
-                <p v-if="portfolioScope === 'personal'">
-                    명의자:
-                    {{
-                        selfProfile?.name || firebaseUser?.displayName || '본인'
-                    }}
-                </p>
-                <label v-else
-                    >명의자
-                    <select v-model="accountForm.ownerId" required>
-                        <option value="">선택</option>
-                        <option
-                            v-for="p in ownProfiles"
-                            :key="p.id"
-                            :value="p.id">
-                            {{ p.name }}
-                        </option>
-                    </select></label
-                >
-                <label
-                    >금융기관
-                    <input
-                        v-model="accountForm.institution"
-                        required
-                        maxlength="100"
-                        placeholder="예: 토스증권"
-                /></label>
-                <label
-                    >유형
-                    <select v-model="accountForm.type">
-                        <option value="general">일반</option>
-                        <option value="isa">ISA</option>
-                        <option value="pension">연금</option>
-                        <option value="other">기타</option>
-                    </select></label
-                >
-                <label
-                    >별칭
-                    <input v-model="accountForm.alias" required maxlength="100"
-                /></label>
-                <label
-                    >계좌 끝 4자리 (선택)
-                    <input
-                        v-model="accountForm.last4"
-                        maxlength="4"
-                        pattern="[0-9]{4}"
-                        inputmode="numeric"
-                        autocomplete="off"
-                /></label>
-                <button :disabled="busy">계좌 등록</button>
-            </form>
-            <ul>
-                <li v-for="a in visibleAccounts" :key="a.id">
-                    <button :disabled="busy" @click="selectedAccount = a.id">
-                        {{ ownerName(a.ownerId) }} · {{ a.institution }} ·
-                        {{ a.alias }} · {{ a.type }} · {{ a.maskedNumber }}
-                    </button>
-                    · 자료 기준일 {{ a.asOf || '미확인' }} · {{ a.source }}
-                </li>
-            </ul>
-            <p v-if="accountsState === 'ready' && !visibleAccounts.length">
-                등록된 계좌가 없습니다. 위에서 본인 계좌를 추가하세요. 가족
-                계좌는 가족 포트폴리오에서 확인할 수 있습니다.
-            </p>
-        </section>
-        <template v-if="space">
-            <section v-if="activeAccount">
-                <h2>선택 계좌: {{ activeAccount.alias }}</h2>
-                <label
-                    >계좌
-                    <select v-model="selectedAccount" :disabled="busy">
-                        <option
-                            v-for="a in visibleAccounts"
-                            :key="a.id"
-                            :value="a.id">
-                            {{ ownerName(a.ownerId) }} / {{ a.institution }} /
-                            {{ a.alias }} / {{ a.maskedNumber }}
-                        </option>
-                    </select></label
-                >
-                <template v-if="canConfigure">
-                    <form
-                        @submit.prevent="
-                            mutate('renameAccount', {
-                                accountId: selectedAccount,
-                                alias: activeAccount.alias,
-                            })
-                        ">
-                        <label
-                            >계좌 별칭
-                            <input
-                                v-model="activeAccount.alias"
-                                required
-                                maxlength="100" /></label
-                        ><button :disabled="busy">별칭 저장</button>
-                    </form>
-                    <details class="sharing-options">
-                        <summary>가족에게 계좌 공유 (선택)</summary>
-                        <h3>계좌별 공유 권한</h3>
+        <Tabs v-model:value="portfolioTab" class="portfolio-tabs"
+            ><TabList
+                ><Tab value="overview">한눈에 보기</Tab
+                ><Tab value="accounts">계좌 관리</Tab
+                ><Tab value="upload">자료 업로드</Tab
+                ><Tab value="family">가족 관리</Tab></TabList
+            ><TabPanels
+                ><TabPanel value="overview"
+                    ><div
+                        v-if="
+                            accountsState === 'ready' &&
+                            !busy &&
+                            !visibleAccounts.length
+                        "
+                        class="portfolio-empty studio-empty">
+                        <i class="pi pi-wallet" aria-hidden="true" />
+                        <h2>첫 계좌를 등록해 보세요</h2>
                         <p>
-                            가족 관리자에게 자동 공유되지 않습니다. 편집자는
-                            업로드할 수 있습니다.
+                            계좌 등록 후 CSV 또는 PDF 자료를 올리면 잔고와 거래
+                            기록을 확인할 수 있어요.
                         </p>
-                        <ul>
-                            <li
-                                v-for="(role, uid) in activeAccount.permissions"
-                                :key="uid">
+                        <Button
+                            label="첫 계좌 등록"
+                            icon="pi pi-plus"
+                            @click="portfolioTab = 'accounts'" /><small
+                            class="studio-muted"
+                            >계좌 등록 → 자료 업로드 → 검토 후 저장</small
+                        >
+                    </div>
+                    <div
+                        v-if="
+                            summary &&
+                            Object.keys(summary.knownValueByCurrency).length
+                        "
+                        class="portfolio-value-grid"
+                        aria-label="통화별 자료상 보유 평가액">
+                        <Card
+                            v-for="(
+                                value, currency
+                            ) in summary.knownValueByCurrency"
+                            :key="currency"
+                            class="portfolio-value-card"
+                            ><template #content
+                                ><div class="value-card-heading">
+                                    <span>자료상 보유 평가액</span
+                                    ><Tag
+                                        :value="currency"
+                                        severity="secondary" />
+                                </div>
+                                <strong
+                                    >{{ num(value) }}
+                                    <small>{{ currency }}</small></strong
+                                >
+                                <p>
+                                    자료 기준일
+                                    {{ summary.oldestAsOf || '미확인'
+                                    }}{{
+                                        summary.mixedDates
+                                            ? ` ~ ${summary.newestAsOf}`
+                                            : ''
+                                    }}
+                                </p>
+                                <span class="value-card-note">{{
+                                    summary.valueComplete
+                                        ? '확인된 잔고 자료 기준'
+                                        : '일부 평가액 미확인 · 확인된 금액만 포함'
+                                }}</span></template
+                            ></Card
+                        >
+                    </div>
+                    <Panel
+                        v-if="space"
+                        header="원금 회수 · 자금 상세"
+                        toggleable
+                        collapsed
+                        class="capital-details">
+                        <AccountRecoveryOverview
+                            :user="firebaseUser"
+                            :accounts="visibleAccounts"
+                            :refresh-state="capital" />
+                        <section
+                            v-if="activeAccount"
+                            aria-label="회수 현황 계좌 선택">
+                            <label
+                                >회수 현황을 볼 계좌
+                                <Select
+                                    v-model="selectedAccount"
+                                    :disabled="busy"
+                                    :options="
+                                        visibleAccounts.map((a) => ({
+                                            label: `${ownerName(a.ownerId)} / ${a.alias}`,
+                                            value: a.id,
+                                        }))
+                                    "
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="계좌"
+                                    placeholder="선택" />
+                            </label>
+                            <p>선택한 계좌의 전체 저장 내역 기준입니다.</p>
+                        </section>
+                        <PortfolioCapitalPanel
+                            v-if="activeAccount"
+                            :key="`${ownUid}-${selectedAccount}`"
+                            :user="firebaseUser"
+                            :account-id="selectedAccount"
+                            :state="capital"
+                            :loading="capitalLoading"
+                            :error="capitalError"
+                            :read-only="
+                                !editableAccounts.some(
+                                    (a) => a.id === selectedAccount
+                                )
+                            "
+                            @refresh="loadCapital" />
+                    </Panel>
+                    <template v-if="space">
+                        <section v-if="summary">
+                            <h2>
                                 {{
-                                    profiles.find((p) => p.uid === uid)?.name ||
-                                    uid
-                                }}: {{ role }}
+                                    portfolioScope === 'personal'
+                                        ? '내 포트폴리오 합산'
+                                        : '가족 합산'
+                                }}
+                                · {{ visibleAccounts.length }}개 계좌
+                            </h2>
+                            <p>{{ summary.notice }}</p>
+                            <p>
+                                자료 기준일:
+                                {{ summary.oldestAsOf || '미확인' }} ~
+                                {{ summary.newestAsOf || '미확인' }}
+                            </p>
+                            <p v-if="summary.mixedDates" class="warning">
+                                계좌별 자료 기준일이 다릅니다. 일부 계좌만
+                                갱신되었습니다.
+                            </p>
+                            <p
+                                v-if="summary.missingSnapshotAccounts.length"
+                                class="warning">
+                                잔고 미확인 계좌
+                                {{ summary.missingSnapshotAccounts.length }}개는
+                                합계에서 제외했습니다. 거래만으로 기초 보유량을
+                                추정하지 않습니다.
+                            </p>
+                            <p v-if="!summary.valueComplete" class="warning">
+                                미확인 평가액이 있어 합계는 확인된 금액만
+                                포함합니다.
+                            </p>
+                            <p
+                                v-for="(
+                                    amount, currency
+                                ) in summary.knownValueByCurrency"
+                                :key="currency">
+                                확인된 자료 평가액: {{ num(amount) }}
+                                {{ currency }}
+                            </p>
+                            <label
+                                >명의자
+                                <Select
+                                    v-model="ownerFilter"
+                                    :options="[
+                                        { label: '전체', value: '' },
+                                        ...profiles.map((p) => ({
+                                            label: p.name,
+                                            value: p.id,
+                                        })),
+                                    ]"
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="명의자"
+                                    placeholder="선택" /></label
+                            ><label
+                                >계좌
+                                <Select
+                                    v-model="accountFilter"
+                                    :options="[
+                                        { label: '전체', value: '' },
+                                        ...visibleAccounts.map((a) => ({
+                                            label: a.alias,
+                                            value: a.id,
+                                        })),
+                                    ]"
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="계좌"
+                                    placeholder="선택" /></label
+                            ><label
+                                >종목 검색 <InputText v-model="symbolFilter"
+                            /></label>
+                            <h3>명의자·계좌별 원본 잔고</h3>
+                            <DataTable
+                                :value="positions"
+                                striped-rows
+                                paginator
+                                :rows="10"
+                                :page-link-size="3"
+                                paginator-template="PrevPageLink PageLinks NextPageLink"
+                                scrollable
+                                table-style="min-width: 640px"
+                                :table-props="{
+                                    'aria-label': '명의자·계좌별 원본 잔고',
+                                }"
+                                ><Column header="명의자"
+                                    ><template #body="{ data }">{{
+                                        ownerName(data.ownerId)
+                                    }}</template></Column
+                                ><Column header="계좌"
+                                    ><template #body="{ data }">{{
+                                        label(data.accountId)
+                                    }}</template></Column
+                                ><Column field="symbol" header="종목" /><Column
+                                    header="수량"
+                                    ><template #body="{ data }">{{
+                                        num(data.quantity)
+                                    }}</template></Column
+                                ><Column header="자료 평가액"
+                                    ><template #body="{ data }"
+                                        >{{ num(data.amount) }}
+                                        {{ data.currency }}</template
+                                    ></Column
+                                ><Column header="기준일·출처"
+                                    ><template #body="{ data }"
+                                        >{{ data.asOf }} ·
+                                        {{ data.source }}</template
+                                    ></Column
+                                ><template #empty
+                                    >확인 가능한 잔고가 없습니다. 계좌 자료를
+                                    업로드해 주세요.</template
+                                ></DataTable
+                            >
+                            <h3>종목별 합산</h3>
+                            <p class="studio-muted">
+                                선택 범위의 자료 기준일이 서로 다를 수 있습니다.
+                            </p>
+                            <DataTable
+                                :value="symbols"
+                                striped-rows
+                                :table-props="{ 'aria-label': '종목별 합산' }"
+                                ><Column header="종목·통화"
+                                    ><template #body="{ data }"
+                                        >{{ data.symbol }} ·
+                                        {{ data.currency }}</template
+                                    ></Column
+                                ><Column header="합산 수량"
+                                    ><template #body="{ data }">{{
+                                        num(data.quantity)
+                                    }}</template></Column
+                                ><Column header="확인된 평가액"
+                                    ><template #body="{ data }"
+                                        >{{ num(data.amount) }}
+                                        {{
+                                            data.complete ? '' : '(일부 미확인)'
+                                        }}</template
+                                    ></Column
+                                ><template #empty
+                                    >합산할 종목이 없습니다.</template
+                                ></DataTable
+                            >
+                        </section>
+                    </template></TabPanel
+                ><TabPanel value="accounts">
+                    <section
+                        v-if="accountsState === 'ready' || accounts.length">
+                        <h2>
+                            {{
+                                portfolioScope === 'personal'
+                                    ? '내 계좌 등록'
+                                    : '계좌 등록'
+                            }}
+                        </h2>
+                        <p>
+                            여러 금융기관의 본인 계좌를 등록할 수 있습니다. 전체
+                            계좌번호는 입력하지 마세요.
+                        </p>
+                        <form @submit.prevent="createAccount">
+                            <p v-if="portfolioScope === 'personal'">
+                                명의자:
+                                {{
+                                    selfProfile?.name ||
+                                    firebaseUser?.displayName ||
+                                    '본인'
+                                }}
+                            </p>
+                            <label v-else
+                                >명의자
+                                <Select
+                                    v-model="accountForm.ownerId"
+                                    aria-required="true"
+                                    :options="
+                                        ownProfiles.map((p) => ({
+                                            label: p.name,
+                                            value: p.id,
+                                        }))
+                                    "
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="명의자"
+                                    placeholder="선택"
+                            /></label>
+                            <label
+                                >금융기관
+                                <InputText
+                                    v-model="accountForm.institution"
+                                    required
+                                    maxlength="100"
+                                    placeholder="예: 토스증권"
+                            /></label>
+                            <label
+                                >유형
+                                <Select
+                                    v-model="accountForm.type"
+                                    :options="accountTypeOptions"
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="유형"
+                                    placeholder="선택"
+                            /></label>
+                            <label
+                                >별칭
+                                <InputText
+                                    v-model="accountForm.alias"
+                                    required
+                                    maxlength="100"
+                            /></label>
+                            <label
+                                >계좌 끝 4자리 (선택)
+                                <InputText
+                                    v-model="accountForm.last4"
+                                    maxlength="4"
+                                    pattern="[0-9]{4}"
+                                    inputmode="numeric"
+                                    autocomplete="off"
+                            /></label>
+                            <Button type="submit" :disabled="busy"
+                                >계좌 등록</Button
+                            >
+                        </form>
+                        <ul>
+                            <li v-for="a in visibleAccounts" :key="a.id">
+                                <Button
+                                    type="submit"
+                                    :disabled="busy"
+                                    severity="secondary"
+                                    outlined
+                                    @click="selectedAccount = a.id">
+                                    {{ ownerName(a.ownerId) }} ·
+                                    {{ a.institution }} · {{ a.alias }} ·
+                                    {{ a.type }} · {{ a.maskedNumber }}
+                                </Button>
+                                · 자료 기준일 {{ a.asOf || '미확인' }} ·
+                                {{ a.source }}
                             </li>
                         </ul>
-                        <form
-                            @submit.prevent="
-                                mutate('grant', {
-                                    accountId: selectedAccount,
-                                    uid: shareUid,
-                                    role: shareRole,
-                                })
+                        <p
+                            v-if="
+                                accountsState === 'ready' &&
+                                !visibleAccounts.length
                             ">
-                            <label
-                                >성인 구성원
-                                <select v-model="shareUid" required>
-                                    <option value="">선택</option>
-                                    <option
-                                        v-for="p in otherAdults"
-                                        :key="p.id"
-                                        :value="p.uid">
-                                        {{ p.name }}
-                                    </option>
-                                </select></label
-                            ><label
-                                >권한
-                                <select v-model="shareRole">
-                                    <option value="viewer">조회</option>
-                                    <option value="editor">조회·업로드</option>
-                                    <option value="none">공유 취소</option>
-                                </select></label
-                            ><button :disabled="busy">권한 저장</button>
-                        </form>
-                    </details>
-                    <details>
-                        <summary>이전 단일 계좌 데이터 보존 이전</summary>
-                        <p>
-                            본인 portfolios 원장을 별도 보관 복사합니다. 기존
-                            데이터는 유지하며, 기준일 불명 잔고는 합산하지
-                            않습니다. 다른 이전 저장소는 자동 합치지 않습니다.
+                            등록된 계좌가 없습니다. 위에서 본인 계좌를
+                            추가하세요. 가족 계좌는 가족 포트폴리오에서 확인할
+                            수 있습니다.
                         </p>
-                        <label
-                            ><input
-                                v-model="singleAccountConfirmed"
-                                type="checkbox" />
-                            원본이 선택한 본인 계좌 한 개의 자료임을
-                            확인했습니다</label
-                        ><button
-                            :disabled="busy || !singleAccountConfirmed"
-                            @click="
-                                mutate('migrateLegacy', {
-                                    accountId: selectedAccount,
-                                    confirmedSingleAccount:
-                                        singleAccountConfirmed,
-                                })
-                            ">
-                            자료 없는 계좌로 보존 이전
-                        </button>
-                    </details>
-                </template>
-                <p v-if="activeAccount.legacyMigration">
-                    이전 자료:
-                    {{ activeAccount.legacyMigration.transactions }}건 · 잔고
-                    기준일 확인 필요
-                </p>
-                <h3>거래 원장</h3>
-                <label
-                    ><input v-model="legacy" type="checkbox" /> 보존 이전
-                    원장</label
-                ><button :disabled="busy" @click="loadEntries(false)">
-                    조회
-                </button>
-                <button
-                    v-if="nextCursor"
-                    :disabled="busy"
-                    @click="loadEntries(true)">
-                    다음 200건 조회
-                </button>
-                <div class="scroll">
-                    <table v-if="entries.length">
-                        <thead>
-                            <tr>
-                                <th>기준일·출처</th>
-                                <th>거래 내용</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="entry in entries" :key="entry.id">
-                                <td>
-                                    {{ entry.asOf || '미확인' }} ·
-                                    {{ entry.source || 'legacy' }}
-                                </td>
-                                <td>
-                                    <pre>{{ entry.row || entry }}</pre>
-                                    <button
-                                        v-if="
-                                            !legacy && entry.row?.type === 'buy'
+                    </section>
+                    <template v-if="space">
+                        <section v-if="activeAccount">
+                            <h2>선택 계좌: {{ activeAccount.alias }}</h2>
+                            <label
+                                >계좌
+                                <Select
+                                    v-model="selectedAccount"
+                                    :disabled="busy"
+                                    :options="
+                                        visibleAccounts.map((a) => ({
+                                            label: `${ownerName(a.ownerId)} / ${a.alias}`,
+                                            value: a.id,
+                                        }))
+                                    "
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="계좌"
+                                    placeholder="선택"
+                            /></label>
+                            <template v-if="canConfigure">
+                                <form
+                                    @submit.prevent="
+                                        mutate('renameAccount', {
+                                            accountId: selectedAccount,
+                                            alias: activeAccount.alias,
+                                        })
+                                    ">
+                                    <label
+                                        >계좌 별칭
+                                        <InputText
+                                            v-model="activeAccount.alias"
+                                            required
+                                            maxlength="100" /></label
+                                    ><Button type="submit" :disabled="busy"
+                                        >별칭 저장</Button
+                                    >
+                                </form>
+                                <details class="sharing-options">
+                                    <summary>가족에게 계좌 공유 (선택)</summary>
+                                    <h3>계좌별 공유 권한</h3>
+                                    <p>
+                                        가족 관리자에게 자동 공유되지 않습니다.
+                                        편집자는 업로드할 수 있습니다.
+                                    </p>
+                                    <ul>
+                                        <li
+                                            v-for="(
+                                                role, uid
+                                            ) in activeAccount.permissions"
+                                            :key="uid">
+                                            {{
+                                                profiles.find(
+                                                    (p) => p.uid === uid
+                                                )?.name || uid
+                                            }}: {{ role }}
+                                        </li>
+                                    </ul>
+                                    <form
+                                        @submit.prevent="
+                                            mutate('grant', {
+                                                accountId: selectedAccount,
+                                                uid: shareUid,
+                                                role: shareRole,
+                                            })
+                                        ">
+                                        <label
+                                            >성인 구성원
+                                            <Select
+                                                v-model="shareUid"
+                                                aria-required="true"
+                                                :options="
+                                                    otherAdults.map((p) => ({
+                                                        label: p.name,
+                                                        value: p.uid,
+                                                    }))
+                                                "
+                                                option-label="label"
+                                                option-value="value"
+                                                aria-label="성인 구성원"
+                                                placeholder="선택" /></label
+                                        ><label
+                                            >권한
+                                            <Select
+                                                v-model="shareRole"
+                                                :options="roleOptions"
+                                                option-label="label"
+                                                option-value="value"
+                                                aria-label="권한"
+                                                placeholder="선택" /></label
+                                        ><Button type="submit" :disabled="busy"
+                                            >권한 저장</Button
+                                        >
+                                    </form>
+                                </details>
+                                <details>
+                                    <summary>
+                                        이전 단일 계좌 데이터 보존 이전
+                                    </summary>
+                                    <p>
+                                        본인 portfolios 원장을 별도 보관
+                                        복사합니다. 기존 데이터는 유지하며,
+                                        기준일 불명 잔고는 합산하지 않습니다.
+                                        다른 이전 저장소는 자동 합치지 않습니다.
+                                    </p>
+                                    <label
+                                        ><input
+                                            v-model="singleAccountConfirmed"
+                                            type="checkbox" />
+                                        원본이 선택한 본인 계좌 한 개의 자료임을
+                                        확인했습니다</label
+                                    ><Button
+                                        type="submit"
+                                        :disabled="
+                                            busy || !singleAccountConfirmed
                                         "
+                                        @click="
+                                            mutate('migrateLegacy', {
+                                                accountId: selectedAccount,
+                                                confirmedSingleAccount:
+                                                    singleAccountConfirmed,
+                                            })
+                                        ">
+                                        자료 없는 계좌로 보존 이전
+                                    </Button>
+                                </details>
+                            </template>
+                            <p v-if="activeAccount.legacyMigration">
+                                이전 자료:
+                                {{
+                                    activeAccount.legacyMigration.transactions
+                                }}건 · 잔고 기준일 확인 필요
+                            </p>
+                            <h3>거래 원장</h3>
+                            <label
+                                ><input v-model="legacy" type="checkbox" /> 보존
+                                이전 원장</label
+                            ><Button
+                                type="submit"
+                                :disabled="busy"
+                                @click="loadEntries(false)">
+                                조회
+                            </Button>
+                            <Button
+                                type="submit"
+                                v-if="nextCursor"
+                                :disabled="busy"
+                                @click="loadEntries(true)">
+                                다음 200건 조회
+                            </Button>
+                            <div class="scroll">
+                                <table v-if="entries.length">
+                                    <thead>
+                                        <tr>
+                                            <th>기준일·출처</th>
+                                            <th>거래 내용</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            v-for="entry in entries"
+                                            :key="entry.id">
+                                            <td>
+                                                {{ entry.asOf || '미확인' }} ·
+                                                {{ entry.source || 'legacy' }}
+                                            </td>
+                                            <td>
+                                                <pre>{{
+                                                    entry.row || entry
+                                                }}</pre>
+                                                <Button
+                                                    v-if="
+                                                        !legacy &&
+                                                        entry.row?.type ===
+                                                            'buy'
+                                                    "
+                                                    type="button"
+                                                    @click="openFunding(entry)">
+                                                    자금 구성 확인
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <Dialog
+                            v-model:visible="fundingDialog"
+                            modal
+                            header="계좌 매수 자금 상세"
+                            :style="{ width: '850px' }"
+                            :breakpoints="{ '900px': '94vw' }"
+                            class="funding-dialog">
+                            <template v-if="fundingEntry && activeAccount">
+                                <div class="funding-title">
+                                    <h2>
+                                        {{ activeAccount.alias }} ·
+                                        {{ fundingEntry.symbol }} ·
+                                        {{ fundingEntry.date }}
+                                    </h2>
+                                    <Button
                                         type="button"
-                                        @click="openFunding(entry)">
-                                        자금 구성 확인
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-            <dialog
-                ref="fundingDialog"
-                aria-label="계좌 매수 자금 상세"
-                class="funding-dialog">
-                <template v-if="fundingEntry && activeAccount">
-                    <div class="funding-title">
-                        <h2>
-                            {{ activeAccount.alias }} ·
-                            {{ fundingEntry.symbol }} · {{ fundingEntry.date }}
-                        </h2>
-                        <button type="button" @click="fundingDialog.close()">
-                            상세 창 닫기
-                        </button>
-                    </div>
-                    <p v-if="fundingMessage" role="status">
-                        {{ fundingMessage }}
-                    </p>
-                    <PurchaseFundingEditor
-                        :key="`${selectedAccount}-${fundingEntry.id}`"
-                        :user="firebaseUser"
-                        :transaction="fundingEntry"
-                        :asset="{ id: 'ACCOUNT' }"
-                        :account-id="selectedAccount"
-                        :state="capital"
-                        :loading="capitalLoading"
-                        :load-error="capitalError"
-                        :read-only="
+                                        @click="fundingDialog = false">
+                                        상세 창 닫기
+                                    </Button>
+                                </div>
+                                <p v-if="fundingMessage" role="status">
+                                    {{ fundingMessage }}
+                                </p>
+                                <PurchaseFundingEditor
+                                    :key="`${selectedAccount}-${fundingEntry.id}`"
+                                    :user="firebaseUser"
+                                    :transaction="fundingEntry"
+                                    :asset="{ id: 'ACCOUNT' }"
+                                    :account-id="selectedAccount"
+                                    :state="capital"
+                                    :loading="capitalLoading"
+                                    :load-error="capitalError"
+                                    :read-only="
+                                        !editableAccounts.some(
+                                            (a) => a.id === selectedAccount
+                                        )
+                                    "
+                                    @saved="fundingSaved"
+                                    @close="fundingDialog = false" />
+                            </template>
+                        </Dialog>
+                    </template> </TabPanel
+                ><TabPanel value="upload"
+                    ><Message
+                        v-if="
+                            !activeAccount ||
                             !editableAccounts.some(
                                 (a) => a.id === selectedAccount
                             )
                         "
-                        @saved="fundingSaved"
-                        @close="fundingDialog.close()" />
-                </template>
-            </dialog>
-            <section
-                v-if="
-                    activeAccount &&
-                    editableAccounts.some((a) => a.id === selectedAccount)
-                ">
-                <h2>파일 업로드·저장 전 검토</h2>
-                <p>
-                    표준 UTF-8 CSV(200행)와 토스 거래내역 PDF(10,000행)를
-                    지원합니다. 파일은 2MB 이하이며 PDF는 200행씩 나누어
-                    저장합니다. 잔고 CSV는 기준일의 전체 보유 종목을 넣으세요.
-                    새 잔고는 해당 계좌의 이전 잔고를 대체합니다.
-                </p>
-                <details>
-                    <summary>CSV 양식과 거래 유형</summary>
-                    <p>
-                        잔고 amount는 기준일 평가액이며 모르면 비워둡니다. 거래
-                        amount는 거래 금액입니다. 현금 종목은 CASH를 사용하세요.
-                        거래 고유번호 externalId는 같은 계좌에서
-                        재업로드·조회기간 변경에도 같아야 합니다. 매수 자금
-                        배분에는 수수료 포함 정산액이 필요합니다. CSV에
-                        nativeSettlementAmount(USD) 또는 settlementAmount(KRW)를
-                        추가할 수 있습니다. 현금 CASH 행의 cashKind가
-                        exchange이면 계좌 내 환전 후보로 분류합니다.
-                    </p>
-                    <pre>
+                        severity="info"
+                        :closable="false"
+                        >편집 가능한 계좌를 먼저 선택해 주세요. 계좌 관리에서
+                        계좌를 등록하거나 변경할 수 있습니다.</Message
+                    >
+                    <section
+                        v-if="
+                            activeAccount &&
+                            editableAccounts.some(
+                                (a) => a.id === selectedAccount
+                            )
+                        ">
+                        <h2>파일 업로드·저장 전 검토</h2>
+                        <p>
+                            표준 UTF-8 CSV(200행)와 토스 거래내역
+                            PDF(10,000행)를 지원합니다. 파일은 2MB 이하이며
+                            PDF는 200행씩 나누어 저장합니다. 잔고 CSV는 기준일의
+                            전체 보유 종목을 넣으세요. 새 잔고는 해당 계좌의
+                            이전 잔고를 대체합니다.
+                        </p>
+                        <details>
+                            <summary>CSV 양식과 거래 유형</summary>
+                            <p>
+                                잔고 amount는 기준일 평가액이며 모르면
+                                비워둡니다. 거래 amount는 거래 금액입니다. 현금
+                                종목은 CASH를 사용하세요. 거래 고유번호
+                                externalId는 같은 계좌에서 재업로드·조회기간
+                                변경에도 같아야 합니다. 매수 자금 배분에는
+                                수수료 포함 정산액이 필요합니다. CSV에
+                                nativeSettlementAmount(USD) 또는
+                                settlementAmount(KRW)를 추가할 수 있습니다. 현금
+                                CASH 행의 cashKind가 exchange이면 계좌 내 환전
+                                후보로 분류합니다.
+                            </p>
+                            <pre>
 date,symbol,quantity,amount,currency,type,externalId
 2026-10-15,AAPL,2,500,USD,buy,broker-trade-001</pre
-                    >
-                    <p>
-                        거래 유형: buy, sell, dividend, dividend_reversal,
-                        cash_in, cash_out, transfer_in, transfer_out, split.
-                        잔고는 type,externalId 열이 필요 없습니다.
-                    </p>
-                </details>
-                <form @submit.prevent="preview">
-                    <label
-                        >자료 종류
-                        <select v-model="kind">
-                            <option value="transactions">거래내역</option>
-                            <option value="holdings">잔고내역</option>
-                        </select></label
-                    ><label
-                        >파일 형식
-                        <select v-model="format">
-                            <option value="standard-csv">표준 CSV</option>
-                            <option value="toss-pdf">토스 거래내역 PDF</option>
-                        </select></label
-                    ><label
-                        >자료 기준일
-                        <input v-model="asOf" type="date" required /></label
-                    ><label
-                        >파일
-                        <input
-                            ref="fileInput"
-                            type="file"
-                            :accept="format === 'toss-pdf' ? '.pdf' : '.csv'"
-                            required /></label
-                    ><label v-if="format === 'toss-pdf'"
-                        >PDF 비밀번호
-                        <input
-                            v-model="password"
-                            type="password"
-                            autocomplete="off"
-                            :placeholder="
-                                activeAccount.pdfPasswordConfigured
-                                    ? '저장된 비밀번호 사용 · 변경할 때만 입력'
-                                    : '생년월일 6자리'
-                            " /></label
-                    ><label
-                        v-if="
-                            format === 'toss-pdf' &&
-                            activeAccount.permissions?.[ownUid] === 'owner'
-                        ">
-                        <input v-model="rememberPassword" type="checkbox" />
-                        이 계좌의 기본 비밀번호로 암호화 저장
-                    </label>
-                    <p
-                        v-if="
-                            format === 'toss-pdf' &&
-                            activeAccount.pdfPasswordConfigured
-                        ">
-                        계좌 기본 비밀번호가 암호화 저장되어 있습니다. 입력란을
-                        비우면 자동 사용합니다.
-                        <button
-                            v-if="
-                                activeAccount.permissions?.[ownUid] === 'owner'
-                            "
-                            type="button"
-                            :disabled="busy"
-                            @click="removePdfPassword">
-                            저장된 비밀번호 삭제
-                        </button>
-                    </p>
-                    <label
-                        ><input v-model="confirmed" type="checkbox" required />
-                        {{ ownerName(activeAccount.ownerId) }} ·
-                        {{ activeAccount.institution }} ·
-                        {{ activeAccount.alias }} ·
-                        {{ activeAccount.maskedNumber }}의 자료임을
-                        확인했습니다. 파일에서 확실히 확인할 수 없으면 저장하지
-                        않습니다.</label
-                    ><button :disabled="busy">추출·미리보기</button>
-                </form>
-                <template v-if="review"
-                    ><h3>검토 · {{ review.source }}</h3>
-                    <p>
-                        표의 오류를 수정한 뒤 전체 행을 저장합니다. 오류가
-                        남으면 저장되지 않습니다. 검토는 1시간 유효합니다.
-                    </p>
-                    <p v-if="review.rows.length > 200">
-                        전체 {{ review.rows.length }}행 ·
-                        {{ reviewPage + 1 }}/{{
-                            Math.ceil(review.rows.length / 200)
-                        }}쪽
-                        <button
-                            :disabled="busy || reviewPage === 0"
-                            @click="reviewPage--">
-                            이전
-                        </button>
-                        <button
-                            :disabled="
-                                busy ||
-                                (reviewPage + 1) * 200 >= review.rows.length
-                            "
-                            @click="reviewPage++">
-                            다음
-                        </button>
-                    </p>
-                    <ul class="error">
-                        <li v-for="(e, i) in review.errors" :key="i">
-                            행 {{ e.row }}: {{ e.error }}
-                        </li>
-                    </ul>
-                    <div class="scroll">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>행</th>
-                                    <th
-                                        v-for="col in [
-                                            'date',
-                                            'symbol',
-                                            'quantity',
-                                            'amount',
-                                            'currency',
-                                            'type',
-                                            'externalId',
-                                        ]"
-                                        :key="col">
-                                        {{ col }}
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="(row, i) in visibleReviewRows"
-                                    :key="reviewPage * 200 + i">
-                                    <td>{{ reviewPage * 200 + i + 1 }}</td>
-                                    <td
-                                        v-for="col in [
-                                            'date',
-                                            'symbol',
-                                            'quantity',
-                                            'amount',
-                                            'currency',
-                                            'type',
-                                            'externalId',
-                                        ]"
-                                        :key="col">
-                                        <input
-                                            v-model="row[col]"
-                                            :aria-label="`${i + 1}행 ${col}`" />
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            >
+                            <p>
+                                거래 유형: buy, sell, dividend,
+                                dividend_reversal, cash_in, cash_out,
+                                transfer_in, transfer_out, split. 잔고는
+                                type,externalId 열이 필요 없습니다.
+                            </p>
+                        </details>
+                        <form @submit.prevent="preview">
+                            <label
+                                >자료 종류
+                                <Select
+                                    v-model="kind"
+                                    :options="kindOptions"
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="자료 종류"
+                                    placeholder="선택" /></label
+                            ><label
+                                >파일 형식
+                                <Select
+                                    v-model="format"
+                                    :options="formatOptions"
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="파일 형식"
+                                    placeholder="선택" /></label
+                            ><label
+                                >자료 기준일
+                                <InputText
+                                    v-model="asOf"
+                                    type="date"
+                                    required /></label
+                            ><label
+                                >파일
+                                <input
+                                    ref="fileInput"
+                                    type="file"
+                                    :accept="
+                                        format === 'toss-pdf' ? '.pdf' : '.csv'
+                                    "
+                                    required /></label
+                            ><label v-if="format === 'toss-pdf'"
+                                >PDF 비밀번호
+                                <InputText
+                                    v-model="password"
+                                    type="password"
+                                    autocomplete="off"
+                                    :placeholder="
+                                        activeAccount.pdfPasswordConfigured
+                                            ? '저장된 비밀번호 사용 · 변경할 때만 입력'
+                                            : '생년월일 6자리'
+                                    " /></label
+                            ><label
+                                v-if="
+                                    format === 'toss-pdf' &&
+                                    activeAccount.permissions?.[ownUid] ===
+                                        'owner'
+                                ">
+                                <input
+                                    v-model="rememberPassword"
+                                    type="checkbox" />
+                                이 계좌의 기본 비밀번호로 암호화 저장
+                            </label>
+                            <p
+                                v-if="
+                                    format === 'toss-pdf' &&
+                                    activeAccount.pdfPasswordConfigured
+                                ">
+                                계좌 기본 비밀번호가 암호화 저장되어 있습니다.
+                                입력란을 비우면 자동 사용합니다.
+                                <Button
+                                    v-if="
+                                        activeAccount.permissions?.[ownUid] ===
+                                        'owner'
+                                    "
+                                    type="button"
+                                    :disabled="busy"
+                                    @click="removePdfPassword">
+                                    저장된 비밀번호 삭제
+                                </Button>
+                            </p>
+                            <label
+                                ><input
+                                    v-model="confirmed"
+                                    type="checkbox"
+                                    required />
+                                {{ ownerName(activeAccount.ownerId) }} ·
+                                {{ activeAccount.institution }} ·
+                                {{ activeAccount.alias }} ·
+                                {{ activeAccount.maskedNumber }}의 자료임을
+                                확인했습니다. 파일에서 확실히 확인할 수 없으면
+                                저장하지 않습니다.</label
+                            ><Button type="submit" :disabled="busy"
+                                >추출·미리보기</Button
+                            >
+                        </form>
+                        <template v-if="review"
+                            ><h3>검토 · {{ review.source }}</h3>
+                            <p>
+                                표의 오류를 수정한 뒤 전체 행을 저장합니다.
+                                오류가 남으면 저장되지 않습니다. 검토는 1시간
+                                유효합니다.
+                            </p>
+                            <p v-if="review.rows.length > 200">
+                                전체 {{ review.rows.length }}행 ·
+                                {{ reviewPage + 1 }}/{{
+                                    Math.ceil(review.rows.length / 200)
+                                }}쪽
+                                <Button
+                                    type="submit"
+                                    :disabled="busy || reviewPage === 0"
+                                    @click="reviewPage--">
+                                    이전
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    :disabled="
+                                        busy ||
+                                        (reviewPage + 1) * 200 >=
+                                            review.rows.length
+                                    "
+                                    @click="reviewPage++">
+                                    다음
+                                </Button>
+                            </p>
+                            <ul class="error">
+                                <li v-for="(e, i) in review.errors" :key="i">
+                                    행 {{ e.row }}: {{ e.error }}
+                                </li>
+                            </ul>
+                            <div class="scroll">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>행</th>
+                                            <th
+                                                v-for="col in [
+                                                    'date',
+                                                    'symbol',
+                                                    'quantity',
+                                                    'amount',
+                                                    'currency',
+                                                    'type',
+                                                    'externalId',
+                                                ]"
+                                                :key="col">
+                                                {{ col }}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            v-for="(
+                                                row, i
+                                            ) in visibleReviewRows"
+                                            :key="reviewPage * 200 + i">
+                                            <td>
+                                                {{ reviewPage * 200 + i + 1 }}
+                                            </td>
+                                            <td
+                                                v-for="col in [
+                                                    'date',
+                                                    'symbol',
+                                                    'quantity',
+                                                    'amount',
+                                                    'currency',
+                                                    'type',
+                                                    'externalId',
+                                                ]"
+                                                :key="col">
+                                                <InputText
+                                                    v-model="row[col]"
+                                                    :aria-label="`${i + 1}행 ${col}`" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <Button
+                                type="submit"
+                                :disabled="busy"
+                                @click="commit">
+                                수정 내용 검증·저장</Button
+                            ><Button
+                                type="submit"
+                                :disabled="busy"
+                                @click="review = null">
+                                취소
+                            </Button></template
+                        >
+                    </section> </TabPanel
+                ><TabPanel value="family">
+                    <div class="family-options">
+                        <Message severity="info" :closable="false"
+                            >가족 참여와 계좌 공유는 별도입니다. 가족 관리자에게
+                            계좌가 자동 공유되지 않습니다.</Message
+                        >
+                        <section>
+                            <h2>가족 공간 만들기 / 참여</h2>
+                            <label
+                                >내 프로필 이름
+                                <InputText v-model="myName" maxlength="100"
+                            /></label>
+                            <form @submit.prevent="createFamily">
+                                <label
+                                    >가족 이름
+                                    <InputText
+                                        v-model="newFamily"
+                                        required
+                                        maxlength="100" /></label
+                                ><Button type="submit" :disabled="busy"
+                                    >공간 만들기</Button
+                                >
+                            </form>
+                            <form @submit.prevent="join">
+                                <label
+                                    >초대 코드
+                                    <InputText
+                                        v-model="joinToken"
+                                        required
+                                        autocomplete="off" /></label
+                                ><Button type="submit" :disabled="busy"
+                                    >본인 계정으로 참여</Button
+                                >
+                            </form>
+                        </section>
+                        <section v-if="space">
+                            <h2>가족·구성원 관리</h2>
+                            <label
+                                >가족 공간
+                                <Select
+                                    v-model="familyId"
+                                    :disabled="busy"
+                                    :options="
+                                        families.map((f) => ({
+                                            label: f.name,
+                                            value: f.id,
+                                        }))
+                                    "
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="가족 공간"
+                                    placeholder="선택"
+                            /></label>
+                            <form
+                                v-if="space.adminUid === ownUid"
+                                @submit.prevent="
+                                    mutate('renameFamily', { name: space.name })
+                                ">
+                                <label
+                                    >공간 이름
+                                    <InputText
+                                        v-model="space.name"
+                                        required
+                                        maxlength="100" /></label
+                                ><Button type="submit" :disabled="busy"
+                                    >이름 저장</Button
+                                >
+                            </form>
+                            <ul>
+                                <li v-for="p in profiles" :key="p.id">
+                                    {{ p.name }} ·
+                                    {{
+                                        p.kind === 'minor'
+                                            ? '미성년 · 보호자 관리'
+                                            : '성인 · 본인 참여'
+                                    }}
+                                    <form
+                                        v-if="
+                                            ownProfiles.some(
+                                                (o) => o.id === p.id
+                                            )
+                                        "
+                                        @submit.prevent="
+                                            mutate('renameProfile', {
+                                                profileId: p.id,
+                                                name: p.name,
+                                            })
+                                        ">
+                                        <label
+                                            >프로필 이름
+                                            <InputText
+                                                v-model="p.name"
+                                                required /></label
+                                        ><Button type="submit" :disabled="busy"
+                                            >수정</Button
+                                        >
+                                    </form>
+                                </li>
+                            </ul>
+                            <Button
+                                type="submit"
+                                v-if="space.adminUid === ownUid"
+                                :disabled="busy"
+                                @click="mutate('invite', {})">
+                                성인 초대 코드 발급
+                            </Button>
+                            <p v-if="invitation">
+                                48시간 · 1회용 코드 (직접 전달):
+                                <code>{{ invitation }}</code>
+                            </p>
+                            <form
+                                @submit.prevent="
+                                    mutate('addMinor', {
+                                        name: childName,
+                                        guardianAttestation: guardian,
+                                    })
+                                ">
+                                <label
+                                    >자녀 이름
+                                    <InputText
+                                        v-model="childName"
+                                        required
+                                        maxlength="100" /></label
+                                ><label
+                                    ><input
+                                        v-model="guardian"
+                                        type="checkbox"
+                                        required />
+                                    법정 보호자로 관리할 권한이 있습니다</label
+                                ><Button type="submit" :disabled="busy"
+                                    >미성년 프로필 추가</Button
+                                >
+                            </form>
+                        </section>
                     </div>
-                    <button :disabled="busy" @click="commit">
-                        수정 내용 검증·저장</button
-                    ><button :disabled="busy" @click="review = null">
-                        취소
-                    </button></template
-                >
-            </section>
-            <section v-if="summary">
-                <h2>
-                    {{
-                        portfolioScope === 'personal'
-                            ? '내 포트폴리오 합산'
-                            : '가족 합산'
-                    }}
-                    · {{ visibleAccounts.length }}개 계좌
-                </h2>
-                <p>{{ summary.notice }}</p>
-                <p>
-                    자료 기준일: {{ summary.oldestAsOf || '미확인' }} ~
-                    {{ summary.newestAsOf || '미확인' }}
-                </p>
-                <p v-if="summary.mixedDates" class="warning">
-                    계좌별 자료 기준일이 다릅니다. 일부 계좌만 갱신되었습니다.
-                </p>
-                <p
-                    v-if="summary.missingSnapshotAccounts.length"
-                    class="warning">
-                    잔고 미확인 계좌
-                    {{ summary.missingSnapshotAccounts.length }}개는 합계에서
-                    제외했습니다. 거래만으로 기초 보유량을 추정하지 않습니다.
-                </p>
-                <p v-if="!summary.valueComplete" class="warning">
-                    미확인 평가액이 있어 합계는 확인된 금액만 포함합니다.
-                </p>
-                <p
-                    v-for="(amount, currency) in summary.knownValueByCurrency"
-                    :key="currency">
-                    확인된 자료 평가액: {{ num(amount) }} {{ currency }}
-                </p>
-                <label
-                    >명의자
-                    <select v-model="ownerFilter">
-                        <option value="">전체</option>
-                        <option v-for="p in profiles" :key="p.id" :value="p.id">
-                            {{ p.name }}
-                        </option>
-                    </select></label
-                ><label
-                    >계좌
-                    <select v-model="accountFilter">
-                        <option value="">전체</option>
-                        <option
-                            v-for="a in visibleAccounts"
-                            :key="a.id"
-                            :value="a.id">
-                            {{ a.alias }}
-                        </option>
-                    </select></label
-                ><label>종목 검색 <input v-model="symbolFilter" /></label>
-                <div class="scroll">
-                    <table>
-                        <caption>
-                            명의자·계좌별 원본 잔고
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th>명의자</th>
-                                <th>계좌</th>
-                                <th>종목</th>
-                                <th>수량</th>
-                                <th>자료 평가액</th>
-                                <th>기준일·출처</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="p in positions"
-                                :key="`${p.accountId}:${p.symbol}:${p.currency}`">
-                                <td>{{ ownerName(p.ownerId) }}</td>
-                                <td>{{ label(p.accountId) }}</td>
-                                <td>{{ p.symbol }}</td>
-                                <td>{{ num(p.quantity) }}</td>
-                                <td>{{ num(p.amount) }} {{ p.currency }}</td>
-                                <td>{{ p.asOf }} · {{ p.source }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="scroll">
-                    <table>
-                        <caption>
-                            선택 범위의 종목별 합산 (자료 기준일이 다를 수 있음)
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th>종목·통화</th>
-                                <th>합산 수량</th>
-                                <th>확인된 평가액</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="s in symbols"
-                                :key="`${s.symbol}:${s.currency}`">
-                                <td>{{ s.symbol }} · {{ s.currency }}</td>
-                                <td>{{ num(s.quantity) }}</td>
-                                <td>
-                                    {{ num(s.amount) }}
-                                    {{ s.complete ? '' : '(일부 미확인)' }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </template>
+                </TabPanel></TabPanels
+            ></Tabs
+        >
+        <div class="portfolio-legacy">
+            <router-link to="/mypage/legacy"
+                >이전 단일 계좌 자료 보기
+                <i class="pi pi-arrow-right" aria-hidden="true"
+            /></router-link>
+        </div>
     </div>
 </template>
 
 <style scoped>
-    .funding-dialog {
-        width: min(850px, calc(100vw - 24px));
-        max-height: 90dvh;
-        overflow-y: auto;
-        border: 1px solid var(--app-border, #ddd);
-        border-radius: 14px;
-        padding: 16px;
+    .family-page {
         color: var(--app-text);
-        background: var(--app-surface, #fff);
+        line-height: 1.7;
+        min-width: 0;
     }
-    .funding-dialog::backdrop {
-        background: rgba(0, 0, 0, 0.45);
-    }
-    .funding-title {
+    .portfolio-heading {
         display: flex;
-        gap: 12px;
         justify-content: space-between;
         align-items: center;
-        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 24px;
     }
-    .family-page {
-        max-width: 1200px;
-        margin: auto;
-        padding: 24px 16px 64px;
-        color: var(--app-text);
-        line-height: 1.6;
+    .portfolio-heading h1 {
+        font-size: 32px;
+        margin: 10px 0 8px;
     }
-    .family-page,
-    .family-page * {
-        box-sizing: border-box;
+    .portfolio-heading p {
+        color: var(--app-muted);
+        margin: 0;
     }
-    section {
-        border: 1px solid var(--app-border);
-        border-radius: 12px;
-        padding: 20px;
-        margin-top: 20px;
-        background: var(--app-surface);
-    }
-    form {
+    .portfolio-actions {
         display: flex;
-        flex-wrap: wrap;
-        align-items: end;
-        gap: 12px;
-        margin: 16px 0;
+        gap: 10px;
     }
-    label {
-        max-width: calc(100% - 12px);
-        min-width: 0;
-        display: inline-flex;
-        flex-wrap: wrap;
+    .portfolio-scope {
+        display: flex;
         align-items: center;
-        gap: 6px;
-        margin: 6px;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 24px 0;
     }
-    input,
-    select,
-    button {
-        max-width: 100%;
-        font: inherit;
+    .portfolio-tabs :deep(.p-tabpanels) {
+        background: transparent;
+        padding: 24px 0 0;
+    }
+    .portfolio-tabs :deep(.p-tablist-tab-list) {
+        background: transparent;
+    }
+    .portfolio-tabs :deep(.p-tab) {
+        min-height: 52px;
+    }
+    .portfolio-tabs section {
         border: 1px solid var(--app-border);
-        border-radius: 6px;
-        padding: 8px;
-        color: var(--app-text);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 24px;
         background: var(--app-surface);
+        min-width: 0;
     }
-    button {
-        cursor: pointer;
-        margin: 4px;
+    .portfolio-tabs section section {
+        margin: 16px 0 0;
     }
-    button:disabled {
-        opacity: 0.5;
-        cursor: wait;
+    .portfolio-tabs h2 {
+        font-size: 20px;
+        margin: 0 0 16px;
     }
-    a {
-        color: var(--app-accent);
+    .portfolio-tabs h3 {
+        font-size: 16px;
+        margin: 24px 0 16px;
     }
-    .error {
-        color: #db4545;
-    }
-    .warning {
+    .portfolio-tabs p {
+        font-size: 14px;
         color: var(--app-muted);
     }
-    .scroll {
+    .portfolio-tabs form {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        gap: 16px;
+        margin: 20px 0;
+    }
+    .portfolio-tabs label {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
         max-width: 100%;
+        font-size: 14px;
+    }
+    .portfolio-tabs label:has(input[type='checkbox']) {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 10px;
+        width: 100%;
+    }
+    .portfolio-tabs input[type='checkbox'] {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        margin-top: 3px;
+        accent-color: var(--app-accent);
+    }
+    .portfolio-tabs :deep(.p-inputtext),
+    .portfolio-tabs :deep(.p-select) {
+        max-width: 100%;
+        min-width: 0;
+    }
+    .portfolio-tabs details {
+        margin: 20px 0;
+        padding: 16px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+    }
+    .portfolio-tabs summary {
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 650;
+    }
+    .portfolio-tabs ul {
+        padding-left: 20px;
+    }
+    .portfolio-tabs li {
+        margin: 12px 0;
+    }
+    .portfolio-tabs a {
+        color: var(--app-accent);
+    }
+    .portfolio-tabs pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        max-width: 100%;
+        font-size: 13px;
+    }
+    .portfolio-tabs code {
+        overflow-wrap: anywhere;
+    }
+    .scroll {
         overflow: auto;
-        margin: 16px 0;
+        max-width: 100%;
+        margin: 20px 0;
     }
     table {
         border-collapse: collapse;
         width: 100%;
+        font-size: 14px;
     }
     th,
     td {
-        padding: 8px;
+        padding: 12px;
         border-bottom: 1px solid var(--app-border);
         text-align: left;
     }
-    td input {
+    th {
+        background: var(--app-surface-muted);
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    td :deep(.p-inputtext) {
         min-width: 100px;
         width: 140px;
     }
-    pre {
-        white-space: pre-wrap;
-        overflow-wrap: anywhere;
-        max-width: 700px;
+    .warning {
+        color: var(--app-muted);
     }
-    code {
-        overflow-wrap: anywhere;
+    .error {
+        color: var(--p-red-600);
     }
-    :focus-visible {
-        outline: 2px solid var(--app-accent);
-        outline-offset: 2px;
+    .funding-title {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        justify-content: space-between;
+        flex-wrap: wrap;
     }
-    @media (max-width: 600px) {
-        section {
-            padding: 12px;
-        }
-        form {
-            align-items: stretch;
+    .portfolio-value-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .portfolio-value-card {
+        border: 1px solid var(--app-border);
+    }
+    .value-card-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: var(--app-muted);
+        font-size: 14px;
+    }
+    .portfolio-value-card strong {
+        display: block;
+        margin: 18px 0 8px;
+        font-size: 32px;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.03em;
+    }
+    .portfolio-value-card strong small {
+        font-size: 16px;
+        color: var(--app-muted);
+    }
+    .portfolio-value-card p,
+    .value-card-note {
+        margin: 4px 0;
+        font-size: 13px;
+        color: var(--app-muted);
+    }
+    .capital-details {
+        margin-bottom: 24px;
+    }
+    .portfolio-empty {
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
+        border-radius: 16px;
+        margin-bottom: 24px;
+    }
+    .portfolio-legacy {
+        margin-top: 24px;
+        text-align: right;
+        font-size: 13px;
+    }
+    .portfolio-legacy a {
+        color: var(--app-muted);
+    }
+    .family-page > .p-message {
+        margin: 12px 0;
+    }
+    @media (max-width: 767px) {
+        .portfolio-heading {
             flex-direction: column;
+            align-items: stretch;
+        }
+        .portfolio-heading h1 {
+            font-size: 26px;
+        }
+        .portfolio-actions > .p-button {
+            flex: 1;
+        }
+        .portfolio-tabs :deep(.p-tab) {
+            padding: 12px 8px;
+            flex: 1;
+            font-size: 13px;
+        }
+        .portfolio-tabs section {
+            padding: 20px 16px;
+        }
+        .portfolio-tabs form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .portfolio-tabs label {
+            width: 100%;
+        }
+        .portfolio-tabs h2 {
+            font-size: 18px;
+        }
+        .portfolio-tabs :deep(.p-selectbutton) {
+            font-size: 13px;
+        }
+        .portfolio-scope :deep(.p-selectbutton) {
+            width: 100%;
+        }
+        .portfolio-scope :deep(.p-togglebutton) {
+            flex: 1;
         }
     }
 </style>

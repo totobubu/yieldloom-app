@@ -30,6 +30,7 @@ declare module 'vue' {
     StockDividendTrend: typeof import('./src/components/stock/StockDividendTrend.vue')['default']
     StockHoldingPanel: typeof import('./src/components/stock/StockHoldingPanel.vue')['default']
     StockRecoveryPanel: typeof import('./src/components/portfolio/StockRecoveryPanel.vue')['default']
+    StockSearchFilters: typeof import('./src/components/stock/StockSearchFilters.vue')['default']
     ThumbnailCardShell: typeof import('./src/components/thumbnail/ThumbnailCardShell.vue')['default']
     ThumbnailPreview: typeof import('./src/components/thumbnail/ThumbnailPreview.vue')['default']
     TossCommunityCopy: typeof import('./src/components/thumbnail/TossCommunityCopy.vue')['default']

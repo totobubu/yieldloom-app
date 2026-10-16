@@ -91,7 +91,7 @@ if (typeof window !== 'undefined') {
 }
 
 const appState = ref<LayoutConfig>({
-    primary: savedConfig?.primary || 'emerald',
+    primary: savedConfig?.primary || 'blue',
     surface: savedConfig?.surface || null,
     themePreference: savedThemePreference,
 });

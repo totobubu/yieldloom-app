@@ -36,7 +36,7 @@ Low-level composition, 반응성·수명주기, 테마·접근성 및 검증 기
 
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.
 
-GitHub Pages 배포는 `VITE_API_BASE_URL` 설정이 없으면 정식 웹앱 API인 `https://yieldloom-app.vercel.app`을 사용합니다. Node·Python API는 기본 프런트엔드 origin `https://totobubu.github.io`만 허용하며, 추가 사이트는 서버의 `PUBLIC_APP_ORIGINS`에 명시합니다. `FIRESTORE_SA_KEY`·Toss 자격증명은 서버 전용으로 유지합니다. Pages에 Firebase 웹 설정이 없는 경우 로그인 화면에서 정식 웹앱으로 이동해 계좌 기능을 이용할 수 있습니다.
+GitHub Pages 배포는 `VITE_API_BASE_URL` 설정이 없으면 정식 웹앱 API인 `https://yieldloom-app.vercel.app`을 사용합니다. 인증·계좌용 Node·Python API는 기본 프런트엔드 origin `https://totobubu.github.io`와 로컬 개발 주소를 허용하며, 추가 사이트는 서버의 `PUBLIC_APP_ORIGINS`에 명시합니다. 익명 시장 데이터만 반환하는 `/api/thumbnail-data`는 CDN에 저장된 응답도 같은 방식으로 읽을 수 있도록 공개 CORS를 사용하며, 브라우저 자격증명은 허용하지 않습니다. `FIRESTORE_SA_KEY`·Toss 자격증명은 서버 전용으로 유지합니다. Pages에 Firebase 웹 설정이 없는 경우 로그인 화면에서 정식 웹앱으로 이동해 계좌 기능을 이용할 수 있습니다.
 
 ## 광고 배치
 

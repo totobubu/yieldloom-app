@@ -1,179 +1,303 @@
-// Shared 720px thumbnail-card frame. Individual cards keep only their
+// Shared card frame. The original square stays 720px; presentation dimensions
+// are provided by ThumbnailPreview. Individual cards keep only their
 // content-specific artwork rules in their own SFC styles.
 .thumbnail-card-shell {
-	box-sizing: border-box;
-	width: 720px;
-	height: 720px;
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	gap: 12px;
-	padding: 20px;
-	background: #fff;
-	color: #0f172a;
-	font-family:
-		'Pretendard',
-		'Apple SD Gothic Neo',
-		'Malgun Gothic',
-		-apple-system,
-		BlinkMacSystemFont,
-		'Segoe UI',
-		Roboto,
-		'Helvetica Neue',
-		Arial,
-		sans-serif;
+    box-sizing: border-box;
+    width: 720px;
+    height: 720px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    gap: 12px;
+    padding: 20px;
+    background: #fff;
+    color: #0f172a;
+    line-height: 1.4;
+    font-family:
+        'Pretendard',
+        'Apple SD Gothic Neo',
+        'Malgun Gothic',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        'Helvetica Neue',
+        Arial,
+        sans-serif;
 }
 
 .thumbnail-card-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	flex: 0 0 auto;
-	margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex: 0 0 auto;
+    margin-bottom: 12px;
 }
 
 .thumbnail-card-title-stack {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	min-width: 0;
-	align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    align-items: start;
 }
 
 .thumbnail-card-context {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	color: #2563eb;
-	font-size: 11px;
-	font-weight: 700;
-	letter-spacing: 0.16em;
-	line-height: 1;
-	 i {
-	color: #cbd5e1;
-	font-size: 10px;
-	font-style: normal;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1;
+    i {
+        color: #cbd5e1;
+        font-size: 10px;
+        font-style: normal;
+    }
+    &-label {
+        padding: 3px 6px;
+        border: 1px solid #e2e8f0;
+        border-radius: 4px;
+        background: #f8fafc;
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0;
+    }
 }
-&-label {
-	padding: 3px 6px;
-	border: 1px solid #e2e8f0;
-	border-radius: 4px;
-	background: #f8fafc;
-	color: #64748b;
-	font-size: 10px;
-	font-weight: 600;
-	letter-spacing: 0;
-}
-
-}
-
 
 .thumbnail-card-title-group {
-	display: flex;
-	align-items: center;
-	gap: 12px;
-	min-width: 0;
-	h1 {
-		margin: 0;
-		color: #0f172a;
-		font-family:
-			'Pretendard',
-			-apple-system,
-			BlinkMacSystemFont,
-			'Segoe UI',
-			Roboto,
-			'Helvetica Neue',
-			Arial,
-			sans-serif;
-		font-size: 38px;
-		font-weight: 800;
-		letter-spacing: -0.04em;
-		line-height: 1;
-}
-
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    h1 {
+        margin: 0;
+        color: #0f172a;
+        font-family:
+            'Pretendard',
+            -apple-system,
+            BlinkMacSystemFont,
+            'Segoe UI',
+            Roboto,
+            'Helvetica Neue',
+            Arial,
+            sans-serif;
+        font-size: 38px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1;
+    }
 }
 
 .thumbnail-card-badge {
-	max-width: 270px;
-	overflow: hidden;
-	padding: 5px 10px;
-	border: 1px solid #e2e8f0;
-	border-radius: 6px;
-	background: #f8fafc;
-	color: #475569;
-	font-size: 12px;
-	font-weight: 700;
-	line-height: 1;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+    max-width: 270px;
+    overflow: hidden;
+    padding: 5px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .thumbnail-card-date {
-	display: flex;
-	flex: 0 0 auto;
-	flex-direction: column;
-	gap: 5px;
-	align-items: flex-end;
-	text-align: right;
-	 small {
-	color: #94a3b8;
-	font-size: 11px;
-	font-weight: 500;
-	letter-spacing: 0.08em;
-	line-height: 1;
-}
- b {
-	padding: 7px 11px;
-	border: 1px solid #e2e8f0;
-	border-radius: 8px;
-	background: #ffffffcc;
-	color: #0f172a;
-	font-family: 'Plus Jakarta Sans', 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
-	font-size: 15px;
-	line-height: 1;
-}
-
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-end;
+    text-align: right;
+    small {
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        line-height: 1;
+    }
+    b {
+        padding: 7px 11px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        background: #ffffffcc;
+        color: #0f172a;
+        font-family:
+            'Plus Jakarta Sans', 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+        font-size: 15px;
+        line-height: 1;
+    }
 }
 
 .thumbnail-card-footer {
-	display: flex;
-	align-items: center;
-	text-align: left;
-	justify-content: space-between;
-	gap: 12px;
-	flex: 0 0 auto;
-	color: #94a3b8;
-	font-size: 13px;
-	line-height: 1.25;
-	&-note {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    justify-content: space-between;
+    gap: 12px;
+    flex: 0 0 auto;
+    color: #94a3b8;
+    font-size: 13px;
+    line-height: 1.25;
+    &-note {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
 
-		&::before {
-	content: 'ⓘ';
-	flex: 0 0 auto;
-	font-size: 14px;
-}
-	}
-	&-brand {
-	flex: 0 0 auto;
-	color: #94a3b8;
-	font-size: 10.5px;
-	font-weight: 600;
-	letter-spacing: 0;
-	white-space: nowrap;
-}
+        &::before {
+            content: 'ⓘ';
+            flex: 0 0 auto;
+            font-size: 14px;
+        }
+    }
+    &-brand {
+        flex: 0 0 auto;
+        color: #94a3b8;
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0;
+        white-space: nowrap;
+    }
 }
 
 .thumbnail-card-content {
-	min-height: 0;
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
+    min-height: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+// Output themes belong to the artwork and do not follow the app's dark mode.
+.thumbnail-card-shell.thumbnail-template-paper {
+    background: #f7f3e9;
+    .thumbnail-card-header {
+        border-bottom: 2px solid #c6b89d;
+        padding-bottom: 8px;
+        margin-bottom: 0;
+    }
+    .thumbnail-card-title-group h1 {
+        font-family: Georgia, 'Pretendard', serif;
+        color: #342e24;
+    }
+    .thumbnail-card-context {
+        color: #6a5634;
+        letter-spacing: 0.12em;
+    }
+    .thumbnail-card-footer {
+        border-top: 1px dashed #c6b89d;
+        padding-top: 5px;
+    }
+    .thumbnail-card-footer-note,
+    .thumbnail-card-footer-brand {
+        color: #74654e;
+    }
+}
+
+.thumbnail-card-shell.thumbnail-template-navy {
+    background: #102238;
+    .thumbnail-card-title-group h1 {
+        color: #f8fafc;
+    }
+    .thumbnail-card-context {
+        color: #a8c9ef;
+    }
+    .thumbnail-card-content {
+        background: #fff;
+        border-radius: 20px;
+    }
+    .thumbnail-card-context-label,
+    .thumbnail-card-badge {
+        background: #223b56;
+        border-color: #496580;
+        color: #e2edf8;
+    }
+    .thumbnail-card-date small,
+    .thumbnail-card-footer-note,
+    .thumbnail-card-footer-brand {
+        color: #c0d2e6;
+    }
+    .thumbnail-card-date b {
+        background: #223b56;
+        color: #f8fafc;
+        border-color: #496580;
+    }
+}
+
+.thumbnail-card-shell.thumbnail-ratio-wide.summary-card
+    .thumbnail-card-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr auto;
+    > .hero {
+        grid-row: 1 / 3;
+        height: auto;
+    }
+    > .metrics {
+        align-content: center;
+    }
+    > .history {
+        align-self: end;
+    }
+    > .unavailable {
+        grid-column: 1 / -1;
+    }
+}
+
+.thumbnail-card-shell.thumbnail-ratio-wide {
+    .thumbnail-card-title-group h1 {
+        font-size: 46px;
+    }
+    .thumbnail-card-context {
+        font-size: 13px;
+    }
+    .thumbnail-card-footer {
+        font-size: 15px;
+    }
+}
+
+.thumbnail-card-shell.thumbnail-ratio-story {
+    padding: 32px;
+    gap: 20px;
+    .thumbnail-card-title-group h1 {
+        font-size: 48px;
+    }
+    .thumbnail-card-content {
+        justify-content: space-evenly;
+        gap: 24px;
+    }
+    .thumbnail-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 14px;
+    }
+    .thumbnail-card-footer-note {
+        white-space: normal;
+        overflow: visible;
+    }
+    .thumbnail-card-footer-brand {
+        font-size: 12px;
+    }
+    &.summary-card .hero strong {
+        font-size: 88px;
+    }
+    &.summary-card .history-cells article {
+        min-height: 100px;
+    }
+    &.comparison-card .table > div {
+        font-size: 21px;
+    }
+    &.comparison-card .kpis article {
+        min-height: 130px;
+    }
 }

@@ -5,7 +5,7 @@
 ## 화면
 
 - `/`: 티커·종목명·운용사 검색 및 종목 선택.
-- `/login`: 이메일·비밀번호 또는 Google 로그인.
+- `/login`: 이메일·비밀번호 또는 Google 로그인, 회원가입, 비밀번호 재설정. 로그인 유지 선택과 비밀번호 확인 입력을 제공합니다.
 - `/mypage`: 본인 계좌 포트폴리오(기본), 선택형 가족 추가·관리, 파일 검토·수정 및 기준일 잔고 합산.
 - `/mypage/legacy`: 이전 단일 계좌 자료 조회.
 - `/stock/:ticker`: 종목 상세·시세·배당 정보와 배당 카드 PNG·게시 패키지 다운로드, 게시 문구 복사. `/thumbnail/:ticker`는 이 경로로 이동합니다.
@@ -21,6 +21,18 @@ npm run dev
 npm run build
 node --test tests/*.test.mjs
 python -m unittest discover -s tests/content_pipeline -p 'test_*.py'
+```
+
+## 인증 화면과 공유 카드
+
+로그인·회원가입·재설정 화면은 Stitch 인증 시안의 웹·모바일 배치를 반영합니다. Firebase 재설정 링크(`/login?mode=resetPassword&oobCode=…`)의 검증·만료·재시도·변경 완료를 처리하며 작업 코드는 URL에서 제거하고 메모리에만 보관합니다. 메일에서 이 화면을 열려면 Firebase Console → Authentication → Templates의 비밀번호 재설정 작업 URL을 `https://yieldloom-app.vercel.app/login`으로 설정해야 합니다. 이메일 템플릿 설정을 바꾸지 않으면 기존 Firebase 호스팅 재설정 화면을 이용합니다.
+
+공유정보 탭에서 1:1(720×720), 16:9(1280×720), 9:16(720×1280)과 기본·페이퍼·네이비 디자인을 선택합니다. 선택은 카드 5종의 미리보기·PNG·ZIP manifest·로컬 프리셋에 함께 반영됩니다. 기존 프리셋과 기본 PNG 파일명은 유지하며 앱 다크 모드와 출력 디자인은 독립적입니다. 디자인 원본 63개의 기능별 반영 현황은 [시안 대조표](docs/design/stitch-screen-mapping.json)와 [분석 문서](docs/design/STITCH_FEATURE_GAPS_KO.txt)에 기록합니다.
+
+```sh
+# 개발 서버(5173)에서 실행. 인증은 테스트 응답으로 대체하며 실제 메일·계정을 만들지 않습니다.
+node tests/auth-flows.browser.mjs
+node tests/share-presentation.browser.mjs
 ```
 
 ## 공용 개발 스킬

@@ -49,6 +49,14 @@
     } from '@/services/contentPresets';
     import { trackAggregate } from '@/services/analytics';
     import { apiOrigin, apiUrl } from '@/services/apiUrl';
+    import {
+        artworkFilename,
+        artworkSuffix,
+        cardAspectRatios,
+        cardDimensions,
+        cardTemplates,
+        normalizeCardPresentation,
+    } from '@/services/thumbnail/cardPresentation';
 
     const route = useRoute();
     const router = useRouter();
@@ -81,12 +89,23 @@
     const exporting = ref('');
     const exportError = ref('');
     const schedule = ref(null);
-    const artworkSize = 720;
+    const selectedAspectRatio = ref('square'),
+        selectedTemplate = ref('classic');
+    const selectedPresentation = computed(() =>
+        normalizeCardPresentation({
+            aspectRatio: selectedAspectRatio.value,
+            template: selectedTemplate.value,
+        })
+    );
+    const outputDimensions = computed(() =>
+        cardDimensions(selectedPresentation.value)
+    );
     const maxRivals = 3;
     const shareCopyReady = ref(false);
     const dataStatus = ref('fresh');
     const selectedTone = ref('informative');
     const packaging = ref(false);
+    const outputBusy = computed(() => !!exporting.value || packaging.value);
     const presets = ref(loadLocalPresets());
 
     const selectedCardKinds = ref(['summary']);
@@ -476,48 +495,61 @@
             if (sequence === loadSequence) loading.value = false;
         }
     };
-    const prepareExportDocument = (document) => {
+    const prepareExportDocument = (document, dimensions) => {
         document
             .querySelectorAll('.thumbnail-preview-artboard')
             .forEach((element) => {
                 element.style.transform = 'none';
             });
         document.querySelectorAll('.thumbnail-preview').forEach((element) => {
-            element.style.width = '720px';
-            element.style.maxWidth = '720px';
+            element.style.width = `${dimensions.width}px`;
+            element.style.maxWidth = `${dimensions.width}px`;
+            element.style.height = `${dimensions.height}px`;
+        });
+    };
+    const captureArtwork = (element, presentation) => {
+        const dimensions = cardDimensions(presentation);
+        return html2canvas(element, {
+            onclone: (document) => prepareExportDocument(document, dimensions),
+            useCORS: true,
+            backgroundColor: null,
+            scale: 1,
+            width: dimensions.width,
+            height: dimensions.height,
+            windowWidth: Math.max(1280, dimensions.width),
         });
     };
     const downloadArtwork = async (kind) => {
+        if (outputBusy.value) return;
         const element = document.querySelector(
             `[data-thumbnail-kind="${kind}"]`
         );
         if (!element) return;
+        const sequence = loadSequence,
+            presentation = { ...selectedPresentation.value };
+        const symbol = thumbnailData.value.symbol,
+            text = cardShareText(kind);
         exportError.value = '';
         exporting.value = kind;
         try {
-            const canvas = await html2canvas(element, {
-                onclone: prepareExportDocument,
-                useCORS: true,
-                backgroundColor: null,
-                scale: 1,
-                width: artworkSize,
-                height: artworkSize,
-            });
+            const canvas = await captureArtwork(element, presentation);
+            if (sequence !== loadSequence) return;
             const link = document.createElement('a');
-            link.download = `${thumbnailData.value.symbol.toLowerCase()}_${kind}.png`;
+            link.download = artworkFilename(symbol, kind, presentation);
             link.href = canvas.toDataURL('image/png');
             link.click();
             // The download is normally initiated from a user gesture, so immediately offer its matching post copy.
             try {
-                await navigator.clipboard.writeText(cardShareText(kind));
-                shareCopyReady.value = true;
+                await navigator.clipboard.writeText(text);
+                if (sequence === loadSequence) shareCopyReady.value = true;
             } catch {
                 shareCopyReady.value = false;
             }
             trackAggregate('png_download', kind);
         } catch (e) {
-            exportError.value =
-                'PNG를 생성하지 못했습니다. 잠시 후 다시 시도하세요.';
+            if (sequence === loadSequence)
+                exportError.value =
+                    'PNG를 생성하지 못했습니다. 잠시 후 다시 시도하세요.';
             console.error('Thumbnail export failed', e);
         } finally {
             exporting.value = '';
@@ -534,55 +566,59 @@
         }
     };
     const downloadPublishPackage = async () => {
+        if (outputBusy.value) return;
+        const sequence = loadSequence,
+            presentation = { ...selectedPresentation.value };
+        const symbol = thumbnailData.value.symbol,
+            tone = selectedTone.value,
+            sourceStatus = dataStatus.value;
+        const sourceUrl = selectedData.value?.sourceStatus?.dividendSourceUrl,
+            asOfDate = selectedData.value?.sourceStatus?.priceDate;
         exportError.value = '';
         packaging.value = true;
         try {
             const kinds = selectedExportKinds.value;
             if (!kinds.length) return;
-            const cards = await Promise.all(
-                kinds.map(async (kind) => {
-                    const element = document.querySelector(
-                        `[data-thumbnail-kind="${kind}"]`
-                    );
-                    if (!element) return null;
-                    const canvas = await html2canvas(element, {
-                        onclone: prepareExportDocument,
-                        useCORS: true,
-                        backgroundColor: null,
-                        scale: 1,
-                        width: artworkSize,
-                        height: artworkSize,
-                    });
-                    const png = await (
-                        await fetch(canvas.toDataURL('image/png'))
-                    ).arrayBuffer();
-                    return {
-                        kind,
-                        label:
-                            availableCards.value.find(
-                                (card) => card.kind === kind
-                            )?.label || kind,
-                        filename: `${thumbnailData.value.symbol.toLowerCase()}_${kind}.png`,
-                        png: new Uint8Array(png),
-                        text: cardShareText(kind),
-                        sourceUrl:
-                            selectedData.value?.sourceStatus?.dividendSourceUrl,
-                        asOfDate: selectedData.value?.sourceStatus?.priceDate,
-                    };
-                })
-            );
+            const cards = [];
+            for (const kind of kinds) {
+                const element = document.querySelector(
+                    `[data-thumbnail-kind="${kind}"]`
+                );
+                if (!element)
+                    throw new Error('선택한 카드의 미리보기가 없습니다.');
+                const text = cardShareText(kind);
+                const canvas = await captureArtwork(element, presentation);
+                if (sequence !== loadSequence) return;
+                const png = await (
+                    await fetch(canvas.toDataURL('image/png'))
+                ).arrayBuffer();
+                cards.push({
+                    kind,
+                    label:
+                        availableCards.value.find((card) => card.kind === kind)
+                            ?.label || kind,
+                    filename: artworkFilename(symbol, kind, presentation),
+                    png: new Uint8Array(png),
+                    text,
+                    sourceUrl,
+                    asOfDate,
+                });
+            }
+            if (sequence !== loadSequence) return;
             downloadBlob(
                 createPublishPackage({
-                    symbol: thumbnailData.value.symbol,
-                    tone: selectedTone.value,
-                    cards: cards.filter(Boolean),
-                    sourceStatus: dataStatus.value,
+                    symbol,
+                    tone,
+                    cards,
+                    sourceStatus,
+                    presentation,
                 }),
-                `${thumbnailData.value.symbol.toLowerCase()}_publish-package.zip`
+                `${symbol.toLowerCase()}_publish-package${artworkSuffix(presentation)}.zip`
             );
         } catch (reason) {
-            exportError.value =
-                '게시 패키지를 생성하지 못했습니다. 잠시 후 다시 시도하세요.';
+            if (sequence === loadSequence)
+                exportError.value =
+                    '게시 패키지를 생성하지 못했습니다. 잠시 후 다시 시도하세요.';
             console.error('Publish package failed', reason);
         } finally {
             packaging.value = false;
@@ -601,6 +637,8 @@
                 ticker: selectedInfo.value.symbol,
                 rivals: rivals.value,
                 tone: selectedTone.value,
+                presentation: selectedPresentation.value,
+                cardKinds: selectedCardKinds.value,
                 updatedAt: new Date().toISOString(),
             });
             presets.value = [
@@ -620,7 +658,12 @@
         }
     };
     const openPreset = async (preset) => {
+        if (outputBusy.value) return;
         selectedTone.value = preset.tone || 'informative';
+        const presentation = normalizeCardPresentation(preset.presentation);
+        selectedAspectRatio.value = presentation.aspectRatio;
+        selectedTemplate.value = presentation.template;
+        selectedCardKinds.value = preset.cardKinds || ['summary'];
         await router.push({
             path: `/stock/${preset.ticker}`,
             query: {
@@ -1053,17 +1096,51 @@
                                 </div>
                                 <Button
                                     :label="`선택 카드 ZIP (${selectedExportKinds.length})`"
-                                    :disabled="!selectedExportKinds.length"
+                                    :disabled="
+                                        outputBusy ||
+                                        !selectedExportKinds.length
+                                    "
                                     icon="pi pi-box"
                                     :loading="packaging"
                                     @click="downloadPublishPackage" />
                             </div>
                             <div class="share-controls">
                                 <div class="studio-field">
+                                    <label
+                                        id="share-ratio-label"
+                                        for="share-ratio"
+                                        >출력 비율</label
+                                    >
+                                    <Select
+                                        input-id="share-ratio"
+                                        aria-labelledby="share-ratio-label"
+                                        v-model="selectedAspectRatio"
+                                        :options="cardAspectRatios"
+                                        option-label="label"
+                                        option-value="value"
+                                        :disabled="outputBusy" />
+                                </div>
+                                <div class="studio-field">
+                                    <label
+                                        id="share-template-label"
+                                        for="share-template"
+                                        >카드 디자인</label
+                                    >
+                                    <Select
+                                        input-id="share-template"
+                                        aria-labelledby="share-template-label"
+                                        v-model="selectedTemplate"
+                                        :options="cardTemplates"
+                                        option-label="label"
+                                        option-value="value"
+                                        :disabled="outputBusy" />
+                                </div>
+                                <div class="studio-field">
                                     <label for="share-tone">게시 문구 톤</label
                                     ><Select
                                         input-id="share-tone"
                                         v-model="selectedTone"
+                                        :disabled="outputBusy"
                                         :options="toneOptions"
                                         option-label="label"
                                         option-value="value" />
@@ -1073,17 +1150,24 @@
                                     icon="pi pi-bookmark"
                                     severity="secondary"
                                     outlined
+                                    :disabled="outputBusy"
                                     @click="openPresetDialog" /><Button
                                     v-if="
                                         selectedInfo.underlying &&
                                         rivalOptions.length
                                     "
                                     label="비교 종목 선택"
+                                    :disabled="outputBusy"
                                     icon="pi pi-sliders-h"
                                     severity="secondary"
                                     outlined
                                     @click="openRivalPicker" />
                             </div>
+                            <p class="hint">
+                                출력 크기 {{ outputDimensions.width }} ×
+                                {{ outputDimensions.height }}px · 선택한
+                                디자인은 앱 테마와 별도로 이미지에 적용됩니다.
+                            </p>
                             <div v-if="rivals.length" class="selected-rivals">
                                 <span>비교 종목</span
                                 ><Tag
@@ -1103,6 +1187,7 @@
                                     class="preset-item">
                                     <Button
                                         :label="preset.name"
+                                        :disabled="outputBusy"
                                         severity="secondary"
                                         outlined
                                         size="small"
@@ -1111,6 +1196,7 @@
                                         severity="secondary"
                                         text
                                         :aria-label="`${preset.name} 삭제`"
+                                        :disabled="outputBusy"
                                         @click="deletePreset(preset)" />
                                 </div>
                             </div>
@@ -1135,8 +1221,9 @@
                                         v-model="selectedCardKinds"
                                         :input-id="`share-card-${card.kind}`"
                                         :value="card.kind"
-                                        :disabled="card.disabled" />{{
-                                        card.label
+                                        :disabled="
+                                            outputBusy || card.disabled
+                                        " />{{ card.label
                                     }}<small v-if="card.disabled"
                                         >비교 데이터 확인 필요</small
                                     ></label
@@ -1151,11 +1238,13 @@
                             class="artwork-grid"
                             :class="{
                                 'dividend-view': activeTab === 'dividends',
+                                'wide-artwork': selectedAspectRatio === 'wide',
                             }">
                             <article
                                 v-show="showCard('summary')"
                                 class="artwork-panel">
                                 <ThumbnailPreview
+                                    :presentation="selectedPresentation"
                                     ><DividendSummaryThumbnail
                                         :data="thumbnailData"
                                         data-thumbnail-kind="summary" /></ThumbnailPreview
@@ -1163,6 +1252,7 @@
                                     label="요약 PNG 다운로드"
                                     icon="pi pi-download"
                                     :loading="exporting === 'summary'"
+                                    :disabled="outputBusy"
                                     @click="
                                         downloadArtwork('summary')
                                     " /><CardShareActions
@@ -1174,6 +1264,7 @@
                                 v-show="showCard('comparison')"
                                 class="artwork-panel">
                                 <ThumbnailPreview
+                                    :presentation="selectedPresentation"
                                     ><DividendComparisonThumbnail
                                         :data="thumbnailData"
                                         data-thumbnail-kind="comparison" /></ThumbnailPreview
@@ -1181,6 +1272,7 @@
                                     label="비교 PNG 다운로드"
                                     icon="pi pi-download"
                                     :loading="exporting === 'comparison'"
+                                    :disabled="outputBusy"
                                     @click="
                                         downloadArtwork('comparison')
                                     " /><CardShareActions
@@ -1193,6 +1285,7 @@
                                 v-show="showCard('rival')"
                                 class="artwork-panel">
                                 <ThumbnailPreview
+                                    :presentation="selectedPresentation"
                                     ><RivalThumbnail
                                         :data="
                                             comparison
@@ -1209,7 +1302,7 @@
                                 ><Button
                                     label="라이벌 PNG 다운로드"
                                     icon="pi pi-download"
-                                    :disabled="!comparison"
+                                    :disabled="outputBusy || !comparison"
                                     :loading="exporting === 'rival'"
                                     @click="
                                         downloadArtwork('rival')
@@ -1222,6 +1315,7 @@
                                 v-show="showCard('calendar')"
                                 class="artwork-panel">
                                 <ThumbnailPreview
+                                    :presentation="selectedPresentation"
                                     ><DividendCalendarThumbnail
                                         :data="{
                                             ...schedule,
@@ -1232,6 +1326,7 @@
                                     label="일정 PNG 다운로드"
                                     icon="pi pi-download"
                                     :loading="exporting === 'calendar'"
+                                    :disabled="outputBusy"
                                     @click="
                                         downloadArtwork('calendar')
                                     " /><CardShareActions
@@ -1243,6 +1338,7 @@
                                 v-show="showCard('entry-efficiency')"
                                 class="artwork-panel">
                                 <ThumbnailPreview
+                                    :presentation="selectedPresentation"
                                     ><DividendEntryEfficiencyThumbnail
                                         :data="{
                                             ...entryEfficiency,
@@ -1253,6 +1349,7 @@
                                     label="과거 매수 배당률 PNG 다운로드"
                                     icon="pi pi-download"
                                     :loading="exporting === 'entry-efficiency'"
+                                    :disabled="outputBusy"
                                     @click="
                                         downloadArtwork('entry-efficiency')
                                     " /><CardShareActions
@@ -1323,7 +1420,18 @@
                     </div>
                     <p class="studio-muted">
                         {{ selectedInfo.symbol }} ·
-                        {{ rivals.join(', ') || '비교 종목 없음' }} ·
+                        {{
+                            cardAspectRatios.find(
+                                (item) => item.value === selectedAspectRatio
+                            )?.label
+                        }}
+                        ·
+                        {{
+                            cardTemplates.find(
+                                (item) => item.value === selectedTemplate
+                            )?.label
+                        }}
+                        · {{ rivals.join(', ') || '비교 종목 없음' }} ·
                         {{
                             toneOptions.find(
                                 (tone) => tone.value === selectedTone
@@ -1718,6 +1826,9 @@
     }
     .artwork-panel :deep(.thumbnail-preview) {
         margin: auto;
+    }
+    .artwork-grid.wide-artwork {
+        grid-template-columns: minmax(0, 1fr);
     }
     .artwork-panel > .p-button {
         justify-self: start;

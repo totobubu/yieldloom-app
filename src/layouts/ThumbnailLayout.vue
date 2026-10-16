@@ -213,13 +213,6 @@
                     text
                     @click="router.push('/legal')" />
                 <Button
-                    v-if="firebaseUser"
-                    label="이전 단일 계좌 자료"
-                    icon="pi pi-history"
-                    severity="secondary"
-                    text
-                    @click="router.push('/mypage/legacy')" />
-                <Button
                     v-if="isPortfolioAdmin(firebaseUser)"
                     label="종목 식별 관리"
                     icon="pi pi-cog"

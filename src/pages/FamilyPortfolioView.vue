@@ -181,7 +181,8 @@
         symbolFilter = ref(''),
         entries = ref([]),
         nextCursor = ref(null),
-        legacy = ref(false);
+        legacy = ref(false),
+        entriesLoaded = ref(false);
     const shareUid = ref(''),
         shareRole = ref('viewer'),
         singleAccountConfirmed = ref(false);
@@ -408,6 +409,7 @@
         entries.value = [];
         confirmed.value = false;
         singleAccountConfirmed.value = false;
+        legacy.value = false;
         nextCursor.value = null;
         password.value = '';
         rememberPassword.value = true;
@@ -588,19 +590,44 @@
             message.value = '저장된 PDF 기본 비밀번호를 삭제했습니다.';
         });
     }
-    watch(legacy, () => {
+    watch([legacy, selectedAccount, ownUid, familyId], () => {
         entries.value = [];
         nextCursor.value = null;
+        entriesLoaded.value = false;
     });
+    const migrationDate = (value) => {
+        const date = new Date(value);
+        return value && !Number.isNaN(date.getTime())
+            ? date.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })
+            : '미확인';
+    };
+    async function viewMigratedEntries() {
+        legacy.value = true;
+        await nextTick();
+        await loadEntries();
+    }
     async function loadEntries(more = false) {
         await run(async () => {
+            const accountId = selectedAccount.value;
+            const uid = ownUid.value;
+            const family = familyId.value;
+            const preserved = legacy.value;
+            entriesLoaded.value = false;
             const result = await familyRequest('', undefined, {
-                accountId: selectedAccount.value,
-                legacy: String(legacy.value),
+                accountId,
+                legacy: String(preserved),
                 ...(more && nextCursor.value
                     ? { cursor: nextCursor.value }
                     : {}),
             });
+            if (
+                selectedAccount.value !== accountId ||
+                ownUid.value !== uid ||
+                familyId.value !== family ||
+                legacy.value !== preserved
+            )
+                return;
+            entriesLoaded.value = true;
             entries.value = more
                 ? [...entries.value, ...result.entries]
                 : result.entries;
@@ -1050,6 +1077,10 @@
                                 </Button>
                                 · 자료 기준일 {{ a.asOf || '미확인' }} ·
                                 {{ a.source }}
+                                <Tag
+                                    v-if="a.legacyMigration"
+                                    severity="success"
+                                    value="이전 완료" />
                             </li>
                         </ul>
                         <p
@@ -1156,7 +1187,7 @@
                                         >
                                     </form>
                                 </details>
-                                <details>
+                                <details v-if="!activeAccount.legacyMigration">
                                     <summary>
                                         이전 단일 계좌 데이터 보존 이전
                                     </summary>
@@ -1188,12 +1219,42 @@
                                     </Button>
                                 </details>
                             </template>
-                            <p v-if="activeAccount.legacyMigration">
-                                이전 자료:
-                                {{
-                                    activeAccount.legacyMigration.transactions
-                                }}건 · 잔고 기준일 확인 필요
-                            </p>
+                            <section
+                                v-if="activeAccount.legacyMigration"
+                                aria-label="이전 완료 내역">
+                                <h3>이전 완료 내역</h3>
+                                <Tag severity="success" value="이전 완료" />
+                                <p>
+                                    이전 일시:
+                                    {{
+                                        migrationDate(
+                                            activeAccount.legacyMigration
+                                                .migratedAt
+                                        )
+                                    }}
+                                    (한국 시간)
+                                </p>
+                                <p>
+                                    보존 종목
+                                    {{ activeAccount.legacyMigration.assets }}개
+                                    · 거래
+                                    {{
+                                        activeAccount.legacyMigration
+                                            .transactions
+                                    }}건
+                                </p>
+                                <p>
+                                    이전 자료는 이 계좌에 보존되어 있습니다.
+                                    잔고 기준일을 확인할 수 없어 현재 잔고
+                                    합산에는 포함하지 않습니다. 최신 잔고내역을
+                                    업로드해 주세요.
+                                </p>
+                                <Button
+                                    type="button"
+                                    label="보존 이전 원장 확인"
+                                    :disabled="busy"
+                                    @click="viewMigratedEntries" />
+                            </section>
                             <h3>거래 원장</h3>
                             <label
                                 ><input v-model="legacy" type="checkbox" /> 보존
@@ -1211,6 +1272,15 @@
                                 @click="loadEntries(true)">
                                 다음 200건 조회
                             </Button>
+                            <p
+                                v-if="entriesLoaded && !entries.length"
+                                role="status">
+                                {{
+                                    legacy
+                                        ? '보존 이전한 거래가 없습니다.'
+                                        : '저장된 거래가 없습니다.'
+                                }}
+                            </p>
                             <div class="scroll">
                                 <table v-if="entries.length">
                                     <thead>
@@ -1676,12 +1746,6 @@ date,symbol,quantity,amount,currency,type,externalId
                 </TabPanel></TabPanels
             ></Tabs
         >
-        <div class="portfolio-legacy">
-            <router-link to="/mypage/legacy"
-                >이전 단일 계좌 자료 보기
-                <i class="pi pi-arrow-right" aria-hidden="true"
-            /></router-link>
-        </div>
         <PortfolioExportDialog
             v-model:visible="exportVisible"
             :accounts="visibleAccounts"
@@ -1902,14 +1966,6 @@ date,symbol,quantity,amount,currency,type,externalId
         border: 1px solid var(--app-border);
         border-radius: 16px;
         margin-bottom: 24px;
-    }
-    .portfolio-legacy {
-        margin-top: 24px;
-        text-align: right;
-        font-size: 13px;
-    }
-    .portfolio-legacy a {
-        color: var(--app-muted);
     }
     .family-page > .p-message {
         margin: 12px 0;

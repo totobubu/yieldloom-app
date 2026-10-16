@@ -46,6 +46,14 @@
             ? redirect
             : '/mypage';
     });
+    const isPagesHost =
+        window.location.origin === 'https://totobubu.github.io' &&
+        window.location.pathname.startsWith('/yieldloom-app/');
+    const webAppLogin = computed(() => {
+        const url = new URL('/login', 'https://yieldloom-app.vercel.app');
+        url.searchParams.set('redirect', destination.value);
+        return url.href;
+    });
     watch(mode, () => {
         error.value = '';
         message.value = '';
@@ -161,10 +169,24 @@
                         }}
                     </p>
                 </div>
-                <Message v-if="!firebaseReady" severity="warn" :closable="false"
-                    >로그인 서비스에 연결할 수 없습니다. 잠시 후 다시 방문해
-                    주세요.</Message
-                >
+                <div v-if="!firebaseReady">
+                    <Message
+                        :severity="isPagesHost ? 'info' : 'warn'"
+                        :closable="false"
+                        >{{
+                            isPagesHost
+                                ? '계좌 관리와 로그인은 정식 웹앱에서 이용할 수 있어요. 아래 버튼으로 이동해 주세요.'
+                                : '로그인 서비스에 연결할 수 없습니다. 잠시 후 다시 방문해 주세요.'
+                        }}</Message
+                    >
+                    <Button
+                        v-if="isPagesHost"
+                        as="a"
+                        :href="webAppLogin"
+                        label="웹앱에서 로그인"
+                        icon="pi pi-arrow-up-right"
+                        class="full-button" />
+                </div>
                 <template v-else-if="firebaseUser"
                     ><Message severity="success" :closable="false"
                         >{{ firebaseUser.email }}로 로그인되어

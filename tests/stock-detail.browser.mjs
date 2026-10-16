@@ -142,6 +142,10 @@ try {
         )
     );
     await page.setViewportSize({ width: 390, height: 844 });
+    // Card previews rescale in ResizeObserver after the viewport changes.
+    await page.waitForFunction(
+        () => document.documentElement.scrollWidth <= innerWidth
+    );
     assert.ok(
         await page.evaluate(
             () => document.documentElement.scrollWidth <= innerWidth

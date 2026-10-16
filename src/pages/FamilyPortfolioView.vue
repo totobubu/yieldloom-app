@@ -6,7 +6,8 @@
     import PortfolioExportDialog from '@/components/portfolio/PortfolioExportDialog.vue';
     import PortfolioImportResult from '@/components/portfolio/PortfolioImportResult.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
-    import { useRouter } from 'vue-router';
+    import { useRoute, useRouter } from 'vue-router';
+    import PortfolioDividendCalendar from '@/components/portfolio/PortfolioDividendCalendar.vue';
     import Button from 'primevue/button';
     import Card from 'primevue/card';
     import Panel from 'primevue/panel';
@@ -27,7 +28,21 @@
     import { familyRequest } from '@/services/familyPortfolio';
 
     const router = useRouter();
-    const portfolioTab = ref('overview');
+    const route = useRoute();
+    const portfolioTabs = [
+        'overview',
+        'calendar',
+        'accounts',
+        'upload',
+        'family',
+    ];
+    const portfolioTab = computed({
+        get: () =>
+            portfolioTabs.includes(route.query.tab)
+                ? route.query.tab
+                : 'overview',
+        set: (tab) => router.replace({ query: { ...route.query, tab } }),
+    });
     const exportVisible = ref(false),
         exportKind = ref('holdings'),
         importReceipt = ref(null);
@@ -366,7 +381,7 @@
             if (!user)
                 router.replace({
                     path: '/login',
-                    query: { redirect: '/mypage' },
+                    query: { redirect: route.fullPath },
                 });
             else run(refresh);
         },
@@ -673,6 +688,7 @@
         <Tabs v-model:value="portfolioTab" class="portfolio-tabs"
             ><TabList
                 ><Tab value="overview">한눈에 보기</Tab
+                ><Tab value="calendar">배당 캘린더</Tab
                 ><Tab value="accounts">계좌 관리</Tab
                 ><Tab value="upload">자료 업로드</Tab
                 ><Tab value="family">가족 관리</Tab></TabList
@@ -930,6 +946,19 @@
                             >
                         </section>
                     </template></TabPanel
+                ><TabPanel value="calendar">
+                    <PortfolioDividendCalendar
+                        v-if="
+                            portfolioTab === 'calendar' &&
+                            accountsState === 'ready' &&
+                            !busy
+                        "
+                        :accounts="visibleAccounts"
+                        :positions="summary?.positions || []"
+                        :family-id="familyId" />
+                    <p v-else-if="accountsState === 'loading'" role="status">
+                        계좌 자료를 확인하고 있습니다.
+                    </p> </TabPanel
                 ><TabPanel value="accounts">
                     <section
                         v-if="accountsState === 'ready' || accounts.length">
@@ -1271,6 +1300,7 @@
                         "
                         @view="viewImported"
                         @export="openExport(importReceipt.kind)"
+                        @calendar="portfolioTab = 'calendar'"
                         @another="anotherFile" />
                     <Message
                         v-if="

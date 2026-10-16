@@ -1,6 +1,9 @@
 import Holidays from 'date-holidays';
 import { normalizeFrequency } from './frequency';
-import { currentScheduleEvent, partitionScheduleHistory } from './scheduleVerification';
+import {
+    currentScheduleEvent,
+    partitionScheduleHistory,
+} from './scheduleVerification';
 import { getAssetUrl } from '@/utils/dataUrl';
 import {
     isDataReleaseConfigured,
@@ -19,6 +22,7 @@ export type DividendScheduleEvent = {
     verificationStatus?: string | null;
     officialUrl?: string | null;
     amount?: string | number | null;
+    currency?: string | null;
 };
 
 export type CalendarMarker = {
@@ -50,6 +54,7 @@ type LedgerEvent = {
     verification_status?: string | null;
     official_url?: string | null;
     distribution_per_share?: string | number | null;
+    currency?: string | null;
 };
 
 const iso = (value: unknown) =>
@@ -70,6 +75,7 @@ const toEvent = (row: LedgerEvent): DividendScheduleEvent | null => {
         verificationStatus: row.verification_status ?? null,
         officialUrl: row.official_url ?? null,
         amount: row.distribution_per_share ?? null,
+        currency: row.currency ?? null,
     };
 };
 
@@ -93,62 +99,247 @@ const addKoreanBusinessDays = (start: string, count: number) => {
 };
 
 const expectedIntervalDays = (events: DividendScheduleEvent[]) => {
-    const dates = events.slice(0, 4).map((event) => event.exDate).sort();
+    const dates = events
+        .slice(0, 4)
+        .map((event) => event.exDate)
+        .sort();
     if (dates.length < 2) return null;
-    const gaps = dates.slice(1).map((date, index) =>
-        Math.round((day(date).getTime() - day(dates[index]).getTime()) / 86400000)
-    );
+    const gaps = dates
+        .slice(1)
+        .map((date, index) =>
+            Math.round(
+                (day(date).getTime() - day(dates[index]).getTime()) / 86400000
+            )
+        );
     return Math.round(gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length);
 };
 
 async function loadHistory(ticker: string): Promise<DividendScheduleEvent[]> {
     if (isDataReleaseConfigured()) {
         const index = await loadDataReleaseIndex();
-        const row = index.tickers.find((item: { ticker: string }) => item.ticker.toUpperCase() === ticker);
+        const row = index.tickers.find(
+            (item: { ticker: string }) => item.ticker.toUpperCase() === ticker
+        );
         if (!row) return [];
         const history = await loadDataReleaseHistory(row.historyUrl);
-        return history.history.map(toEvent).filter(Boolean) as DividendScheduleEvent[];
+        return history.history
+            .map(toEvent)
+            .filter(Boolean) as DividendScheduleEvent[];
     }
-    const indexResponse = await fetch(getAssetUrl('content-studio/distribution-index.json'), { cache: 'no-store' });
+    const indexResponse = await fetch(
+        getAssetUrl('content-studio/distribution-index.json'),
+        { cache: 'no-store' }
+    );
     if (!indexResponse.ok) return [];
     const index = await indexResponse.json();
-    const row = (index.tickers ?? []).find((item: { ticker?: string }) => item.ticker?.toUpperCase() === ticker);
+    const row = (index.tickers ?? []).find(
+        (item: { ticker?: string }) => item.ticker?.toUpperCase() === ticker
+    );
     if (!row?.historyUrl) return [];
-    const historyResponse = await fetch(getAssetUrl(String(row.historyUrl).replace(/^\//, '')), { cache: 'no-store' });
+    const historyResponse = await fetch(
+        getAssetUrl(String(row.historyUrl).replace(/^\//, '')),
+        { cache: 'no-store' }
+    );
     if (!historyResponse.ok) return [];
     const history = await historyResponse.json();
-    return (history.history ?? []).map(toEvent).filter(Boolean) as DividendScheduleEvent[];
+    return (history.history ?? [])
+        .map(toEvent)
+        .filter(Boolean) as DividendScheduleEvent[];
 }
 
-export async function loadDividendSchedule(ticker: string, fallbackFrequency?: string | null): Promise<DividendSchedule> {
-    const { confirmed: events, review: reviewHistory } = partitionScheduleHistory(await loadHistory(ticker.toUpperCase()));
+export async function loadDividendSchedule(
+    ticker: string,
+    fallbackFrequency?: string | null
+): Promise<DividendSchedule> {
+    return buildSchedule(
+        ticker,
+        await loadHistory(ticker.toUpperCase()),
+        fallbackFrequency
+    );
+}
+
+function buildSchedule(
+    ticker: string,
+    history: DividendScheduleEvent[],
+    fallbackFrequency?: string | null
+): DividendSchedule {
+    const { confirmed: events, review: reviewHistory } =
+        partitionScheduleHistory(history);
     const reference = today();
     const current = currentScheduleEvent(events, reference);
-    const announcedNext = current && current.exDate >= reference ? current : null;
-    const frequency = current?.frequency ?? events[0]?.frequency ?? normalizeFrequency(fallbackFrequency) ?? reviewHistory[0]?.frequency ?? null;
+    const announcedNext =
+        current && current.exDate >= reference ? current : null;
+    const frequency =
+        current?.frequency ??
+        events[0]?.frequency ??
+        normalizeFrequency(fallbackFrequency) ??
+        reviewHistory[0]?.frequency ??
+        null;
     const isWeekly = frequency === 'weekly';
     const displayedEvents = events.filter((event) =>
         isWeekly
-            ? event.exDate >= format(new Date(day(reference).getTime() - 42 * 86400000))
+            ? event.exDate >=
+              format(new Date(day(reference).getTime() - 42 * 86400000))
             : event.exDate.slice(0, 4) === reference.slice(0, 4)
     );
-    const markers: CalendarMarker[] = displayedEvents
-        .flatMap((event) => {
-            const status: CalendarMarker['status'] = event.exDate < reference ? 'completed' : 'confirmed';
-            return [
-                { date: event.exDate, kind: 'ex' as const, status },
-                ...(event.recordDate ? [{ date: event.recordDate, kind: 'record' as const, status }] : []),
-                ...(event.payableDate ? [{ date: event.payableDate, kind: 'payable' as const, status }] : []),
-            ];
-        });
+    const markers: CalendarMarker[] = displayedEvents.flatMap((event) => {
+        const status: CalendarMarker['status'] =
+            event.exDate < reference ? 'completed' : 'confirmed';
+        return [
+            { date: event.exDate, kind: 'ex' as const, status },
+            ...(event.recordDate
+                ? [{ date: event.recordDate, kind: 'record' as const, status }]
+                : []),
+            ...(event.payableDate
+                ? [
+                      {
+                          date: event.payableDate,
+                          kind: 'payable' as const,
+                          status,
+                      },
+                  ]
+                : []),
+        ];
+    });
     const interval = expectedIntervalDays(events);
-    const forecastExDate = announcedNext || !events[0] || !interval
-        ? null
-        : format(new Date(day(events[0].exDate).getTime() + interval * 86400000));
-    if (forecastExDate && forecastExDate > reference) markers.push({ date: forecastExDate, kind: 'forecast', status: 'forecast' });
+    const forecastExDate =
+        announcedNext || !events[0] || !interval
+            ? null
+            : format(
+                  new Date(
+                      day(events[0].exDate).getTime() + interval * 86400000
+                  )
+              );
+    if (forecastExDate && forecastExDate > reference)
+        markers.push({
+            date: forecastExDate,
+            kind: 'forecast',
+            status: 'forecast',
+        });
     const depositRange = current?.payableDate
-        ? { start: addKoreanBusinessDays(current.payableDate, 1), end: addKoreanBusinessDays(current.payableDate, 2) }
+        ? {
+              start: addKoreanBusinessDays(current.payableDate, 1),
+              end: addKoreanBusinessDays(current.payableDate, 2),
+          }
         : null;
-    if (depositRange) markers.push({ date: depositRange.start, kind: 'deposit', status: 'confirmed' });
-    return { ticker: ticker.toUpperCase(), frequency, current, markers, forecastExDate, depositRange, intervalDays: interval, history: events, reviewHistory };
+    if (depositRange)
+        markers.push({
+            date: depositRange.start,
+            kind: 'deposit',
+            status: 'confirmed',
+        });
+    return {
+        ticker: ticker.toUpperCase(),
+        frequency,
+        current,
+        markers,
+        forecastExDate,
+        depositRange,
+        intervalDays: interval,
+        history: events,
+        reviewHistory,
+    };
+}
+
+// Only public schedules are cached. Account ids, quantities and private rows never enter this cache.
+const scheduleCache = new Map<
+    string,
+    { at: number; history: DividendScheduleEvent[] }
+>();
+export async function loadPortfolioSchedules(
+    tickers: string[],
+    signal?: AbortSignal,
+    force = false
+) {
+    const schedules: Record<string, DividendSchedule> = {},
+        errors: Record<string, string> = {};
+    const all = [...new Set(tickers.map((ticker) => ticker.toUpperCase()))];
+    const selected = all.slice(0, 100);
+    all.slice(100).forEach(
+        (ticker) =>
+            (errors[ticker] =
+                '한 번에 100개 종목까지 조회합니다. 계좌 필터로 나누어 주세요.')
+    );
+    const pending = selected.filter(
+        (ticker) =>
+            force ||
+            !scheduleCache.has(ticker) ||
+            Date.now() - scheduleCache.get(ticker)!.at > 180000
+    );
+    let index:
+        | { tickers: { ticker: string; historyUrl: string }[] }
+        | undefined;
+    if (pending.length) {
+        if (isDataReleaseConfigured()) index = await loadDataReleaseIndex();
+        else {
+            const response = await fetch(
+                getAssetUrl('content-studio/distribution-index.json'),
+                { cache: 'no-store', signal }
+            );
+            if (!response.ok)
+                throw new Error('배당 일정 목록을 불러오지 못했습니다.');
+            index = await response.json();
+        }
+    }
+    let cursor = 0;
+    await Promise.all(
+        Array.from({ length: Math.min(4, selected.length) }, async () => {
+            while (cursor < selected.length) {
+                const ticker = selected[cursor++];
+                if (signal?.aborted)
+                    throw new DOMException(
+                        '조회를 취소했습니다.',
+                        'AbortError'
+                    );
+                try {
+                    let history = scheduleCache.get(ticker)?.history;
+                    if (pending.includes(ticker)) {
+                        const row = index?.tickers.find(
+                            (row) => row.ticker.toUpperCase() === ticker
+                        );
+                        if (!row) {
+                            errors[ticker] =
+                                '공식 배당 일정의 지원 종목이 아닙니다.';
+                            continue;
+                        }
+                        let raw;
+                        if (isDataReleaseConfigured())
+                            raw = await loadDataReleaseHistory(row.historyUrl);
+                        else {
+                            const response = await fetch(
+                                getAssetUrl(row.historyUrl.replace(/^\//, '')),
+                                { cache: 'no-store', signal }
+                            );
+                            if (!response.ok)
+                                throw new Error(
+                                    '종목 배당 이력을 불러오지 못했습니다.'
+                                );
+                            raw = await response.json();
+                        }
+                        history = raw.history
+                            .map(toEvent)
+                            .filter(Boolean) as DividendScheduleEvent[];
+                        if (scheduleCache.size >= 128)
+                            scheduleCache.delete(
+                                scheduleCache.keys().next().value!
+                            );
+                        scheduleCache.set(ticker, { at: Date.now(), history });
+                    }
+                    schedules[ticker] = buildSchedule(ticker, history || []);
+                    if (
+                        !schedules[ticker].history.length &&
+                        !schedules[ticker].reviewHistory.length
+                    )
+                        errors[ticker] = '확인 가능한 공시 일정이 없습니다.';
+                } catch (reason) {
+                    if (signal?.aborted) throw reason;
+                    errors[ticker] =
+                        reason instanceof Error
+                            ? reason.message
+                            : '일정 조회에 실패했습니다.';
+                }
+            }
+        })
+    );
+    return { schedules, errors };
 }

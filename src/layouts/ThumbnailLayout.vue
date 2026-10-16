@@ -19,6 +19,9 @@
     const signingOut = ref(false);
     const accountError = ref('');
     const isAuth = computed(() => route.name === 'login');
+    const inStocks = computed(() =>
+        ['thumbnail-home', 'ticker-stock'].includes(route.name)
+    );
     const inPortfolio = computed(() => route.path.startsWith('/mypage'));
     watch(
         () => route.fullPath,
@@ -61,11 +64,7 @@
                 <nav class="desktop-nav" aria-label="주요 메뉴">
                     <router-link
                         to="/"
-                        :aria-current="
-                            !inPortfolio && !isAuth && route.name !== 'legal'
-                                ? 'page'
-                                : undefined
-                        "
+                        :aria-current="inStocks ? 'page' : undefined"
                         :class="{
                             active:
                                 route.name === 'thumbnail-home' ||
@@ -78,6 +77,16 @@
                         :aria-current="inPortfolio ? 'page' : undefined"
                         :class="{ active: inPortfolio }"
                         >내 포트폴리오</router-link
+                    >
+                    <router-link
+                        to="/simulator"
+                        :class="{ active: route.name === 'dividend-simulator' }"
+                        :aria-current="
+                            route.name === 'dividend-simulator'
+                                ? 'page'
+                                : undefined
+                        "
+                        >배당 시뮬레이터</router-link
                     >
                 </nav>
                 <div class="header-actions">
@@ -126,10 +135,8 @@
         <nav v-if="!isAuth" class="mobile-nav" aria-label="모바일 주요 메뉴">
             <router-link
                 to="/"
-                :class="{ active: !inPortfolio && route.name !== 'legal' }"
-                :aria-current="
-                    !inPortfolio && route.name !== 'legal' ? 'page' : undefined
-                "
+                :class="{ active: inStocks }"
+                :aria-current="inStocks ? 'page' : undefined"
                 ><i class="pi pi-search" aria-hidden="true" /><span
                     >종목 검색</span
                 ></router-link
@@ -140,6 +147,16 @@
                 :aria-current="inPortfolio ? 'page' : undefined"
                 ><i class="pi pi-wallet" aria-hidden="true" /><span
                     >내 포트폴리오</span
+                ></router-link
+            >
+            <router-link
+                to="/simulator"
+                :class="{ active: route.name === 'dividend-simulator' }"
+                :aria-current="
+                    route.name === 'dividend-simulator' ? 'page' : undefined
+                "
+                ><i class="pi pi-calculator" aria-hidden="true" /><span
+                    >시뮬레이터</span
                 ></router-link
             >
         </nav>
@@ -411,7 +428,7 @@
             inset-inline: 0;
             z-index: 30;
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(3, 1fr);
             background: var(--app-surface);
             border-top: 1px solid var(--app-border);
             padding: 6px 16px calc(6px + env(safe-area-inset-bottom, 0px));

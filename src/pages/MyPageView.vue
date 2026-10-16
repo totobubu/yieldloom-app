@@ -1,6 +1,7 @@
 <script setup>
     import { computed, nextTick, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
+    import { usePortfolioDashboard } from '@/composables/usePortfolioDashboard';
     import StockRecoveryPanel from '@/components/portfolio/StockRecoveryPanel.vue';
     import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
@@ -33,10 +34,9 @@
             return '이전 거래 원장을 조회하지 못했습니다. 현재 보유 종목은 표시하며, 이전 배당·거래내역은 확인이 필요합니다.';
         return '';
     });
-    const message = ref(''),
-        error = ref(''),
-        loading = ref(false);
-    const dashboard = ref({ assets: [], transactions: [], summary: {} });
+    const message = ref('');
+    const { dashboard, error, loading, refresh: refreshDashboard } =
+        usePortfolioDashboard(firebaseUser, loadPortfolioDashboard);
     const capital = ref({ entries: [], classifications: [], allocations: [] });
     const capitalPanel = ref(null);
     const capitalLoading = ref(false),
@@ -279,37 +279,19 @@
     const typeClass = (v) =>
         ({ buy: 'buy', sell: 'sell', dividend: 'dividend' })[v] ?? 'unknown';
     async function refresh() {
-        if (!firebaseUser.value) return;
-        loading.value = true;
-        error.value = '';
-        try {
-            await Promise.all([
-                loadCapital(),
-                loadPortfolioDashboard(firebaseUser.value.uid)
-                    .then((portfolio) => {
-                        dashboard.value = portfolio;
-                    })
-                    .catch((reason) => {
-                        error.value =
-                            reason.code === 'permission-denied'
-                                ? '현재 보유 종목 조회 권한이 없습니다. 관리자에게 문의해 주세요.'
-                                : reason.code === 'unavailable'
-                                  ? '포트폴리오 서버에 연결하지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.'
-                                  : '포트폴리오를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
-                        console.error(reason);
-                    }),
-            ]);
-        } finally {
-            loading.value = false;
-        }
+        await Promise.all([loadCapital(), refreshDashboard()]);
     }
     watch(
         [firebaseUser, authLoading],
         async ([user, waiting]) => {
             if (waiting) return;
+            selectedAssetId.value = null;
+            fundingTransaction.value = null;
+            fundingMessage.value = '';
+            message.value = '';
+            detailDialog.value?.close();
             if (!user) {
                 await loadCapital();
-                dashboard.value = { assets: [], transactions: [], summary: {} };
                 router.replace('/login');
             } else await refresh();
         },

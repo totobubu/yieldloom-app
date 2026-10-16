@@ -1,5 +1,5 @@
 <script setup>
-    import { computed, onMounted, ref, watch } from 'vue';
+    import { computed, onScopeDispose, ref, watch } from 'vue';
     import { useHead } from '@vueuse/head';
     import { useRoute, useRouter } from 'vue-router';
     import html2canvas from 'html2canvas';
@@ -352,8 +352,6 @@
         await router.replace({
             query: { ...route.query, rivals: selection.join(',') },
         });
-        if (selection.join(',') !== rivals.value.join(','))
-            await load(selection);
     };
 
     let loadSequence = 0;
@@ -574,13 +572,14 @@
         removeLocalPreset(preset.id);
         presets.value = presets.value.filter((item) => item.id !== preset.id);
     };
-    onMounted(load);
+    onScopeDispose(() => { loadSequence++; });
     watch(
-        () => route.params.ticker,
-        () => {
-            rivalPickerOpen.value = true;
+        [() => route.params.ticker, () => route.query.rivals],
+        ([ticker], [previousTicker] = []) => {
+            if (ticker !== previousTicker) rivalPickerOpen.value = true;
             load();
-        }
+        },
+        { immediate: true }
     );
 </script>
 

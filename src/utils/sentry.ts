@@ -35,8 +35,11 @@ export function initSentry(app: App, router: Router) {
     integrations: [
       Sentry.browserTracingIntegration({ router }),
       Sentry.replayIntegration({
-        maskAllText: false,
-        blockAllMedia: false,
+        maskAllText: true,
+        maskAllInputs: true,
+        blockAllMedia: true,
+        // Private views must not appear in replays, including after SPA navigation.
+        block: ['.auth-page', '.family-page', '.mypage', '.mapping-page', '.holding-panel'],
       }),
     ],
 

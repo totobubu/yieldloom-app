@@ -35,7 +35,7 @@
             : value.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
     watch(
         [() => props.positions, refresh],
-        async ([positions], _, onCleanup) => {
+        async ([positions], previous, onCleanup) => {
             const controller = new AbortController();
             onCleanup(() => controller.abort());
             quotes.value = {};
@@ -45,7 +45,12 @@
             try {
                 const result = await loadValuationQuotes(
                     positions.map((row) => row.symbol),
-                    { signal: controller.signal }
+                    {
+                        signal: controller.signal,
+                        force:
+                            previous?.[1] !== undefined &&
+                            previous[1] !== refresh.value,
+                    }
                 );
                 if (!controller.signal.aborted) quotes.value = result.quotes;
             } catch {

@@ -6,6 +6,7 @@ import distributionIndex from '../public/content-studio/distribution-index.json'
 import priceIndex from '../public/content-studio/price-index.json' with { type: 'json' };
 import nav from '../public/nav.json' with { type: 'json' };
 import { createApiHandler } from '../lib/api-handler.js';
+import { createTransportCache } from '../lib/request-cache.js';
 import { readTickerSnapshot, writeTickerSnapshot } from '../lib/r2-snapshot.js';
 import { loadProjection, loadYahooQuote, PriceError } from '../lib/thumbnail-prices.js';
 import { normalizeSymbol, validSymbol, priceFreshness, actualPrices } from '../lib/thumbnail-projection.js';
@@ -13,6 +14,7 @@ import { normalizeSymbol, validSymbol, priceFreshness, actualPrices } from '../l
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const cache = new Map();
 const inFlight = new Map();
+const sourceCache = createTransportCache({ ttlMs: 60_000 });
 const normalize = normalizeSymbol;
 const instruments = new Map(mergeDiscoveredStocks(coreCatalog.instruments, discoveredStocks).map((instrument) => [normalize(instrument.symbol), instrument]));
 const distributions = new Map((distributionIndex.tickers ?? []).map((row) => [normalize(row.ticker), row]));
@@ -58,29 +60,55 @@ function requestOrigin(req) {
 }
 
 async function loadOfficialHistory(symbol, origin, fetcher = fetch) {
-    const coreBase = process.env.DATA_RELEASE_BASE_URL ?? process.env.VITE_DATA_RELEASE_BASE_URL;
+    const coreBase =
+        process.env.DATA_RELEASE_BASE_URL ??
+        process.env.VITE_DATA_RELEASE_BASE_URL;
     if (coreBase) {
         const { loadCoreHistory } = await import('../lib/core-release.js');
         return loadCoreHistory(symbol, coreBase, fetcher);
     }
     const indexRow = distributions.get(symbol);
-    if (!indexRow?.historyUrl || !/^\/content-studio\/distribution-ticker-[a-z0-9.-]+\.json$/i.test(indexRow.historyUrl)) return [];
-    const origins = [...new Set([origin, process.env.THUMBNAIL_OFFICIAL_DATA_BASE_URL, officialDataFallbackOrigin].filter(Boolean))];
+    if (
+        !indexRow?.historyUrl ||
+        !/^\/content-studio\/distribution-ticker-[a-z0-9.-]+\.json$/i.test(
+            indexRow.historyUrl
+        )
+    )
+        return [];
+    const origins = [
+        ...new Set(
+            [
+                origin,
+                process.env.THUMBNAIL_OFFICIAL_DATA_BASE_URL,
+                officialDataFallbackOrigin,
+            ].filter(Boolean)
+        ),
+    ];
     let lastError;
     for (const dataOrigin of origins) {
         try {
-            const response = await fetcher(new URL(indexRow.historyUrl.replace(/^\//, ''), `${String(dataOrigin).replace(/\/$/, '')}/`), { signal: AbortSignal.timeout(4000), headers: { Accept: 'application/json' } });
-            if (!response.ok) {
-                lastError = new Error(`HTTP ${response.status}`);
-                continue;
-            }
-            const payload = await response.json();
-            return payload.history ?? [];
+            const url = new URL(
+                indexRow.historyUrl.replace(/^\//, ''),
+                `${String(dataOrigin).replace(/\/$/, '')}/`
+            ).href;
+            return await sourceCache(fetcher)(url, async () => {
+                const response = await fetcher(url, {
+                    signal: AbortSignal.timeout(4000),
+                    headers: { Accept: 'application/json' },
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const payload = await response.json();
+                if (!Array.isArray(payload.history))
+                    throw new Error('Invalid official history');
+                return payload.history;
+            });
         } catch (error) {
             lastError = error;
         }
     }
-    throw new Error(`공식 배당 원장을 불러오지 못했습니다: ${symbol}`, { cause: lastError });
+    throw new Error(`공식 배당 원장을 불러오지 못했습니다: ${symbol}`, {
+        cause: lastError,
+    });
 }
 
 function toPriceRows(history, events) {
@@ -99,15 +127,47 @@ function toPriceRows(history, events) {
 async function loadPriceHistory(symbol, fetcher, baseUrl, historyKind, asOf) {
     const price = prices.get(symbol);
     const dataPath = price?.dataPath ?? pricePaths.get(symbol)?.dataPaths?.[0];
-    if (!baseUrl || !dataPath || !/^data\/[a-z0-9_-]+\/[a-z0-9.-]+\.json$/i.test(dataPath)) return null;
-    const response = await fetcher(new URL(dataPath, `${baseUrl}/`), { signal: AbortSignal.timeout(4000), headers: { Accept: 'application/json' } });
-    if (!response.ok) throw new Error(`가격 projection을 불러오지 못했습니다: ${symbol}`);
-    const payload = await response.json();
+    if (
+        !baseUrl ||
+        !dataPath ||
+        !/^data\/[a-z0-9_-]+\/[a-z0-9.-]+\.json$/i.test(dataPath)
+    )
+        return null;
+    const url = new URL(dataPath, `${baseUrl}/`).href;
+    const payload = await sourceCache(fetcher)(url, async () => {
+        const response = await fetcher(url, {
+            signal: AbortSignal.timeout(4000),
+            headers: { Accept: 'application/json' },
+        });
+        if (!response.ok)
+            throw new Error(`가격 projection을 불러오지 못했습니다: ${symbol}`);
+        const payload = await response.json();
+        if (!Array.isArray(payload.backtestData))
+            throw new Error('Invalid price history');
+        return payload;
+    });
     const rows = actualPrices(payload, asOf);
     const cutoff = new Date(`${asOf.slice(0, 7)}-01T00:00:00Z`);
-    cutoff.setUTCMonth(cutoff.getUTCMonth() - (historyKind === 'comparison-1y' ? 13 : 37));
-    const marketCap = payload.tickerInfo?.marketCap ?? [...(payload.backtestData ?? [])].reverse().find(row => !row.forecasted && row.date <= asOf && Number(row.marketCap) > 0)?.marketCap;
-    return { ...payload, tickerInfo: { ...payload.tickerInfo, marketCap }, backtestData: rows.filter(row => row.date >= cutoff.toISOString().slice(0, 10)) };
+    cutoff.setUTCMonth(
+        cutoff.getUTCMonth() - (historyKind === 'comparison-1y' ? 13 : 37)
+    );
+    const marketCap =
+        payload.tickerInfo?.marketCap ??
+        [...(payload.backtestData ?? [])]
+            .reverse()
+            .find(
+                (row) =>
+                    !row.forecasted &&
+                    row.date <= asOf &&
+                    Number(row.marketCap) > 0
+            )?.marketCap;
+    return {
+        ...payload,
+        tickerInfo: { ...payload.tickerInfo, marketCap },
+        backtestData: rows.filter(
+            (row) => row.date >= cutoff.toISOString().slice(0, 10)
+        ),
+    };
 }
 
 const latestClose = (rows) => [...rows].reverse().find((row) => Number.isFinite(Number(row.close)) && Number(row.close) > 0) ?? null;

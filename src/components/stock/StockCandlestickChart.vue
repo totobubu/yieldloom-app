@@ -1,7 +1,7 @@
 <script setup>
     import Button from 'primevue/button';
     import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
-    import { apiUrl } from '@/services/apiUrl';
+    import { loadStockPrices } from '@/services/stockPrices.js';
     import { aggregateCandles } from '@/services/stockAnalysis';
     const chartHost = ref(null),
         chartWidth = ref(1000);
@@ -12,7 +12,11 @@
         });
         if (chartHost.value) observer.observe(chartHost.value);
     });
-    onBeforeUnmount(() => observer?.disconnect());
+    onBeforeUnmount(() => {
+        observer?.disconnect();
+        sequence++;
+        controller?.abort();
+    });
     const props = defineProps({
         symbol: { type: String, required: true },
         currency: { type: String, default: '' },
@@ -41,25 +45,21 @@
         { label: '2년', months: 24 },
     ];
     let sequence = 0;
-    const load = async () => {
+    let controller;
+    const load = async (force = false) => {
         const current = ++sequence;
+        controller?.abort();
+        controller = new AbortController();
         const symbol = props.symbol;
         loading.value = true;
         error.value = '';
         data.value = null;
         selected.value = null;
         try {
-            const response = await fetch(
-                apiUrl(
-                    `/api/stock-prices?ticker=${encodeURIComponent(symbol)}`
-                ),
-                { signal: AbortSignal.timeout(15000) }
-            );
-            const payload = await response.json();
-            if (!response.ok)
-                throw new Error(
-                    payload.error || '일봉 데이터를 불러오지 못했습니다.'
-                );
+            const payload = await loadStockPrices(symbol, {
+                force,
+                signal: controller.signal,
+            });
             if (!payload.candles?.length)
                 throw new Error('확인 가능한 일봉 데이터가 없습니다.');
             if (sequence === current) data.value = payload;
@@ -73,7 +73,11 @@
             if (sequence === current) loading.value = false;
         }
     };
-    watch(() => props.symbol, load, { immediate: true });
+    watch(
+        () => props.symbol,
+        () => load(),
+        { immediate: true }
+    );
     watch(period, () => {
         resetWindow();
     });
@@ -313,7 +317,7 @@
         </div>
         <div v-else-if="error" class="chart-state" role="alert">
             <p>{{ error }}</p>
-            <Button severity="secondary" outlined @click="load"
+            <Button severity="secondary" outlined @click="load(true)"
                 >다시 시도</Button
             >
         </div>

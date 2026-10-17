@@ -28,6 +28,26 @@ const account = {
 };
 const overview = { accounts: [account] };
 
+test('transaction export can reuse a validated shared ledger without a second pagination loop', async () => {
+    let calls = 0;
+    const result = await loadPortfolioCsv({
+        familyId: 'f',
+        accountId: 'allowed',
+        kind: 'transactions',
+        request: async () => {
+            throw new Error('duplicate request');
+        },
+        loadLedger: async (options) => {
+            calls++;
+            assert.deepEqual(options.accounts, [{ id: 'allowed' }]);
+            return [{ id: '1', row, asOf: '2026-10-15', source: 'fixture' }];
+        },
+    });
+    assert.equal(calls, 1);
+    assert.equal(result.count, 1);
+    assert.match(result.csv, /AAPL/);
+});
+
 test('CSV preserves missing amounts, zero, Unicode, quoted cells and standard parser compatibility', () => {
     const csv = buildPortfolioCsv('transactions', [
         {

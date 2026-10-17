@@ -171,11 +171,21 @@ try {
         })
         .waitFor();
     accounts = [account('a', 'p', 'AAPL')];
+    const beforeRestore = requests.length;
+    await page.getByRole('button', { name: '새로고침', exact: true }).click();
+    await section.getByText('120 USD', { exact: true }).waitFor();
+    assert.equal(
+        requests.length,
+        beforeRestore,
+        'restored holdings reuse the public price within its TTL'
+    );
     slow = true;
     const started = new Promise((resolve) => {
         slowStarted = resolve;
     });
-    await page.getByRole('button', { name: '새로고침', exact: true }).click();
+    await section
+        .getByRole('button', { name: '시세 다시 조회', exact: true })
+        .click();
     await section.getByRole('status').waitFor();
     await started;
     await page.waitForFunction(

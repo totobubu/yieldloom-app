@@ -1,4 +1,5 @@
 import Holidays from 'date-holidays';
+import { readPublicJson } from '../publicJson.js';
 import { normalizeFrequency } from './frequency';
 import {
     currentScheduleEvent,
@@ -114,48 +115,44 @@ const expectedIntervalDays = (events: DividendScheduleEvent[]) => {
     return Math.round(gaps.reduce((sum, gap) => sum + gap, 0) / gaps.length);
 };
 
-async function loadHistory(ticker: string): Promise<DividendScheduleEvent[]> {
-    if (isDataReleaseConfigured()) {
-        const index = await loadDataReleaseIndex();
-        const row = index.tickers.find(
-            (item: { ticker: string }) => item.ticker.toUpperCase() === ticker
-        );
-        if (!row) return [];
-        const history = await loadDataReleaseHistory(row.historyUrl);
-        return history.history
-            .map(toEvent)
-            .filter(Boolean) as DividendScheduleEvent[];
-    }
-    const indexResponse = await fetch(
+type ScheduleOptions = { signal?: AbortSignal; force?: boolean };
+async function loadScheduleIndex(options: ScheduleOptions = {}) {
+    if (isDataReleaseConfigured()) return loadDataReleaseIndex(options);
+    return readPublicJson(
         getAssetUrl('content-studio/distribution-index.json'),
-        { cache: 'no-store' }
+        {
+            ...options,
+            ttlMs: 180_000,
+            validate: (payload: { tickers?: unknown }) =>
+                Array.isArray(payload?.tickers),
+        }
     );
-    if (!indexResponse.ok) return [];
-    const index = await indexResponse.json();
-    const row = (index.tickers ?? []).find(
-        (item: { ticker?: string }) => item.ticker?.toUpperCase() === ticker
-    );
-    if (!row?.historyUrl) return [];
-    const historyResponse = await fetch(
-        getAssetUrl(String(row.historyUrl).replace(/^\//, '')),
-        { cache: 'no-store' }
-    );
-    if (!historyResponse.ok) return [];
-    const history = await historyResponse.json();
-    return (history.history ?? [])
-        .map(toEvent)
-        .filter(Boolean) as DividendScheduleEvent[];
 }
-
+async function loadScheduleHistory(url: string, options: ScheduleOptions = {}) {
+    const raw = isDataReleaseConfigured()
+        ? await loadDataReleaseHistory(url, options)
+        : await readPublicJson(getAssetUrl(url.replace(/^\//, '')), {
+              ...options,
+              ttlMs: 180_000,
+              validate: (payload: { history?: unknown }) =>
+                  Array.isArray(payload?.history),
+          });
+    return raw.history.map(toEvent).filter(Boolean) as DividendScheduleEvent[];
+}
 export async function loadDividendSchedule(
     ticker: string,
-    fallbackFrequency?: string | null
+    fallbackFrequency?: string | null,
+    options: ScheduleOptions = {}
 ): Promise<DividendSchedule> {
-    return buildSchedule(
-        ticker,
-        await loadHistory(ticker.toUpperCase()),
-        fallbackFrequency
+    const index = await loadScheduleIndex(options);
+    const row = index.tickers.find(
+        (item: { ticker: string }) =>
+            item.ticker.toUpperCase() === ticker.toUpperCase()
     );
+    const history = row
+        ? await loadScheduleHistory(row.historyUrl, options)
+        : [];
+    return buildSchedule(ticker, history, fallbackFrequency);
 }
 
 function buildSchedule(
@@ -241,11 +238,7 @@ function buildSchedule(
     };
 }
 
-// Only public schedules are cached. Account ids, quantities and private rows never enter this cache.
-const scheduleCache = new Map<
-    string,
-    { at: number; history: DividendScheduleEvent[] }
->();
+// Public raw history is shared with search and ticker detail by URL in publicJson.
 export async function loadPortfolioSchedules(
     tickers: string[],
     signal?: AbortSignal,
@@ -260,26 +253,14 @@ export async function loadPortfolioSchedules(
             (errors[ticker] =
                 '한 번에 100개 종목까지 조회합니다. 계좌 필터로 나누어 주세요.')
     );
-    const pending = selected.filter(
-        (ticker) =>
-            force ||
-            !scheduleCache.has(ticker) ||
-            Date.now() - scheduleCache.get(ticker)!.at > 180000
-    );
-    let index:
-        | { tickers: { ticker: string; historyUrl: string }[] }
-        | undefined;
-    if (pending.length) {
-        if (isDataReleaseConfigured()) index = await loadDataReleaseIndex();
-        else {
-            const response = await fetch(
-                getAssetUrl('content-studio/distribution-index.json'),
-                { cache: 'no-store', signal }
-            );
-            if (!response.ok)
-                throw new Error('배당 일정 목록을 불러오지 못했습니다.');
-            index = await response.json();
-        }
+    let index;
+    try {
+        index = selected.length
+            ? await loadScheduleIndex({ signal, force })
+            : { tickers: [] };
+    } catch (error) {
+        if (signal?.aborted) throw error;
+        throw new Error('배당 일정 목록을 불러오지 못했습니다.');
     }
     let cursor = 0;
     await Promise.all(
@@ -292,40 +273,20 @@ export async function loadPortfolioSchedules(
                         'AbortError'
                     );
                 try {
-                    let history = scheduleCache.get(ticker)?.history;
-                    if (pending.includes(ticker)) {
-                        const row = index?.tickers.find(
-                            (row) => row.ticker.toUpperCase() === ticker
-                        );
-                        if (!row) {
-                            errors[ticker] =
-                                '공식 배당 일정의 지원 종목이 아닙니다.';
-                            continue;
-                        }
-                        let raw;
-                        if (isDataReleaseConfigured())
-                            raw = await loadDataReleaseHistory(row.historyUrl);
-                        else {
-                            const response = await fetch(
-                                getAssetUrl(row.historyUrl.replace(/^\//, '')),
-                                { cache: 'no-store', signal }
-                            );
-                            if (!response.ok)
-                                throw new Error(
-                                    '종목 배당 이력을 불러오지 못했습니다.'
-                                );
-                            raw = await response.json();
-                        }
-                        history = raw.history
-                            .map(toEvent)
-                            .filter(Boolean) as DividendScheduleEvent[];
-                        if (scheduleCache.size >= 128)
-                            scheduleCache.delete(
-                                scheduleCache.keys().next().value!
-                            );
-                        scheduleCache.set(ticker, { at: Date.now(), history });
+                    const row = index.tickers.find(
+                        (row: { ticker: string }) =>
+                            row.ticker.toUpperCase() === ticker
+                    );
+                    if (!row) {
+                        errors[ticker] =
+                            '공식 배당 일정의 지원 종목이 아닙니다.';
+                        continue;
                     }
-                    schedules[ticker] = buildSchedule(ticker, history || []);
+                    const history = await loadScheduleHistory(row.historyUrl, {
+                        signal,
+                        force,
+                    });
+                    schedules[ticker] = buildSchedule(ticker, history);
                     if (
                         !schedules[ticker].history.length &&
                         !schedules[ticker].reviewHistory.length

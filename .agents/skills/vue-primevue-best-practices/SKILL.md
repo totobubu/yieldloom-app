@@ -10,7 +10,9 @@ description: Yieldloom 프로젝트의 Vue 3 및 PrimeVue 4 구현·리팩터링
 1. 루트 `AGENTS.md`와 `README.md`, 변경 대상 및 직접 연결되는 코드를 읽는다.
 2. `package.json`·`package-lock.json`에서 현재 버전을 확인한다. 작성 시점 기준
    Vue 3.5, PrimeVue 4, Vite 7, Vue Router 4이며 JS와 TS가 공존한다.
-3. 아래 기준 중 변경에 관련된 항목을 적용한다. 작업 크기에 맞춰 검증한다.
+3. 조회를 추가하거나 호출 시점을 바꾸는 작업은 루트 `AGENTS.md`의
+   「API·데이터 조회 중복 방지」를 구현 전에 적용한다. 아래 기준 중 관련 항목을
+   적용하고 작업 크기에 맞춰 검증한다.
 4. 리뷰에서는 실제 결함·회귀를 우선하고, 취향이나 파일 크기만으로 추출을 요구하지 않는다.
 
 프로젝트 패턴과 검증 대상 예시는 [references/project-patterns.md](references/project-patterns.md)를 참고한다.
@@ -98,6 +100,14 @@ description: Yieldloom 프로젝트의 Vue 3 및 PrimeVue 4 구현·리팩터링
 
 ## 성능
 
+- API 호출을 추가하기 전에 mount·watch·탭 재진입·공유 컴포넌트에서 같은 자료를
+  조회하는지 확인하고, 기존 공용 조회 서비스를 우선 사용한다. 가족 원장 조회는
+  `src/services/familyPortfolio.js`의 `familyRequest`·`loadFamilyLedger`를 확인한다.
+- 진행 중 요청 합치기와 버전 기반 재사용을 적용할 때 로그인 세션·권한·조회 조건을
+  분리하고, 취소·저장·로그아웃 시 무효화도 함께 구현한다. 캐시로 권한 검증을 생략하지 않는다.
+- 조회 변경은 최초/재진입/동시 조회의 API 요청 수와 서버 문서 읽기를 구분해 검증한다.
+  기존 원장 경합·재사용 테스트는 `tests/portfolio_ledger_client.test.mjs`,
+  로컬 API 통합 검증은 `tests/portfolio-ledger.integration.mjs`를 참고한다.
 - 렌더링 중 반복되는 큰 계산·필터는 computed나 서비스로 이동하고 데이터 크기를 확인한다.
 - `v-for`에는 안정적인 고유 key를 사용한다. 목록의 identity를 배열 index로 대신하지 않는다.
 - 대량 목록은 데이터 규모에 따라 페이지네이션·가상화를 검토한다. 실제 필요 없이 도입하지 않는다.

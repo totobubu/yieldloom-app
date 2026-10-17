@@ -49,6 +49,33 @@ const response = (quote, timestamps = [1767272400, 1767358800]) => ({
         ],
     },
 });
+
+test('concurrent server requests for the same ticker make one upstream request', async () => {
+    let calls = 0;
+    const fetcher = async () => {
+        calls++;
+        return {
+            ok: true,
+            json: async () =>
+                response({
+                    open: [100, 101],
+                    high: [110, 111],
+                    low: [99, 100],
+                    close: [105, 106],
+                    volume: [1, 2],
+                }),
+        };
+    };
+    const [a, b] = await Promise.all([
+        loadStockCandles('AAPL', fetcher),
+        loadStockCandles('aapl', fetcher),
+    ]);
+    a.candles[0].close = 999;
+    assert.equal(b.candles[0].close, 105);
+    assert.equal(calls, 1);
+    await loadStockCandles('AAPL', fetcher);
+    assert.equal(calls, 1);
+});
 test('candles retain actual OHLC and volume and normalize dotted share classes', async () => {
     let url;
     const result = await loadStockCandles('brk.b', async (value) => {

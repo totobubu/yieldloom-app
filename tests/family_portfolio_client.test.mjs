@@ -148,6 +148,22 @@ test('identical GETs with reordered parameters share one request and return inde
     assert.equal(calls, 2); // Permission checks are never served from a response cache.
 });
 
+test('permission invalidation still returns the original error to its caller', async () => {
+    const user = { getIdToken: async () => 'fixture' };
+    const reasons = [];
+    const request = createFamilyPortfolioClient({
+        getUser: () => user,
+        fetcher: async () =>
+            Response.json({ error: '권한 없음' }, { status: 403 }),
+    });
+    request.onInvalidate((_user, reason) => reasons.push(reason));
+    await assert.rejects(
+        request(),
+        (error) => error.status === 403 && error.message === '권한 없음'
+    );
+    assert.deepEqual(reasons, ['access']);
+});
+
 test('all callers cancelling aborts the transport; a later caller starts a fresh request', async () => {
     const user = { getIdToken: async () => 'fixture' };
     let calls = 0,

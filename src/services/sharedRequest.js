@@ -29,7 +29,12 @@ export function joinSharedRequest(task, signal) {
             callback(value);
         };
         const abort = () => {
-            finish(reject, cancelledRequest());
+            finish(
+                reject,
+                signal?.reason?.name === 'TimeoutError'
+                    ? signal.reason
+                    : cancelledRequest()
+            );
             if (!task.subscribers && !task.settled) task.controller.abort();
         };
         signal?.addEventListener('abort', abort, { once: true });

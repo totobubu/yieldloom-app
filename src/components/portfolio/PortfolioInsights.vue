@@ -22,6 +22,7 @@
         dividendReduction,
     } from '@/services/portfolioInsights.js';
     import { getAssetUrl } from '@/utils/dataUrl.js';
+    import { readPublicJson } from '@/services/publicJson.js';
     import { useRequestCooldown } from '@/composables/useRequestCooldown.js';
 
     const props = defineProps({
@@ -199,18 +200,24 @@
                         firebaseUser.value?.uid === uid,
                 }),
                 (async () => {
-                    const response = await fetch(
+                    const payload = await readPublicJson(
                         getAssetUrl('portfolio-classifications.json'),
                         {
+                            force:
+                                previous?.[3] !== undefined &&
+                                previous[3] !== refresh.value,
+                            ttlMs: 180_000,
                             signal: AbortSignal.any([
                                 controller.signal,
                                 AbortSignal.timeout(8000),
                             ]),
-                            credentials: 'omit',
+                            validate: (value) =>
+                                value?.schemaVersion === 1 &&
+                                value.securities &&
+                                typeof value.securities === 'object' &&
+                                !Array.isArray(value.securities),
                         }
                     );
-                    if (!response.ok) throw new Error('분류 자료 조회 실패');
-                    const payload = await response.json();
                     if (
                         payload.schemaVersion !== 1 ||
                         !payload.securities ||

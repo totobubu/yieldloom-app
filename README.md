@@ -22,9 +22,14 @@
 npm ci
 npm run dev
 npm run build
+npm run lint:check
 node --test tests/*.test.mjs
 python -m unittest discover -s tests/content_pipeline -p 'test_*.py'
 ```
+
+`npm run lint:check`는 JavaScript·TypeScript·Vue 코드를 파일 수정 없이 검사합니다.
+ESLint 9 설정은 `eslint.config.js`에서 관리하며, 스타일 포맷은 Prettier에 맡깁니다.
+`npm run lint`는 oxlint와 ESLint의 자동 수정을 순서대로 실행합니다.
 
 ## 인증 화면과 공유 카드
 

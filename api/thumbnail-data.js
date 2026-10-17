@@ -2,6 +2,7 @@ import catalog from '../public/thumbnail-catalog.json' with { type: 'json' };
 import coreCatalog from '../data-v2/catalog-seed.json' with { type: 'json' };
 import discoveredStocks from '../public/us-dividend-stocks.json' with { type: 'json' };
 import { mergeDiscoveredStocks } from '../lib/discovered-stocks.js';
+import { verifiedUnderlying } from '../lib/security-underlyings.js';
 import distributionIndex from '../public/content-studio/distribution-index.json' with { type: 'json' };
 import priceIndex from '../public/content-studio/price-index.json' with { type: 'json' };
 import nav from '../public/nav.json' with { type: 'json' };
@@ -25,10 +26,11 @@ const officialDataFallbackOrigin = 'https://totobubu.github.io/yieldloom-app';
 
 export function catalogEntry(symbol) {
     const normalized = normalize(symbol);
+    const verified = verifiedUnderlying(normalized);
     for (const [underlying, symbols] of Object.entries(catalog.relationships)) {
-        if (symbols.includes(normalized)) return { symbol: normalized, underlying, comparisonEligible: true };
+        if (symbols.includes(normalized)) return { symbol: normalized, underlying: verified?.underlying ?? underlying, comparisonEligible: !verified || verified.underlying === underlying };
     }
-    return { symbol: normalized, underlying: null, comparisonEligible: false };
+    return { symbol: normalized, underlying: verified?.underlying ?? null, comparisonEligible: false };
 }
 
 export function rivalOptions(entry) {

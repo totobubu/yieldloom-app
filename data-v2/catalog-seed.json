@@ -777,7 +777,7 @@
       "isin": "US88636V8191",
       "market": "NYSE",
       "currency": "USD",
-      "koName": "무디스",
+      "koName": "디파이언스 아리스타 네트웍스 데일리 타겟 2배 ETF",
       "longName": null,
       "active": true,
       "officialProvider": "Defiance"
@@ -3917,7 +3917,7 @@
       "isin": "US38747T6745",
       "market": "BATS",
       "currency": "USD",
-      "koName": "그래닛셰어즈 일드부스트 크라우드스트라이크 홀딩스 ETF",
+      "koName": "그래닛셰어즈 일드부스트 코어위브 ETF",
       "longName": null,
       "active": true,
       "officialProvider": "GraniteShares"

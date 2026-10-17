@@ -1,0 +1,78 @@
+name: Refresh verified ETF underlyings
+
+on:
+  schedule:
+    - cron: '20 8 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: verified-underlying-metadata
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: pip install lxml
+      - run: npm ci --no-audit --no-fund
+      - name: Collect official metadata and register verified additions
+        shell: bash
+        run: |
+          set +e
+          python scripts/metadata/underlyings.py --collect --apply
+          result=$?
+          set -e
+          if [ "$result" -eq 2 ]; then
+            echo '::warning::Some sources or changes need review; existing links were retained. See the audit artifact.'
+          elif [ "$result" -ne 0 ]; then
+            exit "$result"
+          fi
+      - name: Verify registry and regenerate classifications
+        run: |
+          python -m unittest discover -s tests/metadata -v
+          node --test tests/security_underlyings.test.mjs
+          npm run export:portfolio-classifications
+          npm run type-check
+      - name: Attach audit and evidence cache
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: underlying-metadata-audit-${{ github.run_id }}
+          path: |
+            docs/data-management/underlying-audit.json
+            data-v2/security-underlyings.json
+            var/data-management/underlying-sources/
+          retention-days: 30
+      - name: Commit verified metadata
+        id: commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data-v2/security-underlyings.json public/portfolio-classifications.json docs/data-management/underlying-audit.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'data: refresh verified ETF underlyings'
+            git push origin HEAD:main
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+          fi
+      # GITHUB_TOKEN commits do not trigger push workflows; request the Pages build explicitly.
+      - name: Rebuild Pages with updated metadata
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy-pages.yml --ref main

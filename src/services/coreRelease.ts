@@ -10,6 +10,7 @@ export interface CoreInstrument {
     longName?: string | null;
     active: boolean;
     officialProvider?: string | null;
+    underlying?: string | null;
     instrumentPath?: string;
     dividendHistoryPath?: string;
 }

@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,6 +14,8 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from scripts.metadata.registry import load_verified_links
 ALLOWED_STATUSES = {"official", "cross_checked"}
 
 
@@ -66,6 +69,7 @@ def normalize(event: dict[str, object]) -> dict[str, object]:
 def load_catalog(path: Path | None, events: list[dict[str, object]]) -> list[dict[str, object]]:
     """Return only product-neutral catalog fields; events fill known providers."""
     providers = {str(event["ticker"]): str(event["provider"]) for event in events}
+    links = load_verified_links()
     raw: list[object] = []
     if path:
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -93,6 +97,8 @@ def load_catalog(path: Path | None, events: list[dict[str, object]]) -> list[dic
             "active": bool(row.get("active", True)),
             "officialProvider": str(row["officialProvider"]).strip() if row.get("officialProvider") else providers.get(symbol),
         }
+        if symbol in links:
+            by_symbol[symbol]['underlying'] = links[symbol]['underlying']
     for symbol, provider in providers.items():
         by_symbol.setdefault(symbol, {
             "symbol": symbol, "isin": None, "market": "UNKNOWN", "currency": "USD",
@@ -157,7 +163,8 @@ def main() -> int:
         catalog_index.append({
             key: detail[key]
             for key in ("symbol", "isin", "market", "currency", "koName", "longName", "active", "officialProvider")
-        } | {"instrumentPath": f"catalog/instruments/{filename}.json"})
+        } | ({'underlying': detail['underlying']} if detail.get('underlying') else {})
+          | {"instrumentPath": f"catalog/instruments/{filename}.json"})
     search_path = output / "catalog" / "search-index.json"
     dump(search_path, {"schemaVersion": 1, "instruments": catalog_index})
     generated.append(search_path)

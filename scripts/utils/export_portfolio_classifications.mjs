@@ -1,4 +1,5 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { verifiedUnderlying } from '../../lib/security-underlyings.js';
 
 const root = new URL('../../', import.meta.url);
 const seed = JSON.parse(
@@ -22,7 +23,9 @@ for (const symbol of [
 ].sort()) {
     const provider = instruments.get(symbol)?.officialProvider || null;
     const groups = links.get(symbol);
-    const underlying = groups?.size === 1 ? [...groups][0] : null;
+    const underlying =
+        verifiedUnderlying(symbol)?.underlying ??
+        (groups?.size === 1 ? [...groups][0] : null);
     if (provider || underlying) securities[symbol] = { provider, underlying };
 }
 await writeFile(
@@ -30,7 +33,7 @@ await writeFile(
     JSON.stringify(
         {
             schemaVersion: 1,
-            source: 'catalog-seed + thumbnail-catalog',
+            source: 'catalog-seed + thumbnail-catalog + security-underlyings',
             securities,
         },
         null,

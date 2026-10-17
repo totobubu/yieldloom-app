@@ -9,11 +9,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from scripts.metadata.registry import load_verified_links
 
 
 def normalized_entry(row: dict[str, Any]) -> dict[str, Any] | None:
@@ -42,6 +45,7 @@ def main() -> int:
     parser.add_argument("--input", type=Path, default=ROOT / "public" / "nav.json")
     parser.add_argument("--output", type=Path, default=ROOT / "data-v2" / "catalog-seed.json")
     args = parser.parse_args()
+    links = load_verified_links()
     source = args.input.resolve()
     output = args.output.resolve()
     payload = json.loads(source.read_text(encoding="utf-8"))
@@ -55,6 +59,8 @@ def main() -> int:
         entry = normalized_entry(row)
         if entry is None:
             continue
+        if entry['symbol'] in links:
+            entry['underlying'] = links[entry['symbol']]['underlying']
         if entry["symbol"] in catalog:
             raise ValueError(f"Duplicate symbol in catalog seed: {entry['symbol']}")
         catalog[entry["symbol"]] = entry

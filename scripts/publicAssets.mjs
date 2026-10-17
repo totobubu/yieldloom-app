@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { mergeDiscoveredStocks } from '../lib/discovered-stocks.js';
+import { verifiedUnderlying } from '../lib/security-underlyings.js';
 import { inferSecurityType, matchesProductType, productTypeOptions } from '../lib/security-filters.js';
 
 export const excludedPublicDirectories = new Set([
@@ -16,7 +17,7 @@ export function createTickerIndex(payload, relationships = {}, discovered = {}) 
     return { nav: mergeDiscoveredStocks(payload.instruments, discovered).filter(row => row.symbol && row.active !== false).map(row => ({
         ...Object.fromEntries(indexFields.filter(key => row[key] != null).map(key => [key, row[key]])),
         company: row.officialProvider ?? row.company,
-        underlying: underlyingByTicker.get(row.symbol) ?? row.underlying,
+        underlying: verifiedUnderlying(row.symbol)?.underlying ?? underlyingByTicker.get(row.symbol) ?? row.underlying,
         securityType: inferSecurityType(row),
         productTypes: productTypeOptions.filter(option => option.value && !['stock', 'etf'].includes(option.value) && matchesProductType(row, option.value)).map(option => option.value),
     })) };

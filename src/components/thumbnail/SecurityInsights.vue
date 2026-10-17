@@ -1,4 +1,5 @@
 <script setup>
+    import { readPublicJson } from '@/services/publicJson.js';
     import { computed, ref, watch } from 'vue';
     import { getAssetUrl } from '@/utils/dataUrl';
 
@@ -86,11 +87,15 @@
                         (sum, char) => sum + char.charCodeAt(0),
                         0
                     ) % 64;
-                const response = await fetch(
-                    getAssetUrl(`security-insights/${bucket}.json`)
+                const payload = await readPublicJson(
+                    getAssetUrl(`security-insights/${bucket}.json`),
+                    {
+                        ttlMs: 180_000,
+                        validate: (value) =>
+                            value?.securities &&
+                            typeof value.securities === 'object',
+                    }
                 );
-                if (!response.ok) throw new Error('Could not load insights');
-                const payload = await response.json();
                 if (current === sequence) {
                     data.value = payload.securities[symbol] ?? null;
                     asOf.value = payload.asOfDate;

@@ -1,51 +1,95 @@
-const baseUrl = (import.meta.env.VITE_DATA_RELEASE_BASE_URL || '').replace(/\/$/, '');
+import { readPublicJson } from './publicJson.js';
+const baseUrl = (import.meta.env?.VITE_DATA_RELEASE_BASE_URL || '').replace(
+    /\/+$/,
+    ''
+);
 
-const fetchJson = async (url) => {
-  const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(4000) });
-  if (!response.ok) throw new Error(response.status === 404 ? '승인된 data v2 릴리스가 아직 없습니다.' : `data v2 요청 실패 (${response.status})`);
-  return response.json();
-};
+const fetchJson = (url, options = {}) =>
+    readPublicJson(url, {
+        ttlMs: url.endsWith('/current.json') ? 60_000 : 180_000,
+        ...options,
+    });
 
 const mapEvent = (event) => ({
-  id: event.eventId,
-  provider_slug: event.provider,
-  ticker: event.ticker,
-  distribution_per_share: event.amount.raw,
-  currency: event.amount.currency,
-  previous_amount: null,
-  average4: null,
-  average12: null,
-  declared_date: event.declaredDate,
-  ex_date: event.exDate,
-  record_date: event.recordDate,
-  payable_date: event.payableDate,
-  frequency: event.frequency,
-  verification_status: event.verificationStatus,
-  official_url: event.source.url,
+    id: event.eventId,
+    provider_slug: event.provider,
+    ticker: event.ticker,
+    distribution_per_share: event.amount.raw,
+    currency: event.amount.currency,
+    previous_amount: null,
+    average4: null,
+    average12: null,
+    declared_date: event.declaredDate,
+    ex_date: event.exDate,
+    record_date: event.recordDate,
+    payable_date: event.payableDate,
+    frequency: event.frequency,
+    verification_status: event.verificationStatus,
+    official_url: event.source.url,
 });
 
 export const isDataReleaseConfigured = () => Boolean(baseUrl);
 
-export async function loadDataReleaseIndex() {
-  const pointer = await fetchJson(`${baseUrl}/core/current.json`);
-  if (pointer.schemaVersion !== 2 || !/^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(pointer.manifestKey || '')) throw new Error('Invalid core release pointer');
-  const manifest = await fetchJson(`${baseUrl}/${pointer.manifestKey}`);
-  if (manifest.schemaVersion !== 2 || manifest.releaseId !== pointer.releaseId || manifest.indexPath !== 'index.json') throw new Error('Invalid core release manifest');
-  const index = await fetchJson(`${baseUrl}/${pointer.manifestKey.replace(/manifest\.json$/, manifest.indexPath)}`);
-  return {
-    releaseId: manifest.releaseId,
-    providers: index.providers.map((slug) => ({ slug, displayName: slug })),
-    tickers: index.tickers.map((row) => ({
-      ticker: row.ticker,
-      providerSlug: row.provider,
-      latest: mapEvent(row.latest),
-      historyUrl: `${baseUrl}/${pointer.manifestKey.replace(/manifest\.json$/, row.historyPath)}`,
-      historyCount: row.historyCount,
-    })),
-  };
+export async function loadDataReleaseIndex(options = {}) {
+    const pointer = await fetchJson(`${baseUrl}/core/current.json`, {
+        ...options,
+        validate: (value) =>
+            value?.schemaVersion === 2 &&
+            /^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(
+                value.manifestKey || ''
+            ),
+    });
+    if (
+        pointer.schemaVersion !== 2 ||
+        !/^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(
+            pointer.manifestKey || ''
+        )
+    )
+        throw new Error('Invalid core release pointer');
+    const manifest = await fetchJson(`${baseUrl}/${pointer.manifestKey}`, {
+        ...options,
+        validate: (value) =>
+            value?.schemaVersion === 2 &&
+            value.releaseId === pointer.releaseId &&
+            value.indexPath === 'index.json',
+    });
+    if (
+        manifest.schemaVersion !== 2 ||
+        manifest.releaseId !== pointer.releaseId ||
+        manifest.indexPath !== 'index.json'
+    )
+        throw new Error('Invalid core release manifest');
+    const index = await fetchJson(
+        `${baseUrl}/${pointer.manifestKey.replace(/manifest\.json$/, manifest.indexPath)}`,
+        {
+            ...options,
+            validate: (value) =>
+                Array.isArray(value?.providers) &&
+                Array.isArray(value?.tickers) &&
+                value.tickers.every(
+                    (row) => row?.latest?.amount && row.latest.source
+                ),
+        }
+    );
+    return {
+        releaseId: manifest.releaseId,
+        providers: index.providers.map((slug) => ({ slug, displayName: slug })),
+        tickers: index.tickers.map((row) => ({
+            ticker: row.ticker,
+            providerSlug: row.provider,
+            latest: mapEvent(row.latest),
+            historyUrl: `${baseUrl}/${pointer.manifestKey.replace(/manifest\.json$/, row.historyPath)}`,
+            historyCount: row.historyCount,
+        })),
+    };
 }
 
-export async function loadDataReleaseHistory(url) {
-  const payload = await fetchJson(url);
-  return { ticker: payload.ticker, history: payload.events.map(mapEvent) };
+export async function loadDataReleaseHistory(url, options = {}) {
+    const payload = await fetchJson(url, {
+        ...options,
+        validate: (value) =>
+            Array.isArray(value?.events) &&
+            value.events.every((event) => event?.amount && event.source),
+    });
+    return { ticker: payload.ticker, history: payload.events.map(mapEvent) };
 }

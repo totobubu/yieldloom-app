@@ -1,5 +1,6 @@
 <script setup>
     import { computed, ref, watch } from 'vue';
+    import InvestmentWorkbench from './InvestmentWorkbench.vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
     import SelectButton from 'primevue/selectbutton';
@@ -9,8 +10,7 @@
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
     import { firebaseUser } from '@/services/firebaseClient';
-    import { familyRequest } from '@/services/familyPortfolio';
-    import { loadCalendarLedger } from '@/services/portfolioLedger.js';
+    import { loadFamilyLedger } from '@/services/familyPortfolio';
     import {
         calendarToday,
         validCalendarDate,
@@ -22,6 +22,7 @@
         dividendReduction,
     } from '@/services/portfolioInsights.js';
     import { getAssetUrl } from '@/utils/dataUrl.js';
+    import { readPublicJson } from '@/services/publicJson.js';
     import { useRequestCooldown } from '@/composables/useRequestCooldown.js';
 
     const props = defineProps({
@@ -141,6 +142,8 @@
         { label: '종목', value: 'symbols' },
         { label: '운용사', value: 'providers' },
         { label: '연결 기초자산', value: 'underlyings' },
+        { label: '업종', value: 'sectors' },
+        { label: '국가', value: 'countries' },
     ];
     watch(
         month,
@@ -175,7 +178,7 @@
             () => firebaseUser.value?.uid,
             refresh,
         ],
-        async ([accounts, familyId, uid], _, onCleanup) => {
+        async ([accounts, familyId, uid], previous, onCleanup) => {
             const controller = new AbortController();
             onCleanup(() => controller.abort());
             entries.value = [];
@@ -185,8 +188,10 @@
             issue.value = null;
             loading.value = true;
             const [ledger, metadata] = await Promise.allSettled([
-                loadCalendarLedger({
-                    request: familyRequest,
+                loadFamilyLedger({
+                    force:
+                        previous?.[3] !== undefined &&
+                        previous[3] !== refresh.value,
                     familyId,
                     accounts,
                     signal: controller.signal,
@@ -195,18 +200,24 @@
                         firebaseUser.value?.uid === uid,
                 }),
                 (async () => {
-                    const response = await fetch(
+                    const payload = await readPublicJson(
                         getAssetUrl('portfolio-classifications.json'),
                         {
+                            force:
+                                previous?.[3] !== undefined &&
+                                previous[3] !== refresh.value,
+                            ttlMs: 180_000,
                             signal: AbortSignal.any([
                                 controller.signal,
                                 AbortSignal.timeout(8000),
                             ]),
-                            credentials: 'omit',
+                            validate: (value) =>
+                                value?.schemaVersion === 1 &&
+                                value.securities &&
+                                typeof value.securities === 'object' &&
+                                !Array.isArray(value.securities),
                         }
                     );
-                    if (!response.ok) throw new Error('분류 자료 조회 실패');
-                    const payload = await response.json();
                     if (
                         payload.schemaVersion !== 1 ||
                         !payload.securities ||
@@ -298,6 +309,19 @@
             ></Message
         >
         <template v-else>
+            <InvestmentWorkbench
+                v-if="
+                    ['USD', 'KRW'].includes(selectedCurrency) &&
+                    selectedAccounts.length
+                "
+                :key="`${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                :entries="entries"
+                :positions="selectedPositions"
+                :accounts="selectedAccounts"
+                :family-id="familyId"
+                :currency="selectedCurrency"
+                :month="month"
+                :largest-share="asset?.symbols.rows[0]?.share ?? null" />
             <Message v-if="report.rejected" severity="warn" :closable="false"
                 >날짜가 없거나 유효하지 않은 날짜·미래 날짜의 배당
                 {{ report.rejected }}건은 분석에서 제외했습니다.</Message
@@ -528,7 +552,8 @@
                     :allow-empty="false"
                     aria-label="자산 집중도 분류" />
                 <p class="insights-note">
-                    운용사·기초자산은 앱 분류 자료 기준입니다. 기초자산 연결은
+                    운용사·기초자산·업종·국가는 앱 분류 자료 기준입니다. 확인된
+                    분류가 없으면 종목별 미분류로 표시합니다. 기초자산 연결은
                     롱·인버스·레버리지 방향과 배수를 반영한 실질 노출도가
                     아닙니다. 미분류는 종목별로 구분합니다.
                 </p>

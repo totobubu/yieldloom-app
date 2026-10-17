@@ -23,6 +23,7 @@
     } from '@/services/divgrowRelease';
     import { loadCoreDirectory } from '@/services/coreRelease';
     import { loadDataReleaseIndex } from '@/services/dataRelease';
+    import { readPublicJson } from '@/services/publicJson.js';
     import { mergeDiscoveredStocks } from '../../lib/discovered-stocks.js';
     import { applyVerifiedUnderlyings } from '../../lib/security-underlyings.js';
     import {
@@ -228,6 +229,16 @@
         distributions.value[row.symbol]?.ex_date ||
         row.dividendEvidence?.latestExDate ||
         '미확인';
+    function hasDividendMetrics(row) {
+        if (row.noDividends === true) return false;
+        const event = distributions.value[row.symbol];
+        const value =
+            event?.distribution_per_share ?? row.dividendEvidence?.latestAmount;
+        return (
+            (Number.isFinite(Number(value)) && Number(value) > 0) ||
+            Boolean(event?.ex_date || row.dividendEvidence?.latestExDate)
+        );
+    }
     function reset() {
         query.value = '';
         company.value = '';
@@ -244,15 +255,14 @@
     }
     async function fetchJson(path) {
         const local = getDataUrl(path);
-        let response = await fetch(local).catch(() => null);
-        if (!response?.ok) {
+        try {
+            return await readPublicJson(local, { ttlMs: 180_000 });
+        } catch {
             const fallback = getR2Url(path);
             if (!fallback || fallback === local)
                 throw new Error('데이터를 불러오지 못했습니다.');
-            response = await fetch(fallback);
+            return readPublicJson(fallback, { ttlMs: 180_000 });
         }
-        if (!response.ok) throw new Error('데이터를 불러오지 못했습니다.');
-        return response.json();
     }
     async function load() {
         loading.value = true;
@@ -525,7 +535,9 @@
                             }}</span
                             ><i class="pi pi-angle-right" aria-hidden="true" />
                         </div>
-                        <div class="mobile-stock-metrics">
+                        <div
+                            v-if="hasDividendMetrics(row)"
+                            class="mobile-stock-metrics">
                             <div>
                                 <small>최근 주당 배당금</small
                                 ><strong>{{ amount(row) }}</strong>
@@ -562,6 +574,7 @@
                 배당금·배당락일은 저장된 최근 이력 기준입니다. ‘—’는 제공된
                 데이터가 없는 항목입니다.
             </p>
+            <!-- eslint-disable-next-line vue/no-deprecated-slot-attribute -- This is AdSlot's ad-unit prop. -->
             <AdSlot :slot="homeAdSlot" label="종목 검색 결과 광고" />
         </template>
         <Drawer

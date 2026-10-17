@@ -1,14 +1,23 @@
 import { createApiHandler } from '../lib/api-handler.js';
 import { normalizeSymbol, validSymbol } from '../lib/thumbnail-projection.js';
 import { fetchJson, PriceError } from '../lib/thumbnail-prices.js';
+import { createTransportCache } from '../lib/request-cache.js';
 
-const cache = new Map();
-export async function loadStockCandles(symbol, fetcher = fetch) {
+const candleCache = createTransportCache({ ttlMs: 300_000, maxEntries: 200 });
+export function loadStockCandles(symbol, fetcher = fetch) {
+    const ticker = normalizeSymbol(symbol);
+    if (!validSymbol(ticker))
+        return Promise.reject(
+            new PriceError('올바른 티커를 입력해 주세요.', 400)
+        );
+    return candleCache(fetcher)(ticker, () =>
+        fetchStockCandles(ticker, fetcher)
+    );
+}
+async function fetchStockCandles(symbol, fetcher) {
     const ticker = normalizeSymbol(symbol);
     if (!validSymbol(ticker))
         throw new PriceError('올바른 티커를 입력해 주세요.', 400);
-    const stored = fetcher === fetch && cache.get(ticker);
-    if (stored?.expires > Date.now()) return stored.value;
     const yahooSymbol = /^[A-Z]+\.[AB]$/.test(ticker)
         ? ticker.replace('.', '-')
         : ticker;
@@ -108,10 +117,6 @@ export async function loadStockCandles(symbol, fetcher = fetch) {
         ],
         asOf: new Date().toISOString(),
     };
-    if (fetcher === fetch) {
-        if (cache.size >= 200) cache.delete(cache.keys().next().value);
-        cache.set(ticker, { expires: Date.now() + 300000, value });
-    }
     return value;
 }
 

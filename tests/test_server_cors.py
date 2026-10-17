@@ -30,7 +30,8 @@ class ServerCorsTests(unittest.TestCase):
                         self.assertEqual(result.headers.get('Access-Control-Allow-Origin'), origin if allowed else None)
                         if allowed:
                             self.assertEqual(result.headers.get('Vary'), 'Origin')
-                            self.assertEqual(result.headers.get('Access-Control-Expose-Headers'), 'Retry-After')
+                            exposed = {name.strip() for name in result.headers['Access-Control-Expose-Headers'].split(',')}
+                            self.assertTrue({'Retry-After', 'X-Portfolio-Document-Reads', 'X-Portfolio-Read-Operations'} <= exposed)
                         else:
                             self.assertIsNone(result.headers.get('Access-Control-Expose-Headers'))
 

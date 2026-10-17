@@ -60,6 +60,11 @@ class Collection:
     def order_by(self, field):
         return self
 
+    def select(self, fields):
+        query = Collection(self.db, self.path, self.predicate, self.cap)
+        query.fields = fields
+        return query
+
     def start_after(self, snap):
         return PagedCollection(self.db, self.path, snap.reference.path)
 
@@ -68,7 +73,11 @@ class Collection:
 
     def stream(self):
         paths = [path for path, value in sorted(self.db.data.items()) if path.rsplit('/', 1)[0] == self.path and self.predicate(value)]
-        return iter([Snapshot(Ref(self.db, path)) for path in paths[:self.cap]])
+        snapshots = [Snapshot(Ref(self.db, path)) for path in paths[:self.cap]]
+        if hasattr(self, 'fields'):
+            for snap in snapshots:
+                snap.data = {field: snap.data[field] for field in self.fields if field in snap.data}
+        return iter(snapshots)
 
 
 class PagedCollection(Collection):
@@ -164,6 +173,49 @@ class FamilyApiTest(unittest.TestCase):
         self.assertEqual(self.get('familyId=' + self.family, 'outsider').status_code, 403)
         self.assertEqual(self.get('accountId=' + self.account, 'outsider').status_code, 403)
         self.assertEqual(self.post('grant', {'accountId': self.account, 'uid': 'outsider', 'role': 'viewer'}).status_code, 400)
+
+    def test_ledger_validation_omits_holdings_and_counts_server_reads(self):
+        row = self.db.data['investmentAccounts/' + self.account]
+        row['entriesRevision'] = 3
+        row['snapshot'] = {'rows': [{'symbol': 'PRIVATE'}]}
+        response = self.get('familyId=' + self.family + '&view=ledger')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(set(response.json), {'accounts'})
+        self.assertNotIn('snapshot', response.json['accounts'][0])
+        self.assertEqual(response.json['accounts'][0]['entriesRevision'], 3)
+        self.assertEqual(response.headers['X-Portfolio-Document-Reads'], '2')
+        self.assertEqual(response.headers['X-Portfolio-Read-Operations'], '2')
+        self.assertEqual(response.headers['Cache-Control'], 'private, no-store')
+        self.assertEqual(self.get('familyId=' + self.family + '&view=ledger', 'outsider').status_code, 403)
+
+    def test_full_overview_reuses_membership_query_without_rereading_the_family(self):
+        response = self.get('familyId=' + self.family)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers['X-Portfolio-Document-Reads'], '2')
+        self.assertEqual(response.headers['X-Portfolio-Read-Operations'], '2')
+        self.assertEqual(self.get('familyId=invalid.value').status_code, 400)
+
+    def test_entry_page_read_metrics_include_permissions_and_do_not_leak_identifiers(self):
+        collection = self.db.collection('investmentAccounts').document(self.account).collection('entries')
+        for i in range(201):
+            collection.document(f'e{i:03}').set({'row': {'amount': i}})
+        first = self.get('accountId=' + self.account)
+        self.assertEqual(first.headers['X-Portfolio-Document-Reads'], '203')
+        self.assertEqual(first.headers['X-Portfolio-Read-Operations'], '3')
+        second = self.get('accountId=' + self.account + '&cursor=' + first.json['nextCursor'])
+        self.assertEqual(second.headers['X-Portfolio-Document-Reads'], '4')
+        self.assertEqual(second.headers['X-Portfolio-Read-Operations'], '4')
+        self.assertEqual(self.client.get('/api/family-portfolio').headers['X-Portfolio-Document-Reads'], '0')
+
+    def test_transaction_batch_read_metrics_include_missing_document_snapshots(self):
+        content = b'date,symbol,quantity,amount,currency,type,externalId\n2026-10-14,AAPL,2,100,USD,buy,t1\n2026-10-14,AAPL,3,150,USD,buy,t2\n'
+        review = self.preview(content).json
+        with patch.object(self.db, 'get_all', create=True,
+                          side_effect=lambda refs, transaction: [ref.get(transaction) for ref in refs]):
+            response = self.commit(review)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers['X-Portfolio-Document-Reads'], '7')
+        self.assertEqual(response.headers['X-Portfolio-Read-Operations'], '6')
 
     def test_family_admin_does_not_inherit_adult_accounts(self):
         bob = self.join_bob()

@@ -5,7 +5,10 @@
     import Message from 'primevue/message';
     import Select from 'primevue/select';
     import { firebaseUser } from '@/services/firebaseClient';
-    import { familyRequest } from '@/services/familyPortfolio';
+    import {
+        familyRequest,
+        loadFamilyLedger,
+    } from '@/services/familyPortfolio';
     import { loadPortfolioCsv } from '@/services/portfolioCsv';
 
     const props = defineProps({
@@ -89,6 +92,7 @@
         try {
             const result = await loadPortfolioCsv({
                 request: familyRequest,
+                loadLedger: loadFamilyLedger,
                 familyId: family,
                 accountId: id,
                 kind: selectedKind,

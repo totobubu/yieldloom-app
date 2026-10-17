@@ -196,3 +196,21 @@ test('unavailable asset amounts never become zero, and mixed dates are retained'
     assert.equal(group.total, 10);
     assert.equal(group.dates.length, 2);
 });
+
+test('sector and country concentration uses supplied classifications and keeps unknown symbols separate', () => {
+    const groups = assetConcentration(
+        [
+            { symbol: 'A', currency: 'USD', amount: 60 },
+            { symbol: 'B', currency: 'USD', amount: 40 },
+            { symbol: 'C', currency: 'KRW', amount: 10000 },
+        ],
+        { A: { sector: '기술', country: '미국' } }
+    );
+    const usd = groups.find((g) => g.currency === 'USD');
+    assert.equal(usd.sectors.rows.find((r) => r.label === '기술').share, 60);
+    assert.equal(usd.countries.rows.find((r) => r.label === '미국').share, 60);
+    assert.equal(
+        usd.countries.rows.find((r) => r.label === '미분류 · B').share,
+        40
+    );
+});

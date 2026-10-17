@@ -50,6 +50,15 @@ export function simulateDividends(input) {
         taxTotal = 0,
         netTotal = 0,
         fees = 0;
+    if (input.startingShares !== undefined) {
+        shares = numeric(input.startingShares, '보유 수량', 0, 1e12);
+        cash = initial - shares * initialPrice;
+        if (cash < -Math.max(1e-8, initial * 1e-12))
+            throw new Error(
+                '보유 평가액과 수량·주가 가정이 일치하지 않습니다.'
+            );
+        cash = Math.max(0, cash);
+    }
     const buy = () => {
         if (cash <= fee) return;
         let units = (cash - fee) / price;

@@ -214,6 +214,13 @@
                     @click="router.push('/legal')" />
                 <Button
                     v-if="isPortfolioAdmin(firebaseUser)"
+                    label="ETF 데이터 검토 · 수집 상태"
+                    icon="pi pi-check-square"
+                    severity="secondary"
+                    text
+                    @click="router.push('/admin/metadata')" />
+                <Button
+                    v-if="isPortfolioAdmin(firebaseUser)"
                     label="종목 식별 관리"
                     icon="pi pi-cog"
                     severity="secondary"

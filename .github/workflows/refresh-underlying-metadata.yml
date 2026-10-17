@@ -45,8 +45,9 @@ jobs:
           fi
       - name: Verify registry and regenerate classifications
         run: |
+          python scripts/metadata/apply_reviews.py --url 'https://yieldloom-app.vercel.app/api/security-metadata?action=export' --apply
           python -m unittest discover -s tests/metadata -v
-          node --test tests/security_underlyings.test.mjs
+          node --test tests/security_underlyings.test.mjs tests/metadata_reviews.test.mjs tests/platform_enhancements.test.mjs
           npm run export:portfolio-classifications
           npm run type-check
       - name: Attach audit and evidence cache
@@ -57,6 +58,7 @@ jobs:
           path: |
             docs/data-management/underlying-audit.json
             data-v2/security-underlyings.json
+            data-v2/collection-health.json
             var/data-management/underlying-sources/
           retention-days: 30
       - name: Commit verified metadata
@@ -64,15 +66,40 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add data-v2/security-underlyings.json public/portfolio-classifications.json docs/data-management/underlying-audit.json
+          git add data-v2/security-underlyings.json data-v2/catalog-seed.json data-v2/collection-health.json public/portfolio-classifications.json docs/data-management/underlying-audit.json
           if ! git diff --cached --quiet; then
             git commit -m 'data: refresh verified ETF underlyings'
             git push origin HEAD:main
             echo 'changed=true' >> "$GITHUB_OUTPUT"
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           fi
       # GITHUB_TOKEN commits do not trigger push workflows; request the Pages build explicitly.
       - name: Rebuild Pages with updated metadata
         if: steps.commit.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run deploy-pages.yml --ref main
+          RELEASE_SHA: ${{ steps.commit.outputs.sha }}
+        run: gh workflow run deploy-pages.yml --ref main -f release_sha="$RELEASE_SHA"
+      - name: Trigger configured Vercel deploy hook
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          python - <<'PY'
+          import os, urllib.request
+          hook = os.environ.get('DEPLOY_HOOK')
+          if hook:
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(hook, data=b'', method='POST'), timeout=30) as response:
+                      if response.status >= 300:
+                          raise RuntimeError()
+              except Exception:
+                  raise SystemExit('Vercel deploy hook failed; check the configured integration.')
+          else:
+              print('Using the existing Vercel Git integration.')
+          PY
+      - name: Verify both production sites use the same commit and metadata
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          RELEASE_SHA: ${{ steps.commit.outputs.sha }}
+        run: node scripts/deploy/verify-release.mjs --sha "$RELEASE_SHA"

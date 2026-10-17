@@ -17,7 +17,13 @@ export async function verifyFirebaseBearer(req, checkRevoked = false) {
         error.status = 401;
         throw error;
     }
-    return admin.auth(firebaseApp()).verifyIdToken(header.slice(7), checkRevoked);
+    return admin
+        .auth(firebaseApp())
+        .verifyIdToken(header.slice(7), checkRevoked);
+}
+
+export function firebaseDatabase() {
+    return admin.firestore(firebaseApp());
 }
 
 export function requireAllowedTossUser(claims) {

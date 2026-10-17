@@ -20,6 +20,7 @@
         { key: 'fee', label: '매수 건당 수수료', min: 0, max: 10000 },
     ];
     const frequencies = [
+        { label: '매주', value: 'weekly' },
         { label: '매월', value: 'monthly' },
         { label: '분기', value: 'quarterly' },
         { label: '반기', value: 'semiannual' },

@@ -47,6 +47,65 @@ test('quarterly and annual payments do not pay before their cycle', () => {
         near(r.summary.grossTotal, 120);
     }
 });
+test('weekly payments total 52 per year and aggregate into monthly rows', () => {
+    const r = simulateDividends({ ...input, frequency: 'weekly', months: 24 });
+    near(r.rows[0].gross, (120 * 4) / 52);
+    near(r.rows[1].gross, (120 * 4) / 52);
+    near(r.rows[2].gross, (120 * 5) / 52);
+    near(r.rows[11].grossTotal, 120);
+    near(r.summary.grossTotal, 240);
+    near(r.summary.taxTotal, 36);
+    near(r.summary.cash, 204);
+    assert.equal(r.rows.length, 24);
+    assert.equal(
+        simulateDividends({ ...input, frequency: 'weekly', months: 0 }).summary
+            .grossTotal,
+        0
+    );
+});
+test('weekly reinvestment compounds after withholding at every payment', () => {
+    const r = simulateDividends({
+        ...input,
+        frequency: 'weekly',
+        reinvest: true,
+    }).summary;
+    near(r.wealth, 1000 * (1 + (0.12 * 0.85) / 52) ** 52);
+    near(r.cash, 0);
+    const feeResult = simulateDividends({
+        ...input,
+        initial: 1001,
+        frequency: 'weekly',
+        reinvest: true,
+        fee: 1,
+    }).summary;
+    near(feeResult.fees, 53);
+    near(feeResult.wealth, 1001 + feeResult.netTotal - feeResult.fees);
+});
+test('weekly reinvestment uses the price at each payment and preserves annual price growth', () => {
+    const r = simulateDividends({
+        ...input,
+        months: 1,
+        annualPriceChange: 100,
+        frequency: 'weekly',
+        reinvest: true,
+    });
+    const expectedShares =
+        100 *
+        Array.from(
+            { length: 4 },
+            (_, i) => 1 + (1.2 * 0.85) / (52 * 10 * 2 ** ((i + 1) / 52))
+        ).reduce((a, b) => a * b, 1);
+    near(r.summary.shares, expectedShares);
+    near(r.summary.price, 10 * 2 ** (1 / 12));
+    near(
+        simulateDividends({
+            ...input,
+            frequency: 'weekly',
+            annualPriceChange: -50,
+        }).summary.price,
+        5
+    );
+});
 test('whole-share residual cash, fees and fresh contributions conserve capital', () => {
     const r = simulateDividends({
         ...input,
@@ -101,7 +160,7 @@ test('invalid inputs, unsupported currencies and runaway assumptions do not emit
         { taxRate: 101 },
         { price: 0 },
         { price: null },
-        { frequency: 'weekly' },
+        { frequency: 'daily' },
         { currency: 'EUR' },
         { contribution: NaN },
         { annualPriceChange: -100 },
@@ -134,6 +193,13 @@ test('saved setups keep only supported fields and reject obsolete or malformed s
     assert.equal(normalized.a.initial, 1000);
     assert.equal(normalized.privateAccount, undefined);
     assert.equal(normalized.common.secret, undefined);
+    const weekly = normalizeSimulationSetup({
+        ...setup,
+        a: { ...a, frequency: 'weekly' },
+        b: { ...a, frequency: 'weekly' },
+    });
+    assert.equal(weekly.a.frequency, 'weekly');
+    assert.equal(weekly.b.frequency, 'weekly');
     assert.throws(() => normalizeSimulationSetup({ ...setup, version: 2 }));
     assert.throws(() =>
         normalizeSimulationSetup({ ...setup, a: { ...a, reinvest: 'false' } })

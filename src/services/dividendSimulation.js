@@ -1,5 +1,5 @@
 // Nominal, single-currency assumptions. No historical data or account balances.
-export const simulationVersion = 'nominal-monthly-v1';
+export const simulationVersion = 'nominal-monthly-v2';
 function numeric(value, name, min, max, integer = false) {
     const number =
         value === '' || value === null || value === undefined
@@ -30,7 +30,13 @@ export function simulateDividends(input) {
         typeof input.fractional !== 'boolean'
     )
         throw new Error('재투자와 소수주 선택을 확인해 주세요.');
-    const intervals = { monthly: 1, quarterly: 3, semiannual: 6, annual: 12 };
+    const intervals = {
+        weekly: 12 / 52,
+        monthly: 1,
+        quarterly: 3,
+        semiannual: 6,
+        annual: 12,
+    };
     const interval = intervals[input.frequency];
     if (!interval) throw new Error('배당 지급 주기를 선택해 주세요.');
     if (!['USD', 'KRW'].includes(input.currency))
@@ -78,18 +84,38 @@ export function simulateDividends(input) {
         cash += contribution;
         contributed += contribution;
         buy();
-        price *= monthlyPriceFactor;
-        const gross =
-            month % interval === 0 ? (shares * dividend) / (12 / interval) : 0;
-        const tax = gross * taxRate,
-            net = gross - tax;
-        grossTotal += gross;
-        taxTotal += tax;
-        netTotal += net;
-        if (input.reinvest) {
-            cash += net;
-            if (gross > 0) buy();
-        } else dividendCash += net;
+        const monthStartPrice = price;
+        let gross = 0,
+            tax = 0,
+            net = 0;
+        const payDividend = (paymentsPerYear) => {
+            const payment = (shares * dividend) / paymentsPerYear;
+            const withholding = payment * taxRate;
+            const afterTax = payment - withholding;
+            gross += payment;
+            tax += withholding;
+            net += afterTax;
+            grossTotal += payment;
+            taxTotal += withholding;
+            netTotal += afterTax;
+            if (input.reinvest) {
+                cash += afterTax;
+                if (payment > 0) buy();
+            } else dividendCash += afterTax;
+        };
+        if (input.frequency === 'weekly') {
+            // Equal-length model months: 52 evenly spaced payments per year.
+            const firstWeek = Math.floor(((month - 1) * 52) / 12) + 1;
+            const lastWeek = Math.floor((month * 52) / 12);
+            for (let week = firstWeek; week <= lastWeek; week++) {
+                const offset = (week * 12) / 52 - (month - 1);
+                price = monthStartPrice * monthlyPriceFactor ** offset;
+                payDividend(52);
+            }
+        }
+        price = monthStartPrice * monthlyPriceFactor;
+        if (input.frequency !== 'weekly' && month % interval === 0)
+            payDividend(12 / interval);
         const row = snapshot(month, gross, tax, net);
         if (
             Object.values(row).some(

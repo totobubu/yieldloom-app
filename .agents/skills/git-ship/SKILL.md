@@ -77,7 +77,7 @@ gh pr list --repo "$base_repo" --head "$task_branch" --base "$base_branch" --sta
 ```bash
 # 전용 셸에서 실행해 성공·실패 모두 임시 파일을 정리한다.
 pr_body_file=$(mktemp "${TMPDIR:-/tmp}/git-ship-pr.XXXXXXXX.md")
-trap 'rm -f -- "$pr_body_file"' EXIT
+trap 'rm -- "$pr_body_file"' EXIT
 # 이 파일에 검토한 본문을 작성한 뒤 실행한다. 고정 경로를 재사용하지 않는다.
 gh pr create --repo "$base_repo" --base "$base_branch" --head "$pr_head" --title '<최종 변경을 설명하는 제목>' --body-file "$pr_body_file"
 rm -- "$pr_body_file"

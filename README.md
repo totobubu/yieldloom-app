@@ -61,6 +61,41 @@ GitHub Pages 배포는 `VITE_API_BASE_URL` 설정이 없으면 정식 웹앱 API
 
 공식 운용사 수집기 15종, SQLite 원장, 데이터 대조 및 릴리스·배포 도구는 유지합니다.
 
+ETF 기초자산 연결은 `data-v2/security-underlyings.json`에 공식 상품명·출처 URL·원문
+SHA-256·확인 시각·전략·방향·명시된 배수를 함께 보관합니다. 검색 인덱스, 원격
+core/DivGrow 목록의 검색 화면, 상세 API 및 포트폴리오 분류가 이 정보를 사용합니다.
+라이벌 비교 대상은 별도의 기존 검토 목록을 유지합니다.
+
+```sh
+npm run audit:underlyings
+npm run collect:underlyings
+# 저장된 원문으로 재현: 네트워크 요청 없음
+python scripts/metadata/underlyings.py --offline --apply
+python -m unittest discover -s tests/metadata -v
+node --test tests/security_underlyings.test.mjs
+# 개발 서버 5173에서 실제 검색·모바일·이전 목록 호환 검증
+node tests/underlying-search.browser.mjs
+```
+
+전체 ETF 조사 결과는 `docs/data-management/underlying-audit.json`에 종목별로 남깁니다.
+운용사가 없더라도 이름에 ETF가 있으면 조사에 포함합니다. `verified`는 공식 근거가
+확인된 연결, `legacy-unverified`는 재검증되지 않은 기존 연결, `needs-review`는 이름에서
+발견된 후보입니다. `no-single-underlying-detected`는 단일 연결을 발견하지 못했다는
+뜻이며, 단일 기초자산이 없다고 확정한 결과가 아닙니다.
+
+수집기는 Direxion·Kurv·GraniteShares·Roundhill·YieldMax·Defiance·REX·ProShares의
+공식 목록을 시도합니다. ProShares처럼 목록을 해석하지 못한 경우와 HTTP 오류,
+상품 목록/상세 페이지 충돌은 보고서에 기록합니다. 부분 실패 시 종료 코드 2를 반환하고
+검증된 추가분만 등록하며 기존 연결은 삭제하지 않습니다. 이름 추정이나 거래소·통화가
+확인되지 않은 신규 ETF는 자동으로 종목 목록에 만들지 않습니다. 신규 발견 상품의
+근거는 보고서의 `unregisteredOfficialProducts`에 보관합니다.
+
+`Refresh verified ETF underlyings` 워크플로는 main에서 평일 08:20 UTC에 실행되며,
+검증된 연결·포트폴리오 분류·조사 결과를 커밋하고 Pages 재빌드를 요청합니다.
+원문 캐시는 워크플로 아티팩트로 30일 보관합니다. 브랜치 보호 정책이 봇의 main
+푸시를 막는 저장소에서는 아티팩트를 검토해 정상적인 PR 절차로 반영해야 합니다.
+이 워크플로는 Vercel 운영 배포를 별도로 실행하지 않습니다.
+
 ```sh
 npm run content:run
 npm run content:refresh -- --scope provider --provider yieldmax

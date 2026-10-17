@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "source": "catalog-seed + thumbnail-catalog",
+  "source": "catalog-seed + thumbnail-catalog + security-underlyings",
   "securities": {
     "AAAU": {
       "provider": "Goldman Sachs",
@@ -8,11 +8,11 @@
     },
     "AAPB": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "AAPL"
     },
     "AAPD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "AAPL"
     },
     "AAPL": {
       "provider": null,
@@ -20,7 +20,7 @@
     },
     "AAPU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "AAPL"
     },
     "AAPW": {
       "provider": "Roundhill Investments",
@@ -28,7 +28,7 @@
     },
     "AAPY": {
       "provider": "Kurv",
-      "underlying": null
+      "underlying": "AAPL"
     },
     "AAXJ": {
       "provider": "iShares",
@@ -140,11 +140,11 @@
     },
     "AMDD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "AMD"
     },
     "AMDL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "AMD"
     },
     "AMDW": {
       "provider": "Roundhill Investments",
@@ -160,7 +160,7 @@
     },
     "AMUU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "AMD"
     },
     "AMYY": {
       "provider": "GraniteShares",
@@ -168,7 +168,7 @@
     },
     "AMZD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "AMZN"
     },
     "AMZN": {
       "provider": null,
@@ -176,11 +176,11 @@
     },
     "AMZP": {
       "provider": "Kurv",
-      "underlying": null
+      "underlying": "AMZN"
     },
     "AMZU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "AMZN"
     },
     "AMZW": {
       "provider": "Roundhill Investments",
@@ -192,11 +192,11 @@
     },
     "AMZZ": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "AMZN"
     },
     "ANEL": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "ANET"
     },
     "ANGL": {
       "provider": "VanEck",
@@ -268,7 +268,7 @@
     },
     "ARMW": {
       "provider": "Roundhill Investments",
-      "underlying": null
+      "underlying": "ARM"
     },
     "ARTY": {
       "provider": "iShares",
@@ -308,7 +308,7 @@
     },
     "AVGU": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "AVGO"
     },
     "AVGW": {
       "provider": "Roundhill Investments",
@@ -316,7 +316,7 @@
     },
     "AVGX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "AVGO"
     },
     "AVIG": {
       "provider": "Avantis",
@@ -328,7 +328,7 @@
     },
     "AVL": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "AVGO"
     },
     "AVLC": {
       "provider": "Avantis",
@@ -340,7 +340,7 @@
     },
     "AVS": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "AVGO"
     },
     "AVSC": {
       "provider": "Avantis",
@@ -356,7 +356,7 @@
     },
     "AVXX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "AVAV"
     },
     "AZTD": {
       "provider": "Aztlan",
@@ -380,11 +380,11 @@
     },
     "BABW": {
       "provider": "Roundhill Investments",
-      "underlying": null
+      "underlying": "BABA"
     },
     "BABX": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "BABA"
     },
     "BAFE": {
       "provider": "Brown",
@@ -448,7 +448,7 @@
     },
     "BBYY": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "BABA"
     },
     "BCI": {
       "provider": "abrdn",
@@ -562,6 +562,10 @@
       "provider": "REX",
       "underlying": null
     },
+    "BMNU": {
+      "provider": null,
+      "underlying": "BMNR"
+    },
     "BND": {
       "provider": "Vanguard",
       "underlying": null
@@ -588,7 +592,7 @@
     },
     "BOEU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "BA"
     },
     "BOIL": {
       "provider": "ProShares",
@@ -620,7 +624,7 @@
     },
     "BRKU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "BRK.B"
     },
     "BRKW": {
       "provider": "Roundhill Investments",
@@ -912,11 +916,11 @@
     },
     "CONI": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "COIN"
     },
     "CONL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "COIN"
     },
     "CONY": {
       "provider": "YieldMax",
@@ -980,7 +984,7 @@
     },
     "CRWL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "CRWD"
     },
     "CRWV": {
       "provider": null,
@@ -996,11 +1000,11 @@
     },
     "CSCL": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "CSCO"
     },
     "CSCS": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "CSCO"
     },
     "CSHI": {
       "provider": "Neos",
@@ -1048,7 +1052,7 @@
     },
     "CWY": {
       "provider": "GraniteShares",
-      "underlying": "CRWD"
+      "underlying": "CRWV"
     },
     "DADS": {
       "provider": "Digital",
@@ -1300,7 +1304,7 @@
     },
     "DLLL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "DELL"
     },
     "DLN": {
       "provider": "WisdomTree",
@@ -1520,7 +1524,7 @@
     },
     "ELIL": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "LLY"
     },
     "ELIS": {
       "provider": "Direxion",
@@ -1772,7 +1776,7 @@
     },
     "FBL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "META"
     },
     "FBND": {
       "provider": "Fidelity",
@@ -1792,7 +1796,7 @@
     },
     "FBYY": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "META"
     },
     "FCOM": {
       "provider": "Fidelity",
@@ -2252,11 +2256,11 @@
     },
     "GGLL": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "GOOGL"
     },
     "GGLS": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "GOOGL"
     },
     "GIAX": {
       "provider": "Nicholas",
@@ -2320,7 +2324,7 @@
     },
     "GOOP": {
       "provider": "Kurv",
-      "underlying": null
+      "underlying": "GOOGL"
     },
     "GOOW": {
       "provider": "Roundhill Investments",
@@ -2540,7 +2544,7 @@
     },
     "HIMZ": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "HIMS"
     },
     "HIPS": {
       "provider": "GraniteShares",
@@ -2576,7 +2580,7 @@
     },
     "HOOX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "HOOD"
     },
     "HOOY": {
       "provider": "YieldMax",
@@ -2584,7 +2588,7 @@
     },
     "HOYY": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "HOOD"
     },
     "HTRB": {
       "provider": "Hartford",
@@ -2948,19 +2952,19 @@
     },
     "INTW": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "INTC"
     },
     "IONL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "IONQ"
     },
     "IONX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "IONQ"
     },
     "IONZ": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "IONQ"
     },
     "IOO": {
       "provider": "iShares",
@@ -2968,7 +2972,7 @@
     },
     "IOYY": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "IONQ"
     },
     "IPAC": {
       "provider": "iShares",
@@ -3012,7 +3016,7 @@
     },
     "ISUL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "ISRG"
     },
     "ITA": {
       "provider": "iShares",
@@ -3492,7 +3496,7 @@
     },
     "LLYX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "LLY"
     },
     "LLYZ": {
       "provider": "Defiance",
@@ -3512,7 +3516,7 @@
     },
     "LMTL": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "LMT"
     },
     "LMTS": {
       "provider": "Direxion",
@@ -3544,7 +3548,7 @@
     },
     "MAAY": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "MARA"
     },
     "MAGC": {
       "provider": "Roundhill Investments",
@@ -3608,11 +3612,11 @@
     },
     "METD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "META"
     },
     "METU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "META"
     },
     "METV": {
       "provider": "Roundhill Investments",
@@ -3696,7 +3700,7 @@
     },
     "MRAL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "MARA"
     },
     "MRNA": {
       "provider": null,
@@ -3708,15 +3712,15 @@
     },
     "MSDD": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "MSTR"
     },
     "MSFD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "MSFT"
     },
     "MSFL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "MSFT"
     },
     "MSFO": {
       "provider": "YieldMax",
@@ -3728,7 +3732,7 @@
     },
     "MSFU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "MSFT"
     },
     "MSFW": {
       "provider": "Roundhill Investments",
@@ -3736,7 +3740,7 @@
     },
     "MSFY": {
       "provider": "Kurv",
-      "underlying": null
+      "underlying": "MSFT"
     },
     "MSII": {
       "provider": "Rex",
@@ -3752,7 +3756,7 @@
     },
     "MSST": {
       "provider": "YieldMax",
-      "underlying": null
+      "underlying": "MSTR"
     },
     "MST": {
       "provider": "Defiance",
@@ -3760,7 +3764,7 @@
     },
     "MSTP": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "MSTR"
     },
     "MSTR": {
       "provider": null,
@@ -3768,7 +3772,7 @@
     },
     "MSTU": {
       "provider": "T-Rex",
-      "underlying": null
+      "underlying": "MSTR"
     },
     "MSTW": {
       "provider": "Roundhill Investments",
@@ -3776,7 +3780,7 @@
     },
     "MSTX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "MSTR"
     },
     "MSTY": {
       "provider": "YieldMax",
@@ -3804,11 +3808,11 @@
     },
     "MUD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "MU"
     },
     "MULL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "MU"
     },
     "MUNI": {
       "provider": "PIMCO",
@@ -3816,7 +3820,7 @@
     },
     "MUU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "MU"
     },
     "MUYY": {
       "provider": "GraniteShares",
@@ -3824,7 +3828,7 @@
     },
     "MVLL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "MRVL"
     },
     "MVV": {
       "provider": "ProShares",
@@ -3844,7 +3848,7 @@
     },
     "NBIL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "NBIS"
     },
     "NEAR": {
       "provider": "iShares",
@@ -3856,7 +3860,7 @@
     },
     "NFLP": {
       "provider": "Kurv",
-      "underlying": null
+      "underlying": "NFLX"
     },
     "NFLW": {
       "provider": "Roundhill Investments",
@@ -3876,11 +3880,11 @@
     },
     "NFXL": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "NFLX"
     },
     "NFXS": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "NFLX"
     },
     "NLR": {
       "provider": "VanEck",
@@ -3900,7 +3904,7 @@
     },
     "NOWL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "NOW"
     },
     "NRSH": {
       "provider": "Aztlan",
@@ -3936,7 +3940,7 @@
     },
     "NVD": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "NVDA"
     },
     "NVDA": {
       "provider": null,
@@ -3944,15 +3948,15 @@
     },
     "NVDD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "NVDA"
     },
     "NVDL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "NVDA"
     },
     "NVDU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "NVDA"
     },
     "NVDW": {
       "provider": "Roundhill Investments",
@@ -3968,7 +3972,7 @@
     },
     "NVIT": {
       "provider": "YieldMax",
-      "underlying": null
+      "underlying": "NVDA"
     },
     "NVOX": {
       "provider": "Defiance",
@@ -3996,7 +4000,7 @@
     },
     "OKLL": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "OKLO"
     },
     "OMAH": {
       "provider": "VistaShares",
@@ -4020,7 +4024,7 @@
     },
     "ORCX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "ORCL"
     },
     "OSCX": {
       "provider": "Defiance",
@@ -4052,7 +4056,7 @@
     },
     "PALD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "PANW"
     },
     "PALL": {
       "provider": "abrdn",
@@ -4060,7 +4064,7 @@
     },
     "PALU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "PANW"
     },
     "PAPR": {
       "provider": "Innovator",
@@ -4096,7 +4100,7 @@
     },
     "PDDL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "PDD"
     },
     "PDEC": {
       "provider": "Innovator",
@@ -4184,7 +4188,7 @@
     },
     "PLTD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "PLTR"
     },
     "PLTI": {
       "provider": "REX",
@@ -4200,7 +4204,7 @@
     },
     "PLTU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "PLTR"
     },
     "PLTW": {
       "provider": "Roundhill Investments",
@@ -4284,7 +4288,7 @@
     },
     "PTIR": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "PLTR"
     },
     "PTLC": {
       "provider": "Pacer",
@@ -4352,7 +4356,7 @@
     },
     "QBTZ": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "QBTS"
     },
     "QBY": {
       "provider": "GraniteShares",
@@ -4360,15 +4364,15 @@
     },
     "QCMD": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "QCOM"
     },
     "QCML": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "QCOM"
     },
     "QCMU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "QCOM"
     },
     "QDF": {
       "provider": "FlexShares",
@@ -4532,7 +4536,7 @@
     },
     "RBLY": {
       "provider": "YieldMax",
-      "underlying": null
+      "underlying": "RBLX"
     },
     "RDDW": {
       "provider": "Roundhill Investments",
@@ -4548,7 +4552,7 @@
     },
     "RDTL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "RDDT"
     },
     "RDTY": {
       "provider": "YieldMax",
@@ -4564,7 +4568,7 @@
     },
     "RDYY": {
       "provider": "YieldMax",
-      "underlying": null
+      "underlying": "RDDT"
     },
     "REAI": {
       "provider": "Intelligent",
@@ -4608,11 +4612,11 @@
     },
     "RGTX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "RGTI"
     },
     "RGTZ": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "RGTI"
     },
     "RGYY": {
       "provider": "GraniteShares",
@@ -4628,7 +4632,7 @@
     },
     "RIOX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "RIOT"
     },
     "RISR": {
       "provider": "FolioBeyond",
@@ -4636,7 +4640,7 @@
     },
     "RKLX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "RKLB"
     },
     "RMCA": {
       "provider": "Rockefeller",
@@ -4972,7 +4976,7 @@
     },
     "SHPU": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "SHOP"
     },
     "SHRT": {
       "provider": "Gotham",
@@ -5056,7 +5060,7 @@
     },
     "SMCL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "SMCI"
     },
     "SMCO": {
       "provider": "Hilton",
@@ -5064,7 +5068,7 @@
     },
     "SMCX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "SMCI"
     },
     "SMCY": {
       "provider": "YieldMax",
@@ -5072,7 +5076,7 @@
     },
     "SMCZ": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "SMCI"
     },
     "SMDV": {
       "provider": "ProSares",
@@ -5116,7 +5120,7 @@
     },
     "SMST": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "MSTR"
     },
     "SMTH": {
       "provider": "ALPS/SMITH",
@@ -5124,7 +5128,7 @@
     },
     "SMYY": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "SMCI"
     },
     "SNOW": {
       "provider": null,
@@ -5152,7 +5156,7 @@
     },
     "SOFX": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "SOFI"
     },
     "SOUX": {
       "provider": "Defiance",
@@ -5620,7 +5624,7 @@
     },
     "TSDD": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "TSLA"
     },
     "TSII": {
       "provider": "Rex",
@@ -5628,7 +5632,7 @@
     },
     "TSL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "TSLA"
     },
     "TSLA": {
       "provider": null,
@@ -5636,19 +5640,19 @@
     },
     "TSLL": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "TSLA"
     },
     "TSLP": {
       "provider": "Kurv",
-      "underlying": null
+      "underlying": "TSLA"
     },
     "TSLR": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "TSLA"
     },
     "TSLS": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "TSLA"
     },
     "TSLW": {
       "provider": "Roundhill Investments",
@@ -5664,7 +5668,7 @@
     },
     "TSMU": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "TSM"
     },
     "TSMW": {
       "provider": "Roundhill Investments",
@@ -5672,7 +5676,7 @@
     },
     "TSMX": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "TSM"
     },
     "TSMY": {
       "provider": "YieldMax",
@@ -5680,7 +5684,7 @@
     },
     "TSMZ": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "TSM"
     },
     "TSPA": {
       "provider": "T.",
@@ -5732,7 +5736,7 @@
     },
     "UBEW": {
       "provider": "Roundhill Investments",
-      "underlying": null
+      "underlying": "UBER"
     },
     "UBND": {
       "provider": "VictoryShares",
@@ -5744,7 +5748,7 @@
     },
     "UBRL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "UBER"
     },
     "UBT": {
       "provider": "ProShares",
@@ -6128,7 +6132,7 @@
     },
     "VRTL": {
       "provider": "GraniteShares",
-      "underlying": null
+      "underlying": "VRT"
     },
     "VSGX": {
       "provider": "Vanguard",
@@ -6140,7 +6144,7 @@
     },
     "VSTL": {
       "provider": "Defiance",
-      "underlying": null
+      "underlying": "VST"
     },
     "VT": {
       "provider": "Vanguard",
@@ -6420,7 +6424,7 @@
     },
     "XOMX": {
       "provider": "Direxion",
-      "underlying": null
+      "underlying": "XOM"
     },
     "XOMZ": {
       "provider": "Direxion",

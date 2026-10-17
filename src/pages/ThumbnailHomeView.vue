@@ -24,6 +24,7 @@
     import { loadCoreDirectory } from '@/services/coreRelease';
     import { loadDataReleaseIndex } from '@/services/dataRelease';
     import { mergeDiscoveredStocks } from '../../lib/discovered-stocks.js';
+    import { applyVerifiedUnderlyings } from '../../lib/security-underlyings.js';
     import {
         inferSecurityType,
         matchesProductType,
@@ -280,9 +281,11 @@
             fetchJson('us-dividend-stocks.json'),
         ]);
         if (index.status === 'fulfilled')
-            rows.value = mergeDiscoveredStocks(
-                index.value.nav ?? [],
-                discovered.status === 'fulfilled' ? discovered.value : {}
+            rows.value = applyVerifiedUnderlyings(
+                mergeDiscoveredStocks(
+                    index.value.nav ?? [],
+                    discovered.status === 'fulfilled' ? discovered.value : {}
+                )
             ).filter((row) => row.symbol && row.active !== false);
         else
             error.value =

@@ -1,5 +1,6 @@
 <script setup>
-    import { computed, nextTick, ref, watch } from 'vue';
+    import { computed, nextTick, onScopeDispose, ref, watch } from 'vue';
+    import { createScopedRefresh } from '@/services/scopedRefresh.js';
     import AccountRecoveryOverview from '@/components/portfolio/AccountRecoveryOverview.vue';
     import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
@@ -343,7 +344,11 @@
             busy.value = false;
         }
     }
-    async function refresh() {
+    async function refreshData({
+        scope: [user, requestedFamily],
+        signal,
+        isCurrent,
+    }) {
         if (accountCooldown.coolingDown.value) {
             accountsState.value = 'error';
             accountLoadError.value =
@@ -351,7 +356,7 @@
                 '권장 대기 시간 후 다시 시도해 주세요.';
             return;
         }
-        const requestedUid = firebaseUser.value?.uid;
+        const requestedUid = user?.uid;
         accountsState.value = 'loading';
         accountLoadError.value = '';
         accountLoadIssue.value = null;
@@ -359,19 +364,18 @@
             let data = await familyRequest(
                 '',
                 undefined,
-                familyId.value ? { familyId: familyId.value } : {}
+                requestedFamily ? { familyId: requestedFamily } : {},
+                { signal }
             );
-            if (firebaseUser.value?.uid !== requestedUid) return;
-            if (!familyId.value && data.families.length) {
+            if (!isCurrent()) return;
+            if (!requestedFamily && data.families.length) {
                 familyId.value = (
                     data.families.find((f) => f.kind === 'personal') ||
                     data.families.find((f) => f.adminUid === requestedUid) ||
                     data.families[0]
                 ).id;
-                data = await familyRequest('', undefined, {
-                    familyId: familyId.value,
-                });
-                if (firebaseUser.value?.uid !== requestedUid) return;
+                // The family watcher owns the selected-family request.
+                return;
             }
             families.value = data.families;
             accounts.value = data.accounts || [];
@@ -387,15 +391,28 @@
             accountsState.value = 'ready';
             await loadCapital({ force: true });
         } catch (reason) {
-            if (firebaseUser.value?.uid !== requestedUid) return;
+            if (!isCurrent()) return;
             accountsState.value = 'error';
             accountLoadError.value = reason.message;
             accountLoadIssue.value = reason;
         }
     }
+    const refresh = createScopedRefresh({
+        getScope: () => [firebaseUser.value, familyId.value],
+        load: refreshData,
+    });
+    const unsubscribeRefresh = familyRequest.onInvalidate((_user, reason) => {
+        // The active refresh must still publish its own permission error.
+        if (reason !== 'access') refresh.invalidate();
+    });
+    onScopeDispose(() => {
+        unsubscribeRefresh();
+        refresh.invalidate();
+    });
     watch(
         [firebaseUser, authLoading],
         ([user, waiting]) => {
+            refresh.invalidate();
             // Clear private state when the authenticated identity changes.
             families.value = [];
             accounts.value = [];
@@ -422,7 +439,7 @@
         },
         { immediate: true }
     );
-    watch(familyId, () => {
+    watch(familyId, async () => {
         importReceipt.value = null;
         exportVisible.value = false;
         accountsState.value = 'loading';
@@ -435,7 +452,8 @@
         entries.value = [];
         accountFilter.value = '';
         ownerFilter.value = '';
-        run(refresh);
+        // A selected family must load even while the initial list or a write owns `busy`.
+        await refresh();
     });
     watch(selectedAccount, () => {
         importReceipt.value = null;

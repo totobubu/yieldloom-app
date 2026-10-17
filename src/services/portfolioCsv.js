@@ -17,6 +17,7 @@ const transactionColumns = [
 ];
 export const MAX_EXPORT_ROWS = 10000;
 
+/* eslint-disable no-control-regex -- Control-prefixed spreadsheet formulas must be neutralized. */
 function needsCsvEscape(value) {
     return (
         typeof value === 'string' &&
@@ -24,6 +25,7 @@ function needsCsvEscape(value) {
         (/^[\s\u0000-\u001f]*[=+\-@]/u.test(value) || /^[\t\r\n]/u.test(value))
     );
 }
+/* eslint-enable no-control-regex */
 
 export function csvCell(value) {
     if (value === null || value === undefined) return '""';
@@ -79,6 +81,7 @@ function checkActive(signal, isCurrent) {
 // entire export. Never download a partial first page or an old account's data.
 export async function loadPortfolioCsv({
     request,
+    loadLedger,
     familyId,
     accountId,
     kind,
@@ -89,6 +92,22 @@ export async function loadPortfolioCsv({
     checkActive(signal, isCurrent);
     if (!familyId || !accountId || !['holdings', 'transactions'].includes(kind))
         throw new Error('계좌와 자료 종류를 선택하세요.');
+    if (kind === 'transactions' && loadLedger) {
+        const entries = await loadLedger({
+            familyId,
+            accounts: [{ id: accountId }],
+            signal,
+            isCurrent,
+        });
+        checkActive(signal, isCurrent);
+        const rows = entries.map((entry) => ({
+            ...entry.row,
+            asOf: entry.asOf,
+            source: entry.source,
+        }));
+        onProgress(rows.length);
+        return { csv: buildPortfolioCsv(kind, rows), count: rows.length };
+    }
     const overview = await request('', undefined, { familyId }, { signal });
     checkActive(signal, isCurrent);
     const account = overview.accounts?.find((item) => item.id === accountId);

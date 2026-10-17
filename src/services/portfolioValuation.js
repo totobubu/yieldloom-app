@@ -1,4 +1,4 @@
-import { apiUrl } from './apiUrl.js';
+import { loadStockPrices } from './stockPrices.js';
 import { validCalendarDate } from './portfolioCalendar.js';
 
 const numeric = (value) =>
@@ -19,7 +19,7 @@ const validSymbol = (value) => /^[A-Z0-9^][A-Z0-9.^=-]{0,29}$/.test(value);
 // Public prices only. Quantities, accounts and identities never leave this caller.
 export async function loadValuationQuotes(
     symbols,
-    { fetcher = fetch, signal, limit = 100 } = {}
+    { fetcher = fetch, signal, limit = 100, force = false } = {}
 ) {
     const unique = [...new Set(symbols.map(valuationSymbol))].filter(
         (symbol) => symbol !== 'CASH' && validSymbol(symbol)
@@ -35,21 +35,14 @@ export async function loadValuationQuotes(
             while (cursor < requested.length && !batchSignal.aborted) {
                 const symbol = requested[cursor++];
                 try {
-                    const response = await fetcher(
-                        apiUrl(
-                            `/api/stock-prices?ticker=${encodeURIComponent(symbol)}`
-                        ),
-                        {
-                            credentials: 'omit',
-                            referrerPolicy: 'no-referrer',
-                            signal: AbortSignal.any([
-                                batchSignal,
-                                AbortSignal.timeout(15000),
-                            ]),
-                        }
-                    );
-                    if (!response.ok) throw new Error('시세 조회 실패');
-                    const payload = await response.json();
+                    const payload = await loadStockPrices(symbol, {
+                        fetcher,
+                        force,
+                        signal: AbortSignal.any([
+                            batchSignal,
+                            AbortSignal.timeout(15000),
+                        ]),
+                    });
                     if (batchSignal.aborted) throw batchSignal.reason;
                     if (valuationSymbol(payload.symbol) !== symbol)
                         throw new Error('시세 종목 불일치');

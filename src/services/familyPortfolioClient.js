@@ -29,7 +29,7 @@ export function createFamilyPortfolioClient({
     const limitedUsers = new WeakMap();
     let session;
     const listeners = new Set();
-    const invalidate = () => {
+    const invalidate = (reason = 'reset') => {
         const user = session?.user;
         if (session) {
             session.generation++;
@@ -37,10 +37,10 @@ export function createFamilyPortfolioClient({
                 task.controller.abort();
             session.pending.clear();
         }
-        for (const listener of listeners) listener(user);
+        for (const listener of listeners) listener(user, reason);
     };
     const clear = () => {
-        invalidate();
+        invalidate('session');
         session = undefined;
     };
     function currentSession(user) {
@@ -83,7 +83,7 @@ export function createFamilyPortfolioClient({
         });
         params.sort();
         const mutation = body !== undefined;
-        if (mutation) invalidate();
+        if (mutation) invalidate('write');
         const generation = scope.generation;
         const active = () => session === scope && getUser() === user;
         const work = async (transportSignal) => {
@@ -142,7 +142,8 @@ export function createFamilyPortfolioClient({
                     error.limitType = payload.limitType || 'unknown';
                     limitedUsers.set(user, error);
                 }
-                if ([401, 403, 404].includes(response.status)) invalidate();
+                if ([401, 403, 404].includes(response.status))
+                    invalidate('access');
                 throw error;
             }
             if (!mutation && generation !== scope.generation)
@@ -156,7 +157,7 @@ export function createFamilyPortfolioClient({
             try {
                 return await work(signal);
             } finally {
-                if (active()) invalidate();
+                if (active()) invalidate('write');
             }
         }
         const key = params.toString();

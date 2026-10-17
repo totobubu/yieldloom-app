@@ -215,6 +215,9 @@ try {
         .getByRole('checkbox', { name: '과거 매수 시점별 배당률', exact: true })
         .uncheck();
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForFunction(
+        () => document.documentElement.scrollWidth <= innerWidth
+    );
     assert.ok(
         await page.evaluate(
             () => document.documentElement.scrollWidth <= innerWidth

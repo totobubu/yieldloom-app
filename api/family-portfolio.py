@@ -393,6 +393,8 @@ def validate_import(db, uid, body):
 
 
 def overview(db, uid, family_id, ledger_only=False):
+    if family_id:
+        family_id = identifier(family_id)
     if ledger_only:
         # Permission/revision validation needs neither holdings nor family profiles.
         family(db, family_id, uid)
@@ -402,7 +404,9 @@ def overview(db, uid, family_id, ledger_only=False):
     spaces = [{'id': snap.id, **snap.to_dict()} for snap in read_stream(db.collection('familySpaces').where('participantUids', 'array_contains', uid))]
     if not family_id:
         return {'families': spaces}
-    family(db, family_id, uid)
+    # The membership query already read these family documents for this request.
+    # Reuse that snapshot instead of issuing another read of the selected family.
+    require(any(space['id'] == family_id for space in spaces), '가족 공간 접근 권한이 없습니다.', 403)
     accounts = [{'id': snap.id, **snap.to_dict()} for snap in read_stream(db.collection('investmentAccounts').where('familyId', '==', family_id)) if can_access(snap.to_dict(), uid)]
     return {'families': spaces, 'accounts': accounts, 'summary': summarize(accounts)}
 

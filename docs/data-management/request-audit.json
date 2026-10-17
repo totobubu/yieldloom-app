@@ -1,0 +1,699 @@
+{
+  "asOf": "2026-10-17",
+  "scope": [
+    "src",
+    "api",
+    "lib",
+    "scripts/content_pipeline/providers",
+    "scripts/thumbnail_pipeline",
+    "scripts/cloud"
+  ],
+  "method": "Static audit of query entry points and caller lifecycles; controlled unit/API/browser tests. No production traffic or real account records were inspected.",
+  "limitations": [
+    "Pattern-based inventory is not a runtime request counter; SDK helpers and indirect calls were reviewed through their entry points.",
+    "Only synthetic fixtures and a local in-memory Firestore test store were used. Production billing, distributed cold starts and regional cache hit rates are not measured.",
+    "Cache sharing in the browser and server is limited to the current browser memory / server process; distributed cache reuse is not guaranteed."
+  ],
+  "scannedCodeFiles": 166,
+  "candidateRequestSites": [
+    {
+      "file": "api/_utils/toss-portfolio.js",
+      "line": 13,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "api/_utils/toss-portfolio.js",
+      "line": 25,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "api/family-portfolio.py",
+      "line": 68,
+      "kinds": [
+        "database"
+      ]
+    },
+    {
+      "file": "api/family-portfolio.py",
+      "line": 356,
+      "kinds": [
+        "database"
+      ]
+    },
+    {
+      "file": "api/portfolio-import.py",
+      "line": 115,
+      "kinds": [
+        "database"
+      ]
+    },
+    {
+      "file": "api/stock-prices.js",
+      "line": 33,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "api/thumbnail-data.js",
+      "line": 95,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "api/thumbnail-data.js",
+      "line": 138,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "lib/core-release.js",
+      "line": 45,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "lib/isin-lookup.js",
+      "line": 88,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "lib/thumbnail-prices.js",
+      "line": 18,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "scripts/content_pipeline/providers/base.py",
+      "line": 67,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "scripts/content_pipeline/providers/base.py",
+      "line": 75,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "scripts/content_pipeline/providers/http.py",
+      "line": 38,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "scripts/content_pipeline/providers/http.py",
+      "line": 48,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "scripts/content_pipeline/providers/http.py",
+      "line": 58,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "scripts/content_pipeline/providers/http.py",
+      "line": 65,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "scripts/content_pipeline/providers/yieldmax.py",
+      "line": 24,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "scripts/thumbnail_pipeline/refresh.mjs",
+      "line": 38,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "scripts/thumbnail_pipeline/refresh.mjs",
+      "line": 100,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/components/portfolio/AccountRecoveryOverview.vue",
+      "line": 47,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/components/portfolio/InvestmentWorkbench.vue",
+      "line": 180,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/components/portfolio/InvestmentWorkbench.vue",
+      "line": 193,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/components/portfolio/InvestmentWorkbench.vue",
+      "line": 201,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/components/portfolio/PortfolioCapitalPanel.vue",
+      "line": 171,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/components/portfolio/PurchaseFundingEditor.vue",
+      "line": 168,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/components/stock/StockHoldingPanel.vue",
+      "line": 24,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/components/stock/StockHoldingPanel.vue",
+      "line": 27,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 160,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 364,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 472,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 482,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 493,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 505,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 513,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 552,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 582,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 589,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 636,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/FamilyPortfolioView.vue",
+      "line": 668,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/MyPageView.vue",
+      "line": 77,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/PortfolioMappingsView.vue",
+      "line": 48,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/PortfolioMappingsView.vue",
+      "line": 97,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/PortfolioMappingsView.vue",
+      "line": 153,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/PortfolioMappingsView.vue",
+      "line": 170,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/pages/TickerThumbnailView.vue",
+      "line": 600,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/analytics.js",
+      "line": 9,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/familyPortfolioClient.js",
+      "line": 64,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/services/familyPortfolioClient.js",
+      "line": 93,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/portfolio.js",
+      "line": 10,
+      "kinds": [
+        "database"
+      ]
+    },
+    {
+      "file": "src/services/portfolio.js",
+      "line": 38,
+      "kinds": [
+        "database"
+      ]
+    },
+    {
+      "file": "src/services/portfolio.js",
+      "line": 84,
+      "kinds": [
+        "database"
+      ]
+    },
+    {
+      "file": "src/services/portfolio.js",
+      "line": 132,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/portfolio.js",
+      "line": 149,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/portfolio.js",
+      "line": 170,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/portfolioCapital.js",
+      "line": 51,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/portfolioMappings.js",
+      "line": 3,
+      "kinds": [
+        "private_client"
+      ]
+    },
+    {
+      "file": "src/services/portfolioMappings.js",
+      "line": 5,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/publicJson.js",
+      "line": 59,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/tossConnection.js",
+      "line": 5,
+      "kinds": [
+        "network"
+      ]
+    },
+    {
+      "file": "src/services/tossPortfolio.ts",
+      "line": 9,
+      "kinds": [
+        "network"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "area": "stock candles and portfolio valuation",
+      "status": "improved",
+      "paths": [
+        "src/services/stockPrices.js",
+        "src/services/portfolioValuation.js",
+        "src/components/stock/StockCandlestickChart.vue"
+      ],
+      "change": "One bounded public cache and in-flight request per ticker; 60 second TTL; explicit refresh bypass; cancellation detaches only its consumer.",
+      "scenario": {
+        "beforeRequests": 2,
+        "afterRequests": 1,
+        "warmAdditionalRequests": 0
+      }
+    },
+    {
+      "area": "search, ticker detail and portfolio distribution schedules",
+      "status": "improved",
+      "paths": [
+        "src/services/thumbnail/dividendSchedule.ts",
+        "src/pages/ThumbnailHomeView.vue",
+        "src/services/dataRelease.js"
+      ],
+      "change": "Share public index and raw histories by URL, with three minute history TTL, bounded memory and explicit refresh.",
+      "scenario": {
+        "beforeRequestsForOverlappingDetailAndTwoTickerPortfolio": 5,
+        "afterRequests": 3,
+        "warmAdditionalRequests": 0
+      }
+    },
+    {
+      "area": "classification metadata and security insight shards",
+      "status": "improved",
+      "paths": [
+        "src/components/portfolio/PortfolioInsights.vue",
+        "src/components/thumbnail/SecurityInsights.vue"
+      ],
+      "change": "Validated public JSON is shared for three minutes; unrelated account/month changes do not redownload classifications; manual refresh bypasses the cache."
+    },
+    {
+      "area": "search and core/divgrow release consumers",
+      "status": "improved",
+      "paths": [
+        "src/services/coreRelease.ts",
+        "src/services/dataRelease.js",
+        "src/services/divgrowRelease.js"
+      ],
+      "change": "Share pointer/manifest/index requests; refresh current pointer after one minute instead of retaining it for the lifetime of the browser; URL keys distinguish releases."
+    },
+    {
+      "area": "ticker detail route changes",
+      "status": "improved",
+      "paths": [
+        "src/pages/TickerThumbnailView.vue"
+      ],
+      "change": "Cancel outdated transport work when ticker/rivals change or the view unmounts; retain current-response guards and public error messages."
+    },
+    {
+      "area": "family overview refresh ownership",
+      "status": "improved",
+      "paths": [
+        "src/pages/FamilyPortfolioView.vue",
+        "src/services/scopedRefresh.js"
+      ],
+      "change": "Share only active refreshes in the same user/family scope. The family watcher owns the selected-family load even while a mutation is busy; stale scope responses cannot publish."
+    },
+    {
+      "area": "transaction CSV and calendar/insights",
+      "status": "improved",
+      "paths": [
+        "src/services/portfolioCsv.js",
+        "src/components/portfolio/PortfolioExportDialog.vue",
+        "src/services/portfolioLedgerClient.js"
+      ],
+      "change": "Transaction export reuses the same version- and permission-validated ledger as insights/calendar. Holdings export still reads fresh holdings."
+    },
+    {
+      "area": "family server overview",
+      "status": "improved",
+      "paths": [
+        "api/family-portfolio.py"
+      ],
+      "change": "Reuse the membership-query snapshot inside the same request rather than reading the selected family document again. Ledger-only permission checks remain unchanged.",
+      "scenario": {
+        "oneFamilyOneAccountDocumentsBefore": 3,
+        "after": 2
+      }
+    },
+    {
+      "area": "server stock price API",
+      "status": "improved",
+      "paths": [
+        "api/stock-prices.js",
+        "lib/request-cache.js"
+      ],
+      "change": "Merge concurrent cold ticker requests, retain five minute successful response TTL, isolate transport instances and return independent data copies.",
+      "scenario": {
+        "twoConcurrentRequestsUpstreamBefore": 2,
+        "after": 1
+      }
+    },
+    {
+      "area": "server official core histories",
+      "status": "improved",
+      "paths": [
+        "lib/core-release.js"
+      ],
+      "change": "Share validated pointer/manifest across symbols for one minute; history key includes release path and expected hash. Hash checks remain mandatory.",
+      "scenario": {
+        "threeTickersUpstreamBefore": 9,
+        "after": 5,
+        "warmAdditionalRequests": 0
+      }
+    },
+    {
+      "area": "server thumbnail projections and source histories",
+      "status": "improved",
+      "paths": [
+        "lib/thumbnail-prices.js",
+        "api/thumbnail-data.js"
+      ],
+      "change": "Share verified summary across history kinds and reuse public official/source histories; retain hash validation and process memory limits.",
+      "scenario": {
+        "twoProjectionKindsColdUpstreamBefore": 6,
+        "after": 5
+      }
+    },
+    {
+      "area": "ISIN metadata lookup",
+      "status": "improved",
+      "paths": [
+        "lib/isin-lookup.js"
+      ],
+      "change": "Merge active public metadata lookups for the same normalized ISIN while retaining existing result TTL and independent result copies. The provider POST is a read-only lookup, not a financial mutation.",
+      "scenario": {
+        "twoConcurrentLookupsProviderRequestsBefore": 4,
+        "after": 2
+      }
+    },
+    {
+      "area": "portfolio capital and recovery overview",
+      "status": "existing_optimization_retained",
+      "paths": [
+        "src/services/portfolioCapital.js",
+        "lib/portfolio-capital-handler.js",
+        "lib/account-ledger-cache.js",
+        "src/components/portfolio/AccountRecoveryOverview.vue"
+      ],
+      "reason": "Existing bounded account ledger cache, revision checks, in-flight sharing and five second client reuse are present. Authentication and write-transaction permission rechecks remain required."
+    },
+    {
+      "area": "legacy Firestore dashboard and import",
+      "status": "fresh_reads_retained",
+      "paths": [
+        "src/services/portfolio.js",
+        "api/portfolio-import.py",
+        "api/portfolio_mapping.py"
+      ],
+      "reason": "Legacy records have no reliable revision contract; per-asset subcollections and import duplicate checks serve distinct records and were not replaced with long-lived private caches."
+    },
+    {
+      "area": "admin mapping endpoint",
+      "status": "authorization_retained",
+      "paths": [
+        "src/services/portfolioMappings.js",
+        "lib/portfolio-mappings.js"
+      ],
+      "reason": "User-authorized manual reads/writes and full mapping changes require fresh admin authorization; public ISIN provider requests are optimized separately."
+    },
+    {
+      "area": "Toss connection and holdings compatibility endpoints",
+      "status": "inactive_compatibility_retained",
+      "paths": [
+        "src/services/tossPortfolio.ts",
+        "src/services/tossConnection.js",
+        "api/toss-portfolio.js",
+        "api/toss-connection.py"
+      ],
+      "reason": "These compatibility request functions have no active Vue screen call sites. No shared private holdings or OAuth token cache was added."
+    },
+    {
+      "area": "analytics, snapshots and local export images",
+      "status": "intentional_calls_retained",
+      "paths": [
+        "src/services/analytics.js",
+        "api/analytics.py",
+        "lib/r2-snapshot.js",
+        "api/thumbnail-og.js",
+        "src/pages/TickerThumbnailView.vue"
+      ],
+      "reason": "Analytics represents user events; R2 writes preserve recovery snapshots; data:image fetch is local blob conversion. These are not repeated DB reads to suppress globally."
+    },
+    {
+      "area": "provider collection and R2 batch jobs",
+      "status": "batch_semantics_retained",
+      "paths": [
+        "scripts/content_pipeline/providers/http.py",
+        "scripts/content_pipeline/providers/base.py",
+        "scripts/thumbnail_pipeline",
+        "scripts/cloud"
+      ],
+      "reason": "These are scheduled source preservation/upload paths rather than tab lifecycles. Official source retries, pagination, collection timestamps and R2 writes are intentional; no blanket GET or POST cache was added."
+    }
+  ],
+  "verification": {
+    "node": {
+      "status": "passed",
+      "command": "node --test tests/*.test.mjs",
+      "files": 46
+    },
+    "python": {
+      "status": "passed",
+      "familyPortfolioCases": 22,
+      "corsCases": 1
+    },
+    "typeCheck": {
+      "status": "passed",
+      "command": "npm run type-check"
+    },
+    "build": {
+      "status": "passed",
+      "command": "npm run build",
+      "note": "Existing large vendor chunk warning."
+    },
+    "lint": {
+      "status": "passed",
+      "errors": 0,
+      "warnings": 19,
+      "note": "Existing Vue attribute ordering warnings; intentional AdSlot prop and CSV control-character validation have scoped lint annotations."
+    },
+    "browser": {
+      "status": "passed",
+      "files": [
+        "tests/request-dedup.browser.mjs",
+        "tests/portfolio-insights.browser.mjs",
+        "tests/family-portfolio.browser.mjs",
+        "tests/portfolio-valuation.browser.mjs",
+        "tests/portfolio-calendar.browser.mjs",
+        "tests/stock-detail.browser.mjs"
+      ]
+    },
+    "localApiIntegration": {
+      "status": "passed",
+      "file": "tests/portfolio-ledger.integration.mjs",
+      "storage": "in-memory Firestore test store"
+    },
+    "production": {
+      "status": "not performed",
+      "reason": "No real account records, production provider traffic measurements or billing were used."
+    }
+  }
+}

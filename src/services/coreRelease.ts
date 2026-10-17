@@ -1,4 +1,5 @@
 import { getDataUrl } from '@/utils/dataUrl';
+import { readPublicJson } from './publicJson.js';
 
 export interface CoreInstrument {
     symbol: string;
@@ -23,71 +24,83 @@ interface CoreManifest {
     catalogSearchIndexPath: string;
 }
 
-const configuredBase = (import.meta.env.VITE_DATA_RELEASE_BASE_URL || '').replace(/\/+$/, '');
-let pointerPromise: Promise<{ pointer: CorePointer; manifest: CoreManifest }> | null = null;
-let directoryPromise: Promise<CoreInstrument[]> | null = null;
-
+const configuredBase = (
+    import.meta.env.VITE_DATA_RELEASE_BASE_URL || ''
+).replace(/\/+$/, '');
 const urlForKey = (key: string) =>
-    configuredBase ? `${configuredBase}/${key.replace(/^\//, '')}` : getDataUrl(key);
+    configuredBase
+        ? `${configuredBase}/${key.replace(/^\//, '')}`
+        : getDataUrl(key);
 
-async function currentRelease() {
-    if (!pointerPromise) {
-        pointerPromise = (async () => {
-            const pointerResponse = await fetch(urlForKey('core/current.json'));
-            if (!pointerResponse.ok) throw new Error(`Core release pointer unavailable (${pointerResponse.status})`);
-            const pointer = await pointerResponse.json() as CorePointer;
-            if (!pointer.releaseId || !/^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(pointer.manifestKey || '')) {
-                throw new Error('Core release pointer is invalid');
-            }
-            const manifestResponse = await fetch(urlForKey(pointer.manifestKey));
-            if (!manifestResponse.ok) throw new Error(`Core manifest unavailable (${manifestResponse.status})`);
-            const manifest = await manifestResponse.json() as CoreManifest;
-            if (manifest.releaseId !== pointer.releaseId || manifest.catalogSearchIndexPath !== 'catalog/search-index.json') {
-                throw new Error('Core manifest is invalid');
-            }
-            return { pointer, manifest };
-        })().catch((error) => {
-            pointerPromise = null;
-            throw error;
-        });
-    }
-    return pointerPromise;
+async function currentRelease(): Promise<{
+    pointer: CorePointer;
+    manifest: CoreManifest;
+}> {
+    const pointer = await readPublicJson(urlForKey('core/current.json'), {
+        ttlMs: 60_000,
+        validate: (value: CorePointer) =>
+            Boolean(
+                value.releaseId &&
+                    /^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(
+                        value.manifestKey || ''
+                    )
+            ),
+    });
+    const manifest = await readPublicJson(urlForKey(pointer.manifestKey), {
+        ttlMs: 180_000,
+        validate: (value: CoreManifest) =>
+            value.releaseId === pointer.releaseId &&
+            value.catalogSearchIndexPath === 'catalog/search-index.json',
+    });
+    return { pointer, manifest };
 }
 
 export async function loadCoreDirectory(): Promise<CoreInstrument[]> {
-    if (!directoryPromise) {
-        directoryPromise = (async () => {
-            const { pointer, manifest } = await currentRelease();
-            const releaseRoot = pointer.manifestKey.slice(0, -'manifest.json'.length);
-            const response = await fetch(urlForKey(`${releaseRoot}${manifest.catalogSearchIndexPath}`));
-            if (!response.ok) throw new Error(`Core catalog unavailable (${response.status})`);
-            const payload = await response.json();
-            if (!Array.isArray(payload?.instruments)) throw new Error('Core catalog is invalid');
-            return payload.instruments as CoreInstrument[];
-        })().catch((error) => {
-            directoryPromise = null;
-            throw error;
-        });
-    }
-    return directoryPromise;
+    const { pointer, manifest } = await currentRelease();
+    const releaseRoot = pointer.manifestKey.slice(0, -'manifest.json'.length);
+    const payload = await readPublicJson(
+        urlForKey(`${releaseRoot}${manifest.catalogSearchIndexPath}`),
+        {
+            ttlMs: 180_000,
+            validate: (value: { instruments: unknown }) =>
+                Array.isArray(value?.instruments),
+        }
+    );
+    return payload.instruments;
 }
 
-export async function loadCoreInstrument(entry: CoreInstrument): Promise<CoreInstrument> {
+async function instrumentFromRelease(
+    entry: CoreInstrument,
+    pointer: CorePointer
+): Promise<CoreInstrument> {
     if (!entry.instrumentPath) return entry;
-    const { pointer } = await currentRelease();
     const releaseRoot = pointer.manifestKey.slice(0, -'manifest.json'.length);
-    const response = await fetch(urlForKey(`${releaseRoot}${entry.instrumentPath}`));
-    if (!response.ok) throw new Error(`Core instrument unavailable (${response.status})`);
-    return { ...entry, ...(await response.json() as CoreInstrument) };
+    return {
+        ...entry,
+        ...(await readPublicJson(
+            urlForKey(`${releaseRoot}${entry.instrumentPath}`),
+            { ttlMs: 180_000 }
+        )),
+    };
 }
 
-export async function loadCoreDividendEvents(entry: CoreInstrument): Promise<any[]> {
-    const instrument = await loadCoreInstrument(entry);
-    if (!instrument.dividendHistoryPath) return [];
+export async function loadCoreInstrument(
+    entry: CoreInstrument
+): Promise<CoreInstrument> {
     const { pointer } = await currentRelease();
+    return instrumentFromRelease(entry, pointer);
+}
+
+export async function loadCoreDividendEvents(
+    entry: CoreInstrument
+): Promise<unknown[]> {
+    const { pointer } = await currentRelease();
+    const instrument = await instrumentFromRelease(entry, pointer);
+    if (!instrument.dividendHistoryPath) return [];
     const releaseRoot = pointer.manifestKey.slice(0, -'manifest.json'.length);
-    const response = await fetch(urlForKey(`${releaseRoot}${instrument.dividendHistoryPath}`));
-    if (!response.ok) throw new Error(`Core dividend history unavailable (${response.status})`);
-    const payload = await response.json();
+    const payload = await readPublicJson(
+        urlForKey(`${releaseRoot}${instrument.dividendHistoryPath}`),
+        { ttlMs: 180_000 }
+    );
     return Array.isArray(payload?.events) ? payload.events : [];
 }

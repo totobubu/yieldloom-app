@@ -52,6 +52,23 @@ Low-level composition, 반응성·수명주기, 테마·접근성 및 검증 기
 
 ## 데이터 공급
 
+공개 시세·검색 목록·공시·분류 자료는 `src/services/publicJson.js`에서 URL별 동시 요청을
+합치고 제한된 메모리 캐시를 공유합니다. 시세와 릴리스 포인터는 1분, 공시 이력·분류 자료는
+최대 3분 재사용하며, 시세·공시의 전용 새로고침 버튼은 캐시를 우회합니다. 계좌 수량·원장·인증
+정보는 이 공개 캐시에 넣지 않습니다. 시세 조회는 차트와 포트폴리오 평가가 같은 응답을
+공유하고, 거래 CSV는 분석·캘린더와 같은 권한·버전 검증 원장을 사용합니다.
+
+앱과 서버 및 공통 배치 경로의 조회 조사 결과·유지한 호출·검증 한계는
+[조회 전수 조사 기록](docs/data-management/request-audit.json)에 기록했습니다. 여기에 적힌
+감소 수치는 합성 데이터의 특정 시나리오 결과이며 운영 전체 호출량·Firestore 청구 감소율이
+아닙니다. `publicJsonFor().metrics()`로 공개 데이터의 요청·재사용·동시 합치기 횟수를 확인할 수 있습니다.
+
+```sh
+node --test tests/public_json.test.mjs tests/public_release.test.mjs tests/request_cache.test.mjs tests/scoped_refresh.test.mjs
+# Vite 개발 서버(5173)가 실행 중일 때, 합성 응답으로 브라우저 요청 수와 권한 오류를 검사합니다.
+node tests/request-dedup.browser.mjs
+```
+
 검색 목록은 기본적으로 작은 `ticker-index.json`을 사용합니다. `VITE_DIVGROW_RELEASE_BASE_URL`을 설정하면 DivGrow의 버전 고정 `releases/v1/current.json`과 manifest·catalog를 검증해 목록을 읽습니다. 카드 페이지는 썸네일 API로 필요한 시세 보조 데이터를 요청하며, `DIVGROW_DATA_BASE_URL`은 DivGrow R2의 `data/` 경로를 가리킵니다. 검증된 공식 배당 원장은 data v2의 승인 릴리스로 분리합니다.
 
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.

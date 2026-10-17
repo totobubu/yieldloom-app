@@ -1,5 +1,6 @@
 <script setup>
     import { computed, onScopeDispose, ref, watch } from 'vue';
+    import { readPublicJson } from '@/services/publicJson.js';
     import { useHead } from '@vueuse/head';
     import { useRoute, useRouter } from 'vue-router';
     import html2canvas from 'html2canvas';
@@ -413,35 +414,34 @@
     };
 
     let loadSequence = 0;
+    let loadController;
+    onScopeDispose(() => {
+        loadSequence++;
+        loadController?.abort();
+    });
     const load = async (
         rivalSymbols = route.query.rivals == null
             ? undefined
-            : String(route.query.rivals).split(',').filter(Boolean)
+            : String(route.query.rivals).split(',').filter(Boolean),
+        force = false
     ) => {
         const sequence = ++loadSequence;
+        loadController?.abort();
+        const controller = new AbortController();
+        loadController = controller;
         loading.value = true;
         schedule.value = null;
         error.value = '';
         comparison.value = null;
         try {
             const requested = normalize(route.params.ticker);
-            const response = await fetch(
+            const payload = await readPublicJson(
                 apiUrl(
                     `/api/thumbnail-data?ticker=${encodeURIComponent(requested)}${rivalSymbols == null ? '' : `&rivals=${encodeURIComponent(rivalSymbols.join(','))}`}`
                 ),
-                { cache: 'no-store' }
+                { signal: controller.signal, ttlMs: 60_000, force }
             );
-            const payload = await response.json();
             if (sequence !== loadSequence) return;
-            if (!response.ok)
-                throw new Error(
-                    response.status === 404
-                        ? '해당 티커를 찾을 수 없습니다. 티커를 확인해 주세요.'
-                        : response.status === 503
-                          ? '시세 제공 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.'
-                          : (payload.error ??
-                            '종목 데이터를 불러오지 못했습니다.')
-                );
             selectedInfo.value = {
                 ...payload.catalog,
                 ...payload.ticker.tickerInfo,
@@ -477,7 +477,9 @@
                       )
                     : null;
             const loadedSchedule = await loadDividendSchedule(
-                selectedInfo.value.symbol
+                selectedInfo.value.symbol,
+                undefined,
+                { signal: controller.signal, force }
             ).catch((reason) => {
                 console.warn('Dividend schedule could not load', reason);
                 return null;
@@ -489,7 +491,12 @@
             draftRivals.value = [...loadedRivals];
         } catch (e) {
             if (sequence === loadSequence)
-                error.value = e.message || '종목 정보를 불러오지 못했습니다.';
+                error.value =
+                    e.status === 404
+                        ? '해당 티커를 찾을 수 없습니다. 티커를 확인해 주세요.'
+                        : e.status === 503
+                          ? '시세 제공 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.'
+                          : e.message || '종목 정보를 불러오지 못했습니다.';
             console.error(e);
         } finally {
             if (sequence === loadSequence) loading.value = false;
@@ -678,9 +685,6 @@
         removeLocalPreset(preset.id);
         presets.value = presets.value.filter((item) => item.id !== preset.id);
     };
-    onScopeDispose(() => {
-        loadSequence++;
-    });
     watch(
         [() => route.params.ticker, () => route.query.rivals],
         ([ticker], [previousTicker] = []) => {
@@ -710,7 +714,7 @@
         <div v-else-if="error" class="state">
             <h1>종목을 열 수 없습니다</h1>
             <p>{{ error }}</p>
-            <Button label="다시 시도" @click="load()" />
+            <Button label="다시 시도" @click="load(undefined, true)" />
         </div>
         <template v-else>
             <header class="page-header">

@@ -12,6 +12,26 @@ const figi = [
     },
 ];
 const yahoo = [{ symbol: 'FUBO', shortname: 'FuboTV', quoteType: 'EQUITY' }];
+
+test('concurrent metadata lookups share both providers without sharing mutable results', async () => {
+    let calls = 0;
+    const lookup = createIsinLookup({
+        fetcher: async (url) => {
+            calls++;
+            return Response.json(
+                url.includes('openfigi') ? [{ data: figi }] : { quotes: yahoo }
+            );
+        },
+    });
+    const [a, b] = await Promise.all([
+        lookup(isin),
+        lookup(isin.toLowerCase()),
+    ]);
+    a.candidates.length = 0;
+    assert.equal(b.candidates.length, 1);
+    assert.equal((await lookup(isin)).candidates.length, 1);
+    assert.equal(calls, 2);
+});
 test('exact ISIN plus independent Yahoo agreement is a cross-checked match', () => {
     const r = combineIsinResults(isin, figi, yahoo);
     assert.equal(r.candidates.length, 1);

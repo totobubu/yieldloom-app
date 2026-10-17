@@ -188,6 +188,13 @@ class FamilyApiTest(unittest.TestCase):
         self.assertEqual(response.headers['Cache-Control'], 'private, no-store')
         self.assertEqual(self.get('familyId=' + self.family + '&view=ledger', 'outsider').status_code, 403)
 
+    def test_full_overview_reuses_membership_query_without_rereading_the_family(self):
+        response = self.get('familyId=' + self.family)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers['X-Portfolio-Document-Reads'], '2')
+        self.assertEqual(response.headers['X-Portfolio-Read-Operations'], '2')
+        self.assertEqual(self.get('familyId=invalid.value').status_code, 400)
+
     def test_entry_page_read_metrics_include_permissions_and_do_not_leak_identifiers(self):
         collection = self.db.collection('investmentAccounts').document(self.account).collection('entries')
         for i in range(201):

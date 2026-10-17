@@ -226,6 +226,26 @@ try {
     await summary.getByText('62.5%', { exact: true }).waitFor();
     assert.ok(requests.some((url) => url.includes('cursor=page-2')));
     assert.ok(!requests.some((url) => url.includes('accountId=c')));
+    const entryCalls = () =>
+        requests.filter((url) => url.includes('accountId=')).length;
+    const initialEntryCalls = entryCalls();
+    const initialValidationCalls = requests.filter((url) =>
+        url.includes('view=ledger')
+    ).length;
+    await page.getByRole('tab', { name: '배당 캘린더', exact: true }).click();
+    await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
+    await section.getByLabel('분석 월', { exact: true }).fill(month);
+    await summary.getByText('65 USD', { exact: true }).first().waitFor();
+    assert.equal(
+        entryCalls(),
+        initialEntryCalls,
+        'tab return reuses ledger pages'
+    );
+    assert.equal(
+        requests.filter((url) => url.includes('view=ledger')).length,
+        initialValidationCalls + 2,
+        'tab return still rechecks access and revision'
+    );
     const lab = page.getByRole('region', {
         name: '배당 투자 설계실',
         exact: true,
@@ -464,7 +484,7 @@ try {
     assert.equal(await page.locator('.insights').count(), 0);
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: pagination, reversals, monthly/yearly records, goals/scenario, account/family isolation, metadata fallback, revision change, error/retry, 4 widths, dark/light, logout race'
+        'PASS: tab return adds zero entry requests and two fresh access checks; pagination, reversals, monthly/yearly records, goals/scenario, account/family isolation, metadata fallback, revision change, error/retry, 4 widths, dark/light, logout race'
     );
 } finally {
     await browser.close();

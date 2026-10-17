@@ -7,7 +7,7 @@
     import Tag from 'primevue/tag';
     import Dialog from 'primevue/dialog';
     import { firebaseUser } from '@/services/firebaseClient';
-    import { familyRequest } from '@/services/familyPortfolio';
+    import { loadFamilyLedger } from '@/services/familyPortfolio';
     import { loadPortfolioSchedules } from '@/services/thumbnail/dividendSchedule';
     import {
         calendarToday,
@@ -17,7 +17,6 @@
         recordedDividendRows,
         calendarTotals,
     } from '@/services/portfolioCalendar';
-    import { loadCalendarLedger } from '@/services/portfolioLedger';
     const props = defineProps({
         accounts: { type: Array, default: () => [] },
         positions: { type: Array, default: () => [] },
@@ -195,7 +194,7 @@
             if (sequence === scheduleSequence) scheduleLoading.value = false;
         }
     }
-    async function loadRecorded() {
+    async function loadRecorded(force = false) {
         clearLedger();
         if (!selectedAccounts.value.length) return;
         const sequence = ledgerSequence,
@@ -204,8 +203,8 @@
         ledgerController = controller;
         ledgerLoading.value = true;
         try {
-            const entries = await loadCalendarLedger({
-                request: familyRequest,
+            const entries = await loadFamilyLedger({
+                force,
                 familyId: props.familyId,
                 accounts: selectedAccounts.value,
                 signal: controller.signal,
@@ -291,7 +290,9 @@
                 outlined
                 :disabled="busy"
                 @click="
-                    mode === 'schedule' ? loadSchedules(true) : loadRecorded()
+                    mode === 'schedule'
+                        ? loadSchedules(true)
+                        : loadRecorded(true)
                 " />
         </header>
         <div class="calendar-toolbar">
@@ -347,7 +348,9 @@
                 label="배당 자료 다시 시도"
                 text
                 @click="
-                    mode === 'schedule' ? loadSchedules(true) : loadRecorded()
+                    mode === 'schedule'
+                        ? loadSchedules(true)
+                        : loadRecorded(true)
                 "
         /></Message>
         <details

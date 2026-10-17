@@ -10,8 +10,7 @@
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
     import { firebaseUser } from '@/services/firebaseClient';
-    import { familyRequest } from '@/services/familyPortfolio';
-    import { loadCalendarLedger } from '@/services/portfolioLedger.js';
+    import { loadFamilyLedger } from '@/services/familyPortfolio';
     import {
         calendarToday,
         validCalendarDate,
@@ -178,7 +177,7 @@
             () => firebaseUser.value?.uid,
             refresh,
         ],
-        async ([accounts, familyId, uid], _, onCleanup) => {
+        async ([accounts, familyId, uid], previous, onCleanup) => {
             const controller = new AbortController();
             onCleanup(() => controller.abort());
             entries.value = [];
@@ -188,8 +187,10 @@
             issue.value = null;
             loading.value = true;
             const [ledger, metadata] = await Promise.allSettled([
-                loadCalendarLedger({
-                    request: familyRequest,
+                loadFamilyLedger({
+                    force:
+                        previous?.[3] !== undefined &&
+                        previous[3] !== refresh.value,
                     familyId,
                     accounts,
                     signal: controller.signal,

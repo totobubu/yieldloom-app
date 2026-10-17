@@ -227,6 +227,16 @@
         distributions.value[row.symbol]?.ex_date ||
         row.dividendEvidence?.latestExDate ||
         '미확인';
+    function hasDividendMetrics(row) {
+        if (row.noDividends === true) return false;
+        const event = distributions.value[row.symbol];
+        const value =
+            event?.distribution_per_share ?? row.dividendEvidence?.latestAmount;
+        return (
+            (Number.isFinite(Number(value)) && Number(value) > 0) ||
+            Boolean(event?.ex_date || row.dividendEvidence?.latestExDate)
+        );
+    }
     function reset() {
         query.value = '';
         company.value = '';
@@ -522,7 +532,9 @@
                             }}</span
                             ><i class="pi pi-angle-right" aria-hidden="true" />
                         </div>
-                        <div class="mobile-stock-metrics">
+                        <div
+                            v-if="hasDividendMetrics(row)"
+                            class="mobile-stock-metrics">
                             <div>
                                 <small>최근 주당 배당금</small
                                 ><strong>{{ amount(row) }}</strong>

@@ -230,6 +230,8 @@ export function assetConcentration(positions, classifications = {}) {
             symbols: contributions(eligible),
             providers: classified('provider'),
             underlyings: classified('underlying'),
+            sectors: classified('sector'),
+            countries: classified('country'),
             unknownProvider: eligible.filter((row) => !metadata(row).provider)
                 .length,
             unknownUnderlying: eligible.filter(

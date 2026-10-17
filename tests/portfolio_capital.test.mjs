@@ -162,7 +162,8 @@ function fixture(uid = 'owner') {
             { amount: 42140, currency: 'KRW', date: trade.date },
         ],
     ]);
-    const reads = [];
+    const reads = [],
+        usage = [];
     const ref = (path) => ({
         path,
         get: async () => {
@@ -219,6 +220,7 @@ function fixture(uid = 'owner') {
         },
         database: () => db,
         timestamp: () => 'now',
+        onReadUsage: (row) => usage.push(row),
     });
     const call = async (body, method = 'POST', query = {}) => {
         let status, data;
@@ -238,7 +240,7 @@ function fixture(uid = 'owner') {
         );
         return { status, data };
     };
-    return { call, records, reads };
+    return { call, records, reads, usage };
 }
 test('owner can save, reload and reset funding without modifying the financial ledger', async () => {
     const f = fixture();
@@ -782,4 +784,60 @@ test('annotation writes change capital version without re-reading the immutable 
     assert.equal(imported.data.ledgerUnchanged, false);
     assert.ok(f.reads.includes('investmentAccounts/AC/entries'));
     assert.equal(imported.data.trades.length, 1);
+});
+
+test('fresh clients reuse a large ledger while annotations stay fresh and imported revisions invalidate it', async () => {
+    const f = accountFixture();
+    for (let i = 0; i < 6000; i++) {
+        f.records.set(`investmentAccounts/AC/entries/row${i}`, { row: trade });
+    }
+    const first = await f.call(undefined, 'GET', { accountId: 'AC' });
+    const second = await f.call(undefined, 'GET', { accountId: 'AC' });
+    assert.equal(first.status, 200);
+    assert.deepEqual(second.data, first.data);
+    assert.equal(
+        f.reads.filter((path) => path === 'investmentAccounts/AC/entries')
+            .length,
+        1
+    );
+    assert.equal(f.usage[0].documentReadEstimate, 6007);
+    assert.equal(f.usage[1].documentReadEstimate, 5);
+    assert.equal(f.usage[1].ledgerCache, 'hit');
+
+    const saved = await f.call({
+        action: 'classifyCash',
+        accountId: 'AC',
+        id: 'E',
+        classification: 'exchange',
+        revision: 0,
+    });
+    assert.equal(saved.status, 200);
+    const annotated = await f.call(undefined, 'GET', { accountId: 'AC' });
+    assert.equal(annotated.data.classifications[0].classification, 'exchange');
+    assert.equal(
+        f.reads.filter((path) => path === 'investmentAccounts/AC/entries')
+            .length,
+        1
+    );
+
+    f.records.set('investmentAccounts/AC/entries/imported', { row: trade });
+    f.records.get('investmentAccounts/AC').entriesRevision = 'new-import';
+    const imported = await f.call(undefined, 'GET', { accountId: 'AC' });
+    assert.equal(imported.data.trades.length, first.data.trades.length + 1);
+    assert.equal(
+        f.reads.filter((path) => path === 'investmentAccounts/AC/entries')
+            .length,
+        2
+    );
+
+    f.records.set('familySpaces/F', { participantUids: [] });
+    assert.equal(
+        (await f.call(undefined, 'GET', { accountId: 'AC' })).status,
+        403
+    );
+    assert.equal(
+        f.reads.filter((path) => path === 'investmentAccounts/AC/entries')
+            .length,
+        2
+    );
 });

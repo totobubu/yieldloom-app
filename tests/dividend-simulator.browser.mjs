@@ -29,6 +29,20 @@ try {
         await resultB.locator('h2').innerText()
     );
     await page
+        .getByRole('combobox', { name: 'A 배당 지급 주기', exact: true })
+        .click();
+    await page.getByRole('option', { name: '매주', exact: true }).click();
+    const frequencyB = page.getByRole('combobox', {
+        name: 'B 배당 지급 주기',
+        exact: true,
+    });
+    await frequencyB.focus();
+    await frequencyB.press('ArrowDown');
+    await frequencyB.press('Home');
+    await frequencyB.press('Enter');
+    await frequencyB.getByText('매주', { exact: true }).waitFor();
+    await resultB.waitFor();
+    await page
         .getByRole('button', { name: '원천징수율만 비교', exact: true })
         .click();
     assert.ok(
@@ -51,6 +65,10 @@ try {
         .getByRole('button', { name: '저장된 가정 불러오기', exact: true })
         .click();
     await page.getByText('1,084 USD', { exact: true }).first().waitFor();
+    await page
+        .getByRole('combobox', { name: 'A 배당 지급 주기', exact: true })
+        .getByText('매주', { exact: true })
+        .waitFor();
     assert.equal(
         await page
             .getByLabel('B 최초 투자액 USD', { exact: true })
@@ -117,7 +135,7 @@ try {
     await page.getByText(/저장된 가정을 불러오지 못했습니다/).waitFor();
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: A/B reinvestment, tax-only synchronization, save/restore, negative price, zero period, validation, currency, 4 widths and dark mode'
+        'PASS: weekly selection by mouse/keyboard, A/B reinvestment, tax-only synchronization, weekly save/restore, negative price, zero period, validation, currency, 4 widths and dark mode'
     );
 } finally {
     await browser.close();

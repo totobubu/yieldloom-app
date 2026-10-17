@@ -12,6 +12,7 @@
         user: Object,
         accounts: Array,
         refreshState: Object,
+        refreshAccountId: String,
     });
     const traceAccount = ref('');
     const traceCurrency = ref('USD');
@@ -50,7 +51,8 @@
                     ),
                 });
             }
-            if (request === generation) states.value = results;
+            if (request === generation)
+                states.value = withSelectedState(results);
         } catch (reason) {
             if (request === generation) error.value = reason.message;
         } finally {
@@ -68,10 +70,23 @@
                         a.capitalRevision,
                     ])
                 ),
-            () => props.refreshState?.version,
         ],
         refresh,
         { immediate: true }
+    );
+    // The selected-account panel already loaded edits. Copy its result locally
+    // instead of revalidating all other accounts after every annotation save.
+    const withSelectedState = (rows) =>
+        rows.map((entry) =>
+            entry.accountId === props.refreshAccountId && props.refreshState
+                ? { ...entry, state: props.refreshState }
+                : entry
+        );
+    watch(
+        () => [props.refreshAccountId, props.refreshState],
+        () => {
+            states.value = withSelectedState(states.value);
+        }
     );
     const combined = computed(() => combineCapitalStates(states.value));
     const traceState = computed(() =>

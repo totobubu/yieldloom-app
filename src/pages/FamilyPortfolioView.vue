@@ -890,6 +890,11 @@
                             <AccountRecoveryOverview
                                 :user="firebaseUser"
                                 :accounts="visibleAccounts"
+                                :refresh-account-id="
+                                    capitalLoading || capitalError
+                                        ? ''
+                                        : selectedAccount
+                                "
                                 :refresh-state="capital" />
                             <section
                                 v-if="activeAccount"

@@ -160,9 +160,13 @@ try {
             .getByRole('alert')
             .filter({ hasText: '계좌 목록 조회에 실패했습니다' })
             .waitFor();
-        await page
-            .getByRole('button', { name: '새로고침', exact: true })
-            .click();
+        assert.equal(
+            await page
+                .getByRole('button', { name: '새로고침', exact: true })
+                .isDisabled(),
+            true,
+            'retry countdown disables refresh during the quota cooldown'
+        );
         assert.equal(
             familyReads,
             beforeFailure + 1,

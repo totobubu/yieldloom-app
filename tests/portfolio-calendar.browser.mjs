@@ -229,6 +229,13 @@ try {
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
     for (const width of [1440, 768, 390, 360]) {
         await page.setViewportSize({ width, height: 1000 });
+        // Let the responsive layout settle before measuring overflow.
+        await page.evaluate(
+            () =>
+                new Promise((resolve) =>
+                    requestAnimationFrame(() => requestAnimationFrame(resolve))
+                )
+        );
         assert.ok(
             await page.evaluate(
                 () => document.documentElement.scrollWidth <= innerWidth + 1

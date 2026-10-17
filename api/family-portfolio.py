@@ -10,7 +10,7 @@ from uuid import uuid4
 import firebase_admin
 from google.api_core.exceptions import ResourceExhausted
 from firebase_admin import auth, credentials, firestore
-from flask import Flask, jsonify, request
+from flask import Flask, g, has_request_context, jsonify, request
 from werkzeug.exceptions import RequestEntityTooLarge
 
 from api.family_portfolio_service import (DETAIL_NUMBERS, DETAIL_TEXT, PortfolioError, can_access, digest, identifier, iso_date,
@@ -27,6 +27,9 @@ configure_cors(app)
 @app.after_request
 def private_response(response):
     response.headers['Cache-Control'] = 'private, no-store'
+    if request.method != 'OPTIONS':
+        response.headers['X-Portfolio-Document-Reads'] = str(getattr(g, 'portfolio_document_reads', 0))
+        response.headers['X-Portfolio-Read-Operations'] = str(getattr(g, 'portfolio_read_operations', 0))
     return response
 
 
@@ -43,8 +46,30 @@ def now():
     return datetime.now(timezone.utc)
 
 
-def load(ref, transaction=None):
+def read_snapshot(ref, transaction=None):
+    if has_request_context():
+        g.portfolio_read_operations = getattr(g, 'portfolio_read_operations', 0) + 1
     snap = ref.get(transaction=transaction) if transaction else ref.get()
+    if has_request_context():
+        g.portfolio_document_reads = getattr(g, 'portfolio_document_reads', 0) + 1
+    return snap
+
+
+def read_results(snapshots):
+    if has_request_context():
+        g.portfolio_read_operations = getattr(g, 'portfolio_read_operations', 0) + 1
+    for snap in snapshots:
+        if has_request_context():
+            g.portfolio_document_reads = getattr(g, 'portfolio_document_reads', 0) + 1
+        yield snap
+
+
+def read_stream(query):
+    return read_results(query.stream())
+
+
+def load(ref, transaction=None):
+    snap = read_snapshot(ref, transaction)
     require(snap.exists, '자료가 없거나 접근할 수 없습니다.', 404)
     return snap.to_dict()
 
@@ -131,7 +156,7 @@ def ensure_personal_space(db, uid, body):
     profile_id = 'self_' + hashlib.sha256(uid.encode()).hexdigest()[:24]
     @firestore.transactional
     def apply(tx):
-        existing = ref.get(transaction=tx)
+        existing = read_snapshot(ref, tx)
         if existing.exists:
             require(uid in existing.to_dict()['participantUids'], '공간 접근 권한이 없습니다.', 403)
         else:
@@ -250,7 +275,7 @@ def preview(db, uid):
         require(filename.endswith('.pdf') and content.startswith(b'%PDF-') and kind == 'transactions' and request.form.get('format') == 'toss-pdf', '표준 CSV 또는 토스 거래내역 PDF만 지원합니다.')
         password = request.form.get('password', '')
         if not password:
-            saved = ref.collection('secrets').document('tossPdfPassword').get()
+            saved = read_snapshot(ref.collection('secrets').document('tossPdfPassword'))
             if saved.exists:
                 try:
                     password = open_password(saved.to_dict()['envelope'], 'toss:' + ref.id)
@@ -266,7 +291,7 @@ def preview(db, uid):
             code = row.get('symbol')
             if code and code != 'CASH':
                 if code not in mapping_cache:
-                    mapping = db.collection('stockMappings').document(identifier(code)).get()
+                    mapping = read_snapshot(db.collection('stockMappings').document(identifier(code)))
                     mapping_cache[code] = mapping.to_dict().get('symbol') if mapping.exists else None
                 if mapping_cache[code]:
                     row['symbol'] = mapping_cache[code]
@@ -322,16 +347,16 @@ def commit(db, uid, body):
         rows, errors = validate_rows(body.get('rows'), review['kind'], review['asOf'])
         require(not errors, '오류 행을 모두 수정하세요: ' + json.dumps(errors, ensure_ascii=False))
         receipt = ref.collection('imports').document(review['fileHash'])
-        previous = receipt.get(transaction=tx)
+        previous = read_snapshot(receipt, tx)
         if previous.exists:
             return {'inserted': 0, 'duplicates': len(rows), 'alreadyImported': True}
         if review['kind'] == 'transactions':
             refs = [ref.collection('entries').document(row_key(row)) for row in rows]
             if hasattr(db, 'get_all'):
-                snapshots = {item.reference.path: item for item in db.get_all(refs, transaction=tx)}
+                snapshots = {item.reference.path: item for item in read_results(db.get_all(refs, transaction=tx))}
                 existing = [snapshots[item.path] for item in refs]
             else:
-                existing = [item.get(transaction=tx) for item in refs]
+                existing = [read_snapshot(item, tx) for item in refs]
             for row, old in zip(rows, existing):
                 require(not old.exists or old.to_dict()['row'] == row, '같은 거래 고유번호의 내용이 다릅니다. 원장을 확인하세요.', 409)
             inserted = sum(not old.exists for old in existing)
@@ -367,12 +392,18 @@ def validate_import(db, uid, body):
     return {'valid': True}
 
 
-def overview(db, uid, family_id):
-    spaces = [{'id': snap.id, **snap.to_dict()} for snap in db.collection('familySpaces').where('participantUids', 'array_contains', uid).stream()]
+def overview(db, uid, family_id, ledger_only=False):
+    if ledger_only:
+        # Permission/revision validation needs neither holdings nor family profiles.
+        family(db, family_id, uid)
+        query = db.collection('investmentAccounts').where('familyId', '==', family_id).select(
+            ['familyId', 'entriesRevision', 'permissions', 'authorityUid', 'ownerId'])
+        return {'accounts': [{'id': snap.id, **snap.to_dict()} for snap in read_stream(query) if can_access(snap.to_dict(), uid)]}
+    spaces = [{'id': snap.id, **snap.to_dict()} for snap in read_stream(db.collection('familySpaces').where('participantUids', 'array_contains', uid))]
     if not family_id:
         return {'families': spaces}
     family(db, family_id, uid)
-    accounts = [{'id': snap.id, **snap.to_dict()} for snap in db.collection('investmentAccounts').where('familyId', '==', family_id).stream() if can_access(snap.to_dict(), uid)]
+    accounts = [{'id': snap.id, **snap.to_dict()} for snap in read_stream(db.collection('investmentAccounts').where('familyId', '==', family_id)) if can_access(snap.to_dict(), uid)]
     return {'families': spaces, 'accounts': accounts, 'summary': summarize(accounts)}
 
 
@@ -383,10 +414,10 @@ def migrate_legacy(db, uid, body):
     require(data['authorityUid'] == uid and space['profiles'][data['ownerId']].get('uid') == uid, '본인 명의 계좌만 이전할 수 있습니다.', 403)
     require(body.get('confirmedSingleAccount') is True, '기존 자료가 이 계좌 한 개의 자료인지 확인하세요.')
     legacy = db.collection('portfolios').document(uid)
-    assets = list(legacy.collection('assets').stream())
+    assets = list(read_stream(legacy.collection('assets')))
     rows = []
     for asset in assets:
-        for entry in asset.reference.collection('transactions').stream():
+        for entry in read_stream(asset.reference.collection('transactions')):
             rows.append((f'{asset.id}:{entry.id}', {'legacyAsset': asset.to_dict(), 'legacyTransaction': entry.to_dict(), 'sourcePath': entry.reference.path}))
     require(len(rows) <= 180 and len(assets) <= 100, '대용량 이전은 별도 검토가 필요합니다. 원본 자료는 보존됩니다.')
     @firestore.transactional
@@ -423,13 +454,13 @@ def route():
                 collection = 'legacyEntries' if request.args.get('legacy') == 'true' else 'entries'
                 query = ref.collection(collection).order_by('__name__')
                 if request.args.get('cursor'):
-                    cursor = ref.collection(collection).document(identifier(request.args['cursor'])).get()
+                    cursor = read_snapshot(ref.collection(collection).document(identifier(request.args['cursor'])))
                     require(cursor.exists, '조회 위치가 유효하지 않습니다.')
                     query = query.start_after(cursor)
-                entries = list(query.limit(201).stream())
+                entries = list(read_stream(query.limit(201)))
                 return jsonify({'entries': [{'id': s.id, **s.to_dict()} for s in entries[:200]],
                                 'nextCursor': entries[199].id if len(entries) > 200 else None})
-            return jsonify(overview(db, uid, request.args.get('familyId')))
+            return jsonify(overview(db, uid, request.args.get('familyId'), request.args.get('view') == 'ledger'))
         action = request.args.get('action')
         body = request.get_json(silent=True) or {}
         require(isinstance(body, dict), '요청 형식이 잘못되었습니다.')

@@ -1,6 +1,7 @@
 <script setup>
     import { computed, ref, watch } from 'vue';
     import InvestmentWorkbench from './InvestmentWorkbench.vue';
+    import HoldingScenarioComparison from './HoldingScenarioComparison.vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
     import SelectButton from 'primevue/selectbutton';
@@ -309,6 +310,16 @@
             ></Message
         >
         <template v-else>
+            <HoldingScenarioComparison
+                v-if="
+                    ['USD', 'KRW'].includes(selectedCurrency) &&
+                    selectedAccounts.length
+                "
+                :key="`holding:${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                :positions="selectedPositions"
+                :entries="entries"
+                :currency="selectedCurrency"
+                :month="month" />
             <InvestmentWorkbench
                 v-if="
                     ['USD', 'KRW'].includes(selectedCurrency) &&

@@ -64,6 +64,18 @@ def main() -> int:
         if entry["symbol"] in catalog:
             raise ValueError(f"Duplicate symbol in catalog seed: {entry['symbol']}")
         catalog[entry["symbol"]] = entry
+    # Administrator-reviewed registrations need not exist in the legacy nav.
+    # Keep their confirmed metadata when the migration seed is regenerated.
+    if output.exists():
+        previous = json.loads(output.read_text(encoding='utf-8'))
+        for row in previous.get('instruments', []):
+            if row.get('symbol') not in links or row['symbol'] in catalog:
+                continue
+            entry = normalized_entry(row)
+            if entry is not None:
+                entry['active'] = bool(row.get('active', True))
+                entry['underlying'] = links[entry['symbol']]['underlying']
+                catalog[entry['symbol']] = entry
     result = {
         "schemaVersion": 1,
         "source": "legacy-nav-seed",

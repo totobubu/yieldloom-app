@@ -7,6 +7,16 @@ export default createRouter({
     },
     routes: [
         {
+            path: '/underlying/:symbol',
+            name: 'underlying-explorer',
+            component: () => import('../pages/UnderlyingExplorerView.vue'),
+        },
+        {
+            path: '/admin/metadata',
+            name: 'metadata-review',
+            component: () => import('../pages/MetadataReviewView.vue'),
+        },
+        {
             path: '/',
             name: 'thumbnail-home',
             component: () => import('../pages/ThumbnailHomeView.vue'),

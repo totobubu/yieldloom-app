@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { mergeDiscoveredStocks } from '../lib/discovered-stocks.js';
 import { verifiedUnderlying } from '../lib/security-underlyings.js';
+import { releaseIdentity } from '../lib/release-identity.js';
 import { inferSecurityType, matchesProductType, productTypeOptions } from '../lib/security-filters.js';
 
 export const excludedPublicDirectories = new Set([
@@ -48,6 +49,20 @@ export function publicAssetsPlugin() {
         },
         configureServer(server) {
             server.middlewares.use(async (req, res, next) => {
+                if (req.url?.split('?')[0] === `${base}app-release.json`) {
+                    try {
+                        res.setHeader(
+                            'Content-Type',
+                            'application/json; charset=utf-8'
+                        );
+                        res.setHeader('Cache-Control', 'no-store');
+                        return res.end(
+                            JSON.stringify(await releaseIdentity(configRoot))
+                        );
+                    } catch (error) {
+                        return next(error);
+                    }
+                }
                 if (req.url?.split('?')[0] !== `${base}ticker-index.json`) return next();
                 try {
                     res.setHeader('Content-Type', 'application/json; charset=utf-8');
@@ -68,6 +83,11 @@ export function publicAssetsPlugin() {
             };
             await emitDirectory(publicRoot);
             this.emitFile({ type: 'asset', fileName: 'ticker-index.json', source: await readIndex() });
+            this.emitFile({
+                type: 'asset',
+                fileName: 'app-release.json',
+                source: JSON.stringify(await releaseIdentity(configRoot)),
+            });
         },
     };
 }

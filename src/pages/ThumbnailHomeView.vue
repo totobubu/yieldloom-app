@@ -472,8 +472,11 @@
                             ><span>{{
                                 data.koName || data.longName || data.symbol
                             }}</span></router-link
-                        ><small v-if="data.underlying" class="row-note"
-                            >{{ data.underlying }} 기반</small
+                        ><router-link
+                            v-if="data.underlying"
+                            class="row-note"
+                            :to="`/underlying/${data.underlying}`"
+                            >{{ data.underlying }} 기반</router-link
                         ><small
                             v-else-if="data.dividendEtfs?.length"
                             class="row-note"
@@ -559,6 +562,12 @@
                             >
                         </div>
                     </router-link>
+                    <router-link
+                        v-if="row.underlying"
+                        class="row-note"
+                        :to="`/underlying/${row.underlying}`"
+                        >{{ row.underlying }} ETF 비교</router-link
+                    >
                 </li>
             </ul>
             <Paginator

@@ -22,6 +22,8 @@ from urllib.request import Request, urlopen
 from lxml import html
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from scripts.metadata.health import update_health
 SOURCES = {
     'direxion': ('https://www.direxion.com/single-stock-etfs', r'/product/[^/?#]+/?$', ['Direxion']),
     'kurv': ('https://www.kurvinvest.com/etfs', r'/etf/([a-z0-9.-]+)/?$', ['Kurv']),
@@ -323,6 +325,7 @@ def main(argv=None):
     parser.add_argument('--cache', type=Path, default=ROOT / 'var/data-management/underlying-sources')
     parser.add_argument('--registry', type=Path, default=ROOT / 'data-v2/security-underlyings.json')
     parser.add_argument('--report', type=Path, default=ROOT / 'docs/data-management/underlying-audit.json')
+    parser.add_argument('--health', type=Path, default=ROOT / 'data-v2/collection-health.json')
     args = parser.parse_args(argv)
     if not 1 <= args.workers <= 4:
         parser.error('workers must be 1..4')
@@ -338,7 +341,7 @@ def main(argv=None):
     previous = json.loads(args.registry.read_text()) if args.registry.exists() else {'schemaVersion': 1, 'instruments': {}}
     if previous.get('schemaVersion') != 1:
         raise ValueError('Unsupported registry schema')
-    collected, failures = {}, []
+    collected, failures, observations = {}, [], {}
     if not args.collect and not args.offline and args.report.exists():
         prior_report = json.loads(args.report.read_text(encoding='utf-8'))
         # A local re-audit must not erase evidence about unregistered products
@@ -348,11 +351,15 @@ def main(argv=None):
     if args.collect or args.offline:
         for provider in args.provider or SOURCES:
             url = SOURCES[provider][0]
+            before = len(failures)
+            catalog_ok = False
+            products = {}
             try:
                 doc, evidence = fetch(url, provider, args.cache, args.offline)
                 products = discover(doc, provider, registered)
                 if not products:
                     raise ValueError('Official catalog has no product links')
+                catalog_ok = True
                 # Audit registered products absent from today's lineup as well.
                 # A guessed URL is a fetch candidate only, never registration evidence.
                 if provider in {'kurv', 'graniteshares', 'roundhill', 'yieldmax', 'rex', 'defiance'}:
@@ -387,6 +394,12 @@ def main(argv=None):
                 print(f'{provider}: {len(products)} products, {sum(r["provider"] == provider for r in collected.values())} verified links', flush=True)
             except Exception as exc:
                 failures.append({'provider': provider, 'url': url, 'error': str(exc)})
+            observations[provider] = {'products': len(products), 'catalogFailed': not catalog_ok,
+                                      'verifiedLinks': sum(row['provider'] == provider for row in collected.values()),
+                                      'errors': failures[before:]}
+    if args.collect and not args.offline:
+        previous_health = json.loads(args.health.read_text()) if args.health.exists() else {}
+        write_json(args.health, update_health(previous_health, observations, datetime.now(timezone.utc).isoformat()))
     registry, conflicts = merge_records(previous['instruments'], collected, rows)
     report = audit(rows, registry, relationships, collected, conflicts, failures)
     write_json(args.report, report)

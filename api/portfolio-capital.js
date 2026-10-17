@@ -8,5 +8,6 @@ export default createApiHandler(
         verify: (req) => verifyFirebaseBearer(req, true),
         database: () => admin.firestore(),
         timestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+        onReadUsage: (usage) => console.info(JSON.stringify(usage)),
     })
 );

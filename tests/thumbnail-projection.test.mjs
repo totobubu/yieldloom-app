@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildProjection, validateProjection, jsonBytes, sha256 } from '../lib/thumbnail-projection.js';
+import { buildProjection, validateProjection, jsonBytes } from '../lib/thumbnail-projection.js';
 import { refresh } from '../scripts/thumbnail_pipeline/refresh.mjs';
 import { calculateEntryIncomeEfficiency } from '../src/services/thumbnail/entryIncomeEfficiency.js';
 import { calculateRivalComparison } from '../src/services/thumbnail/rivalComparison.js';

@@ -33,10 +33,14 @@ function fixture(claims = admin, lookup) {
     const versions = new Map();
     let counter = 0,
         databaseCalls = 0;
+    const documentReads = [];
     const ref = (path) => ({
         path,
         id: path.split('/').at(-1),
-        get: async () => snapshot(path),
+        get: async () => {
+            documentReads.push(path);
+            return snapshot(path);
+        },
         set: async (data) => {
             records.set(path, data);
             versions.set(path, ++counter);
@@ -127,6 +131,7 @@ function fixture(claims = admin, lookup) {
         call,
         records,
         versions,
+        documentReads,
         get databaseCalls() {
             return databaseCalls;
         },
@@ -167,6 +172,9 @@ test('preview is read-only for the ledger; apply updates metadata atomically and
     const r = await f.call('POST', { action: 'preview', ...request });
     assert.equal(r.code, 200);
     assert.equal(r.body.affectedAssets, 1);
+    assert.deepEqual(f.documentReads, [
+        'portfolioSecurityMappings/US35953D4016',
+    ]);
     assert.equal(
         f.records.get('portfolios/owner/assets/US35953D4016').symbol,
         null

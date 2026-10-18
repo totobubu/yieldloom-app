@@ -60,7 +60,7 @@ class IndexedDBCache {
      * @param {string} key - 저장 키 (예: "2024-11")
      * @param {Object} data - 저장할 데이터
      */
-    async set(key: string, data: any) {
+    async set(key: string, data: unknown) {
         await this.init();
 
         return new Promise((resolve, reject) => {
@@ -90,7 +90,7 @@ class IndexedDBCache {
      * @param {string} key - 조회 키
      * @returns {Object|null} - 캐시된 데이터 또는 null
      */
-    async get<T = any>(key: string): Promise<T | null> {
+    async get<T = unknown>(key: string): Promise<T | null> {
         await this.init();
 
         return new Promise((resolve, reject) => {

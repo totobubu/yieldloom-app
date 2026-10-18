@@ -18,7 +18,7 @@
 
 import { chromium } from 'playwright';
 import fs from 'fs/promises';
-import { existsSync, readFileSync } from 'fs';
+import { existsSync } from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 
@@ -251,38 +251,6 @@ function findTickerInNav(navData, symbol) {
 }
 
 /**
- * nav 디렉토리에서 티커 파일 찾기
- */
-async function findNavFile(symbol) {
-    const firstLetter = symbol[0].toLowerCase();
-    const marketDirs = await fs.readdir(NAV_DIR);
-
-    for (const market of marketDirs) {
-        const marketPath = path.join(NAV_DIR, market);
-        const stats = await fs.stat(marketPath);
-        if (!stats.isDirectory()) continue;
-
-        const filePath = path.join(marketPath, `${firstLetter}.json`);
-        if (existsSync(filePath)) {
-            try {
-                const content = await fs.readFile(filePath, 'utf-8');
-                const tickers = JSON.parse(content);
-                const ticker = tickers.find(
-                    (t) => t.symbol.toUpperCase() === symbol.toUpperCase()
-                );
-                if (ticker) {
-                    return { filePath, ticker, tickers };
-                }
-            } catch (e) {
-                // 파일 읽기 실패, 다음 파일 시도
-            }
-        }
-    }
-
-    return null;
-}
-
-/**
  * nav 파일을 새 market 디렉토리로 이동
  */
 async function moveNavFile(symbol, oldMarket, newMarket) {
@@ -331,7 +299,7 @@ async function moveNavFile(symbol, oldMarket, newMarket) {
         try {
             const newContent = await fs.readFile(newFilePath, 'utf-8');
             newTickers = JSON.parse(newContent);
-        } catch (e) {
+        } catch {
             console.warn(
                 `  [${symbol}] 새 nav 파일 읽기 실패, 새로 생성합니다.`
             );
@@ -385,7 +353,7 @@ async function moveNavFile(symbol, oldMarket, newMarket) {
 /**
  * data 파일 업데이트 및 이동
  */
-async function updateDataFile(symbol, newMarket, oldMarket) {
+async function updateDataFile(symbol, newMarket) {
     // 기존 파일 찾기
     const oldMarketDirs = Object.values(MARKET_TO_DIR);
     let foundFile = null;
@@ -509,7 +477,7 @@ async function processSymbol(symbol, page) {
     console.log(`[${symbol}] nav.json 업데이트 완료 (dataPaths 포함)`);
 
     // data 파일 업데이트 및 이동
-    await updateDataFile(symbol, market, oldMarket);
+    await updateDataFile(symbol, market);
 
     return { symbol, success: true, market, changed: true, oldMarket };
 }

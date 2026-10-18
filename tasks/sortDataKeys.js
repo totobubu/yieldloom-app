@@ -65,7 +65,7 @@ function main() {
     try {
       processFile(file);
       updated += 1;
-    } catch (e) {
+    } catch {
       failed += 1;
       console.error(`Skipped due to error: ${file}`);
     }

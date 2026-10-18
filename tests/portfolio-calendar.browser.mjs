@@ -185,6 +185,47 @@ try {
         0,
         'schedule view must not load private transaction history'
     );
+    const exportPanel = calendar.getByRole('region', {
+        name: '캘린더 일정·알림 내보내기',
+        exact: true,
+    });
+    const exportButton = exportPanel.getByRole('button', {
+        name: '배당 일정 ICS 다운로드',
+        exact: true,
+    });
+    assert.equal(await exportButton.isDisabled(), true);
+    await exportPanel.getByLabel(/파일에 보유 종목명/).check();
+    await exportPanel
+        .getByRole('combobox', { name: '사전 알림', exact: true })
+        .click();
+    await page.getByRole('option', { name: '3일 전', exact: true }).click();
+    let exportApiRequests = 0;
+    const countExportRequest = (request) => {
+        if (
+            request.url().includes('/api/') ||
+            request.url().includes('distribution-')
+        )
+            exportApiRequests++;
+    };
+    page.on('request', countExportRequest);
+    const downloadPromise = page.waitForEvent('download');
+    await exportButton.press('Enter');
+    const calendarDownload = await downloadPromise;
+    const fileParts = [];
+    for await (const part of await calendarDownload.createReadStream())
+        fileParts.push(part);
+    const ics = Buffer.concat(fileParts).toString('utf8').replace(/\r\n /g, '');
+    assert.match(calendarDownload.suggestedFilename(), /\.ics$/);
+    assert.ok(ics.includes(`DTSTART;VALUE=DATE:${prefix.replace('-', '')}28`));
+    assert.ok(ics.includes('SUMMARY:TSLY 배당 지급일 (공시)'));
+    assert.ok(ics.includes('TRIGGER:-P3D'));
+    assert.ok(!ics.includes('계좌 a'));
+    assert.equal(
+        exportApiRequests,
+        0,
+        'calendar export adds no API/data fetches'
+    );
+    page.off('request', countExportRequest);
     await page
         .getByRole('button', {
             name: `${prefix}-28 배당 일정 1건`,
@@ -204,6 +245,7 @@ try {
     await page
         .getByRole('button', { name: '저장된 배당 거래', exact: true })
         .click();
+    assert.equal(await exportPanel.count(), 0);
     await calendar.getByText('16 USD', { exact: true }).waitFor();
     assert.equal(await page.locator('.month-events .event-row').count(), 4);
     assert.ok(requests.filter((q) => q.includes('accountId=')).length >= 2);
@@ -219,6 +261,10 @@ try {
         .getByRole('combobox', { name: '배당 일정 날짜 기준', exact: true })
         .click();
     await page.getByRole('option', { name: '배당락일', exact: true }).click();
+    assert.equal(
+        await exportPanel.getByLabel(/파일에 보유 종목명/).isChecked(),
+        false
+    );
     await page
         .getByRole('combobox', { name: '배당 계좌 필터', exact: true })
         .click();
@@ -227,6 +273,10 @@ try {
         .getByRole('button', { name: '가족 포트폴리오', exact: true })
         .click();
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
+    // Wait for the closed Select overlay to leave before resizing the viewport.
+    await page.waitForFunction(
+        () => !document.querySelector('.p-select-overlay')
+    );
     for (const width of [1440, 768, 390, 360]) {
         await page.setViewportSize({ width, height: 1000 });
         // Let the responsive layout settle before measuring overflow.
@@ -249,6 +299,9 @@ try {
         await page.screenshot({ path: `${out}/${width}.png`, fullPage: true });
     }
     await page.getByRole('button', { name: '다크 모드', exact: true }).click();
+    await exportPanel.screenshot({
+        path: '/tmp/yieldloom-calendar-export-dark.png',
+    });
     await page.screenshot({ path: `${out}/360-dark.png`, fullPage: true });
     failIndex = true;
     await page

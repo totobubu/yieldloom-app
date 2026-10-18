@@ -6,6 +6,7 @@
     import Message from 'primevue/message';
     import Tag from 'primevue/tag';
     import Dialog from 'primevue/dialog';
+    import DividendCalendarExport from './DividendCalendarExport.vue';
     import { firebaseUser } from '@/services/firebaseClient';
     import { loadFamilyLedger } from '@/services/familyPortfolio';
     import { loadPortfolioSchedules } from '@/services/thumbnail/dividendSchedule';
@@ -410,6 +411,17 @@
                 option-value="value"
                 aria-label="배당 일정 날짜 기준" />
         </div>
+        <DividendCalendarExport
+            v-if="
+                mode === 'schedule' &&
+                !busy &&
+                !error &&
+                selectedAccounts.length
+            "
+            :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${currency}:${period}:${view}:${basis}`"
+            :rows="rangeRows"
+            :basis="basis"
+            :period="view === 'year' ? period.slice(0, 4) : period" />
         <p v-if="busy" role="status">배당 자료를 확인하고 있습니다.</p>
         <div v-else class="calendar-totals">
             <article v-for="total in totals" :key="total.currency">

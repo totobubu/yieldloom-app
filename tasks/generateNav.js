@@ -1,27 +1,7 @@
 import fs from 'fs/promises';
 import { existsSync, readFileSync } from 'fs';
 import path from 'path';
-import axios from 'axios';
 import pLimit from 'p-limit';
-
-const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL;
-
-const fetchDataFromR2 = async (candidates) => {
-    if (!R2_PUBLIC_URL) return null;
-
-    for (const candidate of candidates) {
-        const url = `${R2_PUBLIC_URL}/${candidate.relPath}`;
-        try {
-            const { data } = await axios.get(url, { timeout: 1500 });
-            if (data && (data.backtestData || data.tickerInfo)) {
-                return data;
-            }
-        } catch (e) {
-            // ignore
-        }
-    }
-    return null;
-};
 
 const rootDir = process.cwd();
 const publicDir = path.join(rootDir, 'public');
@@ -530,7 +510,7 @@ function findLogoFile(normalizedName, options = {}) {
         if (!dir) return;
         try {
             if (!existsSync(dir)) return;
-        } catch (error) {
+        } catch {
             return;
         }
         if (searchTargets.some((target) => target.dir === dir)) return;
@@ -887,7 +867,7 @@ async function generateNavJson() {
                 } else {
                     throw new Error('File not found locally');
                 }
-            } catch (error) {
+            } catch {
                 // Skip R2 fetch for performance. Fallback will handle it.
                 stockData = null;
             }
@@ -1010,7 +990,7 @@ async function generateNavJson() {
                 } else {
                     processedTicker.periods = [];
                 }
-            } catch (error) {
+            } catch {
                 processedTicker.periods = [];
             }
 

@@ -22,7 +22,6 @@ async function fixZeroPriceData(filePath) {
         let hasChanges = false;
         
         data.backtestData = data.backtestData.map((item) => {
-            const original = { ...item };
             let changed = false;
             
             // open, high, low, volume이 0이고 close가 있는 경우 null로 변경

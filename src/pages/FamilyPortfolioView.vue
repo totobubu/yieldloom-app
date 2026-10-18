@@ -6,6 +6,7 @@
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
     import PortfolioExportDialog from '@/components/portfolio/PortfolioExportDialog.vue';
     import PortfolioImportResult from '@/components/portfolio/PortfolioImportResult.vue';
+    import ManualHoldingsForm from '@/components/portfolio/ManualHoldingsForm.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { useRoute, useRouter } from 'vue-router';
     import PortfolioDividendCalendar from '@/components/portfolio/PortfolioDividendCalendar.vue';
@@ -115,6 +116,15 @@
         format = ref('standard-csv');
     const rememberPassword = ref(true),
         reviewPage = ref(0);
+    const inputMethod = ref('file');
+    const inputMethodOptions = [
+        { label: '파일 업로드', value: 'file' },
+        { label: '수동 잔고 입력', value: 'manual' },
+    ];
+    watch(inputMethod, () => {
+        review.value = null;
+        importReceipt.value = null;
+    });
     const visibleReviewRows = computed(() =>
         (review.value?.rows || []).slice(
             reviewPage.value * 200,
@@ -563,6 +573,35 @@
             fileInput.value.value = '';
             if (rememberPassword.value && format.value === 'toss-pdf')
                 await refresh();
+        });
+    }
+    async function previewManualHoldings(body) {
+        await run(async () => {
+            const a = activeAccount.value;
+            const user = firebaseUser.value;
+            const selectedFamily = familyId.value;
+            if (!a || !editableAccounts.value.some((item) => item.id === a.id))
+                throw new Error('편집 가능한 계좌를 선택하세요.');
+            importReceipt.value = null;
+            const result = await familyRequest('previewManualHoldings', {
+                ...body,
+                accountId: a.id,
+            });
+            if (
+                firebaseUser.value === user &&
+                selectedAccount.value === a.id &&
+                familyId.value === selectedFamily &&
+                inputMethod.value === 'manual'
+            ) {
+                review.value = {
+                    ...result,
+                    accountId: a.id,
+                    kind: 'holdings',
+                    asOf: body.asOf,
+                    accountAlias: a.alias,
+                };
+                reviewPage.value = 0;
+            }
         });
     }
     async function commit() {
@@ -1527,15 +1566,30 @@
                                 (a) => a.id === selectedAccount
                             )
                         ">
-                        <h2>파일 업로드·저장 전 검토</h2>
-                        <p>
+                        <h2>자료 입력·저장 전 검토</h2>
+                        <SelectButton
+                            v-model="inputMethod"
+                            :options="inputMethodOptions"
+                            option-label="label"
+                            option-value="value"
+                            :allow-empty="false"
+                            :disabled="busy"
+                            aria-label="자료 입력 방법" />
+                        <ManualHoldingsForm
+                            v-if="inputMethod === 'manual' && !review"
+                            :key="`${ownUid}:${familyId}:${selectedAccount}`"
+                            :snapshot="activeAccount.snapshot || null"
+                            :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias}`"
+                            :busy="busy"
+                            @preview="previewManualHoldings" />
+                        <p v-if="inputMethod === 'file'">
                             표준 UTF-8 CSV(200행)와 토스 거래내역
                             PDF(10,000행)를 지원합니다. 파일은 2MB 이하이며
                             PDF는 200행씩 나누어 저장합니다. 잔고 CSV는 기준일의
                             전체 보유 종목을 넣으세요. 새 잔고는 해당 계좌의
                             이전 잔고를 대체합니다.
                         </p>
-                        <details>
+                        <details v-if="inputMethod === 'file'">
                             <summary>CSV 양식과 거래 유형</summary>
                             <p>
                                 잔고 amount는 기준일 평가액이며 모르면
@@ -1560,7 +1614,9 @@ date,symbol,quantity,amount,currency,type,externalId
                                 type,externalId 열이 필요 없습니다.
                             </p>
                         </details>
-                        <form @submit.prevent="preview">
+                        <form
+                            v-if="inputMethod === 'file'"
+                            @submit.prevent="preview">
                             <label
                                 >자료 종류
                                 <Select
@@ -1651,6 +1707,21 @@ date,symbol,quantity,amount,currency,type,externalId
                         </form>
                         <template v-if="review"
                             ><h3>검토 · {{ review.source }}</h3>
+                            <template
+                                v-if="review.source === 'manual-holdings-v1'">
+                                <Message severity="warn" :closable="false">
+                                    기준일 {{ review.asOf }} ·
+                                    {{ review.rows.length }}행의 전체 잔고로
+                                    대체합니다. 빠진 종목은 새 잔고에서
+                                    제외됩니다. 기존 거래는 유지됩니다.
+                                </Message>
+                                <Button
+                                    type="button"
+                                    label="수동 입력 다시 작성"
+                                    severity="secondary"
+                                    :disabled="busy"
+                                    @click="review = null" />
+                            </template>
                             <p>
                                 표의 오류를 수정한 뒤 전체 행을 저장합니다.
                                 오류가 남으면 저장되지 않습니다. 검토는 1시간

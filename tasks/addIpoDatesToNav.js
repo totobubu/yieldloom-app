@@ -27,7 +27,7 @@ async function getFirstTradeDate(symbol) {
             return new Date(firstTradeTime * 1000).toISOString().split('T')[0];
         }
         return null;
-    } catch (error) {
+    } catch {
         return null;
     }
 }

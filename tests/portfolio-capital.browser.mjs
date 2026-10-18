@@ -15,9 +15,9 @@ const layoutStyles = layoutSource
 await writeFile(
     harness,
     `<!doctype html><html><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${layoutStyles}</style><div id="app" class="thumbnail-app"></div><script type="module">
-import {createApp,h} from 'vue'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import MyPage from '/src/pages/MyPageView.vue'; import FamilyPage from '/src/pages/FamilyPortfolioView.vue';
+import {createApp,h} from 'vue'; import PrimeVue from 'primevue/config'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import MyPage from '/src/pages/MyPageView.vue'; import FamilyPage from '/src/pages/FamilyPortfolioView.vue';
 const router=createRouter({history:createMemoryHistory(),routes:[{path:'/',component:new URLSearchParams(location.search).has('family')?FamilyPage:MyPage},{path:'/login',component:{template:'<p>login</p>'}}]});
-createApp({render:()=>h(RouterView)}).use(router).mount('#app');</script></html>`
+createApp({render:()=>h(RouterView)}).use(PrimeVue).use(router).mount('#app');</script></html>`
 );
 const trade = {
     id: 'T',
@@ -109,6 +109,7 @@ try {
     const page = await browser.newPage({
         viewport: { width: 1280, height: 900 },
     });
+    await page.clock.install();
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.route('**/src/services/firebaseClient.js*', (route) =>
@@ -528,8 +529,8 @@ try {
             '/.tmp-capital-test.html?family'
     );
     await page
-        .getByRole('heading', { name: '선택 계좌: 검증 계좌', exact: true })
-        .waitFor();
+        .getByRole('button', { name: '원금 회수 · 자금 상세', exact: true })
+        .click();
     const overview = page.getByRole('region', {
         name: '전체 계좌 원금 회수 현황',
         exact: true,
@@ -547,6 +548,7 @@ try {
         .getByText('분류 확인 필요 1건', { exact: false })
         .first()
         .waitFor();
+    await page.getByRole('tab', { name: '계좌 관리', exact: true }).click();
     await page.getByRole('button', { name: '조회', exact: true }).click();
     await page
         .getByRole('button', { name: '자금 구성 확인', exact: true })
@@ -589,13 +591,17 @@ try {
     await familyDialog
         .getByRole('button', { name: '상세 창 닫기', exact: true })
         .click();
-    const selectedSection = page.locator('section').filter({
-        has: page.getByRole('heading', {
-            name: '선택 계좌: 검증 계좌',
-            exact: true,
-        }),
+    await page.getByRole('tab', { name: '한눈에 보기', exact: true }).click();
+    const selectedSection = page.getByRole('region', {
+        name: '회수 현황 계좌 선택',
+        exact: true,
     });
-    await selectedSection.locator('select').first().selectOption('BB');
+    await selectedSection
+        .getByRole('combobox', { name: '계좌', exact: true })
+        .click();
+    await page
+        .getByRole('option', { name: '본인 / 조회 전용 계좌', exact: true })
+        .click();
     await familyPanel
         .getByText('조회 권한으로 열었습니다.', { exact: false })
         .waitFor();
@@ -625,7 +631,9 @@ try {
         0
     );
     familyFailure = false;
+    await page.clock.fastForward(61000);
     await page.getByRole('button', { name: '새로고침', exact: true }).click();
+    await page.getByRole('tab', { name: '계좌 관리', exact: true }).click();
     await page
         .getByRole('heading', { name: '선택 계좌: 검증 계좌', exact: true })
         .waitFor();

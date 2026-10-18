@@ -11,7 +11,6 @@ const YF_HEADERS = { 'User-Agent': 'Mozilla/5.0' };
 const DATA_LAYOUT_MODE = (
     process.env.DATA_LAYOUT_MODE || 'market'
 ).toLowerCase();
-const MARKET_FILTER = 'KR'; // 한국 티커만 처리
 
 const MARKET_SUBDIR_ALIASES = {
     KOSPI: 'kospi',
@@ -106,7 +105,7 @@ const fetchDataFromR2 = async (symbolCandidates, market) => {
                     // console.log(`ℹ️ Loaded from R2: ${candidate}`);
                     return { data, symbol: candidate };
                 }
-            } catch (e) {
+            } catch {
                 // Ignore 404 or network error
             }
         }
@@ -372,34 +371,6 @@ async function fetchSplitEvents(symbol, fromDate, retryCount = 0) {
     }
 }
 
-async function mergeSplitEvents(existingData, newSplits) {
-    const existingSplits = existingData?.tickerInfo?.events?.splits || [];
-    const splitMap = new Map(
-        existingSplits.map((event) => [
-            `${event.date}|${event.ratio}|${event.type}`,
-            event,
-        ])
-    );
-
-    newSplits.forEach((event) => {
-        const signature = `${event.date}|${event.ratio}|${event.type}`;
-        if (!splitMap.has(signature)) {
-            splitMap.set(signature, event);
-        }
-    });
-
-    const finalSplits = Array.from(splitMap.values()).sort((a, b) =>
-        a.date.localeCompare(b.date)
-    );
-
-    existingData.tickerInfo = {
-        ...existingData.tickerInfo,
-        events: {
-            ...existingData.tickerInfo?.events,
-            splits: finalSplits,
-        },
-    };
-}
 
 async function fetchAndMergePriceData(ticker) {
     const { symbol, ipoDate, market, yfSymbol } = ticker;
@@ -432,7 +403,7 @@ async function fetchAndMergePriceData(ticker) {
             const fileContent = await fs.readFile(filePath, 'utf-8');
             existingData = JSON.parse(fileContent);
             loaded = true;
-        } catch (error) {
+        } catch {
             /* 파일 없으면 R2 시도 */
             if (R2_PUBLIC_URL) {
                 const r2Res = await fetchDataFromR2(symbolCandidates, market);

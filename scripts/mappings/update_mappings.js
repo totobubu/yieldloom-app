@@ -41,7 +41,7 @@ const findExistingSymbol = (symbol) => {
                 if (entry) {
                     return { market, filePath, entry };
                 }
-            } catch (error) {
+            } catch {
                 // Continue searching
             }
         }

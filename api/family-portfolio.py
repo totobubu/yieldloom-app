@@ -312,6 +312,26 @@ def preview(db, uid):
     return {'reviewId': batches[0]['reviewId'], 'batches': batches, 'rows': rows, 'errors': errors, 'source': source}
 
 
+def preview_manual_holdings(db, uid, body):
+    ref, data = account(db, body.get('accountId'), uid, True)
+    require(body.get('identityConfirmed') is True and body.get('completeSnapshotConfirmed') is True,
+            '선택 계좌의 전체 잔고임을 확인하세요.')
+    old = data.get('snapshot')
+    expected = {'asOf': old.get('asOf'), 'importedAt': old.get('importedAt')} if old else None
+    require(body.get('baseSnapshot') == expected, '잔고가 변경되었습니다. 계좌를 새로고침하고 다시 입력하세요.', 409)
+    as_of = iso_date(body.get('asOf'))
+    require(not old or as_of > old['asOf'], '기존 잔고보다 새로운 기준일을 입력하세요.', 409)
+    rows, errors = validate_rows(body.get('rows'), 'holdings', as_of)
+    require(not errors, '입력 내용을 확인하세요: ' + json.dumps(errors, ensure_ascii=False))
+    base_hash = digest(old)
+    session = ref.collection('reviews').document()
+    session.set({'uid': uid, 'rows': rows, 'kind': 'holdings', 'asOf': as_of,
+                 'source': 'manual-holdings-v1', 'baseSnapshotHash': base_hash,
+                 'fileHash': digest(['manual-holdings-v1', as_of, rows, base_hash]),
+                 'expiresAt': now() + timedelta(hours=1)})
+    return {'reviewId': session.id, 'rows': rows, 'errors': [], 'source': 'manual-holdings-v1'}
+
+
 def save_pdf_password(db, uid, body):
     ref, data = account(db, body.get('accountId'), uid, True)
     require(data.get('permissions', {}).get(uid) == 'owner', '계좌 소유자만 PDF 기본 비밀번호를 변경할 수 있습니다.', 403)
@@ -350,6 +370,9 @@ def commit(db, uid, body):
         previous = read_snapshot(receipt, tx)
         if previous.exists:
             return {'inserted': 0, 'duplicates': len(rows), 'alreadyImported': True}
+        if review['source'] == 'manual-holdings-v1':
+            require(digest(data.get('snapshot')) == review['baseSnapshotHash'],
+                    '검토 중 잔고가 변경되었습니다. 계좌를 새로고침하고 다시 입력하세요.', 409)
         if review['kind'] == 'transactions':
             refs = [ref.collection('entries').document(row_key(row)) for row in rows]
             if hasattr(db, 'get_all'):
@@ -470,6 +493,8 @@ def route():
         require(isinstance(body, dict), '요청 형식이 잘못되었습니다.')
         if action == 'preview':
             result = preview(db, uid)
+        elif action == 'previewManualHoldings':
+            result = preview_manual_holdings(db, uid, body)
         elif action == 'ensurePersonal':
             result = ensure_personal_space(db, uid, body)
         elif action == 'createFamily':

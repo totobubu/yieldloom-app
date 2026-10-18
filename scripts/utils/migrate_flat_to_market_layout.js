@@ -106,13 +106,11 @@ async function migrateFiles(dryRun = false) {
             const tickerInfo = data.tickerInfo || {};
 
             let market = tickerInfo.market || tickerInfo.Market;
-            let symbol = tickerInfo.Symbol || tickerInfo.symbol;
 
             // nav.json에서 market 정보 찾기
             if (!market && tickerMarketMap.has(filenameWithoutExt.toLowerCase())) {
                 const navInfo = tickerMarketMap.get(filenameWithoutExt.toLowerCase());
                 market = navInfo.market;
-                symbol = navInfo.symbol;
             }
 
             // market이 없으면 currency로 판단

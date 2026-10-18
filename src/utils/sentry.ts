@@ -75,7 +75,7 @@ export function initSentry(app: App, router: Router) {
     ],
 
     // PII 데이터 제외
-    beforeSend(event, _hint) {
+    beforeSend(event) {
       // 사용자 이메일 마스킹
       if (event.user && event.user.email) {
         event.user.email = event.user.email.replace(/(.{2}).*(@.*)/, '$1***$2');
@@ -96,7 +96,7 @@ export function initSentry(app: App, router: Router) {
 /**
  * 수동으로 에러 리포트
  */
-export function reportError(error: any, context: Record<string, any> = {}) {
+export function reportError(error: unknown, context: Record<string, unknown> = {}) {
   Sentry.captureException(error, {
     contexts: {
       custom: context
@@ -121,7 +121,7 @@ export function setUser(user: { uid: string; email?: string } | null) {
 /**
  * 커스텀 이벤트 기록
  */
-export function logEvent(message: string, level: Sentry.SeverityLevel = 'info', context: Record<string, any> = {}) {
+export function logEvent(message: string, level: Sentry.SeverityLevel = 'info', context: Record<string, unknown> = {}) {
   Sentry.captureMessage(message, {
     level,
     contexts: {

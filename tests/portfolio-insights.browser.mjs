@@ -226,6 +226,91 @@ try {
     await summary.getByText('62.5%', { exact: true }).waitFor();
     assert.ok(requests.some((url) => url.includes('cursor=page-2')));
     assert.ok(!requests.some((url) => url.includes('accountId=c')));
+    // Monthly statements reuse the ledger already loaded by this screen.
+    const statement = section.getByRole('region', {
+        name: '월간 결산 저장·비교',
+        exact: true,
+    });
+    const reportCalls = requests.length;
+    await section.getByLabel('분석 월', { exact: true }).fill(previous);
+    await statement.getByText(/확인된 저장 배당 40 USD/).waitFor();
+    const saveStatement = statement.getByRole('button', {
+        name: '월간 결산 JSON 저장',
+        exact: true,
+    });
+    assert.equal(await saveStatement.isDisabled(), true);
+    await statement.getByLabel(/파일에 배당 금액/).check();
+    const statementDownload = page.waitForEvent('download');
+    await saveStatement.click();
+    const savedStatement = await statementDownload;
+    const chunks = [];
+    for await (const chunk of await savedStatement.createReadStream())
+        chunks.push(chunk);
+    const savedContent = Buffer.concat(chunks);
+    const savedReport = JSON.parse(savedContent.toString('utf8'));
+    assert.equal(savedReport.knownAmount, 40);
+    assert.equal(savedReport.month, previous);
+    assert.ok(!('accountIds' in savedReport));
+    assert.ok(!savedContent.includes(Buffer.from('TSLY')));
+    await section.getByLabel('분석 월', { exact: true }).fill(month);
+    await statement.getByText(/확인된 저장 배당 65 USD/).waitFor();
+    assert.equal(
+        await statement.getByLabel(/파일에 배당 금액/).isChecked(),
+        false
+    );
+    const importStatement = async (buffer) =>
+        statement
+            .getByLabel('이전 월간 결산 파일', { exact: true })
+            .setInputFiles({
+                name: 'monthly.json',
+                mimeType: 'application/json',
+                buffer,
+            });
+    await importStatement(savedContent);
+    await statement
+        .getByText('저장 배당 증감 25 USD', { exact: true })
+        .waitFor();
+    await statement.getByText('증감률 62.5%', { exact: true }).waitFor();
+    await importStatement(Buffer.from('invalid json'));
+    await statement
+        .getByText('JSON 결산 파일을 확인하세요.', { exact: true })
+        .waitFor();
+    assert.equal(
+        await statement
+            .getByText('저장 배당 증감 25 USD', { exact: true })
+            .count(),
+        0
+    );
+    await importStatement(
+        Buffer.from(
+            JSON.stringify({ ...savedReport, scopeHash: 'b'.repeat(64) })
+        )
+    );
+    await statement
+        .getByText(
+            '같은 로그인 사용자·가족·계좌 범위의 결산만 비교할 수 있습니다.',
+            { exact: true }
+        )
+        .waitFor();
+    await importStatement(savedContent);
+    await statement.getByText('증감률 62.5%', { exact: true }).waitFor();
+    assert.equal(
+        requests.length,
+        reportCalls,
+        'saving/loading/changing report month adds no portfolio requests'
+    );
+    await page.setViewportSize({ width: 390, height: 844 });
+    await statement.scrollIntoViewIfNeeded();
+    assert.ok(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth + 1
+        )
+    );
+    await page.screenshot({
+        path: '/tmp/yieldloom-monthly-statement.png',
+        fullPage: true,
+    });
+    await page.setViewportSize({ width: 1440, height: 1000 });
     const entryCalls = () =>
         requests.filter((url) => url.includes('accountId=')).length;
     const initialEntryCalls = entryCalls();

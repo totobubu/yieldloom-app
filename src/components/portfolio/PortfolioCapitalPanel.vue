@@ -40,7 +40,7 @@
     const filter = ref('pending'),
         page = ref(1),
         busy = ref(false),
-        error = ref(''),
+        saveError = ref(''),
         success = ref('');
     const edits = ref({});
     watch(
@@ -165,7 +165,7 @@
     defineExpose({ openEntry });
     async function save(input) {
         busy.value = true;
-        error.value = '';
+        saveError.value = '';
         success.value = '';
         try {
             await portfolioCapitalRequest(props.user, input, props.accountId);
@@ -173,7 +173,7 @@
             success.value = '계좌 내역을 저장했습니다.';
             emit('refresh');
         } catch (reason) {
-            error.value = reason.message;
+            saveError.value = reason.message;
         } finally {
             busy.value = false;
         }
@@ -569,7 +569,7 @@
                 </div>
             </details>
         </template>
-        <p v-if="error" role="alert" class="error">{{ error }}</p>
+        <p v-if="saveError" role="alert" class="error">{{ saveError }}</p>
         <p v-if="success" role="status">{{ success }}</p>
     </section>
 </template>

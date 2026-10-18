@@ -2,6 +2,7 @@
     import { computed, ref, watch } from 'vue';
     import InvestmentWorkbench from './InvestmentWorkbench.vue';
     import HoldingScenarioComparison from './HoldingScenarioComparison.vue';
+    import MonthlyStatement from './MonthlyStatement.vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
     import SelectButton from 'primevue/selectbutton';
@@ -310,6 +311,20 @@
             ></Message
         >
         <template v-else>
+            <MonthlyStatement
+                v-if="
+                    dividends &&
+                    selectedAccounts.length &&
+                    selectedCurrency !== 'UNKNOWN'
+                "
+                :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                :group="dividends"
+                :month="month"
+                :today="today"
+                :user-id="firebaseUser?.uid || ''"
+                :family-id="familyId"
+                :account-ids="selectedAccounts.map((account) => account.id)"
+                :rejected="report.rejected" />
             <HoldingScenarioComparison
                 v-if="
                     ['USD', 'KRW'].includes(selectedCurrency) &&

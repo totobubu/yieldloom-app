@@ -157,6 +157,58 @@ class FamilyApiTest(unittest.TestCase):
     def commit(self, review, account=None, uid='alice'):
         return self.post('commit', {'accountId': account or self.account, 'reviewId': review['reviewId'], 'rows': review['rows']}, uid)
 
+    def manual(self, rows=None, as_of='2026-10-16', uid='alice', **extra):
+        old = self.db.data[f'investmentAccounts/{self.account}'].get('snapshot')
+        body = {'accountId': self.account, 'asOf': as_of,
+                'baseSnapshot': {key: old.get(key) for key in ('asOf', 'importedAt')} if old else None,
+                'identityConfirmed': True, 'completeSnapshotConfirmed': True,
+                'rows': rows if rows is not None else [{'date': as_of, 'symbol': 'aapl', 'quantity': 1.25, 'amount': None, 'currency': 'usd'}]}
+        return self.post('previewManualHoldings', {**body, **extra}, uid)
+
+    def test_manual_holdings_source_validation_and_idempotent_commit(self):
+        content = b'date,symbol,quantity,amount,currency,type,externalId\n2026-10-15,AAPL,1,100,USD,buy,existing-buy\n'
+        self.commit(self.preview(content).json)
+        entries_before = {key: value for key, value in self.db.data.items() if '/entries/' in key}
+        response = self.manual()
+        self.assertEqual(response.headers['X-Portfolio-Document-Reads'], '2')
+        self.assertEqual(response.headers['X-Portfolio-Read-Operations'], '2')
+        review = response.json
+        self.assertEqual(review['source'], 'manual-holdings-v1')
+        self.assertEqual(review['rows'][0]['symbol'], 'AAPL')
+        self.assertEqual(self.commit(review).json['inserted'], 1)
+        self.assertTrue(self.commit(review).json['alreadyImported'])
+        snapshot = self.db.data[f'investmentAccounts/{self.account}']['snapshot']
+        self.assertEqual(snapshot['source'], 'manual-holdings-v1')
+        self.assertIsNone(snapshot['rows'][0]['amount'])
+        self.assertEqual({key: value for key, value in self.db.data.items() if '/entries/' in key}, entries_before)
+        self.assertEqual(self.manual(as_of='2026-10-16').status_code, 409)
+        self.assertEqual(self.manual(as_of='2026-10-15').status_code, 409)
+
+    def test_manual_holdings_requires_complete_confirmation_valid_rows_and_editor(self):
+        self.assertEqual(self.manual(completeSnapshotConfirmed=False).status_code, 400)
+        self.assertEqual(self.manual(identityConfirmed=False).status_code, 400)
+        self.assertEqual(self.manual(rows=[]).status_code, 400)
+        row = {'date': '2026-10-16', 'symbol': 'AAPL', 'quantity': -1, 'amount': None, 'currency': 'USD'}
+        self.assertEqual(self.manual(rows=[row]).status_code, 400)
+        row['quantity'] = 1
+        self.assertEqual(self.manual(rows=[row, row]).status_code, 400)
+        self.assertEqual(self.manual(rows=[row] * 201).status_code, 400)
+        self.join_bob()
+        self.post('grant', {'accountId': self.account, 'uid': 'bob', 'role': 'viewer'})
+        self.assertEqual(self.manual(uid='bob').status_code, 403)
+        self.post('grant', {'accountId': self.account, 'uid': 'bob', 'role': 'editor'})
+        review = self.manual(uid='bob').json
+        self.post('grant', {'accountId': self.account, 'uid': 'bob', 'role': 'viewer'})
+        self.assertEqual(self.commit(review, uid='bob').status_code, 403)
+
+    def test_manual_holdings_rejects_stale_preview_and_concurrent_snapshot(self):
+        first = self.manual().json
+        second = self.manual(as_of='2026-10-17').json
+        self.assertEqual(self.commit(first).status_code, 200)
+        self.assertEqual(self.commit(second).status_code, 409)
+        self.assertEqual(self.manual(as_of='2026-10-18', baseSnapshot=None).status_code, 409)
+        self.assertEqual(self.manual(as_of='2026-10-18').status_code, 200)
+
     def test_personal_account_setup_is_repeatable_and_private(self):
         first = self.post('ensurePersonal', {'profileName': 'Alice'})
         second = self.post('ensurePersonal', {'profileName': 'Different'})

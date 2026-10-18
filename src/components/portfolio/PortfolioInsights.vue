@@ -3,6 +3,7 @@
     import InvestmentWorkbench from './InvestmentWorkbench.vue';
     import HoldingScenarioComparison from './HoldingScenarioComparison.vue';
     import MonthlyStatement from './MonthlyStatement.vue';
+    import AdvancedPortfolioInsights from './AdvancedPortfolioInsights.vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
     import SelectButton from 'primevue/selectbutton';
@@ -311,6 +312,18 @@
             ></Message
         >
         <template v-else>
+            <AdvancedPortfolioInsights
+                v-if="
+                    selectedAccounts.length &&
+                    ['USD', 'KRW'].includes(selectedCurrency)
+                "
+                :key="`advanced:${firebaseUser?.uid}:${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                :entries="entries"
+                :positions="selectedPositions"
+                :accounts="selectedAccounts"
+                :month="month"
+                :currency="selectedCurrency"
+                :today="today" />
             <MonthlyStatement
                 v-if="
                     dividends &&
@@ -324,6 +337,14 @@
                 :user-id="firebaseUser?.uid || ''"
                 :family-id="familyId"
                 :account-ids="selectedAccounts.map((account) => account.id)"
+                :account-revisions="
+                    Object.fromEntries(
+                        selectedAccounts.map((account) => [
+                            account.id,
+                            account.entriesRevision ?? 0,
+                        ])
+                    )
+                "
                 :rejected="report.rejected" />
             <HoldingScenarioComparison
                 v-if="

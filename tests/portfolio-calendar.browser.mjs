@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { chromium } from 'playwright';
-const out = 'design-review/portfolio-calendar';
+const out = '/tmp/yieldloom-expansion-calendar';
 await fs.mkdir(out, { recursive: true });
 const browser = await chromium.launch({
     executablePath: '/usr/bin/chromium',
@@ -75,6 +75,8 @@ try {
             valueComplete: true,
         },
     });
+    let alertPrefs = { enabled: false, leadDays: 7, browser: false },
+        prefRevision = 0;
     let failIndex = false,
         denyLedger = false;
     let slow = false,
@@ -83,6 +85,17 @@ try {
         const url = new URL(r.request().url()),
             id = url.searchParams.get('accountId');
         requests.push(url.search);
+        if (url.searchParams.get('view') === 'preferences')
+            return r.fulfill({
+                json: { preferences: alertPrefs, revision: prefRevision },
+            });
+        if (url.searchParams.get('action') === 'savePreferences') {
+            alertPrefs = r.request().postDataJSON().preferences;
+            prefRevision++;
+            return r.fulfill({
+                json: { preferences: alertPrefs, revision: prefRevision },
+            });
+        }
         if (id) {
             if (denyLedger)
                 return r.fulfill({
@@ -180,6 +193,26 @@ try {
         .waitFor();
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
     await calendar.getByText('2 USD', { exact: true }).first().waitFor();
+    const alertPanel = calendar.getByRole('region', {
+        name: '자동 배당 알림',
+        exact: true,
+    });
+    const initialPreferenceReads = requests.filter((q) =>
+        q.includes('view=preferences')
+    ).length;
+    await alertPanel
+        .getByLabel('앱 내 자동 알림 사용', { exact: true })
+        .check();
+    await alertPanel
+        .getByRole('button', { name: '알림 설정 저장', exact: true })
+        .click();
+    await alertPanel
+        .getByText('알림 설정을 계정에 저장했습니다.', { exact: true })
+        .waitFor();
+    await alertPanel
+        .getByRole('status', { name: '다가오는 배당 알림', exact: true })
+        .waitFor();
+    assert.equal(prefRevision, 1);
     assert.equal(
         requests.filter((q) => q.includes('accountId=')).length,
         0,
@@ -273,6 +306,11 @@ try {
         .getByRole('button', { name: '가족 포트폴리오', exact: true })
         .click();
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
+    assert.equal(
+        requests.filter((q) => q.includes('view=preferences')).length,
+        initialPreferenceReads,
+        'calendar remount shares session preference cache'
+    );
     // Wait for the closed Select overlay to leave before resizing the viewport.
     await page.waitForFunction(
         () => !document.querySelector('.p-select-overlay')

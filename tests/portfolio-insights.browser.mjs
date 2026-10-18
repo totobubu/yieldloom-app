@@ -74,6 +74,8 @@ try {
         b: [entry('1', 'TSLY', 40), entry('2', 'TSLY', 20, previous)],
         c: [entry('1', 'CRSH', 50)],
     };
+    let storedReports = [];
+    let shelfCalls = 0;
     let failLedger = false,
         failMetadata = false,
         mutate = false,
@@ -84,6 +86,40 @@ try {
     await page.route('**/api/family-portfolio?*', async (route) => {
         const url = new URL(route.request().url());
         requests.push(url.search);
+        if (url.searchParams.get('view') === 'preferences')
+            return route.fulfill({
+                json: {
+                    preferences: {
+                        enabled: false,
+                        browser: false,
+                        leadDays: 3,
+                    },
+                    revision: 0,
+                },
+            });
+        if (url.searchParams.get('view') === 'statements') {
+            shelfCalls++;
+            return route.fulfill({ json: { reports: storedReports } });
+        }
+        if (url.searchParams.get('action') === 'saveMonthlyStatement') {
+            const body = route.request().postDataJSON();
+            assert.deepEqual(body.accountRevisions, { a: 1, b: 1 });
+            storedReports = [
+                {
+                    statement: body.statement,
+                    revision: 1,
+                    savedAt: '2026-10-18',
+                    stale: false,
+                },
+            ];
+            return route.fulfill({
+                json: { reports: storedReports, unchanged: false },
+            });
+        }
+        if (url.searchParams.get('action') === 'deleteMonthlyStatement') {
+            storedReports = [];
+            return route.fulfill({ json: { reports: [], unchanged: false } });
+        }
         const id = url.searchParams.get('accountId');
         if (id) {
             if (slow)
@@ -239,7 +275,7 @@ try {
         exact: true,
     });
     assert.equal(await saveStatement.isDisabled(), true);
-    await statement.getByLabel(/파일에 배당 금액/).check();
+    await statement.getByLabel(/배당 금액·통화/).check();
     const statementDownload = page.waitForEvent('download');
     await saveStatement.click();
     const savedStatement = await statementDownload;
@@ -255,7 +291,7 @@ try {
     await section.getByLabel('분석 월', { exact: true }).fill(month);
     await statement.getByText(/확인된 저장 배당 65 USD/).waitFor();
     assert.equal(
-        await statement.getByLabel(/파일에 배당 금액/).isChecked(),
+        await statement.getByLabel(/배당 금액·통화/).isChecked(),
         false
     );
     const importStatement = async (buffer) =>
@@ -299,6 +335,61 @@ try {
         reportCalls,
         'saving/loading/changing report month adds no portfolio requests'
     );
+    assert.equal(shelfCalls, 0, 'shelf stays lazy until explicitly opened');
+    const ledgerBeforeShelf = requests.filter(
+        (q) => q.includes('accountId=') || q.includes('view=ledger')
+    ).length;
+    await statement
+        .getByRole('button', { name: '계정 보관함 열기', exact: true })
+        .click();
+    await statement
+        .getByText('계정에 저장한 결산이 없습니다.', { exact: true })
+        .waitFor();
+    await statement.getByLabel(/배당 금액·통화/).check();
+    await statement
+        .getByRole('button', { name: '현재 결산 계정에 저장', exact: true })
+        .click();
+    await statement.locator('.saved-reports li').waitFor();
+    assert.equal(shelfCalls, 1);
+    await statement
+        .getByRole('button', { name: '결산 카드·블로그 만들기', exact: true })
+        .click();
+    const studio = statement.getByRole('region', {
+        name: '결산 콘텐츠 작업실',
+        exact: true,
+    });
+    const monthlyDraft = studio.getByLabel('결산 블로그 초안', { exact: true });
+    await monthlyDraft.waitFor();
+    assert.ok((await monthlyDraft.inputValue()).includes('[금액 비공개]'));
+    assert.ok(!(await monthlyDraft.inputValue()).includes('TSLY'));
+    await studio.getByLabel('결산 콘텐츠에 금액 공개', { exact: true }).check();
+    assert.ok((await monthlyDraft.inputValue()).includes('65 USD'));
+    const pngDownload = page.waitForEvent('download');
+    await studio
+        .getByRole('button', { name: '결산 카드 PNG 저장', exact: true })
+        .click();
+    const pngFile = await pngDownload;
+    const pngChunks = [];
+    for await (const chunk of await pngFile.createReadStream())
+        pngChunks.push(chunk);
+    const pngBuffer = Buffer.concat(pngChunks);
+    assert.equal(pngBuffer.readUInt32BE(16), 1080);
+    assert.equal(pngBuffer.readUInt32BE(20), 1080);
+    await pngFile.saveAs('/tmp/yieldloom-monthly-card.png');
+    assert.equal(
+        requests.filter(
+            (q) => q.includes('accountId=') || q.includes('view=ledger')
+        ).length,
+        ledgerBeforeShelf,
+        'reports and content never refetch ledger'
+    );
+    page.once('dialog', (dialog) => dialog.accept());
+    await statement
+        .getByRole('button', { name: '저장 결산 삭제', exact: true })
+        .click();
+    await statement
+        .getByText('계정에 저장한 결산이 없습니다.', { exact: true })
+        .waitFor();
     await page.setViewportSize({ width: 390, height: 844 });
     await statement.scrollIntoViewIfNeeded();
     assert.ok(

@@ -7,6 +7,7 @@
     import PortfolioExportDialog from '@/components/portfolio/PortfolioExportDialog.vue';
     import PortfolioImportResult from '@/components/portfolio/PortfolioImportResult.vue';
     import ManualHoldingsForm from '@/components/portfolio/ManualHoldingsForm.vue';
+    import BrokerSpreadsheetForm from '@/components/portfolio/BrokerSpreadsheetForm.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { useRoute, useRouter } from 'vue-router';
     import PortfolioDividendCalendar from '@/components/portfolio/PortfolioDividendCalendar.vue';
@@ -73,6 +74,7 @@
     ];
     const formatOptions = [
         { label: '표준 CSV', value: 'standard-csv' },
+        { label: '표준 XLSX (첫 시트·첫 행 제목)', value: 'standard-xlsx' },
         { label: '토스 거래내역 PDF', value: 'toss-pdf' },
     ];
     const families = ref([]),
@@ -120,6 +122,7 @@
     const inputMethodOptions = [
         { label: '파일 업로드', value: 'file' },
         { label: '수동 잔고 입력', value: 'manual' },
+        { label: '증권사 CSV·XLSX 열 연결', value: 'broker' },
     ];
     watch(inputMethod, () => {
         review.value = null;
@@ -598,6 +601,32 @@
                     accountId: a.id,
                     kind: 'holdings',
                     asOf: body.asOf,
+                    accountAlias: a.alias,
+                };
+                reviewPage.value = 0;
+            }
+        });
+    }
+    async function previewBroker({ form, kind: importKind, asOf: importAsOf }) {
+        await run(async () => {
+            const a = activeAccount.value,
+                user = firebaseUser.value,
+                family = familyId.value;
+            if (!a || form.get('accountId') !== a.id)
+                throw new Error('선택 계좌가 변경되었습니다.');
+            importReceipt.value = null;
+            const result = await familyRequest('preview', form);
+            if (
+                firebaseUser.value === user &&
+                selectedAccount.value === a.id &&
+                familyId.value === family &&
+                inputMethod.value === 'broker'
+            ) {
+                review.value = {
+                    ...result,
+                    accountId: a.id,
+                    kind: importKind,
+                    asOf: importAsOf,
                     accountAlias: a.alias,
                 };
                 reviewPage.value = 0;
@@ -1582,8 +1611,14 @@
                             :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias}`"
                             :busy="busy"
                             @preview="previewManualHoldings" />
+                        <BrokerSpreadsheetForm
+                            v-if="inputMethod === 'broker' && !review"
+                            :key="`broker:${ownUid}:${familyId}:${selectedAccount}`"
+                            :account="activeAccount"
+                            :busy="busy"
+                            @preview="previewBroker" />
                         <p v-if="inputMethod === 'file'">
-                            표준 UTF-8 CSV(200행)와 토스 거래내역
+                            표준 UTF-8 CSV·XLSX(200행)와 토스 거래내역
                             PDF(10,000행)를 지원합니다. 파일은 2MB 이하이며
                             PDF는 200행씩 나누어 저장합니다. 잔고 CSV는 기준일의
                             전체 보유 종목을 넣으세요. 새 잔고는 해당 계좌의
@@ -1647,7 +1682,11 @@ date,symbol,quantity,amount,currency,type,externalId
                                     ref="fileInput"
                                     type="file"
                                     :accept="
-                                        format === 'toss-pdf' ? '.pdf' : '.csv'
+                                        format === 'toss-pdf'
+                                            ? '.pdf'
+                                            : format === 'standard-xlsx'
+                                              ? '.xlsx'
+                                              : '.csv'
                                     "
                                     required /></label
                             ><label v-if="format === 'toss-pdf'"

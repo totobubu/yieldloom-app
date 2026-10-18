@@ -40,17 +40,38 @@ export function buildBlogDraft(template, context, privacy = {}) {
               ? `${Math.floor(fire.firstMonth / 12)}년 ${fire.firstMonth % 12}개월 후 (가정)`
               : '[예상 시점 비공개]';
     const bodies = {
-        monthly: [
-            `[${month}] 월간 배당 결산`,
-            '이번 달 돌아보기',
-            `최근 12개월 저장 배당: ${money(baseline?.annualRecorded)}`,
-            `배당 기록이 있는 달: ${baseline?.observedMonths ?? 0}/12개월. 기록이 없는 달은 0원으로 확정하지 않았습니다.`,
-            '종목별 점검',
-            `최대 기록 기여 종목: ${symbol}`,
-            '전월·전년 비교: 배당 분석 화면에서 같은 기간의 기록 완전성을 확인한 뒤 작성합니다.',
-            '다음 달 계획',
-            '추가 투자금과 생활비 인출 계획을 점검합니다.',
-        ],
+        monthly: context.statement
+            ? [
+                  `[${month}] 월간 배당 결산`,
+                  `선택 월의 확인된 저장 배당: ${context.statement.recordCount ? money(context.statement.knownAmount) : '기록 없음'}`,
+                  `배당·취소 기록 ${context.statement.recordCount}건 · 금액 미확인 ${context.statement.unknownCount}건`,
+                  `자료 확인일: ${context.statement.asOf}`,
+                  ...(context.previousStatement
+                      ? [
+                            `비교 월: ${context.previousStatement.month}`,
+                            `저장 배당 증감: ${money(context.statementComparison?.difference)}`,
+                            `증감률: ${ratio(context.statementComparison?.percent)}`,
+                            context.statementComparison?.reason ||
+                                '동일 범위·통화의 저장 기록을 비교했습니다.',
+                        ]
+                      : [
+                            '이전 월 결산을 불러오면 같은 범위의 기록과 비교할 수 있습니다.',
+                        ]),
+                  '배당 취소를 차감한 저장 기록이며 실제 수령액·세후 금액·전체 지급 내역의 완전성을 확정하지 않습니다.',
+                  '다음 달 계획',
+                  '[기록 누락·분류·생활비와 재투자 계획 점검]',
+              ]
+            : [
+                  `[${month}] 월간 배당 결산`,
+                  '이번 달 돌아보기',
+                  `최근 12개월 저장 배당: ${money(baseline?.annualRecorded)}`,
+                  `배당 기록이 있는 달: ${baseline?.observedMonths ?? 0}/12개월. 기록이 없는 달은 0원으로 확정하지 않았습니다.`,
+                  '종목별 점검',
+                  `최대 기록 기여 종목: ${symbol}`,
+                  '전월·전년 비교: 배당 분석 화면에서 같은 기간의 기록 완전성을 확인한 뒤 작성합니다.',
+                  '다음 달 계획',
+                  '추가 투자금과 생활비 인출 계획을 점검합니다.',
+              ],
         fire: [
             `[${month}] 월 배당 목표와 FIRE 진행 상황`,
             '목표와 현재',

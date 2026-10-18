@@ -68,6 +68,10 @@ service cloud.firestore {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated();
     }
+    // Private monthly snapshots and alert settings use authenticated server APIs only.
+    match /portfolioPrivateUsers/{document=**} {
+      allow read, write: if false;
+    }
     match /portfolios/{userId}/{document=**} {
       allow read: if request.auth != null
               && request.auth.uid == userId;

@@ -83,7 +83,16 @@ export function createFamilyPortfolioClient({
         });
         params.sort();
         const mutation = body !== undefined;
-        if (mutation) invalidate('write');
+        // Inspection, preferences and private reports do not change the account ledger.
+        const invalidatesLedger =
+            mutation &&
+            ![
+                'inspectSpreadsheet',
+                'saveMonthlyStatement',
+                'deleteMonthlyStatement',
+                'savePreferences',
+            ].includes(action);
+        if (invalidatesLedger) invalidate('write');
         const generation = scope.generation;
         const active = () => session === scope && getUser() === user;
         const work = async (transportSignal) => {
@@ -157,7 +166,7 @@ export function createFamilyPortfolioClient({
             try {
                 return await work(signal);
             } finally {
-                if (active()) invalidate('write');
+                if (active() && invalidatesLedger) invalidate('write');
             }
         }
         const key = params.toString();

@@ -7,6 +7,7 @@
     import Tag from 'primevue/tag';
     import Dialog from 'primevue/dialog';
     import DividendCalendarExport from './DividendCalendarExport.vue';
+    import DividendAlerts from './DividendAlerts.vue';
     import { firebaseUser } from '@/services/firebaseClient';
     import { loadFamilyLedger } from '@/services/familyPortfolio';
     import { loadPortfolioSchedules } from '@/services/thumbnail/dividendSchedule';
@@ -411,6 +412,16 @@
                 option-value="value"
                 aria-label="배당 일정 날짜 기준" />
         </div>
+        <DividendAlerts
+            v-if="
+                mode === 'schedule' &&
+                !busy &&
+                !error &&
+                selectedAccounts.length
+            "
+            :key="`alerts:${firebaseUser?.uid}:${familyId}`"
+            :rows="rows"
+            :basis="basis" />
         <DividendCalendarExport
             v-if="
                 mode === 'schedule' &&

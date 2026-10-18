@@ -18,6 +18,8 @@ from api.family_portfolio_service import (DETAIL_NUMBERS, DETAIL_TEXT, Portfolio
 from api.server_cors import configure_cors
 from api.firebase_credential import parse_firebase_credential
 from api.portfolio_pdf_secret import seal_password, open_password
+from api.portfolio_spreadsheet import inspect_spreadsheet, mapped_spreadsheet, standard_xlsx
+from api.portfolio_statements import monthly_reports, change_monthly_report, alert_preferences, save_alert_preferences
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
@@ -258,6 +260,17 @@ def edit_account(db, uid, body, permission=False):
     return apply(db.transaction())
 
 
+def spreadsheet_inspection(db, uid):
+    _, data = account(db, request.form.get('accountId'), uid, True)
+    require(request.form.get('ownerId') == data['ownerId'] and request.form.get('institution') == data['institution'], '명의자·금융기관 선택이 계좌와 일치하지 않습니다.')
+    require(request.form.get('identityConfirmed') == 'true', '선택한 계좌의 자료임을 확인하세요.')
+    uploaded = request.files.get('file')
+    require(uploaded is not None, '파일을 선택하세요.')
+    content = uploaded.read(2 * 1024 * 1024 + 1)
+    require(0 < len(content) <= 2 * 1024 * 1024, '파일은 2MB 이하여야 합니다.', 413)
+    return inspect_spreadsheet(content, uploaded.filename or '', request.form)
+
+
 def preview(db, uid):
     ref, data = account(db, request.form.get('accountId'), uid, True)
     require(request.form.get('ownerId') == data['ownerId'] and request.form.get('institution') == data['institution'], '명의자·금융기관 선택이 계좌와 일치하지 않습니다.')
@@ -268,7 +281,12 @@ def preview(db, uid):
     content = uploaded.read(2 * 1024 * 1024 + 1)
     require(0 < len(content) <= 2 * 1024 * 1024, '파일은 2MB 이하여야 합니다.', 413)
     filename = str(uploaded.filename or '').lower()
-    if filename.endswith('.csv'):
+    if request.form.get('format') == 'broker-spreadsheet':
+        rows, source = mapped_spreadsheet(content, filename, request.form, kind, as_of)
+    elif filename.endswith('.xlsx') and request.form.get('format') == 'standard-xlsx':
+        rows = standard_xlsx(content, filename)
+        source = 'standard-xlsx-v1'
+    elif filename.endswith('.csv'):
         rows = parse_csv(content)
         source = 'standard-csv-v1'
     else:
@@ -302,6 +320,10 @@ def preview(db, uid):
     columns = {'date', 'symbol', 'quantity', 'amount', 'currency', 'type', 'externalId'} | DETAIL_NUMBERS | DETAIL_TEXT
     rows = [{key: value for key, value in row.items() if key in columns} for row in rows]
     file_hash = hashlib.sha256(content).hexdigest()
+    if source == 'standard-xlsx-v1' or source.startswith('broker-mapped-v1:'):
+        file_hash = digest([file_hash, source, kind, as_of, request.form.get('sheet', ''),
+                            request.form.get('headerRow', '1'), request.form.get('encoding', 'utf-8-sig'),
+                            request.form.get('mapping', ''), request.form.get('defaultCurrency', '')])
     batches = []
     for start in range(0, len(rows), 200):
         session = ref.collection('reviews').document()
@@ -476,6 +498,14 @@ def route():
             raise PortfolioError('로그인이 만료되었거나 유효하지 않습니다.', 401)
         uid = claims['uid']
         if request.method == 'GET':
+            if request.args.get('view') == 'preferences':
+                return jsonify(alert_preferences(db, uid, read_snapshot=read_snapshot))
+            if request.args.get('view') == 'statements':
+                try:
+                    ids = json.loads(request.args.get('accountIds', '[]'))
+                except (TypeError, ValueError):
+                    raise PortfolioError('계좌 범위를 확인하세요.')
+                return jsonify(monthly_reports(db, uid, {'familyId': request.args.get('familyId'), 'accountIds': ids, 'currency': request.args.get('currency')}, load=load, read_snapshot=read_snapshot))
             if request.args.get('accountId'):
                 ref, _ = account(db, request.args['accountId'], uid)
                 collection = 'legacyEntries' if request.args.get('legacy') == 'true' else 'entries'
@@ -493,6 +523,12 @@ def route():
         require(isinstance(body, dict), '요청 형식이 잘못되었습니다.')
         if action == 'preview':
             result = preview(db, uid)
+        elif action == 'inspectSpreadsheet':
+            result = spreadsheet_inspection(db, uid)
+        elif action in {'saveMonthlyStatement', 'deleteMonthlyStatement'}:
+            result = change_monthly_report(db, uid, body, load=load, read_snapshot=read_snapshot, now=now, transactional=firestore.transactional, delete=action == 'deleteMonthlyStatement')
+        elif action == 'savePreferences':
+            result = save_alert_preferences(db, uid, body, read_snapshot=read_snapshot, transactional=firestore.transactional)
         elif action == 'previewManualHoldings':
             result = preview_manual_holdings(db, uid, body)
         elif action == 'ensurePersonal':

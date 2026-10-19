@@ -342,16 +342,24 @@ def preview_manual_holdings(db, uid, body):
     expected = {'asOf': old.get('asOf'), 'importedAt': old.get('importedAt')} if old else None
     require(body.get('baseSnapshot') == expected, '잔고가 변경되었습니다. 계좌를 새로고침하고 다시 입력하세요.', 409)
     as_of = iso_date(body.get('asOf'))
-    require(not old or as_of > old['asOf'], '기존 잔고보다 새로운 기준일을 입력하세요.', 409)
+    correction = body.get('correction') is True
+    reason = text(body.get('correctionReason'), '정정 사유', 200) if correction else None
+    if correction:
+        require(old and as_of == old['asOf'], '정정은 현재 잔고와 같은 기준일만 가능합니다.', 409)
+    else:
+        require(not old or as_of > old['asOf'], '기존 잔고보다 새로운 기준일을 입력하세요.', 409)
     rows, errors = validate_rows(body.get('rows'), 'holdings', as_of)
     require(not errors, '입력 내용을 확인하세요: ' + json.dumps(errors, ensure_ascii=False))
+    require(not correction or rows != old['rows'], '변경된 잔고가 없습니다.')
     base_hash = digest(old)
     session = ref.collection('reviews').document()
     session.set({'uid': uid, 'rows': rows, 'kind': 'holdings', 'asOf': as_of,
                  'source': 'manual-holdings-v1', 'baseSnapshotHash': base_hash,
-                 'fileHash': digest(['manual-holdings-v1', as_of, rows, base_hash]),
+                 'correction': correction, 'correctionReason': reason,
+                 'fileHash': digest(['manual-holdings-v1', as_of, rows, base_hash, correction, reason]),
                  'expiresAt': now() + timedelta(hours=1)})
-    return {'reviewId': session.id, 'rows': rows, 'errors': [], 'source': 'manual-holdings-v1'}
+    return {'reviewId': session.id, 'rows': rows, 'errors': [], 'source': 'manual-holdings-v1',
+            'correction': correction, 'correctionReason': reason}
 
 
 def save_pdf_password(db, uid, body):
@@ -413,10 +421,23 @@ def commit(db, uid, body):
         else:
             snapshot = {'rows': rows, 'asOf': review['asOf'], 'source': review['source'], 'importedAt': now().isoformat()}
             old = data.get('snapshot')
-            require(not old or old['asOf'] != snapshot['asOf'] or old['rows'] == rows, '같은 기준일의 잔고가 다릅니다. 기존 자료를 확인하세요.', 409)
-            if not old or old['asOf'] < snapshot['asOf']:
+            correction = review.get('correction') is True and review['source'] == 'manual-holdings-v1'
+            require(not correction or (old and old['asOf'] == snapshot['asOf'] and old['rows'] != rows),
+                    '정정 기준일과 변경 내용을 다시 확인하세요.', 409)
+            require(correction or not old or old['asOf'] != snapshot['asOf'] or old['rows'] == rows, '같은 기준일의 잔고가 다릅니다. 기존 자료를 확인하세요.', 409)
+            replaces_current = not old or old['asOf'] < snapshot['asOf'] or correction
+            snapshot['revision'] = data.get('snapshotRevision', 0) + 1
+            if correction:
+                snapshot.update({'correctionReason': review['correctionReason'], 'changedBy': uid})
+            if replaces_current:
                 data['snapshot'] = snapshot
-            tx.set(ref.collection('snapshots').document(review['fileHash']), snapshot)
+            data['snapshotRevision'] = snapshot['revision']
+            # Store before/after only in the immutable history, never nest it in
+            # the account's current snapshot or expose it in account overviews.
+            tx.set(ref.collection('snapshots').document(review['fileHash']), {
+                **snapshot, 'previous': old if replaces_current else None,
+                'previousAsOf': old.get('asOf') if old and replaces_current else None,
+                'changedBy': uid, 'replacedCurrent': replaces_current})
             inserted = len(rows)
         if not data.get('asOf') or data['asOf'] <= review['asOf']:
             data.update({'asOf': review['asOf'], 'source': review['source']})
@@ -508,6 +529,22 @@ def route():
                 return jsonify(monthly_reports(db, uid, {'familyId': request.args.get('familyId'), 'accountIds': ids, 'currency': request.args.get('currency')}, load=load, read_snapshot=read_snapshot))
             if request.args.get('accountId'):
                 ref, _ = account(db, request.args['accountId'], uid)
+                if request.args.get('view') == 'snapshotHistory':
+                    collection = ref.collection('snapshots')
+                    snapshot_id = request.args.get('snapshotId')
+                    if snapshot_id:
+                        saved = read_snapshot(collection.document(identifier(snapshot_id)))
+                        require(saved.exists, '잔고 이력이 없습니다.', 404)
+                        return jsonify({'snapshot': {'id': saved.id, **saved.to_dict()}})
+                    query = collection.order_by('__name__')
+                    if request.args.get('cursor'):
+                        cursor = read_snapshot(collection.document(identifier(request.args['cursor'])))
+                        require(cursor.exists, '조회 위치가 유효하지 않습니다.')
+                        query = query.start_after(cursor)
+                    query = query.select(['asOf', 'source', 'importedAt', 'revision', 'correctionReason', 'previousAsOf', 'replacedCurrent'])
+                    history = list(read_stream(query.limit(21)))
+                    return jsonify({'snapshots': [{'id': s.id, **s.to_dict()} for s in history[:20]],
+                                    'nextCursor': history[19].id if len(history) > 20 else None})
                 collection = 'legacyEntries' if request.args.get('legacy') == 'true' else 'entries'
                 query = ref.collection(collection).order_by('__name__')
                 if request.args.get('cursor'):

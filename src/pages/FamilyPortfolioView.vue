@@ -7,6 +7,8 @@
     import PortfolioExportDialog from '@/components/portfolio/PortfolioExportDialog.vue';
     import PortfolioImportResult from '@/components/portfolio/PortfolioImportResult.vue';
     import ManualHoldingsForm from '@/components/portfolio/ManualHoldingsForm.vue';
+    import HoldingsChanges from '@/components/portfolio/HoldingsChanges.vue';
+    import SnapshotHistory from '@/components/portfolio/SnapshotHistory.vue';
     import BrokerSpreadsheetForm from '@/components/portfolio/BrokerSpreadsheetForm.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { useRoute, useRouter } from 'vue-router';
@@ -1611,6 +1613,11 @@
                             :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias}`"
                             :busy="busy"
                             @preview="previewManualHoldings" />
+                        <SnapshotHistory
+                            v-if="inputMethod === 'manual' && !review"
+                            :key="`history:${ownUid}:${familyId}:${selectedAccount}`"
+                            :account-id="activeAccount.id"
+                            :revision="activeAccount.snapshotRevision || ''" />
                         <BrokerSpreadsheetForm
                             v-if="inputMethod === 'broker' && !review"
                             :key="`broker:${ownUid}:${familyId}:${selectedAccount}`"
@@ -1754,6 +1761,14 @@ date,symbol,quantity,amount,currency,type,externalId
                                     대체합니다. 빠진 종목은 새 잔고에서
                                     제외됩니다. 기존 거래는 유지됩니다.
                                 </Message>
+                                <p v-if="review.correction">
+                                    같은 기준일 정정 · 사유:
+                                    {{ review.correctionReason }}. 변경 전후
+                                    자료를 이력에 보관합니다.
+                                </p>
+                                <HoldingsChanges
+                                    :before="activeAccount.snapshot?.rows || []"
+                                    :after="review.rows" />
                                 <Button
                                     type="button"
                                     label="수동 입력 다시 작성"

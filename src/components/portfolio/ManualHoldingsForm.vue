@@ -15,6 +15,13 @@
         asOf = ref(''),
         confirmed = ref(false),
         error = ref('');
+    const correction = ref(false),
+        correctionReason = ref('');
+    watch(correction, (value) => {
+        asOf.value = value ? props.snapshot?.asOf || '' : '';
+        confirmed.value = false;
+        correctionReason.value = '';
+    });
     let nextId = 0;
     const emptyRow = () => ({
         id: ++nextId,
@@ -32,6 +39,8 @@
             asOf.value = '';
             confirmed.value = false;
             error.value = '';
+            correction.value = false;
+            correctionReason.value = '';
         },
         { immediate: true }
     );
@@ -41,12 +50,27 @@
             error.value = '선택 계좌의 전체 잔고임을 확인하세요.';
             return;
         }
-        if (props.snapshot && asOf.value <= props.snapshot.asOf) {
+        if (
+            correction.value &&
+            (!props.snapshot ||
+                asOf.value !== props.snapshot.asOf ||
+                !correctionReason.value.trim())
+        ) {
+            error.value = '기존과 같은 기준일과 정정 사유를 확인하세요.';
+            return;
+        }
+        if (
+            !correction.value &&
+            props.snapshot &&
+            asOf.value <= props.snapshot.asOf
+        ) {
             error.value = '기존 잔고보다 새로운 기준일을 입력하세요.';
             return;
         }
         emit('preview', {
             asOf: asOf.value,
+            correction: correction.value,
+            correctionReason: correctionReason.value.trim(),
             baseSnapshot: props.snapshot
                 ? {
                       asOf: props.snapshot.asOf,
@@ -90,8 +114,24 @@
         }}</Message>
         <fieldset :disabled="busy">
             <legend>새 기준일의 전체 보유 목록</legend>
+            <label v-if="snapshot" class="complete-confirmation"
+                ><input v-model="correction" type="checkbox" /> 현재 잔고와 같은
+                기준일의 오류 정정 (변경 전후 이력 보관)</label
+            >
+            <label v-if="correction"
+                >정정 사유<InputText
+                    v-model="correctionReason"
+                    required
+                    maxlength="200"
+                    placeholder="수량 오입력 등 · 개인정보는 쓰지 마세요"
+            /></label>
             <label for="manual-asof">수동 잔고 기준일</label>
-            <InputText id="manual-asof" v-model="asOf" type="date" required />
+            <InputText
+                id="manual-asof"
+                v-model="asOf"
+                type="date"
+                required
+                :readonly="correction" />
             <div v-for="(row, index) in rows" :key="row.id" class="holding-row">
                 <label :for="`manual-symbol-${row.id}`"
                     >{{ index + 1 }}행 종목

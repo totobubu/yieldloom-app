@@ -61,7 +61,7 @@ class Collection:
         return self
 
     def select(self, fields):
-        query = Collection(self.db, self.path, self.predicate, self.cap)
+        query = copy.copy(self)
         query.fields = fields
         return query
 
@@ -69,7 +69,9 @@ class Collection:
         return PagedCollection(self.db, self.path, snap.reference.path)
 
     def limit(self, count):
-        return Collection(self.db, self.path, self.predicate, count)
+        query = copy.copy(self)
+        query.cap = count
+        return query
 
     def stream(self):
         paths = [path for path, value in sorted(self.db.data.items()) if path.rsplit('/', 1)[0] == self.path and self.predicate(value)]
@@ -90,7 +92,11 @@ class PagedCollection(Collection):
         return self
 
     def stream(self):
-        return iter([Snapshot(Ref(self.db, path)) for path in sorted(self.db.data) if path.rsplit('/', 1)[0] == self.path and path > self.after][:self.cap])
+        snapshots = [Snapshot(Ref(self.db, path)) for path in sorted(self.db.data) if path.rsplit('/', 1)[0] == self.path and path > self.after][:self.cap]
+        if hasattr(self, 'fields'):
+            for snap in snapshots:
+                snap.data = {field: snap.data[field] for field in self.fields if field in snap.data}
+        return iter(snapshots)
 
 
 class Transaction:
@@ -183,6 +189,67 @@ class FamilyApiTest(unittest.TestCase):
         self.assertEqual({key: value for key, value in self.db.data.items() if '/entries/' in key}, entries_before)
         self.assertEqual(self.manual(as_of='2026-10-16').status_code, 409)
         self.assertEqual(self.manual(as_of='2026-10-15').status_code, 409)
+
+    def test_same_date_correction_preserves_history_and_is_idempotent(self):
+        initial = self.manual().json
+        self.assertEqual(self.commit(initial).status_code, 200)
+        before = copy.deepcopy(self.db.data[f'investmentAccounts/{self.account}']['snapshot'])
+        changed = [{'date': '2026-10-16', 'symbol': 'AAPL', 'quantity': 2, 'amount': 400, 'currency': 'USD'}]
+        self.assertEqual(self.manual(rows=changed, correction=True).status_code, 400)
+        self.assertEqual(self.manual(rows=changed, correction=True, correctionReason='수량 정정', as_of='2026-10-17').status_code, 409)
+        self.assertEqual(self.manual(correction=True, correctionReason='변경 없음').status_code, 400)
+        review = self.manual(rows=changed, correction=True, correctionReason='수량 정정').json
+        saved = self.commit(review)
+        self.assertEqual(saved.status_code, 200, saved.json)
+        # Same pre-existing account/read/review/receipt path; no extra DB reads.
+        self.assertEqual(saved.headers['X-Portfolio-Document-Reads'], '5')
+        self.assertTrue(self.commit(review).json['alreadyImported'])
+        current = self.db.data[f'investmentAccounts/{self.account}']['snapshot']
+        self.assertEqual(current['rows'][0]['quantity'], 2)
+        self.assertEqual(current['revision'], 2)
+        self.assertNotIn('previous', current)
+        history = self.get(f'accountId={self.account}&view=snapshotHistory')
+        self.assertEqual(history.status_code, 200)
+        self.assertEqual(len(history.json['snapshots']), 2)
+        self.assertTrue(all('rows' not in row and 'previous' not in row for row in history.json['snapshots']))
+        corrected = next(row for row in history.json['snapshots'] if row['revision'] == 2)
+        detail = self.get(f'accountId={self.account}&view=snapshotHistory&snapshotId={corrected["id"]}').json['snapshot']
+        self.assertEqual(detail['previous'], before)
+        self.assertEqual(detail['correctionReason'], '수량 정정')
+        self.assertEqual(detail['changedBy'], 'alice')
+        self.assertEqual(detail['rows'][0]['quantity'], 2)
+        self.assertEqual(self.get(f'accountId={self.account}&view=snapshotHistory', 'outsider').status_code, 403)
+
+    def test_correction_rechecks_concurrent_changes_and_permissions(self):
+        self.commit(self.manual().json)
+        changed = [{'date': '2026-10-16', 'symbol': 'AAPL', 'quantity': 2, 'amount': 400, 'currency': 'USD'}]
+        a = self.manual(rows=changed, correction=True, correctionReason='첫 정정').json
+        b = self.manual(rows=changed, correction=True, correctionReason='경합 정정').json
+        self.assertEqual(self.commit(a).status_code, 200)
+        self.assertEqual(self.commit(b).status_code, 409)
+        self.join_bob()
+        self.post('grant', {'accountId': self.account, 'uid': 'bob', 'role': 'editor'})
+        changed[0]['quantity'] = 3
+        review = self.manual(rows=changed, correction=True, correctionReason='권한 확인', uid='bob').json
+        self.post('grant', {'accountId': self.account, 'uid': 'bob', 'role': 'viewer'})
+        self.assertEqual(self.commit(review, uid='bob').status_code, 403)
+        self.assertEqual(self.manual(rows=changed, correction=True, correctionReason='읽기 전용', uid='bob').status_code, 403)
+        self.assertEqual(self.get(f'accountId={self.account}&view=snapshotHistory', 'bob').status_code, 200)
+        self.post('grant', {'accountId': self.account, 'uid': 'bob', 'role': 'none'})
+        self.assertEqual(self.get(f'accountId={self.account}&view=snapshotHistory', 'bob').status_code, 403)
+
+    def test_snapshot_history_paginates_and_rejects_foreign_detail_ids(self):
+        for i in range(23):
+            self.db.data[f'investmentAccounts/{self.account}/snapshots/snapshot{i:02}'] = {
+                'asOf': '2026-10-16', 'rows': [], 'revision': i, 'previous': {'rows': []}}
+        first = self.get(f'accountId={self.account}&view=snapshotHistory').json
+        second = self.get(f'accountId={self.account}&view=snapshotHistory&cursor={first["nextCursor"]}').json
+        self.assertEqual(len(first['snapshots']), 20)
+        self.assertEqual(len(second['snapshots']), 3)
+        self.assertIsNone(second['nextCursor'])
+        self.assertTrue(all('rows' not in row and 'previous' not in row for row in first['snapshots'] + second['snapshots']))
+        self.assertEqual(self.get(f'accountId={self.account}&view=snapshotHistory&snapshotId=missing').status_code, 404)
+        self.assertEqual(self.get(f'accountId={self.account}&view=snapshotHistory&cursor=missing').status_code, 400)
 
     def test_manual_holdings_requires_complete_confirmation_valid_rows_and_editor(self):
         self.assertEqual(self.manual(completeSnapshotConfirmed=False).status_code, 400)

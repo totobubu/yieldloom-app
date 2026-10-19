@@ -1,5 +1,6 @@
 <script setup>
-    import { computed, ref } from 'vue';
+    import { computed, ref, watch } from 'vue';
+    import { accountXirr } from '@/services/portfolioXirr.js';
     import Message from 'primevue/message';
     import {
         advancedLedgerInsights,
@@ -14,6 +15,31 @@
         today: { type: String, required: true },
     });
     const confirmed = ref(false);
+    const xirrConfirmed = ref(false);
+    watch(
+        () => [
+            props.entries,
+            props.accounts,
+            props.currency,
+            props.month,
+            props.today,
+        ],
+        () => {
+            confirmed.value = false;
+            xirrConfirmed.value = false;
+        }
+    );
+    const xirr = computed(() =>
+        props.accounts.map((account) => ({
+            id: account.id,
+            alias: account.alias,
+            ...accountXirr(props.entries, account, {
+                currency: props.currency,
+                today: props.today,
+                confirmed: xirrConfirmed.value,
+            }),
+        }))
+    );
     const report = computed(() => advancedLedgerInsights(props.entries, props));
     const closed = computed(() =>
         closedLedgerResults(props.entries, props.positions, props.accounts, {
@@ -89,6 +115,30 @@
             계산합니다. 기록 없는 달을 0원으로 만들지 않으며 기록 자체의
             완전성을 보장하지 않습니다.
         </p>
+        <h4>계좌 현금흐름 수익률 · XIRR</h4>
+        <label
+            ><input v-model="xirrConfirmed" type="checkbox" /> 계좌 개설 시점의
+            기초 자산은 0이며, 잔고 기준일까지의 모든 외부 입출금과 현금을
+            포함한 전체 잔고 평가액을 확인했습니다.</label
+        >
+        <p>
+            선택 월의 수익률이 아니라 계좌 개설부터 잔고 기준일까지의 연환산
+            수익률입니다. 외부 입금은 투자 유출, 외부 출금과 마지막 전체
+            평가액은 회수 유입으로 계산합니다. 계좌 내부 배당·매매는 중복
+            가산하지 않습니다. 외부 입금·외부 출금으로 명시된 기록만 사용하며,
+            미분류·환전·증권 이동·통화 혼재·복수 해 가능성은 계산을 보류합니다.
+            현재 시세 대신 업로드한 평가액을 사용합니다.
+        </p>
+        <ul v-if="xirrConfirmed" aria-label="계좌 XIRR 결과">
+            <li v-for="row in xirr" :key="row.id">
+                {{ row.alias }} ·
+                {{
+                    row.available
+                        ? `${format(row.percent)}% · ${row.start} ~ ${row.end}`
+                        : row.reason
+                }}
+            </li>
+        </ul>
         <h4>완전 청산 거래의 정산액 기준 손익</h4>
         <label
             ><input v-model="confirmed" type="checkbox" /> 계좌 잔고

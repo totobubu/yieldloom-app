@@ -24,9 +24,10 @@ jobs:
                   cache: npm
             - run: npm ci --no-audit --no-fund
             - run: npm run lint:check
-            - run: node --test tests/*.test.mjs
             # build includes the Vue/TypeScript check and prerender validation.
+            # Asset contract tests below read the generated dist/ticker-index.json.
             - run: npm run build
+            - run: node --test tests/*.test.mjs
     portfolio-api:
         runs-on: ubuntu-latest
         timeout-minutes: 15

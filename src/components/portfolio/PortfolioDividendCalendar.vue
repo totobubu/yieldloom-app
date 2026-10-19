@@ -8,6 +8,7 @@
     import Dialog from 'primevue/dialog';
     import DividendCalendarExport from './DividendCalendarExport.vue';
     import DividendAlerts from './DividendAlerts.vue';
+    import DividendReconciliation from './DividendReconciliation.vue';
     import { firebaseUser } from '@/services/firebaseClient';
     import { loadFamilyLedger } from '@/services/familyPortfolio';
     import { loadPortfolioSchedules } from '@/services/thumbnail/dividendSchedule';
@@ -46,6 +47,7 @@
     const modeOptions = [
         { label: '공시 일정·예상', value: 'schedule' },
         { label: '저장된 배당 거래', value: 'recorded' },
+        { label: '예상·기록 대조', value: 'reconcile' },
     ];
     const viewOptions = [
         { label: '월간', value: 'month' },
@@ -140,10 +142,18 @@
         [...new Set(positions.value.map((p) => p.asOf))].sort()
     );
     const busy = computed(() =>
-        mode.value === 'schedule' ? scheduleLoading.value : ledgerLoading.value
+        mode.value === 'reconcile'
+            ? scheduleLoading.value || ledgerLoading.value
+            : mode.value === 'schedule'
+              ? scheduleLoading.value
+              : ledgerLoading.value
     );
     const error = computed(() =>
-        mode.value === 'schedule' ? scheduleError.value : ledgerError.value
+        mode.value === 'reconcile'
+            ? scheduleError.value || ledgerError.value
+            : mode.value === 'schedule'
+              ? scheduleError.value
+              : ledgerError.value
     );
     const stateNames = {
         announced: '공시 일정',
@@ -244,22 +254,45 @@
             )
                 accountId.value = '';
             clearLedger();
-            loadSchedules();
-            if (mode.value === 'recorded') loadRecorded();
+            if (mode.value !== 'recorded') loadSchedules();
+            if (mode.value !== 'schedule') loadRecorded();
         },
         { immediate: true, flush: 'sync' }
     );
-    watch([mode, accountId], () => {
+    watch(mode, () => {
         detailDate.value = '';
         clearLedger();
-        if (mode.value === 'recorded') loadRecorded();
-        else loadSchedules();
+        if (
+            mode.value !== 'recorded' &&
+            positions.value.some(
+                (p) => p.symbol !== 'CASH' && !schedules.value[p.symbol]
+            )
+        )
+            loadSchedules();
+        if (mode.value !== 'schedule') loadRecorded();
+    });
+    watch(accountId, () => {
+        if (mode.value !== 'recorded') loadSchedules();
+        clearLedger();
+        if (mode.value !== 'schedule') loadRecorded();
     });
     onScopeDispose(() => {
         scheduleSequence++;
         scheduleController?.abort();
         clearLedger();
     });
+    async function refreshData() {
+        if (mode.value === 'reconcile')
+            await Promise.all([loadSchedules(true), loadRecorded(true)]);
+        else if (mode.value === 'schedule') await loadSchedules(true);
+        else await loadRecorded(true);
+    }
+    const reconciliationSchedules = computed(
+        () =>
+            portfolioScheduleRows(positions.value, schedules.value, {
+                basis: 'payable',
+            }).rows
+    );
     function move(direction) {
         const year = Number(period.value.slice(0, 4)),
             month = Number(period.value.slice(5));
@@ -291,11 +324,7 @@
                 severity="secondary"
                 outlined
                 :disabled="busy"
-                @click="
-                    mode === 'schedule'
-                        ? loadSchedules(true)
-                        : loadRecorded(true)
-                " />
+                @click="refreshData()" />
         </header>
         <div class="calendar-toolbar">
             <SelectButton
@@ -346,17 +375,10 @@
         >
         <Message v-if="error" severity="error" :closable="false"
             >{{ error }}
-            <Button
-                label="배당 자료 다시 시도"
-                text
-                @click="
-                    mode === 'schedule'
-                        ? loadSchedules(true)
-                        : loadRecorded(true)
-                "
+            <Button label="배당 자료 다시 시도" text @click="refreshData()"
         /></Message>
         <details
-            v-if="mode === 'schedule' && Object.keys(scheduleErrors).length"
+            v-if="mode !== 'recorded' && Object.keys(scheduleErrors).length"
             class="calendar-warning">
             <summary>
                 일정을 확인하지 못한 종목
@@ -412,203 +434,221 @@
                 option-value="value"
                 aria-label="배당 일정 날짜 기준" />
         </div>
-        <DividendAlerts
-            v-if="
-                mode === 'schedule' &&
-                !busy &&
-                !error &&
-                selectedAccounts.length
-            "
-            :key="`alerts:${firebaseUser?.uid}:${familyId}`"
-            :rows="rows"
-            :basis="basis" />
-        <DividendCalendarExport
-            v-if="
-                mode === 'schedule' &&
-                !busy &&
-                !error &&
-                selectedAccounts.length
-            "
-            :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${currency}:${period}:${view}:${basis}`"
-            :rows="rangeRows"
-            :basis="basis"
-            :period="view === 'year' ? period.slice(0, 4) : period" />
-        <p v-if="busy" role="status">배당 자료를 확인하고 있습니다.</p>
-        <div v-else class="calendar-totals">
-            <article v-for="total in totals" :key="total.currency">
-                <span
-                    >{{
-                        mode === 'schedule'
-                            ? '확인된 세전 예상액'
-                            : '저장된 거래금액'
-                    }}
-                    · {{ total.currency }}</span
-                ><strong>{{
-                    total.known
-                        ? money(total.amount, total.currency)
-                        : '금액 미확인'
-                }}</strong
-                ><small
-                    >금액 확인 {{ total.known }}건 · 미확인
-                    {{ total.unknown }}건</small
-                >
-            </article>
-            <p v-if="!rangeRows.length">
-                이 기간에 확인된 자료가 없습니다. 배당이 0이라는 뜻은 아닙니다.
-            </p>
-        </div>
-        <template v-if="!busy">
-            <div v-if="view === 'year'" class="year-timeline">
-                <button
-                    v-for="month in yearMonths"
-                    :key="month.month"
-                    class="year-month"
-                    @click="
-                        period = month.month;
-                        view = 'month';
-                    ">
-                    <b>{{ month.label }}</b
-                    ><span>{{
-                        month.count ? `${month.count}건` : '확인 자료 없음'
-                    }}</span
-                    ><span v-for="total in month.totals" :key="total.currency"
+        <DividendReconciliation
+            v-if="mode === 'reconcile' && !busy && !error"
+            :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${currency}:${period}:${view}:${scheduleSequence}:${ledgerSequence}`"
+            :schedules="reconciliationSchedules"
+            :recorded="recorded"
+            :accounts="selectedAccounts"
+            :period="view === 'year' ? period.slice(0, 4) : period"
+            :currency="currency" />
+        <p v-if="mode === 'reconcile' && busy" role="status">
+            배당 대조 자료를 확인하고 있습니다.
+        </p>
+        <template v-if="mode !== 'reconcile'">
+            <DividendAlerts
+                v-if="
+                    mode === 'schedule' &&
+                    !busy &&
+                    !error &&
+                    selectedAccounts.length
+                "
+                :key="`alerts:${firebaseUser?.uid}:${familyId}`"
+                :rows="rows"
+                :basis="basis" />
+            <DividendCalendarExport
+                v-if="
+                    mode === 'schedule' &&
+                    !busy &&
+                    !error &&
+                    selectedAccounts.length
+                "
+                :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${currency}:${period}:${view}:${basis}`"
+                :rows="rangeRows"
+                :basis="basis"
+                :period="view === 'year' ? period.slice(0, 4) : period" />
+            <p v-if="busy" role="status">배당 자료를 확인하고 있습니다.</p>
+            <div v-else class="calendar-totals">
+                <article v-for="total in totals" :key="total.currency">
+                    <span
                         >{{
-                            total.known
-                                ? money(total.amount, total.currency)
-                                : `${total.currency} 금액 미확인`
-                        }}<small v-if="total.unknown">
-                            · 미확인 {{ total.unknown }}건</small
-                        ></span
+                            mode === 'schedule'
+                                ? '확인된 세전 예상액'
+                                : '저장된 거래금액'
+                        }}
+                        · {{ total.currency }}</span
+                    ><strong>{{
+                        total.known
+                            ? money(total.amount, total.currency)
+                            : '금액 미확인'
+                    }}</strong
+                    ><small
+                        >금액 확인 {{ total.known }}건 · 미확인
+                        {{ total.unknown }}건</small
                     >
-                </button>
+                </article>
+                <p v-if="!rangeRows.length">
+                    이 기간에 확인된 자료가 없습니다. 배당이 0이라는 뜻은
+                    아닙니다.
+                </p>
             </div>
-            <div v-else class="calendar-body">
-                <div class="month-grid" aria-label="배당 월간 달력">
-                    <div
-                        v-for="weekday in [
-                            '일',
-                            '월',
-                            '화',
-                            '수',
-                            '목',
-                            '금',
-                            '토',
-                        ]"
-                        :key="weekday"
-                        class="weekday">
-                        {{ weekday }}
-                    </div>
+            <template v-if="!busy">
+                <div v-if="view === 'year'" class="year-timeline">
                     <button
-                        v-for="day in days"
-                        :key="day.date"
-                        class="day-cell"
-                        :class="{
-                            'outside-month': !day.inMonth,
-                            today: day.date === calendarToday(),
-                        }"
-                        :aria-label="`${day.date} 배당 일정 ${onDate(day.date).length}건`"
-                        @click="detailDate = day.date">
-                        <b>{{ day.day }}</b
+                        v-for="month in yearMonths"
+                        :key="month.month"
+                        class="year-month"
+                        @click="
+                            period = month.month;
+                            view = 'month';
+                        ">
+                        <b>{{ month.label }}</b
+                        ><span>{{
+                            month.count ? `${month.count}건` : '확인 자료 없음'
+                        }}</span
                         ><span
-                            v-for="event in onDate(day.date).slice(0, 2)"
-                            :key="event.id"
-                            class="day-event"
-                            :class="event.status"
-                            >{{ event.symbol
-                            }}<small>{{
-                                stateNames[event.status]
-                            }}</small></span
-                        ><small v-if="onDate(day.date).length > 2"
-                            >+{{ onDate(day.date).length - 2 }}건 더 보기</small
+                            v-for="total in month.totals"
+                            :key="total.currency"
+                            >{{
+                                total.known
+                                    ? money(total.amount, total.currency)
+                                    : `${total.currency} 금액 미확인`
+                            }}<small v-if="total.unknown">
+                                · 미확인 {{ total.unknown }}건</small
+                            ></span
                         >
                     </button>
                 </div>
-                <section class="month-events" aria-label="월간 배당 목록">
-                    <h3>이번 달 일정 {{ rangeRows.length }}건</h3>
-                    <button
-                        v-for="event in rangeRows.slice(0, visibleCount)"
-                        :key="event.id"
-                        class="event-row"
-                        @click="detailDate = event.date">
-                        <div>
-                            <b>{{ event.symbol }}</b
-                            ><Tag
-                                :value="stateNames[event.status]"
-                                :severity="
-                                    event.status === 'forecast' ||
-                                    event.status === 'review'
-                                        ? 'warn'
-                                        : 'info'
-                                " />
+                <div v-else class="calendar-body">
+                    <div class="month-grid" aria-label="배당 월간 달력">
+                        <div
+                            v-for="weekday in [
+                                '일',
+                                '월',
+                                '화',
+                                '수',
+                                '목',
+                                '금',
+                                '토',
+                            ]"
+                            :key="weekday"
+                            class="weekday">
+                            {{ weekday }}
                         </div>
-                        <span
-                            >{{ event.date }} ·
-                            {{ accountLabel(event.accountId) }}</span
-                        ><strong>{{
-                            money(event.amount, event.currency)
-                        }}</strong>
-                    </button>
-                    <Button
-                        v-if="rangeRows.length > visibleCount"
-                        :label="`배당 목록 더 보기 (${visibleCount}/${rangeRows.length})`"
-                        severity="secondary"
-                        outlined
-                        @click="visibleCount += 50" />
-                    <p v-if="!rangeRows.length" class="calendar-meta">
-                        계좌·통화·조회 기간을 확인해 주세요.
-                    </p>
-                </section>
-            </div>
-        </template>
-        <Dialog
-            :visible="!!detailDate"
-            modal
-            :header="`${detailDate} 배당 상세`"
-            :style="{ width: '38rem', maxWidth: '94vw' }"
-            @update:visible="detailDate = ''">
-            <article
-                v-for="event in onDate(detailDate)"
-                :key="event.id"
-                class="event-detail">
-                <div>
-                    <h3>
-                        {{ event.symbol }} · {{ accountLabel(event.accountId) }}
-                    </h3>
-                    <Tag :value="stateNames[event.status]" />
+                        <button
+                            v-for="day in days"
+                            :key="day.date"
+                            class="day-cell"
+                            :class="{
+                                'outside-month': !day.inMonth,
+                                today: day.date === calendarToday(),
+                            }"
+                            :aria-label="`${day.date} 배당 일정 ${onDate(day.date).length}건`"
+                            @click="detailDate = day.date">
+                            <b>{{ day.day }}</b
+                            ><span
+                                v-for="event in onDate(day.date).slice(0, 2)"
+                                :key="event.id"
+                                class="day-event"
+                                :class="event.status"
+                                >{{ event.symbol
+                                }}<small>{{
+                                    stateNames[event.status]
+                                }}</small></span
+                            ><small v-if="onDate(day.date).length > 2"
+                                >+{{ onDate(day.date).length - 2 }}건 더
+                                보기</small
+                            >
+                        </button>
+                    </div>
+                    <section class="month-events" aria-label="월간 배당 목록">
+                        <h3>이번 달 일정 {{ rangeRows.length }}건</h3>
+                        <button
+                            v-for="event in rangeRows.slice(0, visibleCount)"
+                            :key="event.id"
+                            class="event-row"
+                            @click="detailDate = event.date">
+                            <div>
+                                <b>{{ event.symbol }}</b
+                                ><Tag
+                                    :value="stateNames[event.status]"
+                                    :severity="
+                                        event.status === 'forecast' ||
+                                        event.status === 'review'
+                                            ? 'warn'
+                                            : 'info'
+                                    " />
+                            </div>
+                            <span
+                                >{{ event.date }} ·
+                                {{ accountLabel(event.accountId) }}</span
+                            ><strong>{{
+                                money(event.amount, event.currency)
+                            }}</strong>
+                        </button>
+                        <Button
+                            v-if="rangeRows.length > visibleCount"
+                            :label="`배당 목록 더 보기 (${visibleCount}/${rangeRows.length})`"
+                            severity="secondary"
+                            outlined
+                            @click="visibleCount += 50" />
+                        <p v-if="!rangeRows.length" class="calendar-meta">
+                            계좌·통화·조회 기간을 확인해 주세요.
+                        </p>
+                    </section>
                 </div>
-                <strong>{{ money(event.amount, event.currency) }}</strong>
-                <p>{{ event.notice }}</p>
-                <dl>
-                    <template v-if="event.exDate"
-                        ><dt>배당락일 / 공시 지급일</dt>
-                        <dd>
-                            {{ event.exDate }} /
-                            {{ event.payableDate || '미확인' }}
-                        </dd></template
-                    >
-                    <dt>자료 기준일</dt>
-                    <dd>{{ event.quantityAsOf || '미확인' }}</dd>
-                    <template v-if="event.quantity !== undefined"
-                        ><dt>자료 수량 / 주당 배당금</dt>
-                        <dd>
-                            {{ event.quantity }}주 /
-                            {{ money(event.perShare, event.currency) }}
-                        </dd></template
-                    >
-                </dl>
-                <a
-                    v-if="safeSource(event.sourceUrl)"
-                    :href="event.sourceUrl"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >공시 원문 확인
-                    <i class="pi pi-external-link" aria-hidden="true"
-                /></a>
-            </article>
-            <p v-if="!onDate(detailDate).length">
-                이 날짜에 확인된 자료가 없습니다.
-            </p>
-        </Dialog>
+            </template>
+            <Dialog
+                :visible="!!detailDate"
+                modal
+                :header="`${detailDate} 배당 상세`"
+                :style="{ width: '38rem', maxWidth: '94vw' }"
+                @update:visible="detailDate = ''">
+                <article
+                    v-for="event in onDate(detailDate)"
+                    :key="event.id"
+                    class="event-detail">
+                    <div>
+                        <h3>
+                            {{ event.symbol }} ·
+                            {{ accountLabel(event.accountId) }}
+                        </h3>
+                        <Tag :value="stateNames[event.status]" />
+                    </div>
+                    <strong>{{ money(event.amount, event.currency) }}</strong>
+                    <p>{{ event.notice }}</p>
+                    <dl>
+                        <template v-if="event.exDate"
+                            ><dt>배당락일 / 공시 지급일</dt>
+                            <dd>
+                                {{ event.exDate }} /
+                                {{ event.payableDate || '미확인' }}
+                            </dd></template
+                        >
+                        <dt>자료 기준일</dt>
+                        <dd>{{ event.quantityAsOf || '미확인' }}</dd>
+                        <template v-if="event.quantity !== undefined"
+                            ><dt>자료 수량 / 주당 배당금</dt>
+                            <dd>
+                                {{ event.quantity }}주 /
+                                {{ money(event.perShare, event.currency) }}
+                            </dd></template
+                        >
+                    </dl>
+                    <a
+                        v-if="safeSource(event.sourceUrl)"
+                        :href="event.sourceUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >공시 원문 확인
+                        <i class="pi pi-external-link" aria-hidden="true"
+                    /></a>
+                </article>
+                <p v-if="!onDate(detailDate).length">
+                    이 날짜에 확인된 자료가 없습니다.
+                </p>
+            </Dialog>
+        </template>
     </section>
 </template>
 <style scoped>

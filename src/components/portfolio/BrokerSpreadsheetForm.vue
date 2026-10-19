@@ -6,6 +6,12 @@
     import Select from 'primevue/select';
     import Message from 'primevue/message';
     import { familyRequest } from '@/services/familyPortfolio.js';
+    import {
+        brokerHeaderSignature,
+        loadBrokerPreset,
+        saveBrokerPreset,
+        deleteBrokerPreset,
+    } from '@/services/brokerPresets.js';
 
     const props = defineProps({
         account: { type: Object, required: true },
@@ -25,6 +31,82 @@
         error = ref(''),
         inspecting = ref(false);
     const defaultCurrency = ref('');
+    const presetStatus = ref(''),
+        mappingConfirmed = ref(false);
+    const presetApplied = ref(false);
+    const presetSheet = ref('');
+    let pendingPreset = null;
+    watch([broker, kind, () => props.account.id], () => {
+        pendingPreset = null;
+        presetSheet.value = '';
+        presetStatus.value = '';
+        info.value = null;
+        mapping.value = {};
+        generation++;
+        inspecting.value = false;
+        confirmed.value = false;
+    });
+    watch(
+        [mapping, defaultCurrency],
+        () => {
+            mappingConfirmed.value = false;
+        },
+        { deep: true }
+    );
+    function loadPreset() {
+        try {
+            pendingPreset = loadBrokerPreset(
+                localStorage,
+                broker.value,
+                kind.value
+            );
+            if (!pendingPreset) throw new Error('저장된 설정이 없습니다.');
+            encoding.value = pendingPreset.encoding;
+            headerRow.value = pendingPreset.headerRow;
+            info.value = null;
+            presetStatus.value =
+                '인코딩·제목 행을 불러왔습니다. 워크시트를 선택한 뒤 파일 열을 확인하세요.';
+        } catch (reason) {
+            error.value = reason.message;
+        }
+    }
+    async function savePreset() {
+        const version = generation;
+        try {
+            if (!info.value || !mappingConfirmed.value)
+                throw new Error('열 연결을 확인하세요.');
+            const value = {
+                encoding: encoding.value,
+                headerRow: headerRow.value,
+                defaultCurrency: defaultCurrency.value,
+                columnCount: info.value.headers.length,
+                sheetIndex: Math.max(
+                    0,
+                    info.value.sheets.indexOf(info.value.sheet)
+                ),
+                mapping: { ...mapping.value },
+                headerSignature: await brokerHeaderSignature(
+                    info.value.headers
+                ),
+            };
+            if (version !== generation) return;
+            saveBrokerPreset(localStorage, broker.value, kind.value, value);
+            pendingPreset = value;
+            presetStatus.value =
+                '이 브라우저에 열 연결 설정을 저장했습니다. 파일·계좌·시트 이름은 저장하지 않습니다.';
+        } catch (reason) {
+            if (version === generation) error.value = reason.message;
+        }
+    }
+    function deletePreset() {
+        try {
+            deleteBrokerPreset(localStorage, broker.value, kind.value);
+            pendingPreset = null;
+            presetStatus.value = '저장된 설정을 삭제했습니다.';
+        } catch (reason) {
+            error.value = reason.message;
+        }
+    }
     watch(
         [file, kind],
         () => {
@@ -82,6 +164,9 @@
             generation++;
             info.value = null;
             mapping.value = {};
+            presetApplied.value = false;
+            presetSheet.value = '';
+            mappingConfirmed.value = false;
             error.value = '';
             inspecting.value = false;
         },
@@ -125,6 +210,34 @@
                 const index = result.headers.indexOf(key);
                 if (index >= 0) mapping.value[key] = index;
             }
+            if (pendingPreset) {
+                if (
+                    result.sheets.length &&
+                    result.sheets[pendingPreset.sheetIndex] !== result.sheet
+                ) {
+                    presetSheet.value =
+                        result.sheets[pendingPreset.sheetIndex] || '';
+                    presetStatus.value = presetSheet.value
+                        ? `저장된 설정은 ${pendingPreset.sheetIndex + 1}번째 시트입니다. 저장된 시트를 선택한 뒤 파일 열을 다시 확인하세요.`
+                        : '저장된 순서의 시트가 없습니다. 워크시트와 열을 직접 확인하세요.';
+                    return;
+                }
+                const signature = await brokerHeaderSignature(result.headers);
+                if (version !== generation) return;
+                if (
+                    signature === pendingPreset.headerSignature &&
+                    result.headers.length === pendingPreset.columnCount
+                ) {
+                    mapping.value = { ...pendingPreset.mapping };
+                    presetApplied.value = true;
+                    defaultCurrency.value = pendingPreset.defaultCurrency;
+                    presetStatus.value =
+                        '저장된 열 연결을 불러왔습니다. 파일의 실제 열과 통화를 다시 확인하세요.';
+                } else {
+                    presetStatus.value =
+                        '저장된 양식과 파일의 열 구성이 다릅니다. 열을 다시 연결하세요.';
+                }
+            }
         } catch (reason) {
             if (version === generation) error.value = reason.message;
         } finally {
@@ -135,6 +248,10 @@
         error.value = '';
         try {
             if (!info.value) throw new Error('파일의 열을 먼저 확인하세요.');
+            if (presetApplied.value && !mappingConfirmed.value)
+                throw new Error(
+                    '불러온 열 연결과 통화를 확인한 뒤 확인란을 선택하세요.'
+                );
             const data = form();
             data.set('defaultCurrency', defaultCurrency.value);
             data.set(
@@ -169,6 +286,27 @@
         <form @submit.prevent="preview">
             <fieldset :disabled="busy || inspecting">
                 <legend>파일과 계좌 확인</legend>
+                <p>
+                    이 브라우저의 증권사·자료 종류별 설정을 재사용할 수
+                    있습니다. 공용 기기에서는 저장하지 마세요.
+                </p>
+                <Button
+                    type="button"
+                    label="열 연결 설정 불러오기"
+                    severity="secondary"
+                    @click="loadPreset" />
+                <Button
+                    type="button"
+                    label="저장된 열 연결 삭제"
+                    severity="secondary"
+                    @click="deletePreset" />
+                <p v-if="presetStatus" role="status">{{ presetStatus }}</p>
+                <Button
+                    v-if="presetSheet"
+                    type="button"
+                    label="저장된 시트 선택"
+                    severity="secondary"
+                    @click="sheet = presetSheet" />
                 <label
                     >증권사<Select
                         v-model="broker"
@@ -269,6 +407,16 @@
                         화면에서 오류를 확인하고 수정하세요.
                     </p>
                     <Button type="submit" label="연결 자료 미리보기" />
+                    <label
+                        ><input v-model="mappingConfirmed" type="checkbox" />
+                        파일의 열 연결과 기본 통화를 확인했습니다.</label
+                    >
+                    <Button
+                        type="button"
+                        label="열 연결 설정 저장"
+                        severity="secondary"
+                        :disabled="!mappingConfirmed"
+                        @click="savePreset" />
                 </template>
             </fieldset>
         </form>

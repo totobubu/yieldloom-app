@@ -1,0 +1,86 @@
+name: Application quality
+
+on:
+    pull_request:
+    push:
+        branches: [main]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: app-quality-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    application:
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '24'
+                  cache: npm
+            - run: npm ci --no-audit --no-fund
+            - run: npm run lint:check
+            - run: node --test tests/*.test.mjs
+            # build includes the Vue/TypeScript check and prerender validation.
+            - run: npm run build
+    portfolio-api:
+        runs-on: ubuntu-latest
+        timeout-minutes: 15
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: '3.12'
+                  cache: pip
+                  cache-dependency-path: requirements.txt
+            - run: python -m pip install -r requirements.txt
+            - name: Permissions, import validation, corrections and private statements
+              run: |
+                  python -m unittest discover -s tests -p 'test_family_portfolio.py'
+                  python -m unittest discover -s tests -p 'test_portfolio_expansion.py'
+                  python -m unittest discover -s tests -p 'test_portfolio_import.py'
+                  python -m unittest discover -s tests -p 'test_portfolio_csv.py'
+                  python -m unittest discover -s tests -p 'test_server_cors.py'
+    browser:
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '24'
+                  cache: npm
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: '3.12'
+                  cache: pip
+                  cache-dependency-path: requirements.txt
+            - run: npm ci --no-audit --no-fund
+            - run: python -m pip install -r requirements.txt
+            - run: npx playwright install --with-deps chromium
+            - name: Browser flows with synthetic identities and an in-memory API
+              env:
+                  VITE_API_PROXY_TARGET: http://127.0.0.1:5011
+                  VITE_API_BASE_URL: ''
+              run: |
+                  python tests/family_portfolio_test_server.py > /tmp/family-api.log 2>&1 &
+                  env -u GITHUB_ACTIONS npm run dev -- --host 127.0.0.1 --port 5175 --strictPort > /tmp/vite.log 2>&1 &
+                  trap 'kill $(jobs -pr) 2>/dev/null || true' EXIT
+                  node scripts/utils/wait-test-servers.mjs
+                  export CHROMIUM_PATH="$(node --input-type=module -e "import { chromium } from 'playwright'; process.stdout.write(chromium.executablePath());")"
+                  FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/manual-holdings.browser.mjs
+                  FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/broker-spreadsheet.browser.mjs
+                  node tests/portfolio-enhancements.browser.mjs
+            - uses: actions/upload-artifact@v4
+              if: failure()
+              with:
+                  name: browser-diagnostics
+                  path: |
+                      /tmp/family-api.log
+                      /tmp/vite.log
+                      /tmp/yieldloom-enhancements-*.png
+                  retention-days: 5

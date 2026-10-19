@@ -701,6 +701,10 @@
         await nextTick();
         fileInput.value?.focus();
     }
+    function openHoldingsUpload() {
+        kind.value = 'holdings';
+        portfolioTab.value = 'upload';
+    }
     async function removePdfPassword() {
         await run(async () => {
             await familyRequest('pdfPassword', {
@@ -923,7 +927,8 @@
                         :accounts="visibleAccounts"
                         :missing-accounts="
                             summary.missingSnapshotAccounts.length
-                        " />
+                        "
+                        @request-upload="openHoldingsUpload" />
                     <div
                         v-if="
                             summary &&
@@ -2252,10 +2257,21 @@ date,symbol,quantity,amount,currency,type,externalId
         .portfolio-actions > .p-button {
             flex: 1;
         }
+        .portfolio-tabs :deep(.p-tablist) {
+            overflow-x: auto;
+            overscroll-behavior-inline: contain;
+            scrollbar-width: thin;
+        }
+        .portfolio-tabs :deep(.p-tablist-tab-list) {
+            width: max-content;
+            min-width: 100%;
+        }
         .portfolio-tabs :deep(.p-tab) {
             padding: 12px 8px;
-            flex: 1;
+            flex: 0 0 auto;
+            min-width: max-content;
             font-size: 13px;
+            white-space: nowrap;
         }
         .portfolio-tabs section {
             padding: 20px 16px;

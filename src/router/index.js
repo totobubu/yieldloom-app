@@ -1,5 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-export default createRouter({
+import {
+    clearRouteChunkRecovery,
+    recoverRouteChunk,
+} from '@/services/routeChunkRecovery.js';
+
+const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     scrollBehavior(to, from, savedPosition) {
         if (savedPosition) return savedPosition;
@@ -67,3 +72,13 @@ export default createRouter({
         { path: '/:pathMatch(.*)*', redirect: '/' },
     ],
 });
+
+router.onError((error, to) => {
+    recoverRouteChunk(error, to.fullPath);
+});
+
+router.afterEach((to, _from, failure) => {
+    if (!failure) clearRouteChunkRecovery(to.fullPath);
+});
+
+export default router;

@@ -15,6 +15,7 @@
         accounts: { type: Array, default: () => [] },
         missingAccounts: { type: Number, default: 0 },
     });
+    const emit = defineEmits(['request-upload']);
     const quotes = ref({}),
         loading = ref(false),
         error = ref('');
@@ -95,10 +96,24 @@
             error
         }}</Message>
         <template v-else>
-            <p v-if="!positions.length">
-                평가할 잔고 자료가 없습니다. 계좌의 전체 잔고 자료를 업로드해
-                주세요.
-            </p>
+            <div v-if="!positions.length" class="valuation-empty">
+                <i class="pi pi-inbox" aria-hidden="true" />
+                <div>
+                    <h3>저장된 잔고내역이 없습니다</h3>
+                    <p>
+                        거래내역과 잔고내역은 별도 자료입니다. 거래내역을 이미
+                        등록했더라도 현재 보유수량은 추정하지 않습니다.
+                    </p>
+                    <p v-if="missingAccounts">
+                        현재 선택 범위의 {{ missingAccounts }}개 계좌에
+                        잔고내역이 없습니다.
+                    </p>
+                </div>
+                <Button
+                    label="잔고내역 추가"
+                    icon="pi pi-upload"
+                    @click="emit('request-upload')" />
+            </div>
             <div v-if="valuation.currencies.length" class="valuation-grid">
                 <article
                     v-for="group in valuation.currencies"
@@ -236,6 +251,27 @@
         gap: 1rem;
         flex-wrap: wrap;
     }
+    .valuation-empty {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.25rem;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        background: var(--p-content-hover-background);
+    }
+    .valuation-empty > .pi {
+        color: var(--app-accent);
+        font-size: 1.5rem;
+    }
+    .valuation-empty h3,
+    .valuation-empty p {
+        margin: 0;
+    }
+    .valuation-empty p + p {
+        margin-top: 0.25rem;
+    }
     .valuation h2,
     .valuation h3 {
         margin-top: 0;
@@ -277,5 +313,14 @@
     .valuation :deep(.p-datatable) {
         margin-top: 1rem;
         max-width: 100%;
+    }
+    @media (max-width: 767px) {
+        .valuation-empty {
+            grid-template-columns: auto minmax(0, 1fr);
+        }
+        .valuation-empty :deep(.p-button) {
+            grid-column: 1 / -1;
+            width: 100%;
+        }
     }
 </style>

@@ -40,6 +40,13 @@ try {
         let pending,
             previews = 0,
             writes = 0;
+        const waitForPendingPreview = async () => {
+            for (let attempt = 0; attempt < 100; attempt++) {
+                if (pending) return pending;
+                await page.waitForTimeout(50);
+            }
+            throw new Error('Preview request did not start');
+        };
         await page.route('**/api/portfolio-capital*', (route) =>
             route.fulfill({
                 json: { entries: [], classifications: [], allocations: [] },
@@ -152,7 +159,7 @@ try {
             File.prototype.arrayBuffer = window.originalFileArrayBuffer;
         });
         await button.click();
-        await overlay.waitFor();
+        await waitForPendingPreview();
         assert.ok(
             await page.evaluate(() => scrollY > 300),
             'User is below the global page error'
@@ -194,7 +201,7 @@ try {
         assert.equal(await notice.count(), 0);
         pending = null;
         await button.click();
-        await overlay.waitFor();
+        await waitForPendingPreview();
         assert.match(pending.request().postData(), /corrected-fixture/);
         await pending.abort('failed');
         await overlay.waitFor({ state: 'hidden' });
@@ -209,7 +216,7 @@ try {
         // Success, including saved-password account refresh, moves to the review heading.
         pending = null;
         await button.click();
-        await overlay.waitFor();
+        await waitForPendingPreview();
         await pending.fulfill({
             json: {
                 reviewId: 'mobile-review',

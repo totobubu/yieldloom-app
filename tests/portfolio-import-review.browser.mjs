@@ -32,7 +32,7 @@ try {
             json: { entries: [], classifications: [], allocations: [] },
         })
     );
-    const rows = Array.from({ length: 120 }, (_, index) => ({
+    const rows = Array.from({ length: 4716 }, (_, index) => ({
         date: '2026-10-15',
         symbol: index % 2 ? 'SCHD' : 'AAPL',
         securityName: index % 2 ? 'Schwab US Dividend Equity ETF' : 'Apple',
@@ -49,8 +49,86 @@ try {
         type: 'unknown',
         quantity: '',
     };
+    rows[0] = {
+        ...rows[0],
+        date: '2026-03-25',
+        symbol: 'SCHD',
+        securityName: 'Schwab US Dividend Equity ETF',
+        quantity: 180,
+        amount: 148.32,
+        nativeTax: 22.25,
+        nativeSettlementAmount: 126.07,
+    };
+    rows[1] = {
+        ...rows[1],
+        symbol: 'A039980',
+        securityName: '폴라리스AI',
+        quantity: 1,
+        amount: 3025,
+        currency: 'KRW',
+    };
+    rows[2] = {
+        ...rows[2],
+        symbol: 'A041020',
+        securityName: '폴라리스오피스',
+        quantity: 1,
+        amount: 9870,
+        currency: 'KRW',
+    };
+    rows[3] = {
+        ...rows[3],
+        symbol: 'CASH',
+        securityName: '',
+        type: 'cash_out',
+        currency: 'KRW',
+        quantity: null,
+        amount: 14775,
+        cashKind: 'exchange',
+        rawType: '즉시환전 원화출금',
+    };
+    rows[4] = {
+        ...rows[4],
+        symbol: 'CASH',
+        securityName: '',
+        type: 'cash_in',
+        currency: 'USD',
+        quantity: null,
+        amount: 10,
+        cashKind: 'exchange',
+        rawType: '즉시환전 외화입금',
+    };
+    rows[5] = {
+        ...rows[5],
+        symbol: 'YMAX',
+        securityName: 'YieldMax Universe Fund of Option Income ETFs',
+        _mappingIsin: 'US88636J6597',
+        type: 'buy',
+        amount: 9.999968,
+        nativeSettlementAmount: 10,
+        settlementAmount: 14775,
+        exchangeRate: 1477.48,
+        quantity: 0.110754,
+    };
+    rows[6] = {
+        ...rows[6],
+        symbol: 'UNKNOWN',
+        securityName: '미식별 종목',
+        type: 'unknown',
+        _mappingStatus: 'unresolved',
+        quantity: null,
+    };
+    rows[98].externalId = 'edit-target-99';
+    const batches = Array.from(
+        { length: Math.ceil(rows.length / 200) },
+        (_, index) => ({
+            reviewId: `review-fixture-${index}`,
+            start: index * 200,
+            count: Math.min(200, rows.length - index * 200),
+        })
+    );
+    const initialBuyCount = rows.filter((row) => row.type === 'buy').length;
     const calls = [];
-    let committedRows;
+    const committedRows = [];
     await page.route('**/api/family-portfolio*', async (route) => {
         const action = new URL(route.request().url()).searchParams.get(
             'action'
@@ -68,22 +146,19 @@ try {
                     },
                     rows,
                     errors: [{ row: 57, error: '수량을 확인하세요.' }],
-                    batches: [
-                        {
-                            reviewId: 'review-fixture',
-                            start: 0,
-                            count: rows.length,
-                        },
-                    ],
+                    batches,
                     asOf: '2026-10-15',
                 },
             });
         if (action === 'validateImport')
             return route.fulfill({ json: { valid: true } });
         if (action === 'commit') {
-            committedRows = route.request().postDataJSON().rows;
+            committedRows.push(...route.request().postDataJSON().rows);
             return route.fulfill({
-                json: { inserted: rows.length, duplicates: 0 },
+                json: {
+                    inserted: route.request().postDataJSON().rows.length,
+                    duplicates: 0,
+                },
             });
         }
         return route.continue();
@@ -125,29 +200,50 @@ try {
     );
     await review.getByLabel(/첨부한 모든 거래내역서의 성명/).check();
     const baseline = calls.length;
+    assert.equal(
+        await review
+            .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
+            .isEnabled(),
+        true
+    );
     await review
         .getByRole('button', { name: '다음 페이지', exact: true })
         .click();
-    await review.getByLabel('51행 종목', { exact: true }).waitFor();
+    await review
+        .getByRole('button', { name: '8행 수정', exact: true })
+        .waitFor();
 
     await review
-        .getByRole('button', { name: '검토 필요 1', exact: true })
+        .getByRole('button', { name: '검토 필요 2', exact: true })
+        .click();
+    await review
+        .getByRole('button', { name: '57행 수정', exact: true })
         .click();
     await review.getByLabel('57행 수량', { exact: true }).fill('3');
     await review.getByLabel('57행 거래 유형', { exact: true }).click();
     await page.getByRole('option', { name: '매수', exact: true }).click();
     await review.getByLabel('57행 종목', { exact: true }).fill('MSFT');
+    assert.equal(await review.locator('.money-input > span').innerText(), '$');
+    await review
+        .getByRole('button', { name: '수정 적용', exact: true })
+        .click();
     await review
         .getByRole('button', { name: '필터 초기화', exact: true })
         .click();
     await review
         .getByLabel('추출 결과 검색', { exact: true })
-        .fill('review-row-99');
+        .fill('edit-target-99');
+    await review
+        .getByRole('button', { name: '99행 수정', exact: true })
+        .click();
     await review.getByLabel('99행 금액', { exact: true }).fill('125');
     assert.equal(
         await review.getByLabel('99행 종목', { exact: true }).inputValue(),
         'AAPL'
     );
+    await review
+        .getByRole('button', { name: '수정 적용', exact: true })
+        .click();
     assert.equal(
         calls.length,
         baseline,
@@ -157,18 +253,132 @@ try {
         .getByRole('button', { name: '필터 초기화', exact: true })
         .click();
     await review
-        .getByRole('button', { name: '주식 매수 80', exact: true })
+        .getByRole('button', {
+            name: `주식 매수 ${initialBuyCount + 1}`,
+            exact: true,
+        })
         .click();
     assert.equal(
-        await review.getByLabel('2행 종목', { exact: true }).inputValue(),
-        'SCHD'
+        await review
+            .locator('tbody')
+            .getByText('폴라리스AI', { exact: true })
+            .count(),
+        1
     );
     await review
         .getByRole('button', { name: '필터 초기화', exact: true })
         .click();
+    assert.equal(
+        await review.locator('tbody .p-inputtext').count(),
+        0,
+        'default rows render text, not input forms'
+    );
+    assert.equal(
+        await review
+            .locator('tbody .quantity-cell')
+            .nth(5)
+            .evaluate((cell) => getComputedStyle(cell).whiteSpace),
+        'nowrap',
+        'fractional share quantities stay on one line'
+    );
+    assert.equal(
+        await review
+            .getByRole('columnheader', { name: '통화', exact: true })
+            .count(),
+        0
+    );
+    assert.equal(
+        await review
+            .locator('.p-datatable-table-container')
+            .evaluate(
+                (element) => element.scrollWidth > element.clientWidth + 1
+            ),
+        false,
+        'desktop table has no horizontal scroll'
+    );
+    await review
+        .getByRole('button', { name: '폴라리스AI 1건 보기', exact: true })
+        .click();
+    await review.getByLabel('선택 종목 정보', { exact: true }).waitFor();
+    await review.screenshot({
+        path: `${output}/domestic.png`,
+        style: 'header, .skip-link, .mobile-nav { visibility: hidden !important; } .review-save-bar { position: static !important; }',
+    });
+
+    assert.match(
+        await review.getByLabel('선택 종목 정보', { exact: true }).innerText(),
+        /폴라리스AI.*A039980/s
+    );
+    assert.equal(
+        await review
+            .getByRole('columnheader', { name: '종목명 / 티커', exact: true })
+            .count(),
+        0
+    );
+    await review
+        .getByRole('button', { name: '필터 초기화', exact: true })
+        .click();
+    await review
+        .getByRole('combobox', { name: '추출 종목 필터', exact: true })
+        .click();
+    await page.getByRole('option', { name: 'YMAX', exact: true }).click();
+    assert.match(
+        await review.getByLabel('선택 종목 정보', { exact: true }).innerText(),
+        /US88636J6597/
+    );
+    await review
+        .getByRole('button', { name: '필터 초기화', exact: true })
+        .click();
+    await review
+        .getByRole('button', { name: '현금·환전 2', exact: true })
+        .click();
+    await review.screenshot({
+        path: `${output}/cash.png`,
+        style: 'header, .skip-link, .mobile-nav { visibility: hidden !important; } .review-save-bar { position: static !important; }',
+    });
+    await review
+        .getByLabel('추출 결과 검색', { exact: true })
+        .fill('no-such-cash');
+    assert.equal(
+        await review.locator('.funding-preview').count(),
+        0,
+        'empty cash filter does not show unrelated funding matches'
+    );
+    await review.getByLabel('추출 결과 검색', { exact: true }).fill('');
+    await review.locator('.funding-preview button').first().click();
+    const funding = review.getByRole('dialog', {
+        name: '매수 결제 구성',
+        exact: true,
+    });
+    await funding.waitFor();
+    await funding.screenshot({ path: `${output}/funding-dialog.png` });
+
+    assert.match(await funding.innerText(), /₩14,775/);
+    assert.match(await funding.innerText(), /\$10.00/);
+    assert.match(await funding.innerText(), /YMAX/);
+    assert.match(await funding.innerText(), /최초 출처는 별도 확인/);
+    await funding.locator('.p-dialog-close-button').click();
+    await review
+        .getByRole('button', { name: '필터 초기화', exact: true })
+        .click();
+    assert.equal(
+        calls.length,
+        baseline,
+        'names, symbol context, currency display and funding preview are local'
+    );
+    await page.setViewportSize({ width: 1280, height: 1000 });
+    assert.equal(
+        await review
+            .locator('.p-datatable-table-container')
+            .evaluate(
+                (element) => element.scrollWidth > element.clientWidth + 1
+            ),
+        false,
+        '1280px reference width has no horizontal table scroll'
+    );
     await review.screenshot({
         path: `${output}/desktop.png`,
-        style: 'header { visibility: hidden !important; }',
+        style: 'header, .skip-link, .mobile-nav { visibility: hidden !important; } .review-save-bar { position: static !important; }',
     });
     for (const width of [390, 768]) {
         await page.setViewportSize({ width, height: 900 });
@@ -187,14 +397,22 @@ try {
             );
             await review.screenshot({
                 path: `${output}/${width}-${dark ? 'dark' : 'light'}.png`,
-                style: 'header { visibility: hidden !important; }',
+                style: 'header, .skip-link, .mobile-nav { visibility: hidden !important; } .review-save-bar { position: static !important; }',
             });
         }
     }
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await review.getByLabel('1행 선택', { exact: true }).check();
+    await review.getByLabel('2행 선택', { exact: true }).check();
+    await review
+        .getByRole('combobox', { name: '일괄 변경할 거래 유형', exact: true })
+        .click();
+    await page.getByRole('option', { name: '매도', exact: true }).click();
+    await review.getByRole('button', { name: '적용', exact: true }).click();
     // Save with an active filter: all rows, including edits to off-screen rows, must be validated and sent.
     await review
         .getByLabel('추출 결과 검색', { exact: true })
-        .fill('review-row-99');
+        .fill('edit-target-99');
     await review
         .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
         .click();
@@ -204,20 +422,30 @@ try {
             exact: true,
         })
         .waitFor();
-    assert.equal(committedRows.length, 120);
+    assert.equal(committedRows.length, rows.length);
     assert.equal(committedRows[56].symbol, 'MSFT');
     assert.equal(committedRows[56].quantity, '3');
     assert.equal(committedRows[56].type, 'buy');
     assert.equal(committedRows[98].amount, '125');
-    assert.equal(committedRows[0].amount, 50);
+    assert.equal(committedRows[0].amount, 148.32);
+    assert.equal(committedRows[0].type, 'sell');
+    assert.equal(committedRows[1].type, 'sell');
+    assert.equal(
+        committedRows[2].type,
+        rows[2].type,
+        'bulk edit changes only selected original indices'
+    );
     assert.equal(
         calls.filter((action) => action === 'validateImport').length,
-        1
+        batches.length
     );
-    assert.equal(calls.filter((action) => action === 'commit').length, 1);
+    assert.equal(
+        calls.filter((action) => action === 'commit').length,
+        batches.length
+    );
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: review filters preserve original row identity; all 120 rows and off-screen edits are validated/saved with an active filter; no API calls during edits; desktop/mobile light/dark layouts. Extraction and writes are synthetic fixtures.'
+        'PASS: review filters preserve original row identity; all 4716 rows in 24 batches and off-screen edits are validated/saved with an active filter; no API calls during edits; desktop/mobile light/dark layouts. Extraction and writes are synthetic fixtures.'
     );
 } finally {
     await browser.close();

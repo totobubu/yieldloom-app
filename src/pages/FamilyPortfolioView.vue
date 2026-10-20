@@ -162,6 +162,8 @@
             value !== review.value.rows[index]._mappingIsin
         )
             review.value.rows[index]._mappingStatus = 'manual';
+        if (review.value.source === 'toss-pdf')
+            review.value.rows = inferExchangeFunding(review.value.rows);
     }
     async function enrichTossReview(rows) {
         const isins = unresolvedIsins(rows);

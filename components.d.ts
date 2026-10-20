@@ -41,6 +41,7 @@ declare module 'vue' {
     PortfolioDividendCalendar: typeof import('./src/components/portfolio/PortfolioDividendCalendar.vue')['default']
     PortfolioExportDialog: typeof import('./src/components/portfolio/PortfolioExportDialog.vue')['default']
     PortfolioFileImportForm: typeof import('./src/components/portfolio/PortfolioFileImportForm.vue')['default']
+    PortfolioImportFunding: typeof import('./src/components/portfolio/PortfolioImportFunding.vue')['default']
     PortfolioImportResult: typeof import('./src/components/portfolio/PortfolioImportResult.vue')['default']
     PortfolioImportReview: typeof import('./src/components/portfolio/PortfolioImportReview.vue')['default']
     PortfolioInsights: typeof import('./src/components/portfolio/PortfolioInsights.vue')['default']

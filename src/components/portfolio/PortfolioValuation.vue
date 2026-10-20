@@ -9,6 +9,7 @@
         valuePortfolio,
         valuationToday,
     } from '@/services/portfolioValuation.js';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
 
     const props = defineProps({
         positions: { type: Array, required: true },
@@ -20,6 +21,7 @@
     const quotes = ref({}),
         loading = ref(false),
         error = ref('');
+    useFullscreenLoading(loading, '포트폴리오 평가 시세를 불러오고 있습니다.');
     const refresh = ref(0),
         today = ref(valuationToday());
     const accountNames = computed(

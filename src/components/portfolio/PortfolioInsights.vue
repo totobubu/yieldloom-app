@@ -27,6 +27,7 @@
     import { getAssetUrl } from '@/utils/dataUrl.js';
     import { readPublicJson } from '@/services/publicJson.js';
     import { useRequestCooldown } from '@/composables/useRequestCooldown.js';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
 
     const props = defineProps({
         accounts: { type: Array, default: () => [] },
@@ -41,6 +42,10 @@
         loading = ref(false),
         issue = ref(null),
         refresh = ref(0);
+    useFullscreenLoading(
+        loading,
+        '포트폴리오 분석 데이터를 불러오고 있습니다.'
+    );
     const classifications = ref({}),
         metadataError = ref('');
     const goal = ref(null),

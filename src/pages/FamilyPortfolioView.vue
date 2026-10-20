@@ -1411,6 +1411,7 @@
                         header="원금 회수 · 자금 상세"
                         toggleable
                         v-model:collapsed="capitalCollapsed"
+                        :pt="{ contentWrapper: { style: { minWidth: '0' } } }"
                         class="capital-details">
                         <template
                             v-if="

@@ -260,15 +260,15 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
                         parts = line.split("발급번호")
                         if len(parts) > 1:
                             metadata["issue_number"] = parts[1].strip()
-                    elif "성명" in line and "종목" not in line:
-                        match = re.search(r"성명\s+(\S+)", line)
+                    if "성명" in line and "종목" not in line:
+                        match = re.search(r"성명\s*[:：]?\s*(\S+)", line)
                         if match:
                             metadata["customer_name"] = match.group(1)
-                    elif "계좌" in line and "번호" in line:
-                        match = re.search(r"(\d{3}-\d{2}-\d{6})", line)
+                    if "계좌" in line and "번호" in line:
+                        match = re.search(r"계좌\s*번호\s*[:：]?\s*([0-9*•●][0-9*•● \t-]{6,24}[0-9])", line)
                         if match:
                             metadata["account_number"] = match.group(1)
-                    elif "조회 기간" in line:
+                    if "조회 기간" in line:
                         parts = line.split("조회 기간")
                         if len(parts) > 1:
                             metadata["period"] = parts[1].strip()

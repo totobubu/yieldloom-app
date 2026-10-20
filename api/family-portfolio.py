@@ -2,6 +2,7 @@
 import hashlib
 import json
 import os
+import re
 import secrets
 import tempfile
 from datetime import datetime, timedelta, timezone
@@ -92,7 +93,7 @@ def account(db, account_id, uid, write=False):
     return ref, data
 
 
-def pdf_rows(content, password):
+def pdf_rows(content, password, *, metadata=None):
     from api.toss_extractor import extract_transactions_from_pdf
     path = None
     try:
@@ -105,6 +106,13 @@ def pdf_rows(content, password):
     finally:
         if path:
             os.remove(path)
+    if metadata is not None:
+        extracted = result.get('metadata') or {}
+        number = re.sub(r'[^0-9*•●]', '', str(extracted.get('account_number') or ''))
+        metadata.update({
+            'customerName': str(extracted.get('customer_name') or '')[:100],
+            'maskedNumber': '****' + number[-4:] if len(number) >= 8 and number[-4:].isdigit() else None,
+        })
     rows = []
     occurrences = {}
     for raw in result.get('transactions', []):
@@ -280,7 +288,8 @@ def spreadsheet_inspection(db, uid):
 def preview(db, uid):
     ref, data = account(db, request.form.get('accountId'), uid, True)
     require(request.form.get('ownerId') == data['ownerId'] and request.form.get('institution') == data['institution'], '명의자·금융기관 선택이 계좌와 일치하지 않습니다.')
-    require(request.form.get('identityConfirmed') == 'true', '자료의 명의자와 계좌를 직접 확인하세요. 불확실한 자료는 저장할 수 없습니다.')
+    statement_identity = None
+    password_saved = False
     kind = request.form.get('kind')
     as_of = None
     uploaded = request.files.get('file')
@@ -288,6 +297,9 @@ def preview(db, uid):
     content = uploaded.read(2 * 1024 * 1024 + 1)
     require(0 < len(content) <= 2 * 1024 * 1024, '파일은 2MB 이하여야 합니다.', 413)
     filename = str(uploaded.filename or '').lower()
+    is_pdf = filename.endswith('.pdf') and request.form.get('format') == 'toss-pdf'
+    if not is_pdf:
+        require(request.form.get('identityConfirmed') == 'true', '자료의 명의자와 계좌를 직접 확인하세요. 불확실한 자료는 저장할 수 없습니다.')
     if request.form.get('format') == 'broker-spreadsheet':
         as_of = iso_date(request.form.get('asOf'))
         rows, source = mapped_spreadsheet(content, filename, request.form, kind, as_of)
@@ -310,7 +322,15 @@ def preview(db, uid):
                 except Exception:
                     raise PortfolioError('저장된 PDF 비밀번호를 사용할 수 없습니다. 비밀번호를 다시 입력해 저장하세요.')
         require(password, '토스 PDF 비밀번호를 입력하거나 계좌 기본값을 저장하세요.')
-        rows = pdf_rows(content, password)
+        statement_identity = {}
+        rows = pdf_rows(content, password, metadata=statement_identity)
+        extracted_number = statement_identity.get('maskedNumber')
+        registered_number = data.get('maskedNumber') or ''
+        statement_identity['accountMatch'] = (
+            'missing' if not extracted_number else
+            'unregistered' if not re.fullmatch(r'\*{4}\d{4}', registered_number) else
+            'matched' if extracted_number == registered_number else 'mismatch'
+        )
         valid_dates = []
         for row in rows:
             try:
@@ -319,8 +339,9 @@ def preview(db, uid):
                 pass
         require(valid_dates, 'PDF에서 거래일을 확인할 수 없습니다.')
         as_of = max(valid_dates)
-        if request.form.get('rememberPassword') == 'true':
+        if request.form.get('rememberPassword') == 'true' and statement_identity['accountMatch'] == 'matched':
             save_pdf_password(db, uid, {'accountId': ref.id, 'password': password})
+            password_saved = True
         source = 'toss-pdf'
         mapping_cache = {}
         for row in rows:
@@ -347,10 +368,25 @@ def preview(db, uid):
         session = ref.collection('reviews').document()
         receipt_key = file_hash if len(rows) <= 200 else f'{file_hash}-{start // 200}'
         session.set({'uid': uid, 'rows': rows[start:start + 200], 'kind': kind, 'asOf': as_of, 'source': source,
+                     'statementIdentity': statement_identity,
                      'fileHash': receipt_key, 'expiresAt': now() + timedelta(hours=1)})
         batches.append({'reviewId': session.id, 'start': start, 'count': min(200, len(rows) - start)})
     return {'reviewId': batches[0]['reviewId'], 'batches': batches, 'rows': rows, 'errors': errors, 'source': source,
-            'asOf': as_of}
+            'asOf': as_of, 'statementIdentity': statement_identity, 'passwordSaved': password_saved}
+
+
+def require_statement_identity(review, data, body):
+    if review['source'] != 'toss-pdf':
+        return
+    identity = review.get('statementIdentity') or {}
+    number = identity.get('maskedNumber')
+    require(number and re.fullmatch(r'\*{4}\d{4}', number),
+            'PDF에서 계좌번호를 확인할 수 없습니다. 원본 파일과 지원 형식을 확인해 다시 추출하세요.')
+    registered = data.get('maskedNumber') or ''
+    require(not re.fullmatch(r'\*{4}\d{4}', registered) or registered == number,
+            'PDF의 계좌번호가 선택한 계좌와 다릅니다. 올바른 계좌를 선택해 다시 추출하세요.')
+    require(body.get('identityConfirmed') is True,
+            'PDF에서 추출한 명의자·계좌번호와 저장 대상 계좌를 확인하세요.')
 
 
 def preview_manual_holdings(db, uid, body):
@@ -494,6 +530,7 @@ def commit(db, uid, body):
         require(can_access(data, uid, True), '계좌 변경 권한이 없습니다.', 403)
         review = load(session, tx)
         require(review['uid'] == uid and review['expiresAt'] > now(), '검토 세션이 만료되었거나 권한이 없습니다.', 410)
+        require_statement_identity(review, data, body)
         submitted = body.get('rows')
         if review['kind'] == 'transactions':
             require(isinstance(submitted, list) and len(submitted) == len(review['rows']) and
@@ -572,9 +609,10 @@ def commit(db, uid, body):
 
 
 def validate_import(db, uid, body):
-    ref, _ = account(db, body.get('accountId'), uid, True)
+    ref, data = account(db, body.get('accountId'), uid, True)
     review = load(ref.collection('reviews').document(identifier(body.get('reviewId'))))
     require(review['uid'] == uid and review['expiresAt'] > now(), '검토 세션이 만료되었거나 권한이 없습니다.', 410)
+    require_statement_identity(review, data, body)
     submitted = body.get('rows')
     _, errors = validate_rows(submitted, review['kind'], review['asOf'], max_rows=10000 if review['source'] == 'toss-pdf' else 200)
     require(not errors, '오류 행을 모두 수정하세요: ' + json.dumps(errors, ensure_ascii=False))

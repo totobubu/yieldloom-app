@@ -34,9 +34,8 @@ try {
             () => document.querySelector('.portfolio-content-body').inert
         );
         const bounds = await overlay.boundingBox();
-        const content = await page.locator('.portfolio-content').boundingBox();
-        assert.equal(bounds.width, content.width);
-        assert.equal(bounds.height, content.height);
+        assert.equal(bounds.width, width);
+        assert.equal(bounds.height, 900);
         await page
             .getByRole('tab', { name: '계좌 관리', exact: true })
             .click({ timeout: 500 })

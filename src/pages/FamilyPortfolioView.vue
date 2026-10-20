@@ -12,6 +12,7 @@
     import SnapshotHistory from '@/components/portfolio/SnapshotHistory.vue';
     import BrokerSpreadsheetForm from '@/components/portfolio/BrokerSpreadsheetForm.vue';
     import TossPdfImportReview from '@/components/portfolio/TossPdfImportReview.vue';
+    import StatementIdentityReview from '@/components/portfolio/StatementIdentityReview.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { portfolioMappingRequest } from '@/services/portfolioMappings.js';
     import {
@@ -97,6 +98,7 @@
     const requestedCalculations = new Set();
     const portfolioScope = ref('personal');
     const busy = ref(false),
+        operationProgress = ref(null),
         error = ref(''),
         message = ref(''),
         invitation = ref('');
@@ -136,6 +138,8 @@
     const rememberPassword = ref(true),
         reviewPage = ref(0);
     watch(format, () => {
+        review.value = null;
+        confirmed.value = false;
         selectedFiles.value = [];
         fileUpload.value?.clear();
         if (format.value === 'toss-pdf') kind.value = 'transactions';
@@ -331,8 +335,24 @@
         selectedFiles = ref([]),
         password = ref(''),
         confirmed = ref(false),
+        statementConfirmed = ref(false),
         review = ref(null);
+    const statementBlocked = computed(
+        () =>
+            review.value?.source === 'toss-pdf' &&
+            (!review.value.statementFiles?.length ||
+                review.value.statementFiles.some(
+                    (file) =>
+                        !file.maskedNumber ||
+                        !['matched', 'unregistered'].includes(file.accountMatch)
+                ))
+    );
+    watch(review, () => {
+        statementConfirmed.value = false;
+    });
     function selectImportFiles(event) {
+        confirmed.value = false;
+        review.value = null;
         const files = event.files || [];
         selectedFiles.value =
             format.value === 'toss-pdf' ? files : files.slice(-1);
@@ -494,6 +514,7 @@
     async function run(work) {
         if (busy.value) return;
         busy.value = true;
+        operationProgress.value = null;
         error.value = '';
         message.value = '';
         try {
@@ -502,6 +523,7 @@
             error.value = e.message;
         } finally {
             busy.value = false;
+            operationProgress.value = null;
         }
     }
     async function refreshData({
@@ -729,13 +751,19 @@
                 throw new Error('계좌와 파일을 선택하세요.');
             if (files.length > 20)
                 throw new Error('PDF는 한 번에 최대 20개까지 선택하세요.');
-            if (!confirmed.value)
+            if (format.value !== 'toss-pdf' && !confirmed.value)
                 throw new Error('명의자·금융기관·계좌를 확인하세요.');
             if (files.some((file) => file.size > 2 * 1024 * 1024))
                 throw new Error('2MB 이하 파일을 선택하세요.');
             const results = [];
+            operationProgress.value = {
+                stage: 'extract',
+                completed: 0,
+                total: files.length,
+                detail: '',
+            };
             for (const [fileIndex, file] of files.entries()) {
-                message.value = `추출 중 ${fileIndex + 1}/${files.length}`;
+                operationProgress.value.detail = file.name;
                 const form = new FormData();
                 Object.entries({
                     accountId: a.id,
@@ -744,7 +772,7 @@
                     kind: kind.value,
                     asOf: asOf.value,
                     format: format.value,
-                    identityConfirmed: 'true',
+                    identityConfirmed: String(confirmed.value),
                     password: password.value,
                     rememberPassword:
                         fileIndex === 0 &&
@@ -754,7 +782,11 @@
                             : 'false',
                 }).forEach(([key, value]) => form.append(key, value));
                 form.append('file', file);
-                results.push(await familyRequest('preview', form));
+                results.push({
+                    ...(await familyRequest('preview', form)),
+                    fileName: file.name,
+                });
+                operationProgress.value.completed = fileIndex + 1;
             }
             const result = results.reduce(
                 (combined, item) => {
@@ -772,6 +804,11 @@
                             start: batch.start + offset,
                         }))
                     );
+                    if (item.source === 'toss-pdf')
+                        combined.statementFiles.push({
+                            fileName: item.fileName,
+                            ...item.statementIdentity,
+                        });
                     combined.asOf = [combined.asOf, item.asOf]
                         .filter(Boolean)
                         .sort()
@@ -786,10 +823,16 @@
                     batches: [],
                     asOf: null,
                     fileCount: results.length,
+                    statementFiles: [],
                 }
             );
             if (result.source === 'toss-pdf') {
-                message.value = '종목 코드와 환전 흐름을 확인하는 중입니다.';
+                operationProgress.value = {
+                    stage: 'resolve',
+                    completed: 0,
+                    total: 0,
+                    detail: '종목 코드와 환전 흐름을 확인하고 있습니다.',
+                };
                 Object.assign(result, await enrichTossReview(result.rows));
             }
             if (ownUid.value === uid && selectedAccount.value === a.id)
@@ -806,8 +849,7 @@
             password.value = '';
             selectedFiles.value = [];
             fileUpload.value?.clear();
-            if (rememberPassword.value && format.value === 'toss-pdf')
-                await refresh();
+            if (results.some((item) => item.passwordSaved)) await refresh();
         });
     }
     async function previewManualHoldings(body) {
@@ -869,6 +911,13 @@
         await run(async () => {
             const current = review.value;
             if (!current) throw new Error('저장할 자료를 먼저 검토해 주세요.');
+            if (
+                current.source === 'toss-pdf' &&
+                (statementBlocked.value || !statementConfirmed.value)
+            )
+                throw new Error(
+                    'PDF에서 추출한 명의자·계좌번호와 저장 대상 계좌를 확인하세요.'
+                );
             const uid = ownUid.value;
             importReceipt.value = null;
             const batches = current.batches || [
@@ -879,8 +928,15 @@
                 },
             ];
             const result = { inserted: 0, duplicates: 0 };
-            for (const batch of batches)
+            operationProgress.value = {
+                stage: 'validate',
+                completed: 0,
+                total: batches.length,
+                detail: '모든 자료의 오류를 확인한 뒤 저장합니다.',
+            };
+            for (const batch of batches) {
                 await familyRequest('validateImport', {
+                    identityConfirmed: statementConfirmed.value,
                     accountId: current.accountId,
                     reviewId: batch.reviewId,
                     rows: current.rows.slice(
@@ -888,9 +944,17 @@
                         batch.start + batch.count
                     ),
                 });
+                operationProgress.value.completed++;
+            }
+            operationProgress.value = {
+                stage: 'save',
+                completed: 0,
+                total: batches.length,
+                detail: '거래내역을 계좌에 반영하고 있습니다.',
+            };
             for (const [index, batch] of batches.entries()) {
-                message.value = `저장 중 ${index + 1}/${batches.length} · 실패하면 같은 미리보기에서 다시 시도할 수 있습니다.`;
                 const saved = await familyRequest('commit', {
+                    identityConfirmed: statementConfirmed.value,
                     accountId: current.accountId,
                     reviewId: batch.reviewId,
                     rows: current.rows.slice(
@@ -900,7 +964,14 @@
                 });
                 result.inserted += saved.inserted;
                 result.duplicates += saved.duplicates;
+                operationProgress.value.completed = index + 1;
             }
+            operationProgress.value = {
+                stage: 'finalize',
+                completed: 0,
+                total: 0,
+                detail: '잔고와 거래 기록을 갱신하고 있습니다.',
+            };
             let funding = { saved: 0, failed: 0 };
             if (current.source === 'toss-pdf' && result.inserted > 0)
                 funding = await saveMatchedFunding(current);
@@ -1047,7 +1118,10 @@
 </script>
 
 <template>
-    <PortfolioLoadingRegion class="family-page" :busy="contentBusy">
+    <PortfolioLoadingRegion
+        class="family-page"
+        :busy="contentBusy"
+        :progress="operationProgress">
         <header class="portfolio-heading">
             <div>
                 <span class="studio-eyebrow"
@@ -1089,7 +1163,7 @@
         <Message v-if="error" severity="error" :closable="false">{{
             error
         }}</Message>
-        <Message v-if="message" severity="success" :closable="false">{{
+        <Message v-if="message && !busy" severity="success" :closable="false">{{
             message
         }}</Message>
         <Message
@@ -2123,7 +2197,7 @@ date,symbol,quantity,amount,currency,type,externalId
                             </p>
                         </details>
                         <form
-                            v-if="inputMethod === 'file'"
+                            v-if="inputMethod === 'file' && !review"
                             @submit.prevent="preview">
                             <label
                                 >자료 종류
@@ -2234,6 +2308,10 @@ date,symbol,quantity,amount,currency,type,externalId
                                 </Button>
                             </p>
                             <label
+                                v-if="
+                                    format !== 'toss-pdf' &&
+                                    selectedFiles.length
+                                "
                                 ><input
                                     v-model="confirmed"
                                     type="checkbox"
@@ -2250,6 +2328,13 @@ date,symbol,quantity,amount,currency,type,externalId
                         </form>
                         <template v-if="review"
                             ><h3>검토 · {{ review.source }}</h3>
+                            <StatementIdentityReview
+                                v-if="review.source === 'toss-pdf'"
+                                v-model:confirmed="statementConfirmed"
+                                :files="review.statementFiles"
+                                :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.maskedNumber}`"
+                                :blocked="statementBlocked"
+                                :busy="busy" />
                             <template
                                 v-if="review.source === 'manual-holdings-v1'">
                                 <Message severity="warn" :closable="false">
@@ -2365,7 +2450,12 @@ date,symbol,quantity,amount,currency,type,externalId
                             </div>
                             <Button
                                 type="submit"
-                                :disabled="busy"
+                                :disabled="
+                                    busy ||
+                                    statementBlocked ||
+                                    (review.source === 'toss-pdf' &&
+                                        !statementConfirmed)
+                                "
                                 @click="commit">
                                 수정 내용 검증·저장</Button
                             ><Button

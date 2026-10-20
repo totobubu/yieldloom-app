@@ -52,9 +52,7 @@ try {
     await page
         .getByRole('heading', { name: '내 포트폴리오', exact: true })
         .waitFor();
-    await page
-        .getByRole('button', { name: '첫 계좌 등록', exact: true })
-        .click();
+    await page.getByLabel('금융기관', { exact: true }).waitFor();
     await page.getByLabel('금융기관', { exact: true }).fill('테스트증권');
     await page.getByLabel('별칭', { exact: true }).fill('장기투자');
     await page.getByLabel('계좌 끝 4자리 (선택)').fill('4321');

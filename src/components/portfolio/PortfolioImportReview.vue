@@ -20,6 +20,12 @@
         saveDisabled: Boolean,
     });
     const emit = defineEmits(['update-row', 'commit', 'cancel']);
+    const heading = ref(null);
+    function focusHeading() {
+        heading.value?.focus({ preventScroll: true });
+        heading.value?.scrollIntoView({ block: 'center' });
+    }
+    defineExpose({ focusHeading });
     const search = ref('');
     const category = ref('all');
     const symbol = ref('');
@@ -201,7 +207,9 @@
         <div class="review-heading">
             <div class="review-heading-copy">
                 <div class="review-title-line">
-                    <h2>추출 결과 미리보기 · 저장 전 검토</h2>
+                    <h2 ref="heading" tabindex="-1">
+                        추출 결과 미리보기 · 저장 전 검토
+                    </h2>
                     <span class="account-capsule"
                         ><span />{{ accountLabel }}</span
                     >

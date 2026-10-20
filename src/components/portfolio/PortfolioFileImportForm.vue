@@ -12,6 +12,7 @@
         isOwner: Boolean,
         busy: Boolean,
         reviewing: Boolean,
+        error: { type: String, default: '' },
         kindOptions: { type: Array, required: true },
         formatOptions: { type: Array, required: true },
         selectedFiles: { type: Array, required: true },
@@ -30,6 +31,7 @@
         'reset',
     ]);
     const uploader = ref(null);
+    const errorNotice = ref(null);
     const passwordInput = ref(null);
     const showPassword = ref(false);
     const isPdf = computed(() => format.value === 'toss-pdf');
@@ -68,7 +70,11 @@
             ? `${(bytes / 1024).toFixed(1)} KB`
             : `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
     }
-    defineExpose({ clear });
+    function focusError() {
+        errorNotice.value?.focus({ preventScroll: true });
+        errorNotice.value?.scrollIntoView({ block: 'center' });
+    }
+    defineExpose({ clear, focusError });
 </script>
 
 <template>
@@ -376,6 +382,20 @@
                 </article>
 
                 <article class="import-card import-submit">
+                    <div
+                        v-if="error"
+                        ref="errorNotice"
+                        tabindex="-1"
+                        class="import-error">
+                        <Message severity="error" :closable="false">
+                            <strong>추출을 완료하지 못했습니다.</strong>
+                            <p>{{ error }}</p>
+                            <p v-if="selectedFiles.length">
+                                선택한 파일은 유지됩니다. 내용을 확인한 뒤 다시
+                                시도해 주세요.
+                            </p>
+                        </Message>
+                    </div>
                     <label
                         v-if="!isPdf && selectedFiles.length"
                         class="import-check"

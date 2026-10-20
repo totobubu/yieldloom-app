@@ -71,7 +71,7 @@ try {
             () => !document.querySelector('.p-select-overlay')
         );
     };
-    await form.getByLabel('자료 기준일', { exact: true }).fill('2026-10-18');
+    await form.getByLabel('잔고 기준일', { exact: true }).fill('2026-10-18');
     await form
         .getByLabel('CSV 또는 XLSX 파일', { exact: true })
         .setInputFiles(fixturePath);
@@ -120,7 +120,7 @@ try {
         })
         .waitFor();
     await choose('연결 자료 종류', '거래 내역');
-    await form.getByLabel('자료 기준일', { exact: true }).fill('2026-10-18');
+    await form.getByLabel('조회 종료일', { exact: true }).fill('2026-10-18');
     await form.getByLabel('CSV 또는 XLSX 파일', { exact: true }).setInputFiles({
         name: 'dividend.csv',
         mimeType: 'text/csv',

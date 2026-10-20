@@ -19,6 +19,7 @@
     import Card from 'primevue/card';
     import Panel from 'primevue/panel';
     import InputText from 'primevue/inputtext';
+    import FileUpload from 'primevue/fileupload';
     import Select from 'primevue/select';
     import SelectButton from 'primevue/selectbutton';
     import Message from 'primevue/message';
@@ -121,6 +122,11 @@
         format = ref('standard-csv');
     const rememberPassword = ref(true),
         reviewPage = ref(0);
+    watch(format, () => {
+        selectedFiles.value = [];
+        fileUpload.value?.clear();
+        if (format.value === 'toss-pdf') kind.value = 'transactions';
+    });
     const inputMethod = ref('file');
     const inputMethodOptions = [
         { label: '파일 업로드', value: 'file' },
@@ -213,10 +219,16 @@
             ? ''
             : '자금 구성을 저장했습니다.';
     }
-    const fileInput = ref(null),
+    const fileUpload = ref(null),
+        selectedFiles = ref([]),
         password = ref(''),
         confirmed = ref(false),
         review = ref(null);
+    function selectImportFiles(event) {
+        const files = event.files || [];
+        selectedFiles.value =
+            format.value === 'toss-pdf' ? files : files.slice(-1);
+    }
     const accountFilter = ref(''),
         ownerFilter = ref(''),
         symbolFilter = ref(''),
@@ -611,43 +623,85 @@
             importReceipt.value = null;
             const a = activeAccount.value;
             const uid = ownUid.value;
-            const importKind = kind.value,
-                importAsOf = asOf.value;
-            const file = fileInput.value?.files?.[0];
-            if (!a || !file) throw new Error('계좌와 파일을 선택하세요.');
+            const importKind = kind.value;
+            const files = selectedFiles.value;
+            if (!a || !files.length)
+                throw new Error('계좌와 파일을 선택하세요.');
+            if (files.length > 20)
+                throw new Error('PDF는 한 번에 최대 20개까지 선택하세요.');
             if (!confirmed.value)
                 throw new Error('명의자·금융기관·계좌를 확인하세요.');
-            if (file.size > 2 * 1024 * 1024)
+            if (files.some((file) => file.size > 2 * 1024 * 1024))
                 throw new Error('2MB 이하 파일을 선택하세요.');
-            const form = new FormData();
-            Object.entries({
-                accountId: a.id,
-                ownerId: a.ownerId,
-                institution: a.institution,
-                kind: kind.value,
-                asOf: asOf.value,
-                format: format.value,
-                identityConfirmed: 'true',
-                password: password.value,
-                rememberPassword:
-                    rememberPassword.value &&
-                    a.permissions?.[ownUid.value] === 'owner'
-                        ? 'true'
-                        : 'false',
-            }).forEach(([key, value]) => form.append(key, value));
-            form.append('file', file);
-            const result = await familyRequest('preview', form);
+            const results = [];
+            for (const [fileIndex, file] of files.entries()) {
+                message.value = `추출 중 ${fileIndex + 1}/${files.length}`;
+                const form = new FormData();
+                Object.entries({
+                    accountId: a.id,
+                    ownerId: a.ownerId,
+                    institution: a.institution,
+                    kind: kind.value,
+                    asOf: asOf.value,
+                    format: format.value,
+                    identityConfirmed: 'true',
+                    password: password.value,
+                    rememberPassword:
+                        fileIndex === 0 &&
+                        rememberPassword.value &&
+                        a.permissions?.[ownUid.value] === 'owner'
+                            ? 'true'
+                            : 'false',
+                }).forEach(([key, value]) => form.append(key, value));
+                form.append('file', file);
+                results.push(await familyRequest('preview', form));
+            }
+            const result = results.reduce(
+                (combined, item) => {
+                    const offset = combined.rows.length;
+                    combined.rows.push(...item.rows);
+                    combined.errors.push(
+                        ...item.errors.map((problem) => ({
+                            ...problem,
+                            row: problem.row ? problem.row + offset : 0,
+                        }))
+                    );
+                    combined.batches.push(
+                        ...item.batches.map((batch) => ({
+                            ...batch,
+                            start: batch.start + offset,
+                        }))
+                    );
+                    combined.asOf = [combined.asOf, item.asOf]
+                        .filter(Boolean)
+                        .sort()
+                        .at(-1);
+                    return combined;
+                },
+                {
+                    reviewId: results[0].reviewId,
+                    source: results[0].source,
+                    rows: [],
+                    errors: [],
+                    batches: [],
+                    asOf: null,
+                    fileCount: results.length,
+                }
+            );
             if (ownUid.value === uid && selectedAccount.value === a.id)
                 review.value = {
                     ...result,
                     accountId: a.id,
                     kind: importKind,
-                    asOf: importAsOf,
+                    asOf: result.asOf || asOf.value,
                     accountAlias: a.alias,
                 };
+            if (format.value === 'toss-pdf' && result.asOf)
+                asOf.value = result.asOf;
             reviewPage.value = 0;
             password.value = '';
-            fileInput.value.value = '';
+            selectedFiles.value = [];
+            fileUpload.value?.clear();
             if (rememberPassword.value && format.value === 'toss-pdf')
                 await refresh();
         });
@@ -721,11 +775,15 @@
                 },
             ];
             const result = { inserted: 0, duplicates: 0 };
-            await familyRequest('validateImport', {
-                accountId: current.accountId,
-                reviewId: current.reviewId,
-                rows: current.rows,
-            });
+            for (const batch of batches)
+                await familyRequest('validateImport', {
+                    accountId: current.accountId,
+                    reviewId: batch.reviewId,
+                    rows: current.rows.slice(
+                        batch.start,
+                        batch.start + batch.count
+                    ),
+                });
             for (const [index, batch] of batches.entries()) {
                 message.value = `저장 중 ${index + 1}/${batches.length} · 실패하면 같은 미리보기에서 다시 시도할 수 있습니다.`;
                 const saved = await familyRequest('commit', {
@@ -771,7 +829,6 @@
     async function anotherFile() {
         importReceipt.value = null;
         await nextTick();
-        fileInput.value?.focus();
     }
     function openTransactionsUpload() {
         kind.value = 'transactions';
@@ -1219,7 +1276,7 @@
                                     option-value="value"
                                     aria-label="명의자"
                                     placeholder="선택" /></label
-                            ><label
+                            ><label v-if="format !== 'toss-pdf'"
                                 >계좌
                                 <Select
                                     v-model="accountFilter"
@@ -1234,7 +1291,7 @@
                                     option-value="value"
                                     aria-label="계좌"
                                     placeholder="선택" /></label
-                            ><label
+                            ><label v-if="format !== 'toss-pdf'"
                                 >종목 검색 <InputText v-model="symbolFilter"
                             /></label>
                             <h3>명의자·계좌별 잔고</h3>
@@ -1986,25 +2043,57 @@ date,symbol,quantity,amount,currency,type,externalId
                                     aria-label="파일 형식"
                                     placeholder="선택" /></label
                             ><label
-                                >자료 기준일
+                                v-if="format !== 'toss-pdf'"
+                                >{{
+                                    kind === 'transactions'
+                                        ? '조회 종료일'
+                                        : '잔고 기준일'
+                                }}
                                 <InputText
                                     v-model="asOf"
                                     type="date"
-                                    required /></label
-                            ><label
-                                >파일
-                                <input
-                                    ref="fileInput"
-                                    type="file"
+                                    required />
+                                <small v-if="kind === 'transactions'"
+                                    >거래내역서 조회 기간의 마지막
+                                    날입니다.</small
+                                ></label
+                            >
+                            <p v-else class="studio-muted">
+                                조회 종료일은 PDF에서 추출된 마지막 거래일로
+                                자동 입력됩니다.
+                            </p>
+                            <div class="file-upload-field">
+                                <span>파일</span>
+                                <FileUpload
+                                    ref="fileUpload"
+                                    mode="basic"
+                                    name="portfolioFile"
+                                    choose-label="파일 선택"
+                                    :pt="{ input: { 'aria-label': '파일' } }"
+                                    :multiple="format === 'toss-pdf'"
+                                    :file-limit="format === 'toss-pdf' ? 20 : 1"
+                                    :max-file-size="2097152"
                                     :accept="
                                         format === 'toss-pdf'
-                                            ? '.pdf'
+                                            ? '.pdf,application/pdf'
                                             : format === 'standard-xlsx'
-                                              ? '.xlsx'
-                                              : '.csv'
+                                              ? '.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                                              : '.csv,text/csv'
                                     "
-                                    required /></label
-                            ><label v-if="format === 'toss-pdf'"
+                                    custom-upload
+                                    @select="selectImportFiles"
+                                    @clear="selectedFiles = []" />
+                                <ul
+                                    v-if="selectedFiles.length"
+                                    class="selected-files">
+                                    <li
+                                        v-for="file in selectedFiles"
+                                        :key="`${file.name}:${file.size}:${file.lastModified}`">
+                                        {{ file.name }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <label v-if="format === 'toss-pdf'"
                                 >PDF 비밀번호
                                 <InputText
                                     v-model="password"

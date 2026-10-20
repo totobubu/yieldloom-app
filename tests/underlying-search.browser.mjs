@@ -17,26 +17,37 @@ try {
     const expected = ['AAPB', 'AAPD', 'AAPU', 'AAPW', 'AAPY', 'APLY'];
     await page.goto('http://127.0.0.1:5173/?q=AAPL&type=etf');
     for (const symbol of expected) {
-        const row = page
-            .locator('.desktop-results tbody tr')
-            .filter({
-                has: page.locator('strong', {
-                    hasText: new RegExp(`^${symbol}$`),
-                }),
-            });
+        const row = page.locator('.desktop-results tbody tr').filter({
+            has: page.locator('strong', {
+                hasText: new RegExp(`^${symbol}$`),
+            }),
+        });
         await row.getByText('AAPL 기반', { exact: true }).waitFor();
     }
     for (const width of [390, 360]) {
         await page.setViewportSize({ width, height: 1000 });
         for (const symbol of expected) {
-            const row = page
-                .locator('.mobile-results li')
-                .filter({
-                    has: page.locator('strong', {
-                        hasText: new RegExp(`^${symbol}$`),
-                    }),
-                });
+            const row = page.locator('.mobile-results li').filter({
+                has: page.locator('strong', {
+                    hasText: new RegExp(`^${symbol}$`),
+                }),
+            });
             await row.getByText('AAPL 기반', { exact: true }).waitFor();
+            const comparison = row.getByRole('link', {
+                name: 'AAPL ETF 비교',
+                exact: true,
+            });
+            await comparison.waitFor();
+            const [cardBox, comparisonBox] = await Promise.all([
+                row.boundingBox(),
+                comparison.boundingBox(),
+            ]);
+            assert.ok(cardBox && comparisonBox);
+            assert.ok(comparisonBox.y >= cardBox.y);
+            assert.ok(
+                comparisonBox.y + comparisonBox.height <=
+                    cardBox.y + cardBox.height
+            );
         }
         assert.ok(
             await page.evaluate(
@@ -65,13 +76,11 @@ try {
     );
     await page.reload();
     for (const symbol of expected.filter((value) => value !== 'AAPW')) {
-        const row = page
-            .locator('.mobile-results li')
-            .filter({
-                has: page.locator('strong', {
-                    hasText: new RegExp(`^${symbol}$`),
-                }),
-            });
+        const row = page.locator('.mobile-results li').filter({
+            has: page.locator('strong', {
+                hasText: new RegExp(`^${symbol}$`),
+            }),
+        });
         await row.getByText('AAPL 기반', { exact: true }).waitFor();
     }
     assert.deepEqual(errors, []);

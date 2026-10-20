@@ -564,7 +564,7 @@
                     </router-link>
                     <router-link
                         v-if="row.underlying"
-                        class="row-note"
+                        class="row-note mobile-compare-link"
                         :to="`/underlying/${row.underlying}`"
                         >{{ row.underlying }} ETF 비교</router-link
                     >
@@ -793,15 +793,23 @@
             margin: 0;
             gap: 12px;
         }
+        .mobile-results > li {
+            overflow: hidden;
+            background: var(--app-surface);
+            border: 1px solid var(--app-border);
+            border-radius: 14px;
+        }
         .mobile-stock-card {
             display: grid;
             gap: 14px;
             padding: 16px;
-            background: var(--app-surface);
-            border: 1px solid var(--app-border);
-            border-radius: 14px;
             color: var(--app-text);
             text-decoration: none;
+        }
+        .mobile-compare-link {
+            min-height: 44px;
+            margin: 0;
+            padding: 0 16px 12px;
         }
         .mobile-stock-heading {
             display: flex;

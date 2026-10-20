@@ -116,7 +116,7 @@ try {
         .waitFor({ state: 'hidden' });
     await tab('한눈에 보기');
     await page
-        .getByRole('table', { name: '명의자·계좌별 원본 잔고', exact: true })
+        .getByRole('table', { name: '명의자·계좌별 잔고', exact: true })
         .getByText('AAPL', { exact: true })
         .waitFor();
     await upload();

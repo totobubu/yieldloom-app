@@ -14,6 +14,7 @@
         positions: { type: Array, required: true },
         accounts: { type: Array, default: () => [] },
         missingAccounts: { type: Number, default: 0 },
+        estimatedPositions: { type: Number, default: 0 },
     });
     const emit = defineEmits(['request-upload']);
     const quotes = ref({}),
@@ -96,23 +97,33 @@
             error
         }}</Message>
         <template v-else>
+            <Message
+                v-if="estimatedPositions"
+                severity="warn"
+                :closable="false">
+                거래내역으로 계산한 추정 잔고 {{ estimatedPositions }}개를
+                표시합니다. 시작일 이전 보유분·누락 거래·분할·병합 때문에 실제
+                잔고와 다를 수 있습니다.
+            </Message>
             <div v-if="!positions.length" class="valuation-empty">
                 <i class="pi pi-inbox" aria-hidden="true" />
                 <div>
                     <h3>저장된 잔고내역이 없습니다</h3>
                     <p>
-                        거래내역과 잔고내역은 별도 자료입니다. 거래내역을 이미
-                        등록했더라도 현재 보유수량은 추정하지 않습니다.
+                        거래내역이 있으면 계산 잔고를 자동 생성합니다. 필요하면
+                        증권사 잔고내역을 추가하세요.
                     </p>
                     <p v-if="missingAccounts">
                         현재 선택 범위의 {{ missingAccounts }}개 계좌에
                         잔고내역이 없습니다.
                     </p>
                 </div>
-                <Button
-                    label="잔고내역 추가"
-                    icon="pi pi-upload"
-                    @click="emit('request-upload')" />
+                <div class="valuation-empty-actions">
+                    <Button
+                        label="잔고내역 추가"
+                        icon="pi pi-upload"
+                        @click="emit('request-upload')" />
+                </div>
             </div>
             <div v-if="valuation.currencies.length" class="valuation-grid">
                 <article
@@ -272,6 +283,11 @@
     .valuation-empty p + p {
         margin-top: 0.25rem;
     }
+    .valuation-empty-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
     .valuation h2,
     .valuation h3 {
         margin-top: 0;
@@ -318,9 +334,12 @@
         .valuation-empty {
             grid-template-columns: auto minmax(0, 1fr);
         }
-        .valuation-empty :deep(.p-button) {
+        .valuation-empty-actions {
             grid-column: 1 / -1;
             width: 100%;
+        }
+        .valuation-empty-actions :deep(.p-button) {
+            flex: 1 1 10rem;
         }
     }
 </style>

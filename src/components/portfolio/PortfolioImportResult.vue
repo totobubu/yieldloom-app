@@ -15,7 +15,7 @@
         if (props.accountsState !== 'ready')
             return '저장은 완료되었습니다. 계좌 목록 갱신 상태를 확인해 주세요.';
         if (props.receipt.kind === 'transactions')
-            return '거래 기록을 저장했습니다. 보유 수량은 잔고내역을 등록할 때 갱신됩니다.';
+            return '거래 기록을 저장했고 계산 잔고에 반영했습니다. 증권사 잔고내역을 등록하면 해당 기준일 이후 거래만 누적합니다.';
         if (
             props.latestHoldingsDate &&
             props.latestHoldingsDate > props.receipt.asOf

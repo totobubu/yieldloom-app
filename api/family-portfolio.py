@@ -13,8 +13,9 @@ from firebase_admin import auth, credentials, firestore
 from flask import Flask, g, has_request_context, jsonify, request
 from werkzeug.exceptions import RequestEntityTooLarge
 
-from api.family_portfolio_service import (DETAIL_NUMBERS, DETAIL_TEXT, PortfolioError, can_access, digest, identifier, iso_date,
-                                      parse_csv, require, row_key, summarize, text, validate_rows)
+from api.family_portfolio_service import (DETAIL_NUMBERS, DETAIL_TEXT, PortfolioError, apply_holding_entries,
+                                      calculate_holdings, can_access, digest, identifier, iso_date,
+                                      normalize_row, parse_csv, require, row_key, summarize, text, validate_rows)
 from api.server_cors import configure_cors
 from api.firebase_credential import parse_firebase_credential
 from api.portfolio_pdf_secret import seal_password, open_password
@@ -385,6 +386,87 @@ def save_pdf_password(db, uid, body):
     return apply(db.transaction())
 
 
+def rebuild_calculated_snapshot(db, uid, account_id, retries=2):
+    """Read a ledger once, then publish only if its revisions are unchanged."""
+    ref, data = account(db, account_id, uid, True)
+    for _ in range(retries):
+        expected_entries = data.get('entriesRevision', 0)
+        expected_snapshot = data.get('snapshotRevision', 0)
+        entries = [{'id': snap.id, **snap.to_dict()} for snap in read_stream(ref.collection('entries').order_by('__name__').limit(10001))]
+        require(len(entries) <= 10000, '거래 원장이 너무 커 별도 재계산이 필요합니다.', 409)
+        calculated = calculate_holdings(entries, data.get('snapshot'), expected_entries, expected_snapshot)
+        calculated['calculatedAt'] = now().isoformat()
+        @firestore.transactional
+        def publish(tx):
+            current = load(ref, tx)
+            require(can_access(current, uid, True), '계좌 변경 권한이 없습니다.', 403)
+            if (current.get('entriesRevision', 0), current.get('snapshotRevision', 0)) != (expected_entries, expected_snapshot):
+                return False
+            current['calculatedSnapshot'] = calculated
+            current['calculationStatus'] = calculated['status']
+            tx.set(ref, current)
+            return True
+        if publish(db.transaction()):
+            return {'calculatedSnapshot': calculated}
+        data = load(ref)
+    raise PortfolioError('계산 중 거래내역이 변경되었습니다. 다시 시도하세요.', 409)
+
+
+def mutate_entry(db, uid, body):
+    ref, _ = account(db, body.get('accountId'), uid, True)
+    request_id = identifier(body.get('requestId'))
+    operation = body.get('operation')
+    require(operation in {'add', 'void', 'replace', 'restore'}, '지원하지 않는 원장 변경입니다.')
+    reason = text(body.get('reason'), '변경 사유', 200)
+    target_id = identifier(body.get('entryId')) if operation != 'add' else None
+    replacement = None
+    if operation in {'add', 'replace'}:
+        replacement = normalize_row(body.get('row') or {}, 'transactions')
+    audit = ref.collection('entryCorrections').document(request_id)
+    @firestore.transactional
+    def apply(tx):
+        data = load(ref, tx)
+        require(can_access(data, uid, True), '계좌 변경 권한이 없습니다.', 403)
+        prior = read_snapshot(audit, tx)
+        payload_hash = digest({'operation': operation, 'entryId': target_id, 'reason': reason, 'row': replacement})
+        if prior.exists:
+            require(prior.to_dict()['payloadHash'] == payload_hash, '같은 요청 번호의 내용이 다릅니다.', 409)
+            return {'alreadyApplied': True}
+        target = ref.collection('entries').document(target_id) if target_id else None
+        old = read_snapshot(target, tx) if target else None
+        if operation != 'add':
+            require(old.exists, '대상 거래가 없습니다.', 404)
+        old_data = old.to_dict() if old else None
+        if operation in {'void', 'replace'}:
+            require(not old_data.get('voidedAt'), '이미 취소된 거래입니다.', 409)
+        if operation == 'restore':
+            require(old_data.get('voidedAt'), '취소되지 않은 거래입니다.', 409)
+        new_ref = ref.collection('entries').document(row_key(replacement)) if replacement else None
+        if new_ref:
+            existing = read_snapshot(new_ref, tx)
+            require(not existing.exists, '같은 거래 고유번호가 이미 있습니다.', 409)
+        revision = data.get('entriesRevision', 0) + 1
+        timestamp = now().isoformat()
+        if operation in {'void', 'replace'}:
+            tx.set(target, {**old_data, 'voidedAt': timestamp, 'voidedBy': uid, 'voidReason': reason})
+        elif operation == 'restore':
+            restored = {key: value for key, value in old_data.items() if key not in {'voidedAt', 'voidedBy', 'voidReason'}}
+            tx.set(target, restored)
+        if new_ref:
+            tx.set(new_ref, {'row': replacement, 'source': 'manual-correction-v1', 'asOf': replacement['date'],
+                             'importedAt': timestamp, 'replacesEntryId': target_id})
+        data.update({'entriesRevision': revision, 'calculationStatus': 'stale'})
+        tx.set(ref, data)
+        tx.set(audit, {'payloadHash': payload_hash, 'operation': operation, 'entryId': target_id,
+                       'replacementEntryId': new_ref.id if new_ref else None, 'reason': reason,
+                       'changedBy': uid, 'changedAt': timestamp, 'entriesRevision': revision})
+        return {'alreadyApplied': False}
+    result = apply(db.transaction())
+    if not result.get('alreadyApplied'):
+        result.update(rebuild_calculated_snapshot(db, uid, ref.id))
+    return result
+
+
 def commit(db, uid, body):
     ref, _ = account(db, body.get('accountId'), uid, True)
     session = ref.collection('reviews').document(identifier(body.get('reviewId')))
@@ -414,7 +496,17 @@ def commit(db, uid, body):
                 require(not old.exists or old.to_dict()['row'] == row, '같은 거래 고유번호의 내용이 다릅니다. 원장을 확인하세요.', 409)
             inserted = sum(not old.exists for old in existing)
             if inserted:
-                data['entriesRevision'] = data.get('entriesRevision', 0) + 1
+                previous_revision = data.get('entriesRevision', 0)
+                data['entriesRevision'] = previous_revision + 1
+                calculated = data.get('calculatedSnapshot')
+                if (calculated and calculated.get('entriesRevision') == previous_revision
+                        and calculated.get('snapshotRevision') == data.get('snapshotRevision', 0)):
+                    fresh = [{'id': entry.id, 'row': row} for row, entry, old in zip(rows, refs, existing) if not old.exists]
+                    data['calculatedSnapshot'] = apply_holding_entries(calculated, fresh, data['entriesRevision'])
+                    data['calculatedSnapshot']['calculatedAt'] = now().isoformat()
+                    data['calculationStatus'] = data['calculatedSnapshot']['status']
+                else:
+                    data['calculationStatus'] = 'stale'
             for row, entry, old in zip(rows, refs, existing):
                 if not old.exists:
                     tx.set(entry, {'row': row, 'source': review['source'], 'asOf': review['asOf'], 'importedAt': now()})
@@ -432,6 +524,7 @@ def commit(db, uid, body):
             if replaces_current:
                 data['snapshot'] = snapshot
             data['snapshotRevision'] = snapshot['revision']
+            data['calculationStatus'] = 'stale'
             # Store before/after only in the immutable history, never nest it in
             # the account's current snapshot or expose it in account overviews.
             tx.set(ref.collection('snapshots').document(review['fileHash']), {
@@ -446,7 +539,12 @@ def commit(db, uid, body):
         # Retain the expiring review so a partially completed multi-batch import
         # can retry completed batches through their existing receipts.
         return {'inserted': inserted, 'duplicates': len(rows) - inserted}
-    return apply(db.transaction())
+    result = apply(db.transaction())
+    if not result.get('alreadyImported'):
+        current = load(ref)
+        if current.get('calculationStatus') == 'stale':
+            result.update(rebuild_calculated_snapshot(db, uid, ref.id))
+    return result
 
 
 def validate_import(db, uid, body):
@@ -582,6 +680,10 @@ def route():
             result = edit_account(db, uid, body, action == 'grant')
         elif action == 'commit':
             result = commit(db, uid, body)
+        elif action == 'mutateEntry':
+            result = mutate_entry(db, uid, body)
+        elif action == 'rebuildCalculatedHoldings':
+            result = rebuild_calculated_snapshot(db, uid, body.get('accountId'))
         elif action == 'pdfPassword':
             result = save_pdf_password(db, uid, body)
         elif action == 'validateImport':

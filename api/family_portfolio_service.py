@@ -84,6 +84,57 @@ def row_key(row):
     return hashlib.sha256(row['externalId'].encode()).hexdigest()
 
 
+def calculate_holdings(entries, baseline=None, entries_revision=0, snapshot_revision=0):
+    """Materialize share quantities from an immutable transaction ledger."""
+    quantities, amounts, issues = {}, {}, []
+    baseline_as_of = baseline.get('asOf') if baseline else None
+    if baseline:
+        for row in baseline.get('rows', []):
+            quantities[(row['symbol'], row['currency'])] = float(row['quantity'])
+            amounts[(row['symbol'], row['currency'])] = row.get('amount')
+    latest = baseline_as_of
+    for entry in sorted(entries, key=lambda item: (item.get('row', {}).get('date', ''), item.get('id', ''))):
+        if entry.get('voidedAt'):
+            continue
+        row = entry.get('row', entry)
+        day, kind = row.get('date'), row.get('type')
+        if baseline_as_of and day <= baseline_as_of:
+            continue
+        latest = max(latest or day, day)
+        if kind in {'dividend', 'dividend_reversal', 'cash_in', 'cash_out'}:
+            continue
+        key = (row.get('symbol'), row.get('currency'))
+        quantity = row.get('quantity')
+        if kind == 'split' or quantity is None:
+            issues.append({'symbol': key[0], 'currency': key[1], 'reason': 'split' if kind == 'split' else 'missing_quantity'})
+            continue
+        delta = float(quantity) * (-1 if kind in {'sell', 'transfer_out'} else 1)
+        quantities[key] = quantities.get(key, 0) + delta
+        amounts[key] = None
+        if quantities[key] < -1e-9:
+            issues.append({'symbol': key[0], 'currency': key[1], 'reason': 'negative_quantity'})
+    issue_keys = {(item['symbol'], item['currency']) for item in issues}
+    rows = [{'symbol': symbol, 'currency': currency, 'quantity': quantity, 'amount': amounts.get((symbol, currency)),
+             'status': 'needs_review' if (symbol, currency) in issue_keys else 'ready'}
+            for (symbol, currency), quantity in sorted(quantities.items()) if abs(quantity) > 1e-9]
+    return {'rows': rows, 'asOf': latest, 'baselineAsOf': baseline_as_of,
+            'mode': 'anchored' if baseline else 'estimated',
+            'status': 'needs_review' if issues else 'ready', 'issues': issues,
+            'entriesRevision': entries_revision, 'snapshotRevision': snapshot_revision}
+
+
+def apply_holding_entries(calculated, entries, entries_revision):
+    """Increment an already-current materialization without reading the ledger."""
+    baseline = {'asOf': calculated.get('baselineAsOf'), 'rows': calculated.get('rows', [])}
+    result = calculate_holdings(entries, baseline, entries_revision, calculated.get('snapshotRevision', 0))
+    result['mode'] = calculated.get('mode', result['mode'])
+    result['baselineAsOf'] = calculated.get('baselineAsOf')
+    result['issues'] = list(calculated.get('issues', [])) + result['issues']
+    result['status'] = 'needs_review' if result['issues'] else 'ready'
+    result['asOf'] = max(filter(None, [calculated.get('asOf'), result.get('asOf')]), default=None)
+    return result
+
+
 def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest()
 
@@ -139,13 +190,18 @@ def summarize(accounts):
     """No inferred holdings, FX conversion, transfer P&L, or mixed-date certainty."""
     positions, totals, dates, missing = [], {}, [], []
     for account in accounts:
-        snapshot = account.get('snapshot')
+        snapshot = account.get('calculatedSnapshot')
+        current = (snapshot and snapshot.get('entriesRevision') == account.get('entriesRevision', 0)
+                   and snapshot.get('snapshotRevision') == account.get('snapshotRevision', 0))
+        if not current:
+            snapshot = None
         if not snapshot:
             missing.append(account['id'])
             continue
         dates.append(snapshot['asOf'])
         for row in snapshot['rows']:
-            positions.append({**row, 'accountId': account['id'], 'ownerId': account['ownerId'], 'asOf': snapshot['asOf'], 'source': snapshot['source']})
+            positions.append({**row, 'accountId': account['id'], 'ownerId': account['ownerId'], 'asOf': snapshot['asOf'],
+                              'source': 'calculated', 'calculationMode': snapshot['mode'], 'calculationStatus': snapshot['status']})
             if row['amount'] is not None:
                 totals[row['currency']] = totals.get(row['currency'], 0) + row['amount']
     return {'positions': positions, 'knownValueByCurrency': totals, 'missingSnapshotAccounts': missing,

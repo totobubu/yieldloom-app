@@ -2043,6 +2043,7 @@ date,symbol,quantity,amount,currency,type,externalId
                                     aria-label="파일 형식"
                                     placeholder="선택" /></label
                             ><label
+                                v-if="format !== 'toss-pdf'"
                                 >{{
                                     kind === 'transactions'
                                         ? '조회 종료일'

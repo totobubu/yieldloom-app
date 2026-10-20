@@ -39,21 +39,25 @@ try {
     await page.waitForFunction(() =>
         [...document.querySelectorAll('[role="tab"]')].some(
             (tab) =>
-                tab.textContent?.includes('계좌 관리') &&
+                tab.textContent?.includes('자산관리') &&
                 tab.getAttribute('aria-selected') === 'true'
         )
     );
+    await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).fill('테스트증권');
     await page.getByLabel('별칭', { exact: true }).fill('수동입력');
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();
     await page.getByRole('heading', { name: '선택 계좌: 수동입력' }).waitFor();
     const openManual = async () => {
-        await page
-            .getByRole('tab', { name: '자료 업로드', exact: true })
-            .click();
-        await page
-            .getByRole('button', { name: '수동 잔고 입력', exact: true })
-            .click();
+        const manualButton = page.getByRole('button', {
+            name: '수동 잔고 입력',
+            exact: true,
+        });
+        if (!(await manualButton.isVisible()))
+            await page
+                .getByRole('button', { name: '자료 업로드', exact: true })
+                .click();
+        await manualButton.click();
         await page
             .getByRole('heading', { name: '수동 잔고 입력', exact: true })
             .waitFor();

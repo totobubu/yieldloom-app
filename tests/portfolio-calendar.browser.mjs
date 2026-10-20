@@ -216,10 +216,13 @@ try {
     await calendar
         .getByRole('status', { name: '다가오는 배당 알림', exact: true })
         .waitFor();
+    const initialLedgerReads = requests.filter((q) =>
+        q.includes('accountId=')
+    ).length;
     assert.equal(
-        requests.filter((q) => q.includes('accountId=')).length,
-        0,
-        'schedule view must not load private transaction history'
+        initialLedgerReads,
+        accounts.length,
+        'schedule view reads each ledger once to reconstruct historical holdings'
     );
     assert.equal(
         await calendar.getByText('캘린더 일정·알림 내보내기').count(),
@@ -246,7 +249,11 @@ try {
         .click();
     await calendar.getByText('16 USD', { exact: true }).waitFor();
     assert.equal(await page.locator('.month-events .event-row').count(), 4);
-    assert.ok(requests.filter((q) => q.includes('accountId=')).length >= 2);
+    assert.equal(
+        requests.filter((q) => q.includes('accountId=')).length,
+        initialLedgerReads,
+        'recorded view reuses the verified session ledger cache'
+    );
     await page
         .getByRole('combobox', { name: '배당 계좌 필터', exact: true })
         .click();

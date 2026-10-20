@@ -65,7 +65,7 @@ try {
     const upload = async ({ date = '2026-10-15', amount = 500 } = {}) => {
         await tab('자료 업로드');
         await select('자료 종류', '잔고내역');
-        await page.getByLabel('자료 기준일', { exact: true }).fill(date);
+        await page.getByLabel('잔고 기준일', { exact: true }).fill(date);
         await page.getByLabel('파일', { exact: true }).setInputFiles({
             name: 'holdings.csv',
             mimeType: 'text/csv',

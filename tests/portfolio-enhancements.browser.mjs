@@ -262,7 +262,7 @@ try {
         await broker.getByLabel('연결 종목 코드', { exact: true }).waitFor();
     };
     const layout = 'symbol,quantity,amount,currency\nAAPL,2,100,USD\n';
-    await broker.getByLabel('자료 기준일', { exact: true }).fill('2026-01-02');
+    await broker.getByLabel('잔고 기준일', { exact: true }).fill('2026-01-02');
     await chooseFile(layout);
     const beforePresets = requests.length;
     await broker

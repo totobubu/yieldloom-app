@@ -494,6 +494,18 @@ class FamilyApiTest(unittest.TestCase):
             self.assertEqual(self.post('pdfPassword', {'accountId': self.account, 'remove': True}).json, {'configured': False})
             self.assertNotIn(path, self.db.data)
 
+    def test_pdf_preview_detects_latest_transaction_date(self):
+        rows = [
+            {'date': '2026-09-01', 'symbol': 'AAPL', 'quantity': 1, 'amount': 10, 'currency': 'USD', 'type': 'buy', 'externalId': 'pdf-old'},
+            {'date': '2026-10-19', 'symbol': 'AAPL', 'quantity': 1, 'amount': 10, 'currency': 'USD', 'type': 'buy', 'externalId': 'pdf-new'},
+        ]
+        with patch.object(api, 'pdf_rows', return_value=rows):
+            response = self.preview(b'%PDF-1.4', asOf='', file=(io.BytesIO(b'%PDF-1.4'), 'statement.pdf'), format='toss-pdf', password='123456')
+        self.assertEqual(response.status_code, 200, response.json)
+        self.assertEqual(response.json['asOf'], '2026-10-19')
+        review = self.db.data[f"investmentAccounts/{self.account}/reviews/{response.json['reviewId']}"]
+        self.assertEqual(review['asOf'], '2026-10-19')
+
     def test_database_quota_failure_is_not_an_empty_account_list(self):
         with patch.object(api, 'database', side_effect=api.ResourceExhausted('Quota exceeded.')):
             response = self.get('')

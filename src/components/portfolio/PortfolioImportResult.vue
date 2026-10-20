@@ -61,7 +61,13 @@
                     <dd>{{ receipt.duplicates.toLocaleString('ko-KR') }}행</dd>
                 </div>
                 <div>
-                    <dt>자료 기준일</dt>
+                    <dt>
+                        {{
+                            receipt.kind === 'transactions'
+                                ? '조회 종료일'
+                                : '잔고 기준일'
+                        }}
+                    </dt>
                     <dd>{{ receipt.asOf }}</dd>
                 </div>
             </dl>

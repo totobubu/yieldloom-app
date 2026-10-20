@@ -327,7 +327,8 @@
                         aria-label="연결 자료 종류"
                 /></label>
                 <label
-                    >자료 기준일<InputText v-model="asOf" type="date" required
+                    >{{ kind === 'transactions' ? '조회 종료일' : '잔고 기준일'
+                    }}<InputText v-model="asOf" type="date" required
                 /></label>
                 <label
                     >CSV 또는 XLSX 파일<input

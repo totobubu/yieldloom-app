@@ -276,18 +276,22 @@ def preview(db, uid):
     ref, data = account(db, request.form.get('accountId'), uid, True)
     require(request.form.get('ownerId') == data['ownerId'] and request.form.get('institution') == data['institution'], '명의자·금융기관 선택이 계좌와 일치하지 않습니다.')
     require(request.form.get('identityConfirmed') == 'true', '자료의 명의자와 계좌를 직접 확인하세요. 불확실한 자료는 저장할 수 없습니다.')
-    kind, as_of = request.form.get('kind'), iso_date(request.form.get('asOf'))
+    kind = request.form.get('kind')
+    as_of = None
     uploaded = request.files.get('file')
     require(uploaded is not None, '파일을 선택하세요.')
     content = uploaded.read(2 * 1024 * 1024 + 1)
     require(0 < len(content) <= 2 * 1024 * 1024, '파일은 2MB 이하여야 합니다.', 413)
     filename = str(uploaded.filename or '').lower()
     if request.form.get('format') == 'broker-spreadsheet':
+        as_of = iso_date(request.form.get('asOf'))
         rows, source = mapped_spreadsheet(content, filename, request.form, kind, as_of)
     elif filename.endswith('.xlsx') and request.form.get('format') == 'standard-xlsx':
+        as_of = iso_date(request.form.get('asOf'))
         rows = standard_xlsx(content, filename)
         source = 'standard-xlsx-v1'
     elif filename.endswith('.csv'):
+        as_of = iso_date(request.form.get('asOf'))
         rows = parse_csv(content)
         source = 'standard-csv-v1'
     else:
@@ -302,6 +306,14 @@ def preview(db, uid):
                     raise PortfolioError('저장된 PDF 비밀번호를 사용할 수 없습니다. 비밀번호를 다시 입력해 저장하세요.')
         require(password, '토스 PDF 비밀번호를 입력하거나 계좌 기본값을 저장하세요.')
         rows = pdf_rows(content, password)
+        valid_dates = []
+        for row in rows:
+            try:
+                valid_dates.append(iso_date(row.get('date')))
+            except PortfolioError:
+                pass
+        require(valid_dates, 'PDF에서 거래일을 확인할 수 없습니다.')
+        as_of = max(valid_dates)
         if request.form.get('rememberPassword') == 'true':
             save_pdf_password(db, uid, {'accountId': ref.id, 'password': password})
         source = 'toss-pdf'
@@ -332,7 +344,8 @@ def preview(db, uid):
         session.set({'uid': uid, 'rows': rows[start:start + 200], 'kind': kind, 'asOf': as_of, 'source': source,
                      'fileHash': receipt_key, 'expiresAt': now() + timedelta(hours=1)})
         batches.append({'reviewId': session.id, 'start': start, 'count': min(200, len(rows) - start)})
-    return {'reviewId': batches[0]['reviewId'], 'batches': batches, 'rows': rows, 'errors': errors, 'source': source}
+    return {'reviewId': batches[0]['reviewId'], 'batches': batches, 'rows': rows, 'errors': errors, 'source': source,
+            'asOf': as_of}
 
 
 def preview_manual_holdings(db, uid, body):

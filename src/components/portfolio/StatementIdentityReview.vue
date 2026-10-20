@@ -59,10 +59,12 @@
                 {{ status(file).message }}
             </Message>
         </div>
-        <label v-if="!blocked">
+        <label v-if="!blocked" class="statement-confirmation">
             <input v-model="confirmed" type="checkbox" :disabled="busy" />
-            첨부한 모든 거래내역서의 성명·계좌번호를 확인했고, 저장 대상 계좌의
-            자료가 맞습니다.
+            <span>
+                첨부한 모든 거래내역서의 성명·계좌번호를 확인했고, 저장 대상
+                계좌의 자료가 맞습니다.
+            </span>
         </label>
     </section>
 </template>
@@ -75,5 +77,22 @@
     }
     .statement-file p {
         margin: 8px 0;
+    }
+    .statement-confirmation {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        line-height: 1.6;
+        cursor: pointer;
+    }
+    .statement-confirmation input {
+        flex: 0 0 auto;
+        width: 16px;
+        height: 16px;
+        margin: max(0px, calc((1.6em - 16px) / 2)) 0 0;
+        font: inherit;
+    }
+    .statement-confirmation span {
+        min-width: 0;
     }
 </style>

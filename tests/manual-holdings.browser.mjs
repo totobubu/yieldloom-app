@@ -36,9 +36,13 @@ try {
     await page.goto(
         (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') + '/mypage'
     );
-    await page
-        .getByRole('button', { name: '첫 계좌 등록', exact: true })
-        .click();
+    await page.waitForFunction(() =>
+        [...document.querySelectorAll('[role="tab"]')].some(
+            (tab) =>
+                tab.textContent?.includes('계좌 관리') &&
+                tab.getAttribute('aria-selected') === 'true'
+        )
+    );
     await page.getByLabel('금융기관', { exact: true }).fill('테스트증권');
     await page.getByLabel('별칭', { exact: true }).fill('수동입력');
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();

@@ -178,12 +178,30 @@ try {
             await page
                 .getByText(`${i} / 4개 파일 완료`, { exact: true })
                 .waitFor();
+            await dialog.getByText(`${i + 1}번째 파일 처리 중`).waitFor();
+            await dialog
+                .getByText('서버로 전송하고 거래내역을 추출하고 있습니다.')
+                .waitFor();
+            assert.equal(
+                await dialog.locator('.p-progressbar-indeterminate').count(),
+                1
+            );
             assert.equal(
                 await dialog
                     .getByRole('progressbar')
                     .getAttribute('aria-valuenow'),
-                String(i * 25)
+                null
             );
+            if (i === 0) {
+                await page.clock.install();
+                await page.clock.fastForward(21000);
+                await dialog
+                    .getByText('처리 시간 21초', { exact: true })
+                    .waitFor();
+                await dialog.getByText(/응답을 기다리고 있습니다/).waitFor();
+                assert.equal(writes, 0);
+                assert.equal(previews, 1);
+            }
             if (i === 1) {
                 await page.waitForTimeout(350);
                 await page.screenshot({

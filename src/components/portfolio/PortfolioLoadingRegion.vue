@@ -2,7 +2,7 @@
     import Dialog from 'primevue/dialog';
     import ProgressBar from 'primevue/progressbar';
     import ProgressSpinner from 'primevue/progressspinner';
-    import { computed } from 'vue';
+    import { computed, ref, watch } from 'vue';
 
     const props = defineProps({
         busy: Boolean,
@@ -23,6 +23,21 @@
         finalize: { title: '포트폴리오를 갱신하고 있습니다', label: '마무리' },
     };
     const stage = computed(() => stages[props.progress?.stage]);
+    const extracting = computed(() => props.progress?.stage === 'extract');
+    const elapsed = ref(0);
+    watch(
+        () => props.busy,
+        (busy, _, onCleanup) => {
+            elapsed.value = 0;
+            if (!busy) return;
+            const started = Date.now();
+            const timer = setInterval(() => {
+                elapsed.value = Math.floor((Date.now() - started) / 1000);
+            }, 1000);
+            onCleanup(() => clearInterval(timer));
+        },
+        { immediate: true }
+    );
     const percent = computed(() =>
         props.progress?.total > 0
             ? Math.round(
@@ -73,9 +88,11 @@
                         </span>
                     </div>
                     <ProgressBar
-                        :value="percent"
+                        :value="extracting ? null : percent"
                         :mode="
-                            percent === null ? 'indeterminate' : 'determinate'
+                            extracting || percent === null
+                                ? 'indeterminate'
+                                : 'determinate'
                         "
                         :show-value="false"
                         :pt="{
@@ -83,14 +100,35 @@
                         }"
                         :aria-label="stage?.label" />
                     <p v-if="progress.detail" class="progress-detail">
+                        <strong v-if="extracting && progress.total > 0">
+                            {{
+                                Math.min(
+                                    progress.completed + 1,
+                                    progress.total
+                                )
+                            }}번째 파일 처리 중
+                        </strong>
                         {{ progress.detail }}
+                        <span v-if="progress.message">{{
+                            progress.message
+                        }}</span>
                     </p>
                 </template>
                 <ProgressSpinner
                     v-else
                     class="portfolio-loading-spinner"
                     aria-hidden="true" />
-                <p>처리가 완료될 때까지 잠시만 기다려 주세요.</p>
+                <p class="progress-elapsed" aria-live="off">
+                    처리 시간 {{ elapsed }}초
+                </p>
+                <p v-if="extracting">
+                    파일 하나의 추출이 끝날 때마다 완료 수가 올라갑니다.
+                    <template v-if="elapsed >= 20">
+                        응답을 기다리고 있습니다. 파일 크기와 네트워크 상태에
+                        따라 시간이 더 필요할 수 있습니다.
+                    </template>
+                </p>
+                <p v-else>처리가 완료될 때까지 잠시만 기다려 주세요.</p>
             </div>
         </Dialog>
         <div class="portfolio-content-body" :inert="busy">
@@ -131,9 +169,18 @@
         font-size: 14px;
     }
     .progress-detail {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
         padding: 12px;
         border-radius: 8px;
         background: var(--app-surface-muted);
+    }
+    .progress-detail strong {
+        color: var(--app-text);
+    }
+    .progress-elapsed {
+        font-variant-numeric: tabular-nums;
     }
     .portfolio-loading-spinner {
         width: 80px;

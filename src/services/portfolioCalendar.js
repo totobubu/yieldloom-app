@@ -92,13 +92,12 @@ export function portfolioScheduleRows(
                     payableDate: event.payableDate,
                     currency,
                     amount: eligible
-                        ? historical.receivedAmount ??
-                          amount * historical.quantity
+                        ? (historical.receivedAmount ??
+                          amount * historical.quantity)
                         : null,
                     perShare: amount,
                     quantity: historical.quantity ?? position.quantity,
-                    quantityAsOf:
-                        historical.quantityAsOf || position.asOf,
+                    quantityAsOf: historical.quantityAsOf || position.asOf,
                     amountBasis: historical.basis,
                     status: state,
                     sourceUrl: /^https?:\/\//.test(event.officialUrl || '')
@@ -108,12 +107,12 @@ export function portfolioScheduleRows(
                         state === 'review'
                             ? '공시 대조가 필요한 일정'
                             : !eligible
-                                ? '수량 기준일·배당금·통화를 확인해야 합니다.'
-                                : historical.basis === 'received'
-                                  ? '저장된 실제 배당 입금액과 공시 주당 배당금으로 역산했습니다.'
-                                  : historical.basis === 'ledger'
-                                    ? '현재 잔고에서 배당락일 이후 매수·매도를 되돌려 계산한 세전 참고액입니다.'
-                                    : '자료 기준 수량 × 공시 주당 배당금 · 세전 예상, 지급 자격 미확인',
+                              ? '수량 기준일·배당금·통화를 확인해야 합니다.'
+                              : historical.basis === 'received'
+                                ? '저장된 실제 배당 입금액과 공시 주당 배당금으로 역산했습니다.'
+                                : historical.basis === 'ledger'
+                                  ? '현재 잔고에서 배당락일 이후 매수·매도를 되돌려 계산한 세전 참고액입니다.'
+                                  : '자료 기준 수량 × 공시 주당 배당금 · 세전 예상, 지급 자격 미확인',
                 });
             }
         }
@@ -173,7 +172,7 @@ export function historicalDividendQuantity(position, event, entries = []) {
                     paid =
                         /^[A-Z]{3}$/.test(event.currency || '') &&
                         event.currency === 'USD'
-                            ? finite(row.nativeAmount) ?? finite(row.amount)
+                            ? (finite(row.nativeAmount) ?? finite(row.amount))
                             : finite(row.amount);
                 return {
                     date,

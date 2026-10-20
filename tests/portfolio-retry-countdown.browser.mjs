@@ -87,9 +87,7 @@ try {
     await page
         .getByRole('button', { name: '계좌 목록 다시 시도', exact: true })
         .click();
-    await page
-        .getByRole('button', { name: '첫 계좌 등록', exact: true })
-        .waitFor();
+    await page.getByLabel('금융기관', { exact: true }).waitFor();
     assert.equal(calls, 3);
     assert.equal(
         await page

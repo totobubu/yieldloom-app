@@ -236,15 +236,25 @@
             </div>
             <ol class="review-steps" aria-label="자료 등록 진행 단계">
                 <li>
-                    <i class="pi pi-check-circle" aria-hidden="true" /><span
-                        >1. 업로드<br />및 검증</span
+                    <i class="pi pi-check-circle" aria-hidden="true" />
+                    <b class="completed-step-number">1</b
+                    ><span
+                        ><span class="step-prefix">1. </span>업로드<br />및
+                        검증</span
                     >
                 </li>
                 <li aria-current="step">
-                    <b>2</b><span>2. 결과 및<br />상세 검토</span>
+                    <b>2</b
+                    ><span
+                        ><span class="step-prefix">2. </span>결과 및<br />상세
+                        검토</span
+                    >
                 </li>
                 <li>
-                    <b>3</b><span>3. 최종 저장<br />대기</span>
+                    <b>3</b
+                    ><span
+                        ><span class="step-prefix">3. </span>최종 저장<br />대기</span
+                    >
                 </li>
             </ol>
         </div>
@@ -900,6 +910,9 @@
     .review-steps li[aria-current] b {
         background: var(--app-accent-contrast);
         color: var(--app-accent);
+    }
+    .review-steps .completed-step-number {
+        display: none;
     }
     .review-metrics {
         display: grid;
@@ -1578,6 +1591,28 @@
             display: none;
         }
     }
+    @media (max-width: 767px) {
+        .review-steps {
+            width: 100%;
+        }
+        .review-steps li {
+            flex: 1 1 0;
+            min-width: 0;
+            flex-direction: column;
+            padding: 10px 6px;
+            gap: 6px;
+            text-align: center;
+            word-break: keep-all;
+        }
+        .review-steps .step-prefix,
+        .review-steps li:first-child > i {
+            display: none;
+        }
+        .review-steps .completed-step-number {
+            display: grid;
+            color: #059669;
+        }
+    }
     @media (max-width: 700px) {
         .review-breadcrumb {
             font-size: 10px;
@@ -1601,14 +1636,6 @@
         }
         .review-title-line h2 {
             font-size: 21px;
-        }
-        .review-steps {
-            width: 100%;
-        }
-        .review-steps li {
-            flex: 1;
-            padding: 8px;
-            gap: 6px;
         }
         .review-search {
             grid-template-columns: minmax(0, 1fr) auto;

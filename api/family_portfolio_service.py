@@ -9,7 +9,7 @@ from datetime import date
 
 MAX_ROWS = 200
 TYPES = {'buy', 'sell', 'dividend', 'dividend_reversal', 'cash_in', 'cash_out', 'transfer_in', 'transfer_out', 'split'}
-DETAIL_NUMBERS = {'settlementAmount', 'nativeAmount', 'nativeSettlementAmount', 'exchangeRate', 'nativeCommission', 'nativeTax'}
+DETAIL_NUMBERS = {'convertedAmount', 'settlementAmount', 'nativeAmount', 'nativeSettlementAmount', 'exchangeRate', 'nativeCommission', 'nativeTax'}
 DETAIL_TEXT = {'rawType', 'cashKind', 'originalCode', 'securityName'}
 
 
@@ -104,6 +104,9 @@ def calculate_holdings(entries, baseline=None, entries_revision=0, snapshot_revi
         if kind in {'dividend', 'dividend_reversal', 'cash_in', 'cash_out'}:
             continue
         key = (row.get('symbol'), row.get('currency'))
+        if (row.get('originalCode') == row.get('symbol') and
+                re.fullmatch(r'[A-Z]{2}[A-Z0-9]{9}\d', row.get('symbol') or '')):
+            issues.append({'symbol': key[0], 'currency': key[1], 'reason': 'unresolved_symbol'})
         quantity = row.get('quantity')
         if kind == 'split' or quantity is None:
             issues.append({'symbol': key[0], 'currency': key[1], 'reason': 'split' if kind == 'split' else 'missing_quantity'})

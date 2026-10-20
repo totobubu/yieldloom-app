@@ -506,6 +506,14 @@ class FamilyApiTest(unittest.TestCase):
         review = self.db.data[f"investmentAccounts/{self.account}/reviews/{response.json['reviewId']}"]
         self.assertEqual(review['asOf'], '2026-10-19')
 
+    def test_commit_rejects_changes_to_internal_transaction_identifier(self):
+        content = b'date,symbol,quantity,amount,currency,type,externalId\n2026-10-15,AAPL,1,100,USD,buy,immutable-id\n'
+        review = self.preview(content).json
+        review['rows'][0]['externalId'] = 'changed-id'
+        response = self.commit(review)
+        self.assertEqual(response.status_code, 409)
+        self.assertIn('식별자', response.json['error'])
+
     def test_database_quota_failure_is_not_an_empty_account_list(self):
         with patch.object(api, 'database', side_effect=api.ResourceExhausted('Quota exceeded.')):
             response = self.get('')
@@ -555,6 +563,13 @@ class DomainTest(unittest.TestCase):
         for kind in ['transfer_in', 'transfer_out', 'dividend', 'cash_in', 'cash_out', 'split']:
             normalize_row({'date': '2026-10-15', 'symbol': 'CASH', 'quantity': '2', 'amount': '', 'currency': 'KRW', 'type': kind, 'externalId': kind}, 'transactions')
         self.assertEqual(summarize([{'id': 'A', 'ownerId': 'P'}])['knownValueByCurrency'], {})
+
+    def test_unresolved_isin_marks_calculated_holding_for_review(self):
+        result = calculate_holdings([{'id': 'isin', 'row': {
+            'date': '2026-10-15', 'symbol': 'US88636X8801', 'originalCode': 'US88636X8801',
+            'quantity': 1, 'amount': 10, 'currency': 'USD', 'type': 'buy'}}])
+        self.assertEqual(result['status'], 'needs_review')
+        self.assertEqual(result['issues'][0]['reason'], 'unresolved_symbol')
 
     def test_pdf_unparsed_rows_remain_visible_and_block_commit(self):
         with patch('api.toss_extractor.extract_transactions_from_pdf', return_value={

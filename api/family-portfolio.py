@@ -116,13 +116,18 @@ def pdf_rows(content, password):
             kind = ('transfer_in' if '입고' in raw_type else 'transfer_out' if '출고' in raw_type
                     else 'cash_in' if '세금환급' in raw_type else 'cash_out' if '세액출금' in raw_type else 'unknown')
         day = str(raw.get('date', '')).replace('.', '-').strip()
+        native_amount = raw.get('transaction_amount_usd')
+        foreign = native_amount is not None or str(raw.get('ticker', '')).startswith('US')
         row = {'date': day, 'symbol': raw.get('ticker', ''), 'type': kind,
-               'quantity': raw.get('quantity'), 'amount': raw.get('transaction_amount_krw'), 'currency': 'KRW'}
+               'quantity': raw.get('quantity'),
+               'amount': native_amount if foreign and native_amount is not None else raw.get('transaction_amount_krw'),
+               'currency': 'USD' if foreign else 'KRW'}
         key = digest(row)
         occurrences[key] = occurrences.get(key, 0) + 1
         row['externalId'] = f'toss-pdf:{key}:{occurrences[key]}'
         row.update({key: raw.get(source) for key, source in {
-            'rawType':'type', 'settlementAmount':'settlement_amount_krw', 'nativeAmount':'transaction_amount_usd',
+            'rawType':'type', 'convertedAmount':'transaction_amount_krw',
+            'settlementAmount':'settlement_amount_krw', 'nativeAmount':'transaction_amount_usd',
             'nativeSettlementAmount':'settlement_amount_usd', 'exchangeRate':'exchange_rate',
             'nativeCommission':'commission_usd', 'nativeTax':'tax_usd',
         }.items() if raw.get(source) is not None})
@@ -489,7 +494,13 @@ def commit(db, uid, body):
         require(can_access(data, uid, True), '계좌 변경 권한이 없습니다.', 403)
         review = load(session, tx)
         require(review['uid'] == uid and review['expiresAt'] > now(), '검토 세션이 만료되었거나 권한이 없습니다.', 410)
-        rows, errors = validate_rows(body.get('rows'), review['kind'], review['asOf'])
+        submitted = body.get('rows')
+        if review['kind'] == 'transactions':
+            require(isinstance(submitted, list) and len(submitted) == len(review['rows']) and
+                    all(isinstance(row, dict) and row.get('externalId') == original.get('externalId')
+                        for row, original in zip(submitted, review['rows'])),
+                    '거래 내부 식별자는 변경할 수 없습니다.', 409)
+        rows, errors = validate_rows(submitted, review['kind'], review['asOf'])
         require(not errors, '오류 행을 모두 수정하세요: ' + json.dumps(errors, ensure_ascii=False))
         receipt = ref.collection('imports').document(review['fileHash'])
         previous = read_snapshot(receipt, tx)
@@ -564,7 +575,8 @@ def validate_import(db, uid, body):
     ref, _ = account(db, body.get('accountId'), uid, True)
     review = load(ref.collection('reviews').document(identifier(body.get('reviewId'))))
     require(review['uid'] == uid and review['expiresAt'] > now(), '검토 세션이 만료되었거나 권한이 없습니다.', 410)
-    _, errors = validate_rows(body.get('rows'), review['kind'], review['asOf'], max_rows=10000 if review['source'] == 'toss-pdf' else 200)
+    submitted = body.get('rows')
+    _, errors = validate_rows(submitted, review['kind'], review['asOf'], max_rows=10000 if review['source'] == 'toss-pdf' else 200)
     require(not errors, '오류 행을 모두 수정하세요: ' + json.dumps(errors, ensure_ascii=False))
     return {'valid': True}
 

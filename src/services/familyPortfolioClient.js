@@ -88,6 +88,7 @@ export function createFamilyPortfolioClient({
             mutation &&
             ![
                 'inspectSpreadsheet',
+                'inspectAccountDocument',
                 'saveMonthlyStatement',
                 'deleteMonthlyStatement',
                 'savePreferences',

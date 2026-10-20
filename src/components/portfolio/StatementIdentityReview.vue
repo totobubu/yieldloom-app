@@ -47,7 +47,15 @@
                 PDF에서 추출한 계좌번호:
                 {{ file.maskedNumber || '확인할 수 없음' }}
             </p>
-            <Message :severity="status(file).severity" :closable="false">
+            <Message
+                :severity="status(file).severity"
+                :closable="false"
+                size="small"
+                :dt="{
+                    text: { sm: { fontSize: '12px' }, fontWeight: '400' },
+                    content: { sm: { padding: '8px 10px' } },
+                }"
+                :pt="{ text: { style: { lineHeight: '1.6' } } }">
                 {{ status(file).message }}
             </Message>
         </div>

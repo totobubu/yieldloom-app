@@ -160,6 +160,13 @@ try {
             exact: true,
         })
         .waitFor();
+    await page.keyboard.press('Escape');
+    await page
+        .getByRole('heading', {
+            name: '자료 저장이 완료되었습니다',
+            exact: true,
+        })
+        .waitFor({ state: 'hidden' });
     await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
     const insights = page.getByRole('region', {
         name: '배당 성과·집중도 분석',

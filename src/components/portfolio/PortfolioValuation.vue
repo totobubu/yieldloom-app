@@ -16,7 +16,7 @@
         missingAccounts: { type: Number, default: 0 },
         estimatedPositions: { type: Number, default: 0 },
     });
-    const emit = defineEmits(['request-upload']);
+    const emit = defineEmits(['request-transactions']);
     const quotes = ref({}),
         loading = ref(false),
         error = ref('');
@@ -108,11 +108,8 @@
             <div v-if="!positions.length" class="valuation-empty">
                 <i class="pi pi-inbox" aria-hidden="true" />
                 <div>
-                    <h3>저장된 잔고내역이 없습니다</h3>
-                    <p>
-                        거래내역이 있으면 계산 잔고를 자동 생성합니다. 필요하면
-                        증권사 잔고내역을 추가하세요.
-                    </p>
+                    <h3>아직 거래내역이 없습니다</h3>
+                    <p>거래내역을 추가하면 보유수량을 자동으로 계산합니다.</p>
                     <p v-if="missingAccounts">
                         현재 선택 범위의 {{ missingAccounts }}개 계좌에
                         잔고내역이 없습니다.
@@ -120,9 +117,9 @@
                 </div>
                 <div class="valuation-empty-actions">
                     <Button
-                        label="잔고내역 추가"
+                        label="거래내역 추가"
                         icon="pi pi-upload"
-                        @click="emit('request-upload')" />
+                        @click="emit('request-transactions')" />
                 </div>
             </div>
             <div v-if="valuation.currencies.length" class="valuation-grid">

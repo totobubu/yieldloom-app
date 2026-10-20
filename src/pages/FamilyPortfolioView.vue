@@ -428,6 +428,17 @@
             families.value = data.families;
             accounts.value = data.accounts || [];
             rawSummary.value = data.summary || null;
+            if (!route.query.tab || route.query.tab === 'overview') {
+                const hasRecords = accounts.value.some(
+                    (account) =>
+                        (account.entriesRevision || 0) > 0 || account.snapshot
+                );
+                portfolioTab.value = !accounts.value.length
+                    ? 'accounts'
+                    : hasRecords
+                      ? 'overview'
+                      : 'upload';
+            }
             if (!familyId.value && families.value.length)
                 familyId.value = families.value[0].id;
             if (
@@ -762,8 +773,8 @@
         await nextTick();
         fileInput.value?.focus();
     }
-    function openHoldingsUpload() {
-        kind.value = 'holdings';
+    function openTransactionsUpload() {
+        kind.value = 'transactions';
         portfolioTab.value = 'upload';
     }
     async function removePdfPassword() {
@@ -1042,7 +1053,7 @@
                                 (row) => row.calculationMode === 'estimated'
                             ).length
                         "
-                        @request-upload="openHoldingsUpload" />
+                        @request-transactions="openTransactionsUpload" />
                     <div
                         v-if="
                             summary &&

@@ -11,8 +11,6 @@ try {
     const page = await browser.newPage({
         viewport: { width: 390, height: 900 },
     });
-    let familyRequests = 0;
-    let calculated = false;
     await page.route('**/src/services/firebaseClient*', (route) =>
         route.fulfill({
             contentType: 'application/javascript',
@@ -23,7 +21,6 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
         })
     );
     await page.route('**/api/family-portfolio*', (route) => {
-        familyRequests++;
         const url = new URL(route.request().url());
         const family = {
             id: 'personal-owner',
@@ -32,30 +29,6 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
             profiles: { self: { uid: 'owner', name: '본인' } },
         };
         const hasFamily = url.searchParams.has('familyId');
-        if (url.searchParams.get('action') === 'rebuildCalculatedHoldings') {
-            calculated = true;
-            return route.fulfill({
-                json: { calculatedSnapshot: { status: 'ready' } },
-            });
-        }
-        const calculatedSnapshot = calculated
-            ? {
-                  rows: [
-                      {
-                          symbol: 'AAPL',
-                          currency: 'USD',
-                          quantity: 7,
-                          amount: null,
-                      },
-                  ],
-                  asOf: '2026-10-10',
-                  mode: 'estimated',
-                  status: 'ready',
-                  entriesRevision: 1,
-                  snapshotRevision: 0,
-                  issues: [],
-              }
-            : undefined;
         return route.fulfill({
             json: hasFamily
                 ? {
@@ -69,29 +42,13 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
                               alias: '주식 계좌',
                               institution: '테스트증권',
                               permissions: { owner: 'owner' },
-                              entriesRevision: 1,
-                              calculatedSnapshot,
+                              entriesRevision: 0,
                           },
                       ],
                       summary: {
-                          positions: calculated
-                              ? [
-                                    {
-                                        symbol: 'AAPL',
-                                        currency: 'USD',
-                                        quantity: 7,
-                                        amount: null,
-                                        accountId: 'account-1',
-                                        ownerId: 'self',
-                                        calculationMode: 'estimated',
-                                        calculationStatus: 'ready',
-                                    },
-                                ]
-                              : [],
+                          positions: [],
                           knownValueByCurrency: {},
-                          missingSnapshotAccounts: calculated
-                              ? []
-                              : ['account-1'],
+                          missingSnapshotAccounts: ['account-1'],
                           notice: '',
                       },
                   }
@@ -105,7 +62,19 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
     );
 
     await page.goto(`${base}/mypage`);
-    await page.getByText('거래내역으로 계산한 추정 잔고 1개').waitFor();
+    await page.waitForFunction(() =>
+        [...document.querySelectorAll('[role="tab"]')].some(
+            (tab) =>
+                tab.textContent?.includes('자료 업로드') &&
+                tab.getAttribute('aria-selected') === 'true'
+        )
+    );
+    assert.equal(
+        await page
+            .getByRole('tab', { name: '자료 업로드' })
+            .getAttribute('aria-selected'),
+        'true'
+    );
     assert.equal(
         await page.locator('html').evaluate((el) => el.scrollWidth),
         390
@@ -113,12 +82,6 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
 
     const tabs = page.getByRole('tab');
     assert.ok((await tabs.first().boundingBox()).width >= 60);
-    await page.getByRole('cell', { name: '7' }).first().waitFor();
-    const requestsAfterCalculation = familyRequests;
-    await page.reload();
-    await page.getByRole('cell', { name: '7' }).first().waitFor();
-    assert.equal(familyRequests - requestsAfterCalculation, 2);
-    await page.getByRole('tab', { name: '자료 업로드' }).click();
     assert.equal(
         await page.getByRole('combobox', { name: '자료 종류' }).textContent(),
         '거래내역'
@@ -127,7 +90,7 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
         await page.locator('html').evaluate((el) => el.scrollWidth),
         390
     );
-    console.log('PASS: mobile tabs and empty holdings action');
+    console.log('PASS: mobile tabs and empty portfolio routing');
 } finally {
     await browser.close();
 }

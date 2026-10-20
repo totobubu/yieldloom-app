@@ -273,21 +273,36 @@
                             </ul>
                         </template>
                         <template #empty>
-                            <div class="import-dropzone">
+                            <button
+                                type="button"
+                                class="import-dropzone"
+                                :aria-label="`${fileExtension} 파일 선택`"
+                                :disabled="busy"
+                                @click="uploader?.choose()">
                                 <span class="dropzone-icon"
                                     ><i
                                         class="pi pi-cloud-upload"
                                         aria-hidden="true"
                                 /></span>
-                                <strong
+                                <strong class="dropzone-desktop"
                                     >{{ fileExtension }} 파일을 이곳에 끌어다
                                     놓으세요</strong
                                 >
-                                <p>
+                                <span
+                                    class="dropzone-desktop dropzone-description">
                                     또는 위의 파일 선택 버튼으로 컴퓨터에서
                                     선택하세요.
-                                </p>
-                            </div>
+                                </span>
+                                <strong class="dropzone-touch"
+                                    >눌러서 {{ fileExtension }} 파일
+                                    선택</strong
+                                >
+                                <span
+                                    class="dropzone-touch dropzone-description">
+                                    휴대폰이나 클라우드에 저장된 파일을
+                                    선택하세요.
+                                </span>
+                            </button>
                         </template>
                     </FileUpload>
                     <p class="field-note">
@@ -716,6 +731,23 @@ date,symbol,quantity,amount,currency,type,externalId
         gap: 8px;
         padding: 22px 10px;
         text-align: center;
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: var(--app-text);
+        font: inherit;
+        cursor: pointer;
+    }
+    .import-dropzone:focus-visible {
+        outline: 2px solid var(--app-accent);
+        outline-offset: 4px;
+        border-radius: 8px;
+    }
+    .import-dropzone:disabled {
+        cursor: default;
+    }
+    .dropzone-touch {
+        display: none;
     }
     .dropzone-icon {
         display: grid;
@@ -730,9 +762,17 @@ date,symbol,quantity,amount,currency,type,externalId
     .dropzone-icon i {
         font-size: 28px;
     }
-    .import-dropzone p {
+    .dropzone-description {
         color: var(--app-muted);
         font-size: 13px;
+    }
+    @media (max-width: 767px), (hover: none), (pointer: coarse) {
+        .dropzone-desktop {
+            display: none;
+        }
+        .dropzone-touch {
+            display: block;
+        }
     }
     .import-file-list {
         display: grid;

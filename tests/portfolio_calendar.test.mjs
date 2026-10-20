@@ -38,20 +38,26 @@ const schedule = {
         forecastExDate: '2026-10-27',
     },
 };
-test('only future ex-dates with a valid quantity snapshot produce gross reference amounts in the distribution currency', () => {
+test('past and future ex-dates resolve gross reference amounts from the available quantity snapshot', () => {
     const { rows } = portfolioScheduleRows([position], schedule, {
         today: '2026-10-16',
     });
-    assert.equal(rows[0].amount, null);
+    assert.equal(rows[0].amount, 2);
     assert.equal(rows[1].amount, 2);
     assert.equal(rows[1].currency, 'USD');
-    for (const asOf of ['2026-10-21', '2026-10-18', null])
+    for (const asOf of ['2026-10-21', '2026-10-18'])
         assert.equal(
             portfolioScheduleRows([{ ...position, asOf }], schedule, {
                 today: '2026-10-16',
             }).rows[1].amount,
-            null
+            2
         );
+    assert.equal(
+        portfolioScheduleRows([{ ...position, asOf: null }], schedule, {
+            today: '2026-10-16',
+        }).rows[1].amount,
+        null
+    );
     assert.equal(
         portfolioScheduleRows(
             [position],
@@ -60,6 +66,52 @@ test('only future ex-dates with a valid quantity snapshot produce gross referenc
         ).rows[0].amount,
         null
     );
+});
+test('past entitlement rolls later trades back and falls back to a received dividend', () => {
+    const past = { ...event, exDate: '2026-09-20', payableDate: '2026-09-23' };
+    const entries = [
+        {
+            accountId: 'a',
+            row: {
+                type: 'buy',
+                symbol: 'TSLY',
+                date: '2026-09-25',
+                quantity: 4,
+            },
+        },
+    ];
+    let row = portfolioScheduleRows(
+        [position],
+        { TSLY: { history: [past] } },
+        { today: '2026-10-16', entries }
+    ).rows[0];
+    assert.equal(row.quantity, 6);
+    assert.ok(Math.abs(row.amount - 1.2) < 1e-9);
+    assert.equal(row.amountBasis, 'ledger');
+
+    entries.push({
+        accountId: 'a',
+        row: {
+            type: 'dividend',
+            symbol: 'TSLY',
+            date: '2026-09-24',
+            nativeAmount: 1.4,
+        },
+    });
+    row = portfolioScheduleRows(
+        [position],
+        { TSLY: { history: [past] } },
+        { today: '2026-10-16', entries }
+    ).rows[0];
+    assert.equal(row.quantity, 7);
+    assert.equal(row.amount, 1.4);
+    assert.equal(row.amountBasis, 'received');
+    row = portfolioScheduleRows(
+        [{ ...position, asOf: null }],
+        { TSLY: { history: [past] } },
+        { today: '2026-10-16', entries }
+    ).rows[0];
+    assert.equal(row.amount, 1.4);
 });
 test('missing payout dates, reviewed announcements and periodic forecasts never invent payments or amounts', () => {
     const result = portfolioScheduleRows(

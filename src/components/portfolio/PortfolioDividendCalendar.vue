@@ -35,6 +35,7 @@
         scheduleLoading = ref(false),
         scheduleError = ref('');
     const recorded = ref([]),
+        ledgerEntries = ref([]),
         ledgerLoading = ref(false),
         ledgerError = ref(''),
         detailDate = ref(''),
@@ -69,6 +70,7 @@
     const projection = computed(() =>
         portfolioScheduleRows(positions.value, schedules.value, {
             basis: basis.value,
+            entries: ledgerEntries.value,
         })
     );
     const rows = computed(() =>
@@ -141,11 +143,9 @@
         [...new Set(positions.value.map((p) => p.asOf))].sort()
     );
     const busy = computed(() =>
-        mode.value === 'reconcile'
-            ? scheduleLoading.value || ledgerLoading.value
-            : mode.value === 'schedule'
-              ? scheduleLoading.value
-              : ledgerLoading.value
+        mode.value === 'recorded'
+            ? ledgerLoading.value
+            : scheduleLoading.value || ledgerLoading.value
     );
     const error = computed(() =>
         mode.value === 'reconcile'
@@ -173,6 +173,7 @@
         ledgerSequence++;
         ledgerController?.abort();
         recorded.value = [];
+        ledgerEntries.value = [];
         ledgerError.value = '';
         ledgerLoading.value = false;
         detailDate.value = '';
@@ -224,6 +225,7 @@
                     firebaseUser.value?.uid === uid,
             });
             if (sequence === ledgerSequence) {
+                ledgerEntries.value = entries;
                 recorded.value = recordedDividendRows(entries);
             }
         } catch (reason) {
@@ -254,7 +256,7 @@
                 accountId.value = '';
             clearLedger();
             if (mode.value !== 'recorded') loadSchedules();
-            if (mode.value !== 'schedule') loadRecorded();
+            loadRecorded();
         },
         { immediate: true, flush: 'sync' }
     );
@@ -268,12 +270,12 @@
             )
         )
             loadSchedules();
-        if (mode.value !== 'schedule') loadRecorded();
+        loadRecorded();
     });
     watch(accountId, () => {
         if (mode.value !== 'recorded') loadSchedules();
         clearLedger();
-        if (mode.value !== 'schedule') loadRecorded();
+        loadRecorded();
     });
     onScopeDispose(() => {
         scheduleSequence++;
@@ -281,15 +283,15 @@
         clearLedger();
     });
     async function refreshData() {
-        if (mode.value === 'reconcile')
+        if (mode.value !== 'recorded')
             await Promise.all([loadSchedules(true), loadRecorded(true)]);
-        else if (mode.value === 'schedule') await loadSchedules(true);
         else await loadRecorded(true);
     }
     const reconciliationSchedules = computed(
         () =>
             portfolioScheduleRows(positions.value, schedules.value, {
                 basis: 'payable',
+                entries: ledgerEntries.value,
             }).rows
     );
     function move(direction) {
@@ -351,9 +353,9 @@
         </div>
         <Message severity="info" :closable="false"
             ><template v-if="mode === 'schedule'"
-                >예상액은 저장된 수량 × 공시 배당금의 <b>세전 참고액</b>입니다.
-                실제 보유·지급 자격과 증권사 입금일은 확인되지 않습니다. 과거
-                배당락일에는 현재 수량으로 금액을 추정하지 않습니다.</template
+                >예상액은 배당락일 잔고 × 공시 배당금의 <b>세전 참고액</b>입니다.
+                과거 잔고는 거래 내역으로 복원하며, 실제 배당 입금액이 있으면
+                이를 우선 사용합니다.</template
             ><template v-else
                 >업로드해 저장한 배당 거래만 표시합니다. 세전·세후 실수령액이나
                 모든 지급 내역이 완전하다는 뜻은 아닙니다. 배당 취소는 음수로

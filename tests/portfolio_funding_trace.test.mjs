@@ -62,7 +62,7 @@ test('own and cross-stock dividend reinvestment never add external principal or 
     assert.equal(r.warnings.length, 0);
 });
 
-test('sale preserves original principal across stocks, reinvests only profit, attributes actual withdrawals proportionally', () => {
+test('sale preserves original principal across stocks and unknown withdrawals estimate their sources', () => {
     const r = run(
         [
             cash('D', '20260101', 1000, 'external_deposit'),
@@ -78,17 +78,19 @@ test('sale preserves original principal across stocks, reinvests only profit, at
     const a = r.stocks.find((s) => s.symbol === 'A');
     const b = r.stocks.find((s) => s.symbol === 'B');
     near(a.direct, 1000);
-    near(a.recovered, 600);
-    near(a.rate, 60);
+    near(a.recovered, 400);
+    near(a.rate, 40);
     near(b.direct, 0);
-    near(b.principalHeld, 500);
-    near(b.reinvestedHeld, 100);
+    near(b.principalHeld, 600);
+    near(b.reinvestedHeld, 0);
     near(b.quantity, 6);
-    near(r.currencies[0].rate, 60);
+    near(r.currencies[0].principalRate, 40);
+    near(r.currencies[0].totalRecoveryRate, 60);
+    near(r.currencies[0].estimatedPrincipalRecovered, 400);
     near(r.timelines.USD.at(-1).trackedAssetsAtCost, 600);
 });
 
-test('losses and partial sales reduce every funding source proportionally', () => {
+test('losses reduce the FIFO funding lots selected by the sale', () => {
     const r = run(
         [cash('D', '20260101', 100, 'external_deposit')],
         [
@@ -140,7 +142,7 @@ test('confirmed allocation overrides dividend-first without inventing cash', () 
     near(r.timelines.USD.at(-1).cash, 100);
 });
 
-test('recovery can exceed 100%, fresh deposits lower the rate, no zero denominator', () => {
+test('profit withdrawals do not recover principal and no zero denominator is created', () => {
     const r = run(
         [
             cash('D', '20260101', 100, 'external_deposit'),
@@ -153,9 +155,62 @@ test('recovery can exceed 100%, fresh deposits lower the rate, no zero denominat
         ]
     );
     near(r.timelines.USD[3].recovered, 120);
-    near(r.currencies[0].rate, 60);
-    near(r.stocks[0].rate, 120);
+    near(r.currencies[0].totalRecoveryRate, 60);
+    near(r.currencies[0].principalRate, 0);
+    near(r.stocks[0].rate, 0);
     assert.equal(r.currencies[1].rate, null);
+});
+
+test('1000 principal plus 100 dividend reinvestment keeps principal at 1000', () => {
+    const r = run(
+        [cash('D', '20260101', 1000, 'external_deposit')],
+        [
+            trade('B', '20260102', 'buy', 'A', 1000, 10),
+            trade('DIV', '20260201', 'dividend', 'A', 100),
+            trade('RE', '20260202', 'buy', 'B', 100, 1),
+        ]
+    );
+    const metric = r.currencies.find((row) => row.currency === 'USD');
+    near(metric.deposits, 1000);
+    near(r.stocks.find((row) => row.symbol === 'A').principalHeld, 1000);
+    near(r.stocks.find((row) => row.symbol === 'B').reinvestedHeld, 100);
+    near(r.timelines.USD.at(-1).trackedAssetsAtCost, 1100);
+});
+
+test('confirmed principal withdrawal alone increases principal recovery', () => {
+    const r = run(
+        [
+            cash('D', '20260101', 1000, 'external_deposit'),
+            cash('W', '20260102', 250, 'principal_withdrawal'),
+        ],
+        []
+    );
+    const metric = r.currencies.find((row) => row.currency === 'USD');
+    near(metric.principalRecovered, 250);
+    near(metric.estimatedPrincipalRecovered, 0);
+    near(metric.remainingPrincipal, 750);
+    near(metric.principalRate, 25);
+});
+
+test('opening lots seed confirmed principal and exclude earlier ledger events', () => {
+    const earlier = cash('OLD', '20250101', 500, 'external_deposit');
+    const r = tracePortfolioFunding({
+        entries: [earlier.entry],
+        classifications: [earlier.annotation],
+        openingLots: [
+            {
+                id: 'OPEN',
+                accountId: 'a',
+                trackingStartAt: '20260101',
+                currency: 'USD',
+                symbol: 'A',
+                amount: 1000,
+                quantity: 10,
+            },
+        ],
+    });
+    near(r.currencies[0].deposits, 1000);
+    near(r.stocks[0].principalHeld, 1000);
 });
 
 test('duplicate cash dividend is not added to security dividend and reversals suspend trace', () => {

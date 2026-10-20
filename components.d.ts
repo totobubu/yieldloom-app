@@ -42,6 +42,7 @@ declare module 'vue' {
     Message: typeof import('primevue/message')['default']
     MonthlyContentStudio: typeof import('./src/components/portfolio/MonthlyContentStudio.vue')['default']
     MonthlyStatement: typeof import('./src/components/portfolio/MonthlyStatement.vue')['default']
+    OpeningFundingEditor: typeof import('./src/components/portfolio/OpeningFundingEditor.vue')['default']
     PortfolioCapitalPanel: typeof import('./src/components/portfolio/PortfolioCapitalPanel.vue')['default']
     PortfolioDividendCalendar: typeof import('./src/components/portfolio/PortfolioDividendCalendar.vue')['default']
     PortfolioExportDialog: typeof import('./src/components/portfolio/PortfolioExportDialog.vue')['default']

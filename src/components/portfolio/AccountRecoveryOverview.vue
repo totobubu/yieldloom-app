@@ -1,8 +1,8 @@
 <script setup>
     import { computed, onScopeDispose, ref, watch } from 'vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
+    import { tracePortfolioFunding } from '@/services/portfolioFundingTrace.js';
     import {
-        capitalRecovery,
         capitalSummary,
         combineCapitalStates,
     } from '../../../lib/portfolio-capital.js';
@@ -16,6 +16,7 @@
     });
     const traceAccount = ref('');
     const traceCurrency = ref('USD');
+    const savingOpening = ref(false);
     function focusTrace(item) {
         traceAccount.value = item.accountId;
         traceCurrency.value = item.currency;
@@ -91,7 +92,7 @@
     const combined = computed(() => combineCapitalStates(states.value));
     const traceState = computed(() =>
         Object.fromEntries(
-            ['entries', 'classifications'].map((kind) => [
+            ['entries', 'classifications', 'openingLots'].map((kind) => [
                 kind,
                 states.value.flatMap(({ accountId, state }) =>
                     (state[kind] || []).map((row) => ({ ...row, accountId }))
@@ -99,8 +100,51 @@
             ])
         )
     );
-    const recovery = computed(() =>
-        capitalRecovery(combined.value.entries, combined.value.classifications)
+    const selectedTraceState = computed(
+        () =>
+            states.value.find((row) => row.accountId === traceAccount.value)
+                ?.state || {}
+    );
+    const selectedCanEdit = computed(() => {
+        const account = props.accounts?.find(
+            (row) => row.id === traceAccount.value
+        );
+        return ['owner', 'editor'].includes(
+            account?.permissions?.[props.user?.uid]
+        );
+    });
+    async function saveOpening(input) {
+        if (!props.user || !traceAccount.value || savingOpening.value) return;
+        savingOpening.value = true;
+        error.value = '';
+        try {
+            await portfolioCapitalRequest(
+                props.user,
+                input,
+                traceAccount.value
+            );
+            const state = await portfolioCapitalRequest(
+                props.user,
+                undefined,
+                traceAccount.value,
+                { force: true }
+            );
+            states.value = states.value.map((row) =>
+                row.accountId === traceAccount.value ? { ...row, state } : row
+            );
+        } catch (reason) {
+            error.value = reason.message;
+        } finally {
+            savingOpening.value = false;
+        }
+    }
+    const recovery = computed(
+        () =>
+            tracePortfolioFunding({
+                ...traceState.value,
+                trades: trades.value,
+                allocations: allocations.value,
+            }).currencies
     );
     const accountRecovery = computed(() =>
         states.value.flatMap(({ accountId, state }) => {
@@ -108,10 +152,25 @@
                 state.entries || [],
                 state.classifications || []
             ).pending;
-            return capitalRecovery(
-                state.entries || [],
-                state.classifications || []
-            ).map((row) => ({
+            return tracePortfolioFunding({
+                entries: (state.entries || []).map((row) => ({
+                    ...row,
+                    accountId,
+                })),
+                classifications: (state.classifications || []).map((row) => ({
+                    ...row,
+                    accountId,
+                })),
+                trades: state.trades || [],
+                allocations: (state.allocations || []).map((row) => ({
+                    ...row,
+                    accountId,
+                })),
+                openingLots: (state.openingLots || []).map((row) => ({
+                    ...row,
+                    accountId,
+                })),
+            }).currencies.map((row) => ({
                 ...row,
                 accountId,
                 pending,
@@ -164,33 +223,54 @@
         <template v-else>
             <div class="metrics">
                 <article v-for="item in recovery" :key="item.currency">
-                    <small>실제 출금 기준 회수율 · {{ item.currency }}</small>
+                    <small>원금 계보 기준 회수율 · {{ item.currency }}</small>
                     <strong>{{
-                        item.rate === null
+                        item.principalRate === null
                             ? '원금 확인 필요'
-                            : `${item.rate.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}%`
+                            : `${item.principalRate.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}%`
                     }}</strong>
                     <progress
-                        v-if="item.rate !== null"
-                        :value="Math.min(item.rate, 100)"
+                        v-if="item.principalRate !== null"
+                        :value="Math.min(item.principalRate, 100)"
                         max="100"
                         :aria-label="`${item.currency} 전체 계좌 원금 회수율`" />
                     <dl>
                         <div>
-                            <dt>누적 외부 입금</dt>
-                            <dd>{{ money(item.principal, item.currency) }}</dd>
+                            <dt>누적 투자 원금</dt>
+                            <dd>{{ money(item.deposits, item.currency) }}</dd>
                         </div>
                         <div>
-                            <dt>실제 외부 출금</dt>
-                            <dd>{{ money(item.recovered, item.currency) }}</dd>
-                        </div>
-                        <div>
-                            <dt>입금 대비 미출금액</dt>
+                            <dt>원금 회수</dt>
                             <dd>
                                 {{
-                                    item.rate === null
+                                    money(
+                                        item.principalRecovered +
+                                            item.estimatedPrincipalRecovered,
+                                        item.currency
+                                    )
+                                }}
+                                <small v-if="item.estimatedPrincipalRecovered">
+                                    추정
+                                    {{
+                                        money(
+                                            item.estimatedPrincipalRecovered,
+                                            item.currency
+                                        )
+                                    }}
+                                    포함
+                                </small>
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>미회수 원금</dt>
+                            <dd>
+                                {{
+                                    item.principalRate === null
                                         ? '—'
-                                        : money(item.remaining, item.currency)
+                                        : money(
+                                              item.remainingPrincipal,
+                                              item.currency
+                                          )
                                 }}
                             </dd>
                         </div>
@@ -201,9 +281,9 @@
                 미분류 {{ pending }}건을 제외한 잠정 수치입니다.
             </p>
             <p>
-                회수율 = 외부 출금 ÷ 외부 입금. 배당·매도금 재투자와 계좌 간
-                이동은 원금·회수금에 더하지 않습니다. 계좌 간 이체는 양쪽 내역을
-                ‘계좌 내 이동’으로 분류해 주세요. 통화 간 환산은 하지 않습니다.
+                원금 회수율 = 원금으로 귀속된 외부 출금 ÷ 누적 투자 원금.
+                배당·수익 출금은 총 현금 회수에만 포함합니다. 배당·매도금
+                재투자와 계좌 간 이동은 새 원금으로 더하지 않습니다.
             </p>
             <p>
                 현재 평가액은 아래 가족 합산 잔고에서 확인하세요. 현금 잔액과
@@ -222,9 +302,9 @@
                             <tr>
                                 <th>계좌</th>
                                 <th>통화</th>
-                                <th>외부 투입금</th>
-                                <th>실제 현금 회수</th>
-                                <th>미회수액</th>
+                                <th>누적 투자 원금</th>
+                                <th>원금 회수</th>
+                                <th>미회수 원금</th>
                                 <th>회수율</th>
                                 <th>자료 상태</th>
                                 <th>상세</th>
@@ -237,22 +317,32 @@
                                 <th scope="row">{{ item.alias }}</th>
                                 <td>{{ item.currency }}</td>
                                 <td>
-                                    {{ money(item.principal, item.currency) }}
-                                </td>
-                                <td>
-                                    {{ money(item.recovered, item.currency) }}
+                                    {{ money(item.deposits, item.currency) }}
                                 </td>
                                 <td>
                                     {{
-                                        item.rate == null
+                                        money(
+                                            item.principalRecovered +
+                                                item.estimatedPrincipalRecovered,
+                                            item.currency
+                                        )
+                                    }}
+                                    <small
+                                        v-if="item.estimatedPrincipalRecovered">
+                                        추정 포함
+                                    </small>
+                                </td>
+                                <td>
+                                    {{
+                                        item.principalRate == null
                                             ? '—'
                                             : money(
-                                                  item.remaining,
+                                                  item.remainingPrincipal,
                                                   item.currency
                                               )
                                     }}
                                 </td>
-                                <td>{{ percent(item.rate) }}</td>
+                                <td>{{ percent(item.principalRate) }}</td>
                                 <td>
                                     {{
                                         item.pending
@@ -283,7 +373,12 @@
                 :classifications="traceState.classifications"
                 :trades="trades"
                 :allocations="allocations"
-                :accounts="accounts" />
+                :opening-lots="traceState.openingLots"
+                :opening-revision="selectedTraceState.openingRevision || 0"
+                :can-edit-opening="selectedCanEdit"
+                :saving-opening="savingOpening"
+                :accounts="accounts"
+                @save-opening="saveOpening" />
             <StockRecoveryPanel
                 :trades="trades"
                 :allocations="allocations"

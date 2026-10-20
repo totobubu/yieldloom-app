@@ -1170,6 +1170,18 @@
         "
         :progress="operationProgress"
         @after-hide="focusPreviewFeedback">
+        <Teleport to="#portfolio-header-actions">
+            <Button
+                class="portfolio-header-refresh"
+                icon="pi pi-refresh"
+                aria-label="새로고침"
+                severity="secondary"
+                text
+                rounded
+                :loading="busy"
+                :disabled="accountCooldown.coolingDown.value"
+                @click="run(refresh)" />
+        </Teleport>
         <header class="portfolio-heading">
             <div>
                 <span class="studio-eyebrow"
@@ -1178,27 +1190,6 @@
                 >
                 <h1>내 포트폴리오</h1>
                 <p>내 계좌의 기록을 모아, 투자 흐름을 살펴보세요.</p>
-            </div>
-            <div class="portfolio-actions">
-                <Button
-                    label="CSV 내보내기"
-                    icon="pi pi-download"
-                    severity="secondary"
-                    outlined
-                    :disabled="
-                        busy ||
-                        accountsState !== 'ready' ||
-                        !visibleAccounts.length
-                    "
-                    @click="openExport()" />
-                <Button
-                    label="새로고침"
-                    icon="pi pi-refresh"
-                    severity="secondary"
-                    outlined
-                    :loading="busy"
-                    :disabled="accountCooldown.coolingDown.value"
-                    @click="run(refresh)" />
             </div>
         </header>
         <Message v-if="error" severity="error" :closable="false">{{
@@ -1268,6 +1259,18 @@
                 :disabled="accountCooldown.coolingDown.value"
                 @click="run(refresh)"
         /></Message>
+        <div class="portfolio-tools">
+            <Button
+                label="CSV 내보내기"
+                icon="pi pi-download"
+                severity="secondary"
+                text
+                size="small"
+                :disabled="
+                    busy || accountsState !== 'ready' || !visibleAccounts.length
+                "
+                @click="openExport()" />
+        </div>
         <Tabs v-model:value="portfolioTab" class="portfolio-tabs"
             ><TabList
                 ><Tab value="overview">한눈에 보기</Tab
@@ -2369,10 +2372,12 @@
         color: var(--app-muted);
         margin: 0;
     }
-    .portfolio-actions {
+    .portfolio-tools {
         display: flex;
-        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
         gap: 10px;
+        margin: 8px 0;
     }
     .portfolio-scope {
         display: flex;
@@ -2571,17 +2576,8 @@
         .portfolio-heading h1 {
             font-size: 26px;
         }
-        .portfolio-actions > .p-button {
-            flex: 1 1 0;
-            min-width: 0;
-            flex-direction: column;
-            gap: 8px;
-            padding: 12px 8px;
-        }
-        .portfolio-actions :deep(.p-button-label) {
-            flex: 0 1 auto;
-            word-break: keep-all;
-            white-space: normal;
+        .portfolio-tools {
+            margin-bottom: 4px;
         }
         .portfolio-tabs :deep(.p-tablist) {
             position: sticky;

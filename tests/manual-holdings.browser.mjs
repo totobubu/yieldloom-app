@@ -50,7 +50,7 @@ try {
     await page.getByRole('heading', { name: '선택 계좌: 수동입력' }).waitFor();
     const openManual = async () => {
         await page
-            .getByRole('tab', { name: '자료 업로드', exact: true })
+            .getByRole('button', { name: '자료 업로드', exact: true })
             .click();
         await page
             .getByRole('button', { name: '수동 잔고 입력', exact: true })

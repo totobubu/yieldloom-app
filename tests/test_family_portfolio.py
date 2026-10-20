@@ -15,6 +15,14 @@ api = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(api)
 
 
+def pdf_parser(rows):
+    def parse(content, password, *, metadata=None):
+        if metadata is not None:
+            metadata.update({'customerName': 'PDF Test', 'maskedNumber': '****1234'})
+        return rows
+    return parse
+
+
 class Snapshot:
     def __init__(self, ref):
         self.reference, self.id = ref, ref.id
@@ -161,7 +169,7 @@ class FamilyApiTest(unittest.TestCase):
             'asOf': '2026-10-15', 'identityConfirmed': 'true', 'file': (io.BytesIO(content), 'statement.csv'), **extra}, headers={'Authorization': 'Bearer ' + uid})
 
     def commit(self, review, account=None, uid='alice'):
-        return self.post('commit', {'accountId': account or self.account, 'reviewId': review['reviewId'], 'rows': review['rows']}, uid)
+        return self.post('commit', {'accountId': account or self.account, 'reviewId': review['reviewId'], 'rows': review['rows'], 'identityConfirmed': True}, uid)
 
     def manual(self, rows=None, as_of='2026-10-16', uid='alice', **extra):
         old = self.db.data[f'investmentAccounts/{self.account}'].get('snapshot')
@@ -455,11 +463,11 @@ class FamilyApiTest(unittest.TestCase):
     def test_large_pdf_batches_retry_without_duplicates_and_validate_all_rows(self):
         rows = [{'date': '2026-10-15', 'symbol': 'CASH', 'quantity': None, 'amount': 100, 'currency': 'KRW',
                  'type': 'cash_in', 'externalId': f'pdf-{i}'} for i in range(405)]
-        with patch.object(api, 'pdf_rows', return_value=rows):
+        with patch.object(api, 'pdf_rows', side_effect=pdf_parser(rows)):
             review = self.preview(b'%PDF-1.4', file=(io.BytesIO(b'%PDF-1.4'), 'statement.pdf'), format='toss-pdf', password='123456').json
         self.assertEqual(len(review['batches']), 3)
         invalid = copy.deepcopy(rows);invalid[-1]['amount'] = -1
-        payload = {'accountId': self.account, 'reviewId': review['reviewId'], 'rows': invalid}
+        payload = {'accountId': self.account, 'reviewId': review['reviewId'], 'rows': invalid, 'identityConfirmed': True}
         self.assertEqual(self.post('validateImport', payload).status_code, 400)
         payload['rows'] = rows
         self.assertEqual(self.post('validateImport', payload).status_code, 200)
@@ -499,12 +507,77 @@ class FamilyApiTest(unittest.TestCase):
             {'date': '2026-09-01', 'symbol': 'AAPL', 'quantity': 1, 'amount': 10, 'currency': 'USD', 'type': 'buy', 'externalId': 'pdf-old'},
             {'date': '2026-10-19', 'symbol': 'AAPL', 'quantity': 1, 'amount': 10, 'currency': 'USD', 'type': 'buy', 'externalId': 'pdf-new'},
         ]
-        with patch.object(api, 'pdf_rows', return_value=rows):
+        with patch.object(api, 'pdf_rows', side_effect=pdf_parser(rows)):
             response = self.preview(b'%PDF-1.4', asOf='', file=(io.BytesIO(b'%PDF-1.4'), 'statement.pdf'), format='toss-pdf', password='123456')
         self.assertEqual(response.status_code, 200, response.json)
         self.assertEqual(response.json['asOf'], '2026-10-19')
         review = self.db.data[f"investmentAccounts/{self.account}/reviews/{response.json['reviewId']}"]
         self.assertEqual(review['asOf'], '2026-10-19')
+
+    def statement_preview(self, number='100-01-001234', remember=False):
+        extraction = {
+            'metadata': {'customer_name': 'PDF Test', 'account_number': number},
+            'cash_transactions': [{'date': '2026.10.15', 'rawType': '이체입금',
+                                   'currency': 'KRW', 'amount': 100, 'suggestedKind': 'external_deposit'}],
+        }
+        with patch('api.toss_extractor.extract_transactions_from_pdf', return_value=extraction) as parser:
+            response = self.preview(b'%PDF-1.4', identityConfirmed='false',
+                                    file=(io.BytesIO(b'%PDF-1.4'), 'statement.pdf'),
+                                    format='toss-pdf', password='fixture', rememberPassword=str(remember).lower())
+            parser.assert_called_once()
+        self.assertEqual(response.status_code, 200, response.json)
+        # Reuse account and family already read for authorization; no extra reads for identity.
+        self.assertEqual(response.headers['X-Portfolio-Document-Reads'], '2')
+        return response.json
+
+    def test_pdf_identity_is_extracted_masked_and_confirmed_only_before_saving(self):
+        review = self.statement_preview()
+        self.assertEqual(review['statementIdentity'], {
+            'customerName': 'PDF Test', 'maskedNumber': '****1234', 'accountMatch': 'matched'})
+        self.assertNotIn('100-01-001234', str(review))
+        self.assertNotIn('100-01-001234', str(self.db.data))
+        payload = {'accountId': self.account, 'reviewId': review['reviewId'], 'rows': review['rows']}
+        for action in ('validateImport', 'commit'):
+            self.assertEqual(self.post(action, payload).status_code, 400)
+        payload['identityConfirmed'] = True
+        self.assertEqual(self.post('validateImport', payload).status_code, 200)
+        self.assertEqual(self.post('commit', payload).json['inserted'], 1)
+
+    def test_pdf_mismatched_or_missing_identity_cannot_be_overridden_by_client(self):
+        for number, status in [('100-01-009999', 'mismatch'), ('', 'missing')]:
+            with self.subTest(status=status):
+                review = self.statement_preview(number)
+                self.assertEqual(review['statementIdentity']['accountMatch'], status)
+                payload = {'accountId': self.account, 'reviewId': review['reviewId'],
+                           'rows': review['rows'], 'identityConfirmed': True,
+                           'statementIdentity': {'maskedNumber': '****1234', 'accountMatch': 'matched'}}
+                for action in ('validateImport', 'commit'):
+                    self.assertEqual(self.post(action, payload).status_code, 400)
+        self.assertEqual(self.get('accountId=' + self.account).json['entries'], [])
+
+    def test_pdf_identity_rechecks_account_and_rejects_old_unverified_sessions(self):
+        review = self.statement_preview()
+        data = self.db.data[f'investmentAccounts/{self.account}']
+        data['maskedNumber'] = '****9999'
+        self.assertEqual(self.commit(review).status_code, 400)
+        data['maskedNumber'] = '****1234'
+        del self.db.data[f"investmentAccounts/{self.account}/reviews/{review['reviewId']}"]['statementIdentity']
+        self.assertEqual(self.commit(review).status_code, 400)
+
+    def test_pdf_without_registered_number_requires_explicit_manual_confirmation(self):
+        self.db.data[f'investmentAccounts/{self.account}']['maskedNumber'] = '미입력'
+        review = self.statement_preview()
+        self.assertEqual(review['statementIdentity']['accountMatch'], 'unregistered')
+        self.assertEqual(self.commit(review).json['inserted'], 1)
+
+    def test_pdf_password_is_saved_only_for_matching_account(self):
+        with patch.object(api, 'save_pdf_password') as save:
+            mismatch = self.statement_preview('100-01-009999', remember=True)
+            save.assert_not_called()
+            self.assertFalse(mismatch['passwordSaved'])
+            match = self.statement_preview(remember=True)
+            save.assert_called_once()
+            self.assertTrue(match['passwordSaved'])
 
     def test_commit_rejects_changes_to_internal_transaction_identifier(self):
         content = b'date,symbol,quantity,amount,currency,type,externalId\n2026-10-15,AAPL,1,100,USD,buy,immutable-id\n'

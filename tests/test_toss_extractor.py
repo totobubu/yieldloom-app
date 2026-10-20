@@ -1,10 +1,28 @@
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'api'))
-from toss_extractor import parse_transaction_lines
+from toss_extractor import extract_transactions_from_pdf, parse_transaction_lines
 
 class TossStatementColumns(unittest.TestCase):
+    def test_statement_identity_accepts_header_spacing_colons_and_shared_lines(self):
+        for header in [
+            '성명 PDFTest\n계좌번호 100-01-001234',
+            '성명: PDFTest 계좌 번호: 100 - 01 - 001234',
+            '성명：PDFTest\n계좌번호：10001001234',
+            '성명 PDFTest\n계좌번호 ****1234',
+        ]:
+            with self.subTest(header=header):
+                page = MagicMock()
+                page.extract_text.return_value = header
+                pdf = MagicMock()
+                pdf.__enter__.return_value.pages = [page]
+                with patch('toss_extractor.pdfplumber.open', return_value=pdf):
+                    result = extract_transactions_from_pdf('synthetic.pdf', verbose=False)
+                self.assertEqual(result['metadata']['customer_name'], 'PDFTest')
+                self.assertTrue(result['metadata']['account_number'].endswith('1234'))
+
     def test_fractional_purchase_keeps_settlement_distinct_from_price_and_fees(self):
         row, _ = parse_transaction_lines([
             '2026.10.15 구매 테스트 ETF 1,338.60 0.144987 6,692 6,693 46,162 0 0 0 243.428075 281,106',

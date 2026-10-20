@@ -295,7 +295,7 @@
                 </p>
                 <p v-else>현금 CASH를 포함한 종목 코드 기준</p>
             </article>
-            <article class="metric-card">
+            <article class="metric-card trade-metric">
                 <span
                     >{{ isHoldings ? '자료 기준일' : '주요 거래 요약'
                     }}<i
@@ -306,17 +306,16 @@
                 }}</strong>
                 <div v-else class="trade-counts">
                     <div>
-                        <small class="buy-label">매수 {{ counts.buy }}건</small
+                        <small class="buy-label">매수</small
                         ><b>{{ counts.buy.toLocaleString() }}<em>건</em></b>
                     </div>
                     <div>
-                        <small class="sell-label"
-                            >매도 {{ counts.sell }}건</small
+                        <small class="sell-label">매도</small
                         ><b>{{ counts.sell.toLocaleString() }}<em>건</em></b>
                     </div>
                     <div>
                         <small>현금·환전</small
-                        ><b>{{ cashCount }}<em>건</em></b>
+                        ><b>{{ cashCount.toLocaleString() }}<em>건</em></b>
                     </div>
                 </div>
                 <p class="period-label">조회 기간: {{ period }}</p>
@@ -330,7 +329,8 @@
                     ><em>확인 요망</em></span
                 ><strong>{{ counts.unresolved }}<small>건</small></strong>
                 <p>
-                    추출 시 오류 · 미식별 거래<button
+                    <span>추출 시 오류 · 미식별 거래</span
+                    ><button
                         type="button"
                         :disabled="busy"
                         @click="category = 'unresolved'">
@@ -933,6 +933,7 @@
         font-size: 32px;
         font-variant-numeric: tabular-nums;
         letter-spacing: -0.035em;
+        overflow-wrap: anywhere;
     }
     .metric-card > strong small {
         margin-left: 7px;
@@ -959,13 +960,17 @@
         font-size: 24px;
     }
     .trade-counts {
-        display: flex;
-        gap: 16px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
         margin: 10px 0 18px;
+    }
+    .trade-counts > div {
+        min-width: 0;
     }
     .trade-counts > div + div {
         border-left: 1px solid var(--review-line);
-        padding-left: 16px;
+        padding-left: 8px;
     }
     .trade-counts small {
         display: block;
@@ -982,6 +987,8 @@
     }
     .trade-counts b {
         display: block;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
         font-size: 18px;
         line-height: 1.5;
     }
@@ -1002,6 +1009,7 @@
         color: var(--p-orange-700);
     }
     .issue-metric > span {
+        flex-wrap: wrap;
         color: inherit;
         font-weight: 650;
     }
@@ -1023,9 +1031,14 @@
         white-space: nowrap;
     }
     .issue-metric p {
+        flex-wrap: wrap;
+        align-items: baseline;
         color: inherit;
+        word-break: keep-all;
     }
     .issue-metric button {
+        flex-shrink: 0;
+        white-space: nowrap;
         border: 0;
         background: transparent;
         padding: 0;
@@ -1541,6 +1554,11 @@
     :global(.p-dark) .preview-badge {
         color: #6ee7b7;
     }
+    @media (max-width: 1200px) {
+        .review-metrics {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
     @media (max-width: 1100px) {
         .review-heading {
             flex-direction: column;
@@ -1570,6 +1588,10 @@
         }
         .metric-card {
             padding: 14px;
+        }
+        .trade-metric,
+        .issue-metric {
+            grid-column: 1 / -1;
         }
         .metric-card > strong {
             font-size: 26px;
@@ -1619,11 +1641,10 @@
         .review-save-actions {
             margin-left: auto;
         }
-        .trade-counts {
-            gap: 10px;
-        }
-        .trade-counts > div + div {
-            padding-left: 10px;
+    }
+    @media (max-width: 360px) {
+        .review-metrics {
+            grid-template-columns: minmax(0, 1fr);
         }
     }
 </style>

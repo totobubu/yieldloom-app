@@ -21,24 +21,45 @@
         rows: { type: Array, required: true },
         errors: { type: Array, default: () => [] },
         mappingWarning: { type: String, default: '' },
+        visibleIndices: { type: Array, default: null },
+        busy: Boolean,
+        filterKey: { type: String, default: '' },
     });
     const emit = defineEmits(['update-row']);
     const active = ref('summary');
+    const first = ref(0);
+    watch([active, () => props.filterKey], () => {
+        first.value = 0;
+    });
     const groups = computed(() => importReviewGroups(props.rows, props.errors));
-    const tabs = computed(() => [
-        { value: 'summary', label: '전체 요약', items: groups.value.all },
-        { value: 'cash', label: '현금·환전', items: groups.value.cash },
-        {
-            value: 'unresolved',
-            label: '미확인',
-            items: groups.value.unresolved,
-        },
-        ...groups.value.symbols.map((group) => ({
-            value: `symbol:${group.symbol}`,
-            label: group.symbol,
-            items: group.items,
-        })),
-    ]);
+    const issueIndices = computed(
+        () => new Set(groups.value.unresolved.map((item) => item.index))
+    );
+    const tabs = computed(() => {
+        const visible =
+            props.visibleIndices === null
+                ? null
+                : new Set(props.visibleIndices);
+        return [
+            { value: 'summary', label: '전체 요약', items: groups.value.all },
+            { value: 'cash', label: '현금·환전', items: groups.value.cash },
+            {
+                value: 'unresolved',
+                label: '미확인',
+                items: groups.value.unresolved,
+            },
+            ...groups.value.symbols.map((group) => ({
+                value: `symbol:${group.symbol}`,
+                label: group.symbol,
+                items: group.items,
+            })),
+        ].map((tab) => ({
+            ...tab,
+            items: visible
+                ? tab.items.filter((item) => visible.has(item.index))
+                : tab.items,
+        }));
+    });
     watch(tabs, (value) => {
         if (!value.some((tab) => tab.value === active.value))
             active.value = 'summary';
@@ -48,7 +69,7 @@
 </script>
 
 <template>
-    <section class="toss-review" aria-label="토스 PDF 추출 검토">
+    <div class="toss-review" aria-label="토스 PDF 추출 검토">
         <Message v-if="mappingWarning" severity="warn" :closable="false">
             {{ mappingWarning }}
         </Message>
@@ -70,25 +91,36 @@
                     v-for="tab in tabs"
                     :key="tab.value"
                     :value="tab.value">
-                    <div v-if="tab.value === 'summary'" class="review-summary">
-                        <p>전체 거래 {{ groups.all.length }}건</p>
-                        <p>종목 {{ groups.symbols.length }}개</p>
-                        <p>현금·환전 {{ groups.cash.length }}건</p>
-                        <p>확인 필요 {{ groups.unresolved.length }}건</p>
-                    </div>
                     <DataTable
-                        v-else
+                        v-if="tab.value === active"
+                        v-model:first="first"
                         :value="tab.items"
                         data-key="index"
+                        :row-class="
+                            (data) =>
+                                issueIndices.has(data.index)
+                                    ? 'toss-issue-row'
+                                    : ''
+                        "
                         paginator
                         :rows="50"
                         :rows-per-page-options="[25, 50, 100]"
-                        responsive-layout="scroll"
+                        scrollable
+                        scroll-height="600px"
+                        table-style="min-width: 1050px"
                         striped-rows>
-                        <Column field="row.date" header="거래일" />
+                        <template #empty
+                            >표시할 자료가 없습니다. 검색어와 필터를
+                            확인하세요.</template
+                        >
+                        <Column
+                            field="row.date"
+                            header="거래일"
+                            style="min-width: 100px" />
                         <Column header="종목">
                             <template #body="{ data }">
                                 <InputText
+                                    :disabled="busy"
                                     :model-value="data.row.symbol"
                                     :aria-label="`${data.index + 1}행 종목`"
                                     @update:model-value="
@@ -106,6 +138,7 @@
                                             data.row._mappingStatus
                                         ) && data.row._mappingCandidates?.length
                                     "
+                                    :disabled="busy"
                                     :model-value="null"
                                     :options="data.row._mappingCandidates"
                                     option-label="symbol"
@@ -135,6 +168,7 @@
                         <Column header="유형">
                             <template #body="{ data }">
                                 <Select
+                                    :disabled="busy"
                                     :model-value="data.row.type"
                                     :options="transactionTypeOptions"
                                     option-label="label"
@@ -151,6 +185,7 @@
                         <Column header="수량">
                             <template #body="{ data }">
                                 <InputText
+                                    :disabled="busy"
                                     :model-value="data.row.quantity"
                                     :aria-label="`${data.index + 1}행 수량`"
                                     @update:model-value="
@@ -161,6 +196,7 @@
                         <Column header="체결 금액">
                             <template #body="{ data }">
                                 <InputText
+                                    :disabled="busy"
                                     :model-value="data.row.amount"
                                     :aria-label="`${data.index + 1}행 금액`"
                                     @update:model-value="
@@ -177,6 +213,7 @@
                         <Column header="통화">
                             <template #body="{ data }">
                                 <Select
+                                    :disabled="busy"
                                     :model-value="data.row.currency"
                                     :options="['USD', 'KRW']"
                                     :aria-label="`${data.index + 1}행 통화`"
@@ -192,18 +229,19 @@
                                         data.row._mappingStatus === 'verified'
                                             ? '웹 교차 확인'
                                             : data.row._mappingStatus ===
-                                                'saved'
-                                              ? '저장된 연결'
-                                              : data.row._mappingStatus
-                                                ? '종목 확인 필요'
-                                                : transactionTypeLabel(
-                                                      data.row.type
-                                                  )
+                                                'manual'
+                                              ? '직접 연결'
+                                              : data.row._mappingStatus ===
+                                                  'saved'
+                                                ? '저장된 연결'
+                                                : data.row._mappingStatus
+                                                  ? '종목 확인 필요'
+                                                  : transactionTypeLabel(
+                                                        data.row.type
+                                                    )
                                     "
                                     :severity="
-                                        ['unresolved', 'unavailable'].includes(
-                                            data.row._mappingStatus
-                                        )
+                                        issueIndices.has(data.index)
                                             ? 'warn'
                                             : 'success'
                                     " />
@@ -227,19 +265,30 @@
                 </TabPanel>
             </TabPanels>
         </Tabs>
-    </section>
+    </div>
 </template>
 
 <style scoped>
-    .review-summary {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-        gap: 0.75rem;
+    .toss-review {
+        min-width: 0;
     }
-    .review-summary p {
-        padding: 1rem;
-        border: 1px solid var(--p-content-border-color);
-        border-radius: var(--p-border-radius-md);
+    :deep(.p-tabpanels) {
+        padding: 0;
+    }
+    :deep(.p-tablist-tab-list) {
+        background: var(--app-surface);
+    }
+    :deep(.p-tab) {
+        gap: 6px;
+        font-size: 12px;
+        padding: 12px;
+    }
+    :deep(.toss-issue-row > td) {
+        background: color-mix(
+            in srgb,
+            var(--p-orange-500) 7%,
+            var(--app-surface)
+        );
     }
     small {
         display: block;
@@ -250,7 +299,7 @@
         overflow-x: auto;
     }
     :deep(.p-inputtext),
-    :deep(.p-select) {
+    :deep(.p-datatable-tbody .p-select) {
         min-width: 7rem;
         width: 100%;
     }

@@ -380,7 +380,7 @@ try {
         path: `${output}/desktop.png`,
         style: 'header, .skip-link, .mobile-nav { visibility: hidden !important; } .review-save-bar { position: static !important; }',
     });
-    for (const width of [390, 768]) {
+    for (const width of [320, 360, 390, 430, 768, 1024, 1201, 1280]) {
         await page.setViewportSize({ width, height: 900 });
         for (const dark of [false, true]) {
             await page.evaluate(
@@ -395,6 +395,59 @@ try {
                 false,
                 `${width}px ${dark ? 'dark' : 'light'}: no page overflow`
             );
+            const metricOverflow = await review
+                .locator('.review-metrics')
+                .evaluate((region) => {
+                    const problems = [];
+                    for (const card of region.querySelectorAll(
+                        '.metric-card'
+                    )) {
+                        const bounds = card.getBoundingClientRect();
+                        if (card.scrollWidth > card.clientWidth + 1)
+                            problems.push('card scroll overflow');
+                        const walker = document.createTreeWalker(
+                            card,
+                            NodeFilter.SHOW_TEXT
+                        );
+                        while (walker.nextNode()) {
+                            const node = walker.currentNode;
+                            if (!node.textContent.trim()) continue;
+                            const textBounds =
+                                node.parentElement
+                                    .closest('.trade-counts > div')
+                                    ?.getBoundingClientRect() || bounds;
+                            const range = document.createRange();
+                            range.selectNodeContents(node);
+                            for (const rect of range.getClientRects()) {
+                                if (
+                                    rect.left < textBounds.left - 1 ||
+                                    rect.right > textBounds.right + 1
+                                )
+                                    problems.push(node.textContent.trim());
+                            }
+                        }
+                    }
+                    for (const value of region.querySelectorAll(
+                        '.trade-counts b, .issue-metric button'
+                    )) {
+                        if (
+                            value.getBoundingClientRect().height >
+                            parseFloat(getComputedStyle(value).lineHeight) + 1
+                        )
+                            problems.push(
+                                `wrapped value/action: ${value.textContent}`
+                            );
+                    }
+                    return problems;
+                });
+            assert.deepEqual(
+                metricOverflow,
+                [],
+                `${width}px: metric content stays inside cards`
+            );
+            await review.locator('.review-metrics').screenshot({
+                path: `${output}/metrics-${width}-${dark ? 'dark' : 'light'}.png`,
+            });
             await review.screenshot({
                 path: `${output}/${width}-${dark ? 'dark' : 'light'}.png`,
                 style: 'header, .skip-link, .mobile-nav { visibility: hidden !important; } .review-save-bar { position: static !important; }',

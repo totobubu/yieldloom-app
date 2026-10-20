@@ -2812,7 +2812,16 @@
             font-size: 26px;
         }
         .portfolio-actions > .p-button {
-            flex: 1;
+            flex: 1 1 0;
+            min-width: 0;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px 8px;
+        }
+        .portfolio-actions :deep(.p-button-label) {
+            flex: 0 1 auto;
+            word-break: keep-all;
+            white-space: normal;
         }
         .portfolio-tabs :deep(.p-tablist) {
             overflow-x: auto;

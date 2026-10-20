@@ -83,6 +83,7 @@
         familyId = ref(''),
         accounts = ref([]),
         rawSummary = ref(null);
+    const requestedCalculations = new Set();
     const portfolioScope = ref('personal');
     const busy = ref(false),
         error = ref(''),
@@ -223,6 +224,22 @@
         nextCursor = ref(null),
         legacy = ref(false),
         entriesLoaded = ref(false);
+    const entryDialog = ref(false);
+    const entryMutation = ref({
+        operation: 'add',
+        entryId: '',
+        reason: '',
+        row: {},
+    });
+    const transactionTypes = [
+        { label: '매수', value: 'buy' },
+        { label: '매도', value: 'sell' },
+        { label: '입고', value: 'transfer_in' },
+        { label: '출고', value: 'transfer_out' },
+        { label: '배당', value: 'dividend' },
+        { label: '입금', value: 'cash_in' },
+        { label: '출금', value: 'cash_out' },
+    ];
     const shareUid = ref(''),
         shareRole = ref('viewer'),
         singleAccountConfirmed = ref(false);
@@ -260,11 +277,19 @@
             ids.has(p.accountId)
         );
         const dates = visibleAccounts.value
-            .filter((a) => a.snapshot)
-            .map((a) => a.snapshot.asOf)
+            .filter((a) => a.calculatedSnapshot)
+            .map((a) => a.calculatedSnapshot.asOf)
+            .filter(Boolean)
             .sort();
         const missing = visibleAccounts.value
-            .filter((a) => !a.snapshot)
+            .filter(
+                (a) =>
+                    !a.calculatedSnapshot ||
+                    a.calculatedSnapshot.entriesRevision !==
+                        (a.entriesRevision || 0) ||
+                    a.calculatedSnapshot.snapshotRevision !==
+                        (a.snapshotRevision || 0)
+            )
             .map((a) => a.id);
         const totals = {};
         for (const p of positions)
@@ -305,6 +330,14 @@
     const editableAccounts = computed(() =>
         accounts.value.filter((a) =>
             ['owner', 'editor'].includes(a.permissions[firebaseUser.value?.uid])
+        )
+    );
+    const calculationIssues = computed(() =>
+        visibleAccounts.value.flatMap((account) =>
+            (account.calculatedSnapshot?.issues || []).map((issue) => ({
+                ...issue,
+                accountId: account.id,
+            }))
         )
     );
     const canConfigure = computed(
@@ -405,6 +438,34 @@
                 selectedAccount.value = visibleAccounts.value[0]?.id || '';
             accountsState.value = 'ready';
             await loadCapital({ force: true });
+            const stale = accounts.value.filter((account) => {
+                const key = `${account.id}:${account.entriesRevision || 0}:${account.snapshotRevision || 0}`;
+                const calculated = account.calculatedSnapshot;
+                const needsCalculation =
+                    (account.entriesRevision || account.snapshotRevision) &&
+                    (!calculated ||
+                        calculated.entriesRevision !==
+                            (account.entriesRevision || 0) ||
+                        calculated.snapshotRevision !==
+                            (account.snapshotRevision || 0));
+                return (
+                    needsCalculation &&
+                    ['owner', 'editor'].includes(
+                        account.permissions?.[requestedUid]
+                    ) &&
+                    !requestedCalculations.has(key)
+                );
+            });
+            if (stale.length) {
+                for (const account of stale) {
+                    const key = `${account.id}:${account.entriesRevision || 0}:${account.snapshotRevision || 0}`;
+                    requestedCalculations.add(key);
+                    await familyRequest('rebuildCalculatedHoldings', {
+                        accountId: account.id,
+                    });
+                }
+                await refresh();
+            }
         } catch (reason) {
             if (!isCurrent()) return;
             accountsState.value = 'error';
@@ -760,6 +821,54 @@
             nextCursor.value = result.nextCursor;
         });
     }
+    function editEntry(operation, entry = null) {
+        entryMutation.value = {
+            operation,
+            entryId: entry?.id || '',
+            reason: '',
+            row:
+                operation === 'replace'
+                    ? {
+                          ...entry.row,
+                          externalId: `${entry.row.externalId}-replacement-${Date.now()}`,
+                      }
+                    : {
+                          date: new Date().toISOString().slice(0, 10),
+                          type: 'buy',
+                          symbol: '',
+                          quantity: null,
+                          amount: null,
+                          currency: 'KRW',
+                          externalId: `manual-${Date.now()}`,
+                      },
+        };
+        entryDialog.value = true;
+    }
+    const entryDelta = computed(() => {
+        const item = entryMutation.value;
+        const row = item.row || {};
+        const sign = ['sell', 'transfer_out'].includes(row.type) ? -1 : 1;
+        return row.quantity == null ? null : sign * Number(row.quantity);
+    });
+    async function saveEntryMutation() {
+        await run(async () => {
+            const item = entryMutation.value;
+            await familyRequest('mutateEntry', {
+                accountId: selectedAccount.value,
+                requestId: crypto.randomUUID().replaceAll('-', ''),
+                operation: item.operation,
+                entryId: item.entryId || undefined,
+                reason: item.reason,
+                row: ['add', 'replace'].includes(item.operation)
+                    ? item.row
+                    : undefined,
+            });
+            entryDialog.value = false;
+            await refresh();
+            await loadEntries();
+            message.value = '거래 원장과 계산 잔고를 갱신했습니다.';
+        });
+    }
 </script>
 
 <template>
@@ -928,6 +1037,11 @@
                         :missing-accounts="
                             summary.missingSnapshotAccounts.length
                         "
+                        :estimated-positions="
+                            summary.positions.filter(
+                                (row) => row.calculationMode === 'estimated'
+                            ).length
+                        "
                         @request-upload="openHoldingsUpload" />
                     <div
                         v-if="
@@ -1049,11 +1163,24 @@
                             <p
                                 v-if="summary.missingSnapshotAccounts.length"
                                 class="warning">
-                                잔고 미확인 계좌
-                                {{ summary.missingSnapshotAccounts.length }}개는
-                                합계에서 제외했습니다. 거래만으로 기초 보유량을
-                                추정하지 않습니다.
+                                계산 대기 또는 확인 필요 계좌
+                                {{ summary.missingSnapshotAccounts.length }}개가
+                                있습니다.
                             </p>
+                            <Message
+                                v-if="calculationIssues.length"
+                                severity="warn"
+                                :closable="false">
+                                <strong>추정 제외·확인 필요</strong>
+                                <ul>
+                                    <li
+                                        v-for="issue in calculationIssues"
+                                        :key="`${issue.accountId}:${issue.symbol}:${issue.reason}`">
+                                        {{ label(issue.accountId) }} ·
+                                        {{ issue.symbol }} · {{ issue.reason }}
+                                    </li>
+                                </ul>
+                            </Message>
                             <p v-if="!summary.valueComplete" class="warning">
                                 미확인 평가액이 있어 합계는 확인된 금액만
                                 포함합니다.
@@ -1099,7 +1226,7 @@
                             ><label
                                 >종목 검색 <InputText v-model="symbolFilter"
                             /></label>
-                            <h3>명의자·계좌별 원본 잔고</h3>
+                            <h3>명의자·계좌별 잔고</h3>
                             <DataTable
                                 :value="positions"
                                 striped-rows
@@ -1110,7 +1237,7 @@
                                 scrollable
                                 table-style="min-width: 640px"
                                 :table-props="{
-                                    'aria-label': '명의자·계좌별 원본 잔고',
+                                    'aria-label': '명의자·계좌별 잔고',
                                 }"
                                 ><Column header="명의자"
                                     ><template #body="{ data }">{{
@@ -1132,9 +1259,11 @@
                                     ></Column
                                 ><Column header="기준일·출처"
                                     ><template #body="{ data }"
-                                        >{{ data.asOf }} ·
-                                        {{ data.source }}</template
-                                    ></Column
+                                        >{{ data.asOf }} · {{ data.source
+                                        }}<Tag
+                                            v-if="data.estimated"
+                                            value="추정"
+                                            severity="warn" /></template></Column
                                 ><template #empty
                                     >확인 가능한 잔고가 없습니다. 계좌 자료를
                                     업로드해 주세요.</template
@@ -1467,6 +1596,13 @@
                                     @click="viewMigratedEntries" />
                             </section>
                             <h3>거래 원장</h3>
+                            <Button
+                                v-if="!legacy"
+                                type="button"
+                                label="거래 직접 추가"
+                                icon="pi pi-plus"
+                                :disabled="busy"
+                                @click="editEntry('add')" />
                             <label
                                 ><input v-model="legacy" type="checkbox" /> 보존
                                 이전 원장</label
@@ -1493,11 +1629,16 @@
                                 }}
                             </p>
                             <div class="scroll">
-                                <table v-if="entries.length">
+                                <table
+                                    v-if="entries.length"
+                                    class="ledger-table">
                                     <thead>
                                         <tr>
-                                            <th>기준일·출처</th>
-                                            <th>거래 내용</th>
+                                            <th>일자</th>
+                                            <th>유형</th>
+                                            <th>종목</th>
+                                            <th>수량</th>
+                                            <th>상태·작업</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1505,13 +1646,30 @@
                                             v-for="entry in entries"
                                             :key="entry.id">
                                             <td>
-                                                {{ entry.asOf || '미확인' }} ·
-                                                {{ entry.source || 'legacy' }}
+                                                {{
+                                                    entry.row?.date ||
+                                                    entry.asOf ||
+                                                    '미확인'
+                                                }}
                                             </td>
                                             <td>
-                                                <pre>{{
-                                                    entry.row || entry
-                                                }}</pre>
+                                                {{
+                                                    entry.row?.type ||
+                                                    entry.source ||
+                                                    'legacy'
+                                                }}
+                                            </td>
+                                            <td>
+                                                {{ entry.row?.symbol || '—' }}
+                                            </td>
+                                            <td>
+                                                {{ num(entry.row?.quantity) }}
+                                            </td>
+                                            <td>
+                                                <Tag
+                                                    v-if="entry.voidedAt"
+                                                    value="취소됨"
+                                                    severity="secondary" />
                                                 <Button
                                                     v-if="
                                                         !legacy &&
@@ -1522,12 +1680,146 @@
                                                     @click="openFunding(entry)">
                                                     자금 구성 확인
                                                 </Button>
+                                                <template v-if="!legacy">
+                                                    <Button
+                                                        v-if="!entry.voidedAt"
+                                                        type="button"
+                                                        label="취소"
+                                                        severity="danger"
+                                                        text
+                                                        @click="
+                                                            editEntry(
+                                                                'void',
+                                                                entry
+                                                            )
+                                                        " />
+                                                    <Button
+                                                        v-if="!entry.voidedAt"
+                                                        type="button"
+                                                        label="교체"
+                                                        severity="secondary"
+                                                        text
+                                                        @click="
+                                                            editEntry(
+                                                                'replace',
+                                                                entry
+                                                            )
+                                                        " />
+                                                    <Button
+                                                        v-else
+                                                        type="button"
+                                                        label="취소 복원"
+                                                        severity="secondary"
+                                                        text
+                                                        @click="
+                                                            editEntry(
+                                                                'restore',
+                                                                entry
+                                                            )
+                                                        " />
+                                                </template>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </section>
+                        <Dialog
+                            v-model:visible="entryDialog"
+                            modal
+                            header="거래 원장 정정"
+                            :style="{ width: 'min(560px, 94vw)' }">
+                            <form
+                                class="entry-mutation-form"
+                                @submit.prevent="saveEntryMutation">
+                                <Message severity="warn" :closable="false">
+                                    원본은 삭제하지 않고 감사 이력에 보존됩니다.
+                                    <span v-if="entryDelta !== null">
+                                        예상 수량 변화:
+                                        {{ num(entryDelta) }}주</span
+                                    >
+                                </Message>
+                                <template
+                                    v-if="
+                                        ['add', 'replace'].includes(
+                                            entryMutation.operation
+                                        )
+                                    ">
+                                    <label
+                                        >거래일<input
+                                            v-model="entryMutation.row.date"
+                                            type="date"
+                                            required
+                                    /></label>
+                                    <label
+                                        >유형<Select
+                                            v-model="entryMutation.row.type"
+                                            :options="transactionTypes"
+                                            option-label="label"
+                                            option-value="value"
+                                    /></label>
+                                    <label
+                                        >종목<input
+                                            v-model.trim="
+                                                entryMutation.row.symbol
+                                            "
+                                            required
+                                            maxlength="40"
+                                    /></label>
+                                    <label
+                                        >통화<input
+                                            v-model.trim="
+                                                entryMutation.row.currency
+                                            "
+                                            required
+                                            maxlength="3"
+                                    /></label>
+                                    <label
+                                        >수량<input
+                                            v-model.number="
+                                                entryMutation.row.quantity
+                                            "
+                                            type="number"
+                                            min="0"
+                                            step="any"
+                                    /></label>
+                                    <label
+                                        >금액<input
+                                            v-model.number="
+                                                entryMutation.row.amount
+                                            "
+                                            type="number"
+                                            min="0"
+                                            step="any"
+                                    /></label>
+                                    <label
+                                        >거래 고유번호<input
+                                            v-model.trim="
+                                                entryMutation.row.externalId
+                                            "
+                                            required
+                                            maxlength="120"
+                                    /></label>
+                                </template>
+                                <label
+                                    >변경 사유<input
+                                        v-model.trim="entryMutation.reason"
+                                        required
+                                        maxlength="200"
+                                /></label>
+                                <div class="dialog-actions">
+                                    <Button
+                                        type="button"
+                                        label="닫기"
+                                        severity="secondary"
+                                        outlined
+                                        @click="entryDialog = false" /><Button
+                                        type="submit"
+                                        label="확인 후 반영"
+                                        :loading="busy" />
+                                </div>
+                            </form>
+                        </Dialog>
                         <Dialog
                             v-model:visible="fundingDialog"
                             modal
@@ -2022,6 +2314,30 @@ date,symbol,quantity,amount,currency,type,externalId
 </template>
 
 <style scoped>
+    .entry-mutation-form {
+        display: grid;
+        gap: 0.9rem;
+    }
+    .entry-mutation-form label {
+        display: grid;
+        gap: 0.35rem;
+        font-weight: 600;
+    }
+    .entry-mutation-form input {
+        min-height: 2.75rem;
+        border: 1px solid var(--p-surface-300);
+        border-radius: 0.5rem;
+        padding: 0.65rem;
+        width: 100%;
+    }
+    .dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+    .ledger-table td:last-child {
+        min-width: 17rem;
+    }
     .retry-countdown {
         margin: 12px 0;
     }

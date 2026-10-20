@@ -233,7 +233,9 @@ try {
         reads.find((r) => r.action === 'previewManualHoldings').documents,
         2
     );
-    assert.equal(reads.find((r) => r.action === 'commit').documents, 5);
+    // A holdings commit now also reads the ledger once to publish the
+    // revision-checked calculated snapshot synchronously.
+    assert.equal(reads.find((r) => r.action === 'commit').documents, 11);
 
     // Persist a layout, restore it, then detect a same-width reordered header.
     await page

@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 API = Path(__file__).resolve().parents[1] / 'api'
 sys.path.insert(0, str(API))
-from family_portfolio_service import PortfolioError, normalize_row, summarize, validate_rows
+from family_portfolio_service import PortfolioError, calculate_holdings, normalize_row, summarize, validate_rows
 spec = importlib.util.spec_from_file_location('family_api', API / 'family-portfolio.py')
 api = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(api)
@@ -202,7 +202,7 @@ class FamilyApiTest(unittest.TestCase):
         saved = self.commit(review)
         self.assertEqual(saved.status_code, 200, saved.json)
         # Same pre-existing account/read/review/receipt path; no extra DB reads.
-        self.assertEqual(saved.headers['X-Portfolio-Document-Reads'], '5')
+        self.assertEqual(saved.headers['X-Portfolio-Document-Reads'], '9')
         self.assertTrue(self.commit(review).json['alreadyImported'])
         current = self.db.data[f'investmentAccounts/{self.account}']['snapshot']
         self.assertEqual(current['rows'][0]['quantity'], 2)
@@ -333,8 +333,8 @@ class FamilyApiTest(unittest.TestCase):
                           side_effect=lambda refs, transaction: [ref.get(transaction) for ref in refs]):
             response = self.commit(review)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.headers['X-Portfolio-Document-Reads'], '7')
-        self.assertEqual(response.headers['X-Portfolio-Read-Operations'], '6')
+        self.assertEqual(response.headers['X-Portfolio-Document-Reads'], '13')
+        self.assertEqual(response.headers['X-Portfolio-Read-Operations'], '11')
 
     def test_family_admin_does_not_inherit_adult_accounts(self):
         bob = self.join_bob()
@@ -506,8 +506,39 @@ class FamilyApiTest(unittest.TestCase):
         self.assertNotIn('accounts', response.json)
         self.assertIn('기존 계좌와 거래내역은 유지됩니다', response.json['error'])
 
+    def test_entry_void_restore_and_request_id_are_audited(self):
+        content = b'date,symbol,quantity,amount,currency,type,externalId\n2026-10-15,AAPL,2,100,USD,buy,trade-1\n'
+        self.assertEqual(self.commit(self.preview(content).json).status_code, 200)
+        entry_id = next(path.rsplit('/', 1)[-1] for path in self.db.data if f'investmentAccounts/{self.account}/entries/' in path)
+        body = {'accountId': self.account, 'requestId': 'void1', 'operation': 'void',
+                'entryId': entry_id, 'reason': '중복 거래'}
+        result = self.post('mutateEntry', body)
+        self.assertEqual(result.status_code, 200, result.json)
+        self.assertEqual(result.json['calculatedSnapshot']['rows'], [])
+        self.assertTrue(self.post('mutateEntry', body).json['alreadyApplied'])
+        restore = {**body, 'requestId': 'restore1', 'operation': 'restore', 'reason': '취소 복원'}
+        result = self.post('mutateEntry', restore)
+        self.assertEqual(result.json['calculatedSnapshot']['rows'][0]['quantity'], 2)
+        audits = [value for path, value in self.db.data.items() if '/entryCorrections/' in path]
+        self.assertEqual([item['operation'] for item in audits], ['void', 'restore'])
+
 
 class DomainTest(unittest.TestCase):
+    def test_materialized_holdings_use_baseline_and_flag_unsafe_rows(self):
+        baseline = {'asOf': '2026-10-10', 'rows': [
+            {'symbol': 'AAPL', 'currency': 'USD', 'quantity': 5, 'amount': 500}]}
+        entries = [
+            {'id': 'old', 'row': {'date': '2026-10-10', 'symbol': 'AAPL', 'currency': 'USD', 'quantity': 99, 'type': 'buy'}},
+            {'id': 'buy', 'row': {'date': '2026-10-11', 'symbol': 'AAPL', 'currency': 'USD', 'quantity': 2, 'type': 'buy'}},
+            {'id': 'sell', 'row': {'date': '2026-10-12', 'symbol': 'AAPL', 'currency': 'USD', 'quantity': 1, 'type': 'sell'}},
+            {'id': 'split', 'row': {'date': '2026-10-13', 'symbol': 'AAPL', 'currency': 'USD', 'quantity': 2, 'type': 'split'}},
+        ]
+        result = calculate_holdings(entries, baseline, 4, 1)
+        self.assertEqual(result['rows'][0]['quantity'], 6)
+        self.assertEqual(result['mode'], 'anchored')
+        self.assertEqual(result['status'], 'needs_review')
+        self.assertEqual(result['entriesRevision'], 4)
+
     def test_corporate_actions_and_transfer_events_do_not_generate_valuation(self):
         for kind in ['transfer_in', 'transfer_out', 'dividend', 'cash_in', 'cash_out', 'split']:
             normalize_row({'date': '2026-10-15', 'symbol': 'CASH', 'quantity': '2', 'amount': '', 'currency': 'KRW', 'type': kind, 'externalId': kind}, 'transactions')

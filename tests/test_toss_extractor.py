@@ -29,6 +29,8 @@ class TossStatementColumns(unittest.TestCase):
             ('성명\n홍길동\n계좌번호\n100-01-001234', '홍길동'),
             ('성 명：\n홍 길 동\n계좌 번호：100-01-001234', '홍길동'),
             ('성명 Hong Gil Dong 계좌번호 100-01-001234', 'Hong Gil Dong'),
+            ('요 청 고 객 발 급 기 준\n성명 테스트고객 종목 전체\n계좌 번호 100-01-001234 원화-외화 거래구분 원화+달러', '테스트고객'),
+            ('성 명 테 스 트 종 목 전체\n계좌 번호 100-01-001234', '테스트'),
         ]:
             with self.subTest(header=header):
                 page = MagicMock()

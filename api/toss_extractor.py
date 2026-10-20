@@ -235,7 +235,7 @@ def extract_statement_identity(text):
     identity = {}
     name = re.search(r"(?m)^[ \t]*성\s*명[ \t]*[:：]?[ \t]*(?:\n[ \t]*)?([^\r\n]+)", text)
     if name:
-        value = re.split(r"계\s*좌\s*번\s*호|조회\s*기간|발급\s*번호", name.group(1), maxsplit=1)[0].strip()
+        value = re.split(r"계\s*좌\s*번\s*호|조회\s*기간|발급\s*번호|[ \t]+종\s*목(?=[ \t:：]|$)", name.group(1), maxsplit=1)[0].strip()
         if value and any(character.isalpha() for character in value) and not re.search(r"거래\s*내역|요청\s*고객|종목", value):
             # Preserve spaces in non-Korean names, while joining spaced Hangul glyphs.
             identity['customer_name'] = re.sub(r"[ \t]+", "", value) if re.fullmatch(r"[가-힣*•● \t]+", value) else value

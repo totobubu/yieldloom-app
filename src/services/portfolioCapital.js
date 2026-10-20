@@ -1,3 +1,4 @@
+import { markPurchaseExchangeCash } from './tossImportReview.js';
 import { apiUrl } from './apiUrl.js';
 
 // Private memory only: each signed-in user object owns a bounded account cache.
@@ -109,9 +110,10 @@ export function createPortfolioCapitalClient({
             }
             if (payload.unchanged && !cached.data)
                 throw new Error('계좌 내역을 다시 조회해 주세요.');
-            cached.data = data;
+            const enriched = markPurchaseExchangeCash(data);
+            cached.data = enriched;
             cached.expiresAt = now() + 5000;
-            return data;
+            return enriched;
         };
         if (input) {
             cached.mutation = work();

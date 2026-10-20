@@ -446,6 +446,7 @@ try {
         authorityUid: 'owner',
         permissions: { owner: 'owner' },
         alias: '검증 계좌',
+        entriesRevision: 1,
         institution: '검증 증권',
         maskedNumber: '****1234',
         type: 'general',

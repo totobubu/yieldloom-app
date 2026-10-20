@@ -85,6 +85,7 @@ try {
         amount: 14775,
         cashKind: 'exchange',
         rawType: '즉시환전 원화출금',
+        exchangeRate: 1477.48,
     };
     rows[4] = {
         ...rows[4],
@@ -96,6 +97,7 @@ try {
         amount: 10,
         cashKind: 'exchange',
         rawType: '즉시환전 외화입금',
+        exchangeRate: 1477.48,
     };
     rows[5] = {
         ...rows[5],
@@ -332,6 +334,28 @@ try {
     await review
         .getByRole('button', { name: '현금·환전 2', exact: true })
         .click();
+    const excludeConversions = review.getByRole('checkbox', {
+        name: '구매 결제에 연결된 환전 출금 제외 (1건)',
+        exact: true,
+    });
+    assert.equal(await excludeConversions.isChecked(), true);
+    assert.equal(
+        await review.getByLabel('4행 선택', { exact: true }).count(),
+        0,
+        'purchase conversion withdrawal is filtered'
+    );
+    assert.equal(
+        await review.getByLabel('5행 선택', { exact: true }).count(),
+        1,
+        'paired USD deposit stays auditable'
+    );
+    await excludeConversions.uncheck();
+    assert.equal(
+        await review.getByLabel('4행 선택', { exact: true }).count(),
+        1,
+        'original withdrawal can be shown'
+    );
+    await excludeConversions.check();
     await review.screenshot({
         path: `${output}/cash.png`,
         style: 'header, .skip-link, .mobile-nav { visibility: hidden !important; } .review-save-bar { position: static !important; }',
@@ -357,6 +381,7 @@ try {
     assert.match(await funding.innerText(), /\$10.00/);
     assert.match(await funding.innerText(), /YMAX/);
     assert.match(await funding.innerText(), /최초 출처는 별도 확인/);
+    assert.match(await funding.innerText(), /같은 날짜 환전 자금을/);
     await funding.locator('.p-dialog-close-button').click();
     await review
         .getByRole('button', { name: '필터 초기화', exact: true })

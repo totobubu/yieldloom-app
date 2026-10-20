@@ -345,6 +345,16 @@
                 class="cash-review"
                 :open="adding || undefined">
                 <summary>계좌 내역 검토 · {{ state.entries.length }}건</summary>
+                <p
+                    v-if="state.entries.some((entry) => entry.purchaseExchange)"
+                    class="help">
+                    구매 결제에 연결된 환전 출금
+                    {{
+                        state.entries.filter((entry) => entry.purchaseExchange)
+                            .length
+                    }}건은 현금 등록과 원금 집계에서 제외합니다. ‘전체 내역’에서
+                    원본을 확인할 수 있습니다.
+                </p>
                 <p class="help">
                     PDF 분류는 후보입니다. 원본에서 외부 입출금인지 확인한 뒤
                     확정하세요. 잘못 분류한 행은 ‘확인 필요’로 되돌릴 수
@@ -460,6 +470,9 @@
                                                 : 'PDF'
                                         }}</small
                                     >
+                                    <small v-if="entry.purchaseExchange"
+                                        >구매 결제 환전 · 현금 등록 제외</small
+                                    >
                                 </td>
                                 <td>
                                     {{ money(entry.amount, entry.currency)
@@ -471,7 +484,12 @@
                                 <td v-if="edits[entry.id]">
                                     <select
                                         v-model="edits[entry.id].classification"
-                                        :disabled="readOnly || busy || loading"
+                                        :disabled="
+                                            entry.purchaseExchange ||
+                                            readOnly ||
+                                            busy ||
+                                            loading
+                                        "
                                         :aria-label="`${date(entry.date)} 계좌 내역 분류`"
                                         @change="
                                             seedSplit(
@@ -487,7 +505,12 @@
                                         </option></select
                                     ><input
                                         v-model="edits[entry.id].note"
-                                        :disabled="readOnly || busy || loading"
+                                        :disabled="
+                                            entry.purchaseExchange ||
+                                            readOnly ||
+                                            busy ||
+                                            loading
+                                        "
                                         maxlength="500"
                                         aria-label="분류 메모"
                                         placeholder="확인 근거·메모" />
@@ -502,7 +525,10 @@
                                         :amount="entry.amount"
                                         :currency="entry.currency"
                                         :disabled="
-                                            busy || loading || readOnly
+                                            entry.purchaseExchange ||
+                                            busy ||
+                                            loading ||
+                                            readOnly
                                         " />
                                     <small
                                         v-if="
@@ -524,6 +550,7 @@
                                     <button
                                         type="button"
                                         :disabled="
+                                            entry.purchaseExchange ||
                                             busy ||
                                             loading ||
                                             readOnly ||

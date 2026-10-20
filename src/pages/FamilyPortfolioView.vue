@@ -6,6 +6,7 @@
     import PurchaseFundingEditor from '@/components/portfolio/PurchaseFundingEditor.vue';
     import PortfolioExportDialog from '@/components/portfolio/PortfolioExportDialog.vue';
     import PortfolioImportResult from '@/components/portfolio/PortfolioImportResult.vue';
+    import PortfolioLoadingRegion from '@/components/portfolio/PortfolioLoadingRegion.vue';
     import ManualHoldingsForm from '@/components/portfolio/ManualHoldingsForm.vue';
     import HoldingsChanges from '@/components/portfolio/HoldingsChanges.vue';
     import SnapshotHistory from '@/components/portfolio/SnapshotHistory.vue';
@@ -101,6 +102,9 @@
         invitation = ref('');
     const accountsState = ref('loading'),
         accountLoadError = ref('');
+    const contentBusy = computed(
+        () => busy.value || accountsState.value === 'loading'
+    );
     const accountLoadIssue = ref(null);
     const accountCooldown = useRequestCooldown(accountLoadIssue);
     const retryTime = computed(() =>
@@ -1043,7 +1047,7 @@
 </script>
 
 <template>
-    <div class="family-page">
+    <PortfolioLoadingRegion class="family-page" :busy="contentBusy">
         <header class="portfolio-heading">
             <div>
                 <span class="studio-eyebrow"
@@ -1088,9 +1092,6 @@
         <Message v-if="message" severity="success" :closable="false">{{
             message
         }}</Message>
-        <Message v-if="busy" severity="info" :closable="false"
-            >자료를 처리하고 있습니다.</Message
-        >
         <Message
             v-if="accountsState === 'error'"
             severity="error"
@@ -1900,6 +1901,7 @@
                         </section>
                         <Dialog
                             v-model:visible="entryDialog"
+                            append-to="self"
                             modal
                             header="거래 원장 정정"
                             :style="{ width: 'min(560px, 94vw)' }">
@@ -1988,6 +1990,7 @@
                         </Dialog>
                         <Dialog
                             v-model:visible="fundingDialog"
+                            append-to="self"
                             modal
                             header="계좌 매수 자금 상세"
                             :style="{ width: '850px' }"
@@ -2517,7 +2520,7 @@ date,symbol,quantity,amount,currency,type,externalId
             :family-id="familyId"
             :initial-account-id="selectedAccount"
             :initial-kind="exportKind" />
-    </div>
+    </PortfolioLoadingRegion>
 </template>
 
 <style scoped>
@@ -2766,7 +2769,7 @@ date,symbol,quantity,amount,currency,type,externalId
         border-radius: 16px;
         margin-bottom: 24px;
     }
-    .family-page > .p-message {
+    .family-page :deep(.portfolio-content-body > .p-message) {
         margin: 12px 0;
     }
     @media (max-width: 767px) {

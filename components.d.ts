@@ -41,6 +41,7 @@ declare module 'vue' {
     PortfolioExportDialog: typeof import('./src/components/portfolio/PortfolioExportDialog.vue')['default']
     PortfolioImportResult: typeof import('./src/components/portfolio/PortfolioImportResult.vue')['default']
     PortfolioInsights: typeof import('./src/components/portfolio/PortfolioInsights.vue')['default']
+    PortfolioLoadingRegion: typeof import('./src/components/portfolio/PortfolioLoadingRegion.vue')['default']
     PortfolioValuation: typeof import('./src/components/portfolio/PortfolioValuation.vue')['default']
     PurchaseFundingEditor: typeof import('./src/components/portfolio/PurchaseFundingEditor.vue')['default']
     RivalThumbnail: typeof import('./src/components/thumbnail/RivalThumbnail.vue')['default']

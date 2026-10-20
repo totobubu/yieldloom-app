@@ -796,6 +796,8 @@
                 };
                 for (const [fileIndex, file] of files.entries()) {
                     operationProgress.value.detail = file.name;
+                    operationProgress.value.message =
+                        '기기에서 파일을 읽고 있습니다.';
                     const form = new FormData();
                     Object.entries({
                         accountId: a.id,
@@ -828,6 +830,8 @@
                         new Blob([bytes], { type: file.type }),
                         file.name
                     );
+                    operationProgress.value.message =
+                        '서버로 전송하고 거래내역을 추출하고 있습니다.';
                     results.push({
                         ...(await familyRequest('preview', form)),
                         fileName: file.name,

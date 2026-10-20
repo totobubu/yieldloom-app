@@ -142,3 +142,77 @@ test('a late GET cannot restore the pre-mutation snapshot for any concurrent cal
         assert.equal(result.classifications[0].id, 'saved');
     assert.equal(calls, 2);
 });
+
+test('same-day purchase links and registration filtering reuse one shared read without automatic writes', async () => {
+    let gets = 0,
+        posts = 0;
+    const cash = [
+        {
+            id: 'won',
+            externalId: 'won',
+            date: '2026-10-15',
+            currency: 'KRW',
+            amount: 14000,
+            exchangeRate: 1400,
+            rawType: '환전원화출금',
+            suggestedKind: 'exchange',
+        },
+        {
+            id: 'usd',
+            externalId: 'usd',
+            date: '2026-10-15',
+            currency: 'USD',
+            amount: 10,
+            exchangeRate: 1400,
+            rawType: '환전외화입금',
+            suggestedKind: 'exchange',
+        },
+    ];
+    const payload = {
+        version: 'v2:1:0',
+        ledgerVersion: 'v2:1',
+        entries: cash,
+        importedCash: cash,
+        trades: [
+            {
+                id: 'buy',
+                externalId: 'buy',
+                date: '2026-10-15',
+                symbol: 'AAA',
+                type: 'buy',
+                currency: 'USD',
+                nativeSettlementAmount: 8,
+                settlementAmount: 11400,
+            },
+        ],
+        allocations: [],
+        classifications: [],
+    };
+    const actor = user();
+    const request = createPortfolioCapitalClient({
+        fetcher: async (url, options) => {
+            if (options.method === 'POST') posts++;
+            else gets++;
+            return response(
+                url.includes('version=')
+                    ? { unchanged: true, version: payload.version }
+                    : payload
+            );
+        },
+    });
+    const [a, b] = await Promise.all([
+        request(actor, undefined, 'AC'),
+        request(actor, undefined, 'AC'),
+    ]);
+    assert.equal(gets, 1);
+    assert.equal(posts, 0);
+    assert.equal(a.entries[0].purchaseExchange, true);
+    assert.equal(a.allocations[0].derived, true);
+    assert.equal(a.allocations[0].parts[0].amount, 8);
+    a.allocations.length = 0;
+    assert.equal(b.allocations.length, 1);
+    const reloaded = await request(actor, undefined, 'AC', { force: true });
+    assert.equal(reloaded.allocations.length, 1);
+    assert.equal(gets, 2);
+    assert.equal(posts, 0);
+});

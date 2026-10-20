@@ -10,6 +10,8 @@
     import PortfolioImportFunding from './PortfolioImportFunding.vue';
     import {
         importReviewGroups,
+        fundingEvidenceIndices,
+        purchaseExchangeWithdrawalIndices,
         transactionTypeLabel,
         transactionTypeOptions,
     } from '@/services/tossImportReview.js';
@@ -38,6 +40,10 @@
     const draft = ref({});
     const editVisible = ref(false);
     const fundingIndex = ref(null);
+    const excludePurchaseExchanges = ref(true);
+    const purchaseWithdrawals = computed(() =>
+        purchaseExchangeWithdrawalIndices(props.rows)
+    );
     const selectedCode = computed(() =>
         props.cashOnly ? 'CASH' : props.selectedSymbol
     );
@@ -48,10 +54,9 @@
         const links = new Map();
         props.rows.forEach((row, index) => {
             if (row._fundingStatus !== 'matched_exchange') return;
-            for (const cashIndex of [
-                row._fundingSuggestion.krwIndex,
-                row._fundingSuggestion.usdIndex,
-            ]) {
+            for (const cashIndex of fundingEvidenceIndices(
+                row._fundingSuggestion
+            )) {
                 if (!links.has(cashIndex)) links.set(cashIndex, []);
                 links.get(cashIndex).push(index);
             }
@@ -68,7 +73,11 @@
                 ? null
                 : new Set(props.visibleIndices);
         return groups.value.all.filter(
-            (item) => !visible || visible.has(item.index)
+            (item) =>
+                (!visible || visible.has(item.index)) &&
+                (!props.cashOnly ||
+                    !excludePurchaseExchanges.value ||
+                    !purchaseWithdrawals.value.has(item.index))
         );
     });
     const pageItems = computed(() =>
@@ -217,6 +226,13 @@
             >
             <span>{{ items.length }}건 · {{ displayedCurrencies }}</span>
         </div>
+        <label v-if="cashOnly" class="purchase-exchange-filter">
+            <input
+                v-model="excludePurchaseExchanges"
+                type="checkbox"
+                :disabled="busy" />
+            구매 결제에 연결된 환전 출금 제외 ({{ purchaseWithdrawals.size }}건)
+        </label>
         <PortfolioImportFunding
             v-model:selected-index="fundingIndex"
             :rows="rows"
@@ -374,6 +390,19 @@
                             {{ reviewSecurityLabel(rows[buyIndex]) }} 매수<i
                                 class="pi pi-link"
                                 aria-hidden="true" /></button></template
+                    ><small v-else-if="data.row._exchangePeerIndex != null">
+                        {{
+                            data.row._exchangeStatus === 'cancelled'
+                                ? '환전 취소 연결'
+                                : '동일 날짜 환전 연결'
+                        }}
+                        ·
+                        {{
+                            reviewMoney(
+                                rows[data.row._exchangePeerIndex]?.amount,
+                                rows[data.row._exchangePeerIndex]?.currency
+                            )
+                        }} </small
                     ><small v-else>{{
                         data.row.cashKind === 'exchange'
                             ? '결제 연결 확인 필요'
@@ -612,6 +641,15 @@
 </template>
 
 <style scoped>
+    .purchase-exchange-filter {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-size: 12px;
+        color: var(--app-muted);
+    }
+
     .selected-security {
         display: flex;
         align-items: center;

@@ -201,8 +201,13 @@
             .join('');
     }
     async function saveMatchedFunding(current) {
+        const inferred = current.rows.filter(
+            (row) => row._fundingSuggestion?.basis === 'date_pool'
+        ).length;
         const matches = current.rows.filter(
-            (row) => row._fundingStatus === 'matched_exchange'
+            (row) =>
+                row._fundingStatus === 'matched_exchange' &&
+                row._fundingSuggestion.basis !== 'date_pool'
         );
         let saved = 0,
             failed = 0;
@@ -248,7 +253,7 @@
                 failed++;
             }
         }
-        return { saved, failed };
+        return { saved, failed, inferred };
     }
     const capital = ref({ entries: [], classifications: [], allocations: [] });
     const capitalCollapsed = ref(true);
@@ -1022,16 +1027,21 @@
                 total: 0,
                 detail: '잔고와 거래 기록을 갱신하고 있습니다.',
             };
-            let funding = { saved: 0, failed: 0 };
-            if (current.source === 'toss-pdf' && result.inserted > 0)
-                funding = await saveMatchedFunding(current);
+            let funding = { saved: 0, failed: 0, inferred: 0 };
+            if (current.source === 'toss-pdf') {
+                funding.inferred = current.rows.filter(
+                    (row) => row._fundingSuggestion?.basis === 'date_pool'
+                ).length;
+                if (result.inserted > 0)
+                    funding = await saveMatchedFunding(current);
+            }
             if (
                 ownUid.value !== uid ||
                 selectedAccount.value !== current.accountId
             )
                 return;
             review.value = null;
-            message.value = `저장 ${result.inserted}행 · 중복 ${result.duplicates}행${funding.saved ? ` · 환전 결제 ${funding.saved}건 연결` : ''}${funding.failed ? ` · 환전 결제 ${funding.failed}건은 원장에서 확인 필요` : ''}`;
+            message.value = `저장 ${result.inserted}행 · 중복 ${result.duplicates}행${funding.saved + funding.inferred ? ` · 환전 결제 ${funding.saved + funding.inferred}건 연결` : ''}${funding.failed ? ` · 환전 결제 ${funding.failed}건은 원장에서 확인 필요` : ''}`;
             importReceipt.value = {
                 ...result,
                 accountAlias: current.accountAlias,

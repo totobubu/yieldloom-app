@@ -56,7 +56,12 @@
         };
     }
     watch(
-        () => [props.transaction.id, stored.value?.revision],
+        () => [
+            props.transaction.id,
+            stored.value?.revision,
+            stored.value?.basisKey,
+            stored.value?.derived ? JSON.stringify(stored.value.parts) : null,
+        ],
         () => {
             const saved =
                 stored.value?.status !== 'reset' ? stored.value : null;
@@ -198,6 +203,10 @@
         <p v-if="loadError" role="alert" class="error">{{ loadError }}</p>
         <p v-if="basis.error" role="alert">{{ basis.error }}</p>
         <template v-else>
+            <p v-if="stored?.derived" class="help">
+                동일 날짜 환전 자금으로 계산한 결제 배분 제안입니다. 원화의 최초
+                출처와 미확인 금액을 확인해 주세요.
+            </p>
             <p>
                 매수 정산액
                 <strong>{{ money(basis.total, basis.currency) }}</strong> ·

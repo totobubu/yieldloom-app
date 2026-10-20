@@ -1,5 +1,6 @@
 <script setup>
     import { computed, ref } from 'vue';
+    import { fundingEvidenceIndices } from '@/services/tossImportReview.js';
     import Dialog from 'primevue/dialog';
     import Button from 'primevue/button';
     import {
@@ -25,11 +26,8 @@
                 ({ row }) =>
                     row._fundingStatus === 'matched_exchange' &&
                     (props.cashIndices === null ||
-                        props.cashIndices.includes(
-                            row._fundingSuggestion.krwIndex
-                        ) ||
-                        props.cashIndices.includes(
-                            row._fundingSuggestion.usdIndex
+                        fundingEvidenceIndices(row._fundingSuggestion).some(
+                            (index) => props.cashIndices.includes(index)
                         ))
             )
     );
@@ -37,11 +35,19 @@
         selectedIndex.value === null ? null : props.rows[selectedIndex.value]
     );
     const suggestion = computed(() => selected.value?._fundingSuggestion);
-    const krw = computed(() =>
-        suggestion.value ? props.rows[suggestion.value.krwIndex] : null
-    );
-    const usd = computed(() =>
-        suggestion.value ? props.rows[suggestion.value.usdIndex] : null
+    const legs = computed(
+        () =>
+            suggestion.value?.legs ||
+            (suggestion.value
+                ? [
+                      {
+                          krwIndex: suggestion.value.krwIndex,
+                          usdIndex: suggestion.value.usdIndex,
+                          amount: suggestion.value.amount,
+                          paidKrw: suggestion.value.paidKrw,
+                      },
+                  ]
+                : [])
     );
     const visible = computed({
         get: () => selectedIndex.value !== null,
@@ -57,13 +63,13 @@
         aria-label="환전과 매수 결제 연결">
         <div class="funding-heading">
             <strong
-                ><i class="pi pi-link" aria-hidden="true" />즉시 환전·매수 결제
-                연결</strong
-            ><span>{{ matches.length }}건 확인</span>
+                ><i class="pi pi-link" aria-hidden="true" />동일 날짜 환전·매수
+                결제 연결</strong
+            ><span>{{ matches.length }}건 연결</span>
         </div>
         <p>
-            같은 날짜의 원화 출금·달러 입금·매수 정산액이 일대일로 연결되는
-            거래입니다.
+            같은 날짜의 원화 출금·달러 입금을 먼저 대조하고 환전 자금을 구매에
+            배분합니다. 개별 주문의 자금 출처와 부족한 금액은 확인이 필요합니다.
         </p>
         <div
             v-for="item in matches.slice(0, limit)"
@@ -74,7 +80,11 @@
                 reviewMoney(item.row._fundingSuggestion.paidKrw, 'KRW')
             }}</strong
             ><i class="pi pi-arrow-right" aria-hidden="true" /><strong>{{
-                reviewMoney(item.row._fundingSuggestion.amount, 'USD')
+                reviewMoney(
+                    item.row._fundingSuggestion.convertedAmount ??
+                        item.row._fundingSuggestion.amount,
+                    'USD'
+                )
             }}</strong
             ><i class="pi pi-arrow-right" aria-hidden="true" /><button
                 type="button"
@@ -85,8 +95,8 @@
             </button>
         </div>
         <p v-if="!matches.length">
-            현재 자료에서 일대일로 확정할 수 있는 결제 연결이 없습니다. 같은 날
-            금액이 반복되거나 증빙이 부족한 거래는 자동으로 연결하지 않습니다.
+            현재 필터에 연결된 환전 결제가 없습니다. 원본 날짜·통화·금액·환율을
+            확인해 주세요.
         </p>
         <Button
             v-if="matches.length > limit"
@@ -109,32 +119,27 @@
                 ><span>{{ selected.symbol }} · {{ selected.date }}</span>
             </div>
             <ol class="funding-steps">
-                <li>
-                    <span>1</span>
+                <li
+                    v-for="(leg, index) in legs"
+                    :key="`${leg.krwIndex}:${leg.usdIndex}`">
+                    <span>{{ index + 1 }}</span>
                     <div>
                         <strong
-                            >환전 원화 출금
-                            {{ reviewMoney(krw?.amount, 'KRW') }}</strong
-                        ><small
-                            >{{ krw?.rawType || '환전 출금' }} ·
-                            {{ suggestion.krwIndex + 1 }}행</small
+                            >환전 배분 {{ reviewMoney(leg.paidKrw, 'KRW') }} →
+                            {{ reviewMoney(leg.amount, 'USD') }}</strong
+                        >
+                        <small
+                            >원본 환전
+                            {{ reviewMoney(rows[leg.krwIndex]?.amount, 'KRW') }}
+                            →
+                            {{ reviewMoney(rows[leg.usdIndex]?.amount, 'USD') }}
+                            · {{ leg.krwIndex + 1 }}행 /
+                            {{ leg.usdIndex + 1 }}행</small
                         >
                     </div>
                 </li>
                 <li>
-                    <span>2</span>
-                    <div>
-                        <strong
-                            >환전 달러 입금
-                            {{ reviewMoney(usd?.amount, 'USD') }}</strong
-                        ><small
-                            >{{ usd?.rawType || '환전 입금' }} ·
-                            {{ suggestion.usdIndex + 1 }}행</small
-                        >
-                    </div>
-                </li>
-                <li>
-                    <span>3</span>
+                    <span>{{ legs.length + 1 }}</span>
                     <div>
                         <strong
                             >{{ reviewSecurityLabel(selected) }} 매수 정산
@@ -146,11 +151,17 @@
                     </div>
                 </li>
             </ol>
+            <p v-if="suggestion.unconfirmedAmount > 0" class="funding-note">
+                결제 자금 미확인:
+                {{ reviewMoney(suggestion.unconfirmedAmount, 'USD') }}
+            </p>
             <p class="funding-note">
                 {{
-                    suggestion.basis === 'settlement'
-                        ? '원문 원화 정산액과 달러 정산액을 각각 대조했습니다.'
-                        : '달러 정산액과 원화 출금액·환율을 대조했습니다. 원화 반올림 오차는 최대 1원까지 허용합니다.'
+                    suggestion.basis === 'date_pool'
+                        ? '같은 날짜 환전 자금을 정해진 순서로 배분한 제안입니다. 사용하지 않은 달러는 잔액으로, 부족한 결제 금액은 미확인으로 유지합니다.'
+                        : suggestion.basis === 'settlement'
+                          ? '원문 원화 정산액과 달러 정산액을 각각 대조했습니다.'
+                          : '달러 정산액과 원화 출금액·환율을 대조했습니다. 원화 반올림 오차는 최대 1원까지 허용합니다.'
                 }}
             </p>
             <p class="funding-note">

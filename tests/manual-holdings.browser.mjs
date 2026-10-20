@@ -43,6 +43,7 @@ try {
                 tab.getAttribute('aria-selected') === 'true'
         )
     );
+    await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).fill('테스트증권');
     await page.getByLabel('별칭', { exact: true }).fill('수동입력');
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();

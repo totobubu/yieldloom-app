@@ -40,12 +40,20 @@ def _scope(db, uid, body):
 
 
 def _allowed(db, uid, family_id, ids, load, tx=None, revisions=None):
-    space = load(db.collection('familySpaces').document(family_id), tx)
-    require(uid in space.get('participantUids', []), '가족 접근 권한이 변경되었습니다.', 403)
+    checked_spaces = set()
+    if family_id != '__all__':
+        space = load(db.collection('familySpaces').document(family_id), tx)
+        require(uid in space.get('participantUids', []), '가족 접근 권한이 변경되었습니다.', 403)
+        checked_spaces.add(family_id)
     current = {}
     for key in ids:
         data = load(db.collection('investmentAccounts').document(key), tx)
-        require(data.get('familyId') == family_id and can_access(data, uid), '계좌 접근 권한이 변경되었습니다.', 403)
+        require((family_id == '__all__' or data.get('familyId') == family_id) and can_access(data, uid), '계좌 접근 권한이 변경되었습니다.', 403)
+        account_family = data.get('familyId')
+        if account_family not in checked_spaces:
+            space = load(db.collection('familySpaces').document(identifier(account_family)), tx)
+            require(uid in space.get('participantUids', []), '가족 접근 권한이 변경되었습니다.', 403)
+            checked_spaces.add(account_family)
         current[key] = data.get('entriesRevision', 0)
         if revisions is not None:
             require(type(revisions.get(key)) is int and revisions[key] == current[key], '거래 원장이 변경되었습니다. 계좌와 배당 분석을 새로고침하세요.', 409)

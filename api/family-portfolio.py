@@ -180,12 +180,15 @@ def ensure_personal_space(db, uid, body):
                          'adminUid': uid, 'participantUids': [uid], 'createdAt': now(),
                          'profiles': {profile_id: {'name': text(body.get('profileName') or '본인', '내 이름'),
                                                'kind': 'adult', 'uid': uid}}})
-        return {'familyId': ref.id}
+        return {'familyId': ref.id, 'profileId': profile_id}
     return apply(db.transaction())
 
 
 def mutate_family(db, uid, action, body):
-    ref, _ = family(db, body.get('familyId'), uid)
+    if action == 'addManagedProfile':
+        ref = db.collection('familySpaces').document(identifier(body.get('familyId')))
+    else:
+        ref, _ = family(db, body.get('familyId'), uid)
     @firestore.transactional
     def apply(tx):
         data = load(ref, tx)
@@ -195,8 +198,24 @@ def mutate_family(db, uid, action, body):
             data['name'] = text(body.get('name'), '가족 이름')
         elif action == 'renameProfile':
             profile = data['profiles'].get(identifier(body.get('profileId')))
-            require(profile and (profile.get('uid') == uid or profile.get('guardianUid') == uid), '프로필 변경 권한이 없습니다.', 403)
+            require(profile and uid in (profile.get('uid'), profile.get('guardianUid'), profile.get('managerUid')), '프로필 변경 권한이 없습니다.', 403)
             profile['name'] = text(body.get('name'), '이름')
+        elif action == 'addManagedProfile':
+            require(data.get('kind') == 'personal' and data.get('adminUid') == uid, '본인 자산에만 가족을 추가할 수 있습니다.', 403)
+            source_family = body.get('sourceFamilyId')
+            source_profile = body.get('sourceProfileId')
+            origin = {}
+            if source_family or source_profile:
+                original = load(db.collection('familySpaces').document(identifier(source_family)), tx)
+                require(uid in original.get('participantUids', []), '가족 접근 권한이 없습니다.', 403)
+                person = original.get('profiles', {}).get(identifier(source_profile))
+                require(person and uid in (person.get('uid'), person.get('guardianUid'), person.get('managerUid')), '직접 관리하는 가족만 연결할 수 있습니다.', 403)
+                for key, person in data['profiles'].items():
+                    if person.get('sourceFamilyId') == source_family and person.get('sourceProfileId') == source_profile:
+                        return {'ok': True, 'profileId': key}
+                origin = {'sourceFamilyId': source_family, 'sourceProfileId': source_profile}
+            profile_id = uuid4().hex
+            data['profiles'][profile_id] = {'name': text(body.get('name'), '가족 이름'), 'kind': 'managed', 'managerUid': uid, **origin}
         elif action == 'addMinor':
             require(body.get('guardianAttestation') is True, '법정 보호자임을 확인하세요.')
             data['profiles'][uuid4().hex] = {'name': text(body.get('name'), '자녀 이름'), 'kind': 'minor', 'guardianUid': uid, 'guardianAttestedAt': now().isoformat()}
@@ -207,7 +226,7 @@ def mutate_family(db, uid, action, body):
             return {'invitation': token, 'expiresInHours': 48}
         require(len(data['profiles']) <= 30, '가족 프로필은 최대 30명입니다.')
         tx.set(ref, data)
-        return {'ok': True}
+        return {'ok': True, **({'profileId': profile_id} if action == 'addManagedProfile' else {})}
     return apply(db.transaction())
 
 
@@ -234,7 +253,7 @@ def create_account(db, uid, body):
     _, space = family(db, body.get('familyId'), uid)
     owner_id = identifier(body.get('ownerId'))
     owner = space['profiles'].get(owner_id)
-    require(owner and (owner.get('uid') == uid or owner.get('guardianUid') == uid), '본인 또는 보호 중인 자녀의 계좌만 등록할 수 있습니다.', 403)
+    require(owner and uid in (owner.get('uid'), owner.get('guardianUid'), owner.get('managerUid')), '직접 관리하는 가족의 계좌만 등록할 수 있습니다.', 403)
     require(body.get('type') in {'general', 'isa', 'pension', 'other'}, '계좌 유형을 선택하세요.')
     last4 = str(body.get('last4', ''))
     require(not last4 or re_last4(last4), '계좌번호는 끝 4자리만 입력하세요.')
@@ -622,6 +641,15 @@ def validate_import(db, uid, body):
 def overview(db, uid, family_id, ledger_only=False):
     if family_id:
         family_id = identifier(family_id)
+    if family_id == '__all__':
+        spaces = [{'id': snap.id, **snap.to_dict()} for snap in read_stream(db.collection('familySpaces').where('participantUids', 'array_contains', uid))]
+        accounts = []
+        for space in spaces:
+            query = db.collection('investmentAccounts').where('familyId', '==', space['id'])
+            if ledger_only:
+                query = query.select(['familyId', 'entriesRevision', 'permissions', 'authorityUid', 'ownerId'])
+            accounts.extend({'id': snap.id, **snap.to_dict()} for snap in read_stream(query) if can_access(snap.to_dict(), uid))
+        return {'accounts': accounts} if ledger_only else {'families': spaces, 'accounts': accounts, 'summary': summarize(accounts)}
     if ledger_only:
         # Permission/revision validation needs neither holdings nor family profiles.
         family(db, family_id, uid)
@@ -721,6 +749,17 @@ def route():
         require(isinstance(body, dict), '요청 형식이 잘못되었습니다.')
         if action == 'preview':
             result = preview(db, uid)
+        elif action == 'inspectAccountDocument':
+            uploaded = request.files.get('file')
+            require(uploaded is not None, 'PDF를 선택하세요.')
+            content = uploaded.read(2 * 1024 * 1024 + 1)
+            require(0 < len(content) <= 2 * 1024 * 1024, '파일은 2MB 이하여야 합니다.', 413)
+            require(str(uploaded.filename or '').lower().endswith('.pdf') and content.startswith(b'%PDF-'), '토스 거래내역 PDF를 선택하세요.')
+            password = request.form.get('password', '')
+            require(password, 'PDF 비밀번호를 입력하세요.')
+            identity = {}
+            pdf_rows(content, password, metadata=identity)
+            result = {**identity, 'institution': '토스증권'}
         elif action == 'inspectSpreadsheet':
             result = spreadsheet_inspection(db, uid)
         elif action in {'saveMonthlyStatement', 'deleteMonthlyStatement'}:
@@ -733,7 +772,7 @@ def route():
             result = ensure_personal_space(db, uid, body)
         elif action == 'createFamily':
             result = create_family(db, uid, body)
-        elif action in {'renameFamily', 'renameProfile', 'addMinor', 'invite'}:
+        elif action in {'renameFamily', 'renameProfile', 'addMinor', 'invite', 'addManagedProfile'}:
             result = mutate_family(db, uid, action, body)
         elif action == 'join':
             result = join_family(db, uid, body)

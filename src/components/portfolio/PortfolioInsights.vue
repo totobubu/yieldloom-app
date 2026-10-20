@@ -335,7 +335,14 @@
                 :month="month"
                 :today="today"
                 :user-id="firebaseUser?.uid || ''"
-                :family-id="familyId"
+                :family-id="
+                    selectedAccounts.length &&
+                    selectedAccounts.every(
+                        (a) => a.familyId === selectedAccounts[0].familyId
+                    )
+                        ? selectedAccounts[0].familyId || familyId
+                        : familyId
+                "
                 :account-ids="selectedAccounts.map((account) => account.id)"
                 :account-revisions="
                     Object.fromEntries(

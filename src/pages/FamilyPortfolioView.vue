@@ -1,5 +1,11 @@
 <script setup>
     import { computed, nextTick, onScopeDispose, ref, watch } from 'vue';
+    import { useAssetManagement } from '@/composables/useAssetManagement.js';
+    import AssetMemberSelector from '@/components/portfolio/AssetMemberSelector.vue';
+    import AssetAccountList from '@/components/portfolio/AssetAccountList.vue';
+    import AssetMemberDialog from '@/components/portfolio/AssetMemberDialog.vue';
+    import AssetAccountRegistration from '@/components/portfolio/AssetAccountRegistration.vue';
+    import AssetUploadDialog from '@/components/portfolio/AssetUploadDialog.vue';
     import { createScopedRefresh } from '@/services/scopedRefresh.js';
     import AccountRecoveryOverview from '@/components/portfolio/AccountRecoveryOverview.vue';
     import PortfolioCapitalPanel from '@/components/portfolio/PortfolioCapitalPanel.vue';
@@ -49,14 +55,7 @@
 
     const router = useRouter();
     const route = useRoute();
-    const portfolioTabs = [
-        'overview',
-        'calendar',
-        'insights',
-        'accounts',
-        'upload',
-        'family',
-    ];
+    const portfolioTabs = ['overview', 'calendar', 'insights', 'assets'];
     const portfolioTab = computed({
         get: () =>
             portfolioTabs.includes(route.query.tab)
@@ -64,24 +63,17 @@
                 : 'overview',
         set: (tab) => router.replace({ query: { ...route.query, tab } }),
     });
+    watch(
+        () => route.query.tab,
+        (tab) => {
+            if (['accounts', 'family', 'upload'].includes(tab))
+                portfolioTab.value = 'assets';
+        },
+        { immediate: true }
+    );
     const exportVisible = ref(false),
         exportKind = ref('holdings'),
         importReceipt = ref(null);
-    const scopeOptions = [
-        { label: '내 계좌', value: 'personal' },
-        { label: '가족 포트폴리오', value: 'family' },
-    ];
-    const accountTypeOptions = [
-        { label: '일반', value: 'general' },
-        { label: 'ISA', value: 'isa' },
-        { label: '연금', value: 'pension' },
-        { label: '기타', value: 'other' },
-    ];
-    const roleOptions = [
-        { label: '조회', value: 'viewer' },
-        { label: '조회·업로드', value: 'editor' },
-        { label: '공유 취소', value: 'none' },
-    ];
     const kindOptions = [
         { label: '거래내역', value: 'transactions' },
         { label: '잔고내역', value: 'holdings' },
@@ -92,16 +84,15 @@
         { label: '토스 거래내역 PDF', value: 'toss-pdf' },
     ];
     const families = ref([]),
-        familyId = ref(''),
+        familyId = ref('__all__'),
         accounts = ref([]),
         rawSummary = ref(null);
     const requestedCalculations = new Set();
-    const portfolioScope = ref('personal');
     const busy = ref(false),
         operationProgress = ref(null),
         error = ref(''),
-        message = ref(''),
-        invitation = ref('');
+        message = ref('');
+    const operationInDialog = ref(false);
     const accountsState = ref('loading'),
         accountLoadError = ref('');
     const contentBusy = computed(
@@ -119,18 +110,6 @@
                   timeZoneName: 'short',
               }).format(accountCooldown.retryAt.value)
     );
-    const newFamily = ref(''),
-        myName = ref(''),
-        joinToken = ref(''),
-        childName = ref(''),
-        guardian = ref(false);
-    const accountForm = ref({
-        institution: '',
-        alias: '',
-        type: 'general',
-        ownerId: '',
-        last4: '',
-    });
     const selectedAccount = ref(''),
         kind = ref('transactions'),
         asOf = ref(''),
@@ -408,36 +387,71 @@
         row: {},
     });
     const transactionTypes = transactionTypeOptions;
-    const shareUid = ref(''),
-        shareRole = ref('viewer'),
-        singleAccountConfirmed = ref(false);
+    const singleAccountConfirmed = ref(false);
     const ownUid = computed(() => firebaseUser.value?.uid);
-    const space = computed(() =>
-        families.value.find((f) => f.id === familyId.value)
+    const {
+        profiles,
+        selectedProfile,
+        selectedMember,
+        memberAccounts,
+        memberDialog,
+        accountDialog,
+        uploadDialog,
+        registerMember,
+        registerAccount,
+        accountProfileKey,
+    } = useAssetManagement({
+        families,
+        accounts,
+        user: firebaseUser,
+        request: familyRequest,
+        refresh: () => refresh(),
+    });
+    const space = computed(
+        () =>
+            families.value.find(
+                (f) => f.id === activeAccount.value?.familyId
+            ) || families.value.find((f) => f.kind === 'personal')
     );
-    const profiles = computed(() =>
-        Object.entries(space.value?.profiles || {}).map(([id, p]) => ({
-            id,
-            ...p,
-        }))
-    );
-    const ownProfiles = computed(() =>
-        profiles.value.filter(
-            (p) =>
-                p.uid === firebaseUser.value?.uid ||
-                p.guardianUid === firebaseUser.value?.uid
-        )
-    );
-    const selfProfile = computed(() =>
-        profiles.value.find((p) => p.uid === ownUid.value)
-    );
-    const visibleAccounts = computed(() =>
-        accounts.value.filter(
-            (a) =>
-                portfolioScope.value === 'family' ||
-                space.value?.profiles[a.ownerId]?.uid === ownUid.value
-        )
-    );
+    const visibleAccounts = computed(() => accounts.value);
+    const registrationMember = ref(null);
+    const modalVisible = computed({
+        get: () => accountDialog.value || uploadDialog.value,
+        set: (value) => {
+            if (!value && !busy.value) {
+                accountDialog.value = false;
+                uploadDialog.value = false;
+            }
+        },
+    });
+    watch(selectedProfile, () => {
+        if (!memberAccounts.value.some((a) => a.id === selectedAccount.value))
+            selectedAccount.value = memberAccounts.value[0]?.id || '';
+    });
+    watch(modalVisible, (visible) => {
+        if (!visible) resetFileInput();
+    });
+    function openAccountRegistration() {
+        registrationMember.value = selectedMember.value || null;
+        error.value = '';
+        accountDialog.value = true;
+    }
+    async function addManagedMember(name) {
+        await run(async () => {
+            await registerMember(name);
+            memberDialog.value = false;
+        });
+    }
+    function openUpload(id) {
+        resetFileInput();
+        error.value = '';
+        const account = accounts.value.find((a) => a.id === id);
+        if (!account) return;
+        selectedProfile.value = accountProfileKey(account);
+        selectedAccount.value = id;
+        accountDialog.value = false;
+        uploadDialog.value = true;
+    }
     const summary = computed(() => {
         if (!rawSummary.value) return null;
         const ids = new Set(visibleAccounts.value.map((a) => a.id));
@@ -473,24 +487,12 @@
             newestAsOf: dates.at(-1) || null,
             valueComplete:
                 !missing.length && positions.every((p) => p.amount !== null),
-            notice:
-                portfolioScope.value === 'personal'
-                    ? '본인 명의 계좌의 잔고 자료입니다. 현재 평가액·수익률이 아니며 통화별로 구분합니다.'
-                    : rawSummary.value.notice,
+            notice: rawSummary.value.notice,
         };
     });
-    watch([visibleAccounts, selfProfile], () => {
+    watch(visibleAccounts, () => {
         if (!visibleAccounts.value.some((a) => a.id === selectedAccount.value))
-            selectedAccount.value = visibleAccounts.value[0]?.id || '';
-        if (
-            portfolioScope.value === 'personal' ||
-            !ownProfiles.value.some((p) => p.id === accountForm.value.ownerId)
-        )
-            accountForm.value.ownerId = selfProfile.value?.id || '';
-    });
-    watch(portfolioScope, () => {
-        accountFilter.value = '';
-        ownerFilter.value = '';
+            selectedAccount.value = memberAccounts.value[0]?.id || '';
     });
     const activeAccount = computed(() =>
         visibleAccounts.value.find((a) => a.id === selectedAccount.value)
@@ -510,9 +512,6 @@
     );
     const canConfigure = computed(
         () => activeAccount.value?.authorityUid === firebaseUser.value?.uid
-    );
-    const otherAdults = computed(() =>
-        profiles.value.filter((p) => p.uid && p.uid !== firebaseUser.value?.uid)
     );
     const positions = computed(() =>
         (summary.value?.positions || []).filter(
@@ -542,13 +541,17 @@
         return [...grouped.values()];
     });
     const label = (id) => accounts.value.find((a) => a.id === id)?.alias || id;
-    const ownerName = (id) => space.value?.profiles[id]?.name || '미확인';
+    const ownerName = (id) =>
+        families.value.map((f) => f.profiles?.[id]).find(Boolean)?.name ||
+        '미확인';
     const num = (v) =>
         v === null || v === undefined
             ? '미확인'
             : Number(v).toLocaleString('ko-KR', { maximumFractionDigits: 8 });
     async function run(work, { onError } = {}) {
         if (busy.value) return;
+        const user = firebaseUser.value;
+        operationInDialog.value = modalVisible.value || memberDialog.value;
         busy.value = true;
         operationProgress.value = null;
         error.value = '';
@@ -556,11 +559,15 @@
         try {
             await work();
         } catch (e) {
+            if (firebaseUser.value !== user) return;
             if (onError) onError(e);
             else error.value = e.message;
         } finally {
             busy.value = false;
+            operationInDialog.value = false;
             operationProgress.value = null;
+            if (firebaseUser.value === user && modalVisible.value)
+                await focusPreviewFeedback();
         }
     }
     async function refreshData({
@@ -580,22 +587,13 @@
         accountLoadError.value = '';
         accountLoadIssue.value = null;
         try {
-            let data = await familyRequest(
+            const data = await familyRequest(
                 '',
                 undefined,
                 requestedFamily ? { familyId: requestedFamily } : {},
                 { signal }
             );
             if (!isCurrent()) return;
-            if (!requestedFamily && data.families.length) {
-                familyId.value = (
-                    data.families.find((f) => f.kind === 'personal') ||
-                    data.families.find((f) => f.adminUid === requestedUid) ||
-                    data.families[0]
-                ).id;
-                // The family watcher owns the selected-family request.
-                return;
-            }
             families.value = data.families;
             accounts.value = data.accounts || [];
             rawSummary.value = data.summary || null;
@@ -605,13 +603,11 @@
                         (account.entriesRevision || 0) > 0 || account.snapshot
                 );
                 portfolioTab.value = !accounts.value.length
-                    ? 'accounts'
+                    ? 'assets'
                     : hasRecords
                       ? 'overview'
-                      : 'upload';
+                      : 'assets';
             }
-            if (!familyId.value && families.value.length)
-                familyId.value = families.value[0].id;
             if (
                 !visibleAccounts.value.some(
                     (a) => a.id === selectedAccount.value
@@ -650,6 +646,15 @@
             }
         } catch (reason) {
             if (!isCurrent()) return;
+            if ([401, 403].includes(reason.status)) {
+                accounts.value = [];
+                families.value = [];
+                rawSummary.value = null;
+                uploadDialog.value =
+                    accountDialog.value =
+                    memberDialog.value =
+                        false;
+            }
             accountsState.value = 'error';
             accountLoadError.value = reason.message;
             accountLoadIssue.value = reason;
@@ -679,11 +684,9 @@
             review.value = null;
             importReceipt.value = null;
             exportVisible.value = false;
-            familyId.value = '';
+            familyId.value = '__all__';
             selectedAccount.value = '';
-            invitation.value = '';
             password.value = '';
-            portfolioScope.value = 'personal';
             accountsState.value = 'loading';
             accountLoadError.value = '';
             accountLoadIssue.value = null;
@@ -697,22 +700,6 @@
         },
         { immediate: true }
     );
-    watch(familyId, async () => {
-        importReceipt.value = null;
-        exportVisible.value = false;
-        accountsState.value = 'loading';
-        accountLoadError.value = '';
-        accounts.value = [];
-        rawSummary.value = null;
-        invitation.value = '';
-        nextCursor.value = null;
-        review.value = null;
-        entries.value = [];
-        accountFilter.value = '';
-        ownerFilter.value = '';
-        // A selected family must load even while the initial list or a write owns `busy`.
-        await refresh();
-    });
     watch(selectedAccount, () => {
         importReceipt.value = null;
         review.value = null;
@@ -724,57 +711,34 @@
         password.value = '';
         rememberPassword.value = true;
     });
-    async function createFamily() {
-        await run(async () => {
-            const result = await familyRequest('createFamily', {
-                name: newFamily.value,
-                profileName: myName.value,
-            });
-            familyId.value = result.familyId;
-            await refresh();
-        });
-    }
-    async function join() {
-        await run(async () => {
-            const result = await familyRequest('join', {
-                invitation: joinToken.value,
-                name: myName.value,
-            });
-            joinToken.value = '';
-            familyId.value = result.familyId;
-            await refresh();
-        });
-    }
     async function mutate(action, body) {
         await run(async () => {
-            const result = await familyRequest(action, {
-                familyId: familyId.value,
-                ...body,
-            });
-            if (result.invitation) invitation.value = result.invitation;
-            else message.value = '저장했습니다.';
+            await familyRequest(action, body);
+            message.value = '저장했습니다.';
             await refresh();
         });
     }
-    async function createAccount() {
+    async function createAccount(form, document) {
         await run(async () => {
-            if (!space.value) {
-                const result = await familyRequest('ensurePersonal', {
-                    profileName: firebaseUser.value?.displayName || '본인',
-                });
-                familyId.value = result.familyId;
-                await refresh();
-            }
-            if (portfolioScope.value === 'personal')
-                accountForm.value.ownerId = selfProfile.value.id;
-            const result = await familyRequest('createAccount', {
-                ...accountForm.value,
-                familyId: familyId.value,
-            });
-            await refresh();
+            const result = await registerAccount(
+                form,
+                registrationMember.value
+            );
             selectedAccount.value = result.accountId;
-            accountForm.value.last4 = '';
+            accountDialog.value = false;
+            uploadDialog.value = true;
+            if (document) {
+                inputMethod.value = 'file';
+                format.value = 'toss-pdf';
+                await nextTick();
+                selectedFiles.value = [document.file];
+                password.value = document.password;
+                rememberPassword.value = false;
+                confirmed.value = true;
+            }
         });
+        if (document && uploadDialog.value && selectedFiles.value.length)
+            await preview();
     }
     async function preview() {
         if (busy.value) return;
@@ -1069,10 +1033,11 @@
         exportVisible.value = true;
     }
     async function viewImported() {
+        uploadDialog.value = false;
         if (importReceipt.value?.kind === 'holdings')
             portfolioTab.value = 'overview';
         else {
-            portfolioTab.value = 'accounts';
+            portfolioTab.value = 'assets';
             legacy.value = false;
             await loadEntries();
         }
@@ -1085,7 +1050,12 @@
     }
     function openTransactionsUpload() {
         kind.value = 'transactions';
-        portfolioTab.value = 'upload';
+        const target =
+            editableAccounts.value.find(
+                (a) => a.id === selectedAccount.value
+            ) || editableAccounts.value[0];
+        if (target) openUpload(target.id);
+        else portfolioTab.value = 'assets';
     }
     async function removePdfPassword() {
         await run(async () => {
@@ -1195,7 +1165,9 @@
 <template>
     <PortfolioLoadingRegion
         class="family-page"
-        :busy="contentBusy"
+        :busy="
+            contentBusy && !operationInDialog && !modalVisible && !memberDialog
+        "
         :progress="operationProgress"
         @after-hide="focusPreviewFeedback">
         <header class="portfolio-heading">
@@ -1226,14 +1198,7 @@
                     outlined
                     :loading="busy"
                     :disabled="accountCooldown.coolingDown.value"
-                    @click="run(refresh)" /><Button
-                    label="자료 업로드"
-                    icon="pi pi-upload"
-                    :disabled="
-                        !activeAccount ||
-                        !editableAccounts.some((a) => a.id === selectedAccount)
-                    "
-                    @click="portfolioTab = 'upload'" />
+                    @click="run(refresh)" />
             </div>
         </header>
         <Message v-if="error" severity="error" :closable="false">{{
@@ -1303,26 +1268,12 @@
                 :disabled="accountCooldown.coolingDown.value"
                 @click="run(refresh)"
         /></Message>
-        <div class="portfolio-scope">
-            <SelectButton
-                v-model="portfolioScope"
-                :options="scopeOptions"
-                option-label="label"
-                option-value="value"
-                :allow-empty="false"
-                :disabled="busy"
-                aria-label="포트폴리오 범위" /><Tag
-                value="업로드 자료 기준"
-                severity="secondary" />
-        </div>
         <Tabs v-model:value="portfolioTab" class="portfolio-tabs"
             ><TabList
                 ><Tab value="overview">한눈에 보기</Tab
                 ><Tab value="calendar">배당 캘린더</Tab
                 ><Tab value="insights">배당 분석</Tab
-                ><Tab value="accounts">계좌 관리</Tab
-                ><Tab value="upload">자료 업로드</Tab
-                ><Tab value="family">가족 관리</Tab></TabList
+                ><Tab value="assets">자산관리</Tab></TabList
             ><TabPanels
                 ><TabPanel value="overview"
                     ><div
@@ -1341,7 +1292,7 @@
                         <Button
                             label="첫 계좌 등록"
                             icon="pi pi-plus"
-                            @click="portfolioTab = 'accounts'" /><small
+                            @click="portfolioTab = 'assets'" /><small
                             class="studio-muted"
                             >계좌 등록 → 자료 업로드 → 검토 후 저장</small
                         >
@@ -1353,7 +1304,7 @@
                             summary &&
                             visibleAccounts.length
                         "
-                        :key="`${ownUid}:${familyId}:${portfolioScope}`"
+                        :key="`${ownUid}:${familyId}`"
                         :positions="summary.positions"
                         :accounts="visibleAccounts"
                         :missing-accounts="
@@ -1463,15 +1414,11 @@
                                 @refresh="loadCapital" />
                         </template>
                     </Panel>
-                    <template v-if="space">
+                    <template v-if="families.length">
                         <section v-if="summary">
                             <h2>
-                                {{
-                                    portfolioScope === 'personal'
-                                        ? '내 포트폴리오 합산'
-                                        : '가족 합산'
-                                }}
-                                · {{ visibleAccounts.length }}개 계좌
+                                전체 자산 합산 · {{ visibleAccounts.length }}개
+                                계좌
                             </h2>
                             <p>{{ summary.notice }}</p>
                             <p>
@@ -1642,119 +1589,51 @@
                             accountsState === 'ready' &&
                             !busy
                         "
-                        :key="`${ownUid}:${familyId}:${portfolioScope}`"
+                        :key="`${ownUid}:${familyId}`"
                         :accounts="visibleAccounts"
                         :positions="summary?.positions || []"
                         :family-id="familyId" />
                     <p v-else-if="accountsState === 'loading'" role="status">
                         계좌 자료를 확인하고 있습니다.
                     </p> </TabPanel
-                ><TabPanel value="accounts">
-                    <section
-                        v-if="accountsState === 'ready' || accounts.length">
-                        <h2>
-                            {{
-                                portfolioScope === 'personal'
-                                    ? '내 계좌 등록'
-                                    : '계좌 등록'
-                            }}
-                        </h2>
-                        <p>
-                            여러 금융기관의 본인 계좌를 등록할 수 있습니다. 전체
-                            계좌번호는 입력하지 마세요.
-                        </p>
-                        <form @submit.prevent="createAccount">
-                            <p v-if="portfolioScope === 'personal'">
-                                명의자:
+                ><TabPanel value="assets">
+                    <section>
+                        <h2>자산관리</h2>
+                        <AssetMemberSelector
+                            :profiles="profiles"
+                            :selected="selectedProfile"
+                            :busy="busy"
+                            @select="selectedProfile = $event"
+                            @add="
+                                error = '';
+                                memberDialog = true;
+                            " />
+                        <div class="asset-list-heading">
+                            <h3>
                                 {{
-                                    selfProfile?.name ||
+                                    selectedMember?.name ||
                                     firebaseUser?.displayName ||
                                     '본인'
-                                }}
-                            </p>
-                            <label v-else
-                                >명의자
-                                <Select
-                                    v-model="accountForm.ownerId"
-                                    aria-required="true"
-                                    :options="
-                                        ownProfiles.map((p) => ({
-                                            label: p.name,
-                                            value: p.id,
-                                        }))
-                                    "
-                                    option-label="label"
-                                    option-value="value"
-                                    aria-label="명의자"
-                                    placeholder="선택"
-                            /></label>
-                            <label
-                                >금융기관
-                                <InputText
-                                    v-model="accountForm.institution"
-                                    required
-                                    maxlength="100"
-                                    placeholder="예: 토스증권"
-                            /></label>
-                            <label
-                                >유형
-                                <Select
-                                    v-model="accountForm.type"
-                                    :options="accountTypeOptions"
-                                    option-label="label"
-                                    option-value="value"
-                                    aria-label="유형"
-                                    placeholder="선택"
-                            /></label>
-                            <label
-                                >별칭
-                                <InputText
-                                    v-model="accountForm.alias"
-                                    required
-                                    maxlength="100"
-                            /></label>
-                            <label
-                                >계좌 끝 4자리 (선택)
-                                <InputText
-                                    v-model="accountForm.last4"
-                                    maxlength="4"
-                                    pattern="[0-9]{4}"
-                                    inputmode="numeric"
-                                    autocomplete="off"
-                            /></label>
-                            <Button type="submit" :disabled="busy"
-                                >계좌 등록</Button
-                            >
-                        </form>
-                        <ul>
-                            <li v-for="a in visibleAccounts" :key="a.id">
-                                <Button
-                                    type="submit"
-                                    :disabled="busy"
-                                    severity="secondary"
-                                    outlined
-                                    @click="selectedAccount = a.id">
-                                    {{ ownerName(a.ownerId) }} ·
-                                    {{ a.institution }} · {{ a.alias }} ·
-                                    {{ a.type }} · {{ a.maskedNumber }}
-                                </Button>
-                                · 자료 기준일 {{ a.asOf || '미확인' }} ·
-                                {{ a.source }}
-                                <Tag
-                                    v-if="a.legacyMigration"
-                                    severity="success"
-                                    value="이전 완료" />
-                            </li>
-                        </ul>
-                        <p
-                            v-if="
-                                accountsState === 'ready' &&
-                                !visibleAccounts.length
-                            ">
-                            등록된 계좌가 없습니다. 위에서 본인 계좌를
-                            추가하세요. 가족 계좌는 가족 포트폴리오에서 확인할
-                            수 있습니다.
-                        </p>
+                                }}의 계좌
+                            </h3>
+                            <Button
+                                label="계좌 추가"
+                                icon="pi pi-plus"
+                                :disabled="
+                                    busy ||
+                                    accountsState !== 'ready' ||
+                                    (!!selectedMember &&
+                                        !selectedMember.manageable)
+                                "
+                                @click="openAccountRegistration" />
+                        </div>
+                        <AssetAccountList
+                            :accounts="memberAccounts"
+                            :selected="selectedAccount"
+                            :user-id="ownUid"
+                            :busy="busy"
+                            @select="selectedAccount = $event"
+                            @upload="openUpload" />
                     </section>
                     <template v-if="space">
                         <section v-if="activeAccount">
@@ -1765,7 +1644,7 @@
                                     v-model="selectedAccount"
                                     :disabled="busy"
                                     :options="
-                                        visibleAccounts.map((a) => ({
+                                        memberAccounts.map((a) => ({
                                             label: `${ownerName(a.ownerId)} / ${a.alias}`,
                                             value: a.id,
                                         }))
@@ -1793,64 +1672,12 @@
                                         >별칭 저장</Button
                                     >
                                 </form>
-                                <details class="sharing-options">
-                                    <summary>가족에게 계좌 공유 (선택)</summary>
-                                    <h3>계좌별 공유 권한</h3>
-                                    <p>
-                                        가족 관리자에게 자동 공유되지 않습니다.
-                                        편집자는 업로드할 수 있습니다.
-                                    </p>
-                                    <ul>
-                                        <li
-                                            v-for="(
-                                                role, uid
-                                            ) in activeAccount.permissions"
-                                            :key="uid">
-                                            {{
-                                                profiles.find(
-                                                    (p) => p.uid === uid
-                                                )?.name || uid
-                                            }}: {{ role }}
-                                        </li>
-                                    </ul>
-                                    <form
-                                        @submit.prevent="
-                                            mutate('grant', {
-                                                accountId: selectedAccount,
-                                                uid: shareUid,
-                                                role: shareRole,
-                                            })
-                                        ">
-                                        <label
-                                            >성인 구성원
-                                            <Select
-                                                v-model="shareUid"
-                                                aria-required="true"
-                                                :options="
-                                                    otherAdults.map((p) => ({
-                                                        label: p.name,
-                                                        value: p.uid,
-                                                    }))
-                                                "
-                                                option-label="label"
-                                                option-value="value"
-                                                aria-label="성인 구성원"
-                                                placeholder="선택" /></label
-                                        ><label
-                                            >권한
-                                            <Select
-                                                v-model="shareRole"
-                                                :options="roleOptions"
-                                                option-label="label"
-                                                option-value="value"
-                                                aria-label="권한"
-                                                placeholder="선택" /></label
-                                        ><Button type="submit" :disabled="busy"
-                                            >권한 저장</Button
-                                        >
-                                    </form>
-                                </details>
-                                <details v-if="!activeAccount.legacyMigration">
+                                <details
+                                    v-if="
+                                        !activeAccount.legacyMigration &&
+                                        space.profiles?.[activeAccount.ownerId]
+                                            ?.uid === ownUid
+                                    ">
                                     <summary>
                                         이전 단일 계좌 데이터 보존 이전
                                     </summary>
@@ -2181,314 +2008,213 @@
                                     @close="fundingDialog = false" />
                             </template>
                         </Dialog>
-                    </template> </TabPanel
-                ><TabPanel value="upload"
-                    ><PortfolioImportResult
-                        v-if="importReceipt"
-                        ref="importResult"
-                        :receipt="importReceipt"
-                        :busy="busy"
-                        :accounts-state="accountsState"
-                        :latest-holdings-date="
-                            activeAccount?.snapshot?.asOf || ''
-                        "
-                        @view="viewImported"
-                        @export="openExport(importReceipt.kind)"
-                        @calendar="portfolioTab = 'calendar'"
-                        @another="anotherFile" />
-                    <Message
-                        v-if="
-                            !importReceipt &&
-                            (!activeAccount ||
-                                !editableAccounts.some(
-                                    (a) => a.id === selectedAccount
-                                ))
-                        "
-                        severity="info"
-                        :closable="false"
-                        >편집 가능한 계좌를 먼저 선택해 주세요. 계좌 관리에서
-                        계좌를 등록하거나 변경할 수 있습니다.</Message
-                    >
-                    <div
-                        v-if="
-                            !importReceipt &&
-                            activeAccount &&
-                            editableAccounts.some(
+                    </template> </TabPanel></TabPanels
+        ></Tabs>
+        <AssetMemberDialog
+            v-model:visible="memberDialog"
+            :busy="busy"
+            :error="error"
+            @submit="addManagedMember" />
+        <AssetUploadDialog
+            v-model:visible="modalVisible"
+            :title="
+                accountDialog
+                    ? '계좌 추가'
+                    : `자료 업로드 · ${activeAccount?.alias || ''}`
+            "
+            :busy="busy">
+            <p v-if="busy" role="status" aria-live="polite">
+                {{ operationProgress?.detail || '자료를 처리하고 있습니다.' }}
+                <span v-if="operationProgress?.total"
+                    >{{ operationProgress.completed }} /
+                    {{ operationProgress.total }}</span
+                >
+            </p>
+            <AssetAccountRegistration
+                v-if="accountDialog"
+                :member-name="
+                    registrationMember?.name ||
+                    firebaseUser?.displayName ||
+                    '본인'
+                "
+                :accounts="
+                    accounts.map((a) => ({
+                        ...a,
+                        _role: a.permissions?.[ownUid],
+                    }))
+                "
+                :busy="busy"
+                :error="error"
+                @submit="createAccount"
+                @existing="openUpload" />
+            <template v-else>
+                <Message v-if="error" severity="error" :closable="false">{{
+                    error
+                }}</Message>
+                <PortfolioImportResult
+                    v-if="importReceipt"
+                    ref="importResult"
+                    :receipt="importReceipt"
+                    :busy="busy"
+                    :accounts-state="accountsState"
+                    :latest-holdings-date="activeAccount?.snapshot?.asOf || ''"
+                    @view="viewImported"
+                    @export="openExport(importReceipt.kind)"
+                    @calendar="
+                        uploadDialog = false;
+                        portfolioTab = 'calendar';
+                    "
+                    @another="anotherFile" />
+                <Message
+                    v-if="
+                        !importReceipt &&
+                        (!activeAccount ||
+                            !editableAccounts.some(
                                 (a) => a.id === selectedAccount
-                            )
-                        "
-                        class="import-workspace">
-                        <div v-if="!review" class="import-heading">
+                            ))
+                    "
+                    severity="info"
+                    :closable="false"
+                    >편집 가능한 계좌를 먼저 선택해 주세요. 계좌 관리에서 계좌를
+                    등록하거나 변경할 수 있습니다.</Message
+                >
+                <div
+                    v-if="
+                        !importReceipt &&
+                        activeAccount &&
+                        editableAccounts.some((a) => a.id === selectedAccount)
+                    "
+                    class="import-workspace">
+                    <div v-if="!review" class="import-heading">
+                        <div>
+                            <h2 ref="importHeading" tabindex="-1">
+                                자료 입력 · 저장 전 검토
+                            </h2>
+                            <p>
+                                거래내역과 잔고 파일을 불러오고, 포트폴리오에
+                                저장하기 전 내용을 확인하세요.
+                            </p>
+                        </div>
+                        <div class="import-account">
+                            <i class="pi pi-wallet" aria-hidden="true" />
                             <div>
-                                <h2 ref="importHeading" tabindex="-1">
-                                    자료 입력 · 저장 전 검토
-                                </h2>
-                                <p>
-                                    거래내역과 잔고 파일을 불러오고,
-                                    포트폴리오에 저장하기 전 내용을 확인하세요.
-                                </p>
-                            </div>
-                            <div class="import-account">
-                                <i class="pi pi-wallet" aria-hidden="true" />
-                                <div>
-                                    <small>대상 계좌</small
-                                    ><strong
-                                        >{{ activeAccount.institution }} ·
-                                        {{ activeAccount.alias }}
-                                        {{ activeAccount.maskedNumber }}</strong
-                                    >
-                                </div>
+                                <small>대상 계좌</small
+                                ><strong
+                                    >{{ activeAccount.institution }} ·
+                                    {{ activeAccount.alias }}
+                                    {{ activeAccount.maskedNumber }}</strong
+                                >
                             </div>
                         </div>
-                        <SelectButton
-                            v-if="!review"
-                            v-model="inputMethod"
-                            :options="inputMethodOptions"
-                            option-label="label"
-                            option-value="value"
-                            :allow-empty="false"
-                            :disabled="busy"
-                            aria-label="자료 입력 방법"
-                            class="import-methods" />
-                        <ManualHoldingsForm
-                            v-if="inputMethod === 'manual' && !review"
-                            :key="`${ownUid}:${familyId}:${selectedAccount}`"
-                            :snapshot="activeAccount.snapshot || null"
-                            :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias}`"
-                            :busy="busy"
-                            @preview="previewManualHoldings" />
-                        <SnapshotHistory
-                            v-if="inputMethod === 'manual' && !review"
-                            :key="`history:${ownUid}:${familyId}:${selectedAccount}`"
-                            :account-id="activeAccount.id"
-                            :revision="activeAccount.snapshotRevision || ''" />
-                        <BrokerSpreadsheetForm
-                            v-if="inputMethod === 'broker' && !review"
-                            :key="`broker:${ownUid}:${familyId}:${selectedAccount}`"
-                            :account="activeAccount"
-                            :busy="busy"
-                            @preview="previewBroker" />
-                        <PortfolioFileImportForm
-                            v-if="inputMethod === 'file'"
-                            v-show="!review"
-                            ref="fileUpload"
-                            v-model:kind="kind"
-                            v-model:format="format"
-                            v-model:as-of="asOf"
-                            v-model:password="password"
-                            v-model:remember-password="rememberPassword"
-                            v-model:confirmed="confirmed"
-                            :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias} · ${activeAccount.maskedNumber}`"
-                            :password-configured="
-                                activeAccount.pdfPasswordConfigured
-                            "
-                            :is-owner="
-                                activeAccount.permissions?.[ownUid] === 'owner'
-                            "
-                            :busy="busy"
-                            :reviewing="!!review"
-                            :error="filePreviewError"
-                            :kind-options="kindOptions"
-                            :format-options="formatOptions"
-                            :selected-files="selectedFiles"
-                            @select="selectImportFiles"
-                            @clear="selectedFiles = []"
-                            @preview="preview"
-                            @remove-password="removePdfPassword"
-                            @reset="resetFileInput" />
-                        <PortfolioImportReview
-                            v-if="review"
-                            ref="importReview"
-                            :key="review.reviewId"
-                            :review="review"
-                            :save-disabled="
-                                statementBlocked ||
-                                (review.source === 'toss-pdf' &&
-                                    !statementConfirmed)
-                            "
-                            :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias} · ${activeAccount.maskedNumber}`"
-                            :busy="busy"
-                            @update-row="updateReviewRow"
-                            @commit="commit"
-                            @cancel="review = null">
-                            <template #identity-review>
-                                <StatementIdentityReview
-                                    v-if="review.source === 'toss-pdf'"
-                                    v-model:confirmed="statementConfirmed"
-                                    :files="review.statementFiles"
-                                    :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.maskedNumber}`"
-                                    :blocked="statementBlocked"
-                                    :busy="busy" />
-                            </template>
-                            <template #holdings-warning>
-                                <div
-                                    v-if="
-                                        review.source === 'manual-holdings-v1'
-                                    ">
-                                    <Message severity="warn" :closable="false">
-                                        기준일 {{ review.asOf }} ·
-                                        {{ review.rows.length }}행의 전체 잔고로
-                                        대체합니다. 빠진 종목은 새 잔고에서
-                                        제외됩니다. 기존 거래는 유지됩니다.
-                                    </Message>
-                                    <p v-if="review.correction">
-                                        같은 기준일 정정 · 사유:
-                                        {{ review.correctionReason }}. 변경 전후
-                                        자료를 이력에 보관합니다.
-                                    </p>
-                                    <HoldingsChanges
-                                        :before="
-                                            activeAccount.snapshot?.rows || []
-                                        "
-                                        :after="review.rows" />
-                                    <Button
-                                        type="button"
-                                        label="수동 입력 다시 작성"
-                                        severity="secondary"
-                                        :disabled="busy"
-                                        @click="review = null" />
-                                </div>
-                            </template>
-                        </PortfolioImportReview>
-                    </div> </TabPanel
-                ><TabPanel value="family">
-                    <div class="family-options">
-                        <Message severity="info" :closable="false"
-                            >가족 참여와 계좌 공유는 별도입니다. 가족 관리자에게
-                            계좌가 자동 공유되지 않습니다.</Message
-                        >
-                        <section>
-                            <h2>가족 공간 만들기 / 참여</h2>
-                            <label
-                                >내 프로필 이름
-                                <InputText v-model="myName" maxlength="100"
-                            /></label>
-                            <form @submit.prevent="createFamily">
-                                <label
-                                    >가족 이름
-                                    <InputText
-                                        v-model="newFamily"
-                                        required
-                                        maxlength="100" /></label
-                                ><Button type="submit" :disabled="busy"
-                                    >공간 만들기</Button
-                                >
-                            </form>
-                            <form @submit.prevent="join">
-                                <label
-                                    >초대 코드
-                                    <InputText
-                                        v-model="joinToken"
-                                        required
-                                        autocomplete="off" /></label
-                                ><Button type="submit" :disabled="busy"
-                                    >본인 계정으로 참여</Button
-                                >
-                            </form>
-                        </section>
-                        <section v-if="space">
-                            <h2>가족·구성원 관리</h2>
-                            <label
-                                >가족 공간
-                                <Select
-                                    v-model="familyId"
-                                    :disabled="busy"
-                                    :options="
-                                        families.map((f) => ({
-                                            label: f.name,
-                                            value: f.id,
-                                        }))
-                                    "
-                                    option-label="label"
-                                    option-value="value"
-                                    aria-label="가족 공간"
-                                    placeholder="선택"
-                            /></label>
-                            <form
-                                v-if="space.adminUid === ownUid"
-                                @submit.prevent="
-                                    mutate('renameFamily', { name: space.name })
-                                ">
-                                <label
-                                    >공간 이름
-                                    <InputText
-                                        v-model="space.name"
-                                        required
-                                        maxlength="100" /></label
-                                ><Button type="submit" :disabled="busy"
-                                    >이름 저장</Button
-                                >
-                            </form>
-                            <ul>
-                                <li v-for="p in profiles" :key="p.id">
-                                    {{ p.name }} ·
-                                    {{
-                                        p.kind === 'minor'
-                                            ? '미성년 · 보호자 관리'
-                                            : '성인 · 본인 참여'
-                                    }}
-                                    <form
-                                        v-if="
-                                            ownProfiles.some(
-                                                (o) => o.id === p.id
-                                            )
-                                        "
-                                        @submit.prevent="
-                                            mutate('renameProfile', {
-                                                profileId: p.id,
-                                                name: p.name,
-                                            })
-                                        ">
-                                        <label
-                                            >프로필 이름
-                                            <InputText
-                                                v-model="p.name"
-                                                required /></label
-                                        ><Button type="submit" :disabled="busy"
-                                            >수정</Button
-                                        >
-                                    </form>
-                                </li>
-                            </ul>
-                            <Button
-                                type="submit"
-                                v-if="space.adminUid === ownUid"
-                                :disabled="busy"
-                                @click="mutate('invite', {})">
-                                성인 초대 코드 발급
-                            </Button>
-                            <p v-if="invitation">
-                                48시간 · 1회용 코드 (직접 전달):
-                                <code>{{ invitation }}</code>
-                            </p>
-                            <form
-                                @submit.prevent="
-                                    mutate('addMinor', {
-                                        name: childName,
-                                        guardianAttestation: guardian,
-                                    })
-                                ">
-                                <label
-                                    >자녀 이름
-                                    <InputText
-                                        v-model="childName"
-                                        required
-                                        maxlength="100" /></label
-                                ><label
-                                    ><input
-                                        v-model="guardian"
-                                        type="checkbox"
-                                        required />
-                                    법정 보호자로 관리할 권한이 있습니다</label
-                                ><Button type="submit" :disabled="busy"
-                                    >미성년 프로필 추가</Button
-                                >
-                            </form>
-                        </section>
                     </div>
-                </TabPanel></TabPanels
-            ></Tabs
-        >
+                    <SelectButton
+                        v-if="!review"
+                        v-model="inputMethod"
+                        :options="inputMethodOptions"
+                        option-label="label"
+                        option-value="value"
+                        :allow-empty="false"
+                        :disabled="busy"
+                        aria-label="자료 입력 방법"
+                        class="import-methods" />
+                    <ManualHoldingsForm
+                        v-if="inputMethod === 'manual' && !review"
+                        :key="`${ownUid}:${familyId}:${selectedAccount}`"
+                        :snapshot="activeAccount.snapshot || null"
+                        :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias}`"
+                        :busy="busy"
+                        @preview="previewManualHoldings" />
+                    <SnapshotHistory
+                        v-if="inputMethod === 'manual' && !review"
+                        :key="`history:${ownUid}:${familyId}:${selectedAccount}`"
+                        :account-id="activeAccount.id"
+                        :revision="activeAccount.snapshotRevision || ''" />
+                    <BrokerSpreadsheetForm
+                        v-if="inputMethod === 'broker' && !review"
+                        :key="`broker:${ownUid}:${familyId}:${selectedAccount}`"
+                        :account="activeAccount"
+                        :busy="busy"
+                        @preview="previewBroker" />
+                    <PortfolioFileImportForm
+                        v-if="inputMethod === 'file'"
+                        v-show="!review"
+                        ref="fileUpload"
+                        v-model:kind="kind"
+                        v-model:format="format"
+                        v-model:as-of="asOf"
+                        v-model:password="password"
+                        v-model:remember-password="rememberPassword"
+                        v-model:confirmed="confirmed"
+                        :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias} · ${activeAccount.maskedNumber}`"
+                        :password-configured="
+                            activeAccount.pdfPasswordConfigured
+                        "
+                        :is-owner="
+                            activeAccount.permissions?.[ownUid] === 'owner'
+                        "
+                        :busy="busy"
+                        :reviewing="!!review"
+                        :error="filePreviewError"
+                        :kind-options="kindOptions"
+                        :format-options="formatOptions"
+                        :selected-files="selectedFiles"
+                        @select="selectImportFiles"
+                        @clear="selectedFiles = []"
+                        @preview="preview"
+                        @remove-password="removePdfPassword"
+                        @reset="resetFileInput" />
+                    <PortfolioImportReview
+                        v-if="review"
+                        ref="importReview"
+                        :key="review.reviewId"
+                        :review="review"
+                        :save-disabled="
+                            statementBlocked ||
+                            (review.source === 'toss-pdf' &&
+                                !statementConfirmed)
+                        "
+                        :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias} · ${activeAccount.maskedNumber}`"
+                        :busy="busy"
+                        @update-row="updateReviewRow"
+                        @commit="commit"
+                        @cancel="review = null">
+                        <template #identity-review>
+                            <StatementIdentityReview
+                                v-if="review.source === 'toss-pdf'"
+                                v-model:confirmed="statementConfirmed"
+                                :files="review.statementFiles"
+                                :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.maskedNumber}`"
+                                :blocked="statementBlocked"
+                                :busy="busy" />
+                        </template>
+                        <template #holdings-warning>
+                            <div v-if="review.source === 'manual-holdings-v1'">
+                                <Message severity="warn" :closable="false">
+                                    기준일 {{ review.asOf }} ·
+                                    {{ review.rows.length }}행의 전체 잔고로
+                                    대체합니다. 빠진 종목은 새 잔고에서
+                                    제외됩니다. 기존 거래는 유지됩니다.
+                                </Message>
+                                <p v-if="review.correction">
+                                    같은 기준일 정정 · 사유:
+                                    {{ review.correctionReason }}. 변경 전후
+                                    자료를 이력에 보관합니다.
+                                </p>
+                                <HoldingsChanges
+                                    :before="activeAccount.snapshot?.rows || []"
+                                    :after="review.rows" />
+                                <Button
+                                    type="button"
+                                    label="수동 입력 다시 작성"
+                                    severity="secondary"
+                                    :disabled="busy"
+                                    @click="review = null" />
+                            </div>
+                        </template>
+                    </PortfolioImportReview>
+                </div>
+            </template>
+        </AssetUploadDialog>
         <PortfolioExportDialog
             v-model:visible="exportVisible"
             :accounts="visibleAccounts"
@@ -2499,6 +2225,13 @@
 </template>
 
 <style scoped>
+    .asset-list-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
     .import-workspace {
         min-width: 0;
     }

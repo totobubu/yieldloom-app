@@ -10,6 +10,7 @@
         loadSecurityInsights,
     } from '@/services/securityDirectory.js';
     import { loadStockPrices } from '@/services/stockPrices.js';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     import {
         underlyingProducts,
         comparableMetric,
@@ -28,6 +29,10 @@
         risks = ref({}),
         detailed = ref(false),
         pending = ref(false);
+    useFullscreenLoading(
+        computed(() => loading.value || pending.value),
+        '기초자산 데이터를 불러오고 있습니다.'
+    );
     const strategy = ref(''),
         direction = ref(''),
         frequency = ref('');

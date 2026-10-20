@@ -50,6 +50,7 @@
     } from '@/services/contentPresets';
     import { trackAggregate } from '@/services/analytics';
     import { apiOrigin, apiUrl } from '@/services/apiUrl';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     import {
         artworkFilename,
         artworkSuffix,
@@ -83,6 +84,7 @@
     const selectedInfo = ref(null);
     const selectedData = ref(null);
     const loading = ref(true);
+    useFullscreenLoading(loading, '종목 정보를 불러오고 있습니다.');
     const error = ref('');
     const rivals = ref([]);
     const draftRivals = ref([]);

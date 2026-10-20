@@ -3,6 +3,7 @@
     import { computed, ref, watch } from 'vue';
     import { firebaseUser, authLoading } from '@/services/firebaseClient';
     import { familyRequest } from '@/services/familyPortfolio';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     const props = defineProps({
         symbol: { type: String, required: true },
         price: { type: Number, default: null },
@@ -12,6 +13,7 @@
     const positions = ref([]),
         loading = ref(false),
         error = ref('');
+    useFullscreenLoading(loading, '계좌별 잔고를 불러오고 있습니다.');
     let sequence = 0;
     const load = async () => {
         const current = ++sequence;

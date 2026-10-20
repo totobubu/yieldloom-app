@@ -2,7 +2,7 @@
     import { computed, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { signOut } from 'firebase/auth';
-    import { auth, firebaseUser } from '@/services/firebaseClient';
+    import { auth, authLoading, firebaseUser } from '@/services/firebaseClient';
     import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
     import { useLayout } from '@/composables/shared/useLayout';
     import Button from 'primevue/button';
@@ -11,6 +11,8 @@
     import Message from 'primevue/message';
     import Toast from 'primevue/toast';
     import ConfirmDialog from 'primevue/confirmdialog';
+    import FullscreenDataLoading from '@/components/FullscreenDataLoading.vue';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
 
     const route = useRoute();
     const router = useRouter();
@@ -18,6 +20,7 @@
     const accountOpen = ref(false);
     const signingOut = ref(false);
     const accountError = ref('');
+    useFullscreenLoading(authLoading, '로그인 정보를 확인하고 있습니다.');
     const isAuth = computed(() => route.name === 'login');
     const inStocks = computed(() =>
         ['thumbnail-home', 'ticker-stock'].includes(route.name)
@@ -237,6 +240,7 @@
             </div>
         </Drawer>
         <Toast /><ConfirmDialog />
+        <FullscreenDataLoading />
     </div>
 </template>
 

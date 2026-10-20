@@ -38,6 +38,7 @@
         portfolioTickerStates,
     } from '@/services/portfolio';
     import AdSlot from '@/components/ads/AdSlot.vue';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     useHead({ title: 'ETF·주식 검색' });
     const route = useRoute(),
         router = useRouter();
@@ -72,6 +73,10 @@
     const holdingStates = ref(new Map()),
         holdingsLoading = ref(false),
         holdingsError = ref('');
+    useFullscreenLoading(
+        computed(() => loading.value || holdingsLoading.value),
+        '종목 데이터를 불러오고 있습니다.'
+    );
     let holdingsRequest = 0;
     watch(
         [firebaseUser, authLoading],

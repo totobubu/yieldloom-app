@@ -17,6 +17,7 @@
     } from '@/services/transactionAmount.js';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { purchaseBasis } from '../../lib/portfolio-capital.js';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import { loadPortfolioDashboard } from '@/services/portfolio';
     import { summarizePortfolio } from '@/services/portfolioSummary';
@@ -49,6 +50,10 @@
         fundingTransaction = ref(null),
         fundingEditor = ref(null),
         fundingMessage = ref('');
+    useFullscreenLoading(
+        computed(() => loading.value || capitalLoading.value),
+        '포트폴리오 데이터를 불러오고 있습니다.'
+    );
     let capitalRequestId = 0,
         capitalOwnerUid = '';
     async function loadCapital() {

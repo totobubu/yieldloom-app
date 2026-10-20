@@ -4,6 +4,7 @@
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import { portfolioMappingRequest } from '@/services/portfolioMappings';
     import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     const route = useRoute(),
         router = useRouter();
     const allowed = computed(() => isPortfolioAdmin(firebaseUser.value));
@@ -14,6 +15,7 @@
         error = ref(''),
         message = ref(''),
         search = ref('');
+    useFullscreenLoading(busy, '종목 식별 데이터를 불러오고 있습니다.');
     const review = ref(null),
         accepted = ref(false),
         manual = ref(false);

@@ -225,6 +225,26 @@ def parse_transaction_lines(lines, start_idx):
         return None, next_idx
 
 
+def extract_statement_identity(text):
+    """Read first-page labels even when PDF glyph spacing separates Korean letters.
+
+    Values may share a line with another label or start on the next line.
+    Keep the search anchored to the name label so transaction names cannot
+    become the account holder's name when the header value is absent.
+    """
+    identity = {}
+    name = re.search(r"(?m)^[ \t]*성\s*명[ \t]*[:：]?[ \t]*(?:\n[ \t]*)?([^\r\n]+)", text)
+    if name:
+        value = re.split(r"계\s*좌\s*번\s*호|조회\s*기간|발급\s*번호", name.group(1), maxsplit=1)[0].strip()
+        if value and any(character.isalpha() for character in value) and not re.search(r"거래\s*내역|요청\s*고객|종목", value):
+            # Preserve spaces in non-Korean names, while joining spaced Hangul glyphs.
+            identity['customer_name'] = re.sub(r"[ \t]+", "", value) if re.fullmatch(r"[가-힣*•● \t]+", value) else value
+    account = re.search(r"계\s*좌\s*번\s*호\s*[:：]?\s*([0-9*•●][0-9*•● \t-]{6,24}[0-9])", text)
+    if account:
+        identity['account_number'] = account.group(1)
+    return identity
+
+
 def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
     """PDF에서 모든 거래 데이터 추출"""
 
@@ -255,19 +275,12 @@ def extract_transactions_from_pdf(pdf_path, verbose=True, password=None):
 
             # 첫 페이지에서 메타데이터 추출
             if page_num == 1:
+                metadata.update(extract_statement_identity(text))
                 for line in lines:
                     if "발급번호" in line:
                         parts = line.split("발급번호")
                         if len(parts) > 1:
                             metadata["issue_number"] = parts[1].strip()
-                    if "성명" in line and "종목" not in line:
-                        match = re.search(r"성명\s*[:：]?\s*(\S+)", line)
-                        if match:
-                            metadata["customer_name"] = match.group(1)
-                    if "계좌" in line and "번호" in line:
-                        match = re.search(r"계좌\s*번호\s*[:：]?\s*([0-9*•●][0-9*•● \t-]{6,24}[0-9])", line)
-                        if match:
-                            metadata["account_number"] = match.group(1)
                     if "조회 기간" in line:
                         parts = line.split("조회 기간")
                         if len(parts) > 1:

@@ -42,6 +42,7 @@ jobs:
             - name: Permissions, import validation, corrections and private statements
               run: |
                   python -m unittest discover -s tests -p 'test_family_portfolio.py'
+                  python -m unittest discover -s tests -p 'test_toss_extractor.py'
                   python -m unittest discover -s tests -p 'test_portfolio_expansion.py'
                   python -m unittest discover -s tests -p 'test_portfolio_import.py'
                   python -m unittest discover -s tests -p 'test_portfolio_csv.py'

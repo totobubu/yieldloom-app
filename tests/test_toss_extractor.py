@@ -23,6 +23,41 @@ class TossStatementColumns(unittest.TestCase):
                 self.assertEqual(result['metadata']['customer_name'], 'PDFTest')
                 self.assertTrue(result['metadata']['account_number'].endswith('1234'))
 
+    def test_statement_identity_accepts_spaced_glyphs_and_wrapped_values(self):
+        for header, expected in [
+            ('요청 고객\n성 명 홍 길 동\n계 좌 번 호 100 - 01 - 001234', '홍길동'),
+            ('성명\n홍길동\n계좌번호\n100-01-001234', '홍길동'),
+            ('성 명：\n홍 길 동\n계좌 번호：100-01-001234', '홍길동'),
+            ('성명 Hong Gil Dong 계좌번호 100-01-001234', 'Hong Gil Dong'),
+        ]:
+            with self.subTest(header=header):
+                page = MagicMock()
+                page.extract_text.return_value = header
+                pdf = MagicMock()
+                pdf.__enter__.return_value.pages = [page]
+                with patch('toss_extractor.pdfplumber.open', return_value=pdf):
+                    result = extract_transactions_from_pdf('synthetic.pdf', verbose=False)
+                self.assertEqual(result['metadata']['customer_name'], expected)
+                self.assertTrue(result['metadata']['account_number'].endswith('1234'))
+
+    def test_missing_name_does_not_consume_the_next_header_or_a_trade(self):
+        for header in [
+            '성명\n계좌번호 100-01-001234',
+            '성명: 계좌번호: 100-01-001234',
+            '성명:',
+            '성명\n100-01-001234',
+            '거래 종목명 홍길동\n계좌번호 100-01-001234',
+            '성명\n종목명 거래내역',
+        ]:
+            with self.subTest(header=header):
+                page = MagicMock()
+                page.extract_text.return_value = header
+                pdf = MagicMock()
+                pdf.__enter__.return_value.pages = [page]
+                with patch('toss_extractor.pdfplumber.open', return_value=pdf):
+                    result = extract_transactions_from_pdf('synthetic.pdf', verbose=False)
+                self.assertNotIn('customer_name', result['metadata'])
+
     def test_fractional_purchase_keeps_settlement_distinct_from_price_and_fees(self):
         row, _ = parse_transaction_lines([
             '2026.10.15 구매 테스트 ETF 1,338.60 0.144987 6,692 6,693 46,162 0 0 0 243.428075 281,106',

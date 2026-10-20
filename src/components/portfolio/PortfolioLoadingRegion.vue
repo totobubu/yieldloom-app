@@ -8,6 +8,7 @@
         busy: Boolean,
         progress: { type: Object, default: null },
     });
+    defineEmits(['afterHide']);
     const stages = {
         extract: { title: '거래내역서를 읽고 있습니다', label: '파일 추출' },
         resolve: {
@@ -51,7 +52,8 @@
                         backdropFilter: 'blur(4px)',
                     },
                 },
-            }">
+            }"
+            @after-hide="$emit('afterHide')">
             <div
                 class="portfolio-loading-status"
                 tabindex="0"

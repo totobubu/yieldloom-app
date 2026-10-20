@@ -326,12 +326,28 @@
             ? ''
             : '자금 구성을 저장했습니다.';
     }
+    const importReview = ref(null);
+    const filePreviewError = ref('');
+    let focusFilePreview = false;
     const fileUpload = ref(null),
         selectedFiles = ref([]),
         password = ref(''),
         confirmed = ref(false),
         statementConfirmed = ref(false),
         review = ref(null);
+    watch(
+        [selectedFiles, password, format, selectedAccount, inputMethod],
+        () => {
+            filePreviewError.value = '';
+        }
+    );
+    async function focusPreviewFeedback() {
+        if (!focusFilePreview) return;
+        focusFilePreview = false;
+        await nextTick();
+        if (review.value) importReview.value?.focusHeading();
+        else fileUpload.value?.focusError();
+    }
     const statementBlocked = computed(
         () =>
             review.value?.source === 'toss-pdf' &&
@@ -518,7 +534,7 @@
         v === null || v === undefined
             ? '미확인'
             : Number(v).toLocaleString('ko-KR', { maximumFractionDigits: 8 });
-    async function run(work) {
+    async function run(work, { onError } = {}) {
         if (busy.value) return;
         busy.value = true;
         operationProgress.value = null;
@@ -527,7 +543,8 @@
         try {
             await work();
         } catch (e) {
-            error.value = e.message;
+            if (onError) onError(e);
+            else error.value = e.message;
         } finally {
             busy.value = false;
             operationProgress.value = null;
@@ -747,115 +764,145 @@
         });
     }
     async function preview() {
-        await run(async () => {
-            importReceipt.value = null;
-            const a = activeAccount.value;
-            const uid = ownUid.value;
-            const importKind = kind.value;
-            const files = selectedFiles.value;
-            if (!a || !files.length)
-                throw new Error('계좌와 파일을 선택하세요.');
-            if (files.length > 20)
-                throw new Error('PDF는 한 번에 최대 20개까지 선택하세요.');
-            if (format.value !== 'toss-pdf' && !confirmed.value)
-                throw new Error('명의자·금융기관·계좌를 확인하세요.');
-            if (files.some((file) => file.size > 2 * 1024 * 1024))
-                throw new Error('2MB 이하 파일을 선택하세요.');
-            const results = [];
-            operationProgress.value = {
-                stage: 'extract',
-                completed: 0,
-                total: files.length,
-                detail: '',
-            };
-            for (const [fileIndex, file] of files.entries()) {
-                operationProgress.value.detail = file.name;
-                const form = new FormData();
-                Object.entries({
-                    accountId: a.id,
-                    ownerId: a.ownerId,
-                    institution: a.institution,
-                    kind: kind.value,
-                    asOf: asOf.value,
-                    format: format.value,
-                    identityConfirmed: String(confirmed.value),
-                    password: password.value,
-                    rememberPassword:
-                        fileIndex === 0 &&
-                        rememberPassword.value &&
-                        a.permissions?.[ownUid.value] === 'owner'
-                            ? 'true'
-                            : 'false',
-                }).forEach(([key, value]) => form.append(key, value));
-                form.append('file', file);
-                results.push({
-                    ...(await familyRequest('preview', form)),
-                    fileName: file.name,
-                });
-                operationProgress.value.completed = fileIndex + 1;
-            }
-            const result = results.reduce(
-                (combined, item) => {
-                    const offset = combined.rows.length;
-                    combined.rows.push(...item.rows);
-                    combined.errors.push(
-                        ...item.errors.map((problem) => ({
-                            ...problem,
-                            row: problem.row ? problem.row + offset : 0,
-                        }))
-                    );
-                    combined.batches.push(
-                        ...item.batches.map((batch) => ({
-                            ...batch,
-                            start: batch.start + offset,
-                        }))
-                    );
-                    if (item.source === 'toss-pdf')
-                        combined.statementFiles.push({
-                            fileName: item.fileName,
-                            ...item.statementIdentity,
-                        });
-                    combined.asOf = [combined.asOf, item.asOf]
-                        .filter(Boolean)
-                        .sort()
-                        .at(-1);
-                    return combined;
-                },
-                {
-                    reviewId: results[0].reviewId,
-                    source: results[0].source,
-                    rows: [],
-                    errors: [],
-                    batches: [],
-                    asOf: null,
-                    fileCount: results.length,
-                    statementFiles: [],
-                }
-            );
-            if (result.source === 'toss-pdf') {
+        if (busy.value) return;
+        filePreviewError.value = '';
+        focusFilePreview = true;
+        await run(
+            async () => {
+                importReceipt.value = null;
+                const a = activeAccount.value;
+                const uid = ownUid.value;
+                const importKind = kind.value;
+                const files = selectedFiles.value;
+                if (!a || !files.length)
+                    throw new Error('계좌와 파일을 선택하세요.');
+                if (files.length > 20)
+                    throw new Error('PDF는 한 번에 최대 20개까지 선택하세요.');
+                if (format.value !== 'toss-pdf' && !confirmed.value)
+                    throw new Error('명의자·금융기관·계좌를 확인하세요.');
+                if (files.some((file) => file.size > 2 * 1024 * 1024))
+                    throw new Error('2MB 이하 파일을 선택하세요.');
+                const results = [];
                 operationProgress.value = {
-                    stage: 'resolve',
+                    stage: 'extract',
                     completed: 0,
-                    total: 0,
-                    detail: '종목 코드와 환전 흐름을 확인하고 있습니다.',
+                    total: files.length,
+                    detail: '',
                 };
-                Object.assign(result, await enrichTossReview(result.rows));
+                for (const [fileIndex, file] of files.entries()) {
+                    operationProgress.value.detail = file.name;
+                    const form = new FormData();
+                    Object.entries({
+                        accountId: a.id,
+                        ownerId: a.ownerId,
+                        institution: a.institution,
+                        kind: kind.value,
+                        asOf: asOf.value,
+                        format: format.value,
+                        identityConfirmed: String(confirmed.value),
+                        password: password.value,
+                        rememberPassword:
+                            fileIndex === 0 &&
+                            rememberPassword.value &&
+                            a.permissions?.[ownUid.value] === 'owner'
+                                ? 'true'
+                                : 'false',
+                    }).forEach(([key, value]) => form.append(key, value));
+                    // Snapshot the bytes before fetch: mobile document providers can
+                    // revoke/change the selected file handle during body streaming.
+                    let bytes;
+                    try {
+                        bytes = await file.arrayBuffer();
+                    } catch {
+                        throw new Error(
+                            '선택한 파일을 읽을 수 없습니다. 휴대폰에 PDF를 다운로드한 뒤 파일을 다시 선택해 주세요.'
+                        );
+                    }
+                    form.append(
+                        'file',
+                        new Blob([bytes], { type: file.type }),
+                        file.name
+                    );
+                    results.push({
+                        ...(await familyRequest('preview', form)),
+                        fileName: file.name,
+                    });
+                    operationProgress.value.completed = fileIndex + 1;
+                }
+                const result = results.reduce(
+                    (combined, item) => {
+                        const offset = combined.rows.length;
+                        combined.rows.push(...item.rows);
+                        combined.errors.push(
+                            ...item.errors.map((problem) => ({
+                                ...problem,
+                                row: problem.row ? problem.row + offset : 0,
+                            }))
+                        );
+                        combined.batches.push(
+                            ...item.batches.map((batch) => ({
+                                ...batch,
+                                start: batch.start + offset,
+                            }))
+                        );
+                        if (item.source === 'toss-pdf')
+                            combined.statementFiles.push({
+                                fileName: item.fileName,
+                                ...item.statementIdentity,
+                            });
+                        combined.asOf = [combined.asOf, item.asOf]
+                            .filter(Boolean)
+                            .sort()
+                            .at(-1);
+                        return combined;
+                    },
+                    {
+                        reviewId: results[0].reviewId,
+                        source: results[0].source,
+                        rows: [],
+                        errors: [],
+                        batches: [],
+                        asOf: null,
+                        fileCount: results.length,
+                        statementFiles: [],
+                    }
+                );
+                if (result.source === 'toss-pdf') {
+                    operationProgress.value = {
+                        stage: 'resolve',
+                        completed: 0,
+                        total: 0,
+                        detail: '종목 코드와 환전 흐름을 확인하고 있습니다.',
+                    };
+                    Object.assign(result, await enrichTossReview(result.rows));
+                }
+                if (ownUid.value === uid && selectedAccount.value === a.id)
+                    review.value = {
+                        ...result,
+                        accountId: a.id,
+                        kind: importKind,
+                        asOf: result.asOf || asOf.value,
+                        accountAlias: a.alias,
+                    };
+                if (format.value === 'toss-pdf' && result.asOf)
+                    asOf.value = result.asOf;
+                password.value = '';
+                selectedFiles.value = [];
+                fileUpload.value?.clear();
+                if (results.some((item) => item.passwordSaved)) await refresh();
+            },
+            {
+                onError: (e) => {
+                    const detail =
+                        e.message === 'Failed to fetch'
+                            ? '서버에 연결하지 못했습니다. 네트워크 연결을 확인한 뒤 다시 시도해 주세요.'
+                            : e.message ||
+                              '파일을 추출하지 못했습니다. 다시 시도해 주세요.';
+                    if (review.value) error.value = detail;
+                    else filePreviewError.value = detail;
+                },
             }
-            if (ownUid.value === uid && selectedAccount.value === a.id)
-                review.value = {
-                    ...result,
-                    accountId: a.id,
-                    kind: importKind,
-                    asOf: result.asOf || asOf.value,
-                    accountAlias: a.alias,
-                };
-            if (format.value === 'toss-pdf' && result.asOf)
-                asOf.value = result.asOf;
-            password.value = '';
-            selectedFiles.value = [];
-            fileUpload.value?.clear();
-            if (results.some((item) => item.passwordSaved)) await refresh();
-        });
+        );
     }
     async function previewManualHoldings(body) {
         await run(async () => {
@@ -1124,7 +1171,8 @@
     <PortfolioLoadingRegion
         class="family-page"
         :busy="contentBusy"
-        :progress="operationProgress">
+        :progress="operationProgress"
+        @after-hide="focusPreviewFeedback">
         <header class="portfolio-heading">
             <div>
                 <span class="studio-eyebrow"
@@ -2208,6 +2256,7 @@
                             "
                             :busy="busy"
                             :reviewing="!!review"
+                            :error="filePreviewError"
                             :kind-options="kindOptions"
                             :format-options="formatOptions"
                             :selected-files="selectedFiles"
@@ -2218,6 +2267,7 @@
                             @reset="resetFileInput" />
                         <PortfolioImportReview
                             v-if="review"
+                            ref="importReview"
                             :key="review.reviewId"
                             :review="review"
                             :save-disabled="

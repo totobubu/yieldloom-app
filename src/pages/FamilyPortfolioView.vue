@@ -332,8 +332,11 @@
             : '자금 구성을 저장했습니다.';
     }
     const importReview = ref(null);
+    const importResult = ref(null);
+    const importHeading = ref(null);
     const filePreviewError = ref('');
     let focusFilePreview = false;
+    let focusSavedResult = false;
     const fileUpload = ref(null),
         selectedFiles = ref([]),
         password = ref(''),
@@ -347,6 +350,11 @@
         }
     );
     async function focusPreviewFeedback() {
+        if (focusSavedResult) {
+            focusSavedResult = false;
+            await nextTick();
+            if (importReceipt.value) importResult.value?.focusHeading();
+        }
         if (!focusFilePreview) return;
         focusFilePreview = false;
         await nextTick();
@@ -1052,6 +1060,7 @@
                 kind: current.kind,
                 asOf: current.asOf,
             };
+            focusSavedResult = true;
             await refresh();
         });
     }
@@ -1069,8 +1078,10 @@
         }
     }
     async function anotherFile() {
-        importReceipt.value = null;
+        resetFileInput();
         await nextTick();
+        importHeading.value?.focus({ preventScroll: true });
+        importHeading.value?.scrollIntoView({ block: 'start' });
     }
     function openTransactionsUpload() {
         kind.value = 'transactions';
@@ -2173,6 +2184,7 @@
                 ><TabPanel value="upload"
                     ><PortfolioImportResult
                         v-if="importReceipt"
+                        ref="importResult"
                         :receipt="importReceipt"
                         :busy="busy"
                         :accounts-state="accountsState"
@@ -2185,10 +2197,11 @@
                         @another="anotherFile" />
                     <Message
                         v-if="
-                            !activeAccount ||
-                            !editableAccounts.some(
-                                (a) => a.id === selectedAccount
-                            )
+                            !importReceipt &&
+                            (!activeAccount ||
+                                !editableAccounts.some(
+                                    (a) => a.id === selectedAccount
+                                ))
                         "
                         severity="info"
                         :closable="false"
@@ -2197,6 +2210,7 @@
                     >
                     <div
                         v-if="
+                            !importReceipt &&
                             activeAccount &&
                             editableAccounts.some(
                                 (a) => a.id === selectedAccount
@@ -2205,7 +2219,9 @@
                         class="import-workspace">
                         <div v-if="!review" class="import-heading">
                             <div>
-                                <h2>자료 입력 · 저장 전 검토</h2>
+                                <h2 ref="importHeading" tabindex="-1">
+                                    자료 입력 · 저장 전 검토
+                                </h2>
                                 <p>
                                     거래내역과 잔고 파일을 불러오고,
                                     포트폴리오에 저장하기 전 내용을 확인하세요.

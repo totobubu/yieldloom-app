@@ -64,6 +64,11 @@ try {
     );
     const upload = async ({ date = '2026-10-15', amount = 500 } = {}) => {
         await tab('자료 업로드');
+        const another = page.getByRole('button', {
+            name: '추가 등록',
+            exact: true,
+        });
+        if (await another.isVisible()) await another.click();
         await select('자료 종류', '잔고내역');
         await page.getByLabel('잔고 기준일', { exact: true }).fill(date);
         await page.getByLabel('파일', { exact: true }).setInputFiles({

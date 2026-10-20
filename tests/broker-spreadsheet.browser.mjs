@@ -119,6 +119,8 @@ try {
             exact: true,
         })
         .waitFor();
+    assert.equal(await form.isVisible(), false);
+    await page.getByRole('button', { name: '추가 등록', exact: true }).click();
     await choose('연결 자료 종류', '거래 내역');
     await form.getByLabel('조회 종료일', { exact: true }).fill('2026-10-18');
     await form.getByLabel('CSV 또는 XLSX 파일', { exact: true }).setInputFiles({

@@ -258,6 +258,37 @@ try {
             .waitFor();
         assert.equal(writes, 4);
         assert.equal(previews, 4);
+        await page.waitForFunction(() =>
+            document.activeElement?.matches('.import-result h2')
+        );
+        assert.equal(await page.locator('.import-workspace').count(), 0);
+        assert.equal(await page.locator('input[type=file]').count(), 0);
+        const resultHeading = await page
+            .locator('.import-result h2')
+            .boundingBox();
+        assert.ok(resultHeading.y > 0 && resultHeading.y < 900);
+        if (width === 390) {
+            const another = await page
+                .getByRole('button', { name: '추가 등록', exact: true })
+                .boundingBox();
+            const navigation = await page.locator('.mobile-nav').boundingBox();
+            assert.ok(another.y + another.height <= navigation.y);
+        }
+        await page.getByText('STEP 3 · 저장 결과', { exact: true }).waitFor();
+        await page
+            .getByRole('button', { name: '추가 등록', exact: true })
+            .click();
+        assert.equal(await page.locator('.import-result').count(), 0);
+        assert.equal(writes, 4);
+        assert.equal(previews, 4);
+        await page.waitForFunction(() =>
+            document.activeElement?.matches('.import-heading h2')
+        );
+        assert.equal(await page.locator('input[type=file]').inputValue(), '');
+        assert.equal(
+            await page.getByLabel('PDF 비밀번호', { exact: true }).inputValue(),
+            ''
+        );
         for (const status of ['mismatch', 'missing']) {
             await open();
             await upload(2);

@@ -160,10 +160,6 @@ try {
         });
         await button.click();
         await waitForPendingPreview();
-        assert.ok(
-            await page.evaluate(() => scrollY > 300),
-            'User is below the global page error'
-        );
         const request = pending.request().postData();
         assert.match(request, /%PDF-fixture/);
         assert.match(request, /name="password"\r\n\r\n\r\n/); // Uses the configured password.

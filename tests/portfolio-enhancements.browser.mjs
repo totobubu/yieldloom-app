@@ -168,7 +168,10 @@ try {
             },
         })
     );
-    await page.goto(`${base}/mypage?tab=upload`);
+    await page.goto(`${base}/mypage?tab=assets`);
+    await page
+        .getByRole('button', { name: '자료 업로드', exact: true })
+        .click();
     await page
         .getByRole('button', { name: '수동 잔고 입력', exact: true })
         .click();

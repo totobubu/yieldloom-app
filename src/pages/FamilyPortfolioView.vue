@@ -10,7 +10,16 @@
     import HoldingsChanges from '@/components/portfolio/HoldingsChanges.vue';
     import SnapshotHistory from '@/components/portfolio/SnapshotHistory.vue';
     import BrokerSpreadsheetForm from '@/components/portfolio/BrokerSpreadsheetForm.vue';
+    import TossPdfImportReview from '@/components/portfolio/TossPdfImportReview.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
+    import { portfolioMappingRequest } from '@/services/portfolioMappings.js';
+    import {
+        applyIsinResolutions,
+        inferExchangeFunding,
+        transactionTypeLabel,
+        transactionTypeOptions,
+        unresolvedIsins,
+    } from '@/services/tossImportReview.js';
     import { useRoute, useRouter } from 'vue-router';
     import PortfolioDividendCalendar from '@/components/portfolio/PortfolioDividendCalendar.vue';
     import PortfolioValuation from '@/components/portfolio/PortfolioValuation.vue';
@@ -143,6 +152,101 @@
             (reviewPage.value + 1) * 200
         )
     );
+    function updateReviewRow({ index, field, value }) {
+        if (!review.value?.rows[index]) return;
+        review.value.rows[index][field] = value;
+        if (
+            field === 'symbol' &&
+            review.value.rows[index]._mappingIsin &&
+            value !== review.value.rows[index]._mappingIsin
+        )
+            review.value.rows[index]._mappingStatus = 'manual';
+    }
+    async function enrichTossReview(rows) {
+        const isins = unresolvedIsins(rows);
+        if (!isins.length)
+            return {
+                rows: inferExchangeFunding(applyIsinResolutions(rows, [])),
+            };
+        const results = [];
+        try {
+            for (let offset = 0; offset < isins.length; offset += 50) {
+                const response = await portfolioMappingRequest(
+                    firebaseUser.value,
+                    {
+                        action: 'resolveBatch',
+                        isins: isins.slice(offset, offset + 50),
+                    }
+                );
+                results.push(...response.results);
+            }
+            return {
+                rows: inferExchangeFunding(applyIsinResolutions(rows, results)),
+            };
+        } catch (reason) {
+            return {
+                rows: inferExchangeFunding(applyIsinResolutions(rows, [])),
+                mappingWarning: `종목 자동 조회를 완료하지 못했습니다. ISIN을 직접 확인해 주세요. (${reason.message})`,
+            };
+        }
+    }
+    async function entryId(externalId) {
+        const bytes = new TextEncoder().encode(externalId);
+        const digest = await crypto.subtle.digest('SHA-256', bytes);
+        return [...new Uint8Array(digest)]
+            .map((value) => value.toString(16).padStart(2, '0'))
+            .join('');
+    }
+    async function saveMatchedFunding(current) {
+        const matches = current.rows.filter(
+            (row) => row._fundingStatus === 'matched_exchange'
+        );
+        let saved = 0,
+            failed = 0;
+        for (const row of matches) {
+            const suggestion = row._fundingSuggestion;
+            const krw = current.rows[suggestion.krwIndex];
+            const usd = current.rows[suggestion.usdIndex];
+            try {
+                await portfolioCapitalRequest(
+                    firebaseUser.value,
+                    {
+                        action: 'saveFunding',
+                        assetId: 'ACCOUNT',
+                        transactionId: await entryId(row.externalId),
+                        basisKey: JSON.stringify([
+                            row.date,
+                            row.rawType || row.type,
+                            'USD',
+                            Number(row.nativeSettlementAmount),
+                            row.settlementAmount == null
+                                ? null
+                                : Number(row.settlementAmount),
+                        ]),
+                        revision: 0,
+                        parts: [
+                            {
+                                method: 'krw_conversion',
+                                amount: suggestion.amount,
+                                paidKrw: suggestion.paidKrw,
+                                source: 'unknown',
+                            },
+                        ],
+                        evidenceIds: [
+                            await entryId(krw.externalId),
+                            await entryId(usd.externalId),
+                        ],
+                        note: '토스 PDF의 같은 날짜 원화 환전 출금·달러 입금·매수 정산액이 일대일로 일치했습니다. 원화의 최초 출처는 확인이 필요합니다.',
+                    },
+                    current.accountId
+                );
+                saved++;
+            } catch {
+                failed++;
+            }
+        }
+        return { saved, failed };
+    }
     const capital = ref({ entries: [], classifications: [], allocations: [] });
     const capitalCollapsed = ref(true);
     const capitalLoading = ref(false),
@@ -243,15 +347,7 @@
         reason: '',
         row: {},
     });
-    const transactionTypes = [
-        { label: '매수', value: 'buy' },
-        { label: '매도', value: 'sell' },
-        { label: '입고', value: 'transfer_in' },
-        { label: '출고', value: 'transfer_out' },
-        { label: '배당', value: 'dividend' },
-        { label: '입금', value: 'cash_in' },
-        { label: '출금', value: 'cash_out' },
-    ];
+    const transactionTypes = transactionTypeOptions;
     const shareUid = ref(''),
         shareRole = ref('viewer'),
         singleAccountConfirmed = ref(false);
@@ -688,6 +784,10 @@
                     fileCount: results.length,
                 }
             );
+            if (result.source === 'toss-pdf') {
+                message.value = '종목 코드와 환전 흐름을 확인하는 중입니다.';
+                Object.assign(result, await enrichTossReview(result.rows));
+            }
             if (ownUid.value === uid && selectedAccount.value === a.id)
                 review.value = {
                     ...result,
@@ -797,13 +897,16 @@
                 result.inserted += saved.inserted;
                 result.duplicates += saved.duplicates;
             }
+            let funding = { saved: 0, failed: 0 };
+            if (current.source === 'toss-pdf' && result.inserted > 0)
+                funding = await saveMatchedFunding(current);
             if (
                 ownUid.value !== uid ||
                 selectedAccount.value !== current.accountId
             )
                 return;
             review.value = null;
-            message.value = `저장 ${result.inserted}행 · 중복 ${result.duplicates}행`;
+            message.value = `저장 ${result.inserted}행 · 중복 ${result.duplicates}행${funding.saved ? ` · 환전 결제 ${funding.saved}건 연결` : ''}${funding.failed ? ` · 환전 결제 ${funding.failed}건은 원장에서 확인 필요` : ''}`;
             importReceipt.value = {
                 ...result,
                 accountAlias: current.accountAlias,
@@ -1722,7 +1825,10 @@
                                             </td>
                                             <td>
                                                 {{
-                                                    entry.row?.type ||
+                                                    (entry.row?.type &&
+                                                        transactionTypeLabel(
+                                                            entry.row.type
+                                                        )) ||
                                                     entry.source ||
                                                     'legacy'
                                                 }}
@@ -1859,14 +1965,6 @@
                                             type="number"
                                             min="0"
                                             step="any"
-                                    /></label>
-                                    <label
-                                        >거래 고유번호<input
-                                            v-model.trim="
-                                                entryMutation.row.externalId
-                                            "
-                                            required
-                                            maxlength="120"
                                     /></label>
                                 </template>
                                 <label
@@ -2042,8 +2140,7 @@ date,symbol,quantity,amount,currency,type,externalId
                                     option-value="value"
                                     aria-label="파일 형식"
                                     placeholder="선택" /></label
-                            ><label
-                                v-if="format !== 'toss-pdf'"
+                            ><label v-if="format !== 'toss-pdf'"
                                 >{{
                                     kind === 'transactions'
                                         ? '조회 종료일'
@@ -2178,7 +2275,17 @@ date,symbol,quantity,amount,currency,type,externalId
                                 오류가 남으면 저장되지 않습니다. 검토는 1시간
                                 유효합니다.
                             </p>
-                            <p v-if="review.rows.length > 200">
+                            <TossPdfImportReview
+                                v-if="review.source === 'toss-pdf'"
+                                :rows="review.rows"
+                                :errors="review.errors"
+                                :mapping-warning="review.mappingWarning"
+                                @update-row="updateReviewRow" />
+                            <p
+                                v-if="
+                                    review.source !== 'toss-pdf' &&
+                                    review.rows.length > 200
+                                ">
                                 전체 {{ review.rows.length }}행 ·
                                 {{ reviewPage + 1 }}/{{
                                     Math.ceil(review.rows.length / 200)
@@ -2205,7 +2312,9 @@ date,symbol,quantity,amount,currency,type,externalId
                                     행 {{ e.row }}: {{ e.error }}
                                 </li>
                             </ul>
-                            <div class="scroll">
+                            <div
+                                v-if="review.source !== 'toss-pdf'"
+                                class="scroll">
                                 <table>
                                     <thead>
                                         <tr>
@@ -2218,7 +2327,6 @@ date,symbol,quantity,amount,currency,type,externalId
                                                     'amount',
                                                     'currency',
                                                     'type',
-                                                    'externalId',
                                                 ]"
                                                 :key="col">
                                                 {{ col }}
@@ -2242,7 +2350,6 @@ date,symbol,quantity,amount,currency,type,externalId
                                                     'amount',
                                                     'currency',
                                                     'type',
-                                                    'externalId',
                                                 ]"
                                                 :key="col">
                                                 <InputText

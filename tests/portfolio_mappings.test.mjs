@@ -149,6 +149,39 @@ test('only a verified administrator can read or mutate mappings', async () => {
         assert.equal(f.databaseCalls, 0);
     }
 });
+test('signed-in users can batch-resolve public ISINs without reading the database', async () => {
+    const calls = [];
+    const lookup = async (isin) => {
+        calls.push(isin);
+        return {
+            isin,
+            candidates: [
+                {
+                    symbol: isin === 'US88636X8801' ? 'TSLY' : 'CONY',
+                    crossChecked: true,
+                    sources: [],
+                },
+            ],
+        };
+    };
+    const f = fixture(
+        { uid: 'member', email: 'member@example.com', email_verified: true },
+        lookup
+    );
+    const response = await f.call('POST', {
+        action: 'resolveBatch',
+        isins: ['US88636X8801', 'US88636X8561', 'US88636X8801'],
+    });
+    assert.equal(response.code, 200);
+    assert.deepEqual(calls, []);
+    assert.equal(response.body.results[0].confirmed.symbol, 'TSLY');
+    assert.equal(response.body.results[1].confirmed.symbol, 'CONY');
+    assert.equal(
+        response.body.results[0].confirmed.canonicalIsin,
+        'US88636J4444'
+    );
+    assert.equal(f.databaseCalls, 0);
+});
 test('catalog validation preserves source ISIN and chooses canonical metadata on the server', () => {
     const result = validateMapping(request, catalog);
     assert.equal(result.isin, 'US35953D4016');

@@ -69,3 +69,5 @@ class CashImportTest(unittest.TestCase):
         self.assertFalse(errors)
         self.assertEqual(normalized[0]['nativeSettlementAmount'],100.1)
         self.assertEqual(normalized[0]['settlementAmount'],140140)
+        self.assertEqual(normalized[0]['convertedAmount'],140000)
+        self.assertEqual((normalized[0]['amount'],normalized[0]['currency']),(100,'USD'))

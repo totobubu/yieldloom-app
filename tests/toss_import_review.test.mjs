@@ -78,3 +78,125 @@ test('only an unambiguous exact exchange and USD settlement are linked', () => {
         'needs_review'
     );
 });
+
+test('instant conversion links observed KRW and USD settlements even without a cash-side rate', () => {
+    const rows = [
+        {
+            date: '2026-10-15',
+            symbol: 'CASH',
+            type: 'cash_out',
+            currency: 'KRW',
+            amount: 14775,
+            cashKind: 'exchange',
+        },
+        {
+            date: '2026-10-15',
+            symbol: 'CASH',
+            type: 'cash_in',
+            currency: 'USD',
+            amount: 10,
+            cashKind: 'exchange',
+        },
+        {
+            date: '2026-10-15',
+            symbol: 'YMAX',
+            type: 'buy',
+            currency: 'USD',
+            nativeSettlementAmount: 10,
+            settlementAmount: 14775,
+        },
+    ];
+    const result = inferExchangeFunding(rows);
+    assert.deepEqual(result[2]._fundingSuggestion, {
+        buyIndex: 2,
+        krwIndex: 0,
+        usdIndex: 1,
+        amount: 10,
+        paidKrw: 14775,
+        basis: 'settlement',
+    });
+    const edited = inferExchangeFunding(
+        result.map((row, index) =>
+            index === 2 ? { ...row, date: '2026-10-16' } : row
+        )
+    );
+    assert.equal(edited[2]._fundingStatus, 'needs_review');
+    assert.equal(edited[2]._fundingSuggestion, undefined);
+    const changedType = inferExchangeFunding(
+        result.map((row, index) =>
+            index === 2 ? { ...row, type: 'sell' } : row
+        )
+    );
+    assert.equal(changedType[2]._fundingStatus, undefined);
+    assert.equal(changedType[2]._fundingSuggestion, undefined);
+    assert.equal(
+        rows[2]._fundingSuggestion,
+        undefined,
+        'input rows remain unchanged'
+    );
+});
+
+test('rate rounding is bounded and a cash leg cannot fund multiple buys', () => {
+    const rows = [
+        {
+            date: '2026-10-15',
+            symbol: 'CASH',
+            type: 'cash_out',
+            currency: 'KRW',
+            amount: 14775,
+            exchangeRate: 1477.48,
+            cashKind: 'exchange',
+        },
+        {
+            date: '2026-10-15',
+            symbol: 'CASH',
+            type: 'cash_in',
+            currency: 'USD',
+            amount: 10,
+            cashKind: 'exchange',
+        },
+        {
+            date: '2026-10-15',
+            symbol: 'YMAX',
+            type: 'buy',
+            currency: 'USD',
+            nativeSettlementAmount: 10,
+        },
+    ];
+    assert.equal(
+        inferExchangeFunding(rows)[2]._fundingStatus,
+        'matched_exchange'
+    );
+    assert.equal(
+        inferExchangeFunding(
+            rows.map((row, index) =>
+                index === 0 ? { ...row, amount: 14777 } : row
+            )
+        )[2]._fundingStatus,
+        'needs_review'
+    );
+    const repeatedBuy = inferExchangeFunding([
+        ...rows,
+        { ...rows[2], symbol: 'TSLY' },
+    ]);
+    assert.equal(repeatedBuy[2]._fundingStatus, 'needs_review');
+    assert.equal(repeatedBuy[3]._fundingStatus, 'needs_review');
+    assert.equal(
+        inferExchangeFunding([...rows, { ...rows[1] }])[2]._fundingStatus,
+        'needs_review',
+        'duplicate USD deposits are ambiguous'
+    );
+    assert.equal(
+        inferExchangeFunding([...rows, { ...rows[0] }])[2]._fundingStatus,
+        'needs_review',
+        'duplicate KRW withdrawals are ambiguous'
+    );
+    assert.equal(
+        inferExchangeFunding(
+            rows.map((row, index) =>
+                index === 2 ? { ...row, currency: 'KRW' } : row
+            )
+        )[2]._fundingStatus,
+        undefined
+    );
+});

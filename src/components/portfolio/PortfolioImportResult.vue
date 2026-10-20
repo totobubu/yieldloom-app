@@ -1,5 +1,5 @@
 <script setup>
-    import { computed } from 'vue';
+    import { computed, ref } from 'vue';
     import Button from 'primevue/button';
     import Card from 'primevue/card';
     import Tag from 'primevue/tag';
@@ -11,6 +11,14 @@
         latestHoldingsDate: { type: String, default: '' },
     });
     defineEmits(['view', 'export', 'another', 'calendar']);
+    const heading = ref(null);
+    function focusHeading() {
+        heading.value?.focus({ preventScroll: true });
+        heading.value
+            ?.closest('.import-result')
+            ?.scrollIntoView({ block: 'start' });
+    }
+    defineExpose({ focusHeading });
     const explanation = computed(() => {
         if (props.accountsState !== 'ready')
             return '저장은 완료되었습니다. 계좌 목록 갱신 상태를 확인해 주세요.';
@@ -28,16 +36,17 @@
 <template>
     <Card class="import-result" role="status" aria-live="polite">
         <template #content>
+            <p class="result-step">STEP 3 · 저장 결과</p>
             <div class="result-heading">
                 <i class="pi pi-check-circle" aria-hidden="true" />
                 <div>
-                    <h3>
+                    <h2 ref="heading" tabindex="-1">
                         {{
                             receipt.inserted
                                 ? '자료 저장이 완료되었습니다'
                                 : '이미 등록된 자료입니다'
                         }}
-                    </h3>
+                    </h2>
                     <p>
                         {{ receipt.accountAlias }} ·
                         {{
@@ -96,7 +105,7 @@
                     :disabled="busy || accountsState !== 'ready'"
                     @click="$emit('calendar')" />
                 <Button
-                    label="다른 파일 등록"
+                    label="추가 등록"
                     severity="secondary"
                     text
                     :disabled="busy"
@@ -110,6 +119,13 @@
     .import-result {
         margin-bottom: 1.5rem;
         border: 1px solid var(--p-green-300);
+        scroll-margin-top: 90px;
+    }
+    .result-step {
+        margin: 0 0 16px;
+        color: var(--app-accent);
+        font-size: 12px;
+        font-weight: 650;
     }
     .result-heading {
         display: flex;
@@ -125,9 +141,10 @@
         flex: 1;
         min-width: 0;
     }
-    .result-heading h3 {
+    .result-heading h2 {
         margin: 0;
         font-size: 1.1rem;
+        word-break: keep-all;
     }
     .result-heading p {
         margin: 0.3rem 0 0;
@@ -152,5 +169,11 @@
         flex-wrap: wrap;
         gap: 0.5rem;
         margin-top: 1rem;
+    }
+    @media (max-width: 767px) {
+        .result-actions {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+        }
     }
 </style>

@@ -97,6 +97,8 @@ try {
             exact: true,
         })
         .waitFor();
+    assert.equal(await form.isVisible(), false);
+    await page.getByRole('button', { name: '추가 등록', exact: true }).click();
     await form.getByLabel('1행 종목', { exact: true }).waitFor();
     assert.equal(
         await form.getByLabel('1행 종목', { exact: true }).inputValue(),
@@ -151,6 +153,7 @@ try {
         .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
         .click();
     await page.getByText('저장 2행 · 중복 0행', { exact: true }).waitFor();
+    await page.getByRole('button', { name: '추가 등록', exact: true }).click();
     await form.getByLabel('2행 종목', { exact: true }).waitFor();
     await form.getByRole('button', { name: '2행 삭제', exact: true }).click();
     assert.equal(

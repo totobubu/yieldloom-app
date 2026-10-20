@@ -208,6 +208,8 @@ try {
             exact: true,
         })
         .waitFor();
+    assert.equal(await manual.isVisible(), false);
+    await page.getByRole('button', { name: '추가 등록', exact: true }).click();
     await manual.waitFor();
     assert.equal(
         await manual.getByLabel('1행 수량', { exact: true }).inputValue(),

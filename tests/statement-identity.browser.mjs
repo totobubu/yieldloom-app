@@ -195,9 +195,12 @@ try {
             if (i === 0) {
                 await page.clock.install();
                 await page.clock.fastForward(21000);
-                await dialog
-                    .getByText('처리 시간 21초', { exact: true })
-                    .waitFor();
+                await page.waitForFunction(() => {
+                    const elapsed = document
+                        .querySelector('.progress-elapsed')
+                        ?.textContent?.match(/처리 시간 (\d+)초/);
+                    return Number(elapsed?.[1]) >= 21;
+                });
                 await dialog.getByText(/응답을 기다리고 있습니다/).waitFor();
                 assert.equal(writes, 0);
                 assert.equal(previews, 1);

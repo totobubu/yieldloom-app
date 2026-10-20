@@ -13,6 +13,12 @@ try {
         isMobile: true,
         hasTouch: true,
     });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+        if (message.text().includes('Error captured'))
+            errors.push(message.text());
+    });
     await page.route('**/src/services/firebaseClient*', (route) =>
         route.fulfill({
             contentType: 'application/javascript',
@@ -26,6 +32,7 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
         const url = new URL(route.request().url());
         const family = {
             id: 'personal-owner',
+            name: '검증 가족',
             kind: 'personal',
             adminUid: 'owner',
             profiles: { self: { uid: 'owner', name: '본인' } },
@@ -43,6 +50,8 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
                               authorityUid: 'owner',
                               alias: '주식 계좌',
                               institution: '테스트증권',
+                              type: 'general',
+                              maskedNumber: '****1234',
                               permissions: { owner: 'owner' },
                               entriesRevision: 0,
                           },
@@ -124,7 +133,7 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
         () => !document.querySelector('.p-collapsible-enter-active')
     );
     const requestsAfterOpen = capitalRequests;
-    for (const width of [320, 360, 390, 430, 768, 1280]) {
+    for (const width of [320, 360, 390, 430, 767, 768, 1280]) {
         await page.setViewportSize({ width, height: 900 });
         for (const dark of [false, true]) {
             await page.evaluate(
@@ -144,6 +153,40 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
                 .locator('.capital-details .p-panel-content-wrapper')
                 .boundingBox();
             assert.ok(wrapper.width <= panel.width);
+            const menu = page.locator('.portfolio-tabs > .p-tablist');
+            if (width <= 767) {
+                await page.evaluate(() => window.scrollTo(0, 1000));
+                const header = await page
+                    .locator('.studio-header')
+                    .boundingBox();
+                const menuBounds = await menu.boundingBox();
+                assert.ok(
+                    Math.abs(menuBounds.y - header.y - header.height) < 1,
+                    'mobile tabs stay below the header while scrolling'
+                );
+                assert.equal(
+                    await menu.evaluate((el) =>
+                        el.contains(
+                            document.elementFromPoint(
+                                el.getBoundingClientRect().x + 20,
+                                el.getBoundingClientRect().y + 20
+                            )
+                        )
+                    ),
+                    true,
+                    'menu is not covered by content'
+                );
+                if (width === 390)
+                    await page.screenshot({
+                        path: `/tmp/portfolio-sticky-menu-${dark ? 'dark' : 'light'}.png`,
+                    });
+            } else {
+                assert.notEqual(
+                    await menu.evaluate((el) => getComputedStyle(el).position),
+                    'sticky',
+                    'desktop menu stays in normal flow'
+                );
+            }
             if (width <= 430) {
                 const table = capital.locator('.table-wrap');
                 assert.equal(
@@ -167,6 +210,15 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
         requestsAfterOpen,
         'resize/theme/reopen reuse loaded cash'
     );
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.getByRole('tab', { name: '가족 관리', exact: true }).click();
+    assert.equal(
+        await page
+            .getByRole('tab', { name: '가족 관리', exact: true })
+            .getAttribute('aria-selected'),
+        'true'
+    );
+    assert.deepEqual(errors, []);
     console.log(
         'PASS: mobile tabs, empty routing, expanded capital panel width, local table scrolling and cached reopen'
     );

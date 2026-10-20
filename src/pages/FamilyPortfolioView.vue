@@ -2512,6 +2512,7 @@
     .import-heading h2 {
         margin-bottom: 6px;
         font-size: 24px;
+        scroll-margin-top: var(--portfolio-scroll-offset, 90px);
     }
     .import-heading p {
         margin: 0;
@@ -2561,6 +2562,11 @@
         border-radius: 8px;
     }
     @media (max-width: 767px) {
+        .family-page {
+            --portfolio-scroll-offset: calc(
+                var(--studio-header-height, 61px) + 69px
+            );
+        }
         .import-heading {
             flex-direction: column;
             align-items: stretch;
@@ -2845,6 +2851,11 @@
             white-space: normal;
         }
         .portfolio-tabs :deep(.p-tablist) {
+            position: sticky;
+            top: var(--studio-header-height, 61px);
+            z-index: 20;
+            background: var(--app-bg);
+            border-bottom: 1px solid var(--app-border);
             overflow-x: auto;
             overscroll-behavior-inline: contain;
             scrollbar-width: thin;

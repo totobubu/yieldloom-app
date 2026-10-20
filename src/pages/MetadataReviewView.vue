@@ -462,8 +462,13 @@
         .queue {
             max-height: 300px;
         }
+    }
+    @media (max-width: 767px) {
         .metadata-review {
-            padding: 16px;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 0;
         }
     }
 </style>

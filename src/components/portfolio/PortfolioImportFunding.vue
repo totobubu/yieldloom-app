@@ -224,6 +224,9 @@
         color: var(--app-muted);
     }
     .funding-preview button {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
         border: 0;
         background: transparent;
         color: var(--app-accent);
@@ -231,6 +234,11 @@
         font: inherit;
         font-weight: 650;
         cursor: pointer;
+    }
+    .funding-preview button > i {
+        font-size: 0.9em;
+        line-height: 1;
+        flex-shrink: 0;
     }
     .funding-security strong,
     .funding-security span {

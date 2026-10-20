@@ -13,6 +13,14 @@ description: 현재 작업을 검증한 뒤 커밋·푸시·PR 생성 또는 재
 - 사용자가 커밋·푸시까지만 등 범위를 제한하면 그 지시를 우선한다. 배포를 명시하면 마지막 배포 확인 절도 수행한다.
 - 저장소의 AGENTS.md, README.md, 변경 영역의 지침을 읽는다. 시작할 때 이 스킬을 사용한다고 알리고, 대기 중에도 약 60초마다 진행 상황을 전한다.
 
+## 메시지·제목 언어
+
+- 새로 작성하는 커밋 제목·본문, PR 제목·본문, 병합 커밋 제목·본문은 기본적으로 한글로 작성한다. 사용자가 다른 언어나 정확한 문구를 지정하면 그 지시를 우선한다.
+- Conventional Commits의 `feat`, `fix`, `docs`, `chore` 같은 타입과 선택적 scope는 유지할 수 있으나, 콜론 뒤 변경 설명은 한글로 쓴다. 예: `docs: Firebase 호출 최소화 지침 추가`.
+- 파일 경로·명령·API 이름·제품명·식별자는 원문을 유지한다. 브랜치명은 기존 영문 명명 규칙을 사용할 수 있다.
+- 커밋 직전과 PR 생성·수정 직전에 제목·본문의 설명 문장이 한글인지 확인한다. 기존 커밋을 언어 통일만을 위해 amend·rebase하지 않으며, 재사용 PR은 이번 작업에서 직접 작성한 제목·본문에만 이 규칙을 적용한다.
+- 병합 시에도 자동 생성되는 영문 메시지 대신 한글 제목·본문을 명시한다. 제목은 PR 번호와 변경 목적을 담고, 본문은 최종 변경과 검증을 간결하게 설명한다. 여러 줄 본문은 임시 파일과 `--body-file`로 전달한다.
+
 ## 1. 대상과 현재 상태 확인
 
 ```bash
@@ -55,7 +63,7 @@ git diff --cached --check
 git diff --cached
 # staged diff 전체가 이번 요청에 속할 때만 커밋한다.
 if ! git diff --cached --quiet; then
-    git commit -m '<변경 목적을 설명하는 커밋 메시지>'
+    git commit -m 'docs: Firebase 호출 최소화 지침 추가'
 fi
 ```
 
@@ -79,7 +87,7 @@ gh pr list --repo "$base_repo" --head "$task_branch" --base "$base_branch" --sta
 pr_body_file=$(mktemp "${TMPDIR:-/tmp}/git-ship-pr.XXXXXXXX.md")
 trap 'rm -- "$pr_body_file"' EXIT
 # 이 파일에 검토한 본문을 작성한 뒤 실행한다. 고정 경로를 재사용하지 않는다.
-gh pr create --repo "$base_repo" --base "$base_branch" --head "$pr_head" --title '<최종 변경을 설명하는 제목>' --body-file "$pr_body_file"
+gh pr create --repo "$base_repo" --base "$base_branch" --head "$pr_head" --title '<최종 변경을 한글로 설명하는 제목>' --body-file "$pr_body_file"
 rm -- "$pr_body_file"
 trap - EXIT
 ```
@@ -100,7 +108,8 @@ gh pr checks "$pr_number" --repo "$base_repo" --watch --interval 15
 - 기본 병합 방식은 merge commit이다. 저장소에서 허용하지 않으면 허용된 squash/rebase 방식을 선택하고 선택 이유를 보고한다. `--admin`이나 브랜치 보호 우회는 사용하지 않는다.
 
 ```bash
-gh pr merge "$pr_number" --repo "$base_repo" --merge --match-head-commit "$reviewed_head"
+# 실제 PR 번호·변경 목적에 맞는 한글 제목과 본문을 작성한다.
+gh pr merge "$pr_number" --repo "$base_repo" --merge --match-head-commit "$reviewed_head" --subject '<PR 번호와 변경 목적을 담은 한글 병합 제목>' --body '<최종 변경과 검증을 설명하는 한글 본문>'
 gh pr view "$pr_number" --repo "$base_repo" --json state,mergedAt,mergeCommit,headRefOid
 ```
 

@@ -4,6 +4,7 @@
     import HoldingScenarioComparison from './HoldingScenarioComparison.vue';
     import MonthlyStatement from './MonthlyStatement.vue';
     import AdvancedPortfolioInsights from './AdvancedPortfolioInsights.vue';
+    import HoldingDividendCapitalChart from './HoldingDividendCapitalChart.vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
     import SelectButton from 'primevue/selectbutton';
@@ -327,6 +328,15 @@
                 :positions="selectedPositions"
                 :accounts="selectedAccounts"
                 :month="month"
+                :currency="selectedCurrency"
+                :today="today" />
+            <HoldingDividendCapitalChart
+                v-if="
+                    selectedAccounts.length &&
+                    ['USD', 'KRW'].includes(selectedCurrency)
+                "
+                :accounts="selectedAccounts"
+                :positions="selectedPositions"
                 :currency="selectedCurrency"
                 :today="today" />
             <MonthlyStatement

@@ -808,7 +808,21 @@
                                 ? 'true'
                                 : 'false',
                     }).forEach(([key, value]) => form.append(key, value));
-                    form.append('file', file);
+                    // Snapshot the bytes before fetch: mobile document providers can
+                    // revoke/change the selected file handle during body streaming.
+                    let bytes;
+                    try {
+                        bytes = await file.arrayBuffer();
+                    } catch {
+                        throw new Error(
+                            '선택한 파일을 읽을 수 없습니다. 휴대폰에 PDF를 다운로드한 뒤 파일을 다시 선택해 주세요.'
+                        );
+                    }
+                    form.append(
+                        'file',
+                        new Blob([bytes], { type: file.type }),
+                        file.name
+                    );
                     results.push({
                         ...(await familyRequest('preview', form)),
                         fileName: file.name,

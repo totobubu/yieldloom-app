@@ -99,6 +99,33 @@ try {
             mimeType: 'application/pdf',
             buffer: Buffer.from('%PDF-fixture'),
         });
+        // A document-provider read failure must be reported before any HTTP request.
+        await page.evaluate(() => {
+            window.originalFileArrayBuffer = File.prototype.arrayBuffer;
+            File.prototype.arrayBuffer = () =>
+                Promise.reject(
+                    new DOMException(
+                        'Fixture file unavailable',
+                        'NotReadableError'
+                    )
+                );
+        });
+        await button.click();
+        await page.waitForFunction(() =>
+            document.activeElement?.classList.contains('import-error')
+        );
+        assert.match(
+            await page.locator('.import-error').innerText(),
+            /파일을 읽을 수 없습니다/
+        );
+        assert.equal(previews, 0);
+        assert.equal(
+            await page.locator('.import-file-list .import-file').count(),
+            1
+        );
+        await page.evaluate(() => {
+            File.prototype.arrayBuffer = window.originalFileArrayBuffer;
+        });
         await button.click();
         await overlay.waitFor();
         assert.ok(
@@ -106,6 +133,7 @@ try {
             'User is below the global page error'
         );
         const request = pending.request().postData();
+        assert.match(request, /%PDF-fixture/);
         assert.match(request, /name="password"\r\n\r\n\r\n/); // Uses the configured password.
         await pending.fulfill({
             status: 400,

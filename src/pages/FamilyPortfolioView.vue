@@ -11,8 +11,8 @@
     import HoldingsChanges from '@/components/portfolio/HoldingsChanges.vue';
     import SnapshotHistory from '@/components/portfolio/SnapshotHistory.vue';
     import BrokerSpreadsheetForm from '@/components/portfolio/BrokerSpreadsheetForm.vue';
-    import TossPdfImportReview from '@/components/portfolio/TossPdfImportReview.vue';
     import StatementIdentityReview from '@/components/portfolio/StatementIdentityReview.vue';
+    import PortfolioImportReview from '@/components/portfolio/PortfolioImportReview.vue';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { portfolioMappingRequest } from '@/services/portfolioMappings.js';
     import {
@@ -30,7 +30,7 @@
     import Card from 'primevue/card';
     import Panel from 'primevue/panel';
     import InputText from 'primevue/inputtext';
-    import FileUpload from 'primevue/fileupload';
+    import PortfolioFileImportForm from '@/components/portfolio/PortfolioFileImportForm.vue';
     import Select from 'primevue/select';
     import SelectButton from 'primevue/selectbutton';
     import Message from 'primevue/message';
@@ -135,8 +135,7 @@
         kind = ref('transactions'),
         asOf = ref(''),
         format = ref('standard-csv');
-    const rememberPassword = ref(true),
-        reviewPage = ref(0);
+    const rememberPassword = ref(true);
     watch(format, () => {
         review.value = null;
         confirmed.value = false;
@@ -154,12 +153,6 @@
         review.value = null;
         importReceipt.value = null;
     });
-    const visibleReviewRows = computed(() =>
-        (review.value?.rows || []).slice(
-            reviewPage.value * 200,
-            (reviewPage.value + 1) * 200
-        )
-    );
     function updateReviewRow({ index, field, value }) {
         if (!review.value?.rows[index]) return;
         review.value.rows[index][field] = value;
@@ -350,6 +343,18 @@
     watch(review, () => {
         statementConfirmed.value = false;
     });
+    function resetFileInput() {
+        fileUpload.value?.clear();
+        selectedFiles.value = [];
+        password.value = '';
+        confirmed.value = false;
+        rememberPassword.value = true;
+        asOf.value = '';
+        review.value = null;
+        importReceipt.value = null;
+        error.value = '';
+        message.value = '';
+    }
     function selectImportFiles(event) {
         confirmed.value = false;
         review.value = null;
@@ -686,7 +691,6 @@
         nextCursor.value = null;
         password.value = '';
         rememberPassword.value = true;
-        reviewPage.value = 0;
     });
     async function createFamily() {
         await run(async () => {
@@ -845,7 +849,6 @@
                 };
             if (format.value === 'toss-pdf' && result.asOf)
                 asOf.value = result.asOf;
-            reviewPage.value = 0;
             password.value = '';
             selectedFiles.value = [];
             fileUpload.value?.clear();
@@ -877,7 +880,6 @@
                     asOf: body.asOf,
                     accountAlias: a.alias,
                 };
-                reviewPage.value = 0;
             }
         });
     }
@@ -903,7 +905,6 @@
                     asOf: importAsOf,
                     accountAlias: a.alias,
                 };
-                reviewPage.value = 0;
             }
         });
     }
@@ -2130,22 +2131,44 @@
                         >편집 가능한 계좌를 먼저 선택해 주세요. 계좌 관리에서
                         계좌를 등록하거나 변경할 수 있습니다.</Message
                     >
-                    <section
+                    <div
                         v-if="
                             activeAccount &&
                             editableAccounts.some(
                                 (a) => a.id === selectedAccount
                             )
-                        ">
-                        <h2>자료 입력·저장 전 검토</h2>
+                        "
+                        class="import-workspace">
+                        <div v-if="!review" class="import-heading">
+                            <div>
+                                <h2>자료 입력 · 저장 전 검토</h2>
+                                <p>
+                                    거래내역과 잔고 파일을 불러오고,
+                                    포트폴리오에 저장하기 전 내용을 확인하세요.
+                                </p>
+                            </div>
+                            <div class="import-account">
+                                <i class="pi pi-wallet" aria-hidden="true" />
+                                <div>
+                                    <small>대상 계좌</small
+                                    ><strong
+                                        >{{ activeAccount.institution }} ·
+                                        {{ activeAccount.alias }}
+                                        {{ activeAccount.maskedNumber }}</strong
+                                    >
+                                </div>
+                            </div>
+                        </div>
                         <SelectButton
+                            v-if="!review"
                             v-model="inputMethod"
                             :options="inputMethodOptions"
                             option-label="label"
                             option-value="value"
                             :allow-empty="false"
                             :disabled="busy"
-                            aria-label="자료 입력 방법" />
+                            aria-label="자료 입력 방법"
+                            class="import-methods" />
                         <ManualHoldingsForm
                             v-if="inputMethod === 'manual' && !review"
                             :key="`${ownUid}:${familyId}:${selectedAccount}`"
@@ -2164,308 +2187,87 @@
                             :account="activeAccount"
                             :busy="busy"
                             @preview="previewBroker" />
-                        <p v-if="inputMethod === 'file'">
-                            표준 UTF-8 CSV·XLSX(200행)와 토스 거래내역
-                            PDF(10,000행)를 지원합니다. 파일은 2MB 이하이며
-                            PDF는 200행씩 나누어 저장합니다. 잔고 CSV는 기준일의
-                            전체 보유 종목을 넣으세요. 새 잔고는 해당 계좌의
-                            이전 잔고를 대체합니다.
-                        </p>
-                        <details v-if="inputMethod === 'file'">
-                            <summary>CSV 양식과 거래 유형</summary>
-                            <p>
-                                잔고 amount는 기준일 평가액이며 모르면
-                                비워둡니다. 거래 amount는 거래 금액입니다. 현금
-                                종목은 CASH를 사용하세요. 거래 고유번호
-                                externalId는 같은 계좌에서 재업로드·조회기간
-                                변경에도 같아야 합니다. 매수 자금 배분에는
-                                수수료 포함 정산액이 필요합니다. CSV에
-                                nativeSettlementAmount(USD) 또는
-                                settlementAmount(KRW)를 추가할 수 있습니다. 현금
-                                CASH 행의 cashKind가 exchange이면 계좌 내 환전
-                                후보로 분류합니다.
-                            </p>
-                            <pre>
-date,symbol,quantity,amount,currency,type,externalId
-2026-10-15,AAPL,2,500,USD,buy,broker-trade-001</pre
-                            >
-                            <p>
-                                거래 유형: buy, sell, dividend,
-                                dividend_reversal, cash_in, cash_out,
-                                transfer_in, transfer_out, split. 잔고는
-                                type,externalId 열이 필요 없습니다.
-                            </p>
-                        </details>
-                        <form
-                            v-if="inputMethod === 'file' && !review"
-                            @submit.prevent="preview">
-                            <label
-                                >자료 종류
-                                <Select
-                                    v-model="kind"
-                                    :options="kindOptions"
-                                    option-label="label"
-                                    option-value="value"
-                                    aria-label="자료 종류"
-                                    placeholder="선택" /></label
-                            ><label
-                                >파일 형식
-                                <Select
-                                    v-model="format"
-                                    :options="formatOptions"
-                                    option-label="label"
-                                    option-value="value"
-                                    aria-label="파일 형식"
-                                    placeholder="선택" /></label
-                            ><label v-if="format !== 'toss-pdf'"
-                                >{{
-                                    kind === 'transactions'
-                                        ? '조회 종료일'
-                                        : '잔고 기준일'
-                                }}
-                                <InputText
-                                    v-model="asOf"
-                                    type="date"
-                                    required />
-                                <small v-if="kind === 'transactions'"
-                                    >거래내역서 조회 기간의 마지막
-                                    날입니다.</small
-                                ></label
-                            >
-                            <p v-else class="studio-muted">
-                                조회 종료일은 PDF에서 추출된 마지막 거래일로
-                                자동 입력됩니다.
-                            </p>
-                            <div class="file-upload-field">
-                                <span>파일</span>
-                                <FileUpload
-                                    ref="fileUpload"
-                                    mode="basic"
-                                    name="portfolioFile"
-                                    choose-label="파일 선택"
-                                    :pt="{ input: { 'aria-label': '파일' } }"
-                                    :multiple="format === 'toss-pdf'"
-                                    :file-limit="format === 'toss-pdf' ? 20 : 1"
-                                    :max-file-size="2097152"
-                                    :accept="
-                                        format === 'toss-pdf'
-                                            ? '.pdf,application/pdf'
-                                            : format === 'standard-xlsx'
-                                              ? '.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                                              : '.csv,text/csv'
-                                    "
-                                    custom-upload
-                                    @select="selectImportFiles"
-                                    @clear="selectedFiles = []" />
-                                <ul
-                                    v-if="selectedFiles.length"
-                                    class="selected-files">
-                                    <li
-                                        v-for="file in selectedFiles"
-                                        :key="`${file.name}:${file.size}:${file.lastModified}`">
-                                        {{ file.name }}
-                                    </li>
-                                </ul>
-                            </div>
-                            <label v-if="format === 'toss-pdf'"
-                                >PDF 비밀번호
-                                <InputText
-                                    v-model="password"
-                                    type="password"
-                                    autocomplete="off"
-                                    :placeholder="
-                                        activeAccount.pdfPasswordConfigured
-                                            ? '저장된 비밀번호 사용 · 변경할 때만 입력'
-                                            : '생년월일 6자리'
-                                    " /></label
-                            ><label
-                                v-if="
-                                    format === 'toss-pdf' &&
-                                    activeAccount.permissions?.[ownUid] ===
-                                        'owner'
-                                ">
-                                <input
-                                    v-model="rememberPassword"
-                                    type="checkbox" />
-                                이 계좌의 기본 비밀번호로 암호화 저장
-                            </label>
-                            <p
-                                v-if="
-                                    format === 'toss-pdf' &&
-                                    activeAccount.pdfPasswordConfigured
-                                ">
-                                계좌 기본 비밀번호가 암호화 저장되어 있습니다.
-                                입력란을 비우면 자동 사용합니다.
-                                <Button
-                                    v-if="
-                                        activeAccount.permissions?.[ownUid] ===
-                                        'owner'
-                                    "
-                                    type="button"
-                                    :disabled="busy"
-                                    @click="removePdfPassword">
-                                    저장된 비밀번호 삭제
-                                </Button>
-                            </p>
-                            <label
-                                v-if="
-                                    format !== 'toss-pdf' &&
-                                    selectedFiles.length
-                                "
-                                ><input
-                                    v-model="confirmed"
-                                    type="checkbox"
-                                    required />
-                                {{ ownerName(activeAccount.ownerId) }} ·
-                                {{ activeAccount.institution }} ·
-                                {{ activeAccount.alias }} ·
-                                {{ activeAccount.maskedNumber }}의 자료임을
-                                확인했습니다. 파일에서 확실히 확인할 수 없으면
-                                저장하지 않습니다.</label
-                            ><Button type="submit" :disabled="busy"
-                                >추출·미리보기</Button
-                            >
-                        </form>
-                        <template v-if="review"
-                            ><h3>검토 · {{ review.source }}</h3>
-                            <StatementIdentityReview
-                                v-if="review.source === 'toss-pdf'"
-                                v-model:confirmed="statementConfirmed"
-                                :files="review.statementFiles"
-                                :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.maskedNumber}`"
-                                :blocked="statementBlocked"
-                                :busy="busy" />
-                            <template
-                                v-if="review.source === 'manual-holdings-v1'">
-                                <Message severity="warn" :closable="false">
-                                    기준일 {{ review.asOf }} ·
-                                    {{ review.rows.length }}행의 전체 잔고로
-                                    대체합니다. 빠진 종목은 새 잔고에서
-                                    제외됩니다. 기존 거래는 유지됩니다.
-                                </Message>
-                                <p v-if="review.correction">
-                                    같은 기준일 정정 · 사유:
-                                    {{ review.correctionReason }}. 변경 전후
-                                    자료를 이력에 보관합니다.
-                                </p>
-                                <HoldingsChanges
-                                    :before="activeAccount.snapshot?.rows || []"
-                                    :after="review.rows" />
-                                <Button
-                                    type="button"
-                                    label="수동 입력 다시 작성"
-                                    severity="secondary"
-                                    :disabled="busy"
-                                    @click="review = null" />
+                        <PortfolioFileImportForm
+                            v-if="inputMethod === 'file'"
+                            v-show="!review"
+                            ref="fileUpload"
+                            v-model:kind="kind"
+                            v-model:format="format"
+                            v-model:as-of="asOf"
+                            v-model:password="password"
+                            v-model:remember-password="rememberPassword"
+                            v-model:confirmed="confirmed"
+                            :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias} · ${activeAccount.maskedNumber}`"
+                            :password-configured="
+                                activeAccount.pdfPasswordConfigured
+                            "
+                            :is-owner="
+                                activeAccount.permissions?.[ownUid] === 'owner'
+                            "
+                            :busy="busy"
+                            :reviewing="!!review"
+                            :kind-options="kindOptions"
+                            :format-options="formatOptions"
+                            :selected-files="selectedFiles"
+                            @select="selectImportFiles"
+                            @clear="selectedFiles = []"
+                            @preview="preview"
+                            @remove-password="removePdfPassword"
+                            @reset="resetFileInput" />
+                        <PortfolioImportReview
+                            v-if="review"
+                            :key="review.reviewId"
+                            :review="review"
+                            :save-disabled="
+                                statementBlocked ||
+                                (review.source === 'toss-pdf' &&
+                                    !statementConfirmed)
+                            "
+                            :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.alias} · ${activeAccount.maskedNumber}`"
+                            :busy="busy"
+                            @update-row="updateReviewRow"
+                            @commit="commit"
+                            @cancel="review = null">
+                            <template #identity-review>
+                                <StatementIdentityReview
+                                    v-if="review.source === 'toss-pdf'"
+                                    v-model:confirmed="statementConfirmed"
+                                    :files="review.statementFiles"
+                                    :account-label="`${ownerName(activeAccount.ownerId)} · ${activeAccount.institution} · ${activeAccount.maskedNumber}`"
+                                    :blocked="statementBlocked"
+                                    :busy="busy" />
                             </template>
-                            <p>
-                                표의 오류를 수정한 뒤 전체 행을 저장합니다.
-                                오류가 남으면 저장되지 않습니다. 검토는 1시간
-                                유효합니다.
-                            </p>
-                            <TossPdfImportReview
-                                v-if="review.source === 'toss-pdf'"
-                                :rows="review.rows"
-                                :errors="review.errors"
-                                :mapping-warning="review.mappingWarning"
-                                @update-row="updateReviewRow" />
-                            <p
-                                v-if="
-                                    review.source !== 'toss-pdf' &&
-                                    review.rows.length > 200
-                                ">
-                                전체 {{ review.rows.length }}행 ·
-                                {{ reviewPage + 1 }}/{{
-                                    Math.ceil(review.rows.length / 200)
-                                }}쪽
-                                <Button
-                                    type="submit"
-                                    :disabled="busy || reviewPage === 0"
-                                    @click="reviewPage--">
-                                    이전
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    :disabled="
-                                        busy ||
-                                        (reviewPage + 1) * 200 >=
-                                            review.rows.length
-                                    "
-                                    @click="reviewPage++">
-                                    다음
-                                </Button>
-                            </p>
-                            <ul class="error">
-                                <li v-for="(e, i) in review.errors" :key="i">
-                                    행 {{ e.row }}: {{ e.error }}
-                                </li>
-                            </ul>
-                            <div
-                                v-if="review.source !== 'toss-pdf'"
-                                class="scroll">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>행</th>
-                                            <th
-                                                v-for="col in [
-                                                    'date',
-                                                    'symbol',
-                                                    'quantity',
-                                                    'amount',
-                                                    'currency',
-                                                    'type',
-                                                ]"
-                                                :key="col">
-                                                {{ col }}
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr
-                                            v-for="(
-                                                row, i
-                                            ) in visibleReviewRows"
-                                            :key="reviewPage * 200 + i">
-                                            <td>
-                                                {{ reviewPage * 200 + i + 1 }}
-                                            </td>
-                                            <td
-                                                v-for="col in [
-                                                    'date',
-                                                    'symbol',
-                                                    'quantity',
-                                                    'amount',
-                                                    'currency',
-                                                    'type',
-                                                ]"
-                                                :key="col">
-                                                <InputText
-                                                    v-model="row[col]"
-                                                    :aria-label="`${i + 1}행 ${col}`" />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <Button
-                                type="submit"
-                                :disabled="
-                                    busy ||
-                                    statementBlocked ||
-                                    (review.source === 'toss-pdf' &&
-                                        !statementConfirmed)
-                                "
-                                @click="commit">
-                                수정 내용 검증·저장</Button
-                            ><Button
-                                type="submit"
-                                :disabled="busy"
-                                @click="review = null">
-                                취소
-                            </Button></template
-                        >
-                    </section> </TabPanel
+                            <template #holdings-warning>
+                                <div
+                                    v-if="
+                                        review.source === 'manual-holdings-v1'
+                                    ">
+                                    <Message severity="warn" :closable="false">
+                                        기준일 {{ review.asOf }} ·
+                                        {{ review.rows.length }}행의 전체 잔고로
+                                        대체합니다. 빠진 종목은 새 잔고에서
+                                        제외됩니다. 기존 거래는 유지됩니다.
+                                    </Message>
+                                    <p v-if="review.correction">
+                                        같은 기준일 정정 · 사유:
+                                        {{ review.correctionReason }}. 변경 전후
+                                        자료를 이력에 보관합니다.
+                                    </p>
+                                    <HoldingsChanges
+                                        :before="
+                                            activeAccount.snapshot?.rows || []
+                                        "
+                                        :after="review.rows" />
+                                    <Button
+                                        type="button"
+                                        label="수동 입력 다시 작성"
+                                        severity="secondary"
+                                        :disabled="busy"
+                                        @click="review = null" />
+                                </div>
+                            </template>
+                        </PortfolioImportReview>
+                    </div> </TabPanel
                 ><TabPanel value="family">
                     <div class="family-options">
                         <Message severity="info" :closable="false"
@@ -2614,6 +2416,83 @@ date,symbol,quantity,amount,currency,type,externalId
 </template>
 
 <style scoped>
+    .import-workspace {
+        min-width: 0;
+    }
+    .import-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+    .import-heading h2 {
+        margin-bottom: 6px;
+        font-size: 24px;
+    }
+    .import-heading p {
+        margin: 0;
+    }
+    .import-account {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        max-width: 340px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 7%,
+            var(--app-surface)
+        );
+    }
+    .import-account i {
+        color: var(--app-accent);
+    }
+    .import-account small {
+        display: block;
+        color: var(--app-muted);
+        font-size: 11px;
+    }
+    .import-account strong {
+        display: block;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
+    .import-methods {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        max-width: 100%;
+        margin-bottom: 24px;
+        padding: 6px;
+        border-radius: 12px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 5%,
+            var(--app-surface)
+        );
+    }
+    .import-methods :deep(.p-togglebutton) {
+        border: 0;
+        border-radius: 8px;
+    }
+    @media (max-width: 767px) {
+        .import-heading {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .import-account {
+            max-width: none;
+        }
+        .import-methods {
+            display: flex;
+        }
+        .import-methods :deep(.p-togglebutton) {
+            flex: 1 1 auto;
+        }
+    }
+
     .entry-mutation-form {
         display: grid;
         gap: 0.9rem;

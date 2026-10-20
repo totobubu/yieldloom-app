@@ -76,6 +76,7 @@ jobs:
                   FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/manual-holdings.browser.mjs
                   FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/broker-spreadsheet.browser.mjs
                   node tests/portfolio-enhancements.browser.mjs
+                  node tests/portfolio-import-review.browser.mjs
             - uses: actions/upload-artifact@v4
               if: failure()
               with:

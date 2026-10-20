@@ -39,7 +39,7 @@ try {
     await page.waitForFunction(() =>
         [...document.querySelectorAll('[role="tab"]')].some(
             (tab) =>
-                tab.textContent?.includes('계좌 관리') &&
+                tab.textContent?.includes('자산관리') &&
                 tab.getAttribute('aria-selected') === 'true'
         )
     );

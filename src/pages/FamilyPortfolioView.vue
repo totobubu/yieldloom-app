@@ -30,6 +30,7 @@
     } from '@/services/tossImportReview.js';
     import { useRoute, useRouter } from 'vue-router';
     import PortfolioDividendCalendar from '@/components/portfolio/PortfolioDividendCalendar.vue';
+    import DividendAlerts from '@/components/portfolio/DividendAlerts.vue';
     import PortfolioValuation from '@/components/portfolio/PortfolioValuation.vue';
     import PortfolioInsights from '@/components/portfolio/PortfolioInsights.vue';
     import Button from 'primevue/button';
@@ -55,7 +56,13 @@
 
     const router = useRouter();
     const route = useRoute();
-    const portfolioTabs = ['overview', 'calendar', 'insights', 'assets'];
+    const portfolioTabs = [
+        'overview',
+        'calendar',
+        'insights',
+        'assets',
+        'settings',
+    ];
     const portfolioTab = computed({
         get: () =>
             portfolioTabs.includes(route.query.tab)
@@ -1273,7 +1280,8 @@
                 ><Tab value="overview">한눈에 보기</Tab
                 ><Tab value="calendar">배당 캘린더</Tab
                 ><Tab value="insights">배당 분석</Tab
-                ><Tab value="assets">자산관리</Tab></TabList
+                ><Tab value="assets">자산관리</Tab
+                ><Tab value="settings">설정</Tab></TabList
             ><TabPanels
                 ><TabPanel value="overview"
                     ><div
@@ -2008,7 +2016,12 @@
                                     @close="fundingDialog = false" />
                             </template>
                         </Dialog>
-                    </template> </TabPanel></TabPanels
+                    </template> </TabPanel
+                ><TabPanel value="settings">
+                    <DividendAlerts
+                        v-if="portfolioTab === 'settings'"
+                        :key="`alert-settings:${ownUid}`"
+                        :show-upcoming="false" /> </TabPanel></TabPanels
         ></Tabs>
         <AssetMemberDialog
             v-model:visible="memberDialog"

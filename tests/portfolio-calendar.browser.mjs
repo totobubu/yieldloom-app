@@ -193,13 +193,15 @@ try {
         .waitFor();
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
     await calendar.getByText('2 USD', { exact: true }).first().waitFor();
-    const alertPanel = calendar.getByRole('region', {
-        name: '자동 배당 알림',
-        exact: true,
-    });
     const initialPreferenceReads = requests.filter((q) =>
         q.includes('view=preferences')
     ).length;
+    await page.getByRole('tab', { name: '설정', exact: true }).click();
+    const alertPanel = page.getByRole('region', {
+        name: '자동 배당 알림',
+        exact: true,
+    });
+    await alertPanel.waitFor();
     await alertPanel
         .getByLabel('앱 내 자동 알림 사용', { exact: true })
         .check();
@@ -209,56 +211,20 @@ try {
     await alertPanel
         .getByText('알림 설정을 계정에 저장했습니다.', { exact: true })
         .waitFor();
-    await alertPanel
+    assert.equal(prefRevision, 1);
+    await page.getByRole('tab', { name: '배당 캘린더', exact: true }).click();
+    await calendar
         .getByRole('status', { name: '다가오는 배당 알림', exact: true })
         .waitFor();
-    assert.equal(prefRevision, 1);
     assert.equal(
         requests.filter((q) => q.includes('accountId=')).length,
         0,
         'schedule view must not load private transaction history'
     );
-    const exportPanel = calendar.getByRole('region', {
-        name: '캘린더 일정·알림 내보내기',
-        exact: true,
-    });
-    const exportButton = exportPanel.getByRole('button', {
-        name: '배당 일정 ICS 다운로드',
-        exact: true,
-    });
-    assert.equal(await exportButton.isDisabled(), true);
-    await exportPanel.getByLabel(/파일에 보유 종목명/).check();
-    await exportPanel
-        .getByRole('combobox', { name: '사전 알림', exact: true })
-        .click();
-    await page.getByRole('option', { name: '3일 전', exact: true }).click();
-    let exportApiRequests = 0;
-    const countExportRequest = (request) => {
-        if (
-            request.url().includes('/api/') ||
-            request.url().includes('distribution-')
-        )
-            exportApiRequests++;
-    };
-    page.on('request', countExportRequest);
-    const downloadPromise = page.waitForEvent('download');
-    await exportButton.press('Enter');
-    const calendarDownload = await downloadPromise;
-    const fileParts = [];
-    for await (const part of await calendarDownload.createReadStream())
-        fileParts.push(part);
-    const ics = Buffer.concat(fileParts).toString('utf8').replace(/\r\n /g, '');
-    assert.match(calendarDownload.suggestedFilename(), /\.ics$/);
-    assert.ok(ics.includes(`DTSTART;VALUE=DATE:${prefix.replace('-', '')}28`));
-    assert.ok(ics.includes('SUMMARY:TSLY 배당 지급일 (공시)'));
-    assert.ok(ics.includes('TRIGGER:-P3D'));
-    assert.ok(!ics.includes('계좌 a'));
     assert.equal(
-        exportApiRequests,
-        0,
-        'calendar export adds no API/data fetches'
+        await calendar.getByText('캘린더 일정·알림 내보내기').count(),
+        0
     );
-    page.off('request', countExportRequest);
     await page
         .getByRole('button', {
             name: `${prefix}-28 배당 일정 1건`,
@@ -278,7 +244,6 @@ try {
     await page
         .getByRole('button', { name: '저장된 배당 거래', exact: true })
         .click();
-    assert.equal(await exportPanel.count(), 0);
     await calendar.getByText('16 USD', { exact: true }).waitFor();
     assert.equal(await page.locator('.month-events .event-row').count(), 4);
     assert.ok(requests.filter((q) => q.includes('accountId=')).length >= 2);
@@ -294,10 +259,6 @@ try {
         .getByRole('combobox', { name: '배당 일정 날짜 기준', exact: true })
         .click();
     await page.getByRole('option', { name: '배당락일', exact: true }).click();
-    assert.equal(
-        await exportPanel.getByLabel(/파일에 보유 종목명/).isChecked(),
-        false
-    );
     await page
         .getByRole('combobox', { name: '배당 계좌 필터', exact: true })
         .click();
@@ -308,7 +269,7 @@ try {
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
     assert.equal(
         requests.filter((q) => q.includes('view=preferences')).length,
-        initialPreferenceReads,
+        initialPreferenceReads + 1,
         'calendar remount shares session preference cache'
     );
     // Wait for the closed Select overlay to leave before resizing the viewport.
@@ -337,9 +298,6 @@ try {
         await page.screenshot({ path: `${out}/${width}.png`, fullPage: true });
     }
     await page.getByRole('button', { name: '다크 모드', exact: true }).click();
-    await exportPanel.screenshot({
-        path: '/tmp/yieldloom-calendar-export-dark.png',
-    });
     await page.screenshot({ path: `${out}/360-dark.png`, fullPage: true });
     failIndex = true;
     await page

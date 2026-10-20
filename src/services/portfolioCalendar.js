@@ -44,7 +44,7 @@ export function monthDays(month) {
 export function portfolioScheduleRows(
     positions,
     schedules,
-    { basis = 'payable', today = calendarToday() } = {}
+    { basis = 'payable', today = calendarToday(), entries = [] } = {}
 ) {
     const rows = [],
         undated = [];
@@ -71,16 +71,18 @@ export function portfolioScheduleRows(
                     currency = /^[A-Z]{3}$/.test(event.currency || '')
                         ? event.currency
                         : null;
+                const historical = historicalDividendQuantity(
+                    position,
+                    event,
+                    entries
+                );
                 const eligible =
                     state === 'announced' &&
                     validCalendarDate(event.exDate) &&
-                    event.exDate >= today &&
-                    validCalendarDate(position.asOf) &&
-                    position.asOf <= today &&
-                    position.asOf <= event.exDate &&
                     amount !== null &&
                     amount >= 0 &&
-                    currency;
+                    currency &&
+                    historical.quantity !== null;
                 rows.push({
                     id: `${position.accountId}:${position.symbol}:${position.currency}:${state}:${event.id ?? event.exDate}`,
                     accountId: position.accountId,
@@ -89,10 +91,14 @@ export function portfolioScheduleRows(
                     exDate: event.exDate,
                     payableDate: event.payableDate,
                     currency,
-                    amount: eligible ? amount * position.quantity : null,
+                    amount: eligible
+                        ? (historical.receivedAmount ??
+                          amount * historical.quantity)
+                        : null,
                     perShare: amount,
-                    quantity: position.quantity,
-                    quantityAsOf: position.asOf,
+                    quantity: historical.quantity ?? position.quantity,
+                    quantityAsOf: historical.quantityAsOf || position.asOf,
+                    amountBasis: historical.basis,
                     status: state,
                     sourceUrl: /^https?:\/\//.test(event.officialUrl || '')
                         ? event.officialUrl
@@ -100,11 +106,13 @@ export function portfolioScheduleRows(
                     notice:
                         state === 'review'
                             ? '공시 대조가 필요한 일정'
-                            : event.exDate < today
-                              ? '과거 배당락일의 보유 여부를 확인할 수 없습니다.'
-                              : !eligible
-                                ? '수량 기준일·배당금·통화를 확인해야 합니다.'
-                                : '자료 기준 수량 × 공시 주당 배당금 · 세전 예상, 지급 자격 미확인',
+                            : !eligible
+                              ? '수량 기준일·배당금·통화를 확인해야 합니다.'
+                              : historical.basis === 'received'
+                                ? '저장된 실제 배당 입금액과 공시 주당 배당금으로 역산했습니다.'
+                                : historical.basis === 'ledger'
+                                  ? '현재 잔고에서 배당락일 이후 매수·매도를 되돌려 계산한 세전 참고액입니다.'
+                                  : '자료 기준 수량 × 공시 주당 배당금 · 세전 예상, 지급 자격 미확인',
                 });
             }
         }
@@ -132,6 +140,91 @@ export function portfolioScheduleRows(
         ),
         undated,
     };
+}
+
+const compactDate = (value) => String(value ?? '').replace(/\D/g, '');
+const entryRow = (entry) => entry?.row || entry || {};
+const dateMillis = (value) => {
+    const compact = compactDate(value);
+    return compact.length === 8
+        ? Date.parse(
+              `${compact.slice(0, 4)}-${compact.slice(4, 6)}-${compact.slice(6)}T00:00:00Z`
+          )
+        : NaN;
+};
+
+/** Resolve the shares entitled immediately before the ex-date. */
+export function historicalDividendQuantity(position, event, entries = []) {
+    const exDate = event?.exDate;
+    if (!validCalendarDate(exDate))
+        return { quantity: null, quantityAsOf: null, basis: null };
+    const ex = compactDate(exDate),
+        accountEntries = entries.filter(
+            (entry) =>
+                entry.accountId === position.accountId &&
+                entryRow(entry).symbol === position.symbol
+        ),
+        received = accountEntries
+            .map((entry) => entryRow(entry))
+            .filter((row) => row.type === 'dividend')
+            .map((row) => {
+                const date = compactDate(row.date),
+                    paid =
+                        /^[A-Z]{3}$/.test(event.currency || '') &&
+                        event.currency === 'USD'
+                            ? (finite(row.nativeAmount) ?? finite(row.amount))
+                            : finite(row.amount);
+                return {
+                    date,
+                    amount: paid === null ? null : Math.abs(paid),
+                    distance: Math.abs(
+                        dateMillis(row.date) - dateMillis(event.payableDate)
+                    ),
+                };
+            })
+            .filter(
+                (item) =>
+                    item.date >= ex &&
+                    item.amount !== null &&
+                    Number.isFinite(item.distance) &&
+                    item.distance <= 3 * 86400000
+            )
+            .sort((a, b) => a.distance - b.distance)[0];
+    const perShare = finite(event.amount);
+    if (received && perShare > 0)
+        return {
+            quantity: Number((received.amount / perShare).toFixed(12)),
+            quantityAsOf: received.date.replace(
+                /^(\d{4})(\d{2})(\d{2})$/,
+                '$1-$2-$3'
+            ),
+            receivedAmount: received.amount,
+            basis: 'received',
+        };
+    if (!validCalendarDate(position?.asOf))
+        return { quantity: null, quantityAsOf: null, basis: null };
+    const asOf = compactDate(position.asOf);
+    let quantity = finite(position.quantity);
+    if (quantity === null)
+        return { quantity: null, quantityAsOf: null, basis: null };
+    for (const entry of accountEntries) {
+        const row = entryRow(entry),
+            date = compactDate(row.date),
+            traded = finite(row.quantity);
+        if (!(traded > 0) || !['buy', 'sell'].includes(row.type)) continue;
+        const direction = row.type === 'buy' ? 1 : -1;
+        if (ex <= asOf && date >= ex && date <= asOf)
+            quantity -= direction * traded;
+        else if (ex > asOf && date > asOf && date < ex)
+            quantity += direction * traded;
+    }
+    return quantity >= 0
+        ? {
+              quantity,
+              quantityAsOf: exDate,
+              basis: exDate < position.asOf ? 'ledger' : 'snapshot',
+          }
+        : { quantity: null, quantityAsOf: null, basis: null };
 }
 export function recordedDividendRows(entries) {
     return entries

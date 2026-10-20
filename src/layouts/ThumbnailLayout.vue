@@ -475,6 +475,9 @@
         .studio-brand {
             font-size: 13px;
         }
+        .brand-secondary {
+            display: none;
+        }
         .header-inner {
             padding-inline: 12px;
         }

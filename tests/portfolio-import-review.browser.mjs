@@ -166,13 +166,20 @@ try {
         return route.continue();
     });
     await page.goto(base + '/mypage');
+    await page.waitForFunction(() =>
+        [...document.querySelectorAll('[role="tab"]')].some(
+            (tab) =>
+                tab.textContent?.includes('자산관리') &&
+                tab.getAttribute('aria-selected') === 'true'
+        )
+    );
+    await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).fill('토스증권');
     await page.getByLabel('별칭', { exact: true }).fill('검토 테스트');
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();
     await page
         .getByRole('heading', { name: '선택 계좌: 검토 테스트' })
         .waitFor();
-    await page.getByRole('tab', { name: '자료 업로드', exact: true }).click();
     await page
         .getByRole('combobox', { name: '파일 형식', exact: true })
         .click();
@@ -413,12 +420,26 @@ try {
                     document.documentElement.classList.toggle('p-dark', value),
                 dark
             );
+            const pageOverflow = await page.evaluate(() => ({
+                documentWidth: document.documentElement.scrollWidth,
+                viewportWidth: innerWidth,
+                offenders: [...document.querySelectorAll('body *')]
+                    .filter((element) => {
+                        const rect = element.getBoundingClientRect();
+                        return rect.right > innerWidth + 1 || rect.left < -1;
+                    })
+                    .slice(0, 5)
+                    .map((element) => ({
+                        tag: element.tagName,
+                        className: String(element.className),
+                        text: element.textContent?.trim().slice(0, 60),
+                        rect: element.getBoundingClientRect().toJSON(),
+                    })),
+            }));
             assert.equal(
-                await page.evaluate(
-                    () => document.documentElement.scrollWidth > innerWidth
-                ),
+                pageOverflow.documentWidth > pageOverflow.viewportWidth,
                 false,
-                `${width}px ${dark ? 'dark' : 'light'}: no page overflow`
+                `${width}px ${dark ? 'dark' : 'light'}: no page overflow ${JSON.stringify(pageOverflow)}`
             );
             const metricOverflow = await review
                 .locator('.review-metrics')

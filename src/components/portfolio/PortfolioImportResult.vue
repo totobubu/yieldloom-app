@@ -119,7 +119,7 @@
     .import-result {
         margin-bottom: 1.5rem;
         border: 1px solid var(--p-green-300);
-        scroll-margin-top: 90px;
+        scroll-margin-top: var(--portfolio-scroll-offset, 90px);
     }
     .result-step {
         margin: 0 0 16px;

@@ -241,6 +241,9 @@
 </template>
 
 <style scoped>
+    .studio-shell {
+        --studio-header-height: 73px;
+    }
     .studio-header {
         position: sticky;
         top: 0;
@@ -250,7 +253,7 @@
     }
     .header-inner {
         max-width: 1344px;
-        height: 72px;
+        height: calc(var(--studio-header-height) - 1px);
         padding: 0 32px;
         margin: auto;
         display: flex;
@@ -388,8 +391,10 @@
         }
     }
     @media (max-width: 767px) {
+        .studio-shell {
+            --studio-header-height: 61px;
+        }
         .header-inner {
-            height: 60px;
             padding: 0 16px;
             gap: 8px;
         }

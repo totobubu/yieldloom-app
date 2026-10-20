@@ -96,6 +96,10 @@
                     <router-link class="guide-link" to="/legal"
                         >이용 안내</router-link
                     >
+                    <div
+                        v-if="inPortfolio"
+                        id="portfolio-header-actions"
+                        class="portfolio-header-actions" />
                     <Button
                         :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
                         :aria-label="isDarkMode ? '라이트 모드' : '다크 모드'"
@@ -308,6 +312,10 @@
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+    .portfolio-header-actions {
+        display: flex;
+        align-items: center;
     }
     .guide-link {
         color: var(--app-muted);

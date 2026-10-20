@@ -136,7 +136,7 @@ try {
         await page.waitForFunction(
             () =>
                 !document.querySelector(
-                    '.portfolio-actions button[aria-label="새로고침"]'
+                    '#portfolio-header-actions button[aria-label="새로고침"]'
                 )?.disabled
         );
         await page.getByRole('tab', { name: '계좌 관리', exact: true }).click();

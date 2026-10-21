@@ -75,7 +75,7 @@ export async function dividendCalendarFile(
     const lines = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//Yieldloom//Dividend Calendar//KO',
+        'PRODID:-//토또부부 배당 스튜디오//Dividend Calendar//KO',
         'CALSCALE:GREGORIAN',
         'X-WR-CALNAME:배당 공시 일정',
     ];

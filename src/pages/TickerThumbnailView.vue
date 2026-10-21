@@ -117,7 +117,7 @@
 
     const selectedCardKinds = ref(['summary']);
     const availableCards = computed(() =>
-        dividendState.value === 'none'
+        dividendState.value !== 'available'
             ? []
             : [
                   { kind: 'summary', label: '배당 요약' },
@@ -148,7 +148,7 @@
             .map((card) => card.kind)
     );
     const showCard = (kind) =>
-        dividendState.value !== 'none' && activeTab.value === 'share'
+        dividendState.value === 'available' && activeTab.value === 'share'
             ? selectedCardKinds.value.includes(kind) &&
               availableCards.value.some((card) => card.kind === kind)
             : ['calendar', 'entry-efficiency'].includes(kind);
@@ -380,8 +380,8 @@
         });
     const shareTitle = computed(() =>
         selectedInfo.value
-            ? `${selectedInfo.value.symbol} 주식 상세정보 · 시세와 배당 | Yieldloom`
-            : 'Yieldloom 배당 콘텐츠'
+            ? `${selectedInfo.value.symbol} 주식 상세정보 · 시세와 배당 | 토또부부 배당 스튜디오`
+            : '토또부부 배당 스튜디오'
     );
     useHead({
         title: shareTitle,
@@ -813,7 +813,7 @@
                         }}</strong
                     >
                 </article>
-                <article v-if="dividendState !== 'none'">
+                <article v-if="dividendState === 'available'">
                     <span>최근 12개월 배당률 · 세전</span
                     ><strong>{{
                         trailingDividend != null && selectedInfo.price > 0
@@ -822,7 +822,7 @@
                     }}</strong>
                 </article>
                 <button
-                    v-if="dividendState !== 'none'"
+                    v-if="dividendState === 'available'"
                     class="next-dividend"
                     @click="selectTab('dividends')">
                     <span
@@ -856,20 +856,6 @@
                     </p>
                 </details>
             </div>
-            <Message
-                v-if="dividendUnavailable"
-                severity="warn"
-                :closable="false"
-                class="dividend-data-notice">
-                배당 정보 확인 중이며, 관련 사항을 의견으로 남겨 주시면
-                감사합니다.
-                <Button
-                    label="익명 요청·한마디 남기기"
-                    icon="pi pi-comment"
-                    text
-                    size="small"
-                    @click="openDividendFeedback" />
-            </Message>
             <Tabs
                 :value="activeTab"
                 @update:value="selectTab"
@@ -905,7 +891,7 @@
                                         }}</small></strong
                                     >
                                 </article>
-                                <article v-if="dividendState !== 'none'">
+                                <article v-if="dividendState === 'available'">
                                     <span>최근 12개월 주당 배당</span
                                     ><strong
                                         >{{
@@ -918,7 +904,7 @@
                                         >12개월 전체 이력 확인 필요</small
                                     >
                                 </article>
-                                <article v-if="dividendState !== 'none'">
+                                <article v-if="dividendState === 'available'">
                                     <span>최근 12개월 배당수익률</span
                                     ><strong
                                         >{{
@@ -1052,7 +1038,23 @@
                         <section
                             v-if="activeTab === 'dividends'"
                             class="stock-section">
-                            <div class="dividend-next">
+                            <Message
+                                v-if="dividendUnavailable"
+                                severity="warn"
+                                :closable="false"
+                                class="dividend-data-notice">
+                                배당 정보 확인 중이며, 관련 사항을 의견으로 남겨
+                                주시면 감사합니다.
+                                <Button
+                                    label="익명 요청·한마디 남기기"
+                                    icon="pi pi-comment"
+                                    text
+                                    size="small"
+                                    @click="openDividendFeedback" />
+                            </Message>
+                            <div
+                                v-if="dividendState === 'available'"
+                                class="dividend-next">
                                 <div class="section-heading">
                                     <h2>배당 일정</h2>
                                     <Tag
@@ -1100,19 +1102,25 @@
                                 </p>
                             </div>
                             <StockDividendTrend
+                                v-if="dividendState === 'available'"
                                 :rows="selectedData.backtestData || []"
                                 :as-of="
                                     selectedData.sourceStatus?.priceDate ||
                                     today()
                                 "
                                 :currency="selectedInfo.currency || 'USD'" />
-                            <h2>배당 이력</h2>
-                            <p class="hint">
+                            <h2 v-if="dividendState === 'available'">
+                                배당 이력
+                            </h2>
+                            <p
+                                v-if="dividendState === 'available'"
+                                class="hint">
                                 배당락일 기준 · 주당 세전
                                 {{ selectedInfo.currency }} ·
                                 {{ historyRows.length }}회 수집
                             </p>
                             <DataTable
+                                v-if="dividendState === 'available'"
                                 :value="historyRows"
                                 class="stock-data-table"
                                 striped-rows
@@ -1131,10 +1139,17 @@
                                     ></Column
                                 ></DataTable
                             >
-                            <p v-if="!historyRows.length" class="hint">
+                            <p
+                                v-if="
+                                    dividendState === 'available' &&
+                                    !historyRows.length
+                                "
+                                class="hint">
                                 확인 가능한 배당 이력이 없습니다.
                             </p>
-                            <p class="hint">
+                            <p
+                                v-if="dividendState === 'available'"
+                                class="hint">
                                 공시 전 일정은 추정치입니다. 개인별 수령액은
                                 보유 수량과 세금에 따라 다릅니다.
                             </p>
@@ -1163,14 +1178,15 @@
                                     @click="downloadPublishPackage" />
                             </div>
                             <Message
-                                v-if="dividendState === 'none'"
+                                v-if="dividendState !== 'available'"
                                 severity="info"
                                 :closable="false">
-                                배당 카드 대신 현재 시세와 종목 기본정보를 담은
+                                배당 이력이 확인된 경우에만 배당 카드를
+                                제공합니다. 현재는 시세와 종목 기본정보를 담은
                                 종목 요약 카드를 제공합니다.
                             </Message>
                             <article
-                                v-if="dividendState === 'none'"
+                                v-if="dividendState !== 'available'"
                                 class="stock-overview-share-card">
                                 <span>{{
                                     selectedInfo.exchange || '거래소 미확인'
@@ -1217,7 +1233,7 @@
                                     @click="copyShareText" />
                             </article>
                             <div
-                                v-if="dividendState !== 'none'"
+                                v-if="dividendState === 'available'"
                                 class="share-controls">
                                 <div class="studio-field">
                                     <label
@@ -1318,7 +1334,7 @@
                         <section
                             v-if="
                                 activeTab === 'share' &&
-                                dividendState !== 'none'
+                                dividendState === 'available'
                             "
                             class="share-selector stock-section">
                             <h2>공유 카드 선택</h2>

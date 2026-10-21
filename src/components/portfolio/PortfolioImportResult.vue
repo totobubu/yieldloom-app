@@ -29,7 +29,7 @@
             props.latestHoldingsDate > props.receipt.asOf
         )
             return `과거 기준일 자료로 보관했습니다. 화면에는 더 최신인 ${props.latestHoldingsDate} 잔고가 표시됩니다.`;
-        return '이 기준일의 전체 잔고가 한눈에 보기에 표시됩니다. 현재 시세로 계산한 평가액은 아닙니다.';
+        return '이 기준일의 전체 잔고가 한눈에 보기 > 보유 종목에 표시됩니다. 현재 시세로 계산한 평가액은 아닙니다.';
     });
 </script>
 

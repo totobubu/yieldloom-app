@@ -91,13 +91,13 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
     await page.waitForFunction(() =>
         [...document.querySelectorAll('[role="tab"]')].some(
             (tab) =>
-                tab.textContent?.includes('자료 업로드') &&
+                tab.textContent?.includes('자산관리') &&
                 tab.getAttribute('aria-selected') === 'true'
         )
     );
     assert.equal(
         await page
-            .getByRole('tab', { name: '자료 업로드' })
+            .getByRole('tab', { name: '자산관리' })
             .getAttribute('aria-selected'),
         'true'
     );
@@ -109,20 +109,17 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
     const tabs = page.getByRole('tab');
     assert.ok((await tabs.first().boundingBox()).width >= 60);
     assert.equal(
-        await page.getByRole('combobox', { name: '자료 종류' }).textContent(),
-        '거래내역'
-    );
-    assert.equal(
         await page.locator('html').evaluate((el) => el.scrollWidth),
         390
     );
-    assert.equal(capitalRequests, 0, 'collapsed details do not fetch cash');
+    assert.equal(
+        capitalRequests,
+        0,
+        'inactive capital tab does not fetch cash'
+    );
     await page.getByRole('tab', { name: '한눈에 보기', exact: true }).click();
-    const toggle = page.getByRole('button', {
-        name: '원금 회수 · 자금 상세',
-        exact: true,
-    });
-    await toggle.click();
+    await page.getByRole('tab', { name: '원금·자금', exact: true }).click();
+    await page.waitForURL('**/mypage?tab=overview&view=capital');
     const capital = page.getByRole('region', {
         name: '투자 원금 대비 회수 현황',
         exact: true,
@@ -149,10 +146,7 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
                 `${width}px: page stays within viewport`
             );
             const panel = await page.locator('.capital-details').boundingBox();
-            const wrapper = await page
-                .locator('.capital-details .p-panel-content-wrapper')
-                .boundingBox();
-            assert.ok(wrapper.width <= panel.width);
+            assert.ok(panel.width <= width);
             const menu = page.locator('.portfolio-tabs > .p-tablist');
             if (width <= 767) {
                 await page.evaluate(() => window.scrollTo(0, 1000));
@@ -202,25 +196,25 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
             }
         }
     }
-    await toggle.click();
-    await toggle.click();
+    await page.getByRole('tab', { name: '요약', exact: true }).click();
+    await page.getByRole('tab', { name: '원금·자금', exact: true }).click();
     await capital.waitFor();
     assert.equal(
         capitalRequests,
         requestsAfterOpen,
-        'resize/theme/reopen reuse loaded cash'
+        'resize/theme/tab revisit reuses loaded cash'
     );
     await page.setViewportSize({ width: 390, height: 900 });
-    await page.getByRole('tab', { name: '가족 관리', exact: true }).click();
+    await page.getByRole('tab', { name: '자산관리', exact: true }).click();
     assert.equal(
         await page
-            .getByRole('tab', { name: '가족 관리', exact: true })
+            .getByRole('tab', { name: '자산관리', exact: true })
             .getAttribute('aria-selected'),
         'true'
     );
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: mobile tabs, empty routing, expanded capital panel width, local table scrolling and cached reopen'
+        'PASS: mobile tabs, empty routing, capital tab width, local table scrolling and cached revisit'
     );
 } finally {
     await browser.close();

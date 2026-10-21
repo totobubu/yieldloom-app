@@ -2,7 +2,7 @@
     import { computed, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { signOut } from 'firebase/auth';
-    import { auth, firebaseUser } from '@/services/firebaseClient';
+    import { auth, authLoading, firebaseUser } from '@/services/firebaseClient';
     import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
     import { useLayout } from '@/composables/shared/useLayout';
     import Button from 'primevue/button';
@@ -11,6 +11,8 @@
     import Message from 'primevue/message';
     import Toast from 'primevue/toast';
     import ConfirmDialog from 'primevue/confirmdialog';
+    import FullscreenDataLoading from '@/components/FullscreenDataLoading.vue';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
 
     const route = useRoute();
     const router = useRouter();
@@ -18,7 +20,9 @@
     const accountOpen = ref(false);
     const signingOut = ref(false);
     const accountError = ref('');
+    useFullscreenLoading(authLoading, '로그인 정보를 확인하고 있습니다.');
     const isAuth = computed(() => route.name === 'login');
+    const isAdmin = computed(() => isPortfolioAdmin(firebaseUser.value));
     const inStocks = computed(() =>
         ['thumbnail-home', 'ticker-stock'].includes(route.name)
     );
@@ -73,12 +77,14 @@
                         >종목 검색</router-link
                     >
                     <router-link
+                        v-if="isAdmin"
                         to="/mypage"
                         :aria-current="inPortfolio ? 'page' : undefined"
                         :class="{ active: inPortfolio }"
                         >내 포트폴리오</router-link
                     >
                     <router-link
+                        v-if="isAdmin"
                         to="/simulator"
                         :class="{ active: route.name === 'dividend-simulator' }"
                         :aria-current="
@@ -93,6 +99,10 @@
                     <router-link class="guide-link" to="/legal"
                         >이용 안내</router-link
                     >
+                    <div
+                        v-if="inPortfolio"
+                        id="portfolio-header-actions"
+                        class="portfolio-header-actions" />
                     <Button
                         :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
                         :aria-label="isDarkMode ? '라이트 모드' : '다크 모드'"
@@ -101,16 +111,8 @@
                         rounded
                         severity="secondary"
                         @click="toggleDarkMode" />
-                    <router-link
-                        v-if="!firebaseUser && !isAuth"
-                        class="login-link"
-                        :to="{
-                            path: '/login',
-                            query: { redirect: route.fullPath },
-                        }"
-                        >로그인</router-link
-                    >
                     <Button
+                        v-if="isAdmin"
                         icon="pi pi-user"
                         aria-label="계정 및 설정"
                         outlined
@@ -142,6 +144,7 @@
                 ></router-link
             >
             <router-link
+                v-if="isAdmin"
                 to="/mypage"
                 :class="{ active: inPortfolio }"
                 :aria-current="inPortfolio ? 'page' : undefined"
@@ -150,6 +153,7 @@
                 ></router-link
             >
             <router-link
+                v-if="isAdmin"
                 to="/simulator"
                 :class="{ active: route.name === 'dividend-simulator' }"
                 :aria-current="
@@ -187,11 +191,7 @@
             }}</Message>
             <div class="account-links">
                 <Button
-                    v-if="!firebaseUser"
-                    label="로그인 / 회원가입"
-                    icon="pi pi-sign-in"
-                    @click="router.push('/login')" />
-                <Button
+                    v-if="isAdmin"
                     label="내 포트폴리오"
                     icon="pi pi-wallet"
                     severity="secondary"
@@ -213,21 +213,28 @@
                     text
                     @click="router.push('/legal')" />
                 <Button
-                    v-if="isPortfolioAdmin(firebaseUser)"
+                    v-if="isAdmin"
+                    label="종목 의견함"
+                    icon="pi pi-inbox"
+                    severity="secondary"
+                    text
+                    @click="router.push('/admin/feedback')" />
+                <Button
+                    v-if="isAdmin"
                     label="ETF 데이터 검토 · 수집 상태"
                     icon="pi pi-check-square"
                     severity="secondary"
                     text
                     @click="router.push('/admin/metadata')" />
                 <Button
-                    v-if="isPortfolioAdmin(firebaseUser)"
+                    v-if="isAdmin"
                     label="종목 식별 관리"
                     icon="pi pi-cog"
                     severity="secondary"
                     text
                     @click="router.push('/admin/portfolio-mappings')" />
                 <Button
-                    v-if="firebaseUser"
+                    v-if="isAdmin"
                     label="로그아웃"
                     icon="pi pi-sign-out"
                     severity="secondary"
@@ -237,6 +244,7 @@
             </div>
         </Drawer>
         <Toast /><ConfirmDialog />
+        <FullscreenDataLoading />
     </div>
 </template>
 
@@ -304,6 +312,10 @@
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+    .portfolio-header-actions {
+        display: flex;
+        align-items: center;
     }
     .guide-link {
         color: var(--app-muted);
@@ -462,6 +474,9 @@
     @media (max-width: 370px) {
         .studio-brand {
             font-size: 13px;
+        }
+        .brand-secondary {
+            display: none;
         }
         .header-inner {
             padding-inline: 12px;

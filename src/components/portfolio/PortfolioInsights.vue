@@ -4,6 +4,7 @@
     import HoldingScenarioComparison from './HoldingScenarioComparison.vue';
     import MonthlyStatement from './MonthlyStatement.vue';
     import AdvancedPortfolioInsights from './AdvancedPortfolioInsights.vue';
+    import HoldingDividendCapitalChart from './HoldingDividendCapitalChart.vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
     import SelectButton from 'primevue/selectbutton';
@@ -27,6 +28,7 @@
     import { getAssetUrl } from '@/utils/dataUrl.js';
     import { readPublicJson } from '@/services/publicJson.js';
     import { useRequestCooldown } from '@/composables/useRequestCooldown.js';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
 
     const props = defineProps({
         accounts: { type: Array, default: () => [] },
@@ -41,6 +43,10 @@
         loading = ref(false),
         issue = ref(null),
         refresh = ref(0);
+    useFullscreenLoading(
+        loading,
+        '포트폴리오 분석 데이터를 불러오고 있습니다.'
+    );
     const classifications = ref({}),
         metadataError = ref('');
     const goal = ref(null),
@@ -322,6 +328,15 @@
                 :positions="selectedPositions"
                 :accounts="selectedAccounts"
                 :month="month"
+                :currency="selectedCurrency"
+                :today="today" />
+            <HoldingDividendCapitalChart
+                v-if="
+                    selectedAccounts.length &&
+                    ['USD', 'KRW'].includes(selectedCurrency)
+                "
+                :accounts="selectedAccounts"
+                :positions="selectedPositions"
                 :currency="selectedCurrency"
                 :today="today" />
             <MonthlyStatement

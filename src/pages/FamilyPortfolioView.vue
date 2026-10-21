@@ -30,11 +30,11 @@
     } from '@/services/tossImportReview.js';
     import { useRoute, useRouter } from 'vue-router';
     import PortfolioDividendCalendar from '@/components/portfolio/PortfolioDividendCalendar.vue';
+    import DividendAlerts from '@/components/portfolio/DividendAlerts.vue';
     import PortfolioValuation from '@/components/portfolio/PortfolioValuation.vue';
     import PortfolioInsights from '@/components/portfolio/PortfolioInsights.vue';
     import Button from 'primevue/button';
     import Card from 'primevue/card';
-    import Panel from 'primevue/panel';
     import InputText from 'primevue/inputtext';
     import PortfolioFileImportForm from '@/components/portfolio/PortfolioFileImportForm.vue';
     import Select from 'primevue/select';
@@ -55,7 +55,13 @@
 
     const router = useRouter();
     const route = useRoute();
-    const portfolioTabs = ['overview', 'calendar', 'insights', 'assets'];
+    const portfolioTabs = [
+        'overview',
+        'calendar',
+        'insights',
+        'assets',
+        'settings',
+    ];
     const portfolioTab = computed({
         get: () =>
             portfolioTabs.includes(route.query.tab)
@@ -71,6 +77,17 @@
         },
         { immediate: true }
     );
+    const overviewViews = ['summary', 'holdings', 'capital'];
+    const overviewView = computed({
+        get: () =>
+            overviewViews.includes(route.query.view)
+                ? route.query.view
+                : 'summary',
+        set: (view) =>
+            router.push({
+                query: { ...route.query, tab: 'overview', view },
+            }),
+    });
     const exportVisible = ref(false),
         exportKind = ref('holdings'),
         importReceipt = ref(null);
@@ -235,7 +252,6 @@
         return { saved, failed, inferred };
     }
     const capital = ref({ entries: [], classifications: [], allocations: [] });
-    const capitalCollapsed = ref(true);
     const capitalLoading = ref(false),
         capitalError = ref(''),
         fundingEntry = ref(null),
@@ -263,7 +279,8 @@
             !user ||
             !accountId ||
             (!fundingDialog.value &&
-                (capitalCollapsed.value || portfolioTab.value !== 'overview'))
+                (portfolioTab.value !== 'overview' ||
+                    overviewView.value !== 'capital'))
         ) {
             capitalLoading.value = false;
             return;
@@ -285,7 +302,7 @@
         }
     }
     watch(
-        [selectedAccount, firebaseUser, capitalCollapsed, portfolioTab],
+        [selectedAccount, firebaseUser, overviewView, portfolioTab],
         () => {
             fundingEntry.value = null;
             fundingDialog.value = false;
@@ -693,7 +710,7 @@
             if (waiting) return;
             if (!user)
                 router.replace({
-                    path: '/login',
+                    path: '/admin/login',
                     query: { redirect: route.fullPath },
                 });
             else run(refresh);
@@ -1170,6 +1187,18 @@
         "
         :progress="operationProgress"
         @after-hide="focusPreviewFeedback">
+        <Teleport to="#portfolio-header-actions">
+            <Button
+                class="portfolio-header-refresh"
+                icon="pi pi-refresh"
+                aria-label="새로고침"
+                severity="secondary"
+                text
+                rounded
+                :loading="busy"
+                :disabled="accountCooldown.coolingDown.value"
+                @click="run(refresh)" />
+        </Teleport>
         <header class="portfolio-heading">
             <div>
                 <span class="studio-eyebrow"
@@ -1178,27 +1207,6 @@
                 >
                 <h1>내 포트폴리오</h1>
                 <p>내 계좌의 기록을 모아, 투자 흐름을 살펴보세요.</p>
-            </div>
-            <div class="portfolio-actions">
-                <Button
-                    label="CSV 내보내기"
-                    icon="pi pi-download"
-                    severity="secondary"
-                    outlined
-                    :disabled="
-                        busy ||
-                        accountsState !== 'ready' ||
-                        !visibleAccounts.length
-                    "
-                    @click="openExport()" />
-                <Button
-                    label="새로고침"
-                    icon="pi pi-refresh"
-                    severity="secondary"
-                    outlined
-                    :loading="busy"
-                    :disabled="accountCooldown.coolingDown.value"
-                    @click="run(refresh)" />
             </div>
         </header>
         <Message v-if="error" severity="error" :closable="false">{{
@@ -1268,12 +1276,25 @@
                 :disabled="accountCooldown.coolingDown.value"
                 @click="run(refresh)"
         /></Message>
+        <div class="portfolio-tools">
+            <Button
+                label="CSV 내보내기"
+                icon="pi pi-download"
+                severity="secondary"
+                text
+                size="small"
+                :disabled="
+                    busy || accountsState !== 'ready' || !visibleAccounts.length
+                "
+                @click="openExport()" />
+        </div>
         <Tabs v-model:value="portfolioTab" class="portfolio-tabs"
             ><TabList
                 ><Tab value="overview">한눈에 보기</Tab
                 ><Tab value="calendar">배당 캘린더</Tab
                 ><Tab value="insights">배당 분석</Tab
-                ><Tab value="assets">자산관리</Tab></TabList
+                ><Tab value="assets">자산관리</Tab
+                ><Tab value="settings">설정</Tab></TabList
             ><TabPanels
                 ><TabPanel value="overview"
                     ><div
@@ -1297,278 +1318,350 @@
                             >계좌 등록 → 자료 업로드 → 검토 후 저장</small
                         >
                     </div>
-                    <PortfolioValuation
+                    <Tabs
                         v-if="
-                            portfolioTab === 'overview' &&
-                            accountsState === 'ready' &&
-                            summary &&
-                            visibleAccounts.length
+                            accountsState === 'ready' && visibleAccounts.length
                         "
-                        :key="`${ownUid}:${familyId}`"
-                        :positions="summary.positions"
-                        :accounts="visibleAccounts"
-                        :missing-accounts="
-                            summary.missingSnapshotAccounts.length
-                        "
-                        :estimated-positions="
-                            summary.positions.filter(
-                                (row) => row.calculationMode === 'estimated'
-                            ).length
-                        "
-                        @request-transactions="openTransactionsUpload" />
-                    <div
-                        v-if="
-                            summary &&
-                            Object.keys(summary.knownValueByCurrency).length
-                        "
-                        class="portfolio-value-grid"
-                        aria-label="통화별 자료상 보유 평가액">
-                        <Card
-                            v-for="(
-                                value, currency
-                            ) in summary.knownValueByCurrency"
-                            :key="currency"
-                            class="portfolio-value-card"
-                            ><template #content
-                                ><div class="value-card-heading">
-                                    <span>자료상 보유 평가액</span
-                                    ><Tag
-                                        :value="currency"
-                                        severity="secondary" />
+                        v-model:value="overviewView"
+                        class="overview-tabs">
+                        <TabList>
+                            <Tab value="summary">요약</Tab>
+                            <Tab value="holdings">보유 종목</Tab>
+                            <Tab value="capital">원금·자금</Tab>
+                        </TabList>
+                        <TabPanels>
+                            <TabPanel value="summary">
+                                <PortfolioValuation
+                                    v-if="
+                                        portfolioTab === 'overview' &&
+                                        overviewView === 'summary' &&
+                                        accountsState === 'ready' &&
+                                        summary &&
+                                        visibleAccounts.length
+                                    "
+                                    :key="`${ownUid}:${familyId}`"
+                                    :positions="summary.positions"
+                                    :accounts="visibleAccounts"
+                                    :missing-accounts="
+                                        summary.missingSnapshotAccounts.length
+                                    "
+                                    :estimated-positions="
+                                        summary.positions.filter(
+                                            (row) =>
+                                                row.calculationMode ===
+                                                'estimated'
+                                        ).length
+                                    "
+                                    @request-transactions="
+                                        openTransactionsUpload
+                                    " />
+                                <div
+                                    v-if="
+                                        overviewView === 'summary' &&
+                                        summary &&
+                                        Object.keys(
+                                            summary.knownValueByCurrency
+                                        ).length
+                                    "
+                                    class="portfolio-value-grid"
+                                    aria-label="통화별 자료상 보유 평가액">
+                                    <Card
+                                        v-for="(
+                                            value, currency
+                                        ) in summary.knownValueByCurrency"
+                                        :key="currency"
+                                        class="portfolio-value-card"
+                                        ><template #content
+                                            ><div class="value-card-heading">
+                                                <span>자료상 보유 평가액</span
+                                                ><Tag
+                                                    :value="currency"
+                                                    severity="secondary" />
+                                            </div>
+                                            <strong
+                                                >{{ num(value) }}
+                                                <small>{{
+                                                    currency
+                                                }}</small></strong
+                                            >
+                                            <p>
+                                                자료 기준일
+                                                {{
+                                                    summary.oldestAsOf ||
+                                                    '미확인'
+                                                }}{{
+                                                    summary.mixedDates
+                                                        ? ` ~ ${summary.newestAsOf}`
+                                                        : ''
+                                                }}
+                                            </p>
+                                            <span class="value-card-note">{{
+                                                summary.valueComplete
+                                                    ? '확인된 잔고 자료 기준'
+                                                    : '일부 평가액 미확인 · 확인된 금액만 포함'
+                                            }}</span></template
+                                        ></Card
+                                    >
                                 </div>
-                                <strong
-                                    >{{ num(value) }}
-                                    <small>{{ currency }}</small></strong
-                                >
-                                <p>
-                                    자료 기준일
-                                    {{ summary.oldestAsOf || '미확인'
-                                    }}{{
-                                        summary.mixedDates
-                                            ? ` ~ ${summary.newestAsOf}`
-                                            : ''
-                                    }}
-                                </p>
-                                <span class="value-card-note">{{
-                                    summary.valueComplete
-                                        ? '확인된 잔고 자료 기준'
-                                        : '일부 평가액 미확인 · 확인된 금액만 포함'
-                                }}</span></template
-                            ></Card
-                        >
-                    </div>
-                    <Panel
-                        v-if="space"
-                        header="원금 회수 · 자금 상세"
-                        toggleable
-                        v-model:collapsed="capitalCollapsed"
-                        :pt="{ contentWrapper: { style: { minWidth: '0' } } }"
-                        class="capital-details">
-                        <template
-                            v-if="
-                                !capitalCollapsed && portfolioTab === 'overview'
-                            ">
-                            <AccountRecoveryOverview
-                                :user="firebaseUser"
-                                :accounts="visibleAccounts"
-                                :refresh-account-id="
-                                    capitalLoading || capitalError
-                                        ? ''
-                                        : selectedAccount
-                                "
-                                :refresh-state="capital" />
-                            <section
-                                v-if="activeAccount"
-                                aria-label="회수 현황 계좌 선택">
-                                <label
-                                    >회수 현황을 볼 계좌
-                                    <Select
-                                        v-model="selectedAccount"
-                                        :disabled="busy"
-                                        :options="
-                                            visibleAccounts.map((a) => ({
-                                                label: `${ownerName(a.ownerId)} / ${a.alias}`,
-                                                value: a.id,
-                                            }))
+                            </TabPanel>
+                            <TabPanel value="capital">
+                                <section
+                                    v-if="
+                                        space &&
+                                        portfolioTab === 'overview' &&
+                                        overviewView === 'capital'
+                                    "
+                                    class="capital-details"
+                                    aria-labelledby="capital-details-heading">
+                                    <h2 id="capital-details-heading">
+                                        원금 회수 · 자금 상세
+                                    </h2>
+                                    <AccountRecoveryOverview
+                                        :user="firebaseUser"
+                                        :accounts="visibleAccounts"
+                                        :refresh-account-id="
+                                            capitalLoading || capitalError
+                                                ? ''
+                                                : selectedAccount
                                         "
-                                        option-label="label"
-                                        option-value="value"
-                                        aria-label="계좌"
-                                        placeholder="선택" />
-                                </label>
-                                <p>선택한 계좌의 전체 저장 내역 기준입니다.</p>
-                            </section>
-                            <PortfolioCapitalPanel
-                                v-if="activeAccount"
-                                :key="`${ownUid}-${selectedAccount}`"
-                                :user="firebaseUser"
-                                :account-id="selectedAccount"
-                                :state="capital"
-                                :loading="capitalLoading"
-                                :error="capitalError"
-                                :read-only="
-                                    !editableAccounts.some(
-                                        (a) => a.id === selectedAccount
-                                    )
-                                "
-                                @refresh="loadCapital" />
-                        </template>
-                    </Panel>
-                    <template v-if="families.length">
-                        <section v-if="summary">
-                            <h2>
-                                전체 자산 합산 · {{ visibleAccounts.length }}개
-                                계좌
-                            </h2>
-                            <p>{{ summary.notice }}</p>
-                            <p>
-                                자료 기준일:
-                                {{ summary.oldestAsOf || '미확인' }} ~
-                                {{ summary.newestAsOf || '미확인' }}
-                            </p>
-                            <p v-if="summary.mixedDates" class="warning">
-                                계좌별 자료 기준일이 다릅니다. 일부 계좌만
-                                갱신되었습니다.
-                            </p>
-                            <p
-                                v-if="summary.missingSnapshotAccounts.length"
-                                class="warning">
-                                계산 대기 또는 확인 필요 계좌
-                                {{ summary.missingSnapshotAccounts.length }}개가
-                                있습니다.
-                            </p>
-                            <Message
-                                v-if="calculationIssues.length"
-                                severity="warn"
-                                :closable="false">
-                                <strong>추정 제외·확인 필요</strong>
-                                <ul>
-                                    <li
-                                        v-for="issue in calculationIssues"
-                                        :key="`${issue.accountId}:${issue.symbol}:${issue.reason}`">
-                                        {{ label(issue.accountId) }} ·
-                                        {{ issue.symbol }} · {{ issue.reason }}
-                                    </li>
-                                </ul>
-                            </Message>
-                            <p v-if="!summary.valueComplete" class="warning">
-                                미확인 평가액이 있어 합계는 확인된 금액만
-                                포함합니다.
-                            </p>
-                            <p
-                                v-for="(
-                                    amount, currency
-                                ) in summary.knownValueByCurrency"
-                                :key="currency">
-                                확인된 자료 평가액: {{ num(amount) }}
-                                {{ currency }}
-                            </p>
-                            <label
-                                >명의자
-                                <Select
-                                    v-model="ownerFilter"
-                                    :options="[
-                                        { label: '전체', value: '' },
-                                        ...profiles.map((p) => ({
-                                            label: p.name,
-                                            value: p.id,
-                                        })),
-                                    ]"
-                                    option-label="label"
-                                    option-value="value"
-                                    aria-label="명의자"
-                                    placeholder="선택" /></label
-                            ><label v-if="format !== 'toss-pdf'"
-                                >계좌
-                                <Select
-                                    v-model="accountFilter"
-                                    :options="[
-                                        { label: '전체', value: '' },
-                                        ...visibleAccounts.map((a) => ({
-                                            label: a.alias,
-                                            value: a.id,
-                                        })),
-                                    ]"
-                                    option-label="label"
-                                    option-value="value"
-                                    aria-label="계좌"
-                                    placeholder="선택" /></label
-                            ><label v-if="format !== 'toss-pdf'"
-                                >종목 검색 <InputText v-model="symbolFilter"
-                            /></label>
-                            <h3>명의자·계좌별 잔고</h3>
-                            <DataTable
-                                :value="positions"
-                                striped-rows
-                                paginator
-                                :rows="10"
-                                :page-link-size="3"
-                                paginator-template="PrevPageLink PageLinks NextPageLink"
-                                scrollable
-                                table-style="min-width: 640px"
-                                :table-props="{
-                                    'aria-label': '명의자·계좌별 잔고',
-                                }"
-                                ><Column header="명의자"
-                                    ><template #body="{ data }">{{
-                                        ownerName(data.ownerId)
-                                    }}</template></Column
-                                ><Column header="계좌"
-                                    ><template #body="{ data }">{{
-                                        label(data.accountId)
-                                    }}</template></Column
-                                ><Column field="symbol" header="종목" /><Column
-                                    header="수량"
-                                    ><template #body="{ data }">{{
-                                        num(data.quantity)
-                                    }}</template></Column
-                                ><Column header="자료 평가액"
-                                    ><template #body="{ data }"
-                                        >{{ num(data.amount) }}
-                                        {{ data.currency }}</template
-                                    ></Column
-                                ><Column header="기준일·출처"
-                                    ><template #body="{ data }"
-                                        >{{ data.asOf }} · {{ data.source
-                                        }}<Tag
-                                            v-if="data.estimated"
-                                            value="추정"
-                                            severity="warn" /></template></Column
-                                ><template #empty
-                                    >확인 가능한 잔고가 없습니다. 계좌 자료를
-                                    업로드해 주세요.</template
-                                ></DataTable
-                            >
-                            <h3>종목별 합산</h3>
-                            <p class="studio-muted">
-                                선택 범위의 자료 기준일이 서로 다를 수 있습니다.
-                            </p>
-                            <DataTable
-                                :value="symbols"
-                                striped-rows
-                                :table-props="{ 'aria-label': '종목별 합산' }"
-                                ><Column header="종목·통화"
-                                    ><template #body="{ data }"
-                                        >{{ data.symbol }} ·
-                                        {{ data.currency }}</template
-                                    ></Column
-                                ><Column header="합산 수량"
-                                    ><template #body="{ data }">{{
-                                        num(data.quantity)
-                                    }}</template></Column
-                                ><Column header="확인된 평가액"
-                                    ><template #body="{ data }"
-                                        >{{ num(data.amount) }}
-                                        {{
-                                            data.complete ? '' : '(일부 미확인)'
-                                        }}</template
-                                    ></Column
-                                ><template #empty
-                                    >합산할 종목이 없습니다.</template
-                                ></DataTable
-                            >
-                        </section>
-                    </template></TabPanel
+                                        :refresh-state="capital" />
+                                    <section
+                                        v-if="activeAccount"
+                                        aria-label="회수 현황 계좌 선택">
+                                        <label
+                                            >회수 현황을 볼 계좌
+                                            <Select
+                                                v-model="selectedAccount"
+                                                :disabled="busy"
+                                                :options="
+                                                    visibleAccounts.map(
+                                                        (a) => ({
+                                                            label: `${ownerName(a.ownerId)} / ${a.alias}`,
+                                                            value: a.id,
+                                                        })
+                                                    )
+                                                "
+                                                option-label="label"
+                                                option-value="value"
+                                                aria-label="계좌"
+                                                placeholder="선택" />
+                                        </label>
+                                        <p>
+                                            선택한 계좌의 전체 저장 내역
+                                            기준입니다.
+                                        </p>
+                                    </section>
+                                    <PortfolioCapitalPanel
+                                        v-if="activeAccount"
+                                        :key="`${ownUid}-${selectedAccount}`"
+                                        :user="firebaseUser"
+                                        :account-id="selectedAccount"
+                                        :state="capital"
+                                        :loading="capitalLoading"
+                                        :error="capitalError"
+                                        :read-only="
+                                            !editableAccounts.some(
+                                                (a) => a.id === selectedAccount
+                                            )
+                                        "
+                                        @refresh="loadCapital" />
+                                </section>
+                            </TabPanel>
+                            <TabPanel value="holdings">
+                                <template v-if="families.length">
+                                    <section v-if="summary">
+                                        <h2>
+                                            전체 자산 합산 ·
+                                            {{ visibleAccounts.length }}개 계좌
+                                        </h2>
+                                        <p>{{ summary.notice }}</p>
+                                        <p>
+                                            자료 기준일:
+                                            {{ summary.oldestAsOf || '미확인' }}
+                                            ~
+                                            {{ summary.newestAsOf || '미확인' }}
+                                        </p>
+                                        <p
+                                            v-if="summary.mixedDates"
+                                            class="warning">
+                                            계좌별 자료 기준일이 다릅니다. 일부
+                                            계좌만 갱신되었습니다.
+                                        </p>
+                                        <p
+                                            v-if="
+                                                summary.missingSnapshotAccounts
+                                                    .length
+                                            "
+                                            class="warning">
+                                            계산 대기 또는 확인 필요 계좌
+                                            {{
+                                                summary.missingSnapshotAccounts
+                                                    .length
+                                            }}개가 있습니다.
+                                        </p>
+                                        <Message
+                                            v-if="calculationIssues.length"
+                                            severity="warn"
+                                            :closable="false">
+                                            <strong>추정 제외·확인 필요</strong>
+                                            <ul>
+                                                <li
+                                                    v-for="issue in calculationIssues"
+                                                    :key="`${issue.accountId}:${issue.symbol}:${issue.reason}`">
+                                                    {{ label(issue.accountId) }}
+                                                    · {{ issue.symbol }} ·
+                                                    {{ issue.reason }}
+                                                </li>
+                                            </ul>
+                                        </Message>
+                                        <p
+                                            v-if="!summary.valueComplete"
+                                            class="warning">
+                                            미확인 평가액이 있어 합계는 확인된
+                                            금액만 포함합니다.
+                                        </p>
+                                        <p
+                                            v-for="(
+                                                amount, currency
+                                            ) in summary.knownValueByCurrency"
+                                            :key="currency">
+                                            확인된 자료 평가액:
+                                            {{ num(amount) }}
+                                            {{ currency }}
+                                        </p>
+                                        <label
+                                            >명의자
+                                            <Select
+                                                v-model="ownerFilter"
+                                                :options="[
+                                                    {
+                                                        label: '전체',
+                                                        value: '',
+                                                    },
+                                                    ...profiles.map((p) => ({
+                                                        label: p.name,
+                                                        value: p.id,
+                                                    })),
+                                                ]"
+                                                option-label="label"
+                                                option-value="value"
+                                                aria-label="명의자"
+                                                placeholder="선택" /></label
+                                        ><label v-if="format !== 'toss-pdf'"
+                                            >계좌
+                                            <Select
+                                                v-model="accountFilter"
+                                                :options="[
+                                                    {
+                                                        label: '전체',
+                                                        value: '',
+                                                    },
+                                                    ...visibleAccounts.map(
+                                                        (a) => ({
+                                                            label: a.alias,
+                                                            value: a.id,
+                                                        })
+                                                    ),
+                                                ]"
+                                                option-label="label"
+                                                option-value="value"
+                                                aria-label="계좌"
+                                                placeholder="선택" /></label
+                                        ><label v-if="format !== 'toss-pdf'"
+                                            >종목 검색
+                                            <InputText v-model="symbolFilter"
+                                        /></label>
+                                        <h3>명의자·계좌별 잔고</h3>
+                                        <DataTable
+                                            :value="positions"
+                                            striped-rows
+                                            paginator
+                                            :rows="10"
+                                            :page-link-size="3"
+                                            paginator-template="PrevPageLink PageLinks NextPageLink"
+                                            scrollable
+                                            table-style="min-width: 640px"
+                                            :table-props="{
+                                                'aria-label':
+                                                    '명의자·계좌별 잔고',
+                                            }"
+                                            ><Column header="명의자"
+                                                ><template #body="{ data }">{{
+                                                    ownerName(data.ownerId)
+                                                }}</template></Column
+                                            ><Column header="계좌"
+                                                ><template #body="{ data }">{{
+                                                    label(data.accountId)
+                                                }}</template></Column
+                                            ><Column
+                                                field="symbol"
+                                                header="종목" /><Column
+                                                header="수량"
+                                                ><template #body="{ data }">{{
+                                                    num(data.quantity)
+                                                }}</template></Column
+                                            ><Column header="자료 평가액"
+                                                ><template #body="{ data }"
+                                                    >{{ num(data.amount) }}
+                                                    {{
+                                                        data.currency
+                                                    }}</template
+                                                ></Column
+                                            ><Column header="기준일·출처"
+                                                ><template #body="{ data }"
+                                                    >{{ data.asOf }} ·
+                                                    {{ data.source
+                                                    }}<Tag
+                                                        v-if="data.estimated"
+                                                        value="추정"
+                                                        severity="warn" /></template></Column
+                                            ><template #empty
+                                                >확인 가능한 잔고가 없습니다.
+                                                계좌 자료를 업로드해
+                                                주세요.</template
+                                            ></DataTable
+                                        >
+                                        <h3>종목별 합산</h3>
+                                        <p class="studio-muted">
+                                            선택 범위의 자료 기준일이 서로 다를
+                                            수 있습니다.
+                                        </p>
+                                        <DataTable
+                                            :value="symbols"
+                                            striped-rows
+                                            :table-props="{
+                                                'aria-label': '종목별 합산',
+                                            }"
+                                            ><Column header="종목·통화"
+                                                ><template #body="{ data }"
+                                                    >{{ data.symbol }} ·
+                                                    {{
+                                                        data.currency
+                                                    }}</template
+                                                ></Column
+                                            ><Column header="합산 수량"
+                                                ><template #body="{ data }">{{
+                                                    num(data.quantity)
+                                                }}</template></Column
+                                            ><Column header="확인된 평가액"
+                                                ><template #body="{ data }"
+                                                    >{{ num(data.amount) }}
+                                                    {{
+                                                        data.complete
+                                                            ? ''
+                                                            : '(일부 미확인)'
+                                                    }}</template
+                                                ></Column
+                                            ><template #empty
+                                                >합산할 종목이
+                                                없습니다.</template
+                                            ></DataTable
+                                        >
+                                    </section>
+                                </template>
+                            </TabPanel>
+                        </TabPanels>
+                    </Tabs></TabPanel
                 ><TabPanel value="calendar">
                     <PortfolioDividendCalendar
                         v-if="
@@ -2008,7 +2101,12 @@
                                     @close="fundingDialog = false" />
                             </template>
                         </Dialog>
-                    </template> </TabPanel></TabPanels
+                    </template> </TabPanel
+                ><TabPanel value="settings">
+                    <DividendAlerts
+                        v-if="portfolioTab === 'settings'"
+                        :key="`alert-settings:${ownUid}`"
+                        :show-upcoming="false" /> </TabPanel></TabPanels
         ></Tabs>
         <AssetMemberDialog
             v-model:visible="memberDialog"
@@ -2369,10 +2467,12 @@
         color: var(--app-muted);
         margin: 0;
     }
-    .portfolio-actions {
+    .portfolio-tools {
         display: flex;
-        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
         gap: 10px;
+        margin: 8px 0;
     }
     .portfolio-scope {
         display: flex;
@@ -2391,6 +2491,20 @@
     }
     .portfolio-tabs :deep(.p-tab) {
         min-height: 52px;
+    }
+    .overview-tabs {
+        min-width: 0;
+    }
+    .overview-tabs :deep(.p-tablist-tab-list) {
+        gap: 4px;
+        padding: 4px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface-muted);
+    }
+    .overview-tabs :deep(.p-tab) {
+        min-height: 44px;
+        border-radius: 8px;
     }
     .portfolio-tabs section {
         border: 1px solid var(--app-border);
@@ -2571,17 +2685,8 @@
         .portfolio-heading h1 {
             font-size: 26px;
         }
-        .portfolio-actions > .p-button {
-            flex: 1 1 0;
-            min-width: 0;
-            flex-direction: column;
-            gap: 8px;
-            padding: 12px 8px;
-        }
-        .portfolio-actions :deep(.p-button-label) {
-            flex: 0 1 auto;
-            word-break: keep-all;
-            white-space: normal;
+        .portfolio-tools {
+            margin-bottom: 4px;
         }
         .portfolio-tabs :deep(.p-tablist) {
             position: sticky;
@@ -2603,6 +2708,12 @@
             min-width: max-content;
             font-size: 13px;
             white-space: nowrap;
+        }
+        .portfolio-tabs .overview-tabs :deep(.p-tablist) {
+            position: static;
+            z-index: auto;
+            background: transparent;
+            border-bottom: 0;
         }
         .portfolio-tabs section {
             padding: 20px 16px;

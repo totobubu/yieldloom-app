@@ -11,7 +11,12 @@
         v-model:visible="visible"
         modal
         :header="title"
-        :style="{ width: '72rem', maxWidth: '96vw' }"
+        :style="{
+            width: '72rem',
+            maxWidth: 'calc(100vw - 24px)',
+            overflowX: 'hidden',
+        }"
+        :content-style="{ minWidth: 0, overflowX: 'hidden' }"
         :closable="!busy"
         :close-on-escape="!busy">
         <slot v-if="visible" />

@@ -1,14 +1,23 @@
 <script setup>
+    import { computed } from 'vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
     import { productTypeOptions } from '../../../lib/security-filters.js';
-    defineProps({
+    const props = defineProps({
         type: String,
         company: String,
         companies: Array,
         providers: Array,
         idPrefix: { type: String, default: 'search' },
+        showHoldingHistory: Boolean,
     });
+    const visibleProductTypes = computed(() =>
+        props.showHoldingHistory
+            ? productTypeOptions
+            : productTypeOptions.filter(
+                  (option) => option.value !== 'holding-history'
+              )
+    );
     defineEmits(['update:type', 'update:company']);
 </script>
 <template>
@@ -38,7 +47,7 @@
                 role="group"
                 :aria-labelledby="`${idPrefix}-types`">
                 <Button
-                    v-for="option in productTypeOptions"
+                    v-for="option in visibleProductTypes"
                     :key="option.value"
                     :label="option.label"
                     :severity="type === option.value ? undefined : 'secondary'"

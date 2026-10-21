@@ -530,8 +530,9 @@ try {
             '/.tmp-capital-test.html?family'
     );
     await page
-        .getByRole('button', { name: '원금 회수 · 자금 상세', exact: true })
-        .click();
+        .locator('.portfolio-loading-overlay')
+        .waitFor({ state: 'hidden' });
+    await page.getByRole('tab', { name: '원금·자금', exact: true }).click();
     const overview = page.getByRole('region', {
         name: '전체 계좌 원금 회수 현황',
         exact: true,
@@ -549,7 +550,7 @@ try {
         .getByText('분류 확인 필요 1건', { exact: false })
         .first()
         .waitFor();
-    await page.getByRole('tab', { name: '계좌 관리', exact: true }).click();
+    await page.getByRole('tab', { name: '자산관리', exact: true }).click();
     await page.getByRole('button', { name: '조회', exact: true }).click();
     await page
         .getByRole('button', { name: '자금 구성 확인', exact: true })
@@ -634,7 +635,7 @@ try {
     familyFailure = false;
     await page.clock.fastForward(61000);
     await page.getByRole('button', { name: '새로고침', exact: true }).click();
-    await page.getByRole('tab', { name: '계좌 관리', exact: true }).click();
+    await page.getByRole('tab', { name: '자산관리', exact: true }).click();
     await page
         .getByRole('heading', { name: '선택 계좌: 검증 계좌', exact: true })
         .waitFor();

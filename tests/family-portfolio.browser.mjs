@@ -118,6 +118,8 @@ try {
         .getByRole('dialog', { name: 'CSV 내보내기', exact: true })
         .waitFor({ state: 'hidden' });
     await tab('한눈에 보기');
+    await tab('보유 종목');
+    await page.waitForURL('**/mypage?tab=overview&view=holdings');
     await page
         .getByRole('table', { name: '명의자·계좌별 잔고', exact: true })
         .getByText('AAPL', { exact: true })

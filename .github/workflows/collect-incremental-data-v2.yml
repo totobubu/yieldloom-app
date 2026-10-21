@@ -61,6 +61,12 @@ jobs:
                     'uploadedBytes': sum(row['Size'] for row in objects),
                     'manifestExists': manifest_exists, 'currentReleaseId': pointer.get('releaseId')}
           print('::notice title=Core release upload status::' + json.dumps(result))
+          try:
+              cors = client.get_bucket_cors(Bucket=bucket).get('CORSRules', [])
+              print('::notice title=Core bucket CORS rules::' + json.dumps(cors))
+          except Exception as error:
+              code = getattr(error, 'response', {}).get('Error', {}).get('Code', type(error).__name__)
+              print('::warning title=Core bucket CORS lookup::' + str(code))
           PY
   collect:
     if: inputs.inspect_release == ''

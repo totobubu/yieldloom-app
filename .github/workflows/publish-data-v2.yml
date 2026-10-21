@@ -61,63 +61,16 @@ jobs:
           --output reviewed-release
       - name: Compare full dividend history
         run: python scripts/data_v2/check_cutover.py --data-dir reviewed-release --output dividend-cutover.json
+      - uses: actions/setup-node@v4
+        if: inputs.verify_public
+        with:
+          node-version: '24'
       - name: Verify published consumer assets
         if: inputs.verify_public
         env:
           PUBLIC_RELEASE_BASE_URL: ${{ vars.VITE_R2_PUBLIC_URL }}
           EXPECTED_RELEASE_ID: ${{ inputs.release_id }}
-        run: |
-          python - <<'PY'
-          import hashlib
-          import json
-          import os
-          import sys
-          from urllib.request import Request, urlopen
-          def expose_error(kind, error, traceback):
-              message = str(error).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-              print('::error title=Public core release probe::' + message)
-          sys.excepthook = expose_error
-          base = os.environ['PUBLIC_RELEASE_BASE_URL'].rstrip('/')
-          if not base.startswith('https://'):
-              raise ValueError('VITE_R2_PUBLIC_URL must be a public HTTPS root')
-          origins = ('https://totobubu.github.io', 'https://yieldloom-app.vercel.app')
-          def read(key, digest=None):
-              payload = None
-              for origin in origins:
-                  request = Request(base + '/' + key, headers={'Origin': origin, 'Cache-Control': 'no-cache'})
-                  with urlopen(request, timeout=20) as response:
-                      if response.headers.get('Access-Control-Allow-Origin') not in ('*', origin):
-                          raise ValueError('Browser CORS missing for ' + key + ' from ' + origin)
-                      raw = response.read()
-                  if digest and hashlib.sha256(raw).hexdigest() != digest:
-                      raise ValueError('Hash mismatch: ' + key)
-                  decoded = json.loads(raw)
-                  if payload is not None and decoded != payload:
-                      raise ValueError('Origins returned different data for ' + key)
-                  payload = decoded
-              return payload
-          pointer = read('core/current.json')
-          if pointer['releaseId'] != os.environ['EXPECTED_RELEASE_ID']:
-              raise ValueError('Published pointer does not match expected release')
-          expected_key = 'core/releases/' + pointer['releaseId'] + '/manifest.json'
-          if pointer['manifestKey'] != expected_key:
-              raise ValueError('Unexpected manifest path')
-          manifest = read(expected_key)
-          if manifest['releaseId'] != pointer['releaseId']:
-              raise ValueError('Manifest release identity mismatch')
-          hashes = {row['path']: row['sha256'] for row in manifest['files']}
-          root = expected_key.removesuffix('manifest.json')
-          index = read(root + 'index.json', hashes['index.json'])
-          catalog = read(root + 'catalog/search-index.json', hashes['catalog/search-index.json'])
-          ticker = index['tickers'][0]
-          history = read(root + ticker['historyPath'], hashes[ticker['historyPath']])
-          if history['ticker'] != ticker['ticker'] or len(history['events']) != ticker['historyCount']:
-              raise ValueError('Ticker history identity or count mismatch')
-          result = {'releaseId': pointer['releaseId'], 'tickers': len(index['tickers']),
-                    'instruments': len(catalog['instruments']), 'sampleTicker': history['ticker'],
-                    'sampleEvents': len(history['events']), 'hashes': 'verified', 'corsOrigins': list(origins)}
-          print('::notice title=Public core release verified::' + json.dumps(result))
-          PY
+        run: node scripts/data_v2/verify_public_release.mjs
       - name: Expose review result
         if: always()
         run: |

@@ -1,3 +1,4 @@
+import { isDelisted } from '../lib/security-status.js';
 // tasks\updateHistoricalUsData.js
 import fs from 'fs/promises';
 import path from 'path';
@@ -483,7 +484,7 @@ async function main() {
     const navData = JSON.parse(navDataContent);
 
     // 커맨드라인 인자로 특정 티커 지정 가능
-    const targetSymbols = process.argv.slice(2).map((s) => s.toUpperCase());
+    const targetSymbols = process.argv.slice(2).filter(s => s !== '--include-delisted').map((s) => s.toUpperCase());
 
     // nav.json에 없는 경우를 대비해 기본 티커 추가 (market 정보 포함)
     const navSymbols = new Set(navData.nav.map((t) => t.symbol.toUpperCase()));
@@ -514,7 +515,7 @@ async function main() {
     }
 
     let tickersToFetch = [...navData.nav, ...fallbackTickers].filter(
-        (item) => !item.upcoming
+        (item) => !item.upcoming && (!isDelisted(item) || process.argv.includes('--include-delisted'))
     );
 
     // 미국 티커만 필터링

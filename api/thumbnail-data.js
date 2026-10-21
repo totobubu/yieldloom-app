@@ -1,3 +1,4 @@
+import { applySecurityStatus, archiveTicker, isDelisted } from '../lib/security-status.js';
 import catalog from '../public/thumbnail-catalog.json' with { type: 'json' };
 import coreCatalog from '../data-v2/catalog-seed.json' with { type: 'json' };
 import discoveredStocks from '../public/us-dividend-stocks.json' with { type: 'json' };
@@ -34,8 +35,8 @@ export function catalogEntry(symbol) {
 }
 
 export function rivalOptions(entry) {
-    if (!entry.underlying || !entry.comparisonEligible) return [];
-    return (catalog.relationships[entry.underlying] ?? []).filter((symbol) => symbol !== entry.symbol);
+    if (isDelisted(entry) || !entry.underlying || !entry.comparisonEligible) return [];
+    return (catalog.relationships[entry.underlying] ?? []).filter((symbol) => symbol !== entry.symbol && !isDelisted(symbol));
 }
 
 const isoDate = (value) => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null;
@@ -167,7 +168,7 @@ async function loadPriceHistory(symbol, fetcher, baseUrl, historyKind, asOf) {
         ...payload,
         tickerInfo: { ...payload.tickerInfo, marketCap },
         backtestData: rows.filter(
-            (row) => row.date >= cutoff.toISOString().slice(0, 10)
+            (row) => isDelisted(symbol) || row.date >= cutoff.toISOString().slice(0, 10)
         ),
     };
 }
@@ -189,6 +190,11 @@ async function fetchTicker(symbol, origin, options = {}) {
     const [historyResult, priceResult] = await Promise.allSettled([
         loadOfficialHistory(key, origin, fetcher),
         (async () => {
+            if (isDelisted(key)) {
+                const archive = await loadPriceHistory(key, fetcher, baseUrl, historyKind, options.asOfDate ?? new Date().toISOString().slice(0, 10)).catch(() => null);
+                if (archive) return { ...archive, source: 'r2_projection' };
+                return loadProjection(key, projectionBase, fetcher, historyKind).catch(() => null);
+            }
             const projection = await loadProjection(key, projectionBase, fetcher, historyKind).catch(() => null);
             if (projection) {
                 if (!projection.tickerInfo?.marketCap) {
@@ -243,31 +249,39 @@ async function fetchTicker(symbol, origin, options = {}) {
 }
 
 export function loadTicker(symbol, origin, options = {}) {
-    if (options.fetcher && options.fetcher !== fetch) return fetchTicker(symbol, origin, options);
+    if (options.fetcher && options.fetcher !== fetch) return fetchTicker(symbol, origin, options).then(archiveTicker);
     const key = JSON.stringify([normalize(symbol), origin, options.priceDataBaseUrl, options.projectionBaseUrl, options.historyKind]);
     if (!inFlight.has(key)) {
         const pending = fetchTicker(symbol, origin, options).finally(() => inFlight.delete(key));
         inFlight.set(key, pending);
     }
-    return inFlight.get(key);
+    return inFlight.get(key).then(archiveTicker);
 }
 
-export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
+function mergeArchiveRows(previous = [], current = []) {
+    const rows = new Map();
+    for (const row of [...previous, ...current]) {
+        if (!row.forecasted) rows.set(row.date, { ...rows.get(row.date), ...row });
+    }
+    return [...rows.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+async function tickerWithSnapshot(symbol, origin, options = {}) {
     const readSnapshot = options.readSnapshot ?? readTickerSnapshot;
     const writeSnapshot = options.writeSnapshot ?? writeTickerSnapshot;
     try {
         const value = await loadTicker(symbol, origin, options);
-        if (value.sourceStatus.price === 'unavailable') {
+        if (value.sourceStatus.price === 'unavailable' || (isDelisted(symbol) && value.tickerInfo.price == null)) {
             const snapshot = await readSnapshot(symbol).catch((error) => {
                 console.warn(`Snapshot read failed for ${symbol}`, error.message);
                 return null;
             });
-            if (snapshot?.value && ['r2_projection', 'thumbnail_projection', 'yahoo_quote'].includes(snapshot.value.sourceStatus?.price)) {
-                return { ...snapshot.value, sourceStatus: { ...(snapshot.value.sourceStatus ?? {}), freshness: 'stale', staleSince: snapshot.savedAt, reason: 'price_source_unavailable' } };
+            if (snapshot?.value && (isDelisted(symbol) || ['r2_projection', 'thumbnail_projection', 'yahoo_quote'].includes(snapshot.value.sourceStatus?.price))) {
+                return { ...snapshot.value, backtestData: isDelisted(symbol) ? mergeArchiveRows(snapshot.value.backtestData, value.backtestData) : snapshot.value.backtestData, sourceStatus: { ...(snapshot.value.sourceStatus ?? {}), freshness: 'stale', staleSince: snapshot.savedAt, reason: 'price_source_unavailable' } };
             }
         }
         // Snapshot persistence is optional locally, but mandatory where R2 credentials exist.
-        await writeSnapshot(symbol, value).catch((error) => console.warn(`Snapshot write failed for ${symbol}`, error.message));
+        if (!isDelisted(symbol)) await writeSnapshot(symbol, value).catch((error) => console.warn(`Snapshot write failed for ${symbol}`, error.message));
         return value;
     } catch (error) {
         const snapshot = await readSnapshot(symbol).catch((snapshotError) => {
@@ -285,6 +299,10 @@ export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
             },
         };
     }
+}
+
+export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
+    return archiveTicker(await tickerWithSnapshot(symbol, origin, options));
 }
 
 export async function buildThumbnailPayload(ticker, requestedRivals, loader) {
@@ -306,16 +324,16 @@ export async function buildThumbnailPayload(ticker, requestedRivals, loader) {
     const rivals = [...new Set((requestedRivals ?? defaults).map(normalize))].filter((symbol) => allowed.has(symbol)).slice(0, 3);
     const symbols = [entry.symbol, ...rivals, ...(entry.underlying && rivals.length ? [entry.underlying] : [])];
     const settled = await Promise.allSettled(symbols.map(symbol => candidates.has(symbol) ? Promise.resolve(candidates.get(symbol)) : activeLoader(symbol)));
-    const loaded = Object.fromEntries(symbols.map((symbol, index) => [symbol, settled[index].status === 'fulfilled' ? settled[index].value : null]));
+    const loaded = Object.fromEntries(symbols.map((symbol, index) => [symbol, settled[index].status === 'fulfilled' && settled[index].value ? archiveTicker(settled[index].value) : null]));
     const unavailable = symbols.filter((symbol) => !loaded[symbol] || (loaded[symbol].tickerInfo?.price == null && !(loaded[symbol].backtestData ?? []).some(row => row.amount)));
     if (!loaded[entry.symbol]) throw new PriceError(`종목 데이터를 불러올 수 없습니다: ${entry.symbol}`);
-    if (loaded[entry.symbol].sourceStatus?.price === 'unavailable' && !loaded[entry.symbol].backtestData?.length) {
+    if (!isDelisted(entry) && loaded[entry.symbol].sourceStatus?.price === 'unavailable' && !loaded[entry.symbol].backtestData?.length) {
         throw new PriceError('종목 시세를 확인할 수 없습니다.', loaded[entry.symbol].sourceStatus.priceErrorCode ?? 503);
     }
     const instrument = instruments.get(entry.symbol);
     const seriesStatus = Object.fromEntries(symbols.map((symbol) => [symbol, loaded[symbol]?.sourceStatus ?? { freshness: 'unavailable' }]));
     const freshness = Object.values(seriesStatus).some((status) => status.freshness === 'stale') ? 'stale' : unavailable.length ? 'partial' : loaded[entry.symbol].sourceStatus?.freshness ?? 'fresh';
-    return { ticker: loaded[entry.symbol], catalog: { ...entry, company: instrument?.officialProvider ?? null }, rivalOptions: rivalOptions(entry), rivals, series: Object.fromEntries(Object.entries(loaded).filter(([symbol]) => symbol !== entry.symbol)), partial: unavailable.length > 0, unavailable, dataStatus: freshness, seriesStatus };
+    return { ticker: loaded[entry.symbol], catalog: applySecurityStatus({ ...instrument, ...entry, company: instrument?.officialProvider ?? null }), rivalOptions: rivalOptions(entry), rivals, series: Object.fromEntries(Object.entries(loaded).filter(([symbol]) => symbol !== entry.symbol)), partial: unavailable.length > 0, unavailable, dataStatus: isDelisted(entry) ? 'archived' : freshness, seriesStatus };
 }
 
 async function handler(req, res) {

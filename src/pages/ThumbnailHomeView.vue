@@ -3,6 +3,12 @@
     import { computed, onMounted, ref, watch } from 'vue';
     import { useHead } from '@vueuse/head';
     import { useRoute, useRouter } from 'vue-router';
+    import Checkbox from 'primevue/checkbox';
+    import {
+        applySecurityStatuses,
+        isSearchableSecurity,
+        isDelisted,
+    } from '../../lib/security-status.js';
     import Button from 'primevue/button';
     import Card from 'primevue/card';
     import InputText from 'primevue/inputtext';
@@ -42,6 +48,7 @@
     const stringParam = (value) => (typeof value === 'string' ? value : '');
     const query = ref(stringParam(route.query.q)),
         company = ref(stringParam(route.query.company));
+    const includeDelisted = ref(route.query.delisted === '1');
     const securityType = ref(stringParam(route.query.type));
     const sortValues = [
         'symbol',
@@ -146,6 +153,7 @@
         return rows.value
             .filter(
                 (row) =>
+                    isSearchableSecurity(row, includeDelisted.value) &&
                     (!company.value || row.company?.trim() === company.value) &&
                     matchesProductType(
                         row,
@@ -200,6 +208,7 @@
         if (restoring || route.name !== 'thumbnail-home') return;
         const next = { ...route.query };
         for (const [key, value] of Object.entries({
+            delisted: includeDelisted.value ? '1' : '',
             q: query.value,
             company: company.value,
             type: securityType.value,
@@ -213,20 +222,25 @@
             void router.replace({ query: next });
     }
     watch(
-        [query, company, securityType, sort],
+        [query, company, securityType, sort, includeDelisted],
         () => {
             if (!restoring) page.value = 1;
         },
         { flush: 'sync' }
     );
-    watch([query, company, securityType, sort, page], syncUrl, {
-        flush: 'post',
-    });
+    watch(
+        [query, company, securityType, sort, includeDelisted, page],
+        syncUrl,
+        {
+            flush: 'post',
+        }
+    );
     watch(
         () => route.query,
         (values) => {
             if (route.name !== 'thumbnail-home') return;
             restoring = true;
+            includeDelisted.value = values.delisted === '1';
             query.value = stringParam(values.q);
             company.value = stringParam(values.company);
             securityType.value = stringParam(values.type);
@@ -266,6 +280,7 @@
         );
     }
     function reset() {
+        includeDelisted.value = false;
         query.value = '';
         company.value = '';
         securityType.value = '';
@@ -298,13 +313,11 @@
         );
         const indexLoader = coreConfigured
             ? loadCoreDirectory().then((instruments) => ({
-                  nav: instruments
-                      .filter((row) => row.active !== false)
-                      .map((row) => ({
-                          ...row,
-                          company: row.officialProvider,
-                          securityType: inferSecurityType(row),
-                      })),
+                  nav: instruments.map((row) => ({
+                      ...row,
+                      company: row.officialProvider,
+                      securityType: inferSecurityType(row),
+                  })),
               }))
             : isDivgrowReleaseConfigured()
               ? loadDivgrowTickerIndex()
@@ -317,12 +330,16 @@
             fetchJson('us-dividend-stocks.json'),
         ]);
         if (index.status === 'fulfilled')
-            rows.value = applyVerifiedUnderlyings(
-                mergeDiscoveredStocks(
-                    index.value.nav ?? [],
-                    discovered.status === 'fulfilled' ? discovered.value : {}
+            rows.value = applySecurityStatuses(
+                applyVerifiedUnderlyings(
+                    mergeDiscoveredStocks(
+                        index.value.nav ?? [],
+                        discovered.status === 'fulfilled'
+                            ? discovered.value
+                            : {}
+                    )
                 )
-            ).filter((row) => row.symbol && row.active !== false);
+            ).filter((row) => row.symbol && isSearchableSecurity(row, true));
         else
             error.value =
                 '종목 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
@@ -383,6 +400,13 @@
                 v-model:company="company"
                 :companies="companies"
                 :providers="popularCompanies" />
+        </div>
+        <div class="delisted-filter">
+            <Checkbox
+                v-model="includeDelisted"
+                input-id="include-delisted"
+                binary />
+            <label for="include-delisted">상장폐지 포함</label>
         </div>
         <div
             v-if="securityType || company || query"
@@ -491,7 +515,9 @@
                                         >{{ row.symbol }}</router-link
                                     >
                                     <router-link
-                                        v-if="row.underlying"
+                                        v-if="
+                                            row.underlying && !isDelisted(row)
+                                        "
                                         class="stock-compare-action"
                                         :to="`/underlying/${row.underlying}`"
                                         :aria-label="`${row.underlying} 기반 ETF 비교`"
@@ -505,6 +531,10 @@
                                         class="stock-provider-badge"
                                         >{{ row.company }}</span
                                     >
+                                    <Tag
+                                        v-if="isDelisted(row)"
+                                        value="상장폐지"
+                                        severity="warn" />
                                 </div>
                                 <span>{{
                                     row.koName || row.longName || row.symbol
@@ -615,6 +645,13 @@
         box-shadow: 0 1px 2px
             color-mix(in srgb, var(--app-text) 3%, transparent);
     }
+    .delisted-filter {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-block: 1rem;
+    }
+
     .search-heading {
         display: flex;
         justify-content: space-between;

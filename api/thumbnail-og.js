@@ -1,3 +1,4 @@
+import { isDelisted } from '../lib/security-status.js';
 import { normalizeSymbol, validSymbol } from '../lib/thumbnail-projection.js';
 import distributionIndex from '../public/content-studio/distribution-index.json' with { type: 'json' };
 
@@ -16,6 +17,7 @@ const date = (value) => /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? '')) ? `${Num
 export default function handler(req, res) {
     const ticker = normalize(req.query.ticker);
     if (!validSymbol(ticker)) return res.status(400).send('Invalid ticker');
+    if (isDelisted(ticker)) return res.status(410).send('상장폐지 종목의 카드 출력은 제공하지 않습니다.');
     const candidate = latest(ticker);
     const dividend = ['official', 'cross_checked'].includes(candidate?.verification_status) ? candidate : null;
     const dividendAmount = amount(dividend?.distribution_per_share ?? dividend?.amount);

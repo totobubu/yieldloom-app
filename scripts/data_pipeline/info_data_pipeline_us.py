@@ -6,12 +6,18 @@
 - 한 번의 실행으로 yfinance를 활용한 모든 정보성 데이터 업데이트
 """
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from scripts.metadata.security_status import load_statuses
+
+DELISTED_SYMBOLS = set(load_statuses())
+
 import json
 import time
 import math
 import requests
 import warnings
-import sys
 import logging
 import yfinance as yf
 from datetime import datetime, timedelta
@@ -126,7 +132,12 @@ def initialize():
         return False
 
     all_tickers_info = nav_data.get("nav", [])
-    active_tickers_info = [t for t in all_tickers_info if not t.get("upcoming", False)]
+    active_tickers_info = [
+        t for t in all_tickers_info
+        if not t.get("upcoming", False)
+        and (str(t.get("symbol", "")).upper().replace(".", "-") not in DELISTED_SYMBOLS
+             or "--include-delisted" in sys.argv)
+    ]
 
     # US 시장 필터링
     active_tickers_info = [

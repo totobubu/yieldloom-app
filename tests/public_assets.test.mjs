@@ -1,3 +1,4 @@
+import { applySecurityStatuses, isSearchableSecurity } from '../lib/security-status.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -6,7 +7,7 @@ import { createTickerIndex, excludedPublicDirectories, publicAssetsPlugin } from
 test('compact index preserves active core catalog entries and thumbnail relationships', async () => {
     const source = JSON.parse(await fs.readFile('data-v2/catalog-seed.json', 'utf8'));
     const catalog = JSON.parse(await fs.readFile('public/thumbnail-catalog.json', 'utf8'));
-    const expected = source.instruments.filter(row => row.symbol && row.active !== false);
+    const expected = applySecurityStatuses(source.instruments).filter(row => row.symbol && isSearchableSecurity(row, true));
     const compact = createTickerIndex(source, catalog.relationships).nav;
     assert.equal(compact.length, expected.length);
     compact.forEach((row, index) => {

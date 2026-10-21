@@ -1,3 +1,4 @@
+import { isDelisted } from '../../lib/security-status.js';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
@@ -16,7 +17,7 @@ for (const row of index.tickers ?? []) {
     const ticker = String(row.ticker ?? '').toUpperCase();
     if (!/^[A-Z0-9.-]{1,15}$/.test(ticker)) continue;
     const latest = row.latest?.verification_status === 'official' ? row.latest : {};
-    const description = `${ticker} 최신 배당 ${amount(latest.distribution_per_share)} · 배당락일 ${exDate(latest.ex_date)} · Yieldloom에서 확인`;
+    const description = isDelisted(ticker) ? `${ticker} 상장폐지 · 과거 시세와 배당 이력 열람` : `${ticker} 최신 배당 ${amount(latest.distribution_per_share)} · 배당락일 ${exDate(latest.ex_date)} · Yieldloom에서 확인`;
     const canonical = `${siteUrl}/stock/${encodeURIComponent(ticker)}`;
     const head = [
         `<title>${escapeHtml(ticker)} 주식 상세정보 · 시세와 배당 | Yieldloom</title>`,
@@ -26,7 +27,7 @@ for (const row of index.tickers ?? []) {
         `<meta property="og:description" content="${escapeHtml(description)}">`,
         `<meta property="og:type" content="website">`,
         `<meta property="og:url" content="${canonical}">`,
-        `<meta property="og:image" content="${siteUrl}/api/thumbnail-og?ticker=${encodeURIComponent(ticker)}">`,
+        isDelisted(ticker) ? '' : `<meta property="og:image" content="${siteUrl}/api/thumbnail-og?ticker=${encodeURIComponent(ticker)}">`,
         '<meta property="og:image:width" content="1200">',
         '<meta property="og:image:height" content="630">',
         '<meta name="twitter:card" content="summary_large_image">',

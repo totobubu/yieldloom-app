@@ -1,3 +1,7 @@
+import {
+    applySecurityStatuses,
+    isSearchableSecurity,
+} from '../../lib/security-status.js';
 import { readPublicJson } from './publicJson.js';
 import { getDataUrl, getR2Url, getAssetUrl } from '@/utils/dataUrl';
 import {
@@ -34,13 +38,15 @@ export async function loadSecurityDirectory() {
             : readDirectoryAsset('content-studio/distribution-index.json'),
     ]);
     if (index.status !== 'fulfilled') throw index.reason;
-    const rows = applyVerifiedUnderlyings(
-        mergeDiscoveredStocks(
-            index.value.nav || [],
-            discovered.status === 'fulfilled' ? discovered.value : {}
+    const rows = applySecurityStatuses(
+        applyVerifiedUnderlyings(
+            mergeDiscoveredStocks(
+                index.value.nav || [],
+                discovered.status === 'fulfilled' ? discovered.value : {}
+            )
         )
     )
-        .filter((row) => row.symbol && row.active !== false)
+        .filter((row) => row.symbol && isSearchableSecurity(row))
         .map((row) => ({
             ...row,
             company: row.officialProvider || row.company,

@@ -1,3 +1,4 @@
+import { isDelisted } from '../lib/security-status.js';
 // tasks\updateHistoricalKrData.js
 import fs from 'fs/promises';
 import path from 'path';
@@ -646,9 +647,9 @@ async function main() {
     const navData = JSON.parse(navDataContent);
 
     // 커맨드라인 인자로 특정 티커 지정 가능
-    const targetSymbols = process.argv.slice(2).map((s) => s.toUpperCase());
+    const targetSymbols = process.argv.slice(2).filter(s => s !== '--include-delisted').map((s) => s.toUpperCase());
 
-    let tickersToFetch = [...navData.nav].filter((item) => !item.upcoming);
+    let tickersToFetch = [...navData.nav].filter((item) => !item.upcoming && (!isDelisted(item) || process.argv.includes('--include-delisted')));
 
     // 한국 티커만 필터링
     tickersToFetch = tickersToFetch.filter(

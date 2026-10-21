@@ -1,3 +1,4 @@
+import { isDelisted } from '../../lib/security-status.js';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import fs from 'node:fs/promises';
 import pLimit from 'p-limit';
@@ -16,7 +17,7 @@ export async function putJson(storage, bucket, key, value, immutable = true) {
     await storage.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: jsonBytes(value), ContentType: 'application/json', CacheControl: immutable ? 'public, max-age=31536000, immutable' : 'public, max-age=60' }));
 }
 
-export async function refresh({ nav, sourceBase, storage, bucket, asOf, symbols, fetcher = fetch, dryRun = false, concurrency = 8 }) {
+export async function refresh({ nav, sourceBase, storage, bucket, asOf, symbols, fetcher = fetch, dryRun = false, includeDelisted = false, concurrency = 8 }) {
     if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 8) throw new Error('Concurrency must be an integer between 1 and 8');
     if (!sourceBase?.startsWith('https://')) throw new Error('An HTTPS source R2 URL is required');
     if (!Array.isArray(nav?.nav) || nav.nav.some(row => typeof row?.symbol !== 'string')) throw new Error('Invalid source directory');
@@ -26,11 +27,12 @@ export async function refresh({ nav, sourceBase, storage, bucket, asOf, symbols,
     const previous = pointer ? await readJson(storage, bucket, pointer.manifestKey) : null;
     if (pointer && (!previous || sha256(jsonBytes(previous)) !== pointer.releaseId)) throw new Error('Previous manifest missing or corrupt; refusing to replace current');
     const entries = { ...(previous?.tickers ?? {}) };
-    const report = { asOf, dryRun, changed: [], unchanged: [], rejected: [], measurements: [] };
+    const report = { asOf, dryRun, changed: [], unchanged: [], rejected: [], skipped: [], measurements: [] };
     const selected = symbols ? new Set(symbols) : null;
     const limit = pLimit(concurrency);
     await Promise.all(nav.nav.filter(row => !selected || selected.has(row.symbol)).map(item => limit(async () => {
         const symbol = item.symbol;
+        if (isDelisted(symbol) && !includeDelisted) { report.skipped.push({ symbol, reason: 'delisted' }); return; }
         const sourceKey = item.dataPaths?.[0];
         try {
             if (!/^data\/[a-z0-9_-]+\/[a-z0-9.-]+\.json$/i.test(sourceKey ?? '')) throw new Error('Invalid source path');
@@ -102,7 +104,7 @@ async function main() {
         nav = await response.json();
     }
     if (!Array.isArray(nav.nav)) throw new Error('Source directory requires nav array');
-    const report = await refresh({ nav, sourceBase, storage, bucket, symbols, dryRun, concurrency: Number(value('--concurrency') ?? 8), asOf: value('--as-of') ?? new Date().toISOString().slice(0,10) });
+    const report = await refresh({ nav, sourceBase, storage, bucket, symbols, dryRun, concurrency: Number(value('--concurrency') ?? 8), includeDelisted: args.includes('--include-delisted'), asOf: value('--as-of') ?? new Date().toISOString().slice(0,10) });
     console.log(JSON.stringify(report, null, 2));
     if (report.rejected.length) process.exitCode = 1;
 }

@@ -1,3 +1,4 @@
+import { applySecurityStatuses, isSearchableSecurity } from '../lib/security-status.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { mergeDiscoveredStocks } from '../lib/discovered-stocks.js';
@@ -10,12 +11,12 @@ export const excludedPublicDirectories = new Set([
     // Source metadata is retained locally for the legacy data generators.
     'nav',
 ]);
-const indexFields = ['symbol', 'koName', 'longName', 'company', 'underlying', 'market', 'currency', 'dividendEtfs', 'dividendEvidence', 'noDividends', 'ipoDate', 'frequency'];
+const indexFields = ['symbol', 'koName', 'longName', 'company', 'underlying', 'market', 'currency', 'dividendEtfs', 'dividendEvidence', 'noDividends', 'ipoDate', 'frequency', 'active', 'listingStatus'];
 
 export function createTickerIndex(payload, relationships = {}, discovered = {}) {
     const underlyingByTicker = new Map(Object.entries(relationships).flatMap(([underlying, tickers]) =>
         (tickers ?? []).map(ticker => [ticker, underlying])));
-    return { nav: mergeDiscoveredStocks(payload.instruments, discovered).filter(row => row.symbol && row.active !== false).map(row => ({
+    return { nav: applySecurityStatuses(mergeDiscoveredStocks(payload.instruments, discovered)).filter(row => row.symbol && isSearchableSecurity(row, true)).map(row => ({
         ...Object.fromEntries(indexFields.filter(key => row[key] != null).map(key => [key, row[key]])),
         company: row.officialProvider ?? row.company,
         underlying: verifiedUnderlying(row.symbol)?.underlying ?? underlyingByTicker.get(row.symbol) ?? row.underlying,

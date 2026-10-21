@@ -11,12 +11,14 @@
     import { firebaseUser, authLoading } from '@/services/firebaseClient';
     import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
     import { metadataReviewRequest } from '@/services/metadataReview.js';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     const allowed = computed(() => isPortfolioAdmin(firebaseUser.value));
     const data = ref(null),
         error = ref(''),
         notice = ref(''),
         busy = ref(false),
         saving = ref(false);
+    useFullscreenLoading(busy, 'ETF 검토 데이터를 불러오고 있습니다.');
     const search = ref(''),
         status = ref('pending'),
         selectedSymbol = ref('');
@@ -170,7 +172,7 @@
             >로그인을 확인하고 있습니다.</Message
         >
         <Message v-else-if="!firebaseUser" severity="info"
-            ><router-link to="/login"
+            ><router-link to="/admin/login"
                 >로그인 후 관리자 권한을 확인해 주세요.</router-link
             ></Message
         >

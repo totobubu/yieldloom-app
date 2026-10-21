@@ -3,6 +3,7 @@
     import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
     import { loadStockPrices } from '@/services/stockPrices.js';
     import { aggregateCandles } from '@/services/stockAnalysis';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     const chartHost = ref(null),
         chartWidth = ref(1000);
     let observer;
@@ -27,6 +28,7 @@
         error = ref(''),
         period = ref(3),
         selected = ref(null);
+    useFullscreenLoading(loading, '일봉 데이터를 불러오고 있습니다.');
     const interval = ref('day'),
         visibleCount = ref(null),
         windowEnd = ref(null);

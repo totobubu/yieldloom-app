@@ -29,6 +29,7 @@
     import ThumbnailPreview from '@/components/thumbnail/ThumbnailPreview.vue';
     import StockDividendTrend from '@/components/stock/StockDividendTrend.vue';
     import StockHoldingPanel from '@/components/stock/StockHoldingPanel.vue';
+    import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
     import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
     import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
@@ -50,6 +51,10 @@
     } from '@/services/contentPresets';
     import { trackAggregate } from '@/services/analytics';
     import { apiOrigin, apiUrl } from '@/services/apiUrl';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
+    import { firebaseUser } from '@/services/firebaseClient.js';
+    import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
+    import { dividendAvailability } from '../../lib/dividend-availability.js';
     import {
         artworkFilename,
         artworkSuffix,
@@ -83,6 +88,7 @@
     const selectedInfo = ref(null);
     const selectedData = ref(null);
     const loading = ref(true);
+    useFullscreenLoading(loading, '종목 정보를 불러오고 있습니다.');
     const error = ref('');
     const rivals = ref([]);
     const draftRivals = ref([]);
@@ -110,21 +116,28 @@
     const presets = ref(loadLocalPresets());
 
     const selectedCardKinds = ref(['summary']);
-    const availableCards = computed(() => [
-        { kind: 'summary', label: '배당 요약' },
-        { kind: 'comparison', label: '배당 비교' },
-        ...(selectedInfo.value?.underlying
-            ? [
+    const availableCards = computed(() =>
+        dividendState.value === 'none'
+            ? []
+            : [
+                  { kind: 'summary', label: '배당 요약' },
+                  { kind: 'comparison', label: '배당 비교' },
+                  ...(selectedInfo.value?.underlying
+                      ? [
+                            {
+                                kind: 'rival',
+                                label: '기초자산·종목 비교',
+                                disabled: !comparison.value,
+                            },
+                        ]
+                      : []),
+                  { kind: 'calendar', label: '배당 일정' },
                   {
-                      kind: 'rival',
-                      label: '기초자산·종목 비교',
-                      disabled: !comparison.value,
+                      kind: 'entry-efficiency',
+                      label: '과거 매수 시점별 배당률',
                   },
               ]
-            : []),
-        { kind: 'calendar', label: '배당 일정' },
-        { kind: 'entry-efficiency', label: '과거 매수 시점별 배당률' },
-    ]);
+    );
     const selectedExportKinds = computed(() =>
         availableCards.value
             .filter(
@@ -135,8 +148,9 @@
             .map((card) => card.kind)
     );
     const showCard = (kind) =>
-        activeTab.value === 'share'
-            ? selectedCardKinds.value.includes(kind)
+        dividendState.value !== 'none' && activeTab.value === 'share'
+            ? selectedCardKinds.value.includes(kind) &&
+              availableCards.value.some((card) => card.kind === kind)
             : ['calendar', 'entry-efficiency'].includes(kind);
     const today = () => new Date().toISOString().slice(0, 10);
     const nextDividend = computed(() => {
@@ -185,19 +199,31 @@
               ? '갱신 지연 · 기준일 확인'
               : '일부 데이터 미확인'
     );
-    const tabs = [
+    const tabs = computed(() => [
         { id: 'details', label: '상세정보' },
         { id: 'prices', label: '시세정보' },
-        { id: 'dividends', label: '배당정보' },
+        ...(dividendState.value === 'none'
+            ? []
+            : [{ id: 'dividends', label: '배당정보' }]),
         { id: 'share', label: '공유정보' },
-    ];
+    ]);
     const activeTab = computed(() =>
-        tabs.some((tab) => tab.id === route.query.tab)
+        tabs.value.some((tab) => tab.id === route.query.tab)
             ? route.query.tab
             : 'details'
     );
     const selectTab = (id) =>
         router.replace({ query: { ...route.query, tab: id } });
+    const openDividendFeedback = () => {
+        document.getElementById('stock-feedback')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        });
+        window.setTimeout(
+            () => document.getElementById('feedback-message')?.focus(),
+            350
+        );
+    };
     const priceRows = computed(() =>
         (selectedData.value?.backtestData ?? [])
             .filter(
@@ -212,6 +238,16 @@
         dividendRows(selectedData.value?.backtestData)
             .filter((row) => row.date <= new Date().toISOString().slice(0, 10))
             .reverse()
+    );
+    const dividendState = computed(() =>
+        dividendAvailability({
+            security: selectedInfo.value || {},
+            sourceStatus: selectedData.value?.sourceStatus || {},
+            history: historyRows.value,
+        })
+    );
+    const dividendUnavailable = computed(
+        () => dividendState.value === 'unavailable'
     );
     const trailingDividend = computed(() => {
         const end = selectedData.value?.sourceStatus?.priceDate;
@@ -777,7 +813,7 @@
                         }}</strong
                     >
                 </article>
-                <article>
+                <article v-if="dividendState !== 'none'">
                     <span>최근 12개월 배당률 · 세전</span
                     ><strong>{{
                         trailingDividend != null && selectedInfo.price > 0
@@ -785,7 +821,10 @@
                             : '전체 이력 확인 필요'
                     }}</strong>
                 </article>
-                <button class="next-dividend" @click="selectTab('dividends')">
+                <button
+                    v-if="dividendState !== 'none'"
+                    class="next-dividend"
+                    @click="selectTab('dividends')">
                     <span
                         >다음 배당락일
                         <em v-if="nextDividend">{{
@@ -802,7 +841,7 @@
                     >시세 기준
                     {{ selectedData.sourceStatus?.priceDate || '미확인' }} ·
                     {{ sourceLabel }}</span
-                ><span
+                ><span v-if="dividendState !== 'none'"
                     >배당 기준 {{ historyRows[0]?.date || '미확인' }} · 공개
                     배당 원장</span
                 >
@@ -817,6 +856,20 @@
                     </p>
                 </details>
             </div>
+            <Message
+                v-if="dividendUnavailable"
+                severity="warn"
+                :closable="false"
+                class="dividend-data-notice">
+                배당 정보 확인 중이며, 관련 사항을 의견으로 남겨 주시면
+                감사합니다.
+                <Button
+                    label="익명 요청·한마디 남기기"
+                    icon="pi pi-comment"
+                    text
+                    size="small"
+                    @click="openDividendFeedback" />
+            </Message>
             <Tabs
                 :value="activeTab"
                 @update:value="selectTab"
@@ -852,7 +905,7 @@
                                         }}</small></strong
                                     >
                                 </article>
-                                <article>
+                                <article v-if="dividendState !== 'none'">
                                     <span>최근 12개월 주당 배당</span
                                     ><strong
                                         >{{
@@ -865,7 +918,7 @@
                                         >12개월 전체 이력 확인 필요</small
                                     >
                                 </article>
-                                <article>
+                                <article v-if="dividendState !== 'none'">
                                     <span>최근 12개월 배당수익률</span
                                     ><strong
                                         >{{
@@ -888,6 +941,7 @@
                                 </article>
                             </div>
                             <StockHoldingPanel
+                                v-if="isPortfolioAdmin(firebaseUser)"
                                 :symbol="selectedInfo.symbol"
                                 :price="
                                     selectedInfo.price != null
@@ -1108,7 +1162,63 @@
                                     :loading="packaging"
                                     @click="downloadPublishPackage" />
                             </div>
-                            <div class="share-controls">
+                            <Message
+                                v-if="dividendState === 'none'"
+                                severity="info"
+                                :closable="false">
+                                배당 카드 대신 현재 시세와 종목 기본정보를 담은
+                                종목 요약 카드를 제공합니다.
+                            </Message>
+                            <article
+                                v-if="dividendState === 'none'"
+                                class="stock-overview-share-card">
+                                <span>{{
+                                    selectedInfo.exchange || '거래소 미확인'
+                                }}</span>
+                                <h3>{{ selectedInfo.name }}</h3>
+                                <strong>{{ selectedInfo.symbol }}</strong>
+                                <dl>
+                                    <div>
+                                        <dt>최근 시세</dt>
+                                        <dd>
+                                            {{
+                                                displayNumber(
+                                                    selectedInfo.price,
+                                                    4
+                                                )
+                                            }}
+                                            {{ selectedInfo.currency }}
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt>전일 대비</dt>
+                                        <dd>
+                                            {{
+                                                priceChange
+                                                    ? `${priceChange.percent >= 0 ? '+' : ''}${displayNumber(priceChange.percent)}%`
+                                                    : '미확인'
+                                            }}
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt>시세 기준</dt>
+                                        <dd>
+                                            {{
+                                                selectedData.sourceStatus
+                                                    ?.priceDate || '미확인'
+                                            }}
+                                        </dd>
+                                    </div>
+                                </dl>
+                                <Button
+                                    label="종목 정보 문구 복사"
+                                    icon="pi pi-copy"
+                                    outlined
+                                    @click="copyShareText" />
+                            </article>
+                            <div
+                                v-if="dividendState !== 'none'"
+                                class="share-controls">
                                 <div class="studio-field">
                                     <label
                                         id="share-ratio-label"
@@ -1206,7 +1316,10 @@
                             </div>
                         </section>
                         <section
-                            v-if="activeTab === 'share'"
+                            v-if="
+                                activeTab === 'share' &&
+                                dividendState !== 'none'
+                            "
                             class="share-selector stock-section">
                             <h2>공유 카드 선택</h2>
                             <p class="hint">
@@ -1238,7 +1351,10 @@
                             </p>
                         </section>
                         <section
-                            v-show="activeTab === 'share'"
+                            v-show="
+                                activeTab === 'share' &&
+                                dividendState !== 'none'
+                            "
                             class="artwork-grid"
                             :class="{
                                 'dividend-view': activeTab === 'dividends',
@@ -1374,7 +1490,10 @@
                             </button>
                         </div>
                         <section
-                            v-show="activeTab === 'share'"
+                            v-show="
+                                activeTab === 'share' &&
+                                dividendState !== 'none'
+                            "
                             class="content-grid">
                             <TossCommunityCopy :data="thumbnailData" />
                             <section
@@ -1397,6 +1516,7 @@
                     </TabPanel></TabPanels
                 >
             </Tabs>
+            <StockFeedbackForm :symbol="selectedInfo.symbol" />
             <Dialog
                 v-model:visible="presetDialogOpen"
                 modal
@@ -1553,7 +1673,7 @@
     }
     .stock-overview {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
         gap: 16px;
         background: var(--app-surface);
         border: 1px solid var(--app-border);
@@ -1762,6 +1882,41 @@
         gap: 12px;
         align-items: flex-end;
         flex-wrap: wrap;
+    }
+    .stock-overview-share-card {
+        display: grid;
+        gap: 12px;
+        max-width: 620px;
+        padding: 24px;
+        border: 1px solid var(--app-border);
+        border-radius: 18px;
+        background: var(--app-surface-soft);
+    }
+    .stock-overview-share-card h3,
+    .stock-overview-share-card dl,
+    .stock-overview-share-card dd {
+        margin: 0;
+    }
+    .stock-overview-share-card > strong {
+        font-size: 1.75rem;
+    }
+    .stock-overview-share-card dl {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .stock-overview-share-card dl > div {
+        padding: 12px;
+        border-radius: 12px;
+        background: var(--app-surface);
+    }
+    .stock-overview-share-card dt {
+        color: var(--app-muted);
+        font-size: 0.8rem;
+    }
+    .stock-overview-share-card dd {
+        margin-top: 6px;
+        font-weight: 700;
     }
     .share-controls .studio-field {
         min-width: 180px;

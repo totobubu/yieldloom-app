@@ -135,7 +135,7 @@ try {
                 passed: true,
             });
         }
-        await page.goto(base + '/login');
+        await page.goto(base + '/admin/login');
         await page
             .getByLabel('이메일', { exact: true })
             .fill('example@example.test');
@@ -161,13 +161,9 @@ try {
             .waitFor();
         await page.screenshot({ path: `${output}/${width}-reset.png` });
         await page
-            .getByRole('button', { name: '계정 및 설정', exact: true })
-            .click();
-        await page
-            .getByRole('button', { name: '다크 모드로 보기', exact: true })
+            .getByRole('button', { name: '다크 모드', exact: true })
             .click();
         assert.equal(await page.locator('html.p-dark').count(), 1);
-        await page.keyboard.press('Escape');
         await page.reload();
         assert.equal(await page.locator('html.p-dark').count(), 1);
         await page.screenshot({ path: `${output}/${width}-dark.png` });

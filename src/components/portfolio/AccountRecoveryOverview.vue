@@ -8,6 +8,7 @@
     } from '../../../lib/portfolio-capital.js';
     import StockRecoveryPanel from './StockRecoveryPanel.vue';
     import FundingTracePanel from './FundingTracePanel.vue';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     const props = defineProps({
         user: Object,
         accounts: Array,
@@ -24,6 +25,7 @@
     const states = ref([]),
         loading = ref(false),
         error = ref('');
+    useFullscreenLoading(loading, '전체 계좌 회수 현황을 불러오고 있습니다.');
     let generation = 0;
     onScopeDispose(() => {
         generation++;

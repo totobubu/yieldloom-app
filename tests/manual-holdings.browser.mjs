@@ -17,7 +17,7 @@ try {
         route.fulfill({
             contentType: 'application/javascript',
             body: `import { ref, computed } from '/node_modules/.vite/deps/vue.js';
-            export const firebaseUser = ref({uid: 'manual-browser-' + Date.now(), displayName: '테스트', getIdToken: async function() { return this.uid; }});
+            export const firebaseUser = ref({uid: 'manual-browser-' + Date.now(), displayName: '테스트', email: 'totobubu.lab@gmail.com', emailVerified: true, getIdToken: async function() { return this.uid; }});
             export const authLoading = ref(false), signedIn = computed(() => true);
             export const firebaseReady = false, db = null, auth = null, googleProvider = null;`,
         })

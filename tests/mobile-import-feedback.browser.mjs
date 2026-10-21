@@ -17,7 +17,7 @@ try {
         await page.route('**/src/services/firebaseClient*', (route) =>
             route.fulfill({
                 contentType: 'application/javascript',
-                body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js';export const firebaseUser=ref({uid:'mobile-fixture',getIdToken:async()=> 'fixture'}),authLoading=ref(false),signedIn=computed(()=>true),firebaseReady=false,db=null,auth=null,googleProvider=null;`,
+                body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js';export const firebaseUser=ref({uid:'mobile-fixture',email:'totobubu.lab@gmail.com',emailVerified:true,getIdToken:async()=> 'fixture'}),authLoading=ref(false),signedIn=computed(()=>true),firebaseReady=false,db=null,auth=null,googleProvider=null;`,
             })
         );
         const family = {
@@ -145,9 +145,10 @@ try {
         await page.waitForFunction(
             () => document.querySelector('.preview-button')?.disabled === true
         );
-        assert.ok(
-            await page.evaluate(() => scrollY > 300),
-            'User is below the global page error'
+        assert.equal(
+            await page.getByRole('dialog', { name: /자료 업로드/ }).isVisible(),
+            true,
+            'Upload feedback stays in the active dialog'
         );
         const request = pending.request().postData();
         assert.match(request, /%PDF-fixture/);

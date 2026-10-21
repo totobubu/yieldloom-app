@@ -2,12 +2,14 @@
     import { readPublicJson } from '@/services/publicJson.js';
     import { computed, ref, watch } from 'vue';
     import { getAssetUrl } from '@/utils/dataUrl';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
 
     const props = defineProps({ symbol: { type: String, required: true } });
     const data = ref(null),
         loading = ref(false),
         failed = ref(false),
         asOf = ref('');
+    useFullscreenLoading(loading, '누적 분석 데이터를 불러오고 있습니다.');
     let sequence = 0;
     const safeUrl = (value) => {
         try {

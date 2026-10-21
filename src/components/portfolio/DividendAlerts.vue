@@ -18,8 +18,10 @@
         takeUndeliveredAlerts,
     } from '@/services/portfolioAlerts.js';
     const props = defineProps({
-        rows: { type: Array, required: true },
-        basis: { type: String, required: true },
+        rows: { type: Array, default: () => [] },
+        basis: { type: String, default: 'payable' },
+        showSettings: { type: Boolean, default: true },
+        showUpcoming: { type: Boolean, default: true },
     });
     const prefs = reactive({ enabled: false, leadDays: 3, browser: false });
     const saved = ref(null),
@@ -136,60 +138,63 @@
 </script>
 <template>
     <section
+        v-if="showSettings || (showUpcoming && saved?.enabled)"
         class="dividend-alerts"
         aria-label="자동 배당 알림"
         :aria-busy="busy">
-        <h3>자동 배당 알림</h3>
-        <p>
-            계정에 저장한 설정으로 앱을 열거나 공시 자료를 갱신할 때 가까운 공시
-            일정을 자동 표시합니다. 계좌·통화 필터를 따르며 앱이 닫힌 동안의
-            푸시·메일 전송은 제공하지 않습니다.
-        </p>
-        <fieldset :disabled="busy || !saved">
-            <legend>내 알림 설정</legend>
-            <label
-                ><input v-model="prefs.enabled" type="checkbox" /> 앱 내 자동
-                알림 사용</label
-            >
-            <label
-                >미리 알려줄 기간<Select
-                    v-model="prefs.leadDays"
-                    :options="[
-                        { label: '1일', value: 1 },
-                        { label: '3일', value: 3 },
-                        { label: '7일', value: 7 },
-                    ]"
-                    option-label="label"
-                    option-value="value"
-                    aria-label="자동 알림 기간"
-            /></label>
-            <label
-                ><input v-model="prefs.browser" type="checkbox" /> 앱을 열어 둔
-                동안 브라우저 알림도 표시 (종목명 포함)</label
-            >
-            <div class="actions">
-                <Button
-                    label="브라우저 알림 권한 허용"
-                    outlined
-                    @click="allowBrowser" /><Button
-                    label="알림 설정 저장"
-                    :disabled="!changed"
-                    @click="save" />
-            </div>
-        </fieldset>
-        <Button
-            label="알림 설정 다시 조회"
-            text
-            :disabled="busy"
-            @click="load(true)" />
-        <Message v-if="error" severity="error" :closable="false">{{
-            error
-        }}</Message>
-        <Message v-if="status" severity="success" :closable="false">{{
-            status
-        }}</Message>
+        <template v-if="showSettings">
+            <h3>자동 배당 알림</h3>
+            <p>
+                계정에 저장한 설정으로 앱을 열거나 공시 자료를 갱신할 때 가까운
+                공시 일정을 자동 표시합니다. 선택한 계좌·통화 필터를 따르며 앱이
+                닫힌 동안의 푸시·메일 전송은 제공하지 않습니다.
+            </p>
+            <fieldset :disabled="busy || !saved">
+                <legend>내 알림 설정</legend>
+                <label
+                    ><input v-model="prefs.enabled" type="checkbox" /> 앱 내
+                    자동 알림 사용</label
+                >
+                <label
+                    >미리 알려줄 기간<Select
+                        v-model="prefs.leadDays"
+                        :options="[
+                            { label: '1일', value: 1 },
+                            { label: '3일', value: 3 },
+                            { label: '7일', value: 7 },
+                        ]"
+                        option-label="label"
+                        option-value="value"
+                        aria-label="자동 알림 기간"
+                /></label>
+                <label
+                    ><input v-model="prefs.browser" type="checkbox" /> 앱을 열어
+                    둔 동안 브라우저 알림도 표시 (종목명 포함)</label
+                >
+                <div class="actions">
+                    <Button
+                        label="브라우저 알림 권한 허용"
+                        outlined
+                        @click="allowBrowser" /><Button
+                        label="알림 설정 저장"
+                        :disabled="!changed"
+                        @click="save" />
+                </div>
+            </fieldset>
+            <Button
+                label="알림 설정 다시 조회"
+                text
+                :disabled="busy"
+                @click="load(true)" />
+            <Message v-if="error" severity="error" :closable="false">{{
+                error
+            }}</Message>
+            <Message v-if="status" severity="success" :closable="false">{{
+                status
+            }}</Message>
+        </template>
         <div
-            v-if="saved?.enabled"
+            v-if="showUpcoming && saved?.enabled"
             role="status"
             aria-label="다가오는 배당 알림">
             <p v-if="!upcoming.length">

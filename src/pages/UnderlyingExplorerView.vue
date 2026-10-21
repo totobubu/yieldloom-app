@@ -6,12 +6,13 @@
     import Tag from 'primevue/tag';
     import Message from 'primevue/message';
     import Popover from 'primevue/popover';
+    import Paginator from 'primevue/paginator';
+    import { inferSecurityType } from '../../lib/security-filters.js';
     import {
         comparisonSections,
         comparisonThemes,
-        similarProducts,
-        canCompareSimilar,
         themeProducts,
+        themeMatch,
     } from '../../lib/comparison-groups.js';
     import {
         loadSecurityDirectory,
@@ -47,7 +48,6 @@
             query: {
                 view,
                 ...(underlying.value ? { symbol: underlying.value } : {}),
-                ...(route.query.ticker ? { ticker: route.query.ticker } : {}),
                 ...(route.query.theme ? { theme: route.query.theme } : {}),
             },
         };
@@ -79,7 +79,15 @@
     );
     const strategy = ref(''),
         direction = ref(''),
+        dividend = ref(''),
         frequency = ref('');
+    const page = ref(1);
+    const pageSize = 12;
+    const dividendNames = {
+        available: '배당 이력 있음',
+        none: '무배당',
+        unavailable: '배당 정보 미확인',
+    };
     const strategyNames = {
         income: '인컴·옵션',
         leveraged: '레버리지',
@@ -91,20 +99,15 @@
         inverse: '인버스',
         unknown: '방향 미확인',
     };
-    const strategyOptions = [
-        { label: '모든 전략', value: '' },
-        ...Object.entries(strategyNames).map(([value, label]) => ({
-            value,
-            label,
-        })),
-    ];
-    const directionOptions = [
-        { label: '모든 방향', value: '' },
-        ...Object.entries(directionNames).map(([value, label]) => ({
-            value,
-            label,
-        })),
-    ];
+    function optionsFor(rows, key, names, allLabel) {
+        const values = [
+            ...new Set(rows.map((row) => row[key]).filter(Boolean)),
+        ];
+        return [
+            { label: allLabel, value: '' },
+            ...values.map((value) => ({ value, label: names[value] || value })),
+        ];
+    }
     const assets = computed(() =>
         [
             ...new Set(
@@ -117,35 +120,33 @@
     const allProducts = computed(() =>
         comparisonProducts(
             (directory.value?.rows ?? []).filter(
-                (row) => row.underlying && row.symbol !== row.underlying
+                (row) => inferSecurityType(row) === 'etf'
             ),
             directory.value?.distributions
         )
     );
-    const similarReady = computed(() => canCompareSimilar(reference.value));
-    const referenceOptions = computed(() =>
-        allProducts.value
-            .map((row) => ({
-                label: `${row.symbol} · ${row.koName || row.longName || row.company || ''}`,
-                value: row.symbol,
-            }))
-            .sort((a, b) => a.value.localeCompare(b.value))
+    const themeOptions = computed(() =>
+        [...new Set(comparisonThemes.map((item) => item.group))].map(
+            (group) => ({
+                label: group,
+                items: comparisonThemes
+                    .filter((item) => item.group === group)
+                    .map((item) => {
+                        const count = themeProducts(
+                            allProducts.value,
+                            item
+                        ).length;
+                        return {
+                            ...item,
+                            displayLabel: `${item.label} (${count})`,
+                            disabled: count === 0,
+                        };
+                    }),
+            })
+        )
     );
-    const reference = computed(() => {
-        const symbol =
-            typeof route.query.ticker === 'string'
-                ? route.query.ticker.toUpperCase()
-                : 'APLY';
-        return allProducts.value.find((row) => row.symbol === symbol) ?? null;
-    });
     const products = computed(() => {
-        if (section.value.value === 'similar')
-            return reference.value
-                ? [
-                      reference.value,
-                      ...similarProducts(allProducts.value, reference.value),
-                  ]
-                : [];
+        if (section.value.value === 'similar') return allProducts.value;
         if (section.value.value === 'theme')
             return themeProducts(allProducts.value, theme.value);
         return underlyingProducts(
@@ -159,31 +160,111 @@
     );
     const resultLabel = computed(() =>
         section.value.value === 'similar'
-            ? `${reference.value?.symbol || '기준 ETF 미선택'} 비교`
+            ? '조건별 ETF 비교'
             : section.value.value === 'theme'
               ? `${theme.value.label} 관련 ETF`
               : `${underlying.value} 기반`
     );
     const selectionKey = computed(
         () =>
-            `${section.value.value}:${underlying.value}:${route.query.ticker || ''}:${theme.value.value}`
+            `${section.value.value}:${section.value.value === 'underlying' ? underlying.value : section.value.value === 'theme' ? theme.value.value : ''}`
+    );
+    const strategyOptions = computed(() =>
+        optionsFor(products.value, 'strategy', strategyNames, '모든 전략')
+    );
+    const strategyProducts = computed(() =>
+        products.value.filter(
+            (row) => !strategy.value || row.strategy === strategy.value
+        )
+    );
+    const directionOptions = computed(() =>
+        optionsFor(
+            strategyProducts.value,
+            'direction',
+            directionNames,
+            '모든 방향'
+        )
+    );
+    const directionProducts = computed(() =>
+        strategyProducts.value.filter(
+            (row) => !direction.value || row.direction === direction.value
+        )
+    );
+    const dividendOptions = computed(() =>
+        optionsFor(
+            directionProducts.value,
+            'dividendStatus',
+            dividendNames,
+            '모든 배당 여부'
+        )
+    );
+    const dividendProducts = computed(() =>
+        directionProducts.value.filter(
+            (row) => !dividend.value || row.dividendStatus === dividend.value
+        )
     );
     const frequencies = computed(() =>
-        [
-            { label: '모든 배당주기', value: '' },
-            ...new Set(products.value.map((row) => row.frequency)),
-        ].map((value) =>
-            typeof value === 'string' ? { label: value, value } : value
-        )
+        optionsFor(dividendProducts.value, 'frequency', {}, '모든 지급 주기')
     );
     const visible = computed(() =>
-        products.value.filter(
-            (row) =>
-                (!strategy.value || row.strategy === strategy.value) &&
-                (!direction.value || row.direction === direction.value) &&
-                (!frequency.value || row.frequency === frequency.value)
+        dividendProducts.value.filter(
+            (row) => !frequency.value || row.frequency === frequency.value
         )
     );
+    const pageProducts = computed(() =>
+        visible.value.slice((page.value - 1) * pageSize, page.value * pageSize)
+    );
+    // Upstream choices invalidate downstream selections, including still-valid ones.
+    watch(
+        strategy,
+        () => {
+            direction.value = '';
+            dividend.value = '';
+            frequency.value = '';
+        },
+        { flush: 'sync' }
+    );
+    watch(
+        direction,
+        () => {
+            dividend.value = '';
+            frequency.value = '';
+        },
+        { flush: 'sync' }
+    );
+    watch(
+        dividend,
+        () => {
+            frequency.value = '';
+        },
+        { flush: 'sync' }
+    );
+    watch(
+        [selectionKey, strategy, direction, dividend, frequency],
+        () => {
+            page.value = 1;
+        },
+        { flush: 'sync' }
+    );
+    // A directory refresh may remove options without changing the selected basis.
+    for (const [options, selection] of [
+        [strategyOptions, strategy],
+        [directionOptions, direction],
+        [dividendOptions, dividend],
+        [frequencies, frequency],
+    ]) {
+        watch(
+            options,
+            (values) => {
+                if (
+                    selection.value &&
+                    !values.some((option) => option.value === selection.value)
+                )
+                    selection.value = '';
+            },
+            { flush: 'sync' }
+        );
+    }
     const number = (value) =>
         value == null || !Number.isFinite(Number(value))
             ? '미확인'
@@ -200,7 +281,7 @@
                       : insights.value[symbol]?.performance?.[key]
               );
     const comparisonRows = computed(() =>
-        visible.value.map((row) => ({
+        pageProducts.value.map((row) => ({
             ...row,
             totalReturn: metric(row.symbol, 'totalReturn1Y')?.value ?? null,
             expenseRatio: metric(row.symbol, 'expenseRatio')?.value ?? null,
@@ -237,6 +318,7 @@
     const resetFilters = () => {
         strategy.value = '';
         direction.value = '';
+        dividend.value = '';
         frequency.value = '';
     };
     let generation = 0,
@@ -261,7 +343,7 @@
         controller = new AbortController();
         const request = ++detailsGeneration;
         const signal = controller.signal,
-            selected = visible.value.slice(0, 12);
+            selected = pageProducts.value;
         pending.value = true;
         detailsError.value = '';
         try {
@@ -312,9 +394,6 @@
             )
                 detailsError.value =
                     '일부 자료를 조회하지 못했습니다. 확인된 자료만 표시합니다.';
-            if (visible.value.length > 12)
-                detailsError.value =
-                    '상세 조회는 표시된 첫 12개까지입니다. 필터로 범위를 좁혀 주세요.';
         } finally {
             if (request === detailsGeneration) pending.value = false;
         }
@@ -333,7 +412,7 @@
         clearDetails();
         help.value?.hide();
     });
-    watch([strategy, direction, frequency], clearDetails);
+    watch([strategy, direction, dividend, frequency, page], clearDetails);
     onScopeDispose(() => {
         generation++;
         detailsGeneration++;
@@ -385,7 +464,7 @@
                 label="수익률·수수료·가격 하락 조회"
                 icon="pi pi-chart-line"
                 :loading="pending"
-                :disabled="loading || !visible.length"
+                :disabled="loading || !pageProducts.length"
                 @click="loadDetails" />
         </header>
         <Popover ref="help" aria-label="비교 안내"
@@ -396,11 +475,15 @@
         /></Message>
         <p v-if="loading" role="status">공용 종목 목록을 불러오고 있습니다.</p>
         <template v-if="directory"
-            ><div class="explorer-filters">
+            ><div
+                class="explorer-filters"
+                :class="{ 'has-basis': section.value !== 'similar' }">
                 <label
                     v-if="section.value === 'underlying'"
                     for="explorer-asset"
-                    ><span id="explorer-asset-label">기초자산</span
+                    ><span id="explorer-asset-label"
+                        ><span class="filter-step" aria-hidden="true">1</span>
+                        기초자산</span
                     ><Select
                         :model-value="underlying"
                         input-id="explorer-asset"
@@ -408,62 +491,85 @@
                         :options="assets"
                         @update:model-value="selectUnderlying"
                 /></label>
-                <label
-                    v-if="section.value === 'similar'"
-                    for="explorer-reference">
-                    <span>기준 ETF</span
-                    ><Select
-                        :model-value="reference?.symbol"
-                        input-id="explorer-reference"
-                        :options="referenceOptions"
-                        option-label="label"
-                        option-value="value"
-                        filter
-                        placeholder="기준 ETF 선택"
-                        @update:model-value="
-                            updateSelection('ticker', $event)
-                        " />
-                </label>
                 <label v-if="section.value === 'theme'" for="explorer-theme">
-                    <span>테마</span
+                    <span
+                        ><span class="filter-step" aria-hidden="true">1</span>
+                        테마</span
                     ><Select
                         :model-value="theme.value"
                         input-id="explorer-theme"
-                        :options="comparisonThemes"
-                        option-label="label"
+                        :options="themeOptions"
+                        option-group-label="label"
+                        option-group-children="items"
+                        option-disabled="disabled"
+                        filter
+                        option-label="displayLabel"
                         option-value="value"
                         @update:model-value="
                             updateSelection('theme', $event)
                         " />
                 </label>
                 <label v-if="hasSelection" for="explorer-strategy"
-                    ><span id="explorer-strategy-label">전략</span
+                    ><span id="explorer-strategy-label"
+                        ><span class="filter-step" aria-hidden="true">{{
+                            section.value === 'similar' ? 1 : 2
+                        }}</span>
+                        전략</span
                     ><Select
                         v-model="strategy"
                         placeholder="모든 전략"
                         input-id="explorer-strategy"
                         aria-labelledby="explorer-strategy-label"
                         :options="strategyOptions"
+                        :disabled="loading || !products.length"
                         option-label="label"
                         option-value="value" /></label
                 ><label v-if="hasSelection" for="explorer-direction"
-                    ><span id="explorer-direction-label">방향</span
+                    ><span id="explorer-direction-label"
+                        ><span class="filter-step" aria-hidden="true">{{
+                            section.value === 'similar' ? 2 : 3
+                        }}</span>
+                        방향</span
                     ><Select
                         v-model="direction"
                         placeholder="모든 방향"
                         input-id="explorer-direction"
                         aria-labelledby="explorer-direction-label"
                         :options="directionOptions"
+                        :disabled="loading || !strategyProducts.length"
                         option-label="label"
                         option-value="value" /></label
+                ><label v-if="hasSelection" for="explorer-dividend">
+                    <span id="explorer-dividend-label"
+                        ><span class="filter-step" aria-hidden="true">{{
+                            section.value === 'similar' ? 3 : 4
+                        }}</span>
+                        배당 여부</span
+                    >
+                    <Select
+                        v-model="dividend"
+                        input-id="explorer-dividend"
+                        aria-labelledby="explorer-dividend-label"
+                        :options="dividendOptions"
+                        option-label="label"
+                        option-value="value"
+                        placeholder="모든 배당 여부"
+                        :disabled="
+                            loading || !directionProducts.length
+                        " /> </label
                 ><label v-if="hasSelection" for="explorer-frequency"
-                    ><span id="explorer-frequency-label">배당주기</span
+                    ><span id="explorer-frequency-label"
+                        ><span class="filter-step" aria-hidden="true">{{
+                            section.value === 'similar' ? 4 : 5
+                        }}</span>
+                        지급 주기</span
                     ><Select
                         v-model="frequency"
-                        placeholder="모든 배당주기"
+                        placeholder="모든 지급 주기"
                         input-id="explorer-frequency"
                         aria-labelledby="explorer-frequency-label"
                         :options="frequencies"
+                        :disabled="loading || !dividendProducts.length"
                         option-label="label"
                         option-value="value"
                 /></label>
@@ -472,25 +578,29 @@
                 <strong>{{ theme.label }}</strong>
                 <p>{{ theme.description }}</p>
                 <small
-                    >위 종목을 기초자산으로 참조하는 ETF 목록입니다. 테마 전체의
-                    보유 비중이나 성과를 뜻하지 않습니다.</small
+                    >기초자산 목록 또는 상품명 키워드로 분류합니다. 여러 테마에
+                    중복될 수 있으며, 상품별 분류 근거를 함께 표시합니다. 보유
+                    비중 분석은 포함하지 않습니다.</small
                 >
             </div>
             <p v-if="section.value === 'similar'" class="comparison-context">
-                기준 ETF를 포함하며, 전략·방향이 같은 ETF를 표시합니다. 레버리지
-                ETF는 배수도 일치해야 합니다. 같은 기초자산을 우선 정렬하며
-                수익률 상관관계는 계산하지 않습니다.
+                전체 ETF에서 앞선 조건에 맞는 다음 옵션만 표시합니다. 상위
+                조건을 바꾸면 하위 선택을 초기화합니다. 배당 이력과 미확인
+                정보는 구분합니다.
             </p>
-            <Message
-                v-if="section.value === 'similar' && reference && !similarReady"
-                severity="info"
-                :closable="false">
-                기준 ETF의 전략·방향·배수 정보가 부족해 유사 ETF를 판별할 수
-                없습니다. 다른 기준 ETF를 선택해 주세요.
-            </Message>
-            <h3 v-if="hasSelection" class="comparison-result-count">
-                {{ resultLabel }} · {{ visible.length }}개
-            </h3>
+            <div v-if="hasSelection" class="comparison-results-toolbar">
+                <h3 class="comparison-result-count">
+                    {{ resultLabel }} · {{ visible.length }}개
+                </h3>
+                <Button
+                    v-if="strategy || direction || dividend || frequency"
+                    label="필터 초기화"
+                    icon="pi pi-refresh"
+                    severity="secondary"
+                    text
+                    size="small"
+                    @click="resetFilters" />
+            </div>
             <Message v-else severity="info" :closable="false"
                 >비교할 기초자산을 선택해 주세요.</Message
             >
@@ -605,7 +715,7 @@
                 </p>
             </section>
             <div v-if="hasSelection" class="product-grid">
-                <article v-for="row in visible" :key="row.symbol">
+                <article v-for="row in pageProducts" :key="row.symbol">
                     <header>
                         <router-link :to="`/stock/${row.symbol}`"
                             ><h3>{{ row.symbol }}</h3></router-link
@@ -637,12 +747,6 @@
                     <div
                         v-if="section.value !== 'underlying'"
                         class="product-context-tags">
-                        <Tag
-                            v-if="
-                                section.value === 'similar' &&
-                                row.symbol === reference?.symbol
-                            "
-                            value="기준 ETF" />
                         <router-link
                             v-if="row.underlying"
                             :to="`/underlying/${row.underlying}`"
@@ -659,12 +763,30 @@
                         }}
                         · {{ row.frequency }}
                     </p>
+                    <small
+                        v-if="section.value === 'theme'"
+                        class="theme-match-note"
+                        >분류 근거: {{ themeMatch(row, theme)?.label }}</small
+                    >
                     <dl>
                         <dt>최근 주당 배당금</dt>
                         <dd>
-                            {{ number(row.dividend) }}
-                            {{ row.dividend == null ? '' : row.currency }}
-                            <small>{{ row.exDate || '배당락일 미확인' }}</small>
+                            {{
+                                row.dividendStatus === 'none'
+                                    ? '무배당'
+                                    : number(row.dividend)
+                            }}
+                            {{
+                                row.dividendStatus === 'none' ||
+                                row.dividend == null
+                                    ? ''
+                                    : row.currency
+                            }}
+                            <small>{{
+                                row.dividendStatus === 'none'
+                                    ? '지급 주기 해당 없음'
+                                    : row.exDate || '배당락일 미확인'
+                            }}</small>
                         </dd>
                         <template v-if="detailed"
                             ><dt>1년 총수익률</dt>
@@ -734,6 +856,15 @@
                     </dl>
                 </article>
             </div>
+            <Paginator
+                v-if="hasSelection && visible.length > pageSize"
+                :first="(page - 1) * pageSize"
+                :rows="pageSize"
+                :total-records="visible.length"
+                :page-link-size="3"
+                template="PrevPageLink PageLinks NextPageLink"
+                aria-label="ETF 비교 결과 페이지"
+                @page="page = $event.page + 1" />
             <section
                 v-if="hasSelection && !visible.length"
                 class="explorer-empty"
@@ -847,6 +978,12 @@
     .comparison-context p {
         margin: 4px 0;
     }
+    .comparison-results-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
     .comparison-result-count {
         margin: 20px 0 12px;
         font-size: 18px;
@@ -860,11 +997,33 @@
     .product-context-tags a {
         color: var(--app-accent);
     }
+    .theme-match-note {
+        margin-top: 8px;
+    }
+    .filter-step {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        margin-right: 4px;
+        border-radius: 50%;
+        color: var(--app-accent);
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 9%,
+            var(--app-surface)
+        );
+        font-size: 12px;
+        font-weight: 700;
+    }
     .explorer-filters {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 14px;
         margin: 20px 0;
+    }
+    .explorer-filters.has-basis {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
     }
     .explorer-filters label {
         display: grid;
@@ -1044,7 +1203,8 @@
         .comparison-load-button {
             align-self: flex-end;
         }
-        .explorer-filters {
+        .explorer-filters,
+        .explorer-filters.has-basis {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }

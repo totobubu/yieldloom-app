@@ -1,4 +1,5 @@
 <script setup>
+    import { stockCardSummary } from '../../lib/stock-card-summary.js';
     import { computed, onMounted, ref, watch } from 'vue';
     import { useHead } from '@vueuse/head';
     import { useRoute, useRouter } from 'vue-router';
@@ -518,7 +519,9 @@
                                     aria-hidden="true"
                             /></router-link>
                         </div>
-                        <div class="stock-card-metrics">
+                        <div
+                            v-if="hasDividendMetrics(row)"
+                            class="stock-card-metrics">
                             <div>
                                 <small>최근 주당 배당금</small
                                 ><strong v-if="hasDividendMetrics(row)">{{
@@ -533,6 +536,29 @@
                                 }}</strong
                                 ><span v-else>미확인</span>
                             </div>
+                        </div>
+                        <div
+                            v-else
+                            class="stock-card-metrics stock-card-summary">
+                            <div>
+                                <small>{{
+                                    stockCardSummary(row).primaryLabel
+                                }}</small
+                                ><strong>{{
+                                    stockCardSummary(row).primaryValue
+                                }}</strong>
+                            </div>
+                            <div>
+                                <small>{{
+                                    stockCardSummary(row).secondaryLabel
+                                }}</small
+                                ><strong>{{
+                                    stockCardSummary(row).secondaryValue
+                                }}</strong>
+                            </div>
+                            <span class="stock-dividend-status">{{
+                                stockCardSummary(row).status
+                            }}</span>
                         </div>
                         <div class="stock-card-meta">
                             <span>{{
@@ -550,7 +576,11 @@
                         <router-link
                             :to="stockLink(row)"
                             class="stock-detail-link"
-                            >상세 배당 분석
+                            >{{
+                                hasDividendMetrics(row)
+                                    ? '상세 배당 분석'
+                                    : '종목 상세 보기'
+                            }}
                             <i class="pi pi-angle-right" aria-hidden="true"
                         /></router-link>
                     </div>
@@ -830,6 +860,11 @@
     .stock-card-metrics strong {
         font-size: 14px;
         overflow-wrap: anywhere;
+    }
+    .stock-card-summary .stock-dividend-status {
+        font-size: 11px;
+        color: var(--app-muted);
+        grid-column: 1 / -1;
     }
     .stock-card-meta {
         display: flex;

@@ -10,7 +10,7 @@ export const excludedPublicDirectories = new Set([
     // Source metadata is retained locally for the legacy data generators.
     'nav',
 ]);
-const indexFields = ['symbol', 'koName', 'longName', 'company', 'underlying', 'market', 'currency', 'dividendEtfs', 'dividendEvidence', 'noDividends', 'ipoDate'];
+const indexFields = ['symbol', 'koName', 'longName', 'company', 'underlying', 'market', 'currency', 'dividendEtfs', 'dividendEvidence', 'noDividends', 'ipoDate', 'frequency'];
 
 export function createTickerIndex(payload, relationships = {}, discovered = {}) {
     const underlyingByTicker = new Map(Object.entries(relationships).flatMap(([underlying, tickers]) =>

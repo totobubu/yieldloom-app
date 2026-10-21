@@ -87,19 +87,10 @@ try {
         await page.locator('.product-grid article').first().waitFor();
         assert.match(
             await page.locator('.comparison-result-count').innerText(),
-            /APLY/
+            /조건별 ETF 비교/
         );
-        assert.ok(
-            (await page.locator('.product-grid article').count()) > 1,
-            'Default comparison must contain peers'
-        );
-        assert.equal(
-            await page
-                .locator('.product-grid')
-                .getByText('기준 ETF', { exact: true })
-                .count(),
-            1
-        );
+        assert.equal(await page.locator('#explorer-reference').count(), 0);
+        assert.ok((await page.locator('.product-grid article').count()) > 1);
         await page.screenshot({ path: `${output}/${width}-similar.png` });
         await nav.getByRole('link', { name: '테마 비교', exact: true }).click();
         await page.waitForURL(
@@ -127,7 +118,7 @@ try {
                 ].includes(href)
             );
         await page.locator('#explorer-theme').click();
-        await page.getByRole('option', { name: '반도체', exact: true }).click();
+        await page.getByRole('option', { name: /^반도체 \(/ }).click();
         await page.waitForURL(
             (url) => url.searchParams.get('theme') === 'semiconductors'
         );
@@ -235,15 +226,14 @@ try {
         /미확인/
     );
     await page.goto(base + '/compare?view=similar&ticker=INVALID');
-    await page
-        .getByRole('heading', {
-            name: '조건에 맞는 ETF가 없습니다',
-            exact: true,
-        })
-        .waitFor();
+    await page.locator('.product-grid article').first().waitFor();
+    assert.match(
+        await page.locator('.comparison-result-count').innerText(),
+        /조건별 ETF 비교/
+    );
     await page.close();
     console.log(
-        'PASS: explicit detail query limits requests, missing metrics remain unknown, invalid reference empty state'
+        'PASS: explicit detail query limits requests, missing metrics remain unknown, legacy reference parameters do not constrain categories'
     );
 } finally {
     await browser.close();

@@ -647,6 +647,8 @@
         margin: 0;
     }
     .stock-card-grid > li {
+        display: flex;
+        flex-direction: column;
         min-width: 0;
     }
     .stock-result-card {

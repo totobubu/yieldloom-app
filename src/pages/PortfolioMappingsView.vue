@@ -106,7 +106,7 @@
         async ([user, waiting]) => {
             if (waiting) return;
             if (!user) {
-                router.replace('/login');
+                router.replace('/admin/login');
                 return;
             }
             pending.value = [];

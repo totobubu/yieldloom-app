@@ -63,6 +63,7 @@ declare module 'vue' {
     StatementIdentityReview: typeof import('./src/components/portfolio/StatementIdentityReview.vue')['default']
     StockCandlestickChart: typeof import('./src/components/stock/StockCandlestickChart.vue')['default']
     StockDividendTrend: typeof import('./src/components/stock/StockDividendTrend.vue')['default']
+    StockFeedbackForm: typeof import('./src/components/stock/StockFeedbackForm.vue')['default']
     StockHoldingPanel: typeof import('./src/components/stock/StockHoldingPanel.vue')['default']
     StockRecoveryPanel: typeof import('./src/components/portfolio/StockRecoveryPanel.vue')['default']
     StockSearchFilters: typeof import('./src/components/stock/StockSearchFilters.vue')['default']

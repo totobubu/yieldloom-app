@@ -2,7 +2,11 @@ export function authDestination(raw, origin) {
     if (typeof raw !== 'string' || !raw.startsWith('/')) return '/mypage';
     try {
         const url = new URL(raw, origin);
-        if (url.origin !== origin || url.pathname.startsWith('/login'))
+        if (
+            url.origin !== origin ||
+            url.pathname.startsWith('/login') ||
+            url.pathname.startsWith('/admin/login')
+        )
             return '/mypage';
         return url.pathname + url.search + url.hash;
     } catch {

@@ -5,9 +5,9 @@
         browserLocalPersistence,
         browserSessionPersistence,
         confirmPasswordReset,
-        createUserWithEmailAndPassword,
         sendPasswordResetEmail,
         setPersistence,
+        signOut,
         signInWithEmailAndPassword,
         signInWithPopup,
         verifyPasswordResetCode,
@@ -20,6 +20,7 @@
         googleProvider,
     } from '@/services/firebaseClient';
     import { authDestination, maskedEmail } from '@/services/authForm';
+    import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
     import Button from 'primevue/button';
     import Card from 'primevue/card';
     import Checkbox from 'primevue/checkbox';
@@ -52,7 +53,6 @@
         () =>
             ({
                 login: '로그인',
-                signup: '회원가입',
                 reset: '비밀번호 재설정',
                 confirm: '새 비밀번호 설정',
                 complete: '비밀번호 변경 완료',
@@ -66,7 +66,7 @@
         window.location.origin === 'https://totobubu.github.io' &&
         window.location.pathname.startsWith('/yieldloom-app/');
     const webAppLogin = computed(() => {
-        const url = new URL('/login', 'https://yieldloom-app.vercel.app');
+        const url = new URL('/admin/login', 'https://yieldloom-app.vercel.app');
         url.searchParams.set('redirect', destination.value);
         if (actionCode.value) {
             url.searchParams.set('mode', 'resetPassword');
@@ -83,9 +83,7 @@
     const confirmationInvalid = computed(
         () => confirmationTouched.value && confirmation.value !== password.value
     );
-    const newPassword = computed(() =>
-        ['signup', 'confirm'].includes(mode.value)
-    );
+    const newPassword = computed(() => mode.value === 'confirm');
     const resendRemaining = computed(() =>
         Math.max(0, Math.ceil((resetReadyAt.value - now.value) / 1000))
     );
@@ -108,7 +106,7 @@
                 verification++;
                 actionCode.value = '';
                 router.replace({
-                    path: '/login',
+                    path: '/admin/login',
                     query: route.query.redirect
                         ? { redirect: destination.value }
                         : {},
@@ -178,7 +176,7 @@
             // Keep action codes out of subsequent referrers and browser history. They
             // remain only in this component's memory until completion or navigation.
             router.replace({
-                path: '/login',
+                path: '/admin/login',
                 query: {
                     mode: 'resetPassword',
                     ...(route.query.redirect
@@ -266,18 +264,16 @@
                         ? browserSessionPersistence
                         : browserLocalPersistence
                 );
-                if (mode.value === 'signup')
-                    await createUserWithEmailAndPassword(
-                        auth,
-                        email.value.trim(),
-                        password.value
-                    );
-                else
-                    await signInWithEmailAndPassword(
-                        auth,
-                        email.value.trim(),
-                        password.value
-                    );
+                const credential = await signInWithEmailAndPassword(
+                    auth,
+                    email.value.trim(),
+                    password.value
+                );
+                if (!isPortfolioAdmin(credential.user)) {
+                    await signOut(auth);
+                    error.value = '관리자 계정만 접근할 수 있습니다.';
+                    return;
+                }
                 await router.push(destination.value);
             }
         } catch (reason) {
@@ -299,9 +295,7 @@
                 error.value =
                     mode.value === 'confirm'
                         ? '비밀번호를 변경하지 못했습니다. 비밀번호 조건을 확인하고 다시 시도해 주세요.'
-                        : mode.value === 'signup'
-                          ? '가입을 완료하지 못했습니다. 이메일과 비밀번호를 확인해 주세요.'
-                          : '로그인 정보를 확인해 주세요.';
+                        : '로그인 정보를 확인해 주세요.';
         } finally {
             busy.value = false;
         }
@@ -317,7 +311,12 @@
                     ? browserSessionPersistence
                     : browserLocalPersistence
             );
-            await signInWithPopup(auth, googleProvider);
+            const credential = await signInWithPopup(auth, googleProvider);
+            if (!isPortfolioAdmin(credential.user)) {
+                await signOut(auth);
+                error.value = '관리자 계정만 접근할 수 있습니다.';
+                return;
+            }
             await router.push(destination.value);
         } catch (reason) {
             error.value =
@@ -357,9 +356,7 @@
                                     ? 'pi pi-check'
                                     : ['reset', 'confirm'].includes(mode)
                                       ? 'pi pi-key'
-                                      : mode === 'signup'
-                                        ? 'pi pi-user-plus'
-                                        : 'pi pi-user'
+                                      : 'pi pi-user'
                             "
                             aria-hidden="true"
                     /></span>
@@ -372,9 +369,7 @@
                                   ? '이전과 다른 비밀번호로 계정을 다시 시작하세요.'
                                   : mode === 'complete'
                                     ? '새 비밀번호로 로그인할 수 있습니다.'
-                                    : mode === 'signup'
-                                      ? '계정을 만들고 나만의 배당 포트폴리오를 관리하세요.'
-                                      : '개인·가족 포트폴리오를 이어서 관리하세요.'
+                                    : '관리자 계정으로 자산 관리 화면에 접근하세요.'
                         }}
                     </p>
                 </div>
@@ -602,12 +597,6 @@
                                 :disabled="working"
                                 @click="mode = 'reset'" />
                         </div>
-                        <p v-if="mode === 'signup'" class="legal-note">
-                            계정 정보 처리와 서비스 이용 안내는
-                            <router-link to="/legal"
-                                >이용 안내·개인정보 안내</router-link
-                            >에서 확인할 수 있습니다.
-                        </p>
                         <Button
                             :label="
                                 mode === 'reset'
@@ -621,7 +610,7 @@
                             :loading="busy"
                             :disabled="working" />
                     </form>
-                    <template v-if="['login', 'signup'].includes(mode)"
+                    <template v-if="mode === 'login'"
                         ><Divider align="center"
                             ><span class="studio-muted">또는</span></Divider
                         ><Button
@@ -639,22 +628,8 @@
                                 ></template
                             ></Button
                         >
-                        <p class="auth-switch">
-                            {{
-                                mode === 'signup'
-                                    ? '이미 계정이 있나요?'
-                                    : '아직 회원이 아니신가요?'
-                            }}<Button
-                                :label="
-                                    mode === 'signup' ? '로그인' : '회원가입'
-                                "
-                                text
-                                :disabled="working"
-                                @click="
-                                    mode =
-                                        mode === 'signup' ? 'login' : 'signup'
-                                " /></p
-                    ></template>
+                        ></template
+                    >
                     <Button
                         v-else
                         label="로그인으로 돌아가기"

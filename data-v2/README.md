@@ -95,6 +95,15 @@ To publish a reviewed artifact, run `Publish approved data v2 release` on
 ID `candidate-<candidate_run_id>`. This validates the downloaded artifact and
 only then moves `core/current.json`.
 
+Before publishing, dispatch the same workflow with `review_only=true`, a
+`candidate_run_id`, and a separate review `release_id`. This mode runs without
+the production environment or R2 credentials. It rebuilds the collected official
+events with the checked-out catalog, compares all verified legacy history, and
+exposes a compact result in the job summary and check annotation. Missing or
+changed history fails the review. The complete snapshot and comparison remain
+in the `dividend-cutover-review-<run_id>` artifact. A review never updates
+`core/current.json`; publishing still requires a separately approved snapshot.
+
 ## Official email screenshot evidence
 
 Email screenshots are never placed under `public/`, data-v2 releases, or the

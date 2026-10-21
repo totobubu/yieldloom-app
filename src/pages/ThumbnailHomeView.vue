@@ -9,7 +9,6 @@
     import InputIcon from 'primevue/inputicon';
     import Select from 'primevue/select';
     import Paginator from 'primevue/paginator';
-    import Drawer from 'primevue/drawer';
     import Tag from 'primevue/tag';
     import Message from 'primevue/message';
     import Skeleton from 'primevue/skeleton';
@@ -56,9 +55,6 @@
             ? route.query.sort
             : 'dividendDate'
     );
-    const filterOpen = ref(false),
-        draftType = ref(''),
-        draftCompany = ref('');
     const sortOptions = [
         { label: '티커순', value: 'symbol' },
         { label: '운용사순', value: 'company' },
@@ -120,7 +116,7 @@
             ),
         ].sort((a, b) => a.localeCompare(b))
     );
-    const popularCompanies = computed(() => topProviders(rows.value));
+    const popularCompanies = computed(() => topProviders(rows.value, 15));
     const dividendDateValue = (row) =>
         distributions.value[row.symbol]?.ex_date ||
         row.dividendEvidence?.latestExDate ||
@@ -199,12 +195,6 @@
     const visible = computed(() =>
         filtered.value.slice((page.value - 1) * pageSize, page.value * pageSize)
     );
-    const filterCount = computed(
-        () =>
-            [company.value, securityType.value, query.value.trim()].filter(
-                Boolean
-            ).length
-    );
     function syncUrl() {
         if (restoring || route.name !== 'thumbnail-home') return;
         const next = { ...route.query };
@@ -250,16 +240,6 @@
     watch(pages, (count) => {
         if (!loading.value && page.value > count) page.value = count;
     });
-    function openFilters() {
-        draftType.value = securityType.value;
-        draftCompany.value = company.value;
-        filterOpen.value = true;
-    }
-    function applyFilters() {
-        securityType.value = draftType.value;
-        company.value = draftCompany.value;
-        filterOpen.value = false;
-    }
     const typeLabel = computed(
         () =>
             productTypeOptions.find(
@@ -375,42 +355,34 @@
                 severity="secondary"
                 rounded />
         </header>
-        <div class="search-input-row">
-            <label for="ticker-search" class="studio-sr-only"
-                >종목명, 티커 또는 운용사 검색</label
-            >
-            <IconField class="search-input"
-                ><InputIcon class="pi pi-search" /><InputText
-                    id="ticker-search"
-                    v-model="query"
-                    type="search"
-                    placeholder="종목명, 티커 또는 운용사 검색"
-                    fluid
-                    autocomplete="off"
-            /></IconField>
-            <Button
-                v-if="query"
-                icon="pi pi-times"
-                aria-label="검색어 지우기"
-                severity="secondary"
-                outlined
-                @click="query = ''" />
-            <Button
-                class="mobile-filter-button"
-                icon="pi pi-sliders-h"
-                :label="filterCount ? `필터 ${filterCount}` : '필터'"
-                severity="secondary"
-                outlined
-                @click="openFilters" />
+        <div class="search-controls">
+            <div class="search-input-row">
+                <label for="ticker-search" class="studio-sr-only"
+                    >종목명, 티커 또는 운용사 검색</label
+                >
+                <IconField class="search-input"
+                    ><InputIcon class="pi pi-search" /><InputText
+                        id="ticker-search"
+                        v-model="query"
+                        type="search"
+                        placeholder="종목명, 티커 또는 운용사 검색"
+                        fluid
+                        autocomplete="off"
+                /></IconField>
+                <Button
+                    v-if="query"
+                    icon="pi pi-times"
+                    aria-label="검색어 지우기"
+                    severity="secondary"
+                    outlined
+                    @click="query = ''" />
+            </div>
+            <StockSearchFilters
+                v-model:type="securityType"
+                v-model:company="company"
+                :companies="companies"
+                :providers="popularCompanies" />
         </div>
-        <Card class="desktop-filters"
-            ><template #content
-                ><StockSearchFilters
-                    v-model:type="securityType"
-                    v-model:company="company"
-                    :companies="companies"
-                    :providers="popularCompanies" /></template
-        ></Card>
         <div
             v-if="securityType || company || query"
             class="active-filters"
@@ -457,8 +429,8 @@
                 <label for="sort-order" class="studio-sr-only"
                     >검색 결과 정렬</label
                 ><Select
-                    input-id="sort-order"
                     v-model="sort"
+                    input-id="sort-order"
                     :options="sortOptions"
                     option-label="label"
                     option-value="value" />
@@ -527,6 +499,11 @@
                                             >VS</span
                                         ></router-link
                                     >
+                                    <span
+                                        v-if="row.company"
+                                        class="stock-provider-badge"
+                                        >{{ row.company }}</span
+                                    >
                                 </div>
                                 <span>{{
                                     row.koName || row.longName || row.symbol
@@ -570,6 +547,12 @@
                                 >{{ row.dividendEtfs.length }}개 ETF 편입</span
                             >
                         </div>
+                        <router-link
+                            :to="stockLink(row)"
+                            class="stock-detail-link"
+                            >상세 배당 분석
+                            <i class="pi pi-angle-right" aria-hidden="true"
+                        /></router-link>
                     </div>
                 </li>
             </ul>
@@ -589,37 +572,18 @@
             <!-- eslint-disable-next-line vue/no-deprecated-slot-attribute -- This is AdSlot's ad-unit prop. -->
             <AdSlot :slot="homeAdSlot" label="종목 검색 결과 광고" />
         </template>
-        <Drawer
-            v-model:visible="filterOpen"
-            header="검색 필터"
-            position="bottom"
-            class="search-filter-drawer"
-            :style="{ height: 'min(82dvh, 740px)' }">
-            <StockSearchFilters
-                id-prefix="mobile"
-                v-model:type="draftType"
-                v-model:company="draftCompany"
-                :companies="companies"
-                :providers="popularCompanies" />
-            <template #footer
-                ><div class="filter-footer">
-                    <Button
-                        label="초기화"
-                        severity="secondary"
-                        outlined
-                        @click="
-                            draftType = '';
-                            draftCompany = '';
-                        " /><Button
-                        label="필터 적용"
-                        icon="pi pi-check"
-                        @click="applyFilters" /></div
-            ></template>
-        </Drawer>
     </section>
 </template>
 
 <style scoped>
+    .search-controls {
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid var(--app-border-subtle);
+        background: var(--app-surface);
+        box-shadow: 0 1px 2px
+            color-mix(in srgb, var(--app-text) 3%, transparent);
+    }
     .search-heading {
         display: flex;
         justify-content: space-between;
@@ -647,15 +611,12 @@
     .search-input :deep(.p-inputtext) {
         height: 56px;
         border-radius: 12px;
-    }
-    .mobile-filter-button {
-        display: none;
-    }
-    .desktop-filters {
-        border: 1px solid var(--app-border);
-    }
-    .desktop-filters :deep(.p-card-content) {
-        padding: 0;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 5%,
+            var(--app-surface)
+        );
+        border-color: transparent;
     }
     .active-filters {
         display: flex;
@@ -700,7 +661,7 @@
     .loading-cards {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
+        gap: 16px;
     }
     .stock-card-grid {
         list-style: none;
@@ -734,8 +695,8 @@
     .stock-result-card {
         display: grid;
         height: 100%;
-        gap: 14px;
-        padding: 16px;
+        gap: 16px;
+        padding: 20px;
         color: var(--app-text);
     }
     .stock-compare-action {
@@ -777,7 +738,7 @@
     }
     .stock-symbol-link {
         color: var(--app-text);
-        font-size: 18px;
+        font-size: 22px;
         font-weight: 750;
         text-decoration: none;
     }
@@ -786,6 +747,34 @@
         color: var(--app-accent);
         text-decoration: underline;
         text-underline-offset: 3px;
+    }
+    .stock-title-actions {
+        flex-wrap: wrap;
+    }
+    .stock-card-heading .stock-provider-badge {
+        display: inline-block;
+        min-height: 0;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 12%,
+            var(--app-surface)
+        );
+        color: var(--app-accent);
+        font-size: 11px;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+    .stock-detail-link {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 4px;
+        color: var(--app-accent);
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
     }
     .stock-card-heading span {
         min-height: 2.5em;
@@ -811,14 +800,27 @@
     }
     .stock-card-metrics {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: 10px;
+        padding: 14px;
+        border-radius: 10px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 6%,
+            var(--app-surface)
+        );
         font-variant-numeric: tabular-nums;
     }
     .stock-card-metrics > div {
-        display: grid;
-        gap: 5px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
         min-width: 0;
+    }
+    .stock-card-metrics > div:first-child strong {
+        color: var(--app-accent);
+        font-size: 17px;
     }
     .stock-card-metrics small,
     .stock-card-metrics span {
@@ -872,12 +874,6 @@
         gap: 16px;
         flex-wrap: wrap;
     }
-    .filter-footer {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
     @media (max-width: 767px) {
         .search-heading {
             margin-bottom: 20px;
@@ -899,11 +895,35 @@
             height: 48px;
             font-size: 14px;
         }
-        .mobile-filter-button {
-            display: inline-flex;
-            white-space: nowrap;
+        .search-controls {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
         }
-        .desktop-filters {
+        .search-input-row {
+            margin-bottom: 16px;
+        }
+        .search-input :deep(.p-inputtext) {
+            background: var(--app-surface);
+            border-color: var(--app-border-subtle);
+        }
+        .stock-result-card {
+            padding: 16px;
+            gap: 12px;
+        }
+        .stock-card-metrics {
+            grid-template-columns: 1fr 1fr;
+        }
+        .stock-card-metrics > div {
+            display: grid;
+            gap: 4px;
+        }
+        .stock-card-meta {
+            border-top: 0;
+            padding-top: 0;
+        }
+        .stock-detail-link {
             display: none;
         }
         .stock-card-grid,

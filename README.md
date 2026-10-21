@@ -12,6 +12,7 @@
 - `/simulator`: 관리자 전용 최초 투자·납입·배당·재투자 A/B 및 원천징수율 가정 비교.
 - `/mypage/legacy`: 이전 단일 계좌 자료 조회.
 - `/stock/:ticker`: 종목 상세·시세·배당 정보와 배당 카드 PNG·게시 패키지 다운로드, 게시 문구 복사. `/thumbnail/:ticker`는 이 경로로 이동합니다.
+- `/compare`: 종목 비교의 기초자산별·유사 ETF·테마(M7/반도체) 하위 화면. `view=underlying|similar|theme`, `symbol`, `ticker`, `theme`으로 비교 조건을 공유합니다. 기존 `/underlying/:symbol` 링크도 유지합니다. 유사 ETF는 검증된 전략·방향이 같고 레버리지 상품의 배수도 같은 상품, 테마는 해당 종목을 기초자산으로 참조하는 상품을 표시합니다.
 - `/legal`: 데이터 출처·갱신·투자 면책 및 개인정보 안내.
 - `/admin/feedback`: 공개 종목 상세에서 익명으로 접수한 요청·질문을 관리자만 검토하고 처리합니다.
 - `?rivals=CRSH,TSII`: 라이벌 선택 공유. 최대 3종.

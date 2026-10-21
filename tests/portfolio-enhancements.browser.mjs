@@ -347,6 +347,7 @@ try {
         .getByText('저장된 설정을 삭제했습니다.', { exact: true })
         .waitFor();
 
+    await page.locator('.p-dialog-close-button').click();
     await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
     const insights = page.getByRole('region', {
         name: '원장 품질·청산 수익 분석',

@@ -8,8 +8,6 @@
     import IconField from 'primevue/iconfield';
     import InputIcon from 'primevue/inputicon';
     import Select from 'primevue/select';
-    import DataTable from 'primevue/datatable';
-    import Column from 'primevue/column';
     import Paginator from 'primevue/paginator';
     import Drawer from 'primevue/drawer';
     import Tag from 'primevue/tag';
@@ -103,7 +101,7 @@
         if (!firebaseUser.value) return '보유이력을 보려면 로그인해 주세요.';
         return holdingsError.value;
     });
-    const pageSize = 25;
+    const pageSize = 60;
     const companies = computed(() =>
         [
             ...new Set(
@@ -421,13 +419,13 @@
         </div>
         <div
             v-if="loading"
-            class="loading-rows"
+            class="loading-cards"
             role="status"
             aria-label="종목 목록을 불러오는 중">
             <Skeleton
-                v-for="n in 5"
+                v-for="n in 12"
                 :key="n"
-                height="5rem"
+                height="10.5rem"
                 border-radius="12px" />
         </div>
         <Message v-else-if="error" severity="error" :closable="false"
@@ -458,99 +456,37 @@
                         @click="reset" /></div></template
         ></Card>
         <template v-else>
-            <DataTable
-                class="desktop-results"
-                :value="visible"
-                data-key="symbol"
-                table-style="min-width: 48rem"
-                striped-rows
-                :table-props="{ 'aria-label': '종목 검색 결과' }">
-                <Column header="종목명 / 티커"
-                    ><template #body="{ data }"
-                        ><router-link class="ticker-link" :to="stockLink(data)"
-                            ><strong>{{ data.symbol }}</strong
-                            ><span>{{
-                                data.koName || data.longName || data.symbol
-                            }}</span></router-link
-                        ><router-link
-                            v-if="data.underlying"
-                            class="row-note"
-                            :to="`/underlying/${data.underlying}`"
-                            >{{ data.underlying }} 기반</router-link
-                        ><small
-                            v-else-if="data.dividendEtfs?.length"
-                            class="row-note"
-                            >{{
-                                data.dividendEtfs
-                                    .map((etf) => etf.ticker)
-                                    .join(' · ')
-                            }}
-                            편입</small
-                        ></template
-                    ></Column
-                >
-                <Column header="운용사"
-                    ><template #body="{ data }"
-                        ><span class="studio-muted">{{
-                            data.company || '—'
-                        }}</span></template
-                    ></Column
-                >
-                <Column header="최근 주당 배당금" body-class="studio-numeric"
-                    ><template #body="{ data }"
-                        ><strong>{{ amount(data) }}</strong
-                        ><small
-                            v-if="
-                                !distributions[data.symbol] &&
-                                data.dividendEvidence
-                            "
-                            class="row-note"
-                            >Yahoo Finance ·
-                            {{ data.dividendEvidence.asOfDate }}</small
-                        ></template
-                    ></Column
-                >
-                <Column header="최근 배당락일"
-                    ><template #body="{ data }"
-                        ><span class="studio-numeric">{{
-                            exDate(data)
-                        }}</span></template
-                    ></Column
-                >
-                <Column
-                    ><template #body="{ data }"
-                        ><router-link
-                            class="detail-link"
-                            :to="stockLink(data)"
-                            :aria-label="`${data.symbol} 종목 상세`"
-                            ><i
-                                class="pi pi-arrow-right"
-                                aria-hidden="true" /></router-link></template
-                ></Column>
-            </DataTable>
-            <ul class="mobile-results" aria-label="종목 검색 결과">
+            <ul class="stock-card-grid" aria-label="종목 검색 결과">
                 <li v-for="row in visible" :key="row.symbol">
-                    <router-link :to="stockLink(row)" class="mobile-stock-card">
-                        <div class="mobile-stock-heading">
-                            <strong>{{ row.symbol }}</strong
-                            ><span>{{
-                                row.koName || row.longName || row.symbol
-                            }}</span
-                            ><i class="pi pi-angle-right" aria-hidden="true" />
+                    <router-link :to="stockLink(row)" class="stock-result-card">
+                        <div class="stock-card-heading">
+                            <div>
+                                <strong>{{ row.symbol }}</strong>
+                                <span>{{
+                                    row.koName || row.longName || row.symbol
+                                }}</span>
+                            </div>
+                            <i
+                                class="pi pi-arrow-up-right"
+                                aria-hidden="true" />
                         </div>
-                        <div
-                            v-if="hasDividendMetrics(row)"
-                            class="mobile-stock-metrics">
+                        <div class="stock-card-metrics">
                             <div>
                                 <small>최근 주당 배당금</small
-                                ><strong>{{ amount(row) }}</strong>
+                                ><strong v-if="hasDividendMetrics(row)">{{
+                                    amount(row)
+                                }}</strong
+                                ><span v-else>정보 확인 중</span>
                             </div>
                             <div>
                                 <small>배당락일</small
-                                ><span>{{ exDate(row) }}</span>
+                                ><strong v-if="hasDividendMetrics(row)">{{
+                                    exDate(row)
+                                }}</strong
+                                ><span v-else>미확인</span>
                             </div>
                         </div>
-                        <div class="mobile-stock-meta">
+                        <div class="stock-card-meta">
                             <span>{{
                                 row.company ||
                                 (inferSecurityType(row) === 'stock'
@@ -559,6 +495,8 @@
                             }}</span
                             ><span v-if="row.underlying"
                                 >{{ row.underlying }} 기반</span
+                            ><span v-else-if="row.dividendEtfs?.length"
+                                >{{ row.dividendEtfs.length }}개 ETF 편입</span
                             >
                         </div>
                     </router-link>
@@ -583,6 +521,14 @@
                 배당금·배당락일은 저장된 최근 이력 기준입니다. ‘—’는 제공된
                 데이터가 없는 항목입니다.
             </p>
+            <details class="classification-note">
+                <summary>상품 유형 분류 기준 자세히 보기</summary>
+                <p>
+                    배당 이력·주기와 상품 정보를 기준으로 분류합니다. 성장주는
+                    대표 성장 종목 목록, 배당성장주·고배당주는 관련 ETF 편입
+                    정보를 참고하며 유형은 서로 중복될 수 있습니다.
+                </p>
+            </details>
             <!-- eslint-disable-next-line vue/no-deprecated-slot-attribute -- This is AdSlot's ad-unit prop. -->
             <AdSlot :slot="homeAdSlot" label="종목 검색 결과 광고" />
         </template>
@@ -683,54 +629,118 @@
     .sort-field :deep(.p-select) {
         min-width: 124px;
     }
-    .desktop-results {
-        border: 1px solid var(--app-border);
-        border-radius: 14px;
-        overflow: hidden;
-    }
-    .desktop-results :deep(th) {
-        font-size: 13px;
-        color: var(--app-muted);
-        background: var(--app-surface-muted);
-        padding: 16px;
-    }
-    .desktop-results :deep(td) {
-        padding: 18px 16px;
-        font-size: 14px;
-    }
-    .ticker-link {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        color: var(--app-text);
-        text-decoration: none;
-    }
-    .ticker-link strong {
-        font-size: 17px;
-    }
-    .ticker-link span {
-        max-width: 360px;
-        overflow-wrap: anywhere;
-        font-size: 13px;
-        color: var(--app-muted);
-    }
     .row-note {
         display: block;
         font-size: 12px;
         color: var(--app-muted);
         margin-top: 5px;
     }
-    .detail-link {
+    .stock-card-grid,
+    .loading-cards {
         display: grid;
-        place-items: center;
-        width: 44px;
-        height: 44px;
-        color: var(--app-accent);
-        border-radius: 10px;
-        background: var(--app-surface-muted);
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
     }
-    .mobile-results {
-        display: none;
+    .stock-card-grid {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .stock-card-grid > li {
+        min-width: 0;
+    }
+    .stock-result-card {
+        display: grid;
+        height: 100%;
+        gap: 14px;
+        padding: 16px;
+        color: var(--app-text);
+        text-decoration: none;
+        border: 1px solid var(--app-border);
+        border-radius: 14px;
+        background: var(--app-surface);
+        transition:
+            border-color 0.18s ease,
+            box-shadow 0.18s ease,
+            transform 0.18s ease;
+    }
+    .stock-result-card:hover,
+    .stock-result-card:focus-visible {
+        border-color: color-mix(
+            in srgb,
+            var(--app-accent) 55%,
+            var(--app-border)
+        );
+        box-shadow: 0 10px 26px
+            color-mix(in srgb, var(--app-accent) 10%, transparent);
+        transform: translateY(-2px);
+        outline: none;
+    }
+    .stock-card-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        min-width: 0;
+    }
+    .stock-card-heading > div {
+        display: grid;
+        gap: 4px;
+        min-width: 0;
+    }
+    .stock-card-heading strong {
+        font-size: 18px;
+    }
+    .stock-card-heading span {
+        min-height: 2.5em;
+        overflow: hidden;
+        color: var(--app-muted);
+        font-size: 13px;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+    .stock-card-heading i {
+        color: var(--app-accent);
+        padding-top: 3px;
+    }
+    .stock-card-metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        font-variant-numeric: tabular-nums;
+    }
+    .stock-card-metrics > div {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+    }
+    .stock-card-metrics small,
+    .stock-card-metrics span {
+        color: var(--app-muted);
+        font-size: 11px;
+    }
+    .stock-card-metrics strong {
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+    .stock-card-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: auto;
+        padding-top: 10px;
+        border-top: 1px solid var(--app-border-subtle);
+        color: var(--app-muted);
+        font-size: 11px;
+    }
+    .stock-card-meta span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .data-note {
         color: var(--app-muted);
@@ -740,9 +750,32 @@
         align-items: baseline;
         gap: 8px;
     }
-    .loading-rows {
-        display: grid;
-        gap: 12px;
+    .classification-note {
+        margin-top: 8px;
+        color: var(--app-muted);
+        font-size: 12px;
+        line-height: 1.65;
+    }
+    .classification-note summary {
+        width: fit-content;
+        min-height: 32px;
+        cursor: pointer;
+    }
+    .classification-note p {
+        max-width: 760px;
+        margin: 4px 0 0;
+    }
+    @media (max-width: 1100px) {
+        .stock-card-grid,
+        .loading-cards {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 820px) and (min-width: 768px) {
+        .stock-card-grid,
+        .loading-cards {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
     }
     .error-state {
         display: flex;
@@ -782,86 +815,20 @@
             display: inline-flex;
             white-space: nowrap;
         }
-        .desktop-filters,
-        .desktop-results {
+        .desktop-filters {
             display: none;
         }
-        .mobile-results {
-            display: grid;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            gap: 12px;
-        }
-        .mobile-results > li {
-            overflow: hidden;
-            background: var(--app-surface);
-            border: 1px solid var(--app-border);
-            border-radius: 14px;
-        }
-        .mobile-stock-card {
-            display: grid;
-            gap: 14px;
-            padding: 16px;
-            color: var(--app-text);
-            text-decoration: none;
+        .stock-card-grid,
+        .loading-cards {
+            grid-template-columns: 1fr;
         }
         .mobile-compare-link {
             min-height: 44px;
             margin: 0;
             padding: 0 16px 12px;
         }
-        .mobile-stock-heading {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-width: 0;
-        }
-        .mobile-stock-heading strong {
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        .mobile-stock-heading > span {
-            color: var(--app-muted);
-            font-size: 13px;
-            min-width: 0;
-            overflow-wrap: anywhere;
-        }
-        .mobile-stock-heading i {
-            margin-left: auto;
-            color: var(--app-muted);
-        }
-        .mobile-stock-metrics {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            font-variant-numeric: tabular-nums;
-        }
-        .mobile-stock-metrics > div {
-            display: grid;
-            gap: 4px;
-        }
-        .mobile-stock-metrics > div:last-child {
-            text-align: right;
-        }
-        .mobile-stock-metrics small {
-            color: var(--app-muted);
-            font-size: 12px;
-        }
-        .mobile-stock-metrics strong {
-            font-size: 17px;
-        }
-        .mobile-stock-metrics span {
-            font-size: 14px;
-        }
-        .mobile-stock-meta {
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            border-top: 1px solid var(--app-border-subtle);
-            padding-top: 10px;
-            color: var(--app-muted);
-            font-size: 12px;
+        .stock-card-heading span {
+            min-height: auto;
         }
         .results-toolbar {
             margin-top: 20px;

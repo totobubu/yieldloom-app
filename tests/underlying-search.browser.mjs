@@ -15,9 +15,18 @@ try {
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     const expected = ['AAPB', 'AAPD', 'AAPU', 'AAPW', 'AAPY', 'APLY'];
+    await page.goto('http://127.0.0.1:5173/');
+    await page.locator('.stock-card-grid li').first().waitFor();
+    assert.equal(await page.locator('.stock-card-grid li').count(), 60);
+    const classificationHelp = page.getByRole('button', {
+        name: '상품 유형 분류 기준 안내',
+    });
+    assert.ok(await classificationHelp.getAttribute('aria-describedby'));
+    await classificationHelp.hover();
+    await page.locator('.p-tooltip-text').waitFor();
     await page.goto('http://127.0.0.1:5173/?q=AAPL&type=etf');
     for (const symbol of expected) {
-        const row = page.locator('.desktop-results tbody tr').filter({
+        const row = page.locator('.stock-card-grid li').filter({
             has: page.locator('strong', {
                 hasText: new RegExp(`^${symbol}$`),
             }),
@@ -27,7 +36,7 @@ try {
     for (const width of [390, 360]) {
         await page.setViewportSize({ width, height: 1000 });
         for (const symbol of expected) {
-            const row = page.locator('.mobile-results li').filter({
+            const row = page.locator('.stock-card-grid li').filter({
                 has: page.locator('strong', {
                     hasText: new RegExp(`^${symbol}$`),
                 }),
@@ -76,7 +85,7 @@ try {
     );
     await page.reload();
     for (const symbol of expected.filter((value) => value !== 'AAPW')) {
-        const row = page.locator('.mobile-results li').filter({
+        const row = page.locator('.stock-card-grid li').filter({
             has: page.locator('strong', {
                 hasText: new RegExp(`^${symbol}$`),
             }),
@@ -85,7 +94,7 @@ try {
     }
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: AAPL search with six ETFs, desktop/mobile, dark mode, older directory overlay, no page errors'
+        'PASS: 60-card page, classification tooltip, AAPL search, desktop/mobile, dark mode, older directory overlay, no page errors'
     );
 } finally {
     await browser.close();

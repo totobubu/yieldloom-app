@@ -326,7 +326,12 @@
                     <li
                         v-for="row in data.dividendEtfs"
                         :key="row.etf || row.ticker">
-                        {{ row.etf || row.ticker }} · 편입 비중
+                        <router-link
+                            class="etf-card-link"
+                            :to="'/stock/' + (row.ticker || row.etf)"
+                            >{{ row.etf || row.ticker }}</router-link
+                        >
+                        · 편입 비중
                         {{ number(row.weightPercent, '%') }} ·
                         {{ row.asOfDate || '기준일 미제공' }}
                         <a
@@ -443,6 +448,9 @@
     summary {
         cursor: pointer;
         font-weight: 600;
+    }
+    .etf-card-link {
+        font-weight: 700;
     }
     .notice {
         color: #9a3412;

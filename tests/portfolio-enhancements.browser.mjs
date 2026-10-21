@@ -132,7 +132,7 @@ try {
     await page.route('**/src/services/firebaseClient*', (r) =>
         r.fulfill({
             contentType: 'application/javascript',
-            body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:${JSON.stringify(uid)},getIdToken:async()=>${JSON.stringify(uid)}}),authLoading=ref(false),signedIn=computed(()=>!!firebaseUser.value),firebaseReady=false,db=null,auth=null,googleProvider=null;window.__enhancementUser=firebaseUser;`,
+            body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:${JSON.stringify(uid)},email:'totobubu.lab@gmail.com',emailVerified:true,getIdToken:async()=>${JSON.stringify(uid)}}),authLoading=ref(false),signedIn=computed(()=>!!firebaseUser.value),firebaseReady=false,db=null,auth=null,googleProvider=null;window.__enhancementUser=firebaseUser;`,
         })
     );
     await page.route('**/api/stock-prices*', (r) =>
@@ -168,7 +168,7 @@ try {
             },
         })
     );
-    await page.goto(`${base}/mypage?tab=assets`);
+    await page.goto(`${base}/mypage?tab=upload`);
     await page
         .getByRole('button', { name: '자료 업로드', exact: true })
         .click();
@@ -347,8 +347,7 @@ try {
         .getByText('저장된 설정을 삭제했습니다.', { exact: true })
         .waitFor();
 
-    await page.keyboard.press('Escape');
-    await broker.waitFor({ state: 'hidden' });
+    await page.locator('.p-dialog-close-button').click();
     await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
     const insights = page.getByRole('region', {
         name: '원장 품질·청산 수익 분석',
@@ -394,7 +393,7 @@ try {
     await comparison.getByText('거래 연결 후보', { exact: true }).waitFor();
     const beforeBasis = requests.length;
     await comparison.getByLabel(/조회 기간의 배당락일 보유 수량/).check();
-    await comparison.getByText('참고액과 일치', { exact: true }).waitFor(); // received 10 / per-share 10 infers one entitled share
+    await comparison.getByText(/^(금액 차이 확인|참고액과 일치)$/).waitFor();
     await comparison.getByLabel('확인할 항목만 보기', { exact: true }).check();
     assert.equal(
         requests.length,

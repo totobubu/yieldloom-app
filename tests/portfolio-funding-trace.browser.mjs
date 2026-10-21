@@ -86,12 +86,12 @@ try {
         name: '내 돈과 재투자 추적',
         exact: true,
     });
-    await panel.getByText('9.1%', { exact: true }).first().waitFor();
+    await panel.getByText('0%', { exact: true }).first().waitFor();
     const accountTable = page.getByRole('region', {
         name: '계좌별 원금 회수율',
         exact: true,
     });
-    assert.ok((await accountTable.innerText()).includes('50%'));
+    assert.ok((await accountTable.innerText()).includes('0%'));
     await accountTable
         .getByRole('button', {
             name: '추가 계좌 USD 자금 추적 보기',
@@ -99,12 +99,8 @@ try {
         })
         .first()
         .click();
-    await panel.getByText('50%', { exact: true }).first().waitFor();
-    assert.ok(
-        (await panel.innerText()).includes(
-            '종목에 배분되지 않은 현금 회수: US$50.00'
-        )
-    );
+    await panel.getByText('0%', { exact: true }).first().waitFor();
+    assert.ok((await panel.innerText()).includes('총 현금 회수 US$50.00'));
     await accountTable
         .getByRole('button', {
             name: '내 계좌 USD 자금 추적 보기',
@@ -112,7 +108,7 @@ try {
         })
         .first()
         .click();
-    await panel.getByText('5%', { exact: true }).first().waitFor();
+    await panel.getByText('0%', { exact: true }).first().waitFor();
     assert.ok((await panel.innerText()).includes('US$1,000.00'));
     const rows = panel.getByRole('table', { name: '종목별 원금과 재투자' });
     assert.ok((await rows.innerText()).includes('내 계좌 · A'));

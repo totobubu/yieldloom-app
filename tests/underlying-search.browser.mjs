@@ -42,6 +42,21 @@ try {
                 }),
             });
             await row.getByText('AAPL 기반', { exact: true }).waitFor();
+            const comparison = row.getByRole('link', {
+                name: 'AAPL ETF 비교',
+                exact: true,
+            });
+            await comparison.waitFor();
+            const [cardBox, comparisonBox] = await Promise.all([
+                row.boundingBox(),
+                comparison.boundingBox(),
+            ]);
+            assert.ok(cardBox && comparisonBox);
+            assert.ok(comparisonBox.y >= cardBox.y);
+            assert.ok(
+                comparisonBox.y + comparisonBox.height <=
+                    cardBox.y + cardBox.height
+            );
         }
         assert.ok(
             await page.evaluate(

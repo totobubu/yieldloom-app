@@ -6,6 +6,7 @@
     import Message from 'primevue/message';
     import Tag from 'primevue/tag';
     import Dialog from 'primevue/dialog';
+    import DividendCalendarExport from './DividendCalendarExport.vue';
     import DividendAlerts from './DividendAlerts.vue';
     import DividendReconciliation from './DividendReconciliation.vue';
     import { firebaseUser } from '@/services/firebaseClient';
@@ -353,9 +354,9 @@
         </div>
         <Message severity="info" :closable="false"
             ><template v-if="mode === 'schedule'"
-                >예상액은 배당락일 잔고 × 공시 배당금의
-                <b>세전 참고액</b>입니다. 과거 잔고는 거래 내역으로 복원하며,
-                실제 배당 입금액이 있으면 이를 우선 사용합니다.</template
+                >예상액은 배당락일 잔고 × 공시 배당금의 <b>세전 참고액</b>입니다.
+                과거 잔고는 거래 내역으로 복원하며, 실제 배당 입금액이 있으면
+                이를 우선 사용합니다.</template
             ><template v-else
                 >업로드해 저장한 배당 거래만 표시합니다. 세전·세후 실수령액이나
                 모든 지급 내역이 완전하다는 뜻은 아닙니다. 배당 취소는 음수로
@@ -456,8 +457,18 @@
                 "
                 :key="`alerts:${firebaseUser?.uid}:${familyId}`"
                 :rows="rows"
+                :basis="basis" />
+            <DividendCalendarExport
+                v-if="
+                    mode === 'schedule' &&
+                    !busy &&
+                    !error &&
+                    selectedAccounts.length
+                "
+                :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${currency}:${period}:${view}:${basis}`"
+                :rows="rangeRows"
                 :basis="basis"
-                :show-settings="false" />
+                :period="view === 'year' ? period.slice(0, 4) : period" />
             <p v-if="busy" role="status">배당 자료를 확인하고 있습니다.</p>
             <div v-else class="calendar-totals">
                 <article v-for="total in totals" :key="total.currency">

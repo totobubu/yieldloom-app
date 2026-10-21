@@ -1,13 +1,19 @@
 <script setup>
     import { computed } from 'vue';
     import { tracePortfolioFunding } from '@/services/portfolioFundingTrace.js';
+    import OpeningFundingEditor from './OpeningFundingEditor.vue';
     const props = defineProps({
         entries: { type: Array, default: () => [] },
         classifications: { type: Array, default: () => [] },
         trades: { type: Array, default: () => [] },
         allocations: { type: Array, default: () => [] },
+        openingLots: { type: Array, default: () => [] },
+        openingRevision: { type: Number, default: 0 },
+        canEditOpening: Boolean,
+        savingOpening: Boolean,
         accounts: { type: Array, default: () => [] },
     });
+    const emit = defineEmits(['save-opening']);
     const accountId = defineModel('accountId', { type: String, default: '' });
     const activeAccount = computed(() =>
         props.accounts.some((a) => a.id === accountId.value)
@@ -20,20 +26,30 @@
               activeAccount.value
             : '전체 계좌'
     );
+    const activeOpeningLots = computed(() =>
+        props.openingLots.filter(
+            (row) =>
+                !activeAccount.value || row.accountId === activeAccount.value
+        )
+    );
     const currency = defineModel('currency', { type: String, default: 'USD' });
     const result = computed(() =>
         tracePortfolioFunding(
             Object.fromEntries(
-                ['entries', 'classifications', 'trades', 'allocations'].map(
-                    (key) => [
-                        key,
-                        props[key].filter(
-                            (r) =>
-                                !activeAccount.value ||
-                                r.accountId === activeAccount.value
-                        ),
-                    ]
-                )
+                [
+                    'entries',
+                    'classifications',
+                    'trades',
+                    'allocations',
+                    'openingLots',
+                ].map((key) => [
+                    key,
+                    props[key].filter(
+                        (r) =>
+                            !activeAccount.value ||
+                            r.accountId === activeAccount.value
+                    ),
+                ])
             )
         )
     );
@@ -58,13 +74,17 @@
     const account = (id) =>
         props.accounts.find((a) => a.id === id)?.alias || id;
     const series = [
-        { key: 'net', label: '외부 순투입금', color: '#2563eb' },
+        { key: 'deposits', label: '누적 투자 원금', color: '#2563eb' },
         {
             key: 'trackedAssetsAtCost',
             label: '추적 자산 (취득원가 + 현금)',
             color: '#16a34a',
         },
-        { key: 'recovered', label: '누적 현금 회수', color: '#c05621' },
+        {
+            key: 'principalRecovered',
+            label: '누적 원금 회수',
+            color: '#c05621',
+        },
     ];
     const range = computed(() => {
         const values = points.value.flatMap((p) => series.map((s) => p[s.key]));
@@ -99,6 +119,12 @@
             </select></label
         >
         <p>현재 범위: {{ scopeLabel }}</p>
+        <OpeningFundingEditor
+            v-if="canEditOpening && (activeAccount || !accounts.length)"
+            :lots="activeOpeningLots"
+            :revision="openingRevision"
+            :disabled="savingOpening"
+            @save="emit('save-opening', $event)" />
         <label
             >추적 통화
             <select v-model="currency" aria-label="자금 추적 통화">
@@ -120,40 +146,46 @@
             </p>
             <div class="trace-metrics">
                 <article>
-                    <small>외부 투입금</small
+                    <small>누적 투자 원금</small
                     ><strong>{{ money(metric.deposits) }}</strong>
                 </article>
                 <article>
-                    <small>실제 현금 회수</small
-                    ><strong>{{ money(metric.recovered) }}</strong>
+                    <small>원금 회수</small
+                    ><strong>{{ money(metric.principalRecovered) }}</strong>
+                    <span v-if="metric.estimatedPrincipalRecovered">
+                        추정
+                        {{ money(metric.estimatedPrincipalRecovered) }} 별도
+                    </span>
                 </article>
                 <article>
-                    <small>현금 회수율</small
-                    ><strong>{{ percent(metric.rate) }}</strong>
+                    <small>원금 회수율</small
+                    ><strong>{{ percent(metric.principalRate) }}</strong>
                 </article>
                 <article>
-                    <small>입금 대비 미회수액</small
+                    <small>미회수 원금</small
+                    ><strong>{{ money(metric.remainingPrincipal) }}</strong>
+                </article>
+                <article>
+                    <small>현재 원금 기반 자산</small
+                    ><strong>{{ money(last.principalAssets) }}</strong>
+                </article>
+                <article>
+                    <small>배당·수익 회수</small
                     ><strong>{{
-                        metric.rate == null
-                            ? '확인 필요'
-                            : money(
-                                  Math.max(
-                                      0,
-                                      metric.deposits - metric.recovered
-                                  )
-                              )
+                        money(metric.dividendRecovered + metric.profitRecovered)
                     }}</strong>
                 </article>
             </div>
             <p>
-                회수율 = 실제 외부 출금 ÷ 누적 외부 입금. 배당·수익을 인출해도
-                회수에 포함하며 100%를 넘을 수 있습니다. 미회수액은 손실액이
-                아닙니다.
+                원금 회수율 = 원금으로 귀속된 외부 출금 ÷ 누적 투자 원금.
+                배당·수익의 출금은 총 현금 회수에는 포함하지만 원금 회수에는
+                포함하지 않습니다. 손실은 현재 원금 기반 자산을 줄여도 누적 투자
+                원금을 줄이지 않습니다.
             </p>
             <p>
-                종목에 배분되지 않은 현금 회수:
-                {{ money(metric.unattributedRecovered) }}. 매수 전 현금 출금
-                또는 자금 출처 미확인분이며 전체·계좌 회수액에는 포함합니다.
+                총 현금 회수 {{ money(metric.recovered) }} · 출처 미확인
+                {{ money(metric.unknownRecovered) }} · 실현손익
+                {{ money(metric.realizedPnl) }}
             </p>
             <figure>
                 <figcaption>
@@ -167,7 +199,7 @@
                 <svg
                     viewBox="0 0 800 225"
                     role="img"
-                    aria-label="외부 순투입금, 취득원가 기준 추적 자산, 누적 현금 회수 추이">
+                    aria-label="누적 투자 원금, 취득원가 기준 추적 자산, 누적 원금 회수 추이">
                     <title>
                         평가액이 아닌 취득원가 기준 자금 흐름입니다. 아래 표에서
                         일자별 금액을 확인할 수 있습니다.
@@ -263,7 +295,7 @@
                             <th>누적 배당·수익 재투자</th>
                             <th>재투자분 실현손익</th>
                             <th>출처 미확인</th>
-                            <th>출처 종목 귀속 인출액</th>
+                            <th>출처 종목 귀속 원금 회수</th>
                             <th>회수율</th>
                         </tr>
                     </thead>
@@ -309,11 +341,12 @@
                 </table>
             </div>
             <p>
-                원금은 처음 매수한 종목에 한 번 배정합니다. 매도 후 다른
-                종목으로 이동해도 출처를 유지합니다. 원금·재투자 보유분은
-                취득원가이며 손익이 아닙니다. 인출액은 현금 잔액의 출처별 비율로
-                배분합니다. 다른 종목의 배당·수익에서만 투자한 종목은 회수율을
-                계산하지 않습니다.
+                외부에서 납입한 원금만 원금으로 계산합니다. 배당으로 B를
+                매수해도 원금은 늘지 않습니다. 원금은 처음 매수한 종목에 한 번
+                배정하며 매도 후 다른 종목으로 이동해도 출처를 유지합니다.
+                원금·재투자 보유분은 취득원가이며 손익이 아닙니다. 인출액은 현금
+                잔액의 출처별 비율로 배분합니다. 다른 종목의 배당·수익에서만
+                투자한 종목은 회수율을 계산하지 않습니다.
             </p>
             <p>
                 누적 재투자는 반복 투자한 금액을 포함한 거래 누계입니다.
@@ -328,9 +361,9 @@
             </summary>
             <p>
                 매수는 배당 → 기타 수익 → 원금 순으로 사용합니다. 저장한 자금
-                구성이 있으면 우선 적용합니다. 매도는 보유분을 비례 차감하며,
-                손실은 출처별로 비례 배분하고 초과 매도수익은 별도 추적합니다.
-                자동 배분은 자금 출처를 해석하기 위한 규칙입니다.
+                구성이 있으면 우선 적용합니다. 매도는 가장 오래된 보유 로트부터
+                차감하며, 손실은 해당 로트에서 차감하고 초과 매도수익은 별도
+                추적합니다. 자동 배분은 자금 출처를 해석하기 위한 규칙입니다.
             </p>
             <p>
                 수량 증가만으로 복리 수익을 확정하지 않습니다. 재투자분의 현재
@@ -367,7 +400,7 @@
     }
     .trace-metrics {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
         margin-top: 16px;
     }

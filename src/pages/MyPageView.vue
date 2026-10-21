@@ -17,7 +17,6 @@
     } from '@/services/transactionAmount.js';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { purchaseBasis } from '../../lib/portfolio-capital.js';
-    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     import { authLoading, firebaseUser } from '@/services/firebaseClient';
     import { loadPortfolioDashboard } from '@/services/portfolio';
     import { summarizePortfolio } from '@/services/portfolioSummary';
@@ -49,11 +48,8 @@
         capitalError = ref(''),
         fundingTransaction = ref(null),
         fundingEditor = ref(null),
-        fundingMessage = ref('');
-    useFullscreenLoading(
-        computed(() => loading.value || capitalLoading.value),
-        '포트폴리오 데이터를 불러오고 있습니다.'
-    );
+        fundingMessage = ref(''),
+        savingOpening = ref(false);
     let capitalRequestId = 0,
         capitalOwnerUid = '';
     async function loadCapital() {
@@ -97,6 +93,19 @@
         fundingMessage.value = capitalError.value
             ? ''
             : '자금 구성을 저장했습니다.';
+    }
+    async function saveOpening(input) {
+        if (!firebaseUser.value || savingOpening.value) return;
+        savingOpening.value = true;
+        capitalError.value = '';
+        try {
+            await portfolioCapitalRequest(firebaseUser.value, input);
+            await loadCapital();
+        } catch (reason) {
+            capitalError.value = reason.message;
+        } finally {
+            savingOpening.value = false;
+        }
     }
     async function openFunding(transaction) {
         fundingTransaction.value = transaction;
@@ -302,7 +311,7 @@
             detailDialog.value?.close();
             if (!user) {
                 await loadCapital();
-                router.replace('/admin/login');
+                router.replace('/login');
             } else await refresh();
         },
         { immediate: true }
@@ -408,7 +417,12 @@
             :entries="capital.entries"
             :classifications="capital.classifications"
             :trades="recoveryTrades"
-            :allocations="capital.allocations" />
+            :allocations="capital.allocations"
+            :opening-lots="capital.openingLots"
+            :opening-revision="capital.openingRevision || 0"
+            can-edit-opening
+            :saving-opening="savingOpening"
+            @save-opening="saveOpening" />
         <StockRecoveryPanel
             :trades="recoveryTrades"
             :allocations="capital.allocations" />

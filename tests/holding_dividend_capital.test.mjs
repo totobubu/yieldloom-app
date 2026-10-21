@@ -37,7 +37,7 @@ const position = (accountId, symbol, quantity = 1) => ({
 const near = (actual, expected) =>
     assert.ok(Math.abs(actual - expected) < 1e-7, `${actual} != ${expected}`);
 
-test('current holding cost is stacked by principal and reinvestment while dividends use initial principal', () => {
+test('current holding cost follows FIFO lots while dividends use initial principal', () => {
     const deposit = cash('cash', '20260101', 1000, 'external_deposit');
     const report = holdingDividendCapital(
         [
@@ -56,11 +56,11 @@ test('current holding cost is stacked by principal and reinvestment while divide
         { currency: 'USD', today: '2026-12-31' }
     );
     const row = report.rows[0];
-    near(row.principalHeld, 500);
-    near(row.reinvestedHeld, 50);
+    near(row.principalHeld, 450);
+    near(row.reinvestedHeld, 100);
     near(row.initialPrincipal, 1000);
     near(row.dividends, 100);
-    near(row.reinvestmentRate, (50 / 550) * 100);
+    near(row.reinvestmentRate, (100 / 550) * 100);
     near(row.dividendRate, 10);
     near(report.investedCost, 550);
     near(report.dividendRate, 10);

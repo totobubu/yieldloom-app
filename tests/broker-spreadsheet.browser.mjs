@@ -28,7 +28,7 @@ try {
         route.fulfill({
             contentType: 'application/javascript',
             body: `import { ref, computed } from '/node_modules/.vite/deps/vue.js';
-            export const firebaseUser = ref({uid: 'manual-browser-' + Date.now(), displayName: '테스트', getIdToken: async function() { return this.uid; }});
+            export const firebaseUser = ref({uid: 'manual-browser-' + Date.now(), displayName: '테스트', email: 'totobubu.lab@gmail.com', emailVerified: true, getIdToken: async function() { return this.uid; }});
             export const authLoading = ref(false), signedIn = computed(() => true);
             export const firebaseReady = false, db = null, auth = null, googleProvider = null;`,
         })
@@ -45,14 +45,8 @@ try {
             });
     });
     await page.goto(
-        (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') + '/mypage'
-    );
-    await page.waitForFunction(() =>
-        [...document.querySelectorAll('[role="tab"]')].some(
-            (tab) =>
-                tab.textContent?.includes('자산관리') &&
-                tab.getAttribute('aria-selected') === 'true'
-        )
+        (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') +
+            '/mypage?tab=assets'
     );
     await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).waitFor();
@@ -160,13 +154,7 @@ try {
             exact: true,
         })
         .waitFor();
-    await page.keyboard.press('Escape');
-    await page
-        .getByRole('heading', {
-            name: '자료 저장이 완료되었습니다',
-            exact: true,
-        })
-        .waitFor({ state: 'hidden' });
+    await page.locator('.p-dialog-close-button').click();
     await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
     const insights = page.getByRole('region', {
         name: '배당 성과·집중도 분석',

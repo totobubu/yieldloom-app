@@ -537,7 +537,7 @@ try {
         name: '전체 계좌 원금 회수 현황',
         exact: true,
     });
-    await overview.getByText('20%', { exact: true }).waitFor();
+    await overview.getByText('0%', { exact: true }).first().waitFor();
     await overview
         .getByRole('region', { name: '종목별 투자 비용 회수' })
         .getByText('TEST', { exact: false })

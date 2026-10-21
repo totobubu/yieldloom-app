@@ -36,9 +36,6 @@
         portfolioTickerStates,
     } from '@/services/portfolio';
     import AdSlot from '@/components/ads/AdSlot.vue';
-    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
-    import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
-    import { hasDividendInformation } from '../../lib/dividend-availability.js';
     useHead({ title: 'ETF·주식 검색' });
     const route = useRoute(),
         router = useRouter();
@@ -73,10 +70,6 @@
     const holdingStates = ref(new Map()),
         holdingsLoading = ref(false),
         holdingsError = ref('');
-    useFullscreenLoading(
-        computed(() => loading.value || holdingsLoading.value),
-        '종목 데이터를 불러오고 있습니다.'
-    );
     let holdingsRequest = 0;
     watch(
         [firebaseUser, authLoading],
@@ -85,7 +78,7 @@
             holdingStates.value = new Map();
             holdingsError.value = '';
             holdingsLoading.value = false;
-            if (pending || !isPortfolioAdmin(user)) return;
+            if (pending || !user) return;
             holdingsLoading.value = true;
             try {
                 const assets = await loadPortfolioAssets(user.uid);
@@ -98,18 +91,6 @@
             } finally {
                 if (request === holdingsRequest) holdingsLoading.value = false;
             }
-        },
-        { immediate: true }
-    );
-    watch(
-        [securityType, firebaseUser, authLoading],
-        ([type, user, pending]) => {
-            if (
-                !pending &&
-                type === 'holding-history' &&
-                !isPortfolioAdmin(user)
-            )
-                securityType.value = '';
         },
         { immediate: true }
     );
@@ -247,10 +228,14 @@
         row.dividendEvidence?.latestExDate ||
         '미확인';
     function hasDividendMetrics(row) {
-        return hasDividendInformation({
-            security: row,
-            distribution: distributions.value[row.symbol],
-        });
+        if (row.noDividends === true) return false;
+        const event = distributions.value[row.symbol];
+        const value =
+            event?.distribution_per_share ?? row.dividendEvidence?.latestAmount;
+        return (
+            (Number.isFinite(Number(value)) && Number(value) > 0) ||
+            Boolean(event?.ex_date || row.dividendEvidence?.latestExDate)
+        );
     }
     function reset() {
         query.value = '';
@@ -377,10 +362,7 @@
                     v-model:type="securityType"
                     v-model:company="company"
                     :companies="companies"
-                    :providers="popularCompanies"
-                    :show-holding-history="
-                        isPortfolioAdmin(firebaseUser)
-                    " /></template
+                    :providers="popularCompanies" /></template
         ></Card>
         <div
             v-if="securityType || company || query"
@@ -494,8 +476,6 @@
                                 ><strong v-if="hasDividendMetrics(row)">{{
                                     amount(row)
                                 }}</strong
-                                ><span v-else-if="row.noDividends === true"
-                                    >무배당</span
                                 ><span v-else>정보 확인 중</span>
                             </div>
                             <div>
@@ -503,8 +483,6 @@
                                 ><strong v-if="hasDividendMetrics(row)">{{
                                     exDate(row)
                                 }}</strong
-                                ><span v-else-if="row.noDividends === true"
-                                    >—</span
                                 ><span v-else>미확인</span>
                             </div>
                         </div>
@@ -524,7 +502,7 @@
                     </router-link>
                     <router-link
                         v-if="row.underlying"
-                        class="row-note"
+                        class="row-note mobile-compare-link"
                         :to="`/underlying/${row.underlying}`"
                         >{{ row.underlying }} ETF 비교</router-link
                     >
@@ -565,8 +543,7 @@
                 v-model:type="draftType"
                 v-model:company="draftCompany"
                 :companies="companies"
-                :providers="popularCompanies"
-                :show-holding-history="isPortfolioAdmin(firebaseUser)" />
+                :providers="popularCompanies" />
             <template #footer
                 ><div class="filter-footer">
                     <Button
@@ -670,6 +647,8 @@
         margin: 0;
     }
     .stock-card-grid > li {
+        display: flex;
+        flex-direction: column;
         min-width: 0;
     }
     .stock-result-card {
@@ -844,6 +823,11 @@
         .stock-card-grid,
         .loading-cards {
             grid-template-columns: 1fr;
+        }
+        .mobile-compare-link {
+            min-height: 44px;
+            margin: 0;
+            padding: 0 16px 12px;
         }
         .stock-card-heading span {
             min-height: auto;

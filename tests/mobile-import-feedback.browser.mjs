@@ -17,7 +17,7 @@ try {
         await page.route('**/src/services/firebaseClient*', (route) =>
             route.fulfill({
                 contentType: 'application/javascript',
-                body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js';export const firebaseUser=ref({uid:'mobile-fixture',getIdToken:async()=> 'fixture'}),authLoading=ref(false),signedIn=computed(()=>true),firebaseReady=false,db=null,auth=null,googleProvider=null;`,
+                body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js';export const firebaseUser=ref({uid:'mobile-fixture',email:'totobubu.lab@gmail.com',emailVerified:true,getIdToken:async()=> 'fixture'}),authLoading=ref(false),signedIn=computed(()=>true),firebaseReady=false,db=null,auth=null,googleProvider=null;`,
             })
         );
         const family = {
@@ -40,13 +40,6 @@ try {
         let pending,
             previews = 0,
             writes = 0;
-        const waitForPendingPreview = async () => {
-            for (let attempt = 0; attempt < 100; attempt++) {
-                if (pending) return pending;
-                await page.waitForTimeout(50);
-            }
-            throw new Error('Preview request did not start');
-        };
         await page.route('**/api/portfolio-capital*', (route) =>
             route.fulfill({
                 json: { entries: [], classifications: [], allocations: [] },
@@ -72,21 +65,11 @@ try {
         });
         await page.goto(
             (process.env.CAPITAL_TEST_URL || 'http://127.0.0.1:5175') +
-                '/mypage'
-        );
-        await page.waitForFunction(() =>
-            [...document.querySelectorAll('[role="tab"]')].some(
-                (tab) =>
-                    tab.textContent?.includes('자산관리') &&
-                    tab.getAttribute('aria-selected') === 'true'
-            )
+                '/mypage?tab=upload'
         );
         await page
             .getByRole('button', { name: '자료 업로드', exact: true })
             .click();
-        await page
-            .getByRole('heading', { name: '선택 계좌: 모바일 검증' })
-            .waitFor();
         const overlay = page.locator('.portfolio-loading-overlay');
         const button = page.getByRole('button', {
             name: '추출·미리보기',
@@ -159,7 +142,14 @@ try {
             File.prototype.arrayBuffer = window.originalFileArrayBuffer;
         });
         await button.click();
-        await waitForPendingPreview();
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === true
+        );
+        assert.equal(
+            await page.getByRole('dialog', { name: /자료 업로드/ }).isVisible(),
+            true,
+            'Upload feedback stays in the active dialog'
+        );
         const request = pending.request().postData();
         assert.match(request, /%PDF-fixture/);
         assert.match(request, /name="password"\r\n\r\n\r\n/); // Uses the configured password.
@@ -169,7 +159,9 @@ try {
                 error: 'PDF를 해석하지 못했습니다. 지원 형식과 비밀번호를 확인하세요.',
             },
         });
-        await overlay.waitFor({ state: 'hidden' });
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === false
+        );
         const notice = page.locator('.import-error');
         await page.waitForFunction(() =>
             document.activeElement?.classList.contains('import-error')
@@ -197,10 +189,14 @@ try {
         assert.equal(await notice.count(), 0);
         pending = null;
         await button.click();
-        await waitForPendingPreview();
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === true
+        );
         assert.match(pending.request().postData(), /corrected-fixture/);
         await pending.abort('failed');
-        await overlay.waitFor({ state: 'hidden' });
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === false
+        );
         await page.waitForFunction(() =>
             document.activeElement?.classList.contains('import-error')
         );
@@ -212,7 +208,9 @@ try {
         // Success, including saved-password account refresh, moves to the review heading.
         pending = null;
         await button.click();
-        await waitForPendingPreview();
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === true
+        );
         await pending.fulfill({
             json: {
                 reviewId: 'mobile-review',
@@ -238,7 +236,9 @@ try {
                 },
             },
         });
-        await overlay.waitFor({ state: 'hidden' });
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === false
+        );
         const heading = page.getByRole('heading', {
             name: '추출 결과 미리보기 · 저장 전 검토',
         });

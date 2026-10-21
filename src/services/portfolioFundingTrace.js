@@ -3,6 +3,7 @@ import {
     isWithdrawal,
     purchaseBasis,
     validateFunding,
+    withdrawalBreakdown,
 } from '../../lib/portfolio-capital.js';
 
 const number = (v) => finiteNumber(v);
@@ -24,6 +25,7 @@ export function tracePortfolioFunding({
     classifications = [],
     trades = [],
     allocations = [],
+    openingLots = [],
 } = {}) {
     const annotations = new Map(
         classifications.map((r) => [`${r.accountId || ''}:${r.id}`, r])
@@ -33,8 +35,26 @@ export function tracePortfolioFunding({
     const warnings = new Set();
     const timelines = { USD: [], KRW: [] };
     const buckets = {
-        USD: { deposits: 0, recovered: 0 },
-        KRW: { deposits: 0, recovered: 0 },
+        USD: {
+            deposits: 0,
+            recovered: 0,
+            principalRecovered: 0,
+            estimatedPrincipalRecovered: 0,
+            dividendRecovered: 0,
+            profitRecovered: 0,
+            unknownRecovered: 0,
+            realizedPnl: 0,
+        },
+        KRW: {
+            deposits: 0,
+            recovered: 0,
+            principalRecovered: 0,
+            estimatedPrincipalRecovered: 0,
+            dividendRecovered: 0,
+            profitRecovered: 0,
+            unknownRecovered: 0,
+            realizedPnl: 0,
+        },
     };
     const pool = (accountId, currency) => {
         const key = `${accountId || ''}:${currency}`;
@@ -92,6 +112,7 @@ export function tracePortfolioFunding({
         return result;
     };
     const rank = {
+        opening: -1,
         external_deposit: 0,
         dividend: 1,
         interest: 1,
@@ -124,7 +145,24 @@ export function tracePortfolioFunding({
             );
             continue;
         }
-        events.push({ ...entry, kind, cashEntry: true });
+        events.push({ ...entry, kind, annotation, cashEntry: true });
+    }
+    const trackingStarts = new Map();
+    for (const opening of openingLots) {
+        const openingDay = day(opening.trackingStartAt || opening.date);
+        const accountKey = opening.accountId || '';
+        const previous = trackingStarts.get(accountKey);
+        if (!previous || openingDay < previous)
+            trackingStarts.set(accountKey, openingDay);
+        events.push({
+            ...opening,
+            id:
+                opening.id ||
+                `opening:${accountKey}:${opening.currency}:${opening.symbol || 'CASH'}`,
+            date: openingDay,
+            kind: 'opening',
+            opening: true,
+        });
     }
     for (const trade of trades)
         events.push({
@@ -140,20 +178,52 @@ export function tracePortfolioFunding({
     );
     const seenDays = new Set();
     for (const event of events) {
-        const { accountId = '', currency, symbol, kind } = event;
+        const { accountId = '', currency, symbol, kind, annotation } = event;
+        const trackingStart = trackingStarts.get(accountId);
+        if (!event.opening && trackingStart && day(event.date) <= trackingStart)
+            continue;
         if (!buckets[currency] || !/^\d{8}$/.test(day(event.date))) {
             missing();
             continue;
         }
         const dayKey = `${accountId}:${currency}:${day(event.date)}`;
-        if (seenDays.has(dayKey))
+        if (seenDays.has(dayKey) && !event.opening)
             warnings.add(
                 '일자만 있는 거래는 같은 날 입금 → 배당 → 매도 → 매수 → 출금 순으로 배분한 추정치입니다.'
             );
         seenDays.add(dayKey);
         const cash = pool(accountId, currency);
         const amount = number(event.amount);
-        if (event.cashEntry) {
+        if (event.opening) {
+            const openingAmount = number(event.amount);
+            const openingQuantity = number(event.quantity);
+            if (!(openingAmount > 0)) {
+                missing();
+                continue;
+            }
+            buckets[currency].deposits += openingAmount;
+            if (!symbol || symbol === 'CASH') {
+                cash.push({
+                    kind: 'principal',
+                    origin: '',
+                    amount: openingAmount,
+                });
+            } else if (!(openingQuantity > 0)) {
+                missing();
+                continue;
+            } else {
+                const item = stock(accountId, symbol, currency);
+                item.direct += openingAmount;
+                item.sources.add(`기초 원금 → ${symbol}`);
+                item.lots.push({
+                    kind: 'principal',
+                    origin: symbol,
+                    amount: openingAmount,
+                    quantity: openingQuantity,
+                    opening: true,
+                });
+            }
+        } else if (event.cashEntry) {
             if (!(amount > 0)) {
                 missing();
                 continue;
@@ -163,11 +233,67 @@ export function tracePortfolioFunding({
                 cash.push({ kind: 'principal', origin: '', amount });
             } else if (isWithdrawal(kind)) {
                 buckets[currency].recovered += amount;
-                // All real external payouts count toward cash payback, including profits.
-                for (const lot of take(cash, amount, () => true, true)) {
-                    if (lot.origin)
-                        stock(accountId, lot.origin, currency).recovered +=
-                            lot.amount;
+                let parts;
+                try {
+                    parts = withdrawalBreakdown(event, annotation);
+                } catch {
+                    parts = {
+                        principal: 0,
+                        dividend: 0,
+                        profit: 0,
+                        unknown: amount,
+                    };
+                }
+                const inferred = kind === 'external_withdrawal';
+                const removed = [];
+                if (inferred) {
+                    removed.push(...take(cash, amount, () => true, true));
+                } else {
+                    for (const source of ['principal', 'dividend', 'profit']) {
+                        if (parts[source] > epsilon)
+                            removed.push(
+                                ...take(
+                                    cash,
+                                    parts[source],
+                                    (lot) => lot.kind === source,
+                                    false,
+                                    true
+                                ).map((lot) => ({
+                                    ...lot,
+                                    withdrawalSource:
+                                        lot.kind === source
+                                            ? source
+                                            : 'unknown',
+                                }))
+                            );
+                    }
+                    if (parts.unknown > epsilon)
+                        removed.push(
+                            ...take(cash, parts.unknown, () => true, true).map(
+                                (lot) => ({
+                                    ...lot,
+                                    withdrawalSource: 'unknown',
+                                })
+                            )
+                        );
+                }
+                for (const lot of removed) {
+                    const attributed = inferred
+                        ? lot.kind
+                        : lot.withdrawalSource;
+                    if (attributed === 'principal') {
+                        if (inferred)
+                            buckets[currency].estimatedPrincipalRecovered +=
+                                lot.amount;
+                        else buckets[currency].principalRecovered += lot.amount;
+                        if (lot.origin)
+                            stock(accountId, lot.origin, currency).recovered +=
+                                lot.amount;
+                    } else if (attributed === 'dividend')
+                        buckets[currency].dividendRecovered += lot.amount;
+                    else if (attributed === 'profit')
+                        buckets[currency].profitRecovered += lot.amount;
+                    else buckets[currency].unknownRecovered += lot.amount;
                 }
             } else if (kind === 'interest' || kind === 'reward')
                 cash.push({ kind: 'profit', origin: '', amount });
@@ -308,27 +434,40 @@ export function tracePortfolioFunding({
                     missing();
                     continue;
                 }
-                const portion = Math.min(1, quantity / held);
-                const cost = sum(item.lots) * portion;
-                const reinvestedCost =
-                    sum(
-                        item.lots.filter((l) =>
-                            ['dividend', 'profit'].includes(l.kind)
-                        )
-                    ) * portion;
+                // Select the oldest acquired lots first. A lot may be split when
+                // the sale quantity ends in the middle of it.
+                let quantityLeft = quantity;
+                const sold = [];
+                for (const lot of item.lots) {
+                    if (quantityLeft <= epsilon) break;
+                    const soldQuantity = Math.min(lot.quantity, quantityLeft);
+                    if (!(soldQuantity > epsilon)) continue;
+                    const portion = soldQuantity / lot.quantity;
+                    sold.push({
+                        ...lot,
+                        amount: lot.amount * portion,
+                        quantity: soldQuantity,
+                    });
+                    lot.amount *= 1 - portion;
+                    lot.quantity -= soldQuantity;
+                    quantityLeft -= soldQuantity;
+                }
+                const cost = sum(sold);
+                const reinvestedCost = sum(
+                    sold.filter((l) => ['dividend', 'profit'].includes(l.kind))
+                );
                 if (cost > 0)
                     item.reinvestmentRealizedPnl +=
                         ((settlement - cost) * reinvestedCost) / cost;
+                buckets[currency].realizedPnl += settlement - cost;
                 const retained = Math.min(1, settlement / cost);
-                for (const lot of item.lots) {
+                for (const lot of sold) {
                     cash.push({
                         kind: lot.kind,
                         origin: lot.origin,
-                        amount: lot.amount * portion * retained,
+                        amount: lot.amount * retained,
                         fromSale: true,
                     });
-                    lot.amount *= 1 - portion;
-                    lot.quantity *= 1 - portion;
                 }
                 if (settlement > cost)
                     cash.push({
@@ -367,6 +506,51 @@ export function tracePortfolioFunding({
             cash: totalCash,
             cost,
             trackedAssetsAtCost: totalCash + cost,
+            principalRecovered:
+                buckets[currency].principalRecovered +
+                buckets[currency].estimatedPrincipalRecovered,
+            principalAssets:
+                [...accounts.values()]
+                    .filter((a) => a.currency === currency)
+                    .reduce(
+                        (n, a) =>
+                            n +
+                            sum(a.cash.filter((l) => l.kind === 'principal')),
+                        0
+                    ) +
+                [...stocks.values()]
+                    .filter((s) => s.currency === currency)
+                    .reduce(
+                        (n, s) =>
+                            n +
+                            sum(s.lots.filter((l) => l.kind === 'principal')),
+                        0
+                    ),
+            reinvestedAssets:
+                [...accounts.values()]
+                    .filter((a) => a.currency === currency)
+                    .reduce(
+                        (n, a) =>
+                            n +
+                            sum(
+                                a.cash.filter((l) =>
+                                    ['dividend', 'profit'].includes(l.kind)
+                                )
+                            ),
+                        0
+                    ) +
+                [...stocks.values()]
+                    .filter((s) => s.currency === currency)
+                    .reduce(
+                        (n, s) =>
+                            n +
+                            sum(
+                                s.lots.filter((l) =>
+                                    ['dividend', 'profit'].includes(l.kind)
+                                )
+                            ),
+                        0
+                    ),
         };
         const line = timelines[currency];
         if (line.at(-1)?.date === snapshot.date)
@@ -379,6 +563,10 @@ export function tracePortfolioFunding({
         currencies: Object.entries(buckets).map(([currency, value]) => ({
             currency,
             ...value,
+            currentPrincipalAssets:
+                timelines[currency].at(-1)?.principalAssets || 0,
+            currentReinvestedAssets:
+                timelines[currency].at(-1)?.reinvestedAssets || 0,
             unattributedRecovered: Math.max(
                 0,
                 value.recovered -
@@ -386,9 +574,30 @@ export function tracePortfolioFunding({
                         .filter((s) => s.currency === currency)
                         .reduce((n, s) => n + s.recovered, 0)
             ),
-            rate:
+            totalRecoveryRate:
                 value.deposits > 0
                     ? (value.recovered / value.deposits) * 100
+                    : null,
+            principalRate:
+                value.deposits > 0
+                    ? ((value.principalRecovered +
+                          value.estimatedPrincipalRecovered) /
+                          value.deposits) *
+                      100
+                    : null,
+            remainingPrincipal: Math.max(
+                0,
+                value.deposits -
+                    value.principalRecovered -
+                    value.estimatedPrincipalRecovered
+            ),
+            // Compatibility: rate now means the primary, principal-only rate.
+            rate:
+                value.deposits > 0
+                    ? ((value.principalRecovered +
+                          value.estimatedPrincipalRecovered) /
+                          value.deposits) *
+                      100
                     : null,
         })),
         stocks: [...stocks.values()].map((s) => ({

@@ -22,7 +22,7 @@ try {
         route.fulfill({
             contentType: 'application/javascript',
             body: `import { ref, computed } from '/node_modules/.vite/deps/vue.js';
-            export const firebaseUser = ref({ uid: 'review-ui-${Date.now()}', displayName: '테스트', getIdToken: async function() { return this.uid; } });
+            export const firebaseUser = ref({ uid: 'review-ui-${Date.now()}', displayName: '테스트', email: 'totobubu.lab@gmail.com', emailVerified: true, getIdToken: async function() { return this.uid; } });
             export const authLoading = ref(false), signedIn = computed(() => true);
             export const firebaseReady = false, db = null, auth = null, googleProvider = null;`,
         })
@@ -165,14 +165,7 @@ try {
         }
         return route.continue();
     });
-    await page.goto(base + '/mypage');
-    await page.waitForFunction(() =>
-        [...document.querySelectorAll('[role="tab"]')].some(
-            (tab) =>
-                tab.textContent?.includes('자산관리') &&
-                tab.getAttribute('aria-selected') === 'true'
-        )
-    );
+    await page.goto(base + '/mypage?tab=assets');
     await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).fill('토스증권');
     await page.getByLabel('별칭', { exact: true }).fill('검토 테스트');
@@ -420,26 +413,12 @@ try {
                     document.documentElement.classList.toggle('p-dark', value),
                 dark
             );
-            const pageOverflow = await page.evaluate(() => ({
-                documentWidth: document.documentElement.scrollWidth,
-                viewportWidth: innerWidth,
-                offenders: [...document.querySelectorAll('body *')]
-                    .filter((element) => {
-                        const rect = element.getBoundingClientRect();
-                        return rect.right > innerWidth + 1 || rect.left < -1;
-                    })
-                    .slice(0, 5)
-                    .map((element) => ({
-                        tag: element.tagName,
-                        className: String(element.className),
-                        text: element.textContent?.trim().slice(0, 60),
-                        rect: element.getBoundingClientRect().toJSON(),
-                    })),
-            }));
             assert.equal(
-                pageOverflow.documentWidth > pageOverflow.viewportWidth,
+                await page.evaluate(
+                    () => document.documentElement.scrollWidth > innerWidth
+                ),
                 false,
-                `${width}px ${dark ? 'dark' : 'light'}: no page overflow ${JSON.stringify(pageOverflow)}`
+                `${width}px ${dark ? 'dark' : 'light'}: no page overflow`
             );
             const metricOverflow = await review
                 .locator('.review-metrics')

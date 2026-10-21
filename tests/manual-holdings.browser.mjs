@@ -17,7 +17,7 @@ try {
         route.fulfill({
             contentType: 'application/javascript',
             body: `import { ref, computed } from '/node_modules/.vite/deps/vue.js';
-            export const firebaseUser = ref({uid: 'manual-browser-' + Date.now(), displayName: '테스트', getIdToken: async function() { return this.uid; }});
+            export const firebaseUser = ref({uid: 'manual-browser-' + Date.now(), displayName: '테스트', email: 'totobubu.lab@gmail.com', emailVerified: true, getIdToken: async function() { return this.uid; }});
             export const authLoading = ref(false), signedIn = computed(() => true);
             export const firebaseReady = false, db = null, auth = null, googleProvider = null;`,
         })
@@ -34,7 +34,8 @@ try {
             });
     });
     await page.goto(
-        (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') + '/mypage'
+        (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') +
+            '/mypage?tab=assets'
     );
     await page.waitForFunction(() =>
         [...document.querySelectorAll('[role="tab"]')].some(
@@ -49,15 +50,17 @@ try {
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();
     await page.getByRole('heading', { name: '선택 계좌: 수동입력' }).waitFor();
     const openManual = async () => {
-        const manualButton = page.getByRole('button', {
-            name: '수동 잔고 입력',
-            exact: true,
+        const uploadDialog = page.getByRole('dialog', {
+            name: '자료 업로드 · 수동입력',
         });
-        if (!(await manualButton.isVisible()))
+        if (!(await uploadDialog.isVisible())) {
             await page
                 .getByRole('button', { name: '자료 업로드', exact: true })
                 .click();
-        await manualButton.click();
+        }
+        await page
+            .getByRole('button', { name: '수동 잔고 입력', exact: true })
+            .click();
         await page
             .getByRole('heading', { name: '수동 잔고 입력', exact: true })
             .waitFor();

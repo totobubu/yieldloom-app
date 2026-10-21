@@ -270,6 +270,30 @@ test('owner can save, reload and reset funding without modifying the financial l
         'reset'
     );
 });
+test('opening principal lots save with revision checks and share the funding read', async () => {
+    const f = fixture();
+    const input = {
+        action: 'saveOpening',
+        revision: 0,
+        trackingStartAt: '2026-01-01',
+        lots: [
+            {
+                currency: 'USD',
+                symbol: 'A',
+                amount: 1000,
+                quantity: 10,
+            },
+            { currency: 'USD', symbol: 'CASH', amount: 50 },
+        ],
+    };
+    assert.equal((await f.call(input)).status, 200);
+    assert.equal((await f.call(input)).status, 409);
+    const read = await f.call(null, 'GET');
+    assert.equal(read.data.openingRevision, 1);
+    assert.equal(read.data.openingLots.length, 2);
+    assert.equal(read.data.allocations.length, 0);
+    assert.equal(read.data.openingLots[0].trackingStartAt, '20260101');
+});
 test('cross-owner reads, edits and foreign evidence are blocked even with supplied UID', async () => {
     const f = fixture('other');
     assert.equal(

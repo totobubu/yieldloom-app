@@ -67,6 +67,9 @@ try {
             (process.env.CAPITAL_TEST_URL || 'http://127.0.0.1:5175') +
                 '/mypage?tab=upload'
         );
+        await page
+            .getByRole('button', { name: '자료 업로드', exact: true })
+            .click();
         const overlay = page.locator('.portfolio-loading-overlay');
         const button = page.getByRole('button', {
             name: '추출·미리보기',
@@ -139,7 +142,9 @@ try {
             File.prototype.arrayBuffer = window.originalFileArrayBuffer;
         });
         await button.click();
-        await overlay.waitFor();
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === true
+        );
         assert.ok(
             await page.evaluate(() => scrollY > 300),
             'User is below the global page error'
@@ -153,7 +158,9 @@ try {
                 error: 'PDF를 해석하지 못했습니다. 지원 형식과 비밀번호를 확인하세요.',
             },
         });
-        await overlay.waitFor({ state: 'hidden' });
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === false
+        );
         const notice = page.locator('.import-error');
         await page.waitForFunction(() =>
             document.activeElement?.classList.contains('import-error')
@@ -181,10 +188,14 @@ try {
         assert.equal(await notice.count(), 0);
         pending = null;
         await button.click();
-        await overlay.waitFor();
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === true
+        );
         assert.match(pending.request().postData(), /corrected-fixture/);
         await pending.abort('failed');
-        await overlay.waitFor({ state: 'hidden' });
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === false
+        );
         await page.waitForFunction(() =>
             document.activeElement?.classList.contains('import-error')
         );
@@ -196,7 +207,9 @@ try {
         // Success, including saved-password account refresh, moves to the review heading.
         pending = null;
         await button.click();
-        await overlay.waitFor();
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === true
+        );
         await pending.fulfill({
             json: {
                 reviewId: 'mobile-review',
@@ -222,7 +235,9 @@ try {
                 },
             },
         });
-        await overlay.waitFor({ state: 'hidden' });
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === false
+        );
         const heading = page.getByRole('heading', {
             name: '추출 결과 미리보기 · 저장 전 검토',
         });

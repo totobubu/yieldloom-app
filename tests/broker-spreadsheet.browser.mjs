@@ -45,15 +45,16 @@ try {
             });
     });
     await page.goto(
-        (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') + '/mypage'
+        (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') +
+            '/mypage?tab=assets'
     );
+    await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).waitFor();
     await page.getByLabel('금융기관', { exact: true }).fill('테스트증권');
     await page.getByLabel('별칭', { exact: true }).fill('수동입력');
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();
     await page.getByRole('heading', { name: '선택 계좌: 수동입력' }).waitFor();
 
-    await page.getByRole('tab', { name: '자료 업로드', exact: true }).click();
     await page
         .getByRole('button', { name: '증권사 CSV·XLSX 열 연결', exact: true })
         .click();
@@ -153,6 +154,7 @@ try {
             exact: true,
         })
         .waitFor();
+    await page.locator('.p-dialog-close-button').click();
     await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
     const insights = page.getByRole('region', {
         name: '배당 성과·집중도 분석',

@@ -165,14 +165,14 @@ try {
         }
         return route.continue();
     });
-    await page.goto(base + '/mypage');
+    await page.goto(base + '/mypage?tab=assets');
+    await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).fill('토스증권');
     await page.getByLabel('별칭', { exact: true }).fill('검토 테스트');
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();
     await page
         .getByRole('heading', { name: '선택 계좌: 검토 테스트' })
         .waitFor();
-    await page.getByRole('tab', { name: '자료 업로드', exact: true }).click();
     await page
         .getByRole('combobox', { name: '파일 형식', exact: true })
         .click();

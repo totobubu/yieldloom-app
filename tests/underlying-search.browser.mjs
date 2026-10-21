@@ -43,7 +43,7 @@ try {
             });
             await row.getByText('AAPL 기반', { exact: true }).waitFor();
             const comparison = row.getByRole('link', {
-                name: 'AAPL ETF 비교',
+                name: 'AAPL 기반 ETF 비교',
                 exact: true,
             });
             await comparison.waitFor();

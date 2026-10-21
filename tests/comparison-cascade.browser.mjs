@@ -2,6 +2,22 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 const base = process.env.UI_BASE_URL || 'http://127.0.0.1:5173';
 const nav = [
+    ...[
+        'AAPL',
+        'MSFT',
+        'AMZN',
+        'GOOG',
+        'GOOGL',
+        'NVDA',
+        'META',
+        'TSLA',
+        'NFLX',
+    ].map((symbol) => ({
+        symbol,
+        securityType: 'stock',
+        longName: symbol + ' Inc.',
+        noDividends: true,
+    })),
     ...['AAPB', 'AAPU', 'AAPD', 'APLY', 'NVDY', 'AMZY'].map((symbol) => ({
         symbol,
         company: 'ETF issuer',
@@ -131,6 +147,22 @@ try {
             .getByRole('navigation', { name: '종목 비교 하위 메뉴' })
             .getByRole('link', { name: '테마 비교', exact: true })
             .click();
+        await select('theme', /^M7 /);
+        assert.equal(
+            await page.locator('.product-grid article h3').first().innerText(),
+            'AAPL'
+        );
+        await select('strategy', '본주(기초자산)');
+        assert.equal(await page.locator('.product-grid article').count(), 8);
+        assert.doesNotMatch(
+            await page.locator('.product-grid').innerText(),
+            /배수 미확인|재검증 대기|운용사 미확인/
+        );
+        assert.deepEqual(await options('direction'), ['모든 방향', '롱']);
+        await select('theme', /^FAANG /);
+        await select('strategy', '본주(기초자산)');
+        assert.equal(await page.locator('.product-grid article').count(), 6);
+        assert.match(await page.locator('.product-grid').innerText(), /AAPL/);
         await select('theme', /^금융 \(/);
         assert.match(await page.locator('.product-grid').innerText(), /XLF/);
         assert.match(

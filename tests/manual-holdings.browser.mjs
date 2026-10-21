@@ -50,9 +50,14 @@ try {
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();
     await page.getByRole('heading', { name: '선택 계좌: 수동입력' }).waitFor();
     const openManual = async () => {
-        await page
-            .getByRole('button', { name: '자료 업로드', exact: true })
-            .click();
+        const uploadDialog = page.getByRole('dialog', {
+            name: '자료 업로드 · 수동입력',
+        });
+        if (!(await uploadDialog.isVisible())) {
+            await page
+                .getByRole('button', { name: '자료 업로드', exact: true })
+                .click();
+        }
         await page
             .getByRole('button', { name: '수동 잔고 입력', exact: true })
             .click();

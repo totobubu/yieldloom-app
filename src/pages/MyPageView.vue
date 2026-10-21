@@ -302,7 +302,7 @@
             detailDialog.value?.close();
             if (!user) {
                 await loadCapital();
-                router.replace('/login');
+                router.replace('/admin/login');
             } else await refresh();
         },
         { immediate: true }

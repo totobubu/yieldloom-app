@@ -710,7 +710,7 @@
             if (waiting) return;
             if (!user)
                 router.replace({
-                    path: '/login',
+                    path: '/admin/login',
                     query: { redirect: route.fullPath },
                 });
             else run(refresh);

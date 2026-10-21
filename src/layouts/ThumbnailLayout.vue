@@ -22,6 +22,7 @@
     const accountError = ref('');
     useFullscreenLoading(authLoading, '로그인 정보를 확인하고 있습니다.');
     const isAuth = computed(() => route.name === 'login');
+    const isAdmin = computed(() => isPortfolioAdmin(firebaseUser.value));
     const inStocks = computed(() =>
         ['thumbnail-home', 'ticker-stock'].includes(route.name)
     );
@@ -76,12 +77,14 @@
                         >종목 검색</router-link
                     >
                     <router-link
+                        v-if="isAdmin"
                         to="/mypage"
                         :aria-current="inPortfolio ? 'page' : undefined"
                         :class="{ active: inPortfolio }"
                         >내 포트폴리오</router-link
                     >
                     <router-link
+                        v-if="isAdmin"
                         to="/simulator"
                         :class="{ active: route.name === 'dividend-simulator' }"
                         :aria-current="
@@ -108,16 +111,8 @@
                         rounded
                         severity="secondary"
                         @click="toggleDarkMode" />
-                    <router-link
-                        v-if="!firebaseUser && !isAuth"
-                        class="login-link"
-                        :to="{
-                            path: '/login',
-                            query: { redirect: route.fullPath },
-                        }"
-                        >로그인</router-link
-                    >
                     <Button
+                        v-if="isAdmin"
                         icon="pi pi-user"
                         aria-label="계정 및 설정"
                         outlined
@@ -149,6 +144,7 @@
                 ></router-link
             >
             <router-link
+                v-if="isAdmin"
                 to="/mypage"
                 :class="{ active: inPortfolio }"
                 :aria-current="inPortfolio ? 'page' : undefined"
@@ -157,6 +153,7 @@
                 ></router-link
             >
             <router-link
+                v-if="isAdmin"
                 to="/simulator"
                 :class="{ active: route.name === 'dividend-simulator' }"
                 :aria-current="
@@ -194,11 +191,7 @@
             }}</Message>
             <div class="account-links">
                 <Button
-                    v-if="!firebaseUser"
-                    label="로그인 / 회원가입"
-                    icon="pi pi-sign-in"
-                    @click="router.push('/login')" />
-                <Button
+                    v-if="isAdmin"
                     label="내 포트폴리오"
                     icon="pi pi-wallet"
                     severity="secondary"
@@ -220,21 +213,28 @@
                     text
                     @click="router.push('/legal')" />
                 <Button
-                    v-if="isPortfolioAdmin(firebaseUser)"
+                    v-if="isAdmin"
+                    label="종목 의견함"
+                    icon="pi pi-inbox"
+                    severity="secondary"
+                    text
+                    @click="router.push('/admin/feedback')" />
+                <Button
+                    v-if="isAdmin"
                     label="ETF 데이터 검토 · 수집 상태"
                     icon="pi pi-check-square"
                     severity="secondary"
                     text
                     @click="router.push('/admin/metadata')" />
                 <Button
-                    v-if="isPortfolioAdmin(firebaseUser)"
+                    v-if="isAdmin"
                     label="종목 식별 관리"
                     icon="pi pi-cog"
                     severity="secondary"
                     text
                     @click="router.push('/admin/portfolio-mappings')" />
                 <Button
-                    v-if="firebaseUser"
+                    v-if="isAdmin"
                     label="로그아웃"
                     icon="pi pi-sign-out"
                     severity="secondary"

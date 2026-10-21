@@ -5,14 +5,15 @@
 ## 화면
 
 - `/`: 티커·종목명·운용사 검색 및 종목 선택.
-- `/login`: 이메일·비밀번호 또는 Google 로그인, 회원가입, 비밀번호 재설정. 로그인 유지 선택과 비밀번호 확인 입력을 제공합니다.
-- `/mypage`: 전체 계좌 포트폴리오, 자산관리의 가족 Avatar·계좌 등록 모달, 계좌별 자료 업로드·검토 및 기준일 잔고 합산. 한눈에 보기는 `view=summary|holdings|capital`로 요약·보유 종목·원금/자금 서브탭을 직접 열 수 있습니다.
+- `/login`: 일반 사용자의 직접 접근을 홈으로 돌려보냅니다. 관리자는 공개 UI에 노출되지 않는 `/admin/login`에서 로그인하며, 허용 목록에 없는 계정은 즉시 로그아웃됩니다.
+- `/mypage`: 인증된 관리자만 접근하는 전체 계좌 포트폴리오입니다. 한눈에 보기는 `view=summary|holdings|capital`로 요약·보유 종목·원금/자금 서브탭을 직접 열 수 있습니다.
 - `/mypage?tab=calendar`: 권한 있는 계좌의 월간 배당 캘린더·연간 타임라인. 공시/잔고 기준 세전 예상과 저장된 배당 거래를 구분합니다.
 - `/mypage?tab=insights`: 배당 투자 설계실(배당 효과·FIRE·회수/재투자·안정성·성향 모의고사·블로그 5종), 계정 결산 보관·콘텐츠 연결, 기록 품질·청산 손익과 자산 집중도.
-- `/simulator`: 최초 투자·납입·배당·재투자 A/B 및 원천징수율 가정 비교.
+- `/simulator`: 관리자 전용 최초 투자·납입·배당·재투자 A/B 및 원천징수율 가정 비교.
 - `/mypage/legacy`: 이전 단일 계좌 자료 조회.
 - `/stock/:ticker`: 종목 상세·시세·배당 정보와 배당 카드 PNG·게시 패키지 다운로드, 게시 문구 복사. `/thumbnail/:ticker`는 이 경로로 이동합니다.
 - `/legal`: 데이터 출처·갱신·투자 면책 및 개인정보 안내.
+- `/admin/feedback`: 공개 종목 상세에서 익명으로 접수한 요청·질문을 관리자만 검토하고 처리합니다.
 - `?rivals=CRSH,TSII`: 라이벌 선택 공유. 최대 3종.
 - 그 외 주소는 `/`로 이동합니다. `VITE_APP_MODE`에 따른 화면 전환은 제거했습니다.
 
@@ -33,7 +34,7 @@ ESLint 9 설정은 `eslint.config.js`에서 관리하며, 스타일 포맷은 Pr
 
 ## 인증 화면과 공유 카드
 
-로그인·회원가입·재설정 화면은 Stitch 인증 시안의 웹·모바일 배치를 반영합니다. Firebase 재설정 링크(`/login?mode=resetPassword&oobCode=…`)의 검증·만료·재시도·변경 완료를 처리하며 작업 코드는 URL에서 제거하고 메모리에만 보관합니다. 메일에서 이 화면을 열려면 Firebase Console → Authentication → Templates의 비밀번호 재설정 작업 URL을 `https://yieldloom-app.vercel.app/login`으로 설정해야 합니다. 이메일 템플릿 설정을 바꾸지 않으면 기존 Firebase 호스팅 재설정 화면을 이용합니다.
+관리자 로그인·재설정 화면은 Stitch 인증 시안의 웹·모바일 배치를 반영합니다. Firebase 재설정 링크(`/admin/login?mode=resetPassword&oobCode=…`)의 검증·만료·재시도·변경 완료를 처리하며 작업 코드는 URL에서 제거하고 메모리에만 보관합니다. 메일에서 이 화면을 열려면 Firebase Console → Authentication → Templates의 비밀번호 재설정 작업 URL을 `https://yieldloom-app.vercel.app/admin/login`으로 설정해야 합니다. 이메일 템플릿 설정을 바꾸지 않으면 기존 Firebase 호스팅 재설정 화면을 이용합니다.
 
 공유정보 탭에서 1:1(720×720), 16:9(1280×720), 9:16(720×1280)과 기본·페이퍼·네이비 디자인을 선택합니다. 선택은 카드 5종의 미리보기·PNG·ZIP manifest·로컬 프리셋에 함께 반영됩니다. 기존 프리셋과 기본 PNG 파일명은 유지하며 앱 다크 모드와 출력 디자인은 독립적입니다. 디자인 원본 63개의 기능별 반영 현황은 [시안 대조표](docs/design/stitch-screen-mapping.json)와 [분석 문서](docs/design/STITCH_FEATURE_GAPS_KO.txt)에 기록합니다.
 
@@ -87,6 +88,8 @@ node tests/request-dedup.browser.mjs
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.
 
 GitHub Pages 배포는 `VITE_API_BASE_URL` 설정이 없으면 정식 웹앱 API인 `https://yieldloom-app.vercel.app`을 사용합니다. 인증·계좌용 Node·Python API는 기본 프런트엔드 origin `https://totobubu.github.io`와 로컬 개발 주소를 허용하며, 추가 사이트는 서버의 `PUBLIC_APP_ORIGINS`에 명시합니다. 익명 시장 데이터만 반환하는 `/api/thumbnail-data`·`/api/stock-prices`는 CDN에 저장된 응답도 같은 방식으로 읽을 수 있도록 공개 CORS를 사용하며, 브라우저 자격증명은 허용하지 않습니다. `FIRESTORE_SA_KEY`·Toss 자격증명은 서버 전용으로 유지합니다. Pages에 Firebase 웹 설정이 없는 경우 로그인 화면에서 정식 웹앱으로 이동해 계좌 기능을 이용할 수 있습니다.
+
+익명 종목 의견함은 `/api/stock-feedback`을 통해 Firestore에 저장합니다. Vercel의 Production·Preview 환경에 기존 `FIRESTORE_SA_KEY`와 충분히 긴 임의 문자열인 `FEEDBACK_IP_SALT`를 설정해야 합니다. 원본 IP는 저장하지 않고 이 비밀값으로 해시한 제한 키만 10분 동안 사용합니다. 공개 제출을 허용할 별도 프런트엔드 origin은 `PUBLIC_APP_ORIGINS`에 추가합니다.
 
 ## 광고 배치
 

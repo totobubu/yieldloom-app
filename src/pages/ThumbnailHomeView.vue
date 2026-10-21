@@ -37,6 +37,8 @@
     } from '@/services/portfolio';
     import AdSlot from '@/components/ads/AdSlot.vue';
     import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
+    import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
+    import { hasDividendInformation } from '../../lib/dividend-availability.js';
     useHead({ title: 'ETF·주식 검색' });
     const route = useRoute(),
         router = useRouter();
@@ -83,7 +85,7 @@
             holdingStates.value = new Map();
             holdingsError.value = '';
             holdingsLoading.value = false;
-            if (pending || !user) return;
+            if (pending || !isPortfolioAdmin(user)) return;
             holdingsLoading.value = true;
             try {
                 const assets = await loadPortfolioAssets(user.uid);
@@ -96,6 +98,18 @@
             } finally {
                 if (request === holdingsRequest) holdingsLoading.value = false;
             }
+        },
+        { immediate: true }
+    );
+    watch(
+        [securityType, firebaseUser, authLoading],
+        ([type, user, pending]) => {
+            if (
+                !pending &&
+                type === 'holding-history' &&
+                !isPortfolioAdmin(user)
+            )
+                securityType.value = '';
         },
         { immediate: true }
     );
@@ -233,14 +247,10 @@
         row.dividendEvidence?.latestExDate ||
         '미확인';
     function hasDividendMetrics(row) {
-        if (row.noDividends === true) return false;
-        const event = distributions.value[row.symbol];
-        const value =
-            event?.distribution_per_share ?? row.dividendEvidence?.latestAmount;
-        return (
-            (Number.isFinite(Number(value)) && Number(value) > 0) ||
-            Boolean(event?.ex_date || row.dividendEvidence?.latestExDate)
-        );
+        return hasDividendInformation({
+            security: row,
+            distribution: distributions.value[row.symbol],
+        });
     }
     function reset() {
         query.value = '';
@@ -367,7 +377,10 @@
                     v-model:type="securityType"
                     v-model:company="company"
                     :companies="companies"
-                    :providers="popularCompanies" /></template
+                    :providers="popularCompanies"
+                    :show-holding-history="
+                        isPortfolioAdmin(firebaseUser)
+                    " /></template
         ></Card>
         <div
             v-if="securityType || company || query"
@@ -481,6 +494,8 @@
                                 ><strong v-if="hasDividendMetrics(row)">{{
                                     amount(row)
                                 }}</strong
+                                ><span v-else-if="row.noDividends === true"
+                                    >무배당</span
                                 ><span v-else>정보 확인 중</span>
                             </div>
                             <div>
@@ -488,6 +503,8 @@
                                 ><strong v-if="hasDividendMetrics(row)">{{
                                     exDate(row)
                                 }}</strong
+                                ><span v-else-if="row.noDividends === true"
+                                    >—</span
                                 ><span v-else>미확인</span>
                             </div>
                         </div>
@@ -548,7 +565,8 @@
                 v-model:type="draftType"
                 v-model:company="draftCompany"
                 :companies="companies"
-                :providers="popularCompanies" />
+                :providers="popularCompanies"
+                :show-holding-history="isPortfolioAdmin(firebaseUser)" />
             <template #footer
                 ><div class="filter-footer">
                     <Button

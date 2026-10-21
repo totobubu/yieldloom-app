@@ -3,6 +3,22 @@ import {
     clearRouteChunkRecovery,
     recoverRouteChunk,
 } from '@/services/routeChunkRecovery.js';
+import { watch } from 'vue';
+import { authLoading, firebaseUser } from '@/services/firebaseClient.js';
+import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
+
+async function requirePortfolioAdmin() {
+    if (authLoading.value)
+        await new Promise((resolve) => {
+            const stop = watch(authLoading, (loading) => {
+                if (!loading) {
+                    stop();
+                    resolve();
+                }
+            });
+        });
+    return isPortfolioAdmin(firebaseUser.value) || { name: 'thumbnail-home' };
+}
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +36,13 @@ const router = createRouter({
             path: '/admin/metadata',
             name: 'metadata-review',
             component: () => import('../pages/MetadataReviewView.vue'),
+            beforeEnter: requirePortfolioAdmin,
+        },
+        {
+            path: '/admin/feedback',
+            name: 'stock-feedback-admin',
+            component: () => import('../pages/StockFeedbackAdminView.vue'),
+            beforeEnter: requirePortfolioAdmin,
         },
         {
             path: '/',
@@ -28,6 +51,10 @@ const router = createRouter({
         },
         {
             path: '/login',
+            redirect: '/',
+        },
+        {
+            path: '/admin/login',
             name: 'login',
             component: () => import('../pages/LoginView.vue'),
         },
@@ -35,16 +62,19 @@ const router = createRouter({
             path: '/mypage',
             name: 'mypage',
             component: () => import('../pages/FamilyPortfolioView.vue'),
+            beforeEnter: requirePortfolioAdmin,
         },
         {
             path: '/mypage/legacy',
             name: 'legacy-mypage',
             component: () => import('../pages/MyPageView.vue'),
+            beforeEnter: requirePortfolioAdmin,
         },
         {
             path: '/admin/portfolio-mappings',
             name: 'portfolio-mappings',
             component: () => import('../pages/PortfolioMappingsView.vue'),
+            beforeEnter: requirePortfolioAdmin,
         },
         {
             path: '/thumbnail/:ticker',
@@ -63,6 +93,7 @@ const router = createRouter({
             path: '/simulator',
             name: 'dividend-simulator',
             component: () => import('../pages/DividendSimulatorView.vue'),
+            beforeEnter: requirePortfolioAdmin,
         },
         {
             path: '/legal',

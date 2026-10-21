@@ -172,7 +172,7 @@
             >로그인을 확인하고 있습니다.</Message
         >
         <Message v-else-if="!firebaseUser" severity="info"
-            ><router-link to="/login"
+            ><router-link to="/admin/login"
                 >로그인 후 관리자 권한을 확인해 주세요.</router-link
             ></Message
         >

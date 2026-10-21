@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createPublicJsonClient } from '../src/services/publicJson.js';
+import {
+    createPublicJsonClient,
+    publicRequestCredentials,
+} from '../src/services/publicJson.js';
 import { loadStockPrices } from '../src/services/stockPrices.js';
 import { loadValuationQuotes } from '../src/services/portfolioValuation.js';
 
@@ -19,7 +22,7 @@ test('public requests share active work, reuse bounded results, expire and force
     const read = createPublicJsonClient({
         now: () => clock,
         fetcher: async (_url, options) => {
-            assert.equal(options.credentials, 'omit');
+            assert.equal(options.credentials, 'same-origin');
             assert.equal(options.referrerPolicy, 'no-referrer');
             assert.equal(options.headers, undefined);
             calls++;
@@ -36,6 +39,33 @@ test('public requests share active work, reuse bounded results, expire and force
     await read('/public', { force: true });
     assert.equal(calls, 3);
     assert.equal(read.metrics().sharedRequests, 1);
+});
+
+test('same-origin public assets keep preview authentication while external URLs omit credentials', () => {
+    const origin = 'https://yieldloom-app-git-work.example.vercel.app';
+    assert.equal(
+        publicRequestCredentials('/ticker-index.json', origin),
+        'same-origin'
+    );
+    assert.equal(
+        publicRequestCredentials('ticker-index.json', origin),
+        'same-origin'
+    );
+    assert.equal(
+        publicRequestCredentials(`${origin}/ticker-index.json`, origin),
+        'same-origin'
+    );
+    assert.equal(
+        publicRequestCredentials(
+            'https://public-data.example/ticker-index.json',
+            origin
+        ),
+        'omit'
+    );
+    assert.equal(
+        publicRequestCredentials('https://public-data.example/file.json'),
+        'omit'
+    );
 });
 
 test('cancelling one consumer keeps another alive; last cancellation cannot populate cache', async () => {

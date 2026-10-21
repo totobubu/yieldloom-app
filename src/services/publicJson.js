@@ -1,11 +1,25 @@
 import { createSharedRequest, joinSharedRequest } from './sharedRequest.js';
 
+export function publicRequestCredentials(url, origin = '') {
+    const value = String(url);
+    if (!/^(?:[a-z][a-z\d+.-]*:|\/\/)/i.test(value)) return 'same-origin';
+    if (!origin) return 'omit';
+    try {
+        return new URL(value, origin).origin === new URL(origin).origin
+            ? 'same-origin'
+            : 'omit';
+    } catch {
+        return 'omit';
+    }
+}
+
 // Opt-in public GETs only. Never use this cache for accounts or authenticated data.
 export function createPublicJsonClient({
     fetcher = fetch,
     now = Date.now,
     maxEntries = 96,
     maxChars = 8_000_000,
+    origin = typeof window === 'undefined' ? '' : window.location.origin,
 } = {}) {
     const entries = new Map();
     const counters = { networkRequests: 0, cacheHits: 0, sharedRequests: 0 };
@@ -57,7 +71,7 @@ export function createPublicJsonClient({
             current.task = createSharedRequest(async (transportSignal) => {
                 counters.networkRequests++;
                 const response = await fetcher(key, {
-                    credentials: 'omit',
+                    credentials: publicRequestCredentials(key, origin),
                     referrerPolicy: 'no-referrer',
                     cache: force ? 'reload' : 'no-store',
                     signal: transportSignal,

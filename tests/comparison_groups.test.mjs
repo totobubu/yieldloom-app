@@ -88,3 +88,41 @@ test('shared card metadata preserves missing dividend state and verified connect
     assert.equal(products[1].verified, false);
     assert.equal(products[1].strategy, 'unknown');
 });
+
+test('theme constituents include actual stocks first and do not match unrelated stock names', () => {
+    const m7 = comparisonThemes.find((row) => row.value === 'm7');
+    const faang = comparisonThemes.find((row) => row.value === 'faang');
+    const rows = comparisonProducts([
+        { symbol: 'AAPU', securityType: 'etf', underlying: 'AAPL' },
+        { symbol: 'NFLX', securityType: 'stock', noDividends: true },
+        {
+            symbol: 'AAPL',
+            securityType: 'stock',
+            dividendEvidence: { latestAmount: 0.26 },
+        },
+        {
+            symbol: 'UNRELATED',
+            securityType: 'stock',
+            longName: 'M7 FAANG company',
+        },
+    ]);
+    assert.deepEqual(
+        themeProducts(rows, m7).map((row) => row.symbol),
+        ['AAPL', 'AAPU']
+    );
+    assert.deepEqual(
+        themeProducts(rows, faang).map((row) => row.symbol),
+        ['AAPL', 'NFLX', 'AAPU']
+    );
+    const apple = themeProducts(rows, m7)[0];
+    assert.equal(apple.strategy, 'underlying-stock');
+    assert.equal(apple.direction, 'long');
+    assert.equal(apple.leverage, null);
+    assert.equal(apple.verified, false);
+    assert.equal(apple.dividend, 0.26);
+    assert.equal(themeMatch(apple, m7).kind, 'constituent');
+    assert.equal(
+        rows.find((row) => row.symbol === 'NFLX').dividendStatus,
+        'none'
+    );
+});

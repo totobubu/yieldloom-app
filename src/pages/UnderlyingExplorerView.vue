@@ -89,6 +89,7 @@
         unavailable: '배당 정보 미확인',
     };
     const strategyNames = {
+        'underlying-stock': '본주(기초자산)',
         income: '인컴·옵션',
         leveraged: '레버리지',
         'single-stock': '단일종목',
@@ -125,6 +126,15 @@
             directory.value?.distributions
         )
     );
+    const themeUniverse = computed(() =>
+        comparisonProducts(
+            (directory.value?.rows ?? []).map((row) => ({
+                ...row,
+                securityType: inferSecurityType(row),
+            })),
+            directory.value?.distributions
+        )
+    );
     const themeOptions = computed(() =>
         [...new Set(comparisonThemes.map((item) => item.group))].map(
             (group) => ({
@@ -133,7 +143,7 @@
                     .filter((item) => item.group === group)
                     .map((item) => {
                         const count = themeProducts(
-                            allProducts.value,
+                            themeUniverse.value,
                             item
                         ).length;
                         return {
@@ -148,7 +158,7 @@
     const products = computed(() => {
         if (section.value.value === 'similar') return allProducts.value;
         if (section.value.value === 'theme')
-            return themeProducts(allProducts.value, theme.value);
+            return themeProducts(themeUniverse.value, theme.value);
         return underlyingProducts(
             directory.value?.rows ?? [],
             underlying.value,
@@ -162,7 +172,7 @@
         section.value.value === 'similar'
             ? '조건별 ETF 비교'
             : section.value.value === 'theme'
-              ? `${theme.value.label} 관련 ETF`
+              ? `${theme.value.label} 관련 종목`
               : `${underlying.value} 기반`
     );
     const selectionKey = computed(
@@ -272,8 +282,13 @@
                   maximumFractionDigits: 4,
               });
     const metric = (symbol, key) =>
-        key === 'totalReturn1Y' &&
-        insights.value[symbol]?.performance?.corporateActionReview
+        (key === 'expenseRatio' &&
+            pageProducts.value.some(
+                (row) =>
+                    row.symbol === symbol && row.kind === 'underlying-stock'
+            )) ||
+        (key === 'totalReturn1Y' &&
+            insights.value[symbol]?.performance?.corporateActionReview)
             ? null
             : comparableMetric(
                   key === 'expenseRatio'
@@ -284,7 +299,10 @@
         pageProducts.value.map((row) => ({
             ...row,
             totalReturn: metric(row.symbol, 'totalReturn1Y')?.value ?? null,
-            expenseRatio: metric(row.symbol, 'expenseRatio')?.value ?? null,
+            expenseRatio:
+                row.kind === 'underlying-stock'
+                    ? null
+                    : (metric(row.symbol, 'expenseRatio')?.value ?? null),
             maxDrawdown: risks.value[row.symbol]?.maxDrawdown ?? null,
         }))
     );
@@ -564,9 +582,10 @@
                 <strong>{{ theme.label }}</strong>
                 <p>{{ theme.description }}</p>
                 <small
-                    >기초자산 목록 또는 상품명 키워드로 분류합니다. 여러 테마에
-                    중복될 수 있으며, 상품별 분류 근거를 함께 표시합니다. 보유
-                    비중 분석은 포함하지 않습니다.</small
+                    >등록된 테마 구성 주식을 먼저 표시하고, 관련 ETF는 기초자산
+                    목록 또는 상품명 키워드로 분류합니다. 여러 테마에 중복될 수
+                    있으며, 상품별 분류 근거를 함께 표시합니다. 보유 비중 분석은
+                    포함하지 않습니다.</small
                 >
             </div>
             <p v-if="section.value === 'similar'" class="comparison-context">
@@ -603,7 +622,7 @@
                 <div class="comparison-summary-heading">
                     <div>
                         <h3>한눈에 비교</h3>
-                        <p>현재 필터의 ETF를 같은 기준으로 비교합니다.</p>
+                        <p>현재 필터의 종목을 같은 기준으로 비교합니다.</p>
                     </div>
                     <span>동일 기준일·기간일 때 상대 우위 표시</span>
                 </div>
@@ -658,7 +677,10 @@
                                             'min'
                                         ),
                                     }">
-                                    {{ number(row.expenseRatio)
+                                    {{
+                                        row.kind === 'underlying-stock'
+                                            ? '해당 없음'
+                                            : number(row.expenseRatio)
                                     }}{{ row.expenseRatio == null ? '' : '%' }}
                                     <small
                                         v-if="
@@ -705,8 +727,11 @@
                     <header>
                         <router-link :to="`/stock/${row.symbol}`"
                             ><h3>{{ row.symbol }}</h3></router-link
-                        ><a
-                            v-if="row.verified && row.source?.url"
+                        ><Tag
+                            v-if="row.kind === 'underlying-stock'"
+                            value="본주"
+                            severity="secondary" /><a
+                            v-else-if="row.verified && row.source?.url"
                             class="verification-link"
                             :href="row.source.url"
                             target="_blank"
@@ -729,17 +754,29 @@
                             " />
                     </header>
                     <p>{{ row.koName || row.longName || row.symbol }}</p>
-                    <p>{{ row.company || '운용사 미확인' }}</p>
+                    <p>
+                        {{
+                            row.kind === 'underlying-stock'
+                                ? '일반 주식'
+                                : row.company || '운용사 미확인'
+                        }}
+                    </p>
                     <div
                         v-if="section.value !== 'underlying'"
                         class="product-context-tags">
                         <router-link
-                            v-if="row.underlying"
+                            v-if="
+                                row.kind !== 'underlying-stock' &&
+                                row.underlying
+                            "
                             :to="`/underlying/${row.underlying}`"
                             >{{ row.underlying }} 기반</router-link
                         >
                     </div>
-                    <p>
+                    <p v-if="row.kind === 'underlying-stock'">
+                        직접 보유 주식 · {{ row.frequency }}
+                    </p>
+                    <p v-else>
                         {{ strategyNames[row.strategy] }} ·
                         {{ directionNames[row.direction] }} ·
                         {{
@@ -806,7 +843,10 @@
                                 >
                             </dd>
                             <dt>운용 보수</dt>
-                            <dd>
+                            <dd v-if="row.kind === 'underlying-stock'">
+                                해당 없음
+                            </dd>
+                            <dd v-else>
                                 {{
                                     number(
                                         metric(row.symbol, 'expenseRatio')
@@ -849,14 +889,14 @@
                 :total-records="visible.length"
                 :page-link-size="3"
                 template="PrevPageLink PageLinks NextPageLink"
-                aria-label="ETF 비교 결과 페이지"
+                aria-label="종목 비교 결과 페이지"
                 @page="page = $event.page + 1" />
             <section
                 v-if="hasSelection && !visible.length"
                 class="explorer-empty"
                 role="status">
                 <i class="pi pi-filter-slash" aria-hidden="true" />
-                <h3>조건에 맞는 ETF가 없습니다</h3>
+                <h3>조건에 맞는 종목이 없습니다</h3>
                 <p>필터 조건을 줄이거나 전체 조건으로 다시 확인해 보세요.</p>
                 <Button
                     label="필터 초기화"

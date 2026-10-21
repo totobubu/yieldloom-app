@@ -1,19 +1,20 @@
 <script setup>
     import { useHead } from '@vueuse/head';
 
-    useHead({ title: '이용 안내 · Yieldloom' });
+    useHead({ title: '이용 안내 · 토또부부 배당 스튜디오' });
 </script>
 
 <template>
     <article class="legal-page">
-        <p class="eyebrow">YIELDLOOM</p>
+        <p class="eyebrow">토또부부 배당 스튜디오</p>
         <h1>이용 안내</h1>
         <section>
             <h2>정보의 성격</h2>
             <p>
-                Yieldloom은 공개된 시장 및 배당 정보를 보기 쉽게 정리해
-                제공합니다. 투자 권유, 매매 신호 또는 세무·법률 자문이 아니며,
-                최종 투자 판단과 확인 책임은 이용자에게 있습니다.
+                <strong>토또부부 배당 스튜디오</strong>는 공개된 시장 및 배당
+                정보를 보기 쉽게 정리해 제공합니다. 투자 권유, 매매 신호 또는
+                세무·법률 자문이 아니며, 최종 투자 판단과 확인 책임은 이용자에게
+                있습니다.
             </p>
         </section>
         <section>

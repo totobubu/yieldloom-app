@@ -1,4 +1,9 @@
 import {
+    applySecurityStatus,
+    archiveTicker,
+    isDelisted,
+} from '../lib/security-status.js';
+import {
     loadOfficialHistory,
     officialReleaseBase,
     officialHistoryReference,
@@ -72,9 +77,10 @@ export function catalogEntry(symbol) {
 }
 
 export function rivalOptions(entry) {
-    if (!entry.underlying || !entry.comparisonEligible) return [];
+    if (isDelisted(entry) || !entry.underlying || !entry.comparisonEligible)
+        return [];
     return (catalog.relationships[entry.underlying] ?? []).filter(
-        (symbol) => symbol !== entry.symbol
+        (symbol) => symbol !== entry.symbol && !isDelisted(symbol)
     );
 }
 
@@ -184,7 +190,9 @@ async function loadPriceHistory(symbol, fetcher, baseUrl, historyKind, asOf) {
         ...payload,
         tickerInfo: { ...payload.tickerInfo, marketCap },
         backtestData: rows.filter(
-            (row) => row.date >= cutoff.toISOString().slice(0, 10)
+            (row) =>
+                isDelisted(symbol) ||
+                row.date >= cutoff.toISOString().slice(0, 10)
         ),
     };
 }
@@ -213,6 +221,22 @@ async function fetchTicker(symbol, origin, options = {}) {
     const [historyResult, priceResult] = await Promise.allSettled([
         loadOfficialHistory(key, origin, fetcher),
         (async () => {
+            if (isDelisted(key)) {
+                const archive = await loadPriceHistory(
+                    key,
+                    fetcher,
+                    baseUrl,
+                    historyKind,
+                    options.asOfDate ?? new Date().toISOString().slice(0, 10)
+                ).catch(() => null);
+                if (archive) return { ...archive, source: 'r2_projection' };
+                return loadProjection(
+                    key,
+                    projectionBase,
+                    fetcher,
+                    historyKind
+                ).catch(() => null);
+            }
             const projection = await loadProjection(
                 key,
                 projectionBase,
@@ -319,7 +343,7 @@ async function fetchTicker(symbol, origin, options = {}) {
 
 export function loadTicker(symbol, origin, options = {}) {
     if (options.fetcher && options.fetcher !== fetch)
-        return fetchTicker(symbol, origin, options);
+        return fetchTicker(symbol, origin, options).then(archiveTicker);
     const key = JSON.stringify([
         normalize(symbol),
         origin,
@@ -334,15 +358,27 @@ export function loadTicker(symbol, origin, options = {}) {
         );
         inFlight.set(key, pending);
     }
-    return inFlight.get(key);
+    return inFlight.get(key).then(archiveTicker);
 }
 
-export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
+function mergeArchiveRows(previous = [], current = []) {
+    const rows = new Map();
+    for (const row of [...previous, ...current]) {
+        if (!row.forecasted)
+            rows.set(row.date, { ...rows.get(row.date), ...row });
+    }
+    return [...rows.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+async function tickerWithSnapshot(symbol, origin, options = {}) {
     const readSnapshot = options.readSnapshot ?? readTickerSnapshot;
     const writeSnapshot = options.writeSnapshot ?? writeTickerSnapshot;
     try {
         const value = await loadTicker(symbol, origin, options);
-        if (value.sourceStatus.price === 'unavailable') {
+        if (
+            value.sourceStatus.price === 'unavailable' ||
+            (isDelisted(symbol) && value.tickerInfo.price == null)
+        ) {
             const snapshot = await readSnapshot(symbol).catch((error) => {
                 console.warn(
                     `Snapshot read failed for ${symbol}`,
@@ -352,14 +388,21 @@ export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
             });
             if (
                 snapshot?.value &&
-                [
-                    'r2_projection',
-                    'thumbnail_projection',
-                    'yahoo_quote',
-                ].includes(snapshot.value.sourceStatus?.price)
+                (isDelisted(symbol) ||
+                    [
+                        'r2_projection',
+                        'thumbnail_projection',
+                        'yahoo_quote',
+                    ].includes(snapshot.value.sourceStatus?.price))
             ) {
                 return {
                     ...snapshot.value,
+                    backtestData: isDelisted(symbol)
+                        ? mergeArchiveRows(
+                              snapshot.value.backtestData,
+                              value.backtestData
+                          )
+                        : snapshot.value.backtestData,
                     sourceStatus: {
                         ...(snapshot.value.sourceStatus ?? {}),
                         freshness: 'stale',
@@ -370,9 +413,13 @@ export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
             }
         }
         // Snapshot persistence is optional locally, but mandatory where R2 credentials exist.
-        await writeSnapshot(symbol, value).catch((error) =>
-            console.warn(`Snapshot write failed for ${symbol}`, error.message)
-        );
+        if (!isDelisted(symbol))
+            await writeSnapshot(symbol, value).catch((error) =>
+                console.warn(
+                    `Snapshot write failed for ${symbol}`,
+                    error.message
+                )
+            );
         return value;
     } catch (error) {
         const snapshot = await readSnapshot(symbol).catch((snapshotError) => {
@@ -393,6 +440,10 @@ export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
             },
         };
     }
+}
+
+export async function loadTickerWithSnapshot(symbol, origin, options = {}) {
+    return archiveTicker(await tickerWithSnapshot(symbol, origin, options));
 }
 
 export async function buildThumbnailPayload(ticker, requestedRivals, loader) {
@@ -436,7 +487,9 @@ export async function buildThumbnailPayload(ticker, requestedRivals, loader) {
     const loaded = Object.fromEntries(
         symbols.map((symbol, index) => [
             symbol,
-            settled[index].status === 'fulfilled' ? settled[index].value : null,
+            settled[index].status === 'fulfilled' && settled[index].value
+                ? archiveTicker(settled[index].value)
+                : null,
         ])
     );
     const unavailable = symbols.filter(
@@ -450,6 +503,7 @@ export async function buildThumbnailPayload(ticker, requestedRivals, loader) {
             `종목 데이터를 불러올 수 없습니다: ${entry.symbol}`
         );
     if (
+        !isDelisted(entry) &&
         loaded[entry.symbol].sourceStatus?.price === 'unavailable' &&
         !loaded[entry.symbol].backtestData?.length
     ) {
@@ -474,7 +528,11 @@ export async function buildThumbnailPayload(ticker, requestedRivals, loader) {
           : (loaded[entry.symbol].sourceStatus?.freshness ?? 'fresh');
     return {
         ticker: loaded[entry.symbol],
-        catalog: { ...entry, company: instrument?.officialProvider ?? null },
+        catalog: applySecurityStatus({
+            ...instrument,
+            ...entry,
+            company: instrument?.officialProvider ?? null,
+        }),
         rivalOptions: rivalOptions(entry),
         rivals,
         series: Object.fromEntries(
@@ -482,7 +540,7 @@ export async function buildThumbnailPayload(ticker, requestedRivals, loader) {
         ),
         partial: unavailable.length > 0,
         unavailable,
-        dataStatus: freshness,
+        dataStatus: isDelisted(entry) ? 'archived' : freshness,
         seriesStatus,
     };
 }

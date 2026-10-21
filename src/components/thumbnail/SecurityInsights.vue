@@ -1,9 +1,33 @@
 <script setup>
     import { readPublicJson } from '@/services/publicJson.js';
     import { computed, ref, watch } from 'vue';
+    import InfoHelp from '@/components/common/InfoHelp.vue';
     import { getAssetUrl } from '@/utils/dataUrl';
     import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
 
+    const basisHelp = ref(null);
+    const basisText =
+        '최근 12개월 지표는 배당락일 기준입니다. 총수익률은 Yahoo 조정 종가로 계산한 추정치이며, 호가 스프레드는 수집 시점의 값입니다. 미확인은 0을 뜻하지 않습니다.';
+    const etfProfiles = {
+        SCHD: {
+            name: 'Schwab U.S. Dividend Equity ETF',
+            company: 'Schwab',
+            index: 'Dow Jones U.S. Dividend 100 Index',
+            description:
+                '배당 지급 이력과 재무 지표를 기준으로 미국 배당주에 투자합니다.',
+            url: 'https://www.schwabassetmanagement.com/products/schd',
+        },
+        VYM: {
+            name: 'Vanguard High Dividend Yield ETF',
+            company: 'Vanguard',
+            index: 'FTSE High Dividend Yield Index',
+            description: '배당수익률이 높은 미국 주식에 폭넓게 투자합니다.',
+            url: 'https://investor.vanguard.com/investment-products/etfs/profile/vym',
+        },
+    };
+    const etfSymbol = (row) =>
+        String(row.ticker || row.etf || '').toUpperCase();
+    const profile = (row) => etfProfiles[etfSymbol(row)];
     const props = defineProps({ symbol: { type: String, required: true } });
     const data = ref(null),
         loading = ref(false),
@@ -80,6 +104,7 @@
                     .trim()
                     .toUpperCase()
                     .replaceAll('.', '-');
+            basisHelp.value?.hide();
             data.value = null;
             failed.value = false;
             loading.value = true;
@@ -118,7 +143,24 @@
         aria-labelledby="insights-heading"
         :aria-busy="loading">
         <header>
-            <h2 id="insights-heading">{{ symbol }} 누적 데이터</h2>
+            <div class="insights-title">
+                <h2 id="insights-heading">{{ symbol }} 누적 데이터</h2>
+                <InfoHelp
+                    v-if="data"
+                    ref="basisHelp"
+                    label="누적 데이터 기준 및 출처 안내"
+                    :text="basisText">
+                    <p v-if="safeUrl(data.sourceUrl)">
+                        지표 출처:
+                        <a
+                            :href="safeUrl(data.sourceUrl)"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >{{ data.source || 'Yahoo Finance' }}</a
+                        >
+                    </p>
+                </InfoHelp>
+            </div>
             <p v-if="data">
                 수집 {{ data.collectedAt?.slice(0, 10) || asOf }} ·
                 {{ label(data.status) }}
@@ -149,20 +191,6 @@
                     >
                 </article>
             </div>
-            <p class="basis">
-                최근 12개월 지표는 배당락일 기준입니다. 총수익률은 Yahoo 조정
-                종가로 계산한 추정치이며, 호가 스프레드는 수집 시점의 값입니다.
-                미확인은 0을 뜻하지 않습니다.
-            </p>
-            <p v-if="safeUrl(data.sourceUrl)">
-                지표 출처:
-                <a
-                    :href="safeUrl(data.sourceUrl)"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >{{ data.source || 'Yahoo Finance' }}</a
-                >
-            </p>
             <h3>
                 ROC 이력 <small>{{ rocRows.length }}건</small>
             </h3>
@@ -320,25 +348,77 @@
                     </table>
                 </div>
             </details>
-            <details v-if="data.dividendEtfs?.length">
-                <summary>배당 ETF 편입 근거</summary>
-                <ul>
-                    <li
+            <section
+                v-if="data.dividendEtfs?.length"
+                class="holding-etfs"
+                aria-labelledby="holding-etfs-heading">
+                <h3 id="holding-etfs-heading">배당 ETF 편입 근거</h3>
+                <p class="basis">
+                    편입 비중은 각 기준일의 ETF 보유 자료 기준입니다.
+                </p>
+                <div class="holding-etf-grid">
+                    <article
                         v-for="row in data.dividendEtfs"
-                        :key="row.etf || row.ticker">
-                        {{ row.etf || row.ticker }} · 편입 비중
-                        {{ number(row.weightPercent, '%') }} ·
-                        {{ row.asOfDate || '기준일 미제공' }}
-                        <a
-                            v-if="safeUrl(row.sourceUrl)"
-                            :href="safeUrl(row.sourceUrl)"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            >출처</a
-                        >
-                    </li>
-                </ul>
-            </details>
+                        :key="etfSymbol(row)"
+                        class="holding-etf-card">
+                        <div class="holding-etf-title">
+                            <router-link :to="'/stock/' + etfSymbol(row)">{{
+                                etfSymbol(row)
+                            }}</router-link
+                            ><span v-if="profile(row)">{{
+                                profile(row).company
+                            }}</span>
+                        </div>
+                        <h4>
+                            {{
+                                profile(row)?.name ||
+                                row.name ||
+                                `${etfSymbol(row)} ETF`
+                            }}
+                        </h4>
+                        <p v-if="profile(row)" class="holding-etf-description">
+                            {{ profile(row).description }}
+                        </p>
+                        <dl>
+                            <div>
+                                <dt>ETF 내 {{ symbol }} 비중</dt>
+                                <dd>{{ number(row.weightPercent, '%') }}</dd>
+                            </div>
+                            <div>
+                                <dt>보유 자료 기준일</dt>
+                                <dd>{{ row.asOfDate || '기준일 미제공' }}</dd>
+                            </div>
+                            <div v-if="profile(row)">
+                                <dt>추종 지수</dt>
+                                <dd>{{ profile(row).index }}</dd>
+                            </div>
+                        </dl>
+                        <div class="holding-etf-links">
+                            <router-link :to="'/stock/' + etfSymbol(row)"
+                                >ETF 상세 보기
+                                <i class="pi pi-angle-right" aria-hidden="true"
+                            /></router-link>
+                            <a
+                                v-if="safeUrl(row.sourceUrl)"
+                                :href="safeUrl(row.sourceUrl)"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >편입 근거 원문
+                                <i
+                                    class="pi pi-external-link"
+                                    aria-hidden="true"
+                            /></a>
+                            <a
+                                v-if="profile(row)"
+                                :href="profile(row).url"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >운용사 상품 안내</a
+                            >
+                        </div>
+                    </article>
+                </div>
+            </section>
         </template>
     </section>
 </template>
@@ -364,6 +444,101 @@
     }
     h3 {
         font-size: 1rem;
+    }
+    .insights-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .insights-title h2 {
+        margin: 0;
+    }
+    .insights-title > .p-button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    .security-insights > header {
+        align-items: center;
+        margin-bottom: 16px;
+    }
+    .holding-etfs {
+        margin-top: 20px;
+    }
+    .holding-etfs > h3 {
+        margin-bottom: 6px;
+    }
+    .holding-etf-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+        gap: 16px;
+    }
+    .holding-etf-card {
+        border: 1px solid var(--app-border);
+        border-radius: 14px;
+        padding: 18px;
+        background: var(--app-surface);
+        min-width: 0;
+    }
+    .holding-etf-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+    .holding-etf-title > a {
+        color: var(--app-accent);
+        font-size: 21px;
+        font-weight: 750;
+        text-decoration: none;
+    }
+    .holding-etf-title > span {
+        font-size: 12px;
+        color: var(--app-muted);
+    }
+    .holding-etf-card h4 {
+        margin: 8px 0;
+        font-size: 14px;
+    }
+    .holding-etf-description {
+        color: var(--app-muted);
+        line-height: 1.6;
+        font-size: 13px;
+    }
+    .holding-etf-card dl {
+        margin: 16px 0;
+        display: grid;
+        gap: 12px;
+        padding-top: 14px;
+        border-top: 1px solid var(--app-border-subtle);
+    }
+    .holding-etf-card dl > div {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 12px;
+    }
+    .holding-etf-card dt {
+        font-size: 12px;
+        color: var(--app-muted);
+    }
+    .holding-etf-card dd {
+        margin: 0;
+        text-align: right;
+        overflow-wrap: anywhere;
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+    }
+    .holding-etf-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+    }
+    .holding-etf-links a {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--app-accent);
+        font-size: 12px;
+        min-height: 44px;
     }
     .metric-grid {
         display: grid;
@@ -443,6 +618,9 @@
     summary {
         cursor: pointer;
         font-weight: 600;
+    }
+    .etf-card-link {
+        font-weight: 700;
     }
     .notice {
         color: #9a3412;

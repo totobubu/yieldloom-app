@@ -1,3 +1,4 @@
+import { isDelisted } from '../lib/security-status.js';
 import { normalizeSymbol, validSymbol } from '../lib/thumbnail-projection.js';
 import { loadOfficialIndex } from '../lib/official-dividends.js';
 
@@ -34,6 +35,10 @@ const date = (value) =>
 export default async function handler(req, res) {
     const ticker = normalize(req.query.ticker);
     if (!validSymbol(ticker)) return res.status(400).send('Invalid ticker');
+    if (isDelisted(ticker))
+        return res
+            .status(410)
+            .send('상장폐지 종목의 카드 출력은 제공하지 않습니다.');
     let index;
     try {
         index = await loadOfficialIndex();

@@ -1,3 +1,4 @@
+import { applySecurityStatuses } from '../lib/security-status.js';
 import fs from 'fs/promises';
 import { existsSync, readFileSync } from 'fs';
 import path from 'path';
@@ -998,7 +999,7 @@ async function generateNavJson() {
         });
     });
 
-    let finalTickers = await Promise.all(finalTickersPromises);
+    let finalTickers = applySecurityStatuses(await Promise.all(finalTickersPromises));
 
     finalTickers.sort((a, b) => a.symbol.localeCompare(b.symbol));
 

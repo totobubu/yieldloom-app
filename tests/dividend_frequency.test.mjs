@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { normalizeFrequency } from '../src/services/thumbnail/frequency.js';
 
-test('compact core catalog index excludes product-specific frequency metadata', async () => {
+test('compact catalog preserves optional registered cadence for summary cards', async () => {
     const index = JSON.parse(await fs.readFile('dist/ticker-index.json', 'utf8'));
     const schd = index.nav.find(row => row.symbol === 'SCHD');
-    assert.equal(schd.frequency, undefined);
+    assert.equal(normalizeFrequency(schd.frequency), 'quarterly');
 });
 
 test('frequency aliases support legacy metadata and official event values', () => {

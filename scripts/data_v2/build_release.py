@@ -16,6 +16,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.metadata.registry import load_verified_links
+from scripts.metadata.security_status import apply_status, load_statuses
 ALLOWED_STATUSES = {"official", "cross_checked"}
 
 
@@ -107,7 +108,8 @@ def load_catalog(path: Path | None, events: list[dict[str, object]]) -> list[dic
             "symbol": symbol, "isin": None, "market": "UNKNOWN", "currency": "USD",
             "koName": None, "longName": None, "active": True, "officialProvider": provider,
         })
-    return [by_symbol[symbol] for symbol in sorted(by_symbol)]
+    statuses = load_statuses()
+    return [apply_status(by_symbol[symbol], statuses) for symbol in sorted(by_symbol)]
 
 
 def main() -> int:
@@ -167,6 +169,7 @@ def main() -> int:
             key: detail[key]
             for key in ("symbol", "isin", "market", "currency", "koName", "longName", "active", "officialProvider", "ipoDate", "frequency", "noDividends") if key in detail
         } | ({'underlying': detail['underlying']} if detail.get('underlying') else {})
+          | ({'listingStatus': detail['listingStatus']} if detail.get('listingStatus') else {})
           | {"instrumentPath": f"catalog/instruments/{filename}.json"})
     search_path = output / "catalog" / "search-index.json"
     dump(search_path, {"schemaVersion": 1, "instruments": catalog_index})

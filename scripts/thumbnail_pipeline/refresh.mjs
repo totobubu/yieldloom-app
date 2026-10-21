@@ -1,3 +1,4 @@
+import { isDelisted } from '../../lib/security-status.js';
 import {
     GetObjectCommand,
     PutObjectCommand,
@@ -55,6 +56,7 @@ export async function refresh({
     symbols,
     fetcher = fetch,
     dryRun = false,
+    includeDelisted = false,
     concurrency = 8,
 }) {
     if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 8)
@@ -95,6 +97,7 @@ export async function refresh({
         changed: [],
         unchanged: [],
         rejected: [],
+        skipped: [],
         measurements: [],
     };
     const selected = symbols ? new Set(symbols) : null;
@@ -105,6 +108,10 @@ export async function refresh({
             .map((item) =>
                 limit(async () => {
                     const symbol = item.symbol;
+                    if (isDelisted(symbol) && !includeDelisted) {
+                        report.skipped.push({ symbol, reason: 'delisted' });
+                        return;
+                    }
                     const sourceKey = item.dataPaths?.[0];
                     try {
                         if (
@@ -333,6 +340,7 @@ async function main() {
         symbols,
         dryRun,
         concurrency: Number(value('--concurrency') ?? 8),
+        includeDelisted: args.includes('--include-delisted'),
         asOf: value('--as-of') ?? new Date().toISOString().slice(0, 10),
     });
     console.log(JSON.stringify(report, null, 2));

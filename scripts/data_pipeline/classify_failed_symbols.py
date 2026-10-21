@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 failed_both 종목들을 분류하는 스크립트
-- 상장폐지된 종목
+- 조회 실패로 확인이 필요한 종목 (상장폐지 확정 아님)
 - 배당이 없는 종목 (활성 상태)
 """
 
@@ -26,7 +26,7 @@ def check_symbol_status(symbol, suffixes):
     """
     심볼의 상태 확인
     Returns: (status, working_suffix, info)
-    status: 'delisted', 'no_dividends', 'has_data'
+    status: 'needs_review', 'no_dividends', 'has_data'
     """
     for suffix in suffixes:
         yf_symbol = symbol + suffix
@@ -65,8 +65,8 @@ def check_symbol_status(symbol, suffixes):
             # 에러 발생 시 다음 접미사 시도
             continue
     
-    # 모든 접미사에서 실패 = 상장폐지
-    return 'delisted', None, {}
+    # 조회 실패는 상장폐지 근거가 아님: 확인 필요
+    return 'needs_review', None, {}
 
 def main():
     print("🔍 Classifying Failed Symbols")
@@ -79,7 +79,7 @@ def main():
     print(f"📊 Found {len(failed_both)} symbols to classify\n")
     
     classification = {
-        "delisted": [],
+        "needs_review": [],
         "no_dividends": [],
         "has_data": [],  # 실제로 배당 데이터가 있는 경우
         "timestamp": report.get("timestamp")
@@ -111,7 +111,7 @@ def main():
     
     print("\n" + "=" * 60)
     print(f"📈 Classification Summary:")
-    print(f"  🪦 Delisted: {len(classification['delisted'])} symbols")
+    print(f"  🔎 Needs review: {len(classification['needs_review'])} symbols")
     print(f"  📭 No Dividends (Active): {len(classification['no_dividends'])} symbols")
     print(f"  ✅ Has Data (False Negative): {len(classification['has_data'])} symbols")
     print(f"  📄 Report saved to: {OUTPUT_FILE}")

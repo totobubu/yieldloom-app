@@ -12,6 +12,7 @@
 - `/simulator`: 관리자 전용 최초 투자·납입·배당·재투자 A/B 및 원천징수율 가정 비교.
 - `/mypage/legacy`: 이전 단일 계좌 자료 조회.
 - `/stock/:ticker`: 종목 상세·시세·배당 정보와 배당 카드 PNG·게시 패키지 다운로드, 게시 문구 복사. `/thumbnail/:ticker`는 이 경로로 이동합니다.
+- `/compare`: 종목 비교의 기초자산별·유사 ETF·테마(키워드·업종·기술) 하위 화면. `view=underlying|similar|theme`, `symbol`, `theme`으로 비교 화면을 공유합니다. 기존 `/underlying/:symbol` 링크도 유지합니다. 유사 ETF는 전체 ETF에서 전략 → 방향 → 배당 여부 → 지급 주기를 단계적으로 선택하며 앞선 조건에 없는 옵션을 숨깁니다. 테마는 등록된 구성 본주를 먼저 표시하고, 해당 종목을 기초자산으로 참조하거나 상품명 키워드가 일치하는 ETF를 함께 표시합니다. 전략의 `본주(기초자산)`으로 구성 주식만 볼 수 있습니다.
 - `/legal`: 데이터 출처·갱신·투자 면책 및 개인정보 안내.
 - `/admin/feedback`: 공개 종목 상세에서 익명으로 접수한 요청·질문을 관리자만 검토하고 처리합니다.
 - `?rivals=CRSH,TSII`: 라이벌 선택 공유. 최대 3종.
@@ -154,6 +155,10 @@ npm run content:refresh -- --scope provider --provider yieldmax
 ```
 
 수집 파이프라인은 기본적으로 카드용 데이터 작업을 수행합니다. 기존 블로그 Bundle·편집 캘린더·주간 대본 생성은 `--include-editorial`을 명시한 경우에만 실행합니다. 호환 도구와 기존 저장 데이터는 보존합니다.
+
+## 상장폐지 종목
+
+상장폐지 종목은 기본 검색에서 제외하고 `상장폐지 포함` 필터와 기존 상세 주소로 과거 이력을 조회합니다. 관리 원본은 `data-v2/security-status.json`이며 `npm run data:validate-status`로 검증합니다. 등록·공식 근거 보완·과거 자료 수집은 [상장 상태 운영 안내](docs/data-management/LISTING_STATUS.md)를 참조하세요. 개인 거래·수량은 자동 변경하지 않습니다.
 
 ## R2 경량 가공 데이터
 

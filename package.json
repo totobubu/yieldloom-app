@@ -62,6 +62,7 @@
         "content:performance": "python scripts/content_pipeline/performance.py import",
         "content:recommend": "python scripts/content_pipeline/performance.py recommend",
         "content:release-check": "python scripts/content_pipeline/release_readiness.py",
+        "data:validate-status": "python scripts/metadata/security_status.py --check",
         "core:cutover:check": "python scripts/data_v2/check_cutover.py"
     },
     "dependencies": {

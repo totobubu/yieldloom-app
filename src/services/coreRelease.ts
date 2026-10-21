@@ -9,6 +9,19 @@ export interface CoreInstrument {
     koName?: string | null;
     longName?: string | null;
     active: boolean;
+    listingStatus?: {
+        status: 'delisted';
+        delistedOn: string | null;
+        lastTradingOn: string | null;
+        reason: string;
+        source: {
+            type: 'official' | 'user_report';
+            reference: string;
+            url: string | null;
+        };
+        officialVerified: boolean;
+        checkedOn: string;
+    };
     ipoDate?: string;
     frequency?: string;
     noDividends?: boolean;

@@ -3969,8 +3969,27 @@
       "currency": "USD",
       "koName": "렉스 코인베이스 성장 및 배당 ETF",
       "longName": null,
-      "active": true,
-      "officialProvider": "Rex"
+      "active": false,
+      "officialProvider": "Rex",
+      "listingStatus": {
+        "symbol": "COII",
+        "market": "NASDAQ",
+        "isin": "US7615621072",
+        "currency": "USD",
+        "koName": "렉스 코인베이스 성장 및 배당 ETF",
+        "company": "Rex",
+        "status": "delisted",
+        "delistedOn": null,
+        "lastTradingOn": null,
+        "reason": "사용자가 상장폐지 사실을 확인하여 등록",
+        "source": {
+          "type": "user_report",
+          "reference": "사용자 상장폐지 확인",
+          "url": null
+        },
+        "officialVerified": false,
+        "checkedOn": "2026-10-21"
+      }
     },
     {
       "ipoDate": "2021-04-14",

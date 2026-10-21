@@ -1,3 +1,7 @@
+import {
+    applySecurityStatuses,
+    isSearchableSecurity,
+} from '../../lib/security-status.js';
 import { readPublicJson } from './publicJson.js';
 import { getDataUrl, getAssetUrl } from '@/utils/dataUrl';
 import { loadCoreDirectory } from './coreRelease';
@@ -7,7 +11,7 @@ import { applyVerifiedUnderlyings } from '../../lib/security-underlyings.js';
 export async function readDirectoryAsset(path, options = {}) {
     return readPublicJson(getDataUrl(path), { ttlMs: 180_000, ...options });
 }
-export async function loadSecurityDirectory() {
+export async function loadSecurityDirectory({ includeDelisted = false } = {}) {
     const core = Boolean(import.meta.env.VITE_DATA_RELEASE_BASE_URL);
     const indexTask = core
         ? loadCoreDirectory().then((nav) => ({ nav }))
@@ -18,13 +22,17 @@ export async function loadSecurityDirectory() {
         loadDividendIndex(),
     ]);
     if (index.status !== 'fulfilled') throw index.reason;
-    const rows = applyVerifiedUnderlyings(
-        mergeDiscoveredStocks(
-            index.value.nav || [],
-            discovered.status === 'fulfilled' ? discovered.value : {}
+    const rows = applySecurityStatuses(
+        applyVerifiedUnderlyings(
+            mergeDiscoveredStocks(
+                index.value.nav || [],
+                discovered.status === 'fulfilled' ? discovered.value : {}
+            )
         )
     )
-        .filter((row) => row.symbol && row.active !== false)
+        .filter(
+            (row) => row.symbol && isSearchableSecurity(row, includeDelisted)
+        )
         .map((row) => ({
             ...row,
             company: row.officialProvider || row.company,

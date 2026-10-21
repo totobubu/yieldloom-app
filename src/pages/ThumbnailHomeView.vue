@@ -1,7 +1,13 @@
 <script setup>
+    import { stockCardSummary } from '../../lib/stock-card-summary.js';
     import { computed, onMounted, ref, watch } from 'vue';
     import { useHead } from '@vueuse/head';
     import { useRoute, useRouter } from 'vue-router';
+    import Checkbox from 'primevue/checkbox';
+    import {
+        isSearchableSecurity,
+        isDelisted,
+    } from '../../lib/security-status.js';
     import Button from 'primevue/button';
     import Card from 'primevue/card';
     import InputText from 'primevue/inputtext';
@@ -9,7 +15,6 @@
     import InputIcon from 'primevue/inputicon';
     import Select from 'primevue/select';
     import Paginator from 'primevue/paginator';
-    import Drawer from 'primevue/drawer';
     import Tag from 'primevue/tag';
     import Message from 'primevue/message';
     import Skeleton from 'primevue/skeleton';
@@ -33,19 +38,28 @@
     const stringParam = (value) => (typeof value === 'string' ? value : '');
     const query = ref(stringParam(route.query.q)),
         company = ref(stringParam(route.query.company));
+    const includeDelisted = ref(route.query.delisted === '1');
     const securityType = ref(stringParam(route.query.type));
+    const sortValues = [
+        'symbol',
+        'company',
+        'ipoDate',
+        'dividendDate',
+        'dividendAmount',
+        'marketCap',
+    ];
     const sort = ref(
-        ['company', 'ipoDate'].includes(route.query.sort)
+        sortValues.includes(route.query.sort)
             ? route.query.sort
-            : 'symbol'
+            : 'dividendDate'
     );
-    const filterOpen = ref(false),
-        draftType = ref(''),
-        draftCompany = ref('');
     const sortOptions = [
         { label: '티커순', value: 'symbol' },
         { label: '운용사순', value: 'company' },
         { label: '최근 상장순', value: 'ipoDate' },
+        { label: '최근 배당일순', value: 'dividendDate' },
+        { label: '배당금 높은순', value: 'dividendAmount' },
+        { label: '시가총액 높은순', value: 'marketCap' },
     ];
     let restoring = false;
     const parsePage = (value) =>
@@ -100,12 +114,36 @@
             ),
         ].sort((a, b) => a.localeCompare(b))
     );
-    const popularCompanies = computed(() => topProviders(rows.value));
+    const popularCompanies = computed(() => topProviders(rows.value, 15));
+    const dividendDateValue = (row) =>
+        distributions.value[row.symbol]?.ex_date ||
+        row.dividendEvidence?.latestExDate ||
+        '';
+    const dividendAmountValue = (row) => {
+        const value =
+            distributions.value[row.symbol]?.distribution_per_share ??
+            row.dividendEvidence?.latestAmount;
+        return Number.isFinite(Number(value)) && Number(value) > 0
+            ? Number(value)
+            : null;
+    };
+    const descendingNumber = (a, b, valueFor) => {
+        const aValue = valueFor(a);
+        const bValue = valueFor(b);
+        if (aValue == null && bValue == null)
+            return String(a.symbol).localeCompare(String(b.symbol));
+        if (aValue == null) return 1;
+        if (bValue == null) return -1;
+        return (
+            bValue - aValue || String(a.symbol).localeCompare(String(b.symbol))
+        );
+    };
     const filtered = computed(() => {
         const needle = query.value.trim().toLowerCase();
         return rows.value
             .filter(
                 (row) =>
+                    isSearchableSecurity(row, includeDelisted.value) &&
                     (!company.value || row.company?.trim() === company.value) &&
                     matchesProductType(
                         row,
@@ -127,14 +165,27 @@
                     )
             )
             .sort((a, b) => {
-                return sort.value === 'ipoDate'
-                    ? String(b.ipoDate ?? '').localeCompare(
-                          String(a.ipoDate ?? '')
-                      )
-                    : String(a[sort.value] ?? '').localeCompare(
-                          String(b[sort.value] ?? ''),
-                          'ko'
-                      );
+                if (sort.value === 'ipoDate')
+                    return String(b.ipoDate ?? '').localeCompare(
+                        String(a.ipoDate ?? '')
+                    );
+                if (sort.value === 'dividendDate')
+                    return dividendDateValue(b).localeCompare(
+                        dividendDateValue(a)
+                    );
+                if (sort.value === 'dividendAmount')
+                    return descendingNumber(a, b, dividendAmountValue);
+                if (sort.value === 'marketCap')
+                    return descendingNumber(a, b, (row) => {
+                        const value = Number(row.marketCap);
+                        return Number.isFinite(value) && value > 0
+                            ? value
+                            : null;
+                    });
+                return String(a[sort.value] ?? '').localeCompare(
+                    String(b[sort.value] ?? ''),
+                    'ko'
+                );
             });
     });
     const pages = computed(() =>
@@ -143,20 +194,15 @@
     const visible = computed(() =>
         filtered.value.slice((page.value - 1) * pageSize, page.value * pageSize)
     );
-    const filterCount = computed(
-        () =>
-            [company.value, securityType.value, query.value.trim()].filter(
-                Boolean
-            ).length
-    );
     function syncUrl() {
         if (restoring || route.name !== 'thumbnail-home') return;
         const next = { ...route.query };
         for (const [key, value] of Object.entries({
+            delisted: includeDelisted.value ? '1' : '',
             q: query.value,
             company: company.value,
             type: securityType.value,
-            sort: sort.value === 'symbol' ? '' : sort.value,
+            sort: sort.value === 'dividendDate' ? '' : sort.value,
             page: page.value > 1 ? String(page.value) : '',
         })) {
             if (value) next[key] = value;
@@ -166,26 +212,31 @@
             void router.replace({ query: next });
     }
     watch(
-        [query, company, securityType, sort],
+        [query, company, securityType, sort, includeDelisted],
         () => {
             if (!restoring) page.value = 1;
         },
         { flush: 'sync' }
     );
-    watch([query, company, securityType, sort, page], syncUrl, {
-        flush: 'post',
-    });
+    watch(
+        [query, company, securityType, sort, includeDelisted, page],
+        syncUrl,
+        {
+            flush: 'post',
+        }
+    );
     watch(
         () => route.query,
         (values) => {
             if (route.name !== 'thumbnail-home') return;
             restoring = true;
+            includeDelisted.value = values.delisted === '1';
             query.value = stringParam(values.q);
             company.value = stringParam(values.company);
             securityType.value = stringParam(values.type);
-            sort.value = ['company', 'ipoDate'].includes(values.sort)
+            sort.value = sortValues.includes(values.sort)
                 ? values.sort
-                : 'symbol';
+                : 'dividendDate';
             page.value = parsePage(values.page);
             restoring = false;
         },
@@ -194,16 +245,6 @@
     watch(pages, (count) => {
         if (!loading.value && page.value > count) page.value = count;
     });
-    function openFilters() {
-        draftType.value = securityType.value;
-        draftCompany.value = company.value;
-        filterOpen.value = true;
-    }
-    function applyFilters() {
-        securityType.value = draftType.value;
-        company.value = draftCompany.value;
-        filterOpen.value = false;
-    }
     const typeLabel = computed(
         () =>
             productTypeOptions.find(
@@ -229,6 +270,7 @@
         );
     }
     function reset() {
+        includeDelisted.value = false;
         query.value = '';
         company.value = '';
         securityType.value = '';
@@ -246,7 +288,9 @@
         loading.value = true;
         error.value = '';
         try {
-            const result = await loadSecurityDirectory();
+            const result = await loadSecurityDirectory({
+                includeDelisted: true,
+            });
             rows.value = result.rows;
             distributions.value = Object.fromEntries(
                 (result.distributions?.tickers ?? []).map((row) => [
@@ -281,42 +325,41 @@
                 severity="secondary"
                 rounded />
         </header>
-        <div class="search-input-row">
-            <label for="ticker-search" class="studio-sr-only"
-                >종목명, 티커 또는 운용사 검색</label
-            >
-            <IconField class="search-input"
-                ><InputIcon class="pi pi-search" /><InputText
-                    id="ticker-search"
-                    v-model="query"
-                    type="search"
-                    placeholder="종목명, 티커 또는 운용사 검색"
-                    fluid
-                    autocomplete="off"
-            /></IconField>
-            <Button
-                v-if="query"
-                icon="pi pi-times"
-                aria-label="검색어 지우기"
-                severity="secondary"
-                outlined
-                @click="query = ''" />
-            <Button
-                class="mobile-filter-button"
-                icon="pi pi-sliders-h"
-                :label="filterCount ? `필터 ${filterCount}` : '필터'"
-                severity="secondary"
-                outlined
-                @click="openFilters" />
+        <div class="search-controls">
+            <div class="search-input-row">
+                <label for="ticker-search" class="studio-sr-only"
+                    >종목명, 티커 또는 운용사 검색</label
+                >
+                <IconField class="search-input"
+                    ><InputIcon class="pi pi-search" /><InputText
+                        id="ticker-search"
+                        v-model="query"
+                        type="search"
+                        placeholder="종목명, 티커 또는 운용사 검색"
+                        fluid
+                        autocomplete="off"
+                /></IconField>
+                <Button
+                    v-if="query"
+                    icon="pi pi-times"
+                    aria-label="검색어 지우기"
+                    severity="secondary"
+                    outlined
+                    @click="query = ''" />
+            </div>
+            <StockSearchFilters
+                v-model:type="securityType"
+                v-model:company="company"
+                :companies="companies"
+                :providers="popularCompanies" />
         </div>
-        <Card class="desktop-filters"
-            ><template #content
-                ><StockSearchFilters
-                    v-model:type="securityType"
-                    v-model:company="company"
-                    :companies="companies"
-                    :providers="popularCompanies" /></template
-        ></Card>
+        <div class="delisted-filter">
+            <Checkbox
+                v-model="includeDelisted"
+                input-id="include-delisted"
+                binary />
+            <label for="include-delisted">상장폐지 포함</label>
+        </div>
         <div
             v-if="securityType || company || query"
             class="active-filters"
@@ -363,8 +406,8 @@
                 <label for="sort-order" class="studio-sr-only"
                     >검색 결과 정렬</label
                 ><Select
-                    input-id="sort-order"
                     v-model="sort"
+                    input-id="sort-order"
                     :options="sortOptions"
                     option-label="label"
                     option-value="value" />
@@ -410,20 +453,57 @@
         ></Card>
         <template v-else>
             <ul class="stock-card-grid" aria-label="종목 검색 결과">
-                <li v-for="row in visible" :key="row.symbol">
-                    <router-link :to="stockLink(row)" class="stock-result-card">
+                <li
+                    v-for="row in visible"
+                    :key="row.symbol"
+                    class="stock-result-item">
+                    <div class="stock-result-card">
                         <div class="stock-card-heading">
                             <div>
-                                <strong>{{ row.symbol }}</strong>
+                                <div class="stock-title-actions">
+                                    <router-link
+                                        :to="stockLink(row)"
+                                        class="stock-symbol-link"
+                                        >{{ row.symbol }}</router-link
+                                    >
+                                    <router-link
+                                        v-if="
+                                            row.underlying && !isDelisted(row)
+                                        "
+                                        class="stock-compare-action"
+                                        :to="`/underlying/${row.underlying}`"
+                                        :aria-label="`${row.underlying} 기반 ETF 비교`"
+                                        :title="`${row.underlying} 기반 ETF 비교`"
+                                        ><span aria-hidden="true"
+                                            >VS</span
+                                        ></router-link
+                                    >
+                                    <span
+                                        v-if="row.company"
+                                        class="stock-provider-badge"
+                                        >{{ row.company }}</span
+                                    >
+                                    <Tag
+                                        v-if="isDelisted(row)"
+                                        value="상장폐지"
+                                        severity="warn" />
+                                </div>
                                 <span>{{
                                     row.koName || row.longName || row.symbol
                                 }}</span>
                             </div>
-                            <i
-                                class="pi pi-arrow-up-right"
-                                aria-hidden="true" />
+                            <router-link
+                                :to="stockLink(row)"
+                                class="stock-detail-action"
+                                :aria-label="`${row.symbol} 종목 상세 보기`"
+                                ><i
+                                    class="pi pi-arrow-up-right"
+                                    aria-hidden="true"
+                            /></router-link>
                         </div>
-                        <div class="stock-card-metrics">
+                        <div
+                            v-if="hasDividendMetrics(row)"
+                            class="stock-card-metrics">
                             <div>
                                 <small>최근 주당 배당금</small
                                 ><strong v-if="hasDividendMetrics(row)">{{
@@ -439,6 +519,29 @@
                                 ><span v-else>미확인</span>
                             </div>
                         </div>
+                        <div
+                            v-else
+                            class="stock-card-metrics stock-card-summary">
+                            <div>
+                                <small>{{
+                                    stockCardSummary(row).primaryLabel
+                                }}</small
+                                ><strong>{{
+                                    stockCardSummary(row).primaryValue
+                                }}</strong>
+                            </div>
+                            <div>
+                                <small>{{
+                                    stockCardSummary(row).secondaryLabel
+                                }}</small
+                                ><strong>{{
+                                    stockCardSummary(row).secondaryValue
+                                }}</strong>
+                            </div>
+                            <span class="stock-dividend-status">{{
+                                stockCardSummary(row).status
+                            }}</span>
+                        </div>
                         <div class="stock-card-meta">
                             <span>{{
                                 row.company ||
@@ -452,16 +555,21 @@
                                 >{{ row.dividendEtfs.length }}개 ETF 편입</span
                             >
                         </div>
-                    </router-link>
-                    <router-link
-                        v-if="row.underlying"
-                        class="row-note mobile-compare-link"
-                        :to="`/underlying/${row.underlying}`"
-                        >{{ row.underlying }} ETF 비교</router-link
-                    >
+                        <router-link
+                            :to="stockLink(row)"
+                            class="stock-detail-link"
+                            >{{
+                                hasDividendMetrics(row)
+                                    ? '상세 배당 분석'
+                                    : '종목 상세 보기'
+                            }}
+                            <i class="pi pi-angle-right" aria-hidden="true"
+                        /></router-link>
+                    </div>
                 </li>
             </ul>
             <Paginator
+                class="search-pagination"
                 :first="(page - 1) * pageSize"
                 :rows="pageSize"
                 :total-records="filtered.length"
@@ -474,48 +582,28 @@
                 배당금·배당락일은 저장된 최근 이력 기준입니다. ‘—’는 제공된
                 데이터가 없는 항목입니다.
             </p>
-            <details class="classification-note">
-                <summary>상품 유형 분류 기준 자세히 보기</summary>
-                <p>
-                    배당 이력·주기와 상품 정보를 기준으로 분류합니다. 성장주는
-                    대표 성장 종목 목록, 배당성장주·고배당주는 관련 ETF 편입
-                    정보를 참고하며 유형은 서로 중복될 수 있습니다.
-                </p>
-            </details>
             <!-- eslint-disable-next-line vue/no-deprecated-slot-attribute -- This is AdSlot's ad-unit prop. -->
             <AdSlot :slot="homeAdSlot" label="종목 검색 결과 광고" />
         </template>
-        <Drawer
-            v-model:visible="filterOpen"
-            header="검색 필터"
-            position="bottom"
-            class="search-filter-drawer"
-            :style="{ height: 'min(82dvh, 740px)' }">
-            <StockSearchFilters
-                id-prefix="mobile"
-                v-model:type="draftType"
-                v-model:company="draftCompany"
-                :companies="companies"
-                :providers="popularCompanies" />
-            <template #footer
-                ><div class="filter-footer">
-                    <Button
-                        label="초기화"
-                        severity="secondary"
-                        outlined
-                        @click="
-                            draftType = '';
-                            draftCompany = '';
-                        " /><Button
-                        label="필터 적용"
-                        icon="pi pi-check"
-                        @click="applyFilters" /></div
-            ></template>
-        </Drawer>
     </section>
 </template>
 
 <style scoped>
+    .search-controls {
+        padding: 24px;
+        border-radius: 16px;
+        border: 1px solid var(--app-border-subtle);
+        background: var(--app-surface);
+        box-shadow: 0 1px 2px
+            color-mix(in srgb, var(--app-text) 3%, transparent);
+    }
+    .delisted-filter {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-block: 1rem;
+    }
+
     .search-heading {
         display: flex;
         justify-content: space-between;
@@ -543,15 +631,12 @@
     .search-input :deep(.p-inputtext) {
         height: 56px;
         border-radius: 12px;
-    }
-    .mobile-filter-button {
-        display: none;
-    }
-    .desktop-filters {
-        border: 1px solid var(--app-border);
-    }
-    .desktop-filters :deep(.p-card-content) {
-        padding: 0;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 5%,
+            var(--app-surface)
+        );
+        border-color: transparent;
     }
     .active-filters {
         display: flex;
@@ -582,6 +667,9 @@
     .sort-field :deep(.p-select) {
         min-width: 124px;
     }
+    .search-pagination {
+        margin-block: 36px 28px;
+    }
     .row-note {
         display: block;
         font-size: 12px;
@@ -592,25 +680,18 @@
     .loading-cards {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
+        gap: 16px;
     }
     .stock-card-grid {
         list-style: none;
         padding: 0;
         margin: 0;
     }
-    .stock-card-grid > li {
+    .stock-result-item {
         display: flex;
         flex-direction: column;
         min-width: 0;
-    }
-    .stock-result-card {
-        display: grid;
-        height: 100%;
-        gap: 14px;
-        padding: 16px;
-        color: var(--app-text);
-        text-decoration: none;
+        position: relative;
         border: 1px solid var(--app-border);
         border-radius: 14px;
         background: var(--app-surface);
@@ -619,8 +700,8 @@
             box-shadow 0.18s ease,
             transform 0.18s ease;
     }
-    .stock-result-card:hover,
-    .stock-result-card:focus-visible {
+    .stock-result-item:hover,
+    .stock-result-item:focus-within {
         border-color: color-mix(
             in srgb,
             var(--app-accent) 55%,
@@ -629,7 +710,33 @@
         box-shadow: 0 10px 26px
             color-mix(in srgb, var(--app-accent) 10%, transparent);
         transform: translateY(-2px);
-        outline: none;
+    }
+    .stock-result-card {
+        display: grid;
+        height: 100%;
+        gap: 16px;
+        padding: 20px;
+        color: var(--app-text);
+    }
+    .stock-compare-action {
+        display: inline-grid;
+        place-items: center;
+        width: 28px;
+        height: 24px;
+        border: 1px solid var(--app-border);
+        border-radius: 7px;
+        color: var(--app-accent);
+        background: var(--app-surface-soft);
+        font-size: 11px;
+        font-weight: 800;
+        text-decoration: none;
+    }
+    .stock-compare-action:hover,
+    .stock-compare-action:focus-visible {
+        border-color: var(--app-accent);
+        outline: 2px solid
+            color-mix(in srgb, var(--app-accent) 28%, transparent);
+        outline-offset: 2px;
     }
     .stock-card-heading {
         display: flex;
@@ -643,8 +750,50 @@
         gap: 4px;
         min-width: 0;
     }
-    .stock-card-heading strong {
-        font-size: 18px;
+    .stock-title-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .stock-symbol-link {
+        color: var(--app-text);
+        font-size: 22px;
+        font-weight: 750;
+        text-decoration: none;
+    }
+    .stock-symbol-link:hover,
+    .stock-symbol-link:focus-visible {
+        color: var(--app-accent);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+    .stock-title-actions {
+        flex-wrap: wrap;
+    }
+    .stock-card-heading .stock-provider-badge {
+        display: inline-block;
+        min-height: 0;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 12%,
+            var(--app-surface)
+        );
+        color: var(--app-accent);
+        font-size: 11px;
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+    .stock-detail-link {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 4px;
+        color: var(--app-accent);
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
     }
     .stock-card-heading span {
         min-height: 2.5em;
@@ -657,20 +806,40 @@
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
     }
-    .stock-card-heading i {
+    .stock-detail-action {
         color: var(--app-accent);
         padding-top: 3px;
+        text-decoration: none;
+    }
+    .stock-detail-action:focus-visible {
+        outline: 2px solid
+            color-mix(in srgb, var(--app-accent) 28%, transparent);
+        outline-offset: 3px;
+        border-radius: 6px;
     }
     .stock-card-metrics {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: 10px;
+        padding: 14px;
+        border-radius: 10px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 6%,
+            var(--app-surface)
+        );
         font-variant-numeric: tabular-nums;
     }
     .stock-card-metrics > div {
-        display: grid;
-        gap: 5px;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
         min-width: 0;
+    }
+    .stock-card-metrics > div:first-child strong {
+        color: var(--app-accent);
+        font-size: 17px;
     }
     .stock-card-metrics small,
     .stock-card-metrics span {
@@ -680,6 +849,11 @@
     .stock-card-metrics strong {
         font-size: 14px;
         overflow-wrap: anywhere;
+    }
+    .stock-card-summary .stock-dividend-status {
+        font-size: 11px;
+        color: var(--app-muted);
+        grid-column: 1 / -1;
     }
     .stock-card-meta {
         display: flex;
@@ -705,21 +879,6 @@
         align-items: baseline;
         gap: 8px;
     }
-    .classification-note {
-        margin-top: 8px;
-        color: var(--app-muted);
-        font-size: 12px;
-        line-height: 1.65;
-    }
-    .classification-note summary {
-        width: fit-content;
-        min-height: 32px;
-        cursor: pointer;
-    }
-    .classification-note p {
-        max-width: 760px;
-        margin: 4px 0 0;
-    }
     @media (max-width: 1100px) {
         .stock-card-grid,
         .loading-cards {
@@ -739,13 +898,10 @@
         gap: 16px;
         flex-wrap: wrap;
     }
-    .filter-footer {
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
     @media (max-width: 767px) {
+        .search-pagination {
+            margin-block: 28px 24px;
+        }
         .search-heading {
             margin-bottom: 20px;
         }
@@ -766,21 +922,40 @@
             height: 48px;
             font-size: 14px;
         }
-        .mobile-filter-button {
-            display: inline-flex;
-            white-space: nowrap;
+        .search-controls {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            box-shadow: none;
         }
-        .desktop-filters {
+        .search-input-row {
+            margin-bottom: 16px;
+        }
+        .search-input :deep(.p-inputtext) {
+            background: var(--app-surface);
+            border-color: var(--app-border-subtle);
+        }
+        .stock-result-card {
+            padding: 16px;
+            gap: 12px;
+        }
+        .stock-card-metrics {
+            grid-template-columns: 1fr 1fr;
+        }
+        .stock-card-metrics > div {
+            display: grid;
+            gap: 4px;
+        }
+        .stock-card-meta {
+            border-top: 0;
+            padding-top: 0;
+        }
+        .stock-detail-link {
             display: none;
         }
         .stock-card-grid,
         .loading-cards {
             grid-template-columns: 1fr;
-        }
-        .mobile-compare-link {
-            min-height: 44px;
-            margin: 0;
-            padding: 0 16px 12px;
         }
         .stock-card-heading span {
             min-height: auto;

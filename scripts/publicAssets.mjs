@@ -1,3 +1,7 @@
+import {
+    applySecurityStatuses,
+    isSearchableSecurity,
+} from '../lib/security-status.js';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { mergeDiscoveredStocks } from '../lib/discovered-stocks.js';
@@ -33,6 +37,8 @@ const indexFields = [
     'noDividends',
     'frequency',
     'ipoDate',
+    'active',
+    'listingStatus',
 ];
 
 export function createTickerIndex(
@@ -46,8 +52,10 @@ export function createTickerIndex(
         )
     );
     return {
-        nav: mergeDiscoveredStocks(payload.instruments, discovered)
-            .filter((row) => row.symbol && row.active !== false)
+        nav: applySecurityStatuses(
+            mergeDiscoveredStocks(payload.instruments, discovered)
+        )
+            .filter((row) => row.symbol && isSearchableSecurity(row, true))
             .map((row) => ({
                 ...Object.fromEntries(
                     indexFields

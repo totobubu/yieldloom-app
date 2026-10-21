@@ -23,8 +23,16 @@
     useFullscreenLoading(authLoading, '로그인 정보를 확인하고 있습니다.');
     const isAuth = computed(() => route.name === 'login');
     const isAdmin = computed(() => isPortfolioAdmin(firebaseUser.value));
-    const inStocks = computed(() =>
-        ['thumbnail-home', 'ticker-stock'].includes(route.name)
+    const inStocks = computed(
+        () =>
+            route.name === 'ticker-stock' ||
+            (route.name === 'thumbnail-home' && route.query.sort !== 'ipoDate')
+    );
+    const inNewListings = computed(
+        () => route.name === 'thumbnail-home' && route.query.sort === 'ipoDate'
+    );
+    const inComparison = computed(() =>
+        ['security-compare', 'underlying-explorer'].includes(route.name)
     );
     const inPortfolio = computed(() => route.path.startsWith('/mypage'));
     watch(
@@ -70,11 +78,24 @@
                         to="/"
                         :aria-current="inStocks ? 'page' : undefined"
                         :class="{
-                            active:
-                                route.name === 'thumbnail-home' ||
-                                route.name === 'ticker-stock',
+                            active: inStocks,
                         }"
                         >종목 검색</router-link
+                    >
+                    <router-link
+                        to="/compare"
+                        :class="{ active: inComparison }"
+                        :aria-current="inComparison ? 'page' : undefined"
+                        >종목 비교</router-link
+                    >
+                    <router-link
+                        :to="{
+                            name: 'thumbnail-home',
+                            query: { sort: 'ipoDate' },
+                        }"
+                        :class="{ active: inNewListings }"
+                        :aria-current="inNewListings ? 'page' : undefined"
+                        >신규 상장</router-link
                     >
                     <router-link
                         v-if="isAdmin"
@@ -141,6 +162,30 @@
                 :aria-current="inStocks ? 'page' : undefined"
                 ><i class="pi pi-search" aria-hidden="true" /><span
                     >종목 검색</span
+                ></router-link
+            >
+            <router-link
+                to="/compare"
+                :class="{ active: inComparison }"
+                :aria-current="inComparison ? 'page' : undefined"
+                ><i class="pi pi-clone" aria-hidden="true" /><span
+                    >종목 비교</span
+                ></router-link
+            >
+            <router-link
+                :to="{ name: 'thumbnail-home', query: { sort: 'ipoDate' } }"
+                :class="{ active: inNewListings }"
+                :aria-current="inNewListings ? 'page' : undefined"
+                ><i class="pi pi-calendar" aria-hidden="true" /><span
+                    >신규 상장</span
+                ></router-link
+            >
+            <router-link
+                to="/legal"
+                :class="{ active: route.name === 'legal' }"
+                :aria-current="route.name === 'legal' ? 'page' : undefined"
+                ><i class="pi pi-info-circle" aria-hidden="true" /><span
+                    >이용 안내</span
                 ></router-link
             >
             <router-link

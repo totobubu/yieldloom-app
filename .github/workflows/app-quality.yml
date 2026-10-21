@@ -23,6 +23,8 @@ jobs:
                   node-version: '24'
                   cache: npm
             - run: npm ci --no-audit --no-fund
+            - run: npm run data:validate-status
+            - run: python -m unittest discover -s tests/metadata -p 'test_security_status.py'
             - run: npm run lint:check
             # build includes the Vue/TypeScript check and prerender validation.
             # Asset contract tests below read the generated dist/ticker-index.json.
@@ -79,6 +81,7 @@ jobs:
                   node tests/portfolio-enhancements.browser.mjs
                   node tests/portfolio-import-review.browser.mjs
                   node tests/mobile-import-feedback.browser.mjs
+                  LISTING_STATUS_BASE_URL=http://127.0.0.1:5175 node tests/security-status.browser.mjs
             - uses: actions/upload-artifact@v4
               if: failure()
               with:

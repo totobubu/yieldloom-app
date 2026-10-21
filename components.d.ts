@@ -37,6 +37,7 @@ declare module 'vue' {
     HoldingScenarioComparison: typeof import('./src/components/portfolio/HoldingScenarioComparison.vue')['default']
     HoldingsChanges: typeof import('./src/components/portfolio/HoldingsChanges.vue')['default']
     IncomeProjectionChart: typeof import('./src/components/portfolio/IncomeProjectionChart.vue')['default']
+    InfoHelp: typeof import('./src/components/common/InfoHelp.vue')['default']
     InvestmentBlog: typeof import('./src/components/portfolio/InvestmentBlog.vue')['default']
     InvestmentWorkbench: typeof import('./src/components/portfolio/InvestmentWorkbench.vue')['default']
     InvestorExam: typeof import('./src/components/portfolio/InvestorExam.vue')['default']

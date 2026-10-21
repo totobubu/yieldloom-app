@@ -36,7 +36,8 @@ test('stock inference and search-index creation preserve filter metadata', () =>
     assert.equal(index.nav[0].securityType, 'stock');
     assert.equal(index.nav[0].noDividends, true);
     assert.equal(index.nav[1].securityType, 'etf');
-    assert.equal(index.nav[1].frequency, undefined);
+    assert.equal(index.nav[1].frequency, '분기');
+    assert.equal(index.nav[0].frequency, undefined);
     assert.ok(index.nav[1].productTypes.includes('dividend-etf'));
     assert.equal(index.nav[1].ipoDate, '2011-10-20');
 });
@@ -56,4 +57,14 @@ test('holding history includes current and former holdings across product types'
     assert.equal(matchesProductType({ symbol: 'TSLA' }, 'holding-history', undefined, states), false);
     assert.equal(matchesProductType(stock, 'holding-history'), false);
     assert.equal(matchesProductType(stock, '', undefined, states), true);
+});
+
+// The directory copies each product's own registered cadence, never its underlying's.
+test('search index keeps underlying and ETF cadence independent', () => {
+    const index = createTickerIndex({ instruments: [
+        {symbol:'AAPL', securityType:'stock', frequency:'분기'},
+        {symbol:'APLY', officialProvider:'YieldMax', frequency:'매주'},
+    ] });
+    assert.equal(index.nav[0].frequency, '분기');
+    assert.equal(index.nav[1].frequency, '매주');
 });

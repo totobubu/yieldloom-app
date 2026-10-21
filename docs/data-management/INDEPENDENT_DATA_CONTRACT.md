@@ -91,6 +91,9 @@ R2 자격 증명을 사용하지 않으며, 현재 catalog로 후보를 다시 �
 YieldMax 6개 URL의 HTTP 404와 Global X 6개 페이지의 history payload 파싱
 실패이며, 해당 출처의 기존 확정 이력은 보존됐다. 비교 통과는 모든 출처의 최신
 조회 성공을 뜻하지 않는다. 이 수집 오류는 별도로 해결해야 한다.
+Global X의 현재 QYLD HTML에는 기존 `distributionHistoryData`가 없고,
+9월 21일 금액도 기존 원문의 `0.1767` 대신 화면 표시용 `$0.18`로 나온다.
+이 표시 값을 원문 금액으로 가져오는 우회 파서는 추가하지 않았다.
 
 발행 대상은 `candidate-39593238852`이고, 발행 run은 `39593732155`다.
 발행 후 검증 모드의 `verify_public=true`로 공개 pointer와 manifest, catalog와

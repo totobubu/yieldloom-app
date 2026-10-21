@@ -10,6 +10,10 @@ on:
         description: Optional official historical source target (provider:YYYY-MM-DD ex-date)
         required: false
         type: string
+      inspect_release:
+        description: Only inspect uploaded release objects and pointer (no collection or writes)
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -19,7 +23,47 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  inspect:
+    if: inputs.inspect_release != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install boto3
+      - name: Inspect release upload without writes
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          RELEASE_ID: ${{ inputs.inspect_release }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import re
+          from scripts.cloud.r2_helper import get_r2_client
+          release_id = os.environ['RELEASE_ID']
+          if not re.fullmatch(r'[A-Za-z0-9._-]+', release_id):
+              raise ValueError('Invalid release ID')
+          client, bucket = get_r2_client()
+          prefix = 'core/releases/' + release_id + '/'
+          pages = client.get_paginator('list_objects_v2').paginate(Bucket=bucket, Prefix=prefix)
+          objects = [row for page in pages for row in page.get('Contents', [])]
+          manifest_exists = any(row['Key'] == prefix + 'manifest.json' for row in objects)
+          try:
+              pointer = json.loads(client.get_object(Bucket=bucket, Key='core/current.json')['Body'].read())
+          except client.exceptions.NoSuchKey:
+              pointer = {}
+          result = {'releaseId': release_id, 'uploadedObjects': len(objects),
+                    'uploadedBytes': sum(row['Size'] for row in objects),
+                    'manifestExists': manifest_exists, 'currentReleaseId': pointer.get('releaseId')}
+          print('::notice title=Core release upload status::' + json.dumps(result))
+          PY
   collect:
+    if: inputs.inspect_release == ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

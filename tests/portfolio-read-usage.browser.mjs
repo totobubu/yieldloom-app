@@ -83,6 +83,7 @@ try {
                 institution: '테스트증권',
                 type: 'general',
                 maskedNumber: '****1234',
+                entriesRevision: 1,
             });
             await route.fulfill({
                 json: {
@@ -111,13 +112,17 @@ try {
             });
         });
         await page.goto(base + '/mypage');
-        const toggle = page.getByRole('button', {
-            name: '원금 회수 · 자금 상세',
+        const capitalTab = page.getByRole('tab', {
+            name: '원금·자금',
             exact: true,
         });
-        await toggle.waitFor();
-        assert.equal(reads, 0, 'collapsed capital must not query the ledger');
-        await toggle.click();
+        await capitalTab.waitFor();
+        assert.equal(
+            reads,
+            0,
+            'inactive capital tab must not query the ledger'
+        );
+        await capitalTab.click();
         const overview = page.getByRole('region', {
             name: '전체 계좌 원금 회수 현황',
             exact: true,
@@ -139,7 +144,7 @@ try {
                     '#portfolio-header-actions button[aria-label="새로고침"]'
                 )?.disabled
         );
-        await page.getByRole('tab', { name: '계좌 관리', exact: true }).click();
+        await page.getByRole('tab', { name: '자산관리', exact: true }).click();
         await page
             .getByRole('tab', { name: '한눈에 보기', exact: true })
             .click();
@@ -182,7 +187,7 @@ try {
         await page.close();
     }
     console.log(
-        'PASS: collapsed ledger makes zero requests; expanded summary/detail share account reads; refresh revalidates versions at desktop/mobile widths'
+        'PASS: inactive capital tab makes zero requests; capital summary/detail share account reads; refresh revalidates versions at desktop/mobile widths'
     );
 } finally {
     await browser.close();

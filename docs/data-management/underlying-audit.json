@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "All catalog entries with an issuer or ETF in the name; not all are single-stock ETFs",
-  "generatedAt": "2026-10-20T13:56:02.718219+00:00",
+  "generatedAt": "2026-10-21T13:53:02.335275+00:00",
   "summary": {
     "catalogInstruments": 2173,
     "etfsAudited": 1601,
@@ -157,8 +157,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/aapx/",
-        "contentSha256": "cdf5d3ae3ebf9119ba424886330f411346d1fd2613d8c84c54aa9c58ceeb0c73",
-        "fetchedAt": "2026-10-20T13:55:57.159707+00:00",
+        "contentSha256": "e9d30d8bedfcaa8c35421c8ed60474dfb0bc911e98f9068dbfa916708e256ecc",
+        "fetchedAt": "2026-10-21T13:52:55.501488+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long Apple Daily Target ETF"
       }
@@ -174,8 +174,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily ADBE Bull 2X ETF"
       }
@@ -191,8 +191,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/ahd/",
-        "contentSha256": "ed58b3cc0b1c1bd9fa82f86e8262a5e7c76a129fd199017616a4873c3808a855",
-        "fetchedAt": "2026-10-20T13:54:45.922278+00:00",
+        "contentSha256": "0d907bcffbff6d483303366b984f6528396e559bac94dbe03f4ee09024d59123",
+        "fetchedAt": "2026-10-21T13:51:16.947884+00:00",
         "method": "official-product-title",
         "text": "GraniteShares Autocallable HOOD ETF"
       }
@@ -208,8 +208,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/ama/",
-        "contentSha256": "02aeb8a30ae2b67dd6191062968cfca41bc0f777d2cd5dcdc849150113bde5d8",
-        "fetchedAt": "2026-10-20T13:55:24.944754+00:00",
+        "contentSha256": "059c241b94d0f33abb2849bbe8c3df94461373cf26547b6a19e6c579ce3d4bb7",
+        "fetchedAt": "2026-10-21T13:52:14.788885+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long AMAT ETF"
       }
@@ -225,8 +225,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/anv/",
-        "contentSha256": "f28e751648e788e6c18df8b585d4185152f1137055fc7b2b455a385247dcd7a0",
-        "fetchedAt": "2026-10-20T13:54:46.339687+00:00",
+        "contentSha256": "d5f910053601d096c830a127018fd09de61fe59a9070c1543cb3739d68d7f277",
+        "fetchedAt": "2026-10-21T13:51:17.698118+00:00",
         "method": "official-product-title",
         "text": "GraniteShares Autocallable NVDA ETF"
       }
@@ -242,8 +242,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/aphu/",
-        "contentSha256": "5a3123657654bc6ab3b32ed6e65ef5b8496f4c4f39961c902a5d98f29ee08b24",
-        "fetchedAt": "2026-10-20T13:55:58.817298+00:00",
+        "contentSha256": "90501138f04c7071b870b7d7af341a53b0f427e7f917616c39468d3054434491",
+        "fetchedAt": "2026-10-21T13:52:57.309312+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long APH Daily Target ETF"
       }
@@ -259,8 +259,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily ASML Bull 2X ETF"
       }
@@ -276,8 +276,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/atc/",
-        "contentSha256": "727f3c1a58446a7dcbc3f479491b88cf090c1d3b49bdba2ec974cf049f8ac9f9",
-        "fetchedAt": "2026-10-20T13:54:46.806060+00:00",
+        "contentSha256": "e6db5899fa57c357fdb4090d53fee5fc0539561363f2e1fa2d1a2a7a2480c872",
+        "fetchedAt": "2026-10-21T13:51:18.368684+00:00",
         "method": "official-product-title",
         "text": "GraniteShares Autocallable COIN ETF"
       }
@@ -293,8 +293,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily BABA Bull 2X ETF"
       }
@@ -310,8 +310,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/bmnz/",
-        "contentSha256": "6c5ce31e1fc67038496f041a84df1ed01a51de927ae7df0745523c237500f13a",
-        "fetchedAt": "2026-10-20T13:55:27.837569+00:00",
+        "contentSha256": "fe33ae7400a5779645d2fa1c70d332e6acdc1184c780e45fd315d4b8b3ae8303",
+        "fetchedAt": "2026-10-21T13:52:18.817481+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short BMNR ETF"
       }
@@ -327,8 +327,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/ccup/",
-        "contentSha256": "180ed9d77f56ff4b3ffc57a6fbb61b9bdfc56fc968d10f1edfb040716a7db883",
-        "fetchedAt": "2026-10-20T13:55:56.239539+00:00",
+        "contentSha256": "ae7d5f61e23bea6bc284bd4a81de70c90bbf634459be6a17b3c9184c7295810a",
+        "fetchedAt": "2026-10-21T13:52:54.662990+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long CRCL Daily Target ETF"
       }
@@ -344,8 +344,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily COIN Bull 2X ETF"
       }
@@ -361,8 +361,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/cord/",
-        "contentSha256": "136c86b88feae79329689ecdbd53e46935c95ae73118f281c0ad5ee6b2bf0150",
-        "fetchedAt": "2026-10-20T13:55:56.241264+00:00",
+        "contentSha256": "8a4baad98091e82893aace00b93f5c130bde97fcf5da483743350cc32afc171c",
+        "fetchedAt": "2026-10-21T13:52:54.615799+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Inverse CRWV Daily Target ETF"
       }
@@ -378,8 +378,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/crcd/",
-        "contentSha256": "da11e80cd98245ad0321de8a8e81a8776caebafeabe3e11d3afe054d36827d4d",
-        "fetchedAt": "2026-10-20T13:55:56.263441+00:00",
+        "contentSha256": "ab11b8d3bc5c51edea58a45e4c90ed87a7c3f970a9b7fe9cb8fe5656006d2d1c",
+        "fetchedAt": "2026-10-21T13:52:54.787437+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Inverse CRCL Daily Target ETF"
       }
@@ -395,8 +395,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/crwu/",
-        "contentSha256": "f6ee97655d49698e449f8b6482a5ee2a441ee4f31265ff08af30c9630b0c3abb",
-        "fetchedAt": "2026-10-20T13:55:56.150551+00:00",
+        "contentSha256": "1d8c5a748764b3c0cff56d894de8c588f600ad5619efb9f6c39728c2888eda26",
+        "fetchedAt": "2026-10-21T13:52:54.533623+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long CRWV Daily Target ETF"
       }
@@ -412,8 +412,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/damd/",
-        "contentSha256": "52d402af0efae3e0598b8dd3a204c3282046d146c6e78e76782c93953c3ce4c4",
-        "fetchedAt": "2026-10-20T13:55:29.210408+00:00",
+        "contentSha256": "56114a092066acfae22ea0fe5d4f1dc0d76638ac37638d2ab90838c3d5b275a4",
+        "fetchedAt": "2026-10-21T13:52:20.763598+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short AMD ETF"
       }
@@ -429,8 +429,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/gmeu/",
-        "contentSha256": "9f08c7adc99655e18778cd4f79be470c9b7497030d539ba0e484fd5bcb0808af",
-        "fetchedAt": "2026-10-20T13:55:56.706363+00:00",
+        "contentSha256": "7c0e6505d0880e0c96de5d7784002f2a038b28c92461ab6eeb8d916de4b78b10",
+        "fetchedAt": "2026-10-21T13:52:55.212535+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long GME Daily Target ETF"
       }
@@ -446,8 +446,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/gou/",
-        "contentSha256": "cd2905f4acc3fd0745385644169d558f927fb78865ac0bfc5a2aef64f33b00d7",
-        "fetchedAt": "2026-10-20T13:54:49.115901+00:00",
+        "contentSha256": "9e8a3b2e56ea1e3110934c12607a10ac93d20a1f577703d0784d29a4cbc80ded",
+        "fetchedAt": "2026-10-21T13:51:22.004130+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long GOOGL Daily ETF (GOU)"
       }
@@ -463,8 +463,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily HOOD Bull 2X ETF"
       }
@@ -480,8 +480,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/inyy/",
-        "contentSha256": "6937c2e9ce8ce69fe19d9589da228ffa6f3159b52f5c5b05f47441b2cedb904d",
-        "fetchedAt": "2026-10-20T13:55:10.776461+00:00",
+        "contentSha256": "800d2c45f9b59c558876542c4414a881b0bfb8a699929c6de493bfa1e62cbdd6",
+        "fetchedAt": "2026-10-21T13:51:55.852619+00:00",
         "method": "official-product-title",
         "text": "YieldMax INTC Option Income Strategy ETF"
       }
@@ -497,8 +497,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily INTC Bull 2X ETF"
       }
@@ -514,8 +514,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/mra/",
-        "contentSha256": "47f4aed1f3a04f968f1d39e721687aa1662e4e21776f2e747ed30c82afaa29fd",
-        "fetchedAt": "2026-10-20T13:54:50.318559+00:00",
+        "contentSha256": "465d86cb9c2cb259622d0f31f0b4f4782aa6acbab702bfe56c0e4bf085286e12",
+        "fetchedAt": "2026-10-21T13:51:24.039831+00:00",
         "method": "official-product-title",
         "text": "GraniteShares Autocallable MARA ETF"
       }
@@ -531,8 +531,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/mrnx/",
-        "contentSha256": "33f33d2f4b2408e44bfd51c6a4fe3a172cd4c32edd07dfc600236bcd5db15d22",
-        "fetchedAt": "2026-10-20T13:55:32.937288+00:00",
+        "contentSha256": "830bbb0a3eeb07da9af8ab3f8187161f837e751e7b29bd559e4fbe43c9e40bb2",
+        "fetchedAt": "2026-10-21T13:52:27.305843+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long MRNA ETF"
       }
@@ -548,8 +548,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily MRVL Bull 2X ETF"
       }
@@ -565,8 +565,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/msfx/",
-        "contentSha256": "297762a8df06957ad38bbcc2b998633ca605daadd8881d8ea14fd8a432f03238",
-        "fetchedAt": "2026-10-20T13:55:57.171323+00:00",
+        "contentSha256": "8d1300993b05b978c9b1269a10d3247e3915848e0815e2c790b2e4a9d86cbb61",
+        "fetchedAt": "2026-10-21T13:52:55.630848+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long Microsoft Daily Target ETF"
       }
@@ -582,8 +582,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/msr/",
-        "contentSha256": "1c47495accd0ed7fe303363d72ea9d687929aa4bfc61a6cb5b6da34b2ca9a5da",
-        "fetchedAt": "2026-10-20T13:54:50.760369+00:00",
+        "contentSha256": "ddf43d218e1f8828844fab66136438b82814143090a9244c02386b237f8d2b63",
+        "fetchedAt": "2026-10-21T13:51:24.613502+00:00",
         "method": "official-product-title",
         "text": "GraniteShares Autocallable MSTR ETF"
       }
@@ -599,8 +599,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/mstz/",
-        "contentSha256": "a3d4881e3a03dee2726f21e2a870af8e8b7d1b2b3fb965884e21136e0bedd79d",
-        "fetchedAt": "2026-10-20T13:55:54.877571+00:00",
+        "contentSha256": "965ff8accb6dea0d94351b139a8c5896b033776771da718351004fc458f9a817",
+        "fetchedAt": "2026-10-21T13:52:53.377035+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Inverse MSTR Daily Target ETF"
       }
@@ -616,8 +616,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/muz/",
-        "contentSha256": "35581b8824ab09fcbdc5ca76ecf8cc41299b217a8f60d0b511fc094e5088a2a9",
-        "fetchedAt": "2026-10-20T13:55:33.748902+00:00",
+        "contentSha256": "c4468e19570ff9f5718f5e1f3c39b5a8a52759bdff3c7b11cb84a3eb2324a317",
+        "fetchedAt": "2026-10-21T13:52:28.214951+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short MU ETF"
       }
@@ -633,8 +633,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/nflu/",
-        "contentSha256": "3f738cf5788d89b19fd82bc7b2ec6ee032b986d1677707ede40f60c3f8fcbbf4",
-        "fetchedAt": "2026-10-20T13:55:56.691536+00:00",
+        "contentSha256": "538203d3add95e9a4d154413d884ad94bb31a99f5ed210f2a5432dd1b7abaa0b",
+        "fetchedAt": "2026-10-21T13:52:55.221234+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long NFLX Daily Target ETF"
       }
@@ -650,8 +650,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/ntal/",
-        "contentSha256": "4a5ced14eb7ebcc5a54c37debbbd865044d1f8813ec0b100bf226e3a2b71af48",
-        "fetchedAt": "2026-10-20T13:54:51.535679+00:00",
+        "contentSha256": "68d6c3ec0f54382711be98136f0d661870c0691395e81197ba5e8e7211b1c126",
+        "fetchedAt": "2026-10-21T13:51:25.943829+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long NTAP Daily ETF (NTAL)"
       }
@@ -667,8 +667,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/nvdq/",
-        "contentSha256": "9c8428ad41d941ea42dd870c8cc0261a2a55d8f4626acfa59defe12c8a115e2e",
-        "fetchedAt": "2026-10-20T13:55:55.317967+00:00",
+        "contentSha256": "7fb4a0e684b1bbcfa7b4478b9cc3ff05725706f877f24ca581b017fae533feaf",
+        "fetchedAt": "2026-10-21T13:52:53.691310+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Inverse NVIDIA Daily Target ETF"
       }
@@ -684,8 +684,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/nvdx/",
-        "contentSha256": "70128b72a3f79481e0a1023ca995162951d521438e1b6f5d8a97df2dd196c771",
-        "fetchedAt": "2026-10-20T13:55:55.303333+00:00",
+        "contentSha256": "9be143fbb626e017e98f6baeb496157765cc7a0769c3f462ef6e5b17b37d93d6",
+        "fetchedAt": "2026-10-21T13:52:53.635706+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long NVIDIA Daily Target ETF"
       }
@@ -701,8 +701,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily ORCL Bear 1X ETF"
       }
@@ -718,8 +718,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily ORCL Bull 2X ETF"
       }
@@ -735,8 +735,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/pla/",
-        "contentSha256": "e527e58ef4fc61a51ed3131fba56e98f89cb7200a7812c206c47b10bd86265bc",
-        "fetchedAt": "2026-10-20T13:54:52.052811+00:00",
+        "contentSha256": "7ee1abdb9b9ad933660edd05047efb593ae2480db18c0b92f0b4eca4fc88695c",
+        "fetchedAt": "2026-10-21T13:51:26.803785+00:00",
         "method": "official-product-title",
         "text": "GraniteShares Autocallable PLTR ETF"
       }
@@ -752,8 +752,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily PYPL Bull 2X ETF"
       }
@@ -769,8 +769,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/rblu/",
-        "contentSha256": "80a8bbccf9523f8414410875185f2ffbd312f3f8d46cfa241c4b7926aa324c91",
-        "fetchedAt": "2026-10-20T13:55:57.450292+00:00",
+        "contentSha256": "9ee84eddce9174da74fad6bfa81ac826d4a49f23549cbe457f112d46a192394e",
+        "fetchedAt": "2026-10-21T13:52:55.942275+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long RBLX Daily Target ETF"
       }
@@ -786,8 +786,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/rklz/",
-        "contentSha256": "1f4816ad4d20806b32a2d95802cc8d4e9a680c48d33b5723663ae0bcb9dc829f",
-        "fetchedAt": "2026-10-20T13:55:44.769147+00:00",
+        "contentSha256": "0710999e66c0b46c2d7ad3fd0215a1f79c212df3529aa73fd344fd76df613e7a",
+        "fetchedAt": "2026-10-21T13:52:38.865868+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short RKLB ETF"
       }
@@ -803,8 +803,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/robn/",
-        "contentSha256": "cbebf1a2566b7c7afbc5e01a8ceb66881b5ffeb10c012273abbb2bd8ba7183a4",
-        "fetchedAt": "2026-10-20T13:55:56.602165+00:00",
+        "contentSha256": "edfbd4d6f49a291c58a15459eab66eebae709ae697b337f450e3dbafb78c53c0",
+        "fetchedAt": "2026-10-21T13:52:55.075305+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long HOOD Daily Target ETF"
       }
@@ -820,8 +820,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/sca/",
-        "contentSha256": "3e2eb489a5d8cae04d373fe4e3177af7146f0b15ad4701a880195496a78e7805",
-        "fetchedAt": "2026-10-20T13:54:53.215014+00:00",
+        "contentSha256": "0329c00c9874626cd49f575b795772d8f44bdb8160512fa4702be629f7482227",
+        "fetchedAt": "2026-10-21T13:51:28.717792+00:00",
         "method": "official-product-title",
         "text": "GraniteShares Autocallable SMCI ETF"
       }
@@ -837,8 +837,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/smup/",
-        "contentSha256": "f19e24d3caa4b40c74aad25eb4c9848c901dd8105914278ddf2d2263a51a6a48",
-        "fetchedAt": "2026-10-20T13:55:57.901443+00:00",
+        "contentSha256": "aaf54ca6da34655fca65c1ec55dec25bc2fc2e8922985ad4ed003c8383dc0a4d",
+        "fetchedAt": "2026-10-21T13:52:56.412001+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long SMR Daily Target ETF"
       }
@@ -854,8 +854,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/sndu/",
-        "contentSha256": "a4cb8455b43ba4f93de7240d5c7a6426d1701565825497880b1bf4e99dc6e633",
-        "fetchedAt": "2026-10-20T13:55:55.754336+00:00",
+        "contentSha256": "b8c5ca5056b0de2f7449fec38b26052f2b5799a64062b2ea9d860a785ea2f90b",
+        "fetchedAt": "2026-10-21T13:52:54.128127+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long Sandisk ETF"
       }
@@ -871,8 +871,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/snou/",
-        "contentSha256": "10a5bc13b1cef854e65a618d9e3a875db735de564e41af942006938242379955",
-        "fetchedAt": "2026-10-20T13:55:58.094836+00:00",
+        "contentSha256": "714b912fec625fa52a19821754a9a0cc86cf48ea2237cfa663f1b5daf805b324",
+        "fetchedAt": "2026-10-21T13:52:56.489171+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long SNOW Daily Target ETF"
       }
@@ -888,8 +888,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily SOFI Bull 2X ETF"
       }
@@ -905,8 +905,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/stsm/",
-        "contentSha256": "5957ee0ed6a32754a066d94840d1282f9b4f6d392505a8536528c411a3505496",
-        "fetchedAt": "2026-10-20T13:55:47.145911+00:00",
+        "contentSha256": "5c7165cf8da2d237ff1456e115e4e626d464337917aa94bdea3849af87d8a209",
+        "fetchedAt": "2026-10-21T13:52:43.029227+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short TSM ETF"
       }
@@ -922,8 +922,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/stxl/",
-        "contentSha256": "c0bdf7928480077cf40dbc3ac2bf210ee751eca6c50d0e0d1c84a36be3b2277f",
-        "fetchedAt": "2026-10-20T13:55:46.964799+00:00",
+        "contentSha256": "efc5e5b9f6a0c64e22edc709e907f16cda6049fd118b27c54944d9e346be2d35",
+        "fetchedAt": "2026-10-21T13:52:43.387102+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long STX ETF"
       }
@@ -939,8 +939,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/tla/",
-        "contentSha256": "a98e1e4d3a76f2173c7907b4df106a8ece091edc39fe867ec67e8b2ca9bc6513",
-        "fetchedAt": "2026-10-20T13:54:54.077752+00:00",
+        "contentSha256": "6d4c0c426a960f9c144d1e397b3c068c3d50501b501a0c50a80a0147ec267742",
+        "fetchedAt": "2026-10-21T13:51:30.172074+00:00",
         "method": "official-product-title",
         "text": "GraniteShares Autocallable TSLA ETF"
       }
@@ -956,8 +956,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/tslt/",
-        "contentSha256": "7986ad7a120e525dba56b809765f3995b944c56e7a8807e25fc9bc2a83e98406",
-        "fetchedAt": "2026-10-20T13:55:55.310842+00:00",
+        "contentSha256": "cebecd7dabee089595b9faffff756f9e41cef45b6215fa6812cb903d07fabf29",
+        "fetchedAt": "2026-10-21T13:52:53.818441+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long Tesla Daily Target ETF"
       }
@@ -973,8 +973,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/tslz/",
-        "contentSha256": "8ea259a54ea42721cf6963de64ff6c34c7e276bf037bcdd41a35955236300d43",
-        "fetchedAt": "2026-10-20T13:55:55.326907+00:00",
+        "contentSha256": "d0410be5e04acf9fdf742d7ef8ae30039680bf20d4f8049e3935aa8b9adcbf3a",
+        "fetchedAt": "2026-10-21T13:52:53.836313+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Inverse Tesla Daily Target ETF"
       }
@@ -990,8 +990,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/ttdu/",
-        "contentSha256": "ad11f267389078f9ec2b8dd7fbeee2941355946fa5761ba06fc03a3141d8ad4c",
-        "fetchedAt": "2026-10-20T13:55:57.628937+00:00",
+        "contentSha256": "42d3f63d039b6cb975e7a0424a41c266d97fb268a461cc5f6cf0f440e558e558",
+        "fetchedAt": "2026-10-21T13:52:56.058089+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long TTD Daily Target ETF"
       }
@@ -1007,8 +1007,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily TXN Bull 2X ETF"
       }
@@ -1024,8 +1024,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "3ae1d693922c98bd58a4b98fe905f3b2c6880a0d615561a69e8ae1d514e602f5",
-        "fetchedAt": "2026-10-20T13:54:42.613659+00:00",
+        "contentSha256": "fdf77f3decb690a3717bc6d3203627af3358b86ede3281d32cf64f2179001aa5",
+        "fetchedAt": "2026-10-21T13:51:12.922464+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily UNH Bull 2X ETF"
       }

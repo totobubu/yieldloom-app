@@ -71,7 +71,12 @@ jobs:
           import hashlib
           import json
           import os
+          import sys
           from urllib.request import Request, urlopen
+          def expose_error(kind, error, traceback):
+              message = str(error).replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print('::error title=Public core release probe::' + message)
+          sys.excepthook = expose_error
           base = os.environ['PUBLIC_RELEASE_BASE_URL'].rstrip('/')
           if not base.startswith('https://'):
               raise ValueError('VITE_R2_PUBLIC_URL must be a public HTTPS root')

@@ -122,6 +122,12 @@ objects and reads the current pointer; it performs no collection or writes.
 Normal publication uploads immutable files with up to eight parallel requests,
 waits for all of them to succeed, then writes the manifest and finally the
 current pointer. Any failed upload prevents both final writes.
+If the production origin is missing from bucket CORS, collection's
+`configure_core_cors=true` mode adds only `https://yieldloom-app.vercel.app`
+using the `data-production` environment. It preserves existing rules and never
+adds the new origin to write methods. `configure_cors.py` defaults to dry run;
+`--apply` is required for a direct change. Public verification uses Node fetch,
+the same client as the API, and checks both Pages and Vercel origins.
 
 ## Official email screenshot evidence
 

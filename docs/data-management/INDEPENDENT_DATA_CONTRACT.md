@@ -95,12 +95,27 @@ Global X의 현재 QYLD HTML에는 기존 `distributionHistoryData`가 없고,
 9월 21일 금액도 기존 원문의 `0.1767` 대신 화면 표시용 `$0.18`로 나온다.
 이 표시 값을 원문 금액으로 가져오는 우회 파서는 추가하지 않았다.
 
-발행 대상은 `candidate-39593238852`이고, 발행 run은 `39593732155`다.
-발행 후 검증 모드의 `verify_public=true`로 공개 pointer와 manifest, catalog와
-배당 index의 해시, 한 종목 이력과 브라우저 CORS를 검사한다. 이후 같은 root를
+`candidate-39593238852`를 발행 run `39593732155`에서 발행 완료했다.
+R2 내부 조회로 2,332개 객체와 최종 manifest, 현재 pointer의 releaseId를 확인했다.
+공개 Node 조회로 pointer·manifest, catalog와 배당 index 및 샘플 AAPW 이력의
+해시를 검증했다. 116종목 배당과 2,188종목 catalog이며, 실제 서버 소비 코드로도
+TSLY 이력 88건이 조회됐다. 최초 Python 공개 요청은 HTTP 403이었으나 앱과
+동일한 Node fetch로 조회가 성공해 공개 검증기를 Node로 전환했다.
+
+초기 CORS는 Pages만 허용하고 새 Vercel 운영 주소가 빠져 있었다. 운영 환경의
+적용 run `39598010313`에서 기존 규칙을 보존하고
+`https://yieldloom-app.vercel.app`만 GET/HEAD 허용 목록에 추가했다. 공개 검증은
+Pages와 Vercel 양쪽 Origin으로 동일한 자료와 CORS를 확인했다. 설정 도구의
+기본값은 dry run이며, 워크플로의 `configure_core_cors=true`는 `data-production`
+환경에서 적용한다. 새 출처에 기존 쓰기 메서드가 부여되지 않는 경우도 검사했다.
+
+검증 모드 `verify_public=true`로 공개 조회를 다시 실행할 수 있다. 이후 같은 root를
 설정해 재배포하고 검색·상세·포트폴리오 일정·OG·SEO를 함께 확인해야 한다.
 Vercel `totobubus-projects` 환경변수 접근과 GitHub Actions 변수 조회는 현재
 403으로 거부되어 앱 소비 경로의 운영 전환은 아직 수행하지 않았다.
+후속 data-v2 Python 테스트는 35개 통과했다. 발행 파일 업로드를 최대 8개 병렬로
+바꾸고, 모든 파일 성공 후에만 manifest와 pointer를 기록하도록 유지했다.
+업로드 실패와 전환 검사 실패 시 최종 원장이 노출되지 않는 테스트를 포함한다.
 
 ## 요청 횟수 검증
 
@@ -123,7 +138,7 @@ manifest를 각각 1회만 읽는다. 이번 전환은 Firebase 호출을 추가
 - 기존 `tests/request-dedup.browser.mjs`는 가격·배당 중복 방지 assertions 이후,
   별도 계좌 권한 오류 메시지 대기 단계에서 타임아웃. 새 원장 전환 브라우저
   검사는 계좌 인증과 분리해 위 두 모드로 검증했다.
-- 공개 R2의 `core/current.json` 조회도 HTTP 403으로 거부되어 운영 원장은 미검증.
+- 초기 Python 공개 R2 조회는 HTTP 403이었다. 후속 Node 공개 조회 결과는 위에 기록했다.
 - `npm run lint:check` 종료 코드 0; 오류 0개, Vue 속성 순서 등 경고 80개.
 
 ## 최신 work 통합 검증

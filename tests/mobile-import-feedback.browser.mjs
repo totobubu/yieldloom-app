@@ -67,6 +67,9 @@ try {
             (process.env.CAPITAL_TEST_URL || 'http://127.0.0.1:5175') +
                 '/mypage?tab=upload'
         );
+        await page
+            .getByRole('button', { name: '자료 업로드', exact: true })
+            .click();
         const overlay = page.locator('.portfolio-loading-overlay');
         const button = page.getByRole('button', {
             name: '추출·미리보기',

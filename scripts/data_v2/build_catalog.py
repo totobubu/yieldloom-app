@@ -17,6 +17,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.metadata.registry import load_verified_links
+from scripts.metadata.security_status import apply_status, load_statuses
 
 
 def normalized_entry(row: dict[str, Any]) -> dict[str, Any] | None:
@@ -28,21 +29,25 @@ def normalized_entry(row: dict[str, Any]) -> dict[str, Any] | None:
     if not market or not currency:
         return None
     provider = row.get("officialProvider") or row.get("provider") or row.get("company")
-    return {
+    result = {
         "symbol": symbol,
         "isin": str(row["isin"]).strip().upper() if row.get("isin") else None,
         "market": market,
         "currency": currency,
         "koName": str(row["koName"]).strip() if row.get("koName") else None,
         "longName": str(row["longName"]).strip() if row.get("longName") else None,
-        "active": not bool(row.get("upcoming")),
+        "active": bool(row.get("active", True)) and not bool(row.get("upcoming")),
         "officialProvider": str(provider).strip() if provider else None,
     }
 
+    for field in ("ipoDate", "frequency", "noDividends"):
+        if field in row:
+            result[field] = row[field]
+    return result
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Create a core catalog seed from a legacy nav snapshot.")
-    parser.add_argument("--input", type=Path, default=ROOT / "public" / "nav.json")
+    parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=ROOT / "data-v2" / "catalog-seed.json")
     args = parser.parse_args()
     links = load_verified_links()
@@ -76,6 +81,13 @@ def main() -> int:
                 entry['active'] = bool(row.get('active', True))
                 entry['underlying'] = links[entry['symbol']]['underlying']
                 catalog[entry['symbol']] = entry
+    statuses = load_statuses()
+    for symbol, status in statuses.items():
+        if symbol not in catalog:
+            entry = normalized_entry(status)
+            if entry:
+                catalog[symbol] = entry
+    catalog = {symbol: apply_status(row, statuses) for symbol, row in catalog.items()}
     result = {
         "schemaVersion": 1,
         "source": "legacy-nav-seed",

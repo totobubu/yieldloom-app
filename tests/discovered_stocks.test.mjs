@@ -12,7 +12,7 @@ const catalog = { schemaVersion: 1, instruments: [stock] };
 
 test('new verified stock appears in index with stock type, name, and ETF provenance', () => {
     const index = createTickerIndex({ instruments: [{ symbol: 'SCHD', market: 'NYSE' }] }, {}, catalog);
-    assert.equal(index.nav.length, 2);
+    assert.equal(index.nav.filter(row => row.active !== false).length, 2);
     assert.equal(index.nav[1].securityType, 'stock');
     assert.equal(index.nav[1].longName, 'AAON, Inc.');
     assert.equal(index.nav[1].dividendEtfs[0].ticker, 'DGRO');

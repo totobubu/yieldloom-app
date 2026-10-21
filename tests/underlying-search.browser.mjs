@@ -27,7 +27,7 @@ try {
     await page.goto('http://127.0.0.1:5173/?q=AAPL&type=etf');
     for (const symbol of expected) {
         const row = page.locator('.stock-card-grid li').filter({
-            has: page.locator('strong', {
+            has: page.locator('.stock-symbol-link', {
                 hasText: new RegExp(`^${symbol}$`),
             }),
         });
@@ -37,13 +37,13 @@ try {
         await page.setViewportSize({ width, height: 1000 });
         for (const symbol of expected) {
             const row = page.locator('.stock-card-grid li').filter({
-                has: page.locator('strong', {
+                has: page.locator('.stock-symbol-link', {
                     hasText: new RegExp(`^${symbol}$`),
                 }),
             });
             await row.getByText('AAPL 기반', { exact: true }).waitFor();
             const comparison = row.getByRole('link', {
-                name: 'AAPL ETF 비교',
+                name: 'AAPL 기반 ETF 비교',
                 exact: true,
             });
             await comparison.waitFor();
@@ -86,7 +86,7 @@ try {
     await page.reload();
     for (const symbol of expected.filter((value) => value !== 'AAPW')) {
         const row = page.locator('.stock-card-grid li').filter({
-            has: page.locator('strong', {
+            has: page.locator('.stock-symbol-link', {
                 hasText: new RegExp(`^${symbol}$`),
             }),
         });

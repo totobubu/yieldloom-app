@@ -24,11 +24,13 @@ not a browser release.
 
 ## Catalog migration
 
-`data-v2/catalog-seed.json` is the checked-in migration seed created from the
-DivGrow catalog. Refresh it only through the explicit migration command
-(`npm run core:catalog:seed -- --input <DivGrow-nav.json>`), then review the
-catalog diff. It carries only symbol, ISIN, market, currency, names, active
-state, and an optional provider reference. Product fields such as `dataPaths`,
+`data-v2/catalog-seed.json` is the independently maintained catalog, initially
+migrated from DivGrow. Normal builds never read the legacy nav. Edit this
+catalog for registrations and reviewed corrections. The explicit migration tool
+(`npm run core:catalog:seed -- --input <legacy-nav.json>`) is for reviewed imports
+only; it is not a normal refresh command. It carries only symbol, ISIN, market, currency, names, active
+state, an optional provider reference, and optional IPO date, dividend frequency
+and no-dividend metadata. Product fields such as `dataPaths`,
 logo paths, periods, and prices are excluded. Pass the reviewed result to the
 release builder:
 
@@ -107,3 +109,6 @@ The command returns a SHA-256 evidence ID. Dispatch `Analyze uploaded email
 evidence` with that ID to re-run OCR from the private original and compare its
 hints against the current official collection state. This produces a private
 review artifact only; it cannot add, modify, or publish a dividend event.
+
+See [the independent data contract](../docs/data-management/INDEPENDENT_DATA_CONTRACT.md)
+for price routing, shared dividend consumers and the mandatory full-history cutover gate.

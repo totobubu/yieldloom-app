@@ -1,5 +1,12 @@
 # scripts/project_future_dividends.py
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from scripts.metadata.security_status import load_statuses
+
+DELISTED_SYMBOLS = set(load_statuses())
+
 import os
 import re
 import json
@@ -122,6 +129,10 @@ def get_previous_business_day(date, holiday_set):
         current_date -= timedelta(days=1)
 
 
+def is_delisted_symbol(symbol):
+    return str(symbol).upper().replace(".", "-") in DELISTED_SYMBOLS
+
+
 def main():
     # 커맨드라인 인자로 특정 티커 지정 가능
     import sys
@@ -161,7 +172,7 @@ def main():
             continue
 
         ticker_info = data["tickerInfo"]
-        if ticker_info.get("upcoming") or not ticker_info.get("frequency"):
+        if is_delisted_symbol(ticker_info.get("symbol") or filename.removesuffix(".json")) or ticker_info.get("upcoming") or not ticker_info.get("frequency"):
             continue
 
         original_backtest_data_str = json.dumps(data["backtestData"], sort_keys=True)

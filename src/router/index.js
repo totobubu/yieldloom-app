@@ -33,6 +33,11 @@ const router = createRouter({
             component: () => import('../pages/UnderlyingExplorerView.vue'),
         },
         {
+            path: '/compare',
+            name: 'security-compare',
+            component: () => import('../pages/UnderlyingExplorerView.vue'),
+        },
+        {
             path: '/admin/metadata',
             name: 'metadata-review',
             component: () => import('../pages/MetadataReviewView.vue'),

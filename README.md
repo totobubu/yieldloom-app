@@ -12,6 +12,7 @@
 - `/simulator`: 관리자 전용 최초 투자·납입·배당·재투자 A/B 및 원천징수율 가정 비교.
 - `/mypage/legacy`: 이전 단일 계좌 자료 조회.
 - `/stock/:ticker`: 종목 상세·시세·배당 정보와 배당 카드 PNG·게시 패키지 다운로드, 게시 문구 복사. `/thumbnail/:ticker`는 이 경로로 이동합니다.
+- `/compare`: 종목 비교의 기초자산별·유사 ETF·테마(키워드·업종·기술) 하위 화면. `view=underlying|similar|theme`, `symbol`, `theme`으로 비교 화면을 공유합니다. 기존 `/underlying/:symbol` 링크도 유지합니다. 유사 ETF는 전체 ETF에서 전략 → 방향 → 배당 여부 → 지급 주기를 단계적으로 선택하며 앞선 조건에 없는 옵션을 숨깁니다. 테마는 등록된 구성 본주를 먼저 표시하고, 해당 종목을 기초자산으로 참조하거나 상품명 키워드가 일치하는 ETF를 함께 표시합니다. 전략의 `본주(기초자산)`으로 구성 주식만 볼 수 있습니다.
 - `/legal`: 데이터 출처·갱신·투자 면책 및 개인정보 안내.
 - `/admin/feedback`: 공개 종목 상세에서 익명으로 접수한 요청·질문을 관리자만 검토하고 처리합니다.
 - `?rivals=CRSH,TSII`: 라이벌 선택 공유. 최대 3종.
@@ -97,7 +98,7 @@ node --test tests/public_json.test.mjs tests/public_release.test.mjs tests/reque
 node tests/request-dedup.browser.mjs
 ```
 
-검색 목록은 기본적으로 작은 `ticker-index.json`을 사용합니다. `VITE_DIVGROW_RELEASE_BASE_URL`을 설정하면 DivGrow의 버전 고정 `releases/v1/current.json`과 manifest·catalog를 검증해 목록을 읽습니다. 카드 페이지는 썸네일 API로 필요한 시세 보조 데이터를 요청하며, `DIVGROW_DATA_BASE_URL`은 DivGrow R2의 `data/` 경로를 가리킵니다. 검증된 공식 배당 원장은 data v2의 승인 릴리스로 분리합니다.
+검색 목록은 이 프로젝트의 `data-v2/catalog-seed.json`에서 만드는 `ticker-index.json`을 사용합니다. `VITE_DATA_RELEASE_BASE_URL`을 설정하면 자체 core 릴리스의 catalog를 읽습니다. 검색·API·빌드는 `nav.json`에 의존하지 않습니다. 가격 파일 경로는 `data-v2/market-sources.json`으로 분리했으며 가격 원본 공급은 아직 기존 설정을 사용합니다. 데이터 계약과 배당 릴리스 전환 조건은 [독립 데이터 안내](docs/data-management/INDEPENDENT_DATA_CONTRACT.md)를 참조하세요.
 
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.
 
@@ -109,7 +110,7 @@ GitHub Pages 배포는 `VITE_API_BASE_URL` 설정이 없으면 정식 웹앱 API
 
 공개 종목 검색 화면만 광고 슬롯을 지원합니다. `VITE_ADSENSE_CLIENT`과 `VITE_ADSENSE_HOME_SLOT`이 모두 유효할 때만 Google AdSense 스크립트를 지연 로드합니다. 개인 포트폴리오·로그인·PDF 업로드 화면에서는 광고를 로드하지 않습니다. 실제 활성화 전에는 AdSense 사이트 심사와 이용 지역에 맞는 개인정보·동의 고지를 별도로 완료해야 합니다.
 
-일정 카드는 `public/content-studio/distribution-index.json`과 티커별 공식 배당 이력, 또는 `VITE_DATA_RELEASE_BASE_URL`로 지정한 data v2 릴리스를 사용합니다. 가격 이력과 공식 배당 원장의 업데이트·정합성 검사는 계속 필요합니다.
+검색·일정·포트폴리오는 공통 배당 조회 서비스를 사용합니다. `VITE_DATA_RELEASE_BASE_URL`과 API의 `DATA_RELEASE_BASE_URL`에 같은 자체 core 릴리스 root를 설정해 전환하며, 설정 전에는 기존 공개 배당 이력을 유지합니다. 전환·발행은 `npm run core:cutover:check`의 전체 이력 대조를 통과해야 합니다. 가격 이력과 공식 배당 원장의 업데이트·정합성 검사는 계속 필요합니다.
 
 공식 운용사 수집기 15종, SQLite 원장, 데이터 대조 및 릴리스·배포 도구는 유지합니다.
 
@@ -154,6 +155,10 @@ npm run content:refresh -- --scope provider --provider yieldmax
 ```
 
 수집 파이프라인은 기본적으로 카드용 데이터 작업을 수행합니다. 기존 블로그 Bundle·편집 캘린더·주간 대본 생성은 `--include-editorial`을 명시한 경우에만 실행합니다. 호환 도구와 기존 저장 데이터는 보존합니다.
+
+## 상장폐지 종목
+
+상장폐지 종목은 기본 검색에서 제외하고 `상장폐지 포함` 필터와 기존 상세 주소로 과거 이력을 조회합니다. 관리 원본은 `data-v2/security-status.json`이며 `npm run data:validate-status`로 검증합니다. 등록·공식 근거 보완·과거 자료 수집은 [상장 상태 운영 안내](docs/data-management/LISTING_STATUS.md)를 참조하세요. 개인 거래·수량은 자동 변경하지 않습니다.
 
 ## R2 경량 가공 데이터
 

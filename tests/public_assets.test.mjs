@@ -1,3 +1,4 @@
+import { applySecurityStatuses, isSearchableSecurity } from '../lib/security-status.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -6,11 +7,11 @@ import { createTickerIndex, excludedPublicDirectories, publicAssetsPlugin } from
 test('compact index preserves active core catalog entries and thumbnail relationships', async () => {
     const source = JSON.parse(await fs.readFile('data-v2/catalog-seed.json', 'utf8'));
     const catalog = JSON.parse(await fs.readFile('public/thumbnail-catalog.json', 'utf8'));
-    const expected = source.instruments.filter(row => row.symbol && row.active !== false);
+    const expected = applySecurityStatuses(source.instruments).filter(row => row.symbol && isSearchableSecurity(row, true));
     const compact = createTickerIndex(source, catalog.relationships).nav;
     assert.equal(compact.length, expected.length);
     compact.forEach((row, index) => {
-        for (const field of ['symbol', 'koName', 'market', 'currency']) {
+        for (const field of ['symbol', 'koName', 'market', 'currency', 'ipoDate', 'frequency', 'noDividends']) {
             assert.equal(row[field], expected[index][field] ?? undefined);
         }
         assert.equal(row.company, expected[index].officialProvider ?? undefined);
@@ -26,6 +27,11 @@ test('build excludes legacy assets and keeps thumbnail and dividend schedule ass
     await assert.rejects(fs.access('dist/nav.json'), { code: 'ENOENT' });
     const index = JSON.parse(await fs.readFile('dist/ticker-index.json', 'utf8'));
     assert.ok(index.nav.length > 0);
+    const source = JSON.parse(await fs.readFile('data-v2/catalog-seed.json', 'utf8'));
+    for (const field of ['ipoDate', 'frequency', 'noDividends']) {
+        const expected = source.instruments.find(row => row.active !== false && row[field] != null);
+        assert.equal(index.nav.find(row => row.symbol === expected.symbol)[field], expected[field]);
+    }
     for (const color of ['red', 'blue', 'gray']) await fs.access(`dist/thumbnail/${color}.png`);
     const schedule = JSON.parse(await fs.readFile('dist/content-studio/distribution-index.json', 'utf8'));
     for (const ticker of schedule.tickers) {

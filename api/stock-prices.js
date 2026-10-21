@@ -1,3 +1,5 @@
+import { isDelisted, securityStatus } from '../lib/security-status.js';
+import { loadTickerWithSnapshot } from './thumbnail-data.js';
 import { createApiHandler } from '../lib/api-handler.js';
 import { normalizeSymbol, validSymbol } from '../lib/thumbnail-projection.js';
 import { fetchJson, PriceError } from '../lib/thumbnail-prices.js';
@@ -18,6 +20,15 @@ async function fetchStockCandles(symbol, fetcher) {
     const ticker = normalizeSymbol(symbol);
     if (!validSymbol(ticker))
         throw new PriceError('올바른 티커를 입력해 주세요.', 400);
+    if (isDelisted(ticker)) {
+        const archive = await loadTickerWithSnapshot(ticker, process.env.THUMBNAIL_OFFICIAL_DATA_BASE_URL ?? 'https://totobubu.github.io/yieldloom-app', { fetcher });
+        return {
+            symbol: ticker, currency: archive.tickerInfo.currency, source: '상장폐지 · 과거 자료',
+            listingStatus: securityStatus(ticker),
+            candles: archive.backtestData.filter(row => Number(row.close) > 0),
+            events: [], asOf: archive.sourceStatus.priceDate,
+        };
+    }
     const yahooSymbol = /^[A-Z]+\.[AB]$/.test(ticker)
         ? ticker.replace('.', '-')
         : ticker;

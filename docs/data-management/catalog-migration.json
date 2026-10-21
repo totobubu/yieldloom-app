@@ -1,0 +1,11 @@
+{
+  "catalogCount": 2173,
+  "priceSourceCount": 2165,
+  "metadataCounts": {
+    "ipoDate": 2156,
+    "frequency": 1788,
+    "noDividends": 220
+  },
+  "catalogOnlySymbols": [],
+  "legacySha256": "9a88808fd7a9dc2346f32ff5147609138326fd6672cdf004c50d7a054a3d0661"
+}

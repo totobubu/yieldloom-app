@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-    similarProducts,
+    themeMatch,
     themeProducts,
     comparisonThemes,
 } from '../lib/comparison-groups.js';
@@ -10,47 +10,51 @@ import {
     comparisonProducts,
 } from '../lib/underlying-comparison.js';
 
-test('similar ETFs match known strategy, direction and leverage; same underlying comes first', () => {
-    const base = {
-        symbol: 'BASE',
-        underlying: 'AAPL',
-        strategy: 'leveraged',
-        direction: 'long',
-        leverage: 1,
-    };
-    const other = { ...base, symbol: 'AAA', underlying: 'NVDA' };
-    const same = { ...base, symbol: 'ZZZ' };
-    const rows = [
-        base,
-        other,
-        same,
-        { ...base, symbol: 'INVERSE', direction: 'inverse' },
-        { ...base, symbol: 'DOUBLE', leverage: 2 },
-        { ...base, symbol: 'LEVERAGED', strategy: 'income' },
-        { ...base, symbol: 'UNKNOWN', leverage: null },
-    ];
-    assert.deepEqual(
-        similarProducts(rows, base).map((row) => row.symbol),
-        ['ZZZ', 'AAA']
-    );
-    assert.deepEqual(
-        similarProducts(rows, { ...base, strategy: 'unknown' }),
-        []
-    );
-    assert.deepEqual(
-        similarProducts(rows, { ...base, direction: 'unknown' }),
-        []
-    );
-    assert.deepEqual(similarProducts(rows, { ...base, leverage: null }), []);
-    assert.deepEqual(similarProducts(rows, null), []);
-    assert.deepEqual(similarProducts(rows, { symbol: 'NO_METADATA' }), []);
-    const income = { ...base, strategy: 'income', leverage: null };
+test('themes match fund names without classifying by issuer names', () => {
+    const finance = comparisonThemes.find((row) => row.value === 'finance');
+    const travel = comparisonThemes.find((row) => row.value === 'travel');
     assert.equal(
-        similarProducts([income, { ...income, symbol: 'OTHER' }], income)
-            .length,
-        1,
-        'Income funds need not declare a daily leverage target'
+        themeMatch({ koName: '글로벌 금융 ETF' }, finance).kind,
+        'name'
     );
+    assert.equal(
+        themeMatch({ koName: '국채 ETF', company: 'Financial Bank' }, finance),
+        null
+    );
+    assert.equal(themeMatch({ underlying: 'ABNB' }, travel).kind, 'underlying');
+    assert.ok(themeMatch({ longName: 'Airlines ETF' }, travel));
+    assert.equal(themeMatch({ longName: 'Semiconductor ETF' }, travel), null);
+});
+test('theme keywords exclude aerospace travel and issuer bank names', () => {
+    const travel = comparisonThemes.find((row) => row.value === 'travel');
+    const finance = comparisonThemes.find((row) => row.value === 'finance');
+    assert.equal(
+        themeMatch({ koName: '디렉시온 항공우주 방산 3배 ETF' }, travel),
+        null
+    );
+    assert.equal(
+        themeMatch({ koName: '뉴욕 멜론은행 핵심 채권 ETF' }, finance),
+        null
+    );
+    assert.ok(themeMatch({ koName: '미국 은행 ETF' }, finance));
+    assert.ok(themeMatch({ koName: 'US 글로벌 항공 ETF' }, travel));
+});
+
+test('dividend availability distinguishes known none from missing history', () => {
+    const products = comparisonProducts([
+        { symbol: 'NONE', noDividends: true, frequency: 'monthly' },
+        { symbol: 'MISSING' },
+        {
+            symbol: 'PAYER',
+            dividendEvidence: { latestAmount: 0.5 },
+            frequency: 'monthly',
+        },
+    ]);
+    assert.equal(products[0].dividendStatus, 'none');
+    assert.equal(products[0].frequency, '해당 없음');
+    assert.equal(products[1].dividendStatus, 'unavailable');
+    assert.equal(products[2].dividendStatus, 'available');
+    assert.equal(products[2].frequency, '매월');
 });
 
 test('M7 includes both Alphabet share classes and excludes unrelated ETFs', () => {

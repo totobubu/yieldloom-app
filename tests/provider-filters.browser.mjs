@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { chromium } from 'playwright';
 
+const base = process.env.UI_BASE_URL || 'http://127.0.0.1:5173';
 const output = '/tmp/yieldloom-provider-design';
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({
@@ -22,7 +23,7 @@ try {
             if (['fetch', 'xhr'].includes(request.resourceType()))
                 requests.push(request.url());
         });
-        await page.goto('http://127.0.0.1:5173/');
+        await page.goto(base + '/');
         await page.locator('.stock-card-grid li').first().waitFor();
         const shortcuts = page.locator('.provider-chips button:visible');
         assert.ok(

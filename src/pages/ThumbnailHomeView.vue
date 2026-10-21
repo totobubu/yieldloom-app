@@ -587,6 +587,7 @@
                 </li>
             </ul>
             <Paginator
+                class="search-pagination"
                 :first="(page - 1) * pageSize"
                 :rows="pageSize"
                 :total-records="filtered.length"
@@ -677,9 +678,8 @@
     .sort-field :deep(.p-select) {
         min-width: 124px;
     }
-    .stock-card-grid + :deep(.p-paginator) {
-        margin-block: 28px 20px;
-        padding-block: 12px;
+    .search-pagination {
+        margin-block: 36px 28px;
     }
     .row-note {
         display: block;
@@ -910,6 +910,9 @@
         flex-wrap: wrap;
     }
     @media (max-width: 767px) {
+        .search-pagination {
+            margin-block: 28px 24px;
+        }
         .search-heading {
             margin-bottom: 20px;
         }

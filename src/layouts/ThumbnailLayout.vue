@@ -26,14 +26,7 @@
     const inStocks = computed(
         () =>
             route.name === 'ticker-stock' ||
-            (route.name === 'thumbnail-home' &&
-                route.query.type !== 'dividend-stock' &&
-                route.query.sort !== 'ipoDate')
-    );
-    const inDividendStocks = computed(
-        () =>
-            route.name === 'thumbnail-home' &&
-            route.query.type === 'dividend-stock'
+            (route.name === 'thumbnail-home' && route.query.sort !== 'ipoDate')
     );
     const inNewListings = computed(
         () => route.name === 'thumbnail-home' && route.query.sort === 'ipoDate'
@@ -90,13 +83,10 @@
                         >종목 검색</router-link
                     >
                     <router-link
-                        :to="{
-                            name: 'thumbnail-home',
-                            query: { type: 'dividend-stock' },
-                        }"
-                        :class="{ active: inDividendStocks }"
-                        :aria-current="inDividendStocks ? 'page' : undefined"
-                        >배당주</router-link
+                        to="/compare"
+                        :class="{ active: inComparison }"
+                        :aria-current="inComparison ? 'page' : undefined"
+                        >종목 비교</router-link
                     >
                     <router-link
                         :to="{
@@ -106,12 +96,6 @@
                         :class="{ active: inNewListings }"
                         :aria-current="inNewListings ? 'page' : undefined"
                         >신규 상장</router-link
-                    >
-                    <router-link
-                        to="/compare"
-                        :class="{ active: inComparison }"
-                        :aria-current="inComparison ? 'page' : undefined"
-                        >종목 비교</router-link
                     >
                     <router-link
                         v-if="isAdmin"
@@ -181,14 +165,11 @@
                 ></router-link
             >
             <router-link
-                :to="{
-                    name: 'thumbnail-home',
-                    query: { type: 'dividend-stock' },
-                }"
-                :class="{ active: inDividendStocks }"
-                :aria-current="inDividendStocks ? 'page' : undefined"
-                ><i class="pi pi-chart-line" aria-hidden="true" /><span
-                    >배당주</span
+                to="/compare"
+                :class="{ active: inComparison }"
+                :aria-current="inComparison ? 'page' : undefined"
+                ><i class="pi pi-clone" aria-hidden="true" /><span
+                    >종목 비교</span
                 ></router-link
             >
             <router-link
@@ -197,14 +178,6 @@
                 :aria-current="inNewListings ? 'page' : undefined"
                 ><i class="pi pi-calendar" aria-hidden="true" /><span
                     >신규 상장</span
-                ></router-link
-            >
-            <router-link
-                to="/compare"
-                :class="{ active: inComparison }"
-                :aria-current="inComparison ? 'page' : undefined"
-                ><i class="pi pi-clone" aria-hidden="true" /><span
-                    >종목 비교</span
                 ></router-link
             >
             <router-link

@@ -16,6 +16,11 @@ on:
         required: false
         default: false
         type: boolean
+      verify_public:
+        description: Also verify the published release and browser CORS
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   actions: read
@@ -56,6 +61,52 @@ jobs:
           --output reviewed-release
       - name: Compare full dividend history
         run: python scripts/data_v2/check_cutover.py --data-dir reviewed-release --output dividend-cutover.json
+      - name: Verify published consumer assets
+        if: inputs.verify_public
+        env:
+          PUBLIC_RELEASE_BASE_URL: ${{ vars.VITE_R2_PUBLIC_URL }}
+          EXPECTED_RELEASE_ID: ${{ inputs.release_id }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from urllib.request import Request, urlopen
+          base = os.environ['PUBLIC_RELEASE_BASE_URL'].rstrip('/')
+          if not base.startswith('https://'):
+              raise ValueError('VITE_R2_PUBLIC_URL must be a public HTTPS root')
+          origin = 'https://totobubu.github.io'
+          def read(key, digest=None):
+              request = Request(base + '/' + key, headers={'Origin': origin, 'Cache-Control': 'no-cache'})
+              with urlopen(request, timeout=20) as response:
+                  if response.headers.get('Access-Control-Allow-Origin') not in ('*', origin):
+                      raise ValueError('Browser CORS missing for ' + key)
+                  raw = response.read()
+              if digest and hashlib.sha256(raw).hexdigest() != digest:
+                  raise ValueError('Hash mismatch: ' + key)
+              return json.loads(raw)
+          pointer = read('core/current.json')
+          if pointer['releaseId'] != os.environ['EXPECTED_RELEASE_ID']:
+              raise ValueError('Published pointer does not match expected release')
+          expected_key = 'core/releases/' + pointer['releaseId'] + '/manifest.json'
+          if pointer['manifestKey'] != expected_key:
+              raise ValueError('Unexpected manifest path')
+          manifest = read(expected_key)
+          if manifest['releaseId'] != pointer['releaseId']:
+              raise ValueError('Manifest release identity mismatch')
+          hashes = {row['path']: row['sha256'] for row in manifest['files']}
+          root = expected_key.removesuffix('manifest.json')
+          index = read(root + 'index.json', hashes['index.json'])
+          catalog = read(root + 'catalog/search-index.json', hashes['catalog/search-index.json'])
+          ticker = index['tickers'][0]
+          history = read(root + ticker['historyPath'], hashes[ticker['historyPath']])
+          if history['ticker'] != ticker['ticker'] or len(history['events']) != ticker['historyCount']:
+              raise ValueError('Ticker history identity or count mismatch')
+          result = {'releaseId': pointer['releaseId'], 'tickers': len(index['tickers']),
+                    'instruments': len(catalog['instruments']), 'sampleTicker': history['ticker'],
+                    'sampleEvents': len(history['events']), 'hashes': 'verified', 'cors': 'verified'}
+          print('::notice title=Public core release verified::' + json.dumps(result))
+          PY
       - name: Expose review result
         if: always()
         run: |
@@ -64,6 +115,16 @@ jobs:
           from collections import Counter
           from pathlib import Path
           path = Path('dividend-cutover.json')
+          collection_path = Path('reviewed-candidate/data-v2/review/incremental-report.json')
+          if collection_path.exists():
+              collection = json.loads(collection_path.read_text())
+              print('::notice title=Collection summary::' + json.dumps(collection['summary']))
+              for provider, details in collection.get('providers', {}).items():
+                  errors = details.get('errors', [])
+                  if errors:
+                      message = json.dumps({'provider': provider, 'errors': errors[:8]}, ensure_ascii=False)
+                      escaped = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+                      print(f'::notice title=Collection source errors::{escaped}')
           if path.exists():
               report = json.loads(path.read_text())
               summary = {key: report[key] for key in ('ready', 'snapshotValid', 'summary')}

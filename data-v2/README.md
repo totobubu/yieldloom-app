@@ -110,6 +110,12 @@ exposes a compact result in the job summary and check annotation. Missing or
 changed history fails the review. The complete snapshot and comparison remain
 in the `dividend-cutover-review-<run_id>` artifact. A review never updates
 `core/current.json`; publishing still requires a separately approved snapshot.
+After publishing, repeat the review with `verify_public=true` and the published
+release ID. The public probe checks the current pointer, manifest, hashed catalog
+and dividend index, one ticker history, and browser CORS. A passing history
+comparison does not certify source availability: inspect collection errors in
+the annotations even when `ready=true`; retained historical events can remain
+valid while a provider's current endpoint is unavailable.
 
 ## Official email screenshot evidence
 

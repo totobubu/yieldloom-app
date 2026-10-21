@@ -23,9 +23,25 @@
 <template>
     <div class="stock-filters">
         <div class="filter-group">
-            <span class="filter-label" :id="`${idPrefix}-types`"
-                >상품 유형</span
-            >
+            <div class="filter-label-row">
+                <span class="filter-label" :id="`${idPrefix}-types`"
+                    >상품 유형</span
+                ><button
+                    type="button"
+                    class="filter-help-button"
+                    aria-label="상품 유형 분류 기준 안내"
+                    :aria-describedby="`${idPrefix}-type-help`"
+                    v-tooltip.bottom="{
+                        value: '배당 이력·주기와 상품 정보를 기준으로 분류하며, 성장주·배당성장주·고배당주는 관련 목록과 ETF 편입 정보를 참고합니다. 유형은 서로 중복될 수 있습니다.',
+                        showDelay: 150,
+                    }">
+                    <i class="pi pi-question-circle" aria-hidden="true" />
+                </button>
+                <span :id="`${idPrefix}-type-help`" class="studio-sr-only"
+                    >배당 이력과 상품 정보를 기준으로 분류하며 유형은 서로
+                    중복될 수 있습니다.</span
+                >
+            </div>
             <div
                 class="filter-chips"
                 role="group"
@@ -76,14 +92,6 @@
                     " />
             </div>
         </div>
-        <details class="filter-help">
-            <summary>상품 유형 분류 기준</summary>
-            <p>
-                배당 이력·주기와 상품 정보를 기준으로 분류합니다. 성장주는 대표
-                성장 종목 목록, 배당성장주·고배당주는 관련 ETF 편입 정보를
-                참고합니다. 유형은 서로 중복될 수 있습니다.
-            </p>
-        </details>
     </div>
 </template>
 <style scoped>
@@ -99,6 +107,29 @@
         font-size: 14px;
         font-weight: 650;
     }
+    .filter-label-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .filter-help-button {
+        display: inline-grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        color: var(--app-muted);
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        cursor: help;
+    }
+    .filter-help-button:hover,
+    .filter-help-button:focus-visible {
+        color: var(--app-accent);
+        background: var(--app-surface-muted);
+        outline: none;
+    }
     .filter-chips {
         display: flex;
         flex-wrap: wrap;
@@ -107,17 +138,5 @@
     .filter-chips :deep(.p-button) {
         font-size: 13px;
         padding: 8px 14px;
-    }
-    .filter-help {
-        color: var(--app-muted);
-        font-size: 13px;
-    }
-    .filter-help summary {
-        cursor: pointer;
-        min-height: 32px;
-    }
-    .filter-help p {
-        margin: 8px 0 0;
-        line-height: 1.7;
     }
 </style>

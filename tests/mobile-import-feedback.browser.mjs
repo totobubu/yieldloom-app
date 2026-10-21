@@ -17,7 +17,7 @@ try {
         await page.route('**/src/services/firebaseClient*', (route) =>
             route.fulfill({
                 contentType: 'application/javascript',
-                body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js';export const firebaseUser=ref({uid:'mobile-fixture',getIdToken:async()=> 'fixture'}),authLoading=ref(false),signedIn=computed(()=>true),firebaseReady=false,db=null,auth=null,googleProvider=null;`,
+                body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js';export const firebaseUser=ref({uid:'mobile-fixture',email:'totobubu.lab@gmail.com',emailVerified:true,getIdToken:async()=> 'fixture'}),authLoading=ref(false),signedIn=computed(()=>true),firebaseReady=false,db=null,auth=null,googleProvider=null;`,
             })
         );
         const family = {

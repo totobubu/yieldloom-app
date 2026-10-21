@@ -34,7 +34,8 @@ try {
             });
     });
     await page.goto(
-        (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') + '/mypage'
+        (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') +
+            '/mypage?tab=assets'
     );
     await page.waitForFunction(() =>
         [...document.querySelectorAll('[role="tab"]')].some(

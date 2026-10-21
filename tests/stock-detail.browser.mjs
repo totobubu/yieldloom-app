@@ -244,10 +244,7 @@ try {
         assert.equal(png.readUInt32BE(20), 720, name);
     }
     await page.getByRole('tab', { name: '상세정보', exact: true }).click();
-    await page
-        .locator('.holding-panel')
-        .getByText('로그인', { exact: true })
-        .waitFor();
+    assert.equal(await page.locator('.holding-panel').count(), 0);
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(
         await page.evaluate(
@@ -262,7 +259,7 @@ try {
     await page.route('**/src/services/firebaseClient.js*', (r) =>
         r.fulfill({
             contentType: 'application/javascript',
-            body: "import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'fixture-owner',getIdToken:async()=> 'fixture-token'}),authLoading=ref(false),firebaseReady=false,db=null,auth=null,googleProvider=null;export const signedIn=computed(()=>true);",
+            body: "import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'fixture-owner',email:'jomalkeun@gmail.com',emailVerified:true,getIdToken:async()=> 'fixture-token'}),authLoading=ref(false),firebaseReady=false,db=null,auth=null,googleProvider=null;export const signedIn=computed(()=>true);",
         })
     );
     let familyRequests = 0;

@@ -77,8 +77,8 @@
             잔고 자료를 확인하는 중…
         </p>
         <p v-else-if="!firebaseUser">
-            <router-link to="/login">로그인</router-link> 후 접근 가능한 가족
-            계좌의 잔고 자료를 확인할 수 있습니다.
+            <router-link to="/admin/login">관리자 로그인</router-link> 후 접근
+            가능한 가족 계좌의 잔고 자료를 확인할 수 있습니다.
         </p>
         <div v-else-if="error" role="alert">
             <p>{{ error }}</p>

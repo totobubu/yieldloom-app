@@ -30,6 +30,7 @@ declare module 'vue' {
     DividendReconciliation: typeof import('./src/components/portfolio/DividendReconciliation.vue')['default']
     DividendSummaryThumbnail: typeof import('./src/components/thumbnail/DividendSummaryThumbnail.vue')['default']
     ErrorBoundary: typeof import('./src/components/ErrorBoundary.vue')['default']
+    FullscreenDataLoading: typeof import('./src/components/FullscreenDataLoading.vue')['default']
     FundingTracePanel: typeof import('./src/components/portfolio/FundingTracePanel.vue')['default']
     HoldingDividendCapitalChart: typeof import('./src/components/portfolio/HoldingDividendCapitalChart.vue')['default']
     HoldingDividendThumbnail: typeof import('./src/components/thumbnail/HoldingDividendThumbnail.vue')['default']

@@ -14,7 +14,9 @@
 `$git-ship` 또는 커밋·푸시·머지·병합 브랜치 삭제를 한 번에 요청하면
 [git-ship 스킬](.agents/skills/git-ship/SKILL.md)을 읽고 적용한다.
 요청된 전체 흐름은 추가 단계별 확인 없이 진행하고, 필수 검증·리뷰·권한은 유지한다.
-기본 정리 대상은 이번 작업 브랜치이며, 배포를 함께 요청하면 운영 배포 확인까지 진행한다.
+옵션 없는 기본 호출은 기능 브랜치를 `work`까지 병합하고 Preview를 확인한다.
+`$git-ship main`은 현재 원격 `work`를 `main`으로 승격하는 PR과 Pages·Vercel
+Production 확인만 수행한다. 기본 정리 대상은 기능 브랜치이고 work·main은 삭제하지 않는다.
 
 ### Vue / PrimeVue best practices
 

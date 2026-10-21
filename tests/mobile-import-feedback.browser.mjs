@@ -145,9 +145,10 @@ try {
         await page.waitForFunction(
             () => document.querySelector('.preview-button')?.disabled === true
         );
-        assert.ok(
-            await page.evaluate(() => scrollY > 300),
-            'User is below the global page error'
+        assert.equal(
+            await page.getByRole('dialog', { name: /자료 업로드/ }).isVisible(),
+            true,
+            'Upload feedback stays in the active dialog'
         );
         const request = pending.request().postData();
         assert.match(request, /%PDF-fixture/);

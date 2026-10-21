@@ -154,6 +154,7 @@ try {
             exact: true,
         })
         .waitFor();
+    await page.locator('.p-dialog-close-button').click();
     await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
     const insights = page.getByRole('region', {
         name: '배당 성과·집중도 분석',

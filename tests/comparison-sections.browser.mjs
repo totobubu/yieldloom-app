@@ -63,7 +63,15 @@ try {
         });
         if (width === 1440) {
             await info.hover();
-            await page.getByRole('tooltip').waitFor();
+            await page.locator('.p-popover').waitFor();
+            const hoverText = await page.locator('.p-popover').innerText();
+            await info.click();
+            assert.equal(
+                await page.locator('.p-popover').innerText(),
+                hoverText
+            );
+            await page.keyboard.press('Escape');
+            await page.locator('.p-popover').waitFor({ state: 'hidden' });
             await page.mouse.move(1, 1);
         }
         await info.focus();

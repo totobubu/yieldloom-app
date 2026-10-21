@@ -5,7 +5,7 @@
     import Button from 'primevue/button';
     import Tag from 'primevue/tag';
     import Message from 'primevue/message';
-    import Popover from 'primevue/popover';
+    import InfoHelp from '@/components/common/InfoHelp.vue';
     import Paginator from 'primevue/paginator';
     import { inferSecurityType } from '../../lib/security-filters.js';
     import {
@@ -443,18 +443,7 @@
             <div>
                 <div class="comparison-section-title">
                     <h2>{{ section.label }}</h2>
-                    <Button
-                        v-tooltip.bottom="{ value: helpText, showDelay: 250 }"
-                        icon="pi pi-info-circle"
-                        aria-label="비교 안내"
-                        aria-describedby="comparison-help-text"
-                        severity="secondary"
-                        text
-                        rounded
-                        @click="help.toggle($event)" />
-                    <span id="comparison-help-text" class="studio-sr-only">{{
-                        helpText
-                    }}</span>
+                    <InfoHelp ref="help" label="비교 안내" :text="helpText" />
                 </div>
                 <p>{{ section.description }}</p>
             </div>
@@ -467,9 +456,6 @@
                 :disabled="loading || !pageProducts.length"
                 @click="loadDetails" />
         </header>
-        <Popover ref="help" aria-label="비교 안내"
-            ><p class="comparison-help-content">{{ helpText }}</p></Popover
-        >
         <Message v-if="error" severity="error" role="alert"
             >{{ error }} <Button label="다시 시도" @click="load"
         /></Message>
@@ -956,12 +942,6 @@
     .comparison-load-button {
         flex-shrink: 0;
         min-height: 44px;
-    }
-    .comparison-help-content {
-        max-width: min(320px, 75vw);
-        margin: 0;
-        line-height: 1.7;
-        font-size: 14px;
     }
     .comparison-context {
         padding: 16px;

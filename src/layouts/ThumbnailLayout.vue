@@ -38,6 +38,9 @@
     const inNewListings = computed(
         () => route.name === 'thumbnail-home' && route.query.sort === 'ipoDate'
     );
+    const inComparison = computed(() =>
+        ['security-compare', 'underlying-explorer'].includes(route.name)
+    );
     const inPortfolio = computed(() => route.path.startsWith('/mypage'));
     watch(
         () => route.fullPath,
@@ -103,6 +106,12 @@
                         :class="{ active: inNewListings }"
                         :aria-current="inNewListings ? 'page' : undefined"
                         >신규 상장</router-link
+                    >
+                    <router-link
+                        to="/compare"
+                        :class="{ active: inComparison }"
+                        :aria-current="inComparison ? 'page' : undefined"
+                        >종목 비교</router-link
                     >
                     <router-link
                         v-if="isAdmin"
@@ -188,6 +197,14 @@
                 :aria-current="inNewListings ? 'page' : undefined"
                 ><i class="pi pi-calendar" aria-hidden="true" /><span
                     >신규 상장</span
+                ></router-link
+            >
+            <router-link
+                to="/compare"
+                :class="{ active: inComparison }"
+                :aria-current="inComparison ? 'page' : undefined"
+                ><i class="pi pi-clone" aria-hidden="true" /><span
+                    >종목 비교</span
                 ></router-link
             >
             <router-link

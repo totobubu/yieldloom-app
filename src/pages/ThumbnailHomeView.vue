@@ -52,7 +52,9 @@
         'marketCap',
     ];
     const sort = ref(
-        sortValues.includes(route.query.sort) ? route.query.sort : 'symbol'
+        sortValues.includes(route.query.sort)
+            ? route.query.sort
+            : 'dividendDate'
     );
     const filterOpen = ref(false),
         draftType = ref(''),
@@ -210,7 +212,7 @@
             q: query.value,
             company: company.value,
             type: securityType.value,
-            sort: sort.value === 'symbol' ? '' : sort.value,
+            sort: sort.value === 'dividendDate' ? '' : sort.value,
             page: page.value > 1 ? String(page.value) : '',
         })) {
             if (value) next[key] = value;
@@ -239,7 +241,7 @@
             securityType.value = stringParam(values.type);
             sort.value = sortValues.includes(values.sort)
                 ? values.sort
-                : 'symbol';
+                : 'dividendDate';
             page.value = parsePage(values.page);
             restoring = false;
         },
@@ -506,17 +508,38 @@
                     v-for="row in visible"
                     :key="row.symbol"
                     class="stock-result-item">
-                    <router-link :to="stockLink(row)" class="stock-result-card">
+                    <div class="stock-result-card">
                         <div class="stock-card-heading">
                             <div>
-                                <strong>{{ row.symbol }}</strong>
+                                <div class="stock-title-actions">
+                                    <router-link
+                                        :to="stockLink(row)"
+                                        class="stock-symbol-link"
+                                        >{{ row.symbol }}</router-link
+                                    >
+                                    <router-link
+                                        v-if="row.underlying"
+                                        class="stock-compare-action"
+                                        :to="`/underlying/${row.underlying}`"
+                                        :aria-label="`${row.underlying} 기반 ETF 비교`"
+                                        :title="`${row.underlying} 기반 ETF 비교`"
+                                        ><span aria-hidden="true"
+                                            >VS</span
+                                        ></router-link
+                                    >
+                                </div>
                                 <span>{{
                                     row.koName || row.longName || row.symbol
                                 }}</span>
                             </div>
-                            <i
-                                class="pi pi-arrow-up-right"
-                                aria-hidden="true" />
+                            <router-link
+                                :to="stockLink(row)"
+                                class="stock-detail-action"
+                                :aria-label="`${row.symbol} 종목 상세 보기`"
+                                ><i
+                                    class="pi pi-arrow-up-right"
+                                    aria-hidden="true"
+                            /></router-link>
                         </div>
                         <div class="stock-card-metrics">
                             <div>
@@ -547,15 +570,7 @@
                                 >{{ row.dividendEtfs.length }}개 ETF 편입</span
                             >
                         </div>
-                    </router-link>
-                    <router-link
-                        v-if="row.underlying"
-                        class="stock-compare-action"
-                        :to="`/underlying/${row.underlying}`"
-                        :aria-label="`${row.underlying} 기반 ETF 비교`"
-                        :title="`${row.underlying} 기반 ETF 비교`"
-                        ><span aria-hidden="true">VS</span></router-link
-                    >
+                    </div>
                 </li>
             </ul>
             <Paginator
@@ -722,25 +737,14 @@
         gap: 14px;
         padding: 16px;
         color: var(--app-text);
-        text-decoration: none;
-    }
-    .stock-result-card:hover,
-    .stock-result-card:focus-visible {
-        outline: none;
-    }
-    .stock-result-item:has(.stock-compare-action) .stock-result-card {
-        padding-bottom: 52px;
     }
     .stock-compare-action {
-        position: absolute;
-        right: 14px;
-        bottom: 12px;
         display: inline-grid;
         place-items: center;
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 24px;
         border: 1px solid var(--app-border);
-        border-radius: 9px;
+        border-radius: 7px;
         color: var(--app-accent);
         background: var(--app-surface-soft);
         font-size: 11px;
@@ -766,8 +770,22 @@
         gap: 4px;
         min-width: 0;
     }
-    .stock-card-heading strong {
+    .stock-title-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .stock-symbol-link {
+        color: var(--app-text);
         font-size: 18px;
+        font-weight: 750;
+        text-decoration: none;
+    }
+    .stock-symbol-link:hover,
+    .stock-symbol-link:focus-visible {
+        color: var(--app-accent);
+        text-decoration: underline;
+        text-underline-offset: 3px;
     }
     .stock-card-heading span {
         min-height: 2.5em;
@@ -780,9 +798,16 @@
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
     }
-    .stock-card-heading i {
+    .stock-detail-action {
         color: var(--app-accent);
         padding-top: 3px;
+        text-decoration: none;
+    }
+    .stock-detail-action:focus-visible {
+        outline: 2px solid
+            color-mix(in srgb, var(--app-accent) 28%, transparent);
+        outline-offset: 3px;
+        border-radius: 6px;
     }
     .stock-card-metrics {
         display: grid;

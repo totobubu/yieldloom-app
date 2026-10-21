@@ -62,6 +62,7 @@
                 >운용사</label
             >
             <Select
+                class="company-select"
                 :input-id="`${idPrefix}-company`"
                 :model-value="company || null"
                 :options="companies"
@@ -102,6 +103,9 @@
     .filter-group {
         display: grid;
         gap: 10px;
+    }
+    .company-select {
+        width: min(100%, 420px);
     }
     .filter-label {
         font-size: 14px;

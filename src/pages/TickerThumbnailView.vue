@@ -772,12 +772,15 @@
                                     selectedInfo.longName || selectedInfo.koName
                                 }}
                             </p>
-                            <span class="studio-muted"
-                                >{{ selectedInfo.company || '운용사 미확인' }} ·
-                                {{
-                                    selectedInfo.currency || '통화 미확인'
-                                }}</span
-                            >
+                            <span class="studio-muted">
+                                <template v-if="selectedInfo.underlying"
+                                    >{{
+                                        selectedInfo.company || '운용사 미확인'
+                                    }}
+                                    ·</template
+                                >
+                                {{ selectedInfo.currency || '통화 미확인' }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -845,16 +848,22 @@
                     >배당 기준 {{ historyRows[0]?.date || '미확인' }} · 공개
                     배당 원장</span
                 >
-                <details>
-                    <summary>데이터 안내</summary>
-                    <p>
-                        시세와 배당은 기준일이 다를 수 있으며 실시간 가격이 아닐
-                        수 있습니다. 미확인은 0이 아닙니다. 12개월 전체
-                        시세·배당 이력을 확인하지 못하면 연간 지표를 표시하지
-                        않습니다. 공시 전 일정은 최근 주기를 바탕으로 한
-                        추정입니다.
-                    </p>
-                </details>
+                <button
+                    type="button"
+                    class="data-help-button"
+                    aria-label="시세와 배당 데이터 안내"
+                    aria-describedby="stock-data-help"
+                    v-tooltip.top="{
+                        value: '시세와 배당은 기준일이 다를 수 있으며 실시간 가격이 아닐 수 있습니다. 미확인은 0이 아닙니다. 12개월 전체 이력을 확인하지 못하면 연간 지표를 표시하지 않으며, 공시 전 일정은 최근 주기를 바탕으로 한 추정입니다.',
+                        showDelay: 150,
+                    }">
+                    <i class="pi pi-question-circle" aria-hidden="true" />
+                </button>
+                <span id="stock-data-help" class="studio-sr-only">
+                    시세와 배당은 기준일이 다를 수 있으며 실시간 가격이 아닐 수
+                    있습니다. 미확인은 0이 아닙니다. 연간 지표는 12개월 전체
+                    이력이 확인될 때만 표시합니다.
+                </span>
             </div>
             <Tabs
                 :value="activeTab"
@@ -1752,15 +1761,17 @@
         padding: 4px 8px;
         background: var(--app-surface-muted);
     }
-    .stock-data-banner details {
-        max-width: 100%;
-    }
-    .stock-data-banner summary {
-        cursor: pointer;
-    }
-    .stock-data-banner p {
-        max-width: 680px;
-        line-height: 1.8;
+    .data-help-button {
+        display: inline-grid;
+        place-items: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 1px solid var(--app-border);
+        border-radius: 50%;
+        color: var(--app-muted);
+        background: var(--app-surface);
+        cursor: help;
     }
     .stock-tabs-root :deep(.p-tabpanels) {
         background: transparent;

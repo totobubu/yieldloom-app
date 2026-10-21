@@ -31,6 +31,7 @@ const indexFields = [
     'dividendEtfs',
     'dividendEvidence',
     'noDividends',
+    'frequency',
     'ipoDate',
 ];
 
@@ -76,7 +77,7 @@ export function publicAssetsPlugin() {
     let configRoot;
     let base;
     const readIndex = async () => {
-        const [seed, catalog, discovered, nav] = await Promise.all([
+        const [seed, catalog, discovered] = await Promise.all([
             fs.readFile(
                 path.join(configRoot, 'data-v2', 'catalog-seed.json'),
                 'utf8'
@@ -89,16 +90,8 @@ export function publicAssetsPlugin() {
                 path.join(publicRoot, 'us-dividend-stocks.json'),
                 'utf8'
             ),
-            fs.readFile(path.join(publicRoot, 'nav.json'), 'utf8'),
         ]);
-        const metadata = new Map(
-            JSON.parse(nav).nav.map((row) => [row.symbol, row])
-        );
         const payload = JSON.parse(seed);
-        payload.instruments = payload.instruments.map((row) => ({
-            ...metadata.get(row.symbol),
-            ...row,
-        }));
         return JSON.stringify(
             createTickerIndex(
                 payload,

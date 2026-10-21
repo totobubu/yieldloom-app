@@ -99,6 +99,9 @@ def load_catalog(path: Path | None, events: list[dict[str, object]]) -> list[dic
         }
         if symbol in links:
             by_symbol[symbol]['underlying'] = links[symbol]['underlying']
+        for field in ('ipoDate', 'frequency', 'noDividends'):
+            if field in row:
+                by_symbol[symbol][field] = row[field]
     for symbol, provider in providers.items():
         by_symbol.setdefault(symbol, {
             "symbol": symbol, "isin": None, "market": "UNKNOWN", "currency": "USD",
@@ -112,7 +115,7 @@ def main() -> int:
     parser.add_argument("--input", type=Path, default=Path("data-v2/candidates/pilot-events.json"))
     parser.add_argument("--release-id", required=True)
     parser.add_argument("--output", type=Path, default=Path("data-v2"))
-    parser.add_argument("--catalog-input", type=Path, help="Core catalog seed; normally produced from legacy nav.json during migration")
+    parser.add_argument("--catalog-input", type=Path, help="Independent catalog: data-v2/catalog-seed.json")
     args = parser.parse_args()
     source = args.input if args.input.is_absolute() else ROOT / args.input
     output = args.output if args.output.is_absolute() else ROOT / args.output
@@ -162,7 +165,7 @@ def main() -> int:
         generated.append(path)
         catalog_index.append({
             key: detail[key]
-            for key in ("symbol", "isin", "market", "currency", "koName", "longName", "active", "officialProvider")
+            for key in ("symbol", "isin", "market", "currency", "koName", "longName", "active", "officialProvider", "ipoDate", "frequency", "noDividends") if key in detail
         } | ({'underlying': detail['underlying']} if detail.get('underlying') else {})
           | {"instrumentPath": f"catalog/instruments/{filename}.json"})
     search_path = output / "catalog" / "search-index.json"

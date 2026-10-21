@@ -60,3 +60,79 @@ test('core consumer rejects history corruption and returns no events for a ticke
         []
     );
 });
+
+test('index and history share the release directory and reject corrupt index data', async () => {
+    const { loadCoreIndex } = await import('../lib/core-release.js');
+    const index = {
+        providers: ['neos'],
+        tickers: [{ ticker: 'SPYI', latest: ticker.events[0] }],
+    };
+    const fullManifest = {
+        ...manifest,
+        indexPath: 'index.json',
+        files: [
+            ...manifest.files,
+            { path: 'index.json', sha256: sha256(jsonBytes(index)) },
+        ],
+    };
+    const calls = [];
+    const fetcher = async (url) => {
+        calls.push(url);
+        return Response.json(
+            url.endsWith('current.json')
+                ? pointer
+                : url.endsWith('manifest.json')
+                  ? fullManifest
+                  : url.endsWith('index.json')
+                    ? index
+                    : ticker
+        );
+    };
+    const [directory, events] = await Promise.all([
+        loadCoreIndex('https://core.example', fetcher),
+        loadCoreHistory('SPYI', 'https://core.example', fetcher),
+    ]);
+    assert.equal(directory.tickers[0].latest.amount.raw, '0.25660');
+    assert.equal(events.length, 1);
+    assert.equal(calls.length, 4);
+    await loadCoreIndex('https://core.example', fetcher);
+    assert.equal(calls.length, 4);
+    const corrupt = async (url) =>
+        Response.json(
+            url.endsWith('current.json')
+                ? pointer
+                : url.endsWith('manifest.json')
+                  ? fullManifest
+                  : { ...index, tickers: [] }
+        );
+    await assert.rejects(
+        loadCoreIndex('https://core.example', corrupt),
+        /hash mismatch/
+    );
+});
+
+test('configured official ledger never falls back to legacy history during an outage', async () => {
+    const { loadOfficialHistory, loadOfficialIndex } = await import(
+        '../lib/official-dividends.js'
+    );
+    const calls = [];
+    const fetcher = async (url) => {
+        calls.push(url);
+        return new Response('', { status: 503 });
+    };
+    await assert.rejects(
+        loadOfficialHistory(
+            'SPYI',
+            'https://legacy.example',
+            fetcher,
+            'https://core.example'
+        )
+    );
+    await assert.rejects(
+        loadOfficialIndex({ base: 'https://core.example', fetcher })
+    );
+    assert.equal(calls.length, 2);
+    assert.ok(
+        calls.every((url) => url === 'https://core.example/core/current.json')
+    );
+});

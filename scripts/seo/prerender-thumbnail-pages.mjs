@@ -1,3 +1,5 @@
+import { loadEnv } from 'vite';
+import { loadOfficialIndex } from '../../lib/official-dividends.js';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 
@@ -5,12 +7,12 @@ const root = process.cwd();
 const siteUrl = String(
     process.env.SITE_URL ?? 'https://totobubu-github-io.vercel.app'
 ).replace(/\/$/, '');
-const index = JSON.parse(
-    await readFile(
-        join(root, 'public/content-studio/distribution-index.json'),
-        'utf8'
-    )
-);
+const base =
+    process.env.DATA_RELEASE_BASE_URL ??
+    process.env.VITE_DATA_RELEASE_BASE_URL ??
+    loadEnv('production', root, 'VITE_').VITE_DATA_RELEASE_BASE_URL ??
+    '';
+const index = await loadOfficialIndex({ base });
 const appHtml = await readFile(join(root, 'dist/index.html'), 'utf8');
 const escapeHtml = (value) =>
     String(value ?? '').replace(
@@ -38,8 +40,11 @@ const exDate = (value) =>
 for (const row of index.tickers ?? []) {
     const ticker = String(row.ticker ?? '').toUpperCase();
     if (!/^[A-Z0-9.-]{1,15}$/.test(ticker)) continue;
-    const latest =
-        row.latest?.verification_status === 'official' ? row.latest : {};
+    const latest = ['official', 'cross_checked'].includes(
+        row.latest?.verification_status
+    )
+        ? row.latest
+        : {};
     const description = `${ticker} 최신 배당 ${amount(latest.distribution_per_share)} · 배당락일 ${exDate(latest.ex_date)} · Yieldloom에서 확인`;
     const canonical = `${siteUrl}/stock/${encodeURIComponent(ticker)}`;
     const head = [

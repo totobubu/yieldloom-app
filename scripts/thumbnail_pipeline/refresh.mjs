@@ -4,6 +4,7 @@ import {
     S3Client,
 } from '@aws-sdk/client-s3';
 import fs from 'node:fs/promises';
+import marketSources from '../../data-v2/market-sources.json' with { type: 'json' };
 import pLimit from 'p-limit';
 import { pathToFileURL } from 'node:url';
 import {
@@ -315,17 +316,13 @@ async function main() {
     const navPath = value('--nav');
     let nav;
     if (navPath) nav = JSON.parse(await fs.readFile(navPath));
-    else {
-        const response = await fetch(
-            `${String(sourceBase).replace(/\/$/, '')}/nav.json`,
-            { signal: AbortSignal.timeout(15000) }
-        );
-        if (!response.ok)
-            throw new Error(
-                `Source directory HTTP ${response.status}; pass --nav for an explicit reviewed directory`
-            );
-        nav = await response.json();
-    }
+    else
+        nav = {
+            nav: marketSources.instruments.map((row) => ({
+                symbol: row.symbol,
+                dataPaths: [row.dataPath],
+            })),
+        };
     if (!Array.isArray(nav.nav))
         throw new Error('Source directory requires nav array');
     const report = await refresh({

@@ -1,11 +1,15 @@
+import {
+    loadOfficialHistory,
+    officialReleaseBase,
+    officialHistoryReference,
+} from '../lib/official-dividends.js';
 import catalog from '../public/thumbnail-catalog.json' with { type: 'json' };
 import coreCatalog from '../data-v2/catalog-seed.json' with { type: 'json' };
 import discoveredStocks from '../public/us-dividend-stocks.json' with { type: 'json' };
 import { mergeDiscoveredStocks } from '../lib/discovered-stocks.js';
 import { verifiedUnderlying } from '../lib/security-underlyings.js';
-import distributionIndex from '../public/content-studio/distribution-index.json' with { type: 'json' };
 import priceIndex from '../public/content-studio/price-index.json' with { type: 'json' };
-import nav from '../public/nav.json' with { type: 'json' };
+import marketSources from '../data-v2/market-sources.json' with { type: 'json' };
 import { createApiHandler } from '../lib/api-handler.js';
 import { createTransportCache } from '../lib/request-cache.js';
 import { readTickerSnapshot, writeTickerSnapshot } from '../lib/r2-snapshot.js';
@@ -31,9 +35,6 @@ const instruments = new Map(
         (instrument) => [normalize(instrument.symbol), instrument]
     )
 );
-const distributions = new Map(
-    (distributionIndex.tickers ?? []).map((row) => [normalize(row.ticker), row])
-);
 const prices = new Map(
     Object.entries(priceIndex.prices ?? {}).map(([symbol, row]) => [
         normalize(symbol),
@@ -41,7 +42,7 @@ const prices = new Map(
     ])
 );
 const pricePaths = new Map(
-    (nav.nav ?? []).map((row) => [normalize(row.symbol), row])
+    marketSources.instruments.map((row) => [normalize(row.symbol), row])
 );
 const priceDataBaseUrl = () =>
     String(
@@ -50,7 +51,6 @@ const priceDataBaseUrl = () =>
             process.env.VITE_R2_PUBLIC_URL ??
             ''
     ).replace(/\/$/, '');
-const officialDataFallbackOrigin = 'https://totobubu.github.io/yieldloom-app';
 
 export function catalogEntry(symbol) {
     const normalized = normalize(symbol);
@@ -114,58 +114,6 @@ function requestOrigin(req) {
     return `${protocol}://${host}`;
 }
 
-async function loadOfficialHistory(symbol, origin, fetcher = fetch) {
-    const coreBase =
-        process.env.DATA_RELEASE_BASE_URL ??
-        process.env.VITE_DATA_RELEASE_BASE_URL;
-    if (coreBase) {
-        const { loadCoreHistory } = await import('../lib/core-release.js');
-        return loadCoreHistory(symbol, coreBase, fetcher);
-    }
-    const indexRow = distributions.get(symbol);
-    if (
-        !indexRow?.historyUrl ||
-        !/^\/content-studio\/distribution-ticker-[a-z0-9.-]+\.json$/i.test(
-            indexRow.historyUrl
-        )
-    )
-        return [];
-    const origins = [
-        ...new Set(
-            [
-                origin,
-                process.env.THUMBNAIL_OFFICIAL_DATA_BASE_URL,
-                officialDataFallbackOrigin,
-            ].filter(Boolean)
-        ),
-    ];
-    let lastError;
-    for (const dataOrigin of origins) {
-        try {
-            const url = new URL(
-                indexRow.historyUrl.replace(/^\//, ''),
-                `${String(dataOrigin).replace(/\/$/, '')}/`
-            ).href;
-            return await sourceCache(fetcher)(url, async () => {
-                const response = await fetcher(url, {
-                    signal: AbortSignal.timeout(4000),
-                    headers: { Accept: 'application/json' },
-                });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const payload = await response.json();
-                if (!Array.isArray(payload.history))
-                    throw new Error('Invalid official history');
-                return payload.history;
-            });
-        } catch (error) {
-            lastError = error;
-        }
-    }
-    throw new Error(`공식 배당 원장을 불러오지 못했습니다: ${symbol}`, {
-        cause: lastError,
-    });
-}
-
 function toPriceRows(history, events) {
     const officialAmounts = new Map(
         toBacktestData(events).map((event) => [event.date, event])
@@ -197,7 +145,7 @@ function toPriceRows(history, events) {
 
 async function loadPriceHistory(symbol, fetcher, baseUrl, historyKind, asOf) {
     const price = prices.get(symbol);
-    const dataPath = price?.dataPath ?? pricePaths.get(symbol)?.dataPaths?.[0];
+    const dataPath = price?.dataPath ?? pricePaths.get(symbol)?.dataPath;
     if (
         !baseUrl ||
         !dataPath ||
@@ -257,11 +205,10 @@ async function fetchTicker(symbol, origin, options = {}) {
         process.env.THUMBNAIL_PROJECTION_BASE_URL ??
         '';
     const historyKind = options.historyKind ?? 'entry-efficiency';
-    const cacheKey = `${key}|${origin}|${baseUrl}|${projectionBase}|${historyKind}`;
+    const cacheKey = `${key}|${origin}|${baseUrl}|${projectionBase}|${historyKind}|${officialReleaseBase()}`;
     const cached = fetcher === fetch && cache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now()) return cached.value;
     const instrument = instruments.get(key) ?? pricePaths.get(key);
-    const indexRow = distributions.get(key);
     let priceError;
     const [historyResult, priceResult] = await Promise.allSettled([
         loadOfficialHistory(key, origin, fetcher),
@@ -332,7 +279,6 @@ async function fetchTicker(symbol, origin, options = {}) {
             currency:
                 instrument?.currency ??
                 priceHistory?.tickerInfo?.currency ??
-                indexRow?.latest?.currency ??
                 null,
             market:
                 instrument?.market ?? priceHistory?.tickerInfo?.market ?? null,
@@ -348,7 +294,7 @@ async function fetchTicker(symbol, origin, options = {}) {
                     : history.length
                       ? 'official_projection'
                       : 'none',
-            dividendSourceUrl: indexRow?.historyUrl ?? null,
+            dividendSourceUrl: officialHistoryReference(key),
             price: priceHistory?.source ?? 'unavailable',
             priceDate,
             quoteTime: priceHistory?.quoteTime ?? null,
@@ -380,6 +326,7 @@ export function loadTicker(symbol, origin, options = {}) {
         options.priceDataBaseUrl,
         options.projectionBaseUrl,
         options.historyKind,
+        officialReleaseBase(),
     ]);
     if (!inFlight.has(key)) {
         const pending = fetchTicker(symbol, origin, options).finally(() =>

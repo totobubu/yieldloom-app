@@ -9,6 +9,9 @@ export interface CoreInstrument {
     koName?: string | null;
     longName?: string | null;
     active: boolean;
+    ipoDate?: string;
+    frequency?: string;
+    noDividends?: boolean;
     officialProvider?: string | null;
     underlying?: string | null;
     instrumentPath?: string;

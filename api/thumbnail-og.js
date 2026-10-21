@@ -1,5 +1,5 @@
 import { normalizeSymbol, validSymbol } from '../lib/thumbnail-projection.js';
-import distributionIndex from '../public/content-studio/distribution-index.json' with { type: 'json' };
+import { loadOfficialIndex } from '../lib/official-dividends.js';
 
 const normalize = normalizeSymbol;
 const escapeXml = (value) =>
@@ -14,7 +14,7 @@ const escapeXml = (value) =>
                 "'": '&apos;',
             })[character]
     );
-const latest = (ticker) => {
+const latest = (ticker, distributionIndex) => {
     const row = (distributionIndex.tickers ?? []).find(
         (item) => normalize(item.ticker) === ticker
     );
@@ -31,10 +31,17 @@ const date = (value) =>
         ? `${Number(value.slice(5, 7))}/${Number(value.slice(8, 10))}`
         : '날짜 미정';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
     const ticker = normalize(req.query.ticker);
     if (!validSymbol(ticker)) return res.status(400).send('Invalid ticker');
-    const candidate = latest(ticker);
+    let index;
+    try {
+        index = await loadOfficialIndex();
+    } catch {
+        res.setHeader('Cache-Control', 'no-store');
+        return res.status(503).send('공식 배당 원장을 불러오지 못했습니다.');
+    }
+    const candidate = latest(ticker, index);
     const dividend = ['official', 'cross_checked'].includes(
         candidate?.verification_status
     )

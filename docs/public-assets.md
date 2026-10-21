@@ -6,8 +6,8 @@
 - `nav` 폴더는 로컬 원본으로 보존하고 배포에서 제외한다.
 - 사용하지 않는 최상위 JSON 10개(exchange-rates, live-data, mappings, missing-logos-fetch-report, missing-logos, missing_isin, popularity, sidebar-tickers, symbol-to-isin, thumbnail)를 삭제했다. 구 시스템의 환율·로고·매핑·사이드바 스크립트를 다시 사용하려면 해당 입력과 출력 경로를 정비해야 한다.
 - 원본 `public/nav.json`은 데이터 생성 작업용으로 보존하지만 배포하지 않는다.
-- 홈과 종목 화면은 자동 생성되는 `ticker-index.json`을 읽는다. 개발 서버는 요청 시 원본에서 생성하고, 빌드는 정적 파일로 출력한다. 별도 생성 명령은 필요 없다.
-- 인덱스에는 symbol, koName, company, underlying, yfSymbol, frequency, ipoDate와 첫 번째 dataPaths만 포함한다. 데이터 경로가 있는 모든 종목을 유지하여 기초자산 비교와 직접 URL 접근을 지원한다.
+- 홈과 종목 화면은 자동 생성되는 `ticker-index.json`을 읽는다. 개발 서버는 요청 시 독립 `data-v2/catalog-seed.json`에서 생성하고, 빌드는 정적 파일로 출력한다. `nav.json`은 읽지 않는다. 별도 생성 명령은 필요 없다.
+- 인덱스에는 종목 식별·검색·분류·상장일 메타데이터만 포함한다. 활성 catalog 종목을 유지하며 가격 파일 경로는 `data-v2/market-sources.json`에서 별도로 관리한다.
 - `thumbnail` 배경, `content-studio/distribution-index.json`과 종목별 배당 이력은 계속 배포한다. 다른 공개 파일도 별도 제외 정책이 없는 한 유지한다.
 - 종목 가격·배당 이력은 기존 dataPaths 및 R2 폴백으로 읽는다. 이번 변경은 데이터 공급 경로를 바꾸지 않는다.
 

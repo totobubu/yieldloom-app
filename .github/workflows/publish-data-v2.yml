@@ -75,16 +75,22 @@ jobs:
           base = os.environ['PUBLIC_RELEASE_BASE_URL'].rstrip('/')
           if not base.startswith('https://'):
               raise ValueError('VITE_R2_PUBLIC_URL must be a public HTTPS root')
-          origin = 'https://totobubu.github.io'
+          origins = ('https://totobubu.github.io', 'https://yieldloom-app.vercel.app')
           def read(key, digest=None):
-              request = Request(base + '/' + key, headers={'Origin': origin, 'Cache-Control': 'no-cache'})
-              with urlopen(request, timeout=20) as response:
-                  if response.headers.get('Access-Control-Allow-Origin') not in ('*', origin):
-                      raise ValueError('Browser CORS missing for ' + key)
-                  raw = response.read()
-              if digest and hashlib.sha256(raw).hexdigest() != digest:
-                  raise ValueError('Hash mismatch: ' + key)
-              return json.loads(raw)
+              payload = None
+              for origin in origins:
+                  request = Request(base + '/' + key, headers={'Origin': origin, 'Cache-Control': 'no-cache'})
+                  with urlopen(request, timeout=20) as response:
+                      if response.headers.get('Access-Control-Allow-Origin') not in ('*', origin):
+                          raise ValueError('Browser CORS missing for ' + key + ' from ' + origin)
+                      raw = response.read()
+                  if digest and hashlib.sha256(raw).hexdigest() != digest:
+                      raise ValueError('Hash mismatch: ' + key)
+                  decoded = json.loads(raw)
+                  if payload is not None and decoded != payload:
+                      raise ValueError('Origins returned different data for ' + key)
+                  payload = decoded
+              return payload
           pointer = read('core/current.json')
           if pointer['releaseId'] != os.environ['EXPECTED_RELEASE_ID']:
               raise ValueError('Published pointer does not match expected release')
@@ -104,7 +110,7 @@ jobs:
               raise ValueError('Ticker history identity or count mismatch')
           result = {'releaseId': pointer['releaseId'], 'tickers': len(index['tickers']),
                     'instruments': len(catalog['instruments']), 'sampleTicker': history['ticker'],
-                    'sampleEvents': len(history['events']), 'hashes': 'verified', 'cors': 'verified'}
+                    'sampleEvents': len(history['events']), 'hashes': 'verified', 'corsOrigins': list(origins)}
           print('::notice title=Public core release verified::' + json.dumps(result))
           PY
       - name: Expose review result

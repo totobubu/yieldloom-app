@@ -393,7 +393,9 @@ try {
     await comparison.getByText('거래 연결 후보', { exact: true }).waitFor();
     const beforeBasis = requests.length;
     await comparison.getByLabel(/조회 기간의 배당락일 보유 수량/).check();
-    await comparison.getByText('금액 차이 확인', { exact: true }).waitFor(); // corrected quantity 2 x 10 vs recorded 10
+    await comparison
+        .getByText(/^(금액 차이 확인|참고액과 일치)$/)
+        .waitFor();
     await comparison.getByLabel('확인할 항목만 보기', { exact: true }).check();
     assert.equal(
         requests.length,

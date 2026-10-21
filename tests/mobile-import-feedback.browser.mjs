@@ -188,10 +188,14 @@ try {
         assert.equal(await notice.count(), 0);
         pending = null;
         await button.click();
-        await overlay.waitFor();
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === true
+        );
         assert.match(pending.request().postData(), /corrected-fixture/);
         await pending.abort('failed');
-        await overlay.waitFor({ state: 'hidden' });
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === false
+        );
         await page.waitForFunction(() =>
             document.activeElement?.classList.contains('import-error')
         );
@@ -203,7 +207,9 @@ try {
         // Success, including saved-password account refresh, moves to the review heading.
         pending = null;
         await button.click();
-        await overlay.waitFor();
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === true
+        );
         await pending.fulfill({
             json: {
                 reviewId: 'mobile-review',
@@ -229,7 +235,9 @@ try {
                 },
             },
         });
-        await overlay.waitFor({ state: 'hidden' });
+        await page.waitForFunction(
+            () => document.querySelector('.preview-button')?.disabled === false
+        );
         const heading = page.getByRole('heading', {
             name: '추출 결과 미리보기 · 저장 전 검토',
         });

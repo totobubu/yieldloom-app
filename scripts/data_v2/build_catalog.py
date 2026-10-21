@@ -29,7 +29,7 @@ def normalized_entry(row: dict[str, Any]) -> dict[str, Any] | None:
     if not market or not currency:
         return None
     provider = row.get("officialProvider") or row.get("provider") or row.get("company")
-    return {
+    result = {
         "symbol": symbol,
         "isin": str(row["isin"]).strip().upper() if row.get("isin") else None,
         "market": market,
@@ -40,10 +40,14 @@ def normalized_entry(row: dict[str, Any]) -> dict[str, Any] | None:
         "officialProvider": str(provider).strip() if provider else None,
     }
 
+    for field in ("ipoDate", "frequency", "noDividends"):
+        if field in row:
+            result[field] = row[field]
+    return result
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Create a core catalog seed from a legacy nav snapshot.")
-    parser.add_argument("--input", type=Path, default=ROOT / "public" / "nav.json")
+    parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=ROOT / "data-v2" / "catalog-seed.json")
     args = parser.parse_args()
     links = load_verified_links()

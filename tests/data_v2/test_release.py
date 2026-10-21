@@ -68,6 +68,21 @@ class ReleaseTests(unittest.TestCase):
             self.assertEqual(detail["dividendHistoryPath"], "tickers/SPYI.json")
             self.assertNotIn("dataPaths", detail)
 
+    def test_owned_catalog_fields_survive_release_build(self):
+        from scripts.data_v2.build_release import load_catalog
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / 'catalog.json'
+            source.write_text(json.dumps({'instruments': [{
+                'symbol': 'SPYI', 'market': 'BATS', 'currency': 'USD', 'active': True,
+                'ipoDate': '2022-08-30', 'frequency': '월', 'noDividends': False,
+                'dataPaths': ['data/bats/spyi.json'],
+            }]}), encoding='utf-8')
+            row = load_catalog(source, [])[0]
+            self.assertEqual(row['ipoDate'], '2022-08-30')
+            self.assertEqual(row['frequency'], '월')
+            self.assertFalse(row['noDividends'])
+            self.assertNotIn('dataPaths', row)
+
     def test_legacy_baseline_cannot_be_released(self):
         with tempfile.TemporaryDirectory() as temp:
             temp_path = Path(temp)

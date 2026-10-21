@@ -50,6 +50,19 @@ jobs:
           else
             python scripts/data_v2/validate_snapshot.py
           fi
+      - name: Compare approved release against existing dividend history
+        shell: bash
+        run: |
+          release_dir=data-v2
+          if [ -n "${{ inputs.candidate_run_id }}" ]; then release_dir=reviewed-candidate/candidate-release; fi
+          python scripts/data_v2/check_cutover.py --data-dir "$release_dir" --output dividend-cutover.json
+      - name: Upload dividend cutover report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dividend-cutover-${{ github.run_id }}
+          path: dividend-cutover.json
+          if-no-files-found: ignore
       - name: Publish immutable snapshot and current pointer
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}

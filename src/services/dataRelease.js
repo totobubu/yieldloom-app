@@ -1,3 +1,4 @@
+import { mapCoreDividend as mapEvent } from '../../lib/dividend-contract.js';
 import { readPublicJson } from './publicJson.js';
 const baseUrl = (import.meta.env?.VITE_DATA_RELEASE_BASE_URL || '').replace(
     /\/+$/,
@@ -9,24 +10,6 @@ const fetchJson = (url, options = {}) =>
         ttlMs: url.endsWith('/current.json') ? 60_000 : 180_000,
         ...options,
     });
-
-const mapEvent = (event) => ({
-    id: event.eventId,
-    provider_slug: event.provider,
-    ticker: event.ticker,
-    distribution_per_share: event.amount.raw,
-    currency: event.amount.currency,
-    previous_amount: null,
-    average4: null,
-    average12: null,
-    declared_date: event.declaredDate,
-    ex_date: event.exDate,
-    record_date: event.recordDate,
-    payable_date: event.payableDate,
-    frequency: event.frequency,
-    verification_status: event.verificationStatus,
-    official_url: event.source.url,
-});
 
 export const isDataReleaseConfigured = () => Boolean(baseUrl);
 

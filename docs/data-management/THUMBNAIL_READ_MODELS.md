@@ -59,8 +59,10 @@ THUMBNAIL_SOURCE_BASE_URL=https://SOURCE_R2_ROOT \
   node scripts/thumbnail_pipeline/refresh.mjs --dry-run --symbols AMDY,TSLY,TOPW,AAPL,TSLA
 ```
 
-By default the source directory is `SOURCE_R2_ROOT/nav.json`. Use
-`--nav public/nav.json` only for an explicitly reviewed local directory.
+The default source directory is the independently maintained
+`data-v2/market-sources.json` in this repository. Refresh does not fetch upstream
+`nav.json`. `--nav <path>` remains an explicit migration/debug override only.
+Update the owned market-source registry when registering a ticker.
 The run accepts `--as-of YYYY-MM-DD` for reproducible validation and
 `--concurrency 1..8` to bound ticker processing (default 8). Source reads and
 per-ticker verification run concurrently; the public pointer still moves only

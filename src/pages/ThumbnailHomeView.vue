@@ -5,7 +5,6 @@
     import { useRoute, useRouter } from 'vue-router';
     import Checkbox from 'primevue/checkbox';
     import {
-        applySecurityStatuses,
         isSearchableSecurity,
         isDelisted,
     } from '../../lib/security-status.js';
@@ -20,16 +19,7 @@
     import Message from 'primevue/message';
     import Skeleton from 'primevue/skeleton';
     import StockSearchFilters from '@/components/stock/StockSearchFilters.vue';
-    import { getDataUrl, getR2Url } from '@/utils/dataUrl';
-    import {
-        isDivgrowReleaseConfigured,
-        loadDivgrowTickerIndex,
-    } from '@/services/divgrowRelease';
-    import { loadCoreDirectory } from '@/services/coreRelease';
-    import { loadDataReleaseIndex } from '@/services/dataRelease';
-    import { readPublicJson } from '@/services/publicJson.js';
-    import { mergeDiscoveredStocks } from '../../lib/discovered-stocks.js';
-    import { applyVerifiedUnderlyings } from '../../lib/security-underlyings.js';
+    import { loadSecurityDirectory } from '@/services/securityDirectory.js';
     import {
         inferSecurityType,
         matchesProductType,
@@ -294,62 +284,24 @@
         const currency = event?.currency ?? row.currency;
         return `${currency === 'USD' ? '$' : currency ? currency + ' ' : ''}${Number(value).toLocaleString('en-US', { maximumFractionDigits: 6 })}`;
     }
-    async function fetchJson(path) {
-        const local = getDataUrl(path);
-        try {
-            return await readPublicJson(local, { ttlMs: 180_000 });
-        } catch {
-            const fallback = getR2Url(path);
-            if (!fallback || fallback === local)
-                throw new Error('데이터를 불러오지 못했습니다.');
-            return readPublicJson(fallback, { ttlMs: 180_000 });
-        }
-    }
     async function load() {
         loading.value = true;
         error.value = '';
-        const coreConfigured = Boolean(
-            import.meta.env.VITE_DATA_RELEASE_BASE_URL
-        );
-        const indexLoader = coreConfigured
-            ? loadCoreDirectory().then((instruments) => ({
-                  nav: instruments.map((row) => ({
-                      ...row,
-                      company: row.officialProvider,
-                      securityType: inferSecurityType(row),
-                  })),
-              }))
-            : isDivgrowReleaseConfigured()
-              ? loadDivgrowTickerIndex()
-              : fetchJson('ticker-index.json');
-        const [index, dividend, discovered] = await Promise.allSettled([
-            indexLoader,
-            coreConfigured
-                ? loadDataReleaseIndex()
-                : fetchJson('content-studio/distribution-index.json'),
-            fetchJson('us-dividend-stocks.json'),
-        ]);
-        if (index.status === 'fulfilled')
-            rows.value = applySecurityStatuses(
-                applyVerifiedUnderlyings(
-                    mergeDiscoveredStocks(
-                        index.value.nav ?? [],
-                        discovered.status === 'fulfilled'
-                            ? discovered.value
-                            : {}
-                    )
-                )
-            ).filter((row) => row.symbol && isSearchableSecurity(row, true));
-        else
-            error.value =
-                '종목 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
-        if (dividend.status === 'fulfilled')
+        try {
+            const result = await loadSecurityDirectory({
+                includeDelisted: true,
+            });
+            rows.value = result.rows;
             distributions.value = Object.fromEntries(
-                (dividend.value.tickers ?? []).map((row) => [
+                (result.distributions?.tickers ?? []).map((row) => [
                     row.ticker,
                     row.latest,
                 ])
             );
+        } catch {
+            error.value =
+                '종목 목록을 불러오지 못했습니다. 다시 시도해 주세요.';
+        }
         loading.value = false;
         page.value = Math.min(page.value, pages.value);
     }

@@ -22,6 +22,9 @@ export interface CoreInstrument {
         officialVerified: boolean;
         checkedOn: string;
     };
+    ipoDate?: string;
+    frequency?: string;
+    noDividends?: boolean;
     officialProvider?: string | null;
     underlying?: string | null;
     instrumentPath?: string;

@@ -38,6 +38,8 @@ def main() -> int:
     if not re.fullmatch(r"[A-Za-z0-9._-]+", args.release_id):
         raise ValueError("Invalid release ID")
     subprocess.run([sys.executable, str(ROOT / "scripts/data_v2/validate_snapshot.py"), "--data-dir", str(data_dir)], check=True)
+    subprocess.run([sys.executable, str(ROOT / "scripts/data_v2/check_cutover.py"),
+                    "--data-dir", str(data_dir), "--output", str(ROOT / "tmp/dividend-cutover.json")], check=True)
     release_prefix = f"{PREFIX}/releases/{args.release_id}"
     try:
         client.head_object(Bucket=bucket, Key=f"{release_prefix}/manifest.json")

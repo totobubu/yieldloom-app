@@ -1,16 +1,10 @@
 import Holidays from 'date-holidays';
-import { readPublicJson } from '../publicJson.js';
 import { normalizeFrequency } from './frequency';
 import {
     currentScheduleEvent,
     partitionScheduleHistory,
 } from './scheduleVerification';
-import { getAssetUrl } from '@/utils/dataUrl';
-import {
-    isDataReleaseConfigured,
-    loadDataReleaseHistory,
-    loadDataReleaseIndex,
-} from '@/services/dataRelease';
+import { loadDividendIndex, loadDividendHistory } from '../dividendLedger.js';
 
 export type DividendScheduleEvent = {
     id?: number;
@@ -116,27 +110,9 @@ const expectedIntervalDays = (events: DividendScheduleEvent[]) => {
 };
 
 type ScheduleOptions = { signal?: AbortSignal; force?: boolean };
-async function loadScheduleIndex(options: ScheduleOptions = {}) {
-    if (isDataReleaseConfigured()) return loadDataReleaseIndex(options);
-    return readPublicJson(
-        getAssetUrl('content-studio/distribution-index.json'),
-        {
-            ...options,
-            ttlMs: 180_000,
-            validate: (payload: { tickers?: unknown }) =>
-                Array.isArray(payload?.tickers),
-        }
-    );
-}
+const loadScheduleIndex = loadDividendIndex;
 async function loadScheduleHistory(url: string, options: ScheduleOptions = {}) {
-    const raw = isDataReleaseConfigured()
-        ? await loadDataReleaseHistory(url, options)
-        : await readPublicJson(getAssetUrl(url.replace(/^\//, '')), {
-              ...options,
-              ttlMs: 180_000,
-              validate: (payload: { history?: unknown }) =>
-                  Array.isArray(payload?.history),
-          });
+    const raw = await loadDividendHistory(url, options);
     return raw.history.map(toEvent).filter(Boolean) as DividendScheduleEvent[];
 }
 export async function loadDividendSchedule(

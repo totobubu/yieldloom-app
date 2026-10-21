@@ -70,7 +70,10 @@ jobs:
               summary['missingByProvider'] = dict(Counter(row['provider'] for row in report['missing']))
               summary['changedFields'] = dict(Counter(field for row in report['changed'] for field in row['fields']))
               summary['changedSample'] = report['changed'][:3]
-              summary['missingEvents'] = report['missing']
+              summary['missingEvents'] = [
+                  [row['provider'], row['ticker'], row['declaredDate'], row['exDate']]
+                  for row in report['missing']
+              ][:30]
               message = json.dumps(summary, ensure_ascii=False)
               escaped = message.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
               print(f'::notice title=Dividend cutover review::{escaped}')

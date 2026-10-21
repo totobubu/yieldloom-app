@@ -90,6 +90,13 @@ report. An unchanged document reuses its last approved-state events; a missing
 historical row is retained and marked for deletion review. A provider failure
 does not discard candidates from other providers.
 
+For a confirmed historical gap, dispatch collection with
+`backfill=roundhill:2026-10-05` (provider and ex-date), or pass
+`--backfill provider:YYYY-MM-DD` to the collector. This forces the adapter's
+narrow historical official sources to be fetched and deduplicated, then saves
+their parsed evidence in the normal collection state. Legacy amounts are never
+imported. The resulting candidate still needs full cutover review.
+
 To publish a reviewed artifact, run `Publish approved data v2 release` on
 `main`, pass `candidate_run_id` from the collection workflow, and use release
 ID `candidate-<candidate_run_id>`. This validates the downloaded artifact and

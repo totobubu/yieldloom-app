@@ -117,6 +117,12 @@ comparison does not certify source availability: inspect collection errors in
 the annotations even when `ready=true`; retained historical events can remain
 valid while a provider's current endpoint is unavailable.
 
+Collection's `inspect_release=<release_id>` mode only counts uploaded R2
+objects and reads the current pointer; it performs no collection or writes.
+Normal publication uploads immutable files with up to eight parallel requests,
+waits for all of them to succeed, then writes the manifest and finally the
+current pointer. Any failed upload prevents both final writes.
+
 ## Official email screenshot evidence
 
 Email screenshots are never placed under `public/`, data-v2 releases, or the

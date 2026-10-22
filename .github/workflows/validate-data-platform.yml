@@ -1,0 +1,34 @@
+name: Validate data platform
+
+on:
+    pull_request:
+        paths:
+            - 'data-v2/dataset-registry.json'
+            - 'scripts/data_platform/**'
+            - 'tests/data_platform/**'
+            - '.github/workflows/validate-data-platform.yml'
+    push:
+        branches: [main, work]
+        paths:
+            - 'data-v2/dataset-registry.json'
+            - 'scripts/data_platform/**'
+            - 'tests/data_platform/**'
+            - '.github/workflows/validate-data-platform.yml'
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    validate:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: '3.11'
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '24'
+            - run: python -m unittest discover -s tests/data_platform -v
+            - run: node --check scripts/data_platform/fetch.mjs

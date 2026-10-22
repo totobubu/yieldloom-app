@@ -26,7 +26,9 @@ def instant(value):
     return clock.astimezone(timezone.utc)
 
 
-def plan(remote, now=None, retain_days=30, minimum=7, grace_days=7, pins=()):
+def plan(remote, now=None, retain_days=30, minimum=7, grace_days=7, pins=(), delete_mode='conditional'):
+    if delete_mode not in ('conditional', 'exclusive-writer'):
+        raise ValueError('Unknown retention deletion mode')
     clock = now or datetime.now(timezone.utc)
     if clock.tzinfo is None or retain_days < 7 or minimum < 2 or grace_days < 1:
         raise ValueError('Retention requires timezone, >=7 days, >=2 snapshots and >=1 grace day')
@@ -78,7 +80,8 @@ def plan(remote, now=None, retain_days=30, minimum=7, grace_days=7, pins=()):
     delete_objects = [row for key, row in rows.items()
                       if OBJECT.fullmatch(key) and key not in referenced and instant(row['modifiedAt']) < cutoff]
     candidates = sorted(delete_manifests, key=lambda r: r['key']) + sorted(delete_objects, key=lambda r: r['key'])
-    return {'schemaVersion': 1, 'kind': 'private_retention_plan', 'createdAt': clock.isoformat(),
+    return {'schemaVersion': 2, 'kind': 'private_retention_plan', 'createdAt': clock.isoformat(),
+            'deleteMode': delete_mode,
             'pointerEtag': etag, 'currentManifest': pointer['manifestSha256'],
             'policy': {'retainDays': retain_days, 'minimumSnapshots': minimum, 'graceDays': grace_days, 'pins': sorted(pins)},
             'retainedManifests': sorted(keep), 'protectedObjects': len(referenced),
@@ -93,18 +96,27 @@ def apply(remote, reviewed, expected_digest, now=None):
     created = instant(reviewed['createdAt'])
     if not timedelta(0) <= clock - created <= timedelta(hours=24):
         raise ValueError('Retention plan is expired or from the future')
-    with remote_writer(remote, 'retention'):
+    if reviewed.get('schemaVersion') != 2:
+        raise ValueError('Create a new retention plan with an explicit deletion mode')
+    with remote_writer(remote, 'retention') as lease:
         policy = reviewed['policy']
-        rebuilt = plan(remote, created, policy['retainDays'], policy['minimumSnapshots'], policy['graceDays'], policy['pins'])
+        mode = reviewed['deleteMode']
+        rebuilt = plan(remote, created, policy['retainDays'], policy['minimumSnapshots'], policy['graceDays'], policy['pins'], mode)
         # The mutable lease is excluded from the reviewed inventory digest below.
         if rebuilt != reviewed:
             raise ValueError('Remote state changed; create and review a new retention plan')
         if reviewed['candidates']:
-            from scripts.data_platform.operations import verify_conditions
-            verify_conditions(remote)
+            from scripts.data_platform.operations import verify_conditions, verify_serialized_delete
+            if mode == 'exclusive-writer':
+                verify_serialized_delete(remote, lease)
+            else:
+                verify_conditions(remote)
         for row in reviewed['candidates']:
-            remote.delete(row['key'], expected=row['etag'])
-    return {'deletedObjects': len(reviewed['candidates']), 'deletedBytes': reviewed['deleteBytes']}
+            if mode == 'exclusive-writer':
+                remote.delete_serialized(row['key'], lease)
+            else:
+                remote.delete(row['key'], expected=row['etag'])
+    return {'deletedObjects': len(reviewed['candidates']), 'deletedBytes': reviewed['deleteBytes'], 'deleteMode': mode}
 
 
 def main():
@@ -116,6 +128,8 @@ def main():
     parser.add_argument('--minimum', type=int, default=7)
     parser.add_argument('--grace-days', type=int, default=7)
     parser.add_argument('--pin', action='append', default=[])
+    parser.add_argument('--delete-mode', choices=['conditional', 'exclusive-writer'], default='conditional',
+                        help='Plan mode only; exclusive-writer requires all bucket writers to honor the shared lease')
     args = parser.parse_args()
     if args.apply_plan:
         if not args.plan_sha256:
@@ -125,7 +139,8 @@ def main():
     else:
         if not args.output:
             parser.error('Plan requires --output in a private directory')
-        result = plan(R2Objects(), retain_days=args.retain_days, minimum=args.minimum, grace_days=args.grace_days, pins=args.pin)
+        result = plan(R2Objects(), retain_days=args.retain_days, minimum=args.minimum, grace_days=args.grace_days, pins=args.pin,
+                      delete_mode=args.delete_mode)
         target = private_path(args.output)
         target.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         target.write_text(encode(result) + '\n')

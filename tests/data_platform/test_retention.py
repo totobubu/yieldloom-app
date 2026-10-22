@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from scripts.data_platform.checkpoints import backup, current, restore, ConditionalConflict, PREFIX
+from scripts.data_platform.checkpoints import backup, current, restore, ConditionalConflict, PREFIX, R2Objects
 from scripts.data_platform.pipeline import Store, collect, digest, encode
 from scripts.data_platform.remote_lock import remote_writer, LOCK_KEY
 from scripts.data_platform.retention import plan, apply
@@ -43,6 +43,14 @@ class RetentionObjects(MemoryObjects):
         del self.objects[key]
         del self.modified[key]
 
+    def delete_serialized(self, key, lease):
+        lease.assert_owned()
+        if self.on_delete and '/probes/' not in key:
+            self.on_delete(key)
+        self.deleted.append(key)
+        del self.objects[key]
+        del self.modified[key]
+
 
 def snapshots(root):
     store = Store(root)
@@ -63,6 +71,76 @@ def snapshots(root):
 
 
 class RetentionTests(unittest.TestCase):
+    def test_serialized_mode_restores_survivors_on_remote_ignoring_delete_conditions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            remote, pointers, _ = snapshots(root / 'original')
+            remote.delete = lambda key, expected: self.fail('Conditional delete must not be used')
+            clock = NOW + timedelta(days=50)
+            reviewed = plan(remote, clock, 7, 2, 1, [pointers[0]['manifestSha256']], 'exclusive-writer')
+            def concurrent_writer(_):
+                with self.assertRaisesRegex(RuntimeError, 'held'):
+                    with remote_writer(remote, 'checkpoint'):
+                        self.fail('Concurrent writer entered serialized deletion')
+            remote.on_delete = concurrent_writer
+            result = apply(remote, reviewed, digest(encode(reviewed).encode()), clock)
+            self.assertGreater(result['deletedObjects'], 0)
+            self.assertEqual(result['deleteMode'], 'exclusive-writer')
+            for number in (0, 8, 9):
+                restore(remote, root / f'restored-{number}', pointers[number])
+            self.assertEqual(current(remote)[0], pointers[-1])
+
+    def test_serialized_mode_is_bound_to_reviewed_hash_and_stops_on_lost_lease(self):
+        with tempfile.TemporaryDirectory() as directory:
+            remote, _, _ = snapshots(Path(directory))
+            clock = NOW + timedelta(days=50)
+            reviewed = plan(remote, clock, 7, 2, 1)
+            checksum = digest(encode(reviewed).encode())
+            reviewed['deleteMode'] = 'exclusive-writer'
+            with self.assertRaisesRegex(ValueError, 'digest'):
+                apply(remote, reviewed, checksum, clock)
+            from scripts.data_platform.remote_lock import WriterLease
+            original = WriterLease.assert_owned
+            def lose_after_probe(lease):
+                if any('/probes/' in key for key in remote.deleted):
+                    raise RuntimeError('Remote writer lease changed; deletion aborted')
+                original(lease)
+            with patch.object(WriterLease, 'assert_owned', lose_after_probe):
+                with self.assertRaisesRegex(RuntimeError, 'lease changed'):
+                    apply(remote, reviewed, digest(encode(reviewed).encode()), clock)
+            self.assertTrue(all('/probes/' in key for key in remote.deleted))
+
+    def test_real_serialized_adapter_checks_ownership_and_restricts_mutable_keys(self):
+        from unittest.mock import Mock
+        remote = R2Objects.__new__(R2Objects)
+        remote.serialized_delete_client = Mock()
+        from scripts.data_platform.remote_lock import WriterLease
+        lease = Mock(spec=WriterLease, remote=remote)
+        key = f"{PREFIX}/objects/{'a' * 64}"
+        remote.delete_serialized(key, lease)
+        lease.assert_owned.assert_called_once()
+        self.assertEqual(remote.serialized_delete_client.delete_object.call_args.kwargs, {'Bucket': 'yieldloom-data-private', 'Key': key})
+        for key in (LOCK_KEY, f'{PREFIX}/current.json', 'other/data', f'{PREFIX}/objects/../current.json'):
+            with self.assertRaises(ValueError):
+                remote.delete_serialized(key, lease)
+        lease.assert_owned.side_effect = RuntimeError('lease changed')
+        with self.assertRaisesRegex(RuntimeError, 'lease changed'):
+            remote.delete_serialized(f"{PREFIX}/objects/{'a' * 64}", lease)
+        self.assertEqual(remote.serialized_delete_client.delete_object.call_count, 1)
+
+    def test_uncertain_serialized_delete_keeps_remote_lease_held(self):
+        from unittest.mock import Mock
+        remote = RetentionObjects()
+        remote.serialized_delete_client = Mock()
+        remote.serialized_delete_client.delete_object.side_effect = TimeoutError('Delete outcome unknown')
+        with self.assertRaises(TimeoutError):
+            with remote_writer(remote, 'retention') as lease:
+                R2Objects.delete_serialized(remote, f"{PREFIX}/objects/{'a' * 64}", lease)
+        self.assertEqual(json.loads(remote.objects[LOCK_KEY])['state'], 'held')
+        with self.assertRaisesRegex(RuntimeError, 'held'):
+            with remote_writer(remote, 'checkpoint'):
+                self.fail('A writer started while a DELETE might still be in flight')
+
     def test_plan_is_read_only_and_apply_preserves_current_and_minimum_restorable_snapshots(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

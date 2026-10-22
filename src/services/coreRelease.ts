@@ -12,13 +12,18 @@ export interface CoreInstrument {
     active: boolean;
     listingStatus?: {
         status: 'delisted';
+        officialName?: string;
         delistedOn: string | null;
         lastTradingOn: string | null;
+        tradingHaltedOn?: string | null;
+        liquidatedOn?: string | null;
+        delistedOnNote?: string | null;
         reason: string;
         source: {
             type: 'official' | 'user_report';
             reference: string;
             url: string | null;
+            relatedReferences?: Array<{ label: string; url: string }>;
         };
         officialVerified: boolean;
         checkedOn: string;

@@ -19,7 +19,7 @@ class ListingStatusTests(unittest.TestCase):
         self.payload = json.loads((ROOT / 'data-v2/security-status.json').read_text())
 
     def test_dates_status_duplicates_and_evidence_are_validated(self):
-        for field, value in [('delistedOn', '2026-02-30'), ('status', 'inactive'), ('source', {}), ('checkedOn', None), ('officialVerified', True)]:
+        for field, value in [('delistedOn', '2026-02-30'), ('status', 'inactive'), ('source', {}), ('checkedOn', None), ('officialVerified', False)]:
             with self.subTest(field=field):
                 payload = copy.deepcopy(self.payload)
                 payload['securities'][0][field] = value
@@ -37,6 +37,8 @@ class ListingStatusTests(unittest.TestCase):
             rows = {r['symbol']: r for r in json.loads(output.read_text())['instruments']}
             self.assertFalse(rows['COII']['active'])
             self.assertEqual(rows['COII']['listingStatus']['status'], 'delisted')
+            self.assertFalse(rows['GIF']['active'])
+            self.assertEqual(rows['GIF']['listingStatus']['officialName'], 'REX Growth & Income Universe ETF')
             self.assertFalse(rows['IPO']['active'])
             self.assertNotIn('listingStatus', rows['IPO'])
             # Release normalization must not discard the status when regenerating search indexes.
@@ -48,6 +50,7 @@ class ListingStatusTests(unittest.TestCase):
             subprocess.run([sys.executable, str(ROOT / 'scripts/data_v2/build_release.py'), '--input', str(candidates), '--catalog-input', str(output), '--release-id', 'status-test', '--output', str(release)], check=True, capture_output=True)
             search_rows = json.loads((release / 'catalog/search-index.json').read_text())['instruments']
             self.assertEqual(next(row for row in search_rows if row['symbol'] == 'COII')['listingStatus'], rows['COII']['listingStatus'])
+            self.assertEqual(next(row for row in search_rows if row['symbol'] == 'GIF')['listingStatus'], rows['GIF']['listingStatus'])
 
     def test_lookup_failures_require_review_without_confirming_delisting(self):
         def fail(*args):
@@ -58,12 +61,23 @@ class ListingStatusTests(unittest.TestCase):
             spec.loader.exec_module(module)
         self.assertEqual(module.check_symbol_status('TEST', ['', '.KS']), ('needs_review', None, {}))
 
-    def test_no_automatic_dates_or_official_confirmation(self):
-        status = load_statuses()['COII']
-        self.assertIsNone(status['delistedOn'])
-        self.assertIsNone(status['lastTradingOn'])
-        self.assertFalse(status['officialVerified'])
-        self.assertFalse(apply_status({'symbol': 'COII', 'active': True})['active'])
+    def test_rex_official_dates_do_not_conflate_halt_liquidation_and_exchange_delisting(self):
+        statuses = load_statuses()
+        expected = {'COII', 'CWII', 'HOII', 'LLII', 'MSII', 'PLTI', 'GIF'}
+        self.assertTrue(expected.issubset(statuses))
+        catalog = json.loads((ROOT / 'data-v2/catalog-seed.json').read_text())
+        catalog_rows = {row['symbol']: row for row in catalog['instruments']}
+        for symbol in expected:
+            with self.subTest(symbol=symbol):
+                status = statuses[symbol]
+                self.assertFalse(catalog_rows[symbol]['active'])
+                self.assertEqual(catalog_rows[symbol]['listingStatus'], status)
+                self.assertTrue(status['officialVerified'])
+                self.assertIsNone(status['delistedOn'])
+                self.assertEqual(status['lastTradingOn'], '2026-06-09')
+                self.assertEqual(status['tradingHaltedOn'], '2026-06-09')
+                self.assertEqual(status['liquidatedOn'], '2026-06-16')
+                self.assertFalse(apply_status({'symbol': symbol, 'active': True})['active'])
 
 
 if __name__ == '__main__':

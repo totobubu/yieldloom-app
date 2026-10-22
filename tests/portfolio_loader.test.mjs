@@ -3,127 +3,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { summarizePortfolio } from '../src/services/portfolioSummary.js';
 
-test('dashboard loader reads holdings and ledger through its real entry point', async () => {
-    const source = (
-        await readFile(
-            new URL('../src/services/portfolio.js', import.meta.url),
-            'utf8'
-        )
-    ).replace(/^import .*;$/gm, '');
-    const fixture = {
-        db: {},
-        summarizePortfolio,
-        apiUrl: (path) => path,
-        collection: (...path) => path.slice(1).join('/'),
-        query: (path) => path,
-        getDocs: async (path) => {
-            if (path === 'portfolios/owner/assets')
-                return {
-                    docs: [
-                        {
-                            id: 'A',
-                            data: () => ({
-                                symbol: 'TOPW',
-                                portfolioPriority: 'current',
-                            }),
-                        },
-                    ],
-                };
-            if (path === 'portfolios/owner/assets/A/transactions')
-                return {
-                    empty: false,
-                    docs: [
-                        {
-                            id: 'T',
-                            data: () => ({
-                                type: 'dividend',
-                                date: '20261001',
-                                amount: 1250,
-                            }),
-                        },
-                    ],
-                };
-            throw new Error(`Unexpected query: ${path}`);
-        },
-    };
-    globalThis.__portfolioFixture = fixture;
-    try {
-        const prelude =
-            'const { db, summarizePortfolio, apiUrl, collection, query, getDocs } = globalThis.__portfolioFixture;\n';
-        const module = await import(
-            `data:text/javascript;base64,${Buffer.from(prelude + source).toString('base64')}`
-        );
-        const result = await module.loadPortfolioDashboard('owner');
-        assert.equal(result.summary.currentCount, 1);
-        assert.equal(result.summary.dividendTotal, 1250);
-        assert.equal(result.transactions.length, 1);
-        assert.equal((await module.loadPortfolioAssets('owner'))[0].id, 'A');
-        assert.equal(
-            module.portfolioTickerStates(result.assets).get('TOPW'),
-            'current'
-        );
-    } finally {
-        delete globalThis.__portfolioFixture;
-    }
-});
-
-test('concurrent dashboard loads for one owner share their Firestore reads', async () => {
-    let assetReads = 0,
-        transactionReads = 0;
-    const pending = deferred();
-    const loader = await dashboardModule(async (path) => {
-        if (path === 'portfolios/owner/assets') {
-            assetReads++;
-            await pending.promise;
-            return holdingSnapshot;
-        }
-        if (path === 'portfolios/owner/assets/A/transactions') {
-            transactionReads++;
-            return { empty: false, docs: [] };
-        }
-        if (path === 'adminPortfolios/owner/assets') return { docs: [] };
-        throw new Error(path);
-    }, 'shared-dashboard');
-    const first = loader.loadPortfolioDashboard('owner');
-    const second = loader.loadPortfolioDashboard('owner');
-    pending.resolve();
-    await Promise.all([first, second]);
-    assert.equal(assetReads, 1);
-    assert.equal(transactionReads, 1);
-});
-
-test('transaction subcollection reads use bounded concurrency', async () => {
-    let active = 0,
-        peak = 0;
-    const assets = Array.from({ length: 14 }, (_, index) => ({
-        id: `A${index}`,
-        data: () => ({ symbol: `T${index}`, portfolioPriority: 'current' }),
-    }));
-    const loader = await dashboardModule(async (path) => {
-        if (path === 'portfolios/owner/assets') return { docs: assets };
-        if (path.startsWith('portfolios/owner/assets/')) {
-            active++;
-            peak = Math.max(peak, active);
-            await new Promise((resolve) => setImmediate(resolve));
-            active--;
-            return { empty: false, docs: [] };
-        }
-        if (path === 'adminPortfolios/owner/assets') return { docs: [] };
-        throw new Error(path);
-    }, 'bounded-dashboard');
-    await loader.loadPortfolioDashboard('owner');
-    assert.equal(peak, 6);
-});
-
-const deferred = () => {
-    let resolve;
-    const promise = new Promise((yes) => {
-        resolve = yes;
-    });
-    return { promise, resolve };
+const user = {
+    uid: 'owner',
+    getIdToken: async () => 'token',
 };
 
-async function dashboardModule(getDocs, tag) {
+async function portfolioModule(tag, getDocs = async () => ({ docs: [] })) {
     const source = (
         await readFile(
             new URL('../src/services/portfolio.js', import.meta.url),
@@ -132,90 +17,144 @@ async function dashboardModule(getDocs, tag) {
     ).replace(/^import .*;$/gm, '');
     globalThis.__portfolioFixture = {
         db: {},
+        firebaseUser: { value: user },
         summarizePortfolio,
-        apiUrl: (p) => p,
+        apiUrl: (path) => path,
         collection: (...path) => path.slice(1).join('/'),
-        query: (p) => p,
+        query: (path) => path,
         getDocs,
     };
     try {
         const prelude =
-            'const { db, summarizePortfolio, apiUrl, collection, query, getDocs } = globalThis.__portfolioFixture;\n';
-        const module = await import(
+            'const { db, firebaseUser, summarizePortfolio, apiUrl, collection, query, getDocs } = globalThis.__portfolioFixture;\n';
+        return await import(
             `data:text/javascript;base64,${Buffer.from(prelude + source + '\n//' + tag).toString('base64')}`
         );
-        return module;
     } finally {
         delete globalThis.__portfolioFixture;
     }
 }
 
-async function dashboardWith(getDocs, tag) {
-    const module = await dashboardModule(getDocs, tag);
-    return module.loadPortfolioDashboard('owner');
-}
-const holdingSnapshot = {
-    docs: [
-        {
-            id: 'A',
-            data: () => ({
-                symbol: 'TOPW',
-                portfolioPriority: 'current',
-                holdingShares: 10,
-            }),
+test('dashboard loader uses one authenticated API request and summarizes its assets', async () => {
+    const module = await portfolioModule('dashboard-api');
+    let request;
+    const dashboard = await module.loadPortfolioDashboard('owner', {
+        user,
+        fetcher: async (url, options) => {
+            request = { url, options };
+            return {
+                ok: true,
+                json: async () => ({
+                    assets: [
+                        {
+                            id: 'A',
+                            symbol: 'TOPW',
+                            portfolioPriority: 'current',
+                            transactions: [
+                                {
+                                    id: 'T',
+                                    type: 'dividend',
+                                    date: '20261001',
+                                    amount: 1250,
+                                },
+                            ],
+                        },
+                    ],
+                }),
+            };
         },
-    ],
-};
-const denied = () =>
-    Object.assign(new Error('Permission denied'), {
-        code: 'permission-denied',
     });
-
-test('denied legacy lookup preserves current holdings and reports a warning', async () => {
-    const dashboard = await dashboardWith(async (path) => {
-        if (path === 'portfolios/owner/assets') return holdingSnapshot;
-        if (path === 'portfolios/owner/assets/A/transactions')
-            return { empty: true, docs: [] };
-        if (path === 'adminPortfolios/owner/assets') throw denied();
-        throw new Error(path);
-    }, 'legacy-denied');
+    assert.equal(request.url, '/api/portfolio-dashboard');
+    assert.equal(request.options.headers.Authorization, 'Bearer token');
+    assert.equal(request.options.cache, 'no-store');
     assert.equal(dashboard.summary.currentCount, 1);
-    assert.equal(dashboard.assets[0].holdingShares, 10);
-    assert.equal(dashboard.summary.historicalCount, null);
-    assert.deepEqual(dashboard.warnings, [
-        { stage: 'legacy', code: 'permission-denied' },
-    ]);
+    assert.equal(dashboard.summary.dividendTotal, 1250);
+    assert.equal(dashboard.transactions.length, 1);
 });
 
-test('denied transaction lookup preserves holdings but marks unavailable ledger', async () => {
-    const dashboard = await dashboardWith(async (path) => {
-        if (path === 'portfolios/owner/assets') return holdingSnapshot;
-        if (path === 'portfolios/owner/assets/A/transactions') throw denied();
-        throw new Error(path);
-    }, 'transactions-denied');
-    assert.equal(dashboard.summary.currentCount, 1);
-    assert.equal(dashboard.assets[0].ledgerUnavailable, true);
-    assert.deepEqual(dashboard.warnings, [
-        { stage: 'transactions', code: 'permission-denied' },
-    ]);
+test('concurrent dashboard loads for one owner share one API request', async () => {
+    const module = await portfolioModule('shared-dashboard');
+    let calls = 0,
+        release;
+    const waiting = new Promise((resolve) => {
+        release = resolve;
+    });
+    const fetcher = async () => {
+        calls++;
+        await waiting;
+        return { ok: true, json: async () => ({ assets: [] }) };
+    };
+    const first = module.loadPortfolioDashboard('owner', { user, fetcher });
+    const second = module.loadPortfolioDashboard('owner', { user, fetcher });
+    release();
+    await Promise.all([first, second]);
+    assert.equal(calls, 1);
 });
 
-test('denied primary holdings lookup remains an error with its stage', async () => {
+test('dashboard API errors preserve quota status and code', async () => {
+    const module = await portfolioModule('dashboard-error');
     await assert.rejects(
-        dashboardWith(async () => {
-            throw denied();
-        }, 'assets-denied'),
+        module.loadPortfolioDashboard('owner', {
+            user,
+            fetcher: async () => ({
+                ok: false,
+                status: 429,
+                json: async () => ({
+                    code: 'DATA_RESOURCE_EXHAUSTED',
+                    error: '데이터베이스 요청이 제한되었습니다.',
+                }),
+            }),
+        }),
         (error) =>
-            error.code === 'permission-denied' &&
-            error.portfolioStage === 'assets'
+            error.status === 429 && error.code === 'DATA_RESOURCE_EXHAUSTED'
     );
 });
 
-test('successful empty legacy lookup reports a confirmed zero history count', async () => {
-    const dashboard = await dashboardWith(async (path) => {
-        if (path === 'portfolios/owner/assets') return holdingSnapshot;
-        return { empty: true, docs: [] };
-    }, 'legacy-empty');
-    assert.equal(dashboard.summary.historicalCount, 0);
-    assert.deepEqual(dashboard.warnings, []);
+test('legacy API warnings keep the unknown history state', async () => {
+    const module = await portfolioModule('dashboard-warning');
+    const dashboard = await module.loadPortfolioDashboard('owner', {
+        user,
+        fetcher: async () => ({
+            ok: true,
+            json: async () => ({
+                assets: [
+                    {
+                        id: 'A',
+                        symbol: 'TOPW',
+                        portfolioPriority: 'current',
+                        holdingShares: 10,
+                        transactions: [],
+                        ledgerUnavailable: true,
+                    },
+                ],
+                warnings: [{ stage: 'legacy', code: 'permission-denied' }],
+            }),
+        }),
+    });
+    assert.equal(dashboard.assets[0].holdingShares, 10);
+    assert.equal(dashboard.summary.historicalCount, null);
+    assert.equal(dashboard.warnings[0].stage, 'legacy');
+});
+
+test('asset-only lookup remains a direct single collection query', async () => {
+    let reads = 0;
+    const module = await portfolioModule('asset-lookup', async (path) => {
+        reads++;
+        assert.equal(path, 'portfolios/owner/assets');
+        return {
+            docs: [
+                {
+                    id: 'A',
+                    data: () => ({
+                        symbol: 'TOPW',
+                        portfolioPriority: 'current',
+                    }),
+                },
+            ],
+        };
+    });
+    const assets = await module.loadPortfolioAssets('owner');
+    assert.equal(reads, 1);
+    assert.equal(assets[0].id, 'A');
+    assert.equal(module.portfolioTickerStates(assets).get('TOPW'), 'current');
 });

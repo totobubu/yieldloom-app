@@ -12,6 +12,7 @@ import sqlite3
 import subprocess
 import sys
 import tempfile
+import time
 from urllib.parse import parse_qsl, urlsplit
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -193,7 +194,7 @@ def collect(store, registry, selected=None, transport=fetch, now=None, force=Fal
     known = {s['id'] for s in registry['sources']}
     if selected and not set(selected) <= known:
         raise ValueError('Unknown selected source')
-    report, fetched, fetch_errors = [], {}, {}
+    report, fetched, fetch_errors, host_last = [], {}, {}, {}
     http_requests = 0
     for source in registry['sources']:
         if selected and source['id'] not in selected:
@@ -229,6 +230,12 @@ def collect(store, registry, selected=None, transport=fetch, now=None, force=Fal
                             headers['If-Modified-Since'] = cached['modified']
                     http_requests += 1
                     try:
+                        host = urlsplit(source['url']).hostname
+                        delay = min(10, max(0, source.get('minHostIntervalSeconds', 0)))
+                        remaining = delay - (time.monotonic() - host_last.get(host, 0))
+                        if remaining > 0:
+                            time.sleep(remaining)
+                        host_last[host] = time.monotonic()
                         response = transport(source['url'], headers)
                         fetched[source['url']] = store.document(source['url'], response, timestamp)
                     except Exception as error:

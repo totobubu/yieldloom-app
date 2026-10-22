@@ -86,10 +86,11 @@ def holdings(content: bytes, config: dict) -> list[dict]:
         raise ValueError('Holdings fund identity mismatch')
     metadata = {r[0]: r[1] for r in rows if len(r) == 2}
     as_of = date(metadata['Fund Holdings as of'])
-    start = next((i for i, r in enumerate(rows) if r[:2] == ['Ticker', 'Name']), None)
-    required = {'Ticker', 'Name', 'Asset Class', 'Weight (%)', 'Quantity', 'Market Value',
+    start = next((i for i, r in enumerate(rows) if {'Name', 'Asset Class', 'Weight (%)'} <= set(r)), None)
+    required = {'Name', 'Asset Class', 'Weight (%)', 'Market Value',
                 'Notional Value', 'Market Currency'}
-    if start is None or not required <= set(rows[start]):
+    if (start is None or not required <= set(rows[start]) or not {'Quantity', 'Par Value'} & set(rows[start])
+            or not {'Ticker', 'ISIN', 'CUSIP'} & set(rows[start])):
         raise ValueError('Holdings schema changed')
     result, seen = [], set()
     for values in rows[start + 1:]:
@@ -98,10 +99,13 @@ def holdings(content: bytes, config: dict) -> list[dict]:
         if len(values) != len(rows[start]) or not values[0]:
             continue
         row = dict(zip(rows[start], values))
-        for key in ('Weight (%)', 'Quantity', 'Market Value', 'Notional Value', 'Price', 'FX Rate'):
+        for key in ('Weight (%)', 'Quantity', 'Par Value', 'Market Value', 'Notional Value', 'Price', 'FX Rate',
+                    'Coupon (%)', 'Duration', 'Mod. Duration', 'Real Duration', 'YTM (%)',
+                    'Yield to Call (%)', 'Yield to Worst (%)', 'Real YTM (%)'):
             if key in row:
                 row[key] = None if row[key] in ('-', '') else decimal(row[key])
-        key = json.dumps([row.get(k) for k in ('Ticker', 'Name', 'Asset Class', 'Market Currency', 'Exchange')])
+        key = json.dumps([row.get(k) for k in ('Ticker', 'Name', 'Asset Class', 'Market Currency', 'Exchange',
+            'ISIN', 'CUSIP', 'SEDOL', 'Maturity', 'Coupon (%)', 'Accrual Date')])
         if key in seen:
             raise ValueError('Holdings identifier is ambiguous')
         seen.add(key)
@@ -123,6 +127,8 @@ def fund_page(content: bytes, config: dict) -> list[dict]:
     text = re.sub(r'\s+', ' ', ' '.join(parser.parts))
     if config['fundName'] not in text or not re.search(r'\b' + re.escape(config['symbol']) + r'\b', text):
         raise ValueError('Fund page identity mismatch')
+    if config.get('cusip') and not re.search(r'CUSIP\s+' + re.escape(config['cusip']) + r'\b', text):
+        raise ValueError('Fund CUSIP identity mismatch')
     day = r'([A-Z][a-z]+ \d{1,2}, \d{4})'
     amount = r'([-+]?\d[\d,]*(?:\.\d+)?)'
     specs = [
@@ -177,6 +183,8 @@ def filings(content: bytes, config: dict) -> list[dict]:
     data = json.loads(content)
     if str(data['cik']).zfill(10) != config['cik']:
         raise ValueError('SEC issuer identity mismatch')
+    if config.get('symbol') and config['symbol'] not in data.get('tickers', []):
+        raise ValueError('SEC ticker identity mismatch')
     recent = data['filings']['recent']
     keys = ('accessionNumber', 'form', 'filingDate', 'reportDate', 'acceptanceDateTime', 'primaryDocument')
     if len({len(recent[k]) for k in keys}) != 1:

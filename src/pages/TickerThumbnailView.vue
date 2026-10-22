@@ -28,6 +28,7 @@
     import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
     import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
     import ThumbnailPreview from '@/components/thumbnail/ThumbnailPreview.vue';
+    import InfoHelp from '@/components/common/InfoHelp.vue';
     import StockDividendTrend from '@/components/stock/StockDividendTrend.vue';
     import StockHoldingPanel from '@/components/stock/StockHoldingPanel.vue';
     import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
@@ -1151,7 +1152,12 @@
                                 "
                                 class="dividend-next">
                                 <div class="section-heading">
-                                    <h2>배당 일정</h2>
+                                    <div class="schedule-title">
+                                        <h2>배당 일정</h2>
+                                        <InfoHelp
+                                            label="배당 일정 안내"
+                                            text="공시 전 일정은 최근 주기를 바탕으로 한 추정치입니다. 증권사 입금일은 다를 수 있으며, 개인별 수령액은 보유 수량과 세금에 따라 다릅니다." />
+                                    </div>
                                     <Tag
                                         :value="
                                             nextDividend?.confirmed
@@ -1190,11 +1196,6 @@
                                         }}</strong>
                                     </div>
                                 </div>
-                                <p class="hint">
-                                    공시 전 일정은 최근 주기를 바탕으로 한
-                                    추정입니다. 증권사 입금일과 실제 수령액은
-                                    다를 수 있습니다.
-                                </p>
                             </div>
                             <StockDividendTrend
                                 v-if="dividendState === 'available'"
@@ -1204,14 +1205,6 @@
                                     today()
                                 "
                                 :currency="selectedInfo.currency || 'USD'" />
-                            <p
-                                v-if="
-                                    !archived && dividendState === 'available'
-                                "
-                                class="hint">
-                                공시 전 일정은 추정치입니다. 개인별 수령액은
-                                보유 수량과 세금에 따라 다릅니다.
-                            </p>
                         </section>
                         <div
                             v-if="activeTab === 'dividends'"
@@ -1725,6 +1718,11 @@
 </template>
 
 <style scoped>
+    .schedule-title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
     .ticker-thumbnail-page {
         color: var(--app-text);
         min-width: 0;

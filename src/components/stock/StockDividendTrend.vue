@@ -1,4 +1,5 @@
 <script setup>
+    import InfoHelp from '@/components/common/InfoHelp.vue';
     import Button from 'primevue/button';
     import { computed, ref } from 'vue';
     import { monthlyDividendSeries } from '@/services/stockAnalysis';
@@ -37,7 +38,12 @@
     <section class="dividend-trend">
         <header>
             <div>
-                <h2>월별 배당 흐름</h2>
+                <div class="trend-title">
+                    <h2>월별 배당 흐름</h2>
+                    <InfoHelp
+                        label="월별 배당 집계 안내"
+                        text="선택 연도와 전년 동월을 비교합니다. 당월은 기준일까지 집계합니다. 회차는 배당락일 기준이며, 공시가 없는 달은 0으로 채우지 않습니다." />
+                </div>
                 <p>주당 세전 {{ currency }} · 배당락일 기준</p>
             </div>
             <div class="trend-controls">
@@ -84,9 +90,13 @@
                 <span>{{ row.month.slice(2).replace('-', '.') }}</span>
             </button>
         </div>
-        <p v-else class="empty">
-            월별 배당 추이를 계산할 실제 이력이 없습니다.
-        </p>
+        <div v-else class="trend-empty" role="status">
+            <span class="empty-icon" aria-hidden="true"
+                ><i class="pi pi-chart-bar"
+            /></span>
+            <strong>아직 표시할 월별 배당 이력이 없습니다</strong>
+            <p>확인된 배당 이력이 쌓이면 월별 흐름을 보여드립니다.</p>
+        </div>
         <div v-if="current" class="trend-detail" aria-live="polite">
             <strong
                 >{{ current.month
@@ -108,10 +118,8 @@
                 }}</b></span
             >
         </div>
-        <p class="trend-note">
-            <i class="blue" />선택 연도 <i class="gray" />전년 동월 · 당월은
-            기준일까지 집계합니다. 회차는 배당락일 기준이며, 공시가 없는 달은
-            0으로 채우지 않습니다.
+        <p v-if="series.some((row) => row.total != null)" class="trend-note">
+            <i class="blue" />선택 연도 <i class="gray" />전년 동월
         </p>
     </section>
 </template>
@@ -219,8 +227,41 @@
         border-radius: 2px;
         margin-right: 4px;
     }
-    .empty {
-        padding: 30px;
+    .trend-title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .trend-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 36px 20px;
+        margin-top: 16px;
+        text-align: center;
+        border: 1px dashed var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface-muted);
+    }
+    .empty-icon {
+        display: grid;
+        place-items: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--app-surface);
+        color: var(--app-accent);
+        font-size: 20px;
+    }
+    .trend-empty strong {
+        color: var(--app-text);
+        font-size: 14px;
+    }
+    .trend-empty p {
+        margin: 0;
         color: var(--app-muted);
+        font-size: 12px;
+        line-height: 1.7;
     }
 </style>

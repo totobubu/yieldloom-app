@@ -108,6 +108,12 @@ try {
     await page
         .getByText('상장폐지 · 과거 이력 열람', { exact: true })
         .waitFor();
+    await page.getByText('최종 거래일 2026-06-09', { exact: true }).waitFor();
+    await page.getByText('거래중단일 2026-06-09', { exact: true }).waitFor();
+    await page.getByText('청산일 2026-06-16', { exact: true }).waitFor();
+    await page
+        .getByText(/거래소의 공식 상장폐지일은 확인되지 않았습니다/)
+        .waitFor();
     assert.equal(await page.getByRole('tab', { name: '공유정보' }).count(), 0);
     assert.equal(
         await page.getByRole('button', { name: '공유 카드 만들기' }).count(),

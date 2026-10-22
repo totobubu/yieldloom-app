@@ -829,6 +829,15 @@
                 <p v-if="selectedInfo.listingStatus.lastTradingOn">
                     최종 거래일 {{ selectedInfo.listingStatus.lastTradingOn }}
                 </p>
+                <p v-if="selectedInfo.listingStatus.tradingHaltedOn">
+                    거래중단일 {{ selectedInfo.listingStatus.tradingHaltedOn }}
+                </p>
+                <p v-if="selectedInfo.listingStatus.liquidatedOn">
+                    청산일 {{ selectedInfo.listingStatus.liquidatedOn }}
+                </p>
+                <p v-if="selectedInfo.listingStatus.delistedOnNote">
+                    {{ selectedInfo.listingStatus.delistedOnNote }}
+                </p>
                 <a
                     v-if="selectedInfo.listingStatus.source.url"
                     :href="selectedInfo.listingStatus.source.url"

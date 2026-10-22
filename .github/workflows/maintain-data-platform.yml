@@ -1,0 +1,48 @@
+name: Verify private data recovery
+
+on:
+    push:
+        branches: [work]
+        paths:
+            - '.github/workflows/maintain-data-platform.yml'
+    workflow_dispatch:
+        inputs:
+            retention_plan:
+                description: Also calculate a read-only retention plan (no deletion)
+                type: boolean
+                default: false
+
+permissions:
+    contents: read
+
+concurrency:
+    group: data-platform-private-writer
+    cancel-in-progress: false
+
+jobs:
+    verify:
+        if: github.ref == 'refs/heads/work' || github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        environment: data-production
+        timeout-minutes: 20
+        env:
+            DATA_PRIVATE_R2_ACCOUNT_ID: ${{ secrets.DATA_PRIVATE_R2_ACCOUNT_ID }}
+            DATA_PRIVATE_R2_ACCESS_KEY_ID: ${{ secrets.DATA_PRIVATE_R2_ACCESS_KEY_ID }}
+            DATA_PRIVATE_R2_SECRET_ACCESS_KEY: ${{ secrets.DATA_PRIVATE_R2_SECRET_ACCESS_KEY }}
+            DATA_PRIVATE_R2_BUCKET: yieldloom-data-private
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: '3.11'
+            - run: pip install boto3==1.43.116
+            - name: Verify conditional operations and fully restore checkpoint
+              run: python scripts/data_platform/operations.py drill
+            - name: Calculate retention counts without deleting data
+              if: inputs.retention_plan
+              run: python scripts/data_platform/retention.py --delete-mode exclusive-writer --output var/data-platform-review/retention.json
+            - name: Operational summary
+              if: always()
+              run: echo 'This workflow never deletes checkpoints. Restore data and detailed retention plans remain private and are not uploaded as artifacts.' >> "$GITHUB_STEP_SUMMARY"

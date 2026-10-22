@@ -7,13 +7,10 @@
     import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
 
     const basisHelp = ref(null);
-    const rocHelp = ref(null);
     const fundamentalsOpen = ref(
         typeof window !== 'undefined' &&
             window.matchMedia('(min-width: 601px)').matches
     );
-    const rocHelpText =
-        'ROC(자본환급)은 분배금 중 자본환급으로 보고된 부분입니다. 수집된 비율은 최종 세무 결과와 다를 수 있습니다. 지급 건별 내역과 회계연도 누적 자료는 별개이며, 누적 자료를 지급 건에 더하지 않습니다. 개인의 달력연도 세무 결과를 뜻하지 않습니다. ROC 금액 미제공은 0을 의미하지 않습니다.';
     const basisText =
         '최근 12개월 지표는 배당락일 기준입니다. 총수익률은 Yahoo 조정 종가로 계산한 추정치이며, 호가 스프레드는 수집 시점의 값입니다. 미확인은 0을 뜻하지 않습니다.';
     const etfProfiles = {
@@ -90,15 +87,6 @@
             ['NAV 관측값', q.navSnapshot, ' USD'],
         ];
     });
-    const rocRows = computed(() =>
-        [...(data.value?.rocObservations ?? [])].sort((a, b) =>
-            String(
-                b.payableDate ?? b.throughPaymentDate ?? b.exDate ?? ''
-            ).localeCompare(
-                String(a.payableDate ?? a.throughPaymentDate ?? a.exDate ?? '')
-            )
-        )
-    );
     const metricGroups = computed(() => [
         {
             key: 'core',
@@ -111,39 +99,6 @@
             rows: [6, 11, 7, 10, 9, 8].map((index) => metrics.value[index]),
         },
     ]);
-    const rocGroups = computed(() =>
-        [
-            {
-                scope: 'payment',
-                title: '지급 건별 내역',
-                rows: rocRows.value.filter(
-                    (row) => row.scope !== 'fiscal_year_to_date'
-                ),
-            },
-            {
-                scope: 'fiscal_year_to_date',
-                title: '회계연도 누적 내역',
-                rows: rocRows.value.filter(
-                    (row) => row.scope === 'fiscal_year_to_date'
-                ),
-            },
-        ].filter((group) => group.rows.length)
-    );
-    const rocSources = computed(() => {
-        const sources = new Map();
-        for (const row of rocRows.value) {
-            const url = safeUrl(row.sourceUrl);
-            if (!url || sources.has(url)) continue;
-            sources.set(url, {
-                url,
-                label:
-                    row.sourceType === 'cached_issuer_distribution_table'
-                        ? '운용사 페이지'
-                        : '공시 문서',
-            });
-        }
-        return [...sources.values()];
-    });
     watch(
         () => props.symbol,
         async (value) => {
@@ -153,7 +108,6 @@
                     .toUpperCase()
                     .replaceAll('.', '-');
             basisHelp.value?.hide();
-            rocHelp.value?.hide();
             data.value = null;
             failed.value = false;
             loading.value = true;
@@ -187,6 +141,11 @@
 </script>
 
 <template>
+    <slot
+        name="history"
+        :observations="data?.rocObservations ?? []"
+        :loading="loading"
+        :failed="failed" />
     <section
         class="security-insights"
         aria-labelledby="insights-heading"
@@ -264,124 +223,6 @@
                         :suffix="suffix" />
                 </div>
             </details>
-            <section class="roc-section" aria-labelledby="roc-heading">
-                <header class="roc-heading-row">
-                    <div class="insights-title">
-                        <h3 id="roc-heading">분배금의 자본환급(ROC) 내역</h3>
-                        <InfoHelp
-                            ref="rocHelp"
-                            label="ROC 기준 및 금액 안내"
-                            :text="rocHelpText" />
-                    </div>
-                    <div v-if="rocSources.length" class="roc-sources">
-                        <a
-                            v-for="(source, index) in rocSources"
-                            :key="source.url"
-                            :href="source.url"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            >{{ source.label
-                            }}{{
-                                rocSources.length > 1 ? ` ${index + 1}` : ''
-                            }}
-                            <i class="pi pi-external-link" aria-hidden="true"
-                        /></a>
-                    </div>
-                </header>
-                <p class="basis">분배금 중 자본환급으로 보고된 부분입니다.</p>
-                <p v-if="!rocRows.length" class="roc-empty">
-                    공개된 ROC 근거를 수집하지 못했습니다. ROC 0%를 의미하지
-                    않습니다.
-                </p>
-                <section
-                    v-for="group in rocGroups"
-                    :key="group.scope"
-                    class="roc-group"
-                    :aria-label="group.title">
-                    <div class="roc-group-heading">
-                        <h4>
-                            <i
-                                :class="
-                                    group.scope === 'payment'
-                                        ? 'pi pi-list'
-                                        : 'pi pi-calendar'
-                                "
-                                aria-hidden="true" />
-                            {{ group.title }}
-                        </h4>
-                        <span>{{ group.rows.length }}건 · 단위: USD, %</span>
-                    </div>
-                    <div class="roc-table-wrap">
-                        <table class="roc-table">
-                            <caption class="studio-sr-only">
-                                {{
-                                    group.title
-                                }}: 날짜, 주당 분배금, ROC 금액 및 비율
-                            </caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">
-                                        {{
-                                            group.scope === 'payment'
-                                                ? '지급일'
-                                                : '누적 종료일'
-                                        }}
-                                    </th>
-                                    <th scope="col">배당락일</th>
-                                    <th scope="col">주당 분배금 (USD)</th>
-                                    <th scope="col">ROC 금액 (USD)</th>
-                                    <th scope="col">ROC 비율</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="row in group.rows"
-                                    :key="row.observationId">
-                                    <th scope="row" class="roc-date">
-                                        {{
-                                            row.payableDate ||
-                                            row.throughPaymentDate ||
-                                            '날짜 미확인'
-                                        }}<small v-if="row.fiscalYearEnd"
-                                            >회계연도 종료
-                                            {{ row.fiscalYearEnd }}</small
-                                        >
-                                    </th>
-                                    <td
-                                        class="roc-ex-date"
-                                        data-label="배당락일">
-                                        {{ row.exDate || '미확인' }}
-                                    </td>
-                                    <td
-                                        class="roc-number"
-                                        data-label="주당 분배금">
-                                        {{ row.distributionAmount ?? '—' }}
-                                    </td>
-                                    <td
-                                        class="roc-number"
-                                        data-label="ROC 금액">
-                                        {{ row.rocAmount ?? '—' }}
-                                    </td>
-                                    <td
-                                        class="roc-number roc-percent"
-                                        data-label="ROC 비율">
-                                        <span>{{
-                                            row.rocPercent == null
-                                                ? '—'
-                                                : `${row.rocPercent}%`
-                                        }}</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-                <p v-if="rocRows.length" class="roc-footnote">
-                    <i class="pi pi-info-circle" aria-hidden="true" /> ‘—’는
-                    금액 미제공입니다. 수집된 ROC 비율은 최종 세무 결과와 다를
-                    수 있습니다.
-                </p>
-            </section>
             <details v-if="data.navHistory?.status === 'available'">
                 <summary>공식 NAV 기록 요약</summary>
                 <p>
@@ -708,15 +549,13 @@
     .notice {
         color: #9a3412;
     }
-    .insights-header,
-    .roc-heading-row {
+    .insights-header {
         background: var(--app-surface);
         border-radius: 16px;
         padding: 16px 20px;
         align-items: center;
     }
-    .insights-title h2,
-    .roc-heading-row h3 {
+    .insights-title h2 {
         margin: 0;
         font-size: 19px;
     }
@@ -787,104 +626,9 @@
     .fundamentals-grid {
         margin-top: 12px;
     }
-    .roc-section {
-        margin-top: 32px;
-    }
-    .roc-sources {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px 16px;
-    }
-    .roc-sources a {
-        display: inline-flex;
-        gap: 6px;
-        align-items: center;
-        min-height: 44px;
-        font-size: 12px;
-        font-weight: 600;
-        text-decoration: none;
-    }
-    .roc-section > .basis {
-        margin: 12px 0 20px;
-    }
-    .roc-group {
-        margin-top: 24px;
-    }
-    .roc-group-heading {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 12px;
-    }
-    .roc-group-heading h4 {
-        margin: 0;
-        font-size: 14px;
-    }
-    .roc-group-heading i {
-        color: var(--app-accent);
-        margin-right: 4px;
-    }
-    .roc-group-heading > span,
-    .roc-footnote {
-        font-size: 12px;
-        color: var(--app-muted);
-    }
-    .roc-table-wrap {
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid var(--app-border-subtle);
-        background: var(--app-surface);
-    }
-    .roc-table {
-        font-variant-numeric: tabular-nums;
-    }
-    .roc-table thead th {
-        position: static;
-        background: var(--app-surface-muted);
-        font-size: 12px;
-        color: var(--app-muted);
-    }
-    .roc-table th,
-    .roc-table td {
-        padding: 18px 16px;
-    }
-    .roc-table tbody th {
-        position: static;
-        font-weight: 600;
-    }
-    .roc-table .roc-number,
-    .roc-table thead th:nth-child(n + 3) {
-        text-align: right;
-    }
-    .roc-table tbody tr:last-child > * {
-        border-bottom: 0;
-    }
-    .roc-percent span {
-        padding: 4px 8px;
-        border-radius: 6px;
-        background: var(--app-surface-muted);
-        color: var(--app-accent);
-        font-weight: 700;
-    }
-    .roc-footnote {
-        margin-top: 16px;
-        line-height: 1.7;
-    }
-    .roc-empty {
-        padding: 24px;
-        background: var(--app-surface);
-        border-radius: 14px;
-        font-size: 14px;
-    }
     @media (max-width: 900px) and (min-width: 601px) {
         .metric-grid.core {
             grid-template-columns: 1fr;
-        }
-        .roc-table th,
-        .roc-table td {
-            padding: 14px 8px;
         }
     }
     @media (max-width: 600px) {
@@ -892,14 +636,12 @@
             padding: 16px;
             margin: 24px 0;
         }
-        .insights-header,
-        .roc-heading-row {
+        .insights-header {
             background: transparent;
             padding: 0;
             gap: 6px;
         }
-        .insights-title h2,
-        .roc-heading-row h3 {
+        .insights-title h2 {
             font-size: 17px;
         }
         .insights-title {
@@ -932,87 +674,6 @@
         }
         .fundamentals-grid {
             padding-bottom: 8px;
-        }
-        .roc-heading-row {
-            display: block;
-        }
-        .roc-heading-row .insights-title {
-            justify-content: space-between;
-        }
-        .roc-sources {
-            justify-content: flex-end;
-        }
-        .roc-section > .basis {
-            margin-top: 0;
-        }
-        .roc-table-wrap {
-            background: transparent;
-            border: 0;
-            border-radius: 0;
-            overflow: visible;
-        }
-        .roc-table,
-        .roc-table tbody {
-            display: block;
-            white-space: normal;
-        }
-        .roc-table thead {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            clip-path: inset(50%);
-        }
-        .roc-table tbody tr {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            background: var(--app-surface);
-            border: 1px solid var(--app-border-subtle);
-            border-radius: 14px;
-            margin-bottom: 10px;
-            padding: 16px 12px;
-            gap: 14px 0;
-        }
-        .roc-table .roc-date {
-            grid-column: 1 / -1;
-            background: transparent;
-            padding: 0;
-            border: 0;
-            font-size: 14px;
-        }
-        .roc-table .roc-ex-date {
-            grid-column: 1 / -1;
-            padding: 0;
-            border: 0;
-            font-size: 12px;
-            color: var(--app-muted);
-        }
-        .roc-ex-date::before {
-            content: attr(data-label) ': ';
-        }
-        .roc-table .roc-number {
-            border: 0;
-            padding: 12px 4px;
-            text-align: center;
-            background: var(--app-surface-muted);
-            font-size: 13px;
-            overflow-wrap: anywhere;
-        }
-        .roc-number::before {
-            display: block;
-            content: attr(data-label);
-            font-size: 10px;
-            color: var(--app-muted);
-            margin-bottom: 6px;
-        }
-        .roc-number:nth-child(3) {
-            border-radius: 8px 0 0 8px;
-        }
-        .roc-number:last-child {
-            border-radius: 0 8px 8px 0;
-        }
-        .roc-percent span {
-            padding: 0;
         }
     }
 </style>

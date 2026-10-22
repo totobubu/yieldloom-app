@@ -87,6 +87,10 @@ $git-ship 배포까지 확인해줘
 정보는 이 공개 캐시에 넣지 않습니다. 시세 조회는 차트와 포트폴리오 평가가 같은 응답을
 공유하고, 거래 CSV는 분석·캘린더와 같은 권한·버전 검증 원장을 사용합니다.
 
+버전이 고정된 core·공식 데이터 릴리스는 제한된 메모리에서 최대 24시간 재사용하고
+브라우저 HTTP 캐시를 활용합니다. 최신 포인터는 조회 시 1분마다 확인하며, 버전이 같으면
+하위 파일을 다시 받지 않습니다. 계좌·인증·변동 시세에는 이 장기 캐시를 적용하지 않습니다.
+
 앱과 서버 및 공통 배치 경로의 조회 조사 결과·유지한 호출·검증 한계는
 [조회 전수 조사 기록](docs/data-management/request-audit.json)에 기록했습니다. 여기에 적힌
 감소 수치는 합성 데이터의 특정 시나리오 결과이며 운영 전체 호출량·Firestore 청구 감소율이
@@ -99,6 +103,11 @@ node tests/request-dedup.browser.mjs
 ```
 
 검색 목록은 이 프로젝트의 `data-v2/catalog-seed.json`에서 만드는 `ticker-index.json`을 사용합니다. `VITE_DATA_RELEASE_BASE_URL`을 설정하면 자체 core 릴리스의 catalog를 읽습니다. 검색·API·빌드는 `nav.json`에 의존하지 않습니다. 가격 파일 경로는 `data-v2/market-sources.json`으로 분리했으며 가격 원본 공급은 아직 기존 설정을 사용합니다. 데이터 계약과 배당 릴리스 전환 조건은 [독립 데이터 안내](docs/data-management/INDEPENDENT_DATA_CONTRACT.md)를 참조하세요.
+
+확장 데이터는 `npm run data:collect`로 종목 후보·ETF 운용지표·보유자산·환율·공시를 영역별
+수집합니다. 원문·기준일·개정 이력은 비공개 `var/data-platform/`에 저장하고, 공개 이용 조건
+승인 전 앱에 배포하지 않습니다. 명령·데이터 계약·후속 영역은
+[확장 수집 운영 안내](docs/data-management/DATA_PLATFORM.md)를 참조하세요.
 
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.
 

@@ -63,7 +63,13 @@
         "content:recommend": "python scripts/content_pipeline/performance.py recommend",
         "content:release-check": "python scripts/content_pipeline/release_readiness.py",
         "data:validate-status": "python scripts/metadata/security_status.py --check",
-        "core:cutover:check": "python scripts/data_v2/check_cutover.py"
+        "core:cutover:check": "python scripts/data_v2/check_cutover.py",
+        "data:registry": "python scripts/data_platform/pipeline.py registry",
+        "data:collect": "python scripts/data_platform/pipeline.py collect",
+        "data:export-candidate": "python scripts/data_platform/pipeline.py export",
+        "data:quality": "python scripts/data_platform/pipeline.py quality",
+        "data:release": "python scripts/data_platform/releases.py",
+        "data:analytics": "python scripts/data_platform/analytics.py"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.1149.0",

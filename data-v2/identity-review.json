@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-22",
+  "scope": "18 catalog entries missing ISIN; inactive does not establish delisting",
+  "identityPolicy": "reviewed_exact_corrections_only_no_personal_ledger_or_alias_changes",
+  "summary": {
+    "reviewed": 18,
+    "confirmedIsin": 2,
+    "unresolvedActive": 0,
+    "unresolvedInactive": 16
+  },
+  "notes": {
+    "inactive_listing_unverified": "Prospectus symbols and underlying names are confirmed; the document does not establish current listing or ISIN. Existing NASDAQ market differs from the prospectus planned Cboe listing.",
+    "inactive_metadata_conflict": "CRWW legacy name describes CoreWeave leverage while the issuer document refers to CRWD; DKNW legacy name refers to Defiance while the document refers to Roundhill. No automatic remapping.",
+    "inactive_ambiguous_legacy_code": "An existing listed candidate with a similar name is not proof that the old code is an alias.",
+    "inactive_malformed_symbol": "Whitespace/code fragments are invalid instrument symbols; preserve inactive history without guessing a target."
+  },
+  "entries": [
+    {
+      "symbol": "ABNW",
+      "previousIsin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_listing_unverified",
+      "documentUnderlyingSymbol": "ABNB",
+      "documentPlannedExchange": "Cboe BZX",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ]
+    },
+    {
+      "symbol": "AS _",
+      "previousIsin": null,
+      "market": "NYSE",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_malformed_symbol",
+      "evidencePaths": [
+        "data-v2/catalog-seed.json"
+      ],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
+      ]
+    },
+    {
+      "symbol": "ASMW",
+      "previousIsin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_listing_unverified",
+      "documentUnderlyingSymbol": "ASML",
+      "documentPlannedExchange": "Cboe BZX",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ]
+    },
+    {
+      "symbol": "BRK.A",
+      "previousIsin": null,
+      "market": "NYSE",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "confirmed_isin",
+      "resolvedIsin": "US0846701086",
+      "evidenceUrls": [
+        "https://www.boerse-stuttgart.de/de-de/produkte/aktien/stuttgart/854075-berkshire-hathaway",
+        "https://www.sec.gov/Archives/edgar/data/315090/000119312526304838/xslSCHEDULE_13D_X02/primary_doc.xml",
+        "https://www.nasdaqtrader.com/dynamic/symdir/otherlisted.txt"
+      ]
+    },
+    {
+      "symbol": "CRWW",
+      "previousIsin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_metadata_conflict",
+      "documentUnderlyingSymbol": "CRWD",
+      "documentPlannedExchange": "Cboe BZX",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Original legacy source or broker instrument identifier resolving the conflicting fund name and issuer",
+        "Official identifier and listing evidence for that exact instrument"
+      ]
+    },
+    {
+      "symbol": "DKNW",
+      "previousIsin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_metadata_conflict",
+      "documentUnderlyingSymbol": "DKNG",
+      "documentPlannedExchange": "Cboe BZX",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Original legacy source or broker instrument identifier resolving the conflicting fund name and issuer",
+        "Official identifier and listing evidence for that exact instrument"
+      ]
+    },
+    {
+      "symbol": "FROM DJANGO.UTILS.TRANSLATION IMPORT DPSTTMF",
+      "previousIsin": null,
+      "market": "NYSE",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_malformed_symbol",
+      "evidencePaths": [
+        "data-v2/catalog-seed.json"
+      ],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
+      ]
+    },
+    {
+      "symbol": "FROM DJANGO.UTILS.TRANSLATION IMPORT UGETTEXT_LAZY AS _NFLP",
+      "previousIsin": null,
+      "market": "NYSE",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_malformed_symbol",
+      "evidencePaths": [
+        "data-v2/catalog-seed.json"
+      ],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
+      ]
+    },
+    {
+      "symbol": "FROM DJANGO.UTILS.TRANSLATION IMPORT UGETTEXT_LAZY AS _SLV",
+      "previousIsin": null,
+      "market": "NYSE",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_malformed_symbol",
+      "evidencePaths": [
+        "data-v2/catalog-seed.json"
+      ],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
+      ]
+    },
+    {
+      "symbol": "IREM",
+      "previousIsin": null,
+      "market": "NYSE",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_ambiguous_legacy_code",
+      "candidateSymbol": "IREN",
+      "evidenceUrls": [
+        "https://www.nasdaqtrader.com/dynamic/symdir/nasdaqlisted.txt"
+      ],
+      "requiredEvidence": [
+        "Original broker/source identifier proving whether the legacy code maps to the named candidate",
+        "Exact instrument and listing evidence; similar spelling is insufficient"
+      ]
+    },
+    {
+      "symbol": "LMTW",
+      "previousIsin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_listing_unverified",
+      "documentUnderlyingSymbol": "LMT",
+      "documentPlannedExchange": "Cboe BZX",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ]
+    },
+    {
+      "symbol": "QMZP",
+      "previousIsin": null,
+      "market": "NYSE",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_ambiguous_legacy_code",
+      "candidateSymbol": "AMZP",
+      "evidenceUrls": [
+        "https://www.nasdaqtrader.com/dynamic/symdir/otherlisted.txt"
+      ],
+      "requiredEvidence": [
+        "Original broker/source identifier proving whether the legacy code maps to the named candidate",
+        "Exact instrument and listing evidence; similar spelling is insufficient"
+      ]
+    },
+    {
+      "symbol": "QRDO",
+      "previousIsin": null,
+      "market": "NYSE",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_ambiguous_legacy_code",
+      "candidateSymbol": "CRDO",
+      "evidenceUrls": [
+        "https://www.nasdaqtrader.com/dynamic/symdir/nasdaqlisted.txt"
+      ],
+      "requiredEvidence": [
+        "Original broker/source identifier proving whether the legacy code maps to the named candidate",
+        "Exact instrument and listing evidence; similar spelling is insufficient"
+      ]
+    },
+    {
+      "symbol": "RDDW",
+      "previousIsin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_listing_unverified",
+      "documentUnderlyingSymbol": "RDDT",
+      "documentPlannedExchange": "Cboe BZX",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ]
+    },
+    {
+      "symbol": "SHOW",
+      "previousIsin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_listing_unverified",
+      "documentUnderlyingSymbol": "SHOP",
+      "documentPlannedExchange": "Cboe BZX",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ]
+    },
+    {
+      "symbol": "TSMW",
+      "previousIsin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_listing_unverified",
+      "documentUnderlyingSymbol": "TSM",
+      "documentPlannedExchange": "Cboe BZX",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ]
+    },
+    {
+      "symbol": "TSYW",
+      "previousIsin": null,
+      "market": "BATS",
+      "currency": "USD",
+      "active": true,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "confirmed_isin",
+      "resolvedIsin": "US77926X3952",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/etf/tsyw/"
+      ]
+    },
+    {
+      "symbol": "XOMW",
+      "previousIsin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "active": false,
+      "reviewedAt": "2026-10-22",
+      "automaticAlias": false,
+      "listingActivation": false,
+      "status": "inactive_listing_unverified",
+      "documentUnderlyingSymbol": "XOM",
+      "documentPlannedExchange": "Cboe BZX",
+      "evidenceUrls": [
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
+        "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ]
+    }
+  ]
+}

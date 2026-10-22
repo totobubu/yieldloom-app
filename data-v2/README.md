@@ -90,10 +90,44 @@ report. An unchanged document reuses its last approved-state events; a missing
 historical row is retained and marked for deletion review. A provider failure
 does not discard candidates from other providers.
 
+For a confirmed historical gap, dispatch collection with
+`backfill=roundhill:2026-10-05` (provider and ex-date), or pass
+`--backfill provider:YYYY-MM-DD` to the collector. This forces the adapter's
+narrow historical official sources to be fetched and deduplicated, then saves
+their parsed evidence in the normal collection state. Legacy amounts are never
+imported. The resulting candidate still needs full cutover review.
+
 To publish a reviewed artifact, run `Publish approved data v2 release` on
 `main`, pass `candidate_run_id` from the collection workflow, and use release
 ID `candidate-<candidate_run_id>`. This validates the downloaded artifact and
 only then moves `core/current.json`.
+
+Before publishing, dispatch the same workflow with `review_only=true`, a
+`candidate_run_id`, and a separate review `release_id`. This mode runs without
+the production environment or R2 credentials. It rebuilds the collected official
+events with the checked-out catalog, compares all verified legacy history, and
+exposes a compact result in the job summary and check annotation. Missing or
+changed history fails the review. The complete snapshot and comparison remain
+in the `dividend-cutover-review-<run_id>` artifact. A review never updates
+`core/current.json`; publishing still requires a separately approved snapshot.
+After publishing, repeat the review with `verify_public=true` and the published
+release ID. The public probe checks the current pointer, manifest, hashed catalog
+and dividend index, one ticker history, and browser CORS. A passing history
+comparison does not certify source availability: inspect collection errors in
+the annotations even when `ready=true`; retained historical events can remain
+valid while a provider's current endpoint is unavailable.
+
+Collection's `inspect_release=<release_id>` mode only counts uploaded R2
+objects and reads the current pointer; it performs no collection or writes.
+Normal publication uploads immutable files with up to eight parallel requests,
+waits for all of them to succeed, then writes the manifest and finally the
+current pointer. Any failed upload prevents both final writes.
+If the production origin is missing from bucket CORS, collection's
+`configure_core_cors=true` mode adds only `https://yieldloom-app.vercel.app`
+using the `data-production` environment. It preserves existing rules and never
+adds the new origin to write methods. `configure_cors.py` defaults to dry run;
+`--apply` is required for a direct change. Public verification uses Node fetch,
+the same client as the API, and checks both Pages and Vercel origins.
 
 ## Official email screenshot evidence
 

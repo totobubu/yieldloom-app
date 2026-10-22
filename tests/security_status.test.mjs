@@ -6,6 +6,7 @@ import {
     archiveTicker,
     isDelisted,
     isSearchableSecurity,
+    securityStatus,
 } from '../lib/security-status.js';
 import { createTickerIndex } from '../scripts/publicAssets.mjs';
 import {
@@ -17,6 +18,31 @@ import {
 } from '../api/thumbnail-data.js';
 import ogHandler from '../api/thumbnail-og.js';
 import { refresh } from '../scripts/thumbnail_pipeline/refresh.mjs';
+
+test('REX liquidation notice is reflected for every fund with distinct event dates', () => {
+    const expected = {
+        COII: 'REX COIN Growth & Income ETF',
+        CWII: 'REX CRWV Growth & Income ETF',
+        HOII: 'REX HOOD Growth & Income ETF',
+        LLII: 'REX LLY Growth & Income ETF',
+        MSII: 'REX MSTR Growth & Income ETF',
+        PLTI: 'REX PLTR Growth & Income ETF',
+        GIF: 'REX Growth & Income Universe ETF',
+    };
+    for (const [symbol, officialName] of Object.entries(expected)) {
+        const entry = catalogEntry(symbol);
+        assert.ok(entry, `${symbol} remains in the catalog for archived history`);
+        assert.equal(isDelisted(entry), true);
+        const status = securityStatus(symbol);
+        assert.equal(status.officialName, officialName);
+        assert.equal(status.officialVerified, true);
+        assert.equal(status.lastTradingOn, '2026-06-09');
+        assert.equal(status.tradingHaltedOn, '2026-06-09');
+        assert.equal(status.liquidatedOn, '2026-06-16');
+        assert.equal(status.delistedOn, null);
+    }
+    assert.deepEqual(rivalOptions(catalogEntry('GIF')), []);
+});
 
 const oldRows = [
     { symbol: 'COII', active: true },
@@ -35,10 +61,11 @@ test('reviewed status overrides remote active flags without treating every inact
         rows
             .filter((row) => isSearchableSecurity(row, true))
             .map((row) => row.symbol),
-        ['COII', 'AAPL']
+        ['COII', 'AAPL', 'CWII', 'HOII', 'LLII', 'MSII', 'PLTI', 'GIF']
     );
-    assert.equal(rows[0].listingStatus.officialVerified, false);
+    assert.equal(rows[0].listingStatus.officialVerified, true);
     assert.equal(rows[0].listingStatus.delistedOn, null);
+    assert.equal(rows[0].listingStatus.lastTradingOn, '2026-06-09');
     assert.equal(oldRows[0].active, true);
     assert.equal(isDelisted(rows[2]), false);
 });

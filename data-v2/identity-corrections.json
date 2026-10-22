@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "corrections": [
+    {
+      "symbol": "IWM",
+      "market": "NYSE",
+      "currency": "USD",
+      "previousIsin": "JP5841360000",
+      "isin": "US4642876555",
+      "cusip": "464287655",
+      "reviewedAt": "2026-10-22",
+      "evidenceUrl": "https://www.ishares.com/us/literature/fact-sheet/iwm-ishares-russell-2000-etf-fund-fact-sheet-ja-jp.pdf",
+      "evidenceAsOfDate": "2026-06-30",
+      "reason": "Issuer fact sheet identifies IWM, USD, NYSE Arca, ISIN and CUSIP. Previous identifier is not an alias of this instrument."
+    },
+    {
+      "symbol": "TSYW",
+      "market": "BATS",
+      "currency": "USD",
+      "previousIsin": null,
+      "isin": "US77926X3952",
+      "cusip": "77926X395",
+      "reviewedAt": "2026-10-22",
+      "evidenceUrl": "https://www.roundhillinvestments.com/etf/tsyw/",
+      "reason": "Issuer explicitly publishes ISIN and CUSIP; primary exchange Cboe BZX matches the BATS catalog identity."
+    },
+    {
+      "symbol": "BRK.A",
+      "market": "NYSE",
+      "currency": "USD",
+      "previousIsin": null,
+      "isin": "US0846701086",
+      "cusip": "084670108",
+      "reviewedAt": "2026-10-22",
+      "evidenceUrl": "https://www.boerse-stuttgart.de/de-de/produkte/aktien/stuttgart/854075-berkshire-hathaway",
+      "additionalEvidenceUrls": [
+        "https://www.sec.gov/Archives/edgar/data/315090/000119312526304838/xslSCHEDULE_13D_X02/primary_doc.xml",
+        "https://www.nasdaqtrader.com/dynamic/symdir/otherlisted.txt"
+      ],
+      "reason": "Exchange publishes ISIN; Berkshire class A CUSIP is confirmed by SEC filing. US directory confirms BRK.A on NYSE. No German trading currency or listing activation is copied."
+    }
+  ]
+}

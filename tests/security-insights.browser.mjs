@@ -25,13 +25,16 @@ async function mockQuote(page) {
                         freshness: 'fresh',
                         priceDate: '2026-10-14',
                     },
-                    backtestData: Array.from({ length: 16 }, (_, i) => ({
-                        date: new Date(Date.UTC(2025, i, 5))
-                            .toISOString()
-                            .slice(0, 10),
-                        close: 40 + i,
-                        amount: 0.5,
-                    })),
+                    backtestData: [
+                        { date: '2026-10-15', close: 40, amount: 0.157 },
+                        ...Array.from({ length: 16 }, (_, i) => ({
+                            date: new Date(Date.UTC(2025, i, 5))
+                                .toISOString()
+                                .slice(0, 10),
+                            close: 40 + i,
+                            amount: 0.5,
+                        })),
+                    ],
                 },
                 catalog: { symbol, securityType: 'etf' },
                 rivals: [],
@@ -56,34 +59,45 @@ try {
         // Quote identity is synthetic; financial insights use the real public snapshot.
         await mockQuote(page);
         await page.goto(base + '/stock/QLDY?tab=details');
+        await page
+            .getByRole('heading', { name: 'QLDY 종목 개요', exact: true })
+            .waitFor();
+        assert.equal(await page.locator('.security-insights').count(), 0);
+        assert.equal(requests.length, 0);
+        await page.getByRole('tab', { name: '배당정보', exact: true }).click();
         const panel = page.locator('.security-insights');
-        await panel.locator('.roc-table tbody tr').first().waitFor();
+        const ledger = page.locator('.dividend-roc-history');
+        await ledger.locator('.history-sources a').first().waitFor();
+        await ledger.locator('.history-table tbody tr').first().waitFor();
         assert.equal(
             await panel.locator('.metric-grid.core article').count(),
             3
         );
-        assert.equal(await panel.locator('.roc-table tbody tr').count(), 4);
-        assert.equal(await panel.locator('.roc-sources a').count(), 1);
         assert.equal(
-            await panel.locator('.roc-sources a').getAttribute('href'),
+            await ledger.locator('.history-table tbody tr').count(),
+            12
+        );
+        assert.equal(await ledger.locator('.history-sources a').count(), 1);
+        assert.equal(
+            await ledger.locator('.history-sources a').getAttribute('href'),
             'https://www.defianceetfs.com/explore-our-etfs/'
         );
         assert.match(
-            await panel.locator('.roc-sources').innerText(),
+            await ledger.locator('.history-sources').innerText(),
             /운용사 페이지/
         );
-        assert.equal(await panel.locator('.roc-table a').count(), 0);
+        assert.equal(await ledger.locator('.history-table a').count(), 0);
         assert.doesNotMatch(
-            await panel.locator('.roc-section').innerText(),
+            await ledger.innerText(),
             /미분류|분류 미확인|상태 · 범위/
         );
         assert.match(
-            await panel.locator('.roc-table tbody tr').first().innerText(),
+            await ledger.locator('.history-table tbody tr').first().innerText(),
             /0\.1570/
         );
         assert.equal(
-            await panel
-                .locator('.roc-table tbody tr')
+            await ledger
+                .locator('.history-table tbody tr')
                 .first()
                 .locator('td')
                 .nth(2)
@@ -91,6 +105,7 @@ try {
             '—'
         );
         const before = requests.length;
+        assert.equal(before, 1);
         const fundamentals = panel.locator('.fundamentals');
         assert.equal(await fundamentals.evaluate((el) => el.open), width > 600);
         await fundamentals.locator('summary').click();
@@ -98,8 +113,8 @@ try {
             await fundamentals.evaluate((el) => el.open),
             width <= 600
         );
-        const help = panel.getByRole('button', {
-            name: 'ROC 기준 및 금액 안내',
+        const help = ledger.getByRole('button', {
+            name: '배당·ROC 연결 및 금액 안내',
             exact: true,
         });
         await help.scrollIntoViewIfNeeded();
@@ -112,16 +127,73 @@ try {
         await page.keyboard.press('Escape');
         await page.locator('.p-popover').waitFor({ state: 'hidden' });
         assert.equal(requests.length, before);
+        assert.equal(
+            await page
+                .getByRole('heading', { name: '배당 이력', exact: true })
+                .count(),
+            0
+        );
+        assert.equal(
+            await ledger
+                .locator('.history-table tbody tr')
+                .filter({ hasText: '2026-10-15' })
+                .count(),
+            1
+        );
+        await ledger.getByRole('button', { name: '차트', exact: true }).click();
+        await ledger.locator('.dividend-roc-chart svg').waitFor();
+        assert.equal(await ledger.locator('.distribution-point').count(), 12);
+        assert.equal(await ledger.locator('.roc-point').count(), 0);
+        assert.equal(await ledger.locator('.ratio-point').count(), 4);
+        assert.equal(await ledger.locator('.distribution-value').count(), 12);
+        assert.equal(await ledger.locator('.ratio-value').count(), 4);
+        assert.equal(await ledger.locator('.roc-value').count(), 0);
+        assert.match(
+            (await ledger.locator('.ratio-value').allTextContents()).join(' '),
+            /100%/
+        );
+        await ledger
+            .locator('.chart-payment')
+            .filter({ has: page.getByText('26-10-08', { exact: true }) })
+            .hover();
+        assert.match(
+            await ledger.locator('.chart-detail').innerText(),
+            /2026-10-08/
+        );
+        await ledger.locator('.chart-payment').last().focus();
+        await page.keyboard.press('Enter');
+        assert.match(
+            await ledger.locator('.chart-detail').innerText(),
+            /2026-10-15/
+        );
+        await ledger.screenshot({
+            path: `/tmp/dividend-roc-chart-${width}.png`,
+        });
+        await ledger.getByRole('button', { name: '표', exact: true }).click();
+        assert.equal(
+            await ledger.locator('.history-table tbody tr').count(),
+            12
+        );
+        assert.equal(requests.length, before);
+        await page.getByRole('tab', { name: '상세정보', exact: true }).click();
+        assert.equal(await panel.count(), 0);
+        await page.getByRole('tab', { name: '배당정보', exact: true }).click();
+        await ledger.locator('.history-table tbody tr').first().waitFor();
+        assert.equal(requests.length, before);
         assert.ok(
             await page.evaluate(
                 () => document.documentElement.scrollWidth <= innerWidth + 1
             )
         );
-        await panel.screenshot({ path: `/tmp/roc-insights-${width}.png` });
+        await ledger.screenshot({
+            path: `/tmp/dividend-roc-table-${width}.png`,
+        });
         await page.evaluate(() =>
             document.documentElement.classList.add('p-dark')
         );
-        await panel.screenshot({ path: `/tmp/roc-insights-dark-${width}.png` });
+        await ledger.screenshot({
+            path: `/tmp/dividend-roc-dark-${width}.png`,
+        });
         assert.deepEqual(errors, []);
         console.log(
             `PASS ${width}: QLDY real snapshot, precision, missing ROC amount, shared source, disclosure, help, no extra reads, light/dark layout`
@@ -132,25 +204,49 @@ try {
         viewport: { width: 390, height: 900 },
     });
     await mockQuote(page);
-    await page.goto(base + '/stock/SPYI?tab=details');
+    await page.goto(base + '/stock/SPYI?tab=dividends');
     const panel = page.locator('.security-insights');
-    await panel.locator('.roc-group').first().waitFor();
-    assert.ok(await panel.getByText('0.48085208', { exact: true }).count());
-    assert.ok(await panel.getByText('95.274833%', { exact: true }).count());
-    assert.equal(await panel.locator('.roc-group').count(), 2);
-    await panel
-        .getByRole('heading', { name: '회계연도 누적 내역', exact: true })
-        .waitFor();
+    const ledger = page.locator('.dividend-roc-history');
+    await ledger.locator('.annual-history').waitFor();
+    await ledger.locator('.annual-history summary').click();
+    let content = await ledger.innerText();
+    for (let i = 0; i < 4 && !content.includes('0.48085208'); i++) {
+        const next = ledger.getByRole('button', {
+            name: '다음 페이지',
+            exact: true,
+        });
+        if (!(await next.isEnabled())) break;
+        await next.click();
+        content = await ledger.innerText();
+    }
+    assert.match(content, /0\.48085208/);
+    assert.match(content, /95\.274833%/);
+    assert.equal(await ledger.locator('.annual-history').count(), 1);
+    await ledger.getByRole('button', { name: '차트', exact: true }).click();
+    assert.ok((await ledger.locator('.roc-point').count()) > 0);
+    assert.ok((await ledger.locator('.ratio-point').count()) > 0);
+
     assert.equal(await panel.getByText('확정', { exact: true }).count(), 0);
     assert.equal(await panel.getByText('추정', { exact: true }).count(), 0);
-    await page.goto(base + '/stock/TXN?tab=details');
-    await panel
+    await page.goto(base + '/stock/TXN?tab=dividends');
+    await ledger
         .getByText('공개된 ROC 근거를 수집하지 못했습니다.', { exact: false })
         .waitFor();
     await panel
         .getByText('배당 지급 여력의 분기별 근거', { exact: true })
         .click();
     await panel.getByText('2026-06-30', { exact: true }).waitFor();
+    await page.route('**/security-insights/41.json', (route) =>
+        route.fulfill({ status: 500, json: { error: 'snapshot unavailable' } })
+    );
+    await page.goto(base + '/stock/NVDA?tab=dividends');
+    await ledger
+        .getByText('ROC 자료를 불러오지 못했습니다.', { exact: false })
+        .waitFor();
+    assert.ok((await ledger.locator('.history-table tbody tr').count()) > 0);
+    await ledger.getByRole('button', { name: '차트', exact: true }).click();
+    assert.equal(await ledger.locator('.ratio-point').count(), 0);
+    assert.equal(await ledger.locator('.roc-point').count(), 0);
     console.log(
         'PASS: SPYI precision and separate fiscal scope; TXN empty ROC and quarterly evidence'
     );

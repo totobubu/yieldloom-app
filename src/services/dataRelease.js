@@ -1,15 +1,13 @@
 import { mapCoreDividend as mapEvent } from '../../lib/dividend-contract.js';
 import { readPublicJson } from './publicJson.js';
+import { releaseCacheOptions } from './releaseCache.js';
 const baseUrl = (import.meta.env?.VITE_DATA_RELEASE_BASE_URL || '').replace(
     /\/+$/,
     ''
 );
 
 const fetchJson = (url, options = {}) =>
-    readPublicJson(url, {
-        ttlMs: url.endsWith('/current.json') ? 60_000 : 180_000,
-        ...options,
-    });
+    readPublicJson(url, releaseCacheOptions(url, options));
 
 export const isDataReleaseConfigured = () => Boolean(baseUrl);
 
@@ -18,15 +16,15 @@ export async function loadDataReleaseIndex(options = {}) {
         ...options,
         validate: (value) =>
             value?.schemaVersion === 2 &&
-            /^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(
-                value.manifestKey || ''
-            ),
+            /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(value.releaseId || '') &&
+            value.manifestKey ===
+                `core/releases/${value.releaseId}/manifest.json`,
     });
     if (
         pointer.schemaVersion !== 2 ||
-        !/^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(
-            pointer.manifestKey || ''
-        )
+        !/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(pointer.releaseId || '') ||
+        pointer.manifestKey !==
+            `core/releases/${pointer.releaseId}/manifest.json`
     )
         throw new Error('Invalid core release pointer');
     const manifest = await fetchJson(`${baseUrl}/${pointer.manifestKey}`, {

@@ -33,11 +33,14 @@ def validate_registry(payload):
         for field in ('delistedOn', 'lastTradingOn', 'checkedOn'):
             if field not in row or (field == 'checkedOn' and row[field] is None):
                 raise ValueError(f'Missing {field}: {symbol}')
-            value = row[field]
+        for field in ('delistedOn', 'lastTradingOn', 'tradingHaltedOn', 'liquidatedOn', 'checkedOn'):
+            value = row.get(field)
             if value is not None and (not isinstance(value, str) or date.fromisoformat(value).isoformat() != value):
                 raise ValueError(f'Invalid {field}: {symbol}')
         if row['lastTradingOn'] and row['delistedOn'] and row['lastTradingOn'] > row['delistedOn']:
             raise ValueError(f'Last trade after delisting: {symbol}')
+        if row.get('liquidatedOn') and row['lastTradingOn'] and row['liquidatedOn'] < row['lastTradingOn']:
+            raise ValueError(f'Liquidation before last trade: {symbol}')
         source = row.get('source') or {}
         if not isinstance(source, dict) or source.get('type') not in ('user_report', 'official') or not isinstance(source.get('reference'), str) or not source['reference'].strip():
             raise ValueError(f'Missing evidence: {symbol}')

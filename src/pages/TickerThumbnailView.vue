@@ -28,11 +28,15 @@
     import DividendCalendarThumbnail from '@/components/thumbnail/DividendCalendarThumbnail.vue';
     import DividendEntryEfficiencyThumbnail from '@/components/thumbnail/DividendEntryEfficiencyThumbnail.vue';
     import ThumbnailPreview from '@/components/thumbnail/ThumbnailPreview.vue';
+    import InfoHelp from '@/components/common/InfoHelp.vue';
     import StockDividendTrend from '@/components/stock/StockDividendTrend.vue';
     import StockHoldingPanel from '@/components/stock/StockHoldingPanel.vue';
     import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
+    import DividendRocHistory from '@/components/stock/DividendRocHistory.vue';
     import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
+    import OfficialFundData from '@/components/stock/OfficialFundData.vue';
+    import { isOfficialFundConfigured } from '@/services/officialFundData.js';
     import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
     import { getAssetUrl } from '@/utils/dataUrl';
     import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
@@ -826,6 +830,15 @@
                 <p v-if="selectedInfo.listingStatus.lastTradingOn">
                     최종 거래일 {{ selectedInfo.listingStatus.lastTradingOn }}
                 </p>
+                <p v-if="selectedInfo.listingStatus.tradingHaltedOn">
+                    거래중단일 {{ selectedInfo.listingStatus.tradingHaltedOn }}
+                </p>
+                <p v-if="selectedInfo.listingStatus.liquidatedOn">
+                    청산일 {{ selectedInfo.listingStatus.liquidatedOn }}
+                </p>
+                <p v-if="selectedInfo.listingStatus.delistedOnNote">
+                    {{ selectedInfo.listingStatus.delistedOnNote }}
+                </p>
                 <a
                     v-if="selectedInfo.listingStatus.source.url"
                     :href="selectedInfo.listingStatus.source.url"
@@ -1061,12 +1074,14 @@
                                 미확인 수치는 0으로 간주하지 않습니다.
                             </p>
                         </section>
-                        <div
-                            v-show="activeTab === 'details'"
-                            class="stock-insights">
-                            <SecurityInsights
-                                :symbol="normalize(route.params.ticker)" />
-                        </div> </TabPanel
+                        <OfficialFundData
+                            v-if="
+                                activeTab === 'details' &&
+                                isOfficialFundConfigured()
+                            "
+                            :symbol="
+                                normalize(route.params.ticker)
+                            " /> </TabPanel
                     ><TabPanel value="prices">
                         <section
                             v-if="activeTab === 'prices'"
@@ -1137,7 +1152,12 @@
                                 "
                                 class="dividend-next">
                                 <div class="section-heading">
-                                    <h2>배당 일정</h2>
+                                    <div class="schedule-title">
+                                        <h2>배당 일정</h2>
+                                        <InfoHelp
+                                            label="배당 일정 안내"
+                                            text="공시 전 일정은 최근 주기를 바탕으로 한 추정치입니다. 증권사 입금일은 다를 수 있으며, 개인별 수령액은 보유 수량과 세금에 따라 다릅니다." />
+                                    </div>
                                     <Tag
                                         :value="
                                             nextDividend?.confirmed
@@ -1176,11 +1196,6 @@
                                         }}</strong>
                                     </div>
                                 </div>
-                                <p class="hint">
-                                    공시 전 일정은 최근 주기를 바탕으로 한
-                                    추정입니다. 증권사 입금일과 실제 수령액은
-                                    다를 수 있습니다.
-                                </p>
                             </div>
                             <StockDividendTrend
                                 v-if="dividendState === 'available'"
@@ -1190,53 +1205,30 @@
                                     today()
                                 "
                                 :currency="selectedInfo.currency || 'USD'" />
-                            <h2 v-if="dividendState === 'available'">
-                                배당 이력
-                            </h2>
-                            <p
-                                v-if="dividendState === 'available'"
-                                class="hint">
-                                배당락일 기준 · 주당 세전
-                                {{ selectedInfo.currency }} ·
-                                {{ historyRows.length }}회 수집
-                            </p>
-                            <DataTable
-                                v-if="dividendState === 'available'"
-                                :value="historyRows"
-                                class="stock-data-table"
-                                striped-rows
-                                paginator
-                                :rows="12"
-                                :page-link-size="3"
-                                paginator-template="PrevPageLink PageLinks NextPageLink"
-                                :table-props="{ 'aria-label': '배당 이력' }"
-                                ><Column
-                                    field="date"
-                                    header="배당락일" /><Column
-                                    header="주당 배당금 · 세전"
-                                    ><template #body="{ data }"
-                                        >{{ displayNumber(amount(data), 6) }}
-                                        {{ selectedInfo.currency }}</template
-                                    ></Column
-                                ></DataTable
-                            >
-                            <p
-                                v-if="
-                                    dividendState === 'available' &&
-                                    !historyRows.length
-                                "
-                                class="hint">
-                                확인 가능한 배당 이력이 없습니다.
-                            </p>
-                            <p
-                                v-if="
-                                    !archived && dividendState === 'available'
-                                "
-                                class="hint">
-                                공시 전 일정은 추정치입니다. 개인별 수령액은
-                                보유 수량과 세금에 따라 다릅니다.
-                            </p>
-                        </section> </TabPanel
+                        </section>
+                        <div
+                            v-if="activeTab === 'dividends'"
+                            class="stock-insights">
+                            <SecurityInsights
+                                :symbol="normalize(route.params.ticker)">
+                                <template
+                                    #history="{
+                                        observations,
+                                        loading: insightsLoading,
+                                        failed,
+                                    }">
+                                    <DividendRocHistory
+                                        :key="normalize(route.params.ticker)"
+                                        :history="historyRows"
+                                        :observations="observations"
+                                        :currency="
+                                            selectedInfo.currency || 'USD'
+                                        "
+                                        :loading="insightsLoading"
+                                        :failed="failed" />
+                                </template>
+                            </SecurityInsights>
+                        </div> </TabPanel
                     ><TabPanel v-if="!archived" value="share">
                         <section class="share-workspace stock-section">
                             <div class="section-heading">
@@ -1726,6 +1718,11 @@
 </template>
 
 <style scoped>
+    .schedule-title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
     .ticker-thumbnail-page {
         color: var(--app-text);
         min-width: 0;

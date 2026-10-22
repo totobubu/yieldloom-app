@@ -1,0 +1,412 @@
+{
+    "schemaVersion": 1,
+    "datasets": {
+        "identity": {
+            "owner": "reference-data",
+            "fields": ["listing"],
+            "identityPolicy": "discovery_candidates_only"
+        },
+        "fund-profile": {
+            "owner": "fund-data",
+            "fields": ["prospectusExpenseRatio"]
+        },
+        "fund-observations": {
+            "owner": "fund-data",
+            "fields": [
+                "nav",
+                "aum",
+                "sharesOutstanding",
+                "closingPrice",
+                "medianSpread30D",
+                "secYield30D",
+                "trailingYield12M"
+            ]
+        },
+        "holdings": {
+            "owner": "fund-data",
+            "fields": ["position"]
+        },
+        "fx": {
+            "owner": "reference-data",
+            "fields": ["referenceRate"]
+        },
+        "filings": {
+            "owner": "issuer-data",
+            "fields": ["filing"]
+        },
+        "market-prices": {
+            "owner": "market-data",
+            "managedBy": "existing_price_collectors",
+            "state": "supplier_rights_and_adjustment_contract_required"
+        },
+        "actions": {
+            "owner": "market-data",
+            "managedBy": "corporate_action_observations",
+            "state": "verified_source_expansion_required"
+        },
+        "distributions": {
+            "owner": "official-dividends",
+            "managedBy": "scripts/data_v2/prepare_incremental_candidate.py",
+            "state": "existing_authoritative_pipeline"
+        },
+        "tax-character": {
+            "owner": "fund-tax-data",
+            "managedBy": "scripts/content_pipeline/tax_character.py",
+            "state": "existing_observation_pipeline"
+        },
+        "financials": {
+            "owner": "issuer-data",
+            "state": "pilot_collection",
+            "fields": [
+                "revenue",
+                "netIncome",
+                "operatingCashFlow",
+                "assets",
+                "liabilities",
+                "cash",
+                "capitalExpenditure",
+                "dividendsPaid",
+                "equity"
+            ]
+        },
+        "exposures": {
+            "owner": "fund-data",
+            "state": "private_derived_candidate",
+            "managedBy": "scripts/data_platform/analytics.py"
+        },
+        "macro": {
+            "owner": "reference-data",
+            "state": "pilot_collection",
+            "fields": ["policyRate"]
+        },
+        "analytics": {
+            "owner": "analytics",
+            "state": "private_derived_candidate",
+            "managedBy": "scripts/data_platform/analytics.py"
+        }
+    },
+    "sources": [
+        {
+            "id": "nasdaq-listed",
+            "enabled": true,
+            "parser": "nasdaq-directory",
+            "parserVersion": "1",
+            "datasets": ["identity"],
+            "url": "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "nasdaq-directory-review-required"
+        },
+        {
+            "id": "nasdaq-other-listed",
+            "enabled": true,
+            "parser": "nasdaq-directory",
+            "parserVersion": "1",
+            "datasets": ["identity"],
+            "url": "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "nasdaq-directory-review-required"
+        },
+        {
+            "id": "ishares-ivv-profile",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-profile",
+            "parserVersion": "2",
+            "datasets": ["fund-observations", "fund-profile"],
+            "url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+            "symbol": "IVV",
+            "entityId": "instrument:isin:US4642872000",
+            "fundName": "iShares Core S&P 500 ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required",
+            "cusip": "464287200"
+        },
+        {
+            "id": "ishares-ivv-holdings",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-holdings",
+            "parserVersion": "5",
+            "datasets": ["holdings", "fund-observations"],
+            "url": "https://www.ishares.com/us/products/239726/ishares-core-s-p-500-etf/latest-holdings.csv",
+            "symbol": "IVV",
+            "entityId": "instrument:isin:US4642872000",
+            "fundName": "iShares Core S&P 500 ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required"
+        },
+        {
+            "id": "ecb-reference-fx",
+            "enabled": true,
+            "parser": "ecb-fx",
+            "parserVersion": "1",
+            "datasets": ["fx"],
+            "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "approved",
+            "policyId": "ecb-public-information"
+        },
+        {
+            "id": "sec-aapl-submissions",
+            "enabled": true,
+            "parser": "sec-submissions",
+            "parserVersion": "2",
+            "datasets": ["filings"],
+            "url": "https://data.sec.gov/submissions/CIK0000320193.json",
+            "cik": "0000320193",
+            "maxFilings": 40,
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information",
+            "symbol": "AAPL",
+            "minHostIntervalSeconds": 1
+        },
+        {
+            "id": "opendart-financials",
+            "enabled": false,
+            "datasets": ["financials", "filings"],
+            "blockedReason": "API key, corporation mapping, CFS/OFS and reporting-period contract required",
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "krx-market-data",
+            "enabled": false,
+            "datasets": ["identity", "market-prices"],
+            "blockedReason": "Service authentication and permitted commercial/public use must be established",
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "commercial-market-data",
+            "enabled": false,
+            "datasets": ["market-prices", "actions", "financials"],
+            "blockedReason": "Provider, coverage, plan, adjustment basis and redistribution rights not selected",
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "ishares-iwm-profile",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-profile",
+            "parserVersion": "2",
+            "datasets": ["fund-observations", "fund-profile"],
+            "url": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf",
+            "symbol": "IWM",
+            "entityId": "instrument:isin:US4642876555",
+            "fundName": "iShares Russell 2000 ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required",
+            "cusip": "464287655"
+        },
+        {
+            "id": "ishares-iwm-holdings",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-holdings",
+            "parserVersion": "5",
+            "datasets": ["holdings", "fund-observations"],
+            "url": "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf/latest-holdings.csv",
+            "symbol": "IWM",
+            "entityId": "instrument:isin:US4642876555",
+            "fundName": "iShares Russell 2000 ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required"
+        },
+        {
+            "id": "ishares-efa-profile",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-profile",
+            "parserVersion": "2",
+            "datasets": ["fund-observations", "fund-profile"],
+            "url": "https://www.ishares.com/us/products/239623/ishares-msci-eafe-etf",
+            "symbol": "EFA",
+            "entityId": "instrument:isin:US4642874659",
+            "fundName": "iShares MSCI EAFE ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required",
+            "cusip": "464287465"
+        },
+        {
+            "id": "ishares-efa-holdings",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-holdings",
+            "parserVersion": "5",
+            "datasets": ["holdings", "fund-observations"],
+            "url": "https://www.ishares.com/us/products/239623/ishares-msci-eafe-etf/latest-holdings.csv",
+            "symbol": "EFA",
+            "entityId": "instrument:isin:US4642874659",
+            "fundName": "iShares MSCI EAFE ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required"
+        },
+        {
+            "id": "ishares-eem-profile",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-profile",
+            "parserVersion": "2",
+            "datasets": ["fund-observations", "fund-profile"],
+            "url": "https://www.ishares.com/us/products/239637/ishares-msci-emerging-markets-etf",
+            "symbol": "EEM",
+            "entityId": "instrument:isin:US4642872349",
+            "fundName": "iShares MSCI Emerging Markets ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required",
+            "cusip": "464287234"
+        },
+        {
+            "id": "ishares-eem-holdings",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-holdings",
+            "parserVersion": "5",
+            "datasets": ["holdings", "fund-observations"],
+            "url": "https://www.ishares.com/us/products/239637/ishares-msci-emerging-markets-etf/latest-holdings.csv",
+            "symbol": "EEM",
+            "entityId": "instrument:isin:US4642872349",
+            "fundName": "iShares MSCI Emerging Markets ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required"
+        },
+        {
+            "id": "ishares-agg-profile",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-profile",
+            "parserVersion": "2",
+            "datasets": ["fund-observations", "fund-profile"],
+            "url": "https://www.ishares.com/us/products/239458/ishares-core-total-us-bond-market-etf",
+            "symbol": "AGG",
+            "entityId": "instrument:isin:US4642872265",
+            "fundName": "iShares Core U.S. Aggregate Bond ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required",
+            "cusip": "464287226"
+        },
+        {
+            "id": "ishares-agg-holdings",
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
+            "parser": "ishares-holdings",
+            "parserVersion": "5",
+            "datasets": ["holdings", "fund-observations"],
+            "url": "https://www.ishares.com/us/products/239458/ishares-core-total-us-bond-market-etf/latest-holdings.csv",
+            "symbol": "AGG",
+            "entityId": "instrument:isin:US4642872265",
+            "fundName": "iShares Core U.S. Aggregate Bond ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required"
+        },
+        {
+            "id": "sec-msft-submissions",
+            "enabled": true,
+            "parser": "sec-submissions",
+            "parserVersion": "2",
+            "datasets": ["filings"],
+            "url": "https://data.sec.gov/submissions/CIK0000789019.json",
+            "cik": "0000789019",
+            "maxFilings": 40,
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information",
+            "symbol": "MSFT",
+            "minHostIntervalSeconds": 1
+        },
+        {
+            "id": "sec-nvda-submissions",
+            "enabled": true,
+            "parser": "sec-submissions",
+            "parserVersion": "2",
+            "datasets": ["filings"],
+            "url": "https://data.sec.gov/submissions/CIK0001045810.json",
+            "cik": "0001045810",
+            "maxFilings": 40,
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information",
+            "symbol": "NVDA",
+            "minHostIntervalSeconds": 1
+        },
+        {
+            "id": "sec-aapl-companyfacts",
+            "enabled": true,
+            "datasets": ["financials"],
+            "parser": "sec-companyfacts",
+            "parserVersion": "2",
+            "url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json",
+            "cik": "0000320193",
+            "symbol": "AAPL",
+            "maxObservationsPerConcept": 60,
+            "minIntervalSeconds": 86400,
+            "minHostIntervalSeconds": 1,
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information"
+        },
+        {
+            "id": "sec-msft-companyfacts",
+            "enabled": true,
+            "datasets": ["financials"],
+            "parser": "sec-companyfacts",
+            "parserVersion": "2",
+            "url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000789019.json",
+            "cik": "0000789019",
+            "symbol": "MSFT",
+            "maxObservationsPerConcept": 60,
+            "minIntervalSeconds": 86400,
+            "minHostIntervalSeconds": 1,
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information"
+        },
+        {
+            "id": "sec-nvda-companyfacts",
+            "enabled": true,
+            "datasets": ["financials"],
+            "parser": "sec-companyfacts",
+            "parserVersion": "2",
+            "url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001045810.json",
+            "cik": "0001045810",
+            "symbol": "NVDA",
+            "maxObservationsPerConcept": 60,
+            "minIntervalSeconds": 86400,
+            "minHostIntervalSeconds": 1,
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information"
+        },
+        {
+            "id": "ecb-policy-rates",
+            "enabled": true,
+            "datasets": ["macro"],
+            "parser": "ecb-policy-rates",
+            "parserVersion": "2",
+            "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html",
+            "maxEffectiveDates": 30,
+            "minIntervalSeconds": 86400,
+            "minHostIntervalSeconds": 1,
+            "publicDisplay": "approved",
+            "policyId": "ecb-public-information"
+        }
+    ]
+}

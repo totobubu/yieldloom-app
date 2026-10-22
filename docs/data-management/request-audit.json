@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-17",
+  "asOf": "2026-10-22",
   "scope": [
     "src",
     "api",
@@ -597,13 +597,21 @@
     },
     {
       "area": "legacy Firestore dashboard and import",
-      "status": "fresh_reads_retained",
+      "status": "improved",
       "paths": [
         "src/services/portfolio.js",
+        "api/portfolio-capital.js",
+        "lib/portfolio-dashboard-handler.js",
         "api/portfolio-import.py",
         "api/portfolio_mapping.py"
       ],
-      "reason": "Legacy records have no reliable revision contract; per-asset subcollections and import duplicate checks serve distinct records and were not replaced with long-lived private caches."
+      "change": "Route the legacy dashboard through one authenticated API request and use document-path-bounded collection-group queries for transaction subcollections. Fresh authorization and uncached reads remain because legacy records have no reliable revision contract; import duplicate checks still serve a separate write-review flow.",
+      "scenario": {
+        "fourteenAssetsCurrentLedgerFirestoreQueryOperationsBefore": 15,
+        "after": 2,
+        "legacyFallbackMaximumAfter": 4,
+        "browserDashboardRequestsAfter": 1
+      }
     },
     {
       "area": "admin mapping endpoint",
@@ -635,7 +643,7 @@
         "api/thumbnail-og.js",
         "src/pages/TickerThumbnailView.vue"
       ],
-      "reason": "Analytics represents user events; R2 writes preserve recovery snapshots; data:image fetch is local blob conversion. These are not repeated DB reads to suppress globally."
+      "reason": "Analytics represents user events and data:image fetch is local blob conversion. Public R2 recovery snapshots now coalesce only successful identical writes and reuse short-lived reads; see storageCallReduction. Changed payloads and expired observations are still saved."
     },
     {
       "area": "provider collection and R2 batch jobs",
@@ -694,6 +702,76 @@
     "production": {
       "status": "not performed",
       "reason": "No real account records, production provider traffic measurements or billing were used."
+    }
+  },
+  "storageCallReduction": {
+    "asOf": "2026-10-22",
+    "scope": "Synthetic same-process SDK command counts and in-memory Firestore API counters; no production billing measurement",
+    "r2": {
+      "path": "lib/r2-snapshot.js",
+      "identicalSnapshotWrites": {
+        "before": 11,
+        "after": 1
+      },
+      "twoConcurrentSnapshotReads": {
+        "before": 2,
+        "after": 1
+      },
+      "readTtlMs": 30000,
+      "successfulIdenticalWriteTtlMs": 300000,
+      "maxEntries": 128,
+      "notes": [
+        "Cache keys include bucket and symbol. Distinct writes are serialized; A-B-A persists all three values.",
+        "Writes invalidate read reuse before and after the attempt; failed or ambiguous writes are never remembered as success.",
+        "Only public recovery snapshots use this cache. Cross-process and cold-start reuse are not guaranteed.",
+        "Projection pointer freshness stays at 60 seconds; validated content-addressed manifests and payloads are reused for 24 hours, with version/hash keys and bounded memory. New release references fetch new files."
+      ],
+      "projectionReadsAcrossThreeLoads": {
+        "before": 10,
+        "after": 6,
+        "elapsedMs": [
+          0,
+          61000,
+          181000
+        ],
+        "measurement": "HTTP fetch calls; origin R2 reads and billing not measured"
+      },
+      "immutableProjectionTtlMs": 86400000
+    },
+    "firestore": {
+      "path": "api/family-portfolio.py",
+      "renameAccountDocumentReads": {
+        "before": 3,
+        "after": 2
+      },
+      "grantDocumentReads": {
+        "before": 4,
+        "after": 2
+      },
+      "unchangedSettingDocumentWrites": {
+        "before": 1,
+        "after": 0
+      },
+      "notes": [
+        "Each request reads account and family inside the transaction and checks access, authority and membership before comparing values.",
+        "Firestore transaction retries can add reads; these are controlled fixture observations.",
+        "Browser HTTP calls and per-request Firebase token revocation verification are unchanged. No private cache was added."
+      ]
+    },
+    "verificationFiles": [
+      "tests/r2_snapshot.test.mjs",
+      "tests/test_family_portfolio.py",
+      "tests/request_cache.test.mjs",
+      "tests/thumbnail-data.test.mjs"
+    ],
+    "verification": {
+      "nodeTestsPassed": 364,
+      "familyApiTestsPassed": 40,
+      "typeCheck": "passed",
+      "changedFileLint": "passed",
+      "build": "passed",
+      "baselineComparison": "Executed the prior snapshot functions and prior edit_account function against the same injected SDK/in-memory fixtures.",
+      "production": "Not measured; no production account data or storage writes were used for this comparison."
     }
   }
 }

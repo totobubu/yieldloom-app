@@ -23,6 +23,13 @@ export function createPublicJsonClient({
 } = {}) {
     const entries = new Map();
     const counters = { networkRequests: 0, cacheHits: 0, sharedRequests: 0 };
+    const retryUrls = new Set();
+    const responseCacheStatuses = {};
+    const retry = (key) => {
+        retryUrls.add(key);
+        while (retryUrls.size > maxEntries)
+            retryUrls.delete(retryUrls.values().next().value);
+    };
     let chars = 0;
     const checked = (value, validate, key, entry) => {
         try {
@@ -31,6 +38,7 @@ export function createPublicJsonClient({
             return value;
         } catch (error) {
             remove(key, entry);
+            if (entry?.immutable) retry(key);
             throw error;
         }
     };
@@ -45,6 +53,7 @@ export function createPublicJsonClient({
             signal,
             force = false,
             ttlMs = 60_000,
+            cachePolicy = 'memory',
             timeoutMs = 15_000,
             validate = () => true,
         } = {}
@@ -65,7 +74,7 @@ export function createPublicJsonClient({
             counters.sharedRequests++;
         } else {
             if (entry) remove(key, entry);
-            entry = { forced: force };
+            entry = { forced: force, immutable: cachePolicy === 'immutable' };
             entries.set(key, entry);
             const current = entry;
             current.task = createSharedRequest(async (transportSignal) => {
@@ -73,9 +82,27 @@ export function createPublicJsonClient({
                 const response = await fetcher(key, {
                     credentials: publicRequestCredentials(key, origin),
                     referrerPolicy: 'no-referrer',
-                    cache: force ? 'reload' : 'no-store',
+                    cache:
+                        force || (current.immutable && retryUrls.has(key))
+                            ? 'reload'
+                            : current.immutable
+                              ? 'default'
+                              : 'no-store',
                     signal: transportSignal,
                 });
+                // Observed headers may themselves come from the browser HTTP cache.
+                // They are diagnostics, not a count of origin reads or billed requests.
+                const status = response.headers
+                    ?.get('cf-cache-status')
+                    ?.toUpperCase();
+                const label =
+                    /^(HIT|MISS|EXPIRED|STALE|REVALIDATED|DYNAMIC|BYPASS|UPDATING)$/.test(
+                        status || ''
+                    )
+                        ? status
+                        : 'UNKNOWN';
+                responseCacheStatuses[label] =
+                    (responseCacheStatuses[label] || 0) + 1;
                 if (!response.ok) {
                     const value = await response.json().catch(() => ({}));
                     throw Object.assign(
@@ -91,6 +118,7 @@ export function createPublicJsonClient({
                     throw new Error('공개 데이터 형식이 잘못되었습니다.');
                 if (transportSignal.aborted) throw transportSignal.reason;
                 if (entries.get(key) === current) {
+                    retryUrls.delete(key);
                     const size = JSON.stringify(value).length;
                     if (size <= maxChars && ttlMs > 0) {
                         current.value = structuredClone(value);
@@ -110,7 +138,16 @@ export function createPublicJsonClient({
                     delete current.task;
                     if (!current.expires) remove(key, current);
                 },
-                () => remove(key, current)
+                () => {
+                    if (entries.get(key) === current) {
+                        if (
+                            current.immutable &&
+                            !current.task.controller.signal.aborted
+                        )
+                            retry(key);
+                        remove(key, current);
+                    }
+                }
             );
             // Bound pending keys too; existing consumers keep their detached task.
             while (entries.size > maxEntries) {
@@ -131,8 +168,16 @@ export function createPublicJsonClient({
     read.clear = () => {
         entries.clear();
         chars = 0;
+        retryUrls.clear();
     };
-    read.metrics = () => ({ ...counters, entries: entries.size, chars });
+    read.metrics = () => ({
+        ...counters,
+        // Legacy networkRequests also counts fetch calls served by the HTTP cache.
+        fetchRequests: counters.networkRequests,
+        responseCacheStatuses: { ...responseCacheStatuses },
+        entries: entries.size,
+        chars,
+    });
     return read;
 }
 

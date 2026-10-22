@@ -1,0 +1,59 @@
+name: Collect private data platform
+
+on:
+    schedule:
+        - cron: '30 0 * * *' # 09:30 Asia/Seoul; activates on the default branch
+    push:
+        branches: [work]
+        paths:
+            - 'scripts/data_platform/**'
+            - 'data-v2/dataset-registry.json'
+            - 'data-v2/source-policies.json'
+            - '.github/workflows/collect-data-platform.yml'
+    workflow_dispatch:
+        inputs:
+            bootstrap:
+                description: Explicitly initialize an empty private bucket (first run only)
+                type: boolean
+                default: false
+
+permissions:
+    contents: read
+
+concurrency:
+    group: data-platform-private-writer
+    cancel-in-progress: false
+
+jobs:
+    collect:
+        if: github.ref == 'refs/heads/work' || github.ref == 'refs/heads/main'
+        runs-on: ubuntu-latest
+        environment: data-production
+        timeout-minutes: 20
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: '3.11'
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '24'
+            - run: pip install boto3==1.43.116
+            - name: Restore, collect and persist private state
+              env:
+                  DATA_PRIVATE_R2_ACCOUNT_ID: ${{ secrets.DATA_PRIVATE_R2_ACCOUNT_ID }}
+                  DATA_PRIVATE_R2_ACCESS_KEY_ID: ${{ secrets.DATA_PRIVATE_R2_ACCESS_KEY_ID }}
+                  DATA_PRIVATE_R2_SECRET_ACCESS_KEY: ${{ secrets.DATA_PRIVATE_R2_SECRET_ACCESS_KEY }}
+                  DATA_PRIVATE_R2_BUCKET: yieldloom-data-private
+                  BOOTSTRAP: ${{ inputs.bootstrap || false }}
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  args=()
+                  if [ "$BOOTSTRAP" = 'true' ]; then args+=(--bootstrap); fi
+                  python scripts/data_platform/run.py --root var/data-platform-job --run-id "${{ github.run_id }}-${{ github.run_attempt }}" "${args[@]}"
+            - name: Report operational failure
+              if: failure()
+              run: echo 'Private collection failed. Check configuration, source health and checkpoint errors. No raw data artifacts are uploaded.' >> "$GITHUB_STEP_SUMMARY"

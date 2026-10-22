@@ -37,7 +37,7 @@ try {
             pdfPasswordConfigured: true,
             permissions: { 'mobile-fixture': 'owner' },
         };
-        let pending,
+        let resolvePreview,
             previews = 0,
             writes = 0;
         await page.route('**/api/portfolio-capital*', (route) =>
@@ -51,7 +51,11 @@ try {
             );
             if (action === 'preview') {
                 previews++;
-                pending = route;
+                assert.ok(
+                    resolvePreview,
+                    'Preview must have a waiting request capture'
+                );
+                resolvePreview(route);
                 return;
             }
             if (['commit', 'validateImport'].includes(action)) writes++;
@@ -75,6 +79,28 @@ try {
             name: '추출·미리보기',
             exact: true,
         });
+        async function clickAndCapturePreview() {
+            let timer;
+            const captured = new Promise((resolve, reject) => {
+                resolvePreview = resolve;
+                timer = setTimeout(
+                    () => reject(new Error('Preview request was not captured')),
+                    10000
+                );
+            });
+            try {
+                const [route] = await Promise.all([captured, button.click()]);
+                await page.waitForFunction(
+                    () =>
+                        document.querySelector('.preview-button')?.disabled ===
+                        true
+                );
+                return route;
+            } finally {
+                clearTimeout(timer);
+                resolvePreview = null;
+            }
+        }
         await button.waitFor();
         await overlay.waitFor({ state: 'hidden' });
         if (dark)
@@ -141,10 +167,7 @@ try {
         await page.evaluate(() => {
             File.prototype.arrayBuffer = window.originalFileArrayBuffer;
         });
-        await button.click();
-        await page.waitForFunction(
-            () => document.querySelector('.preview-button')?.disabled === true
-        );
+        let pending = await clickAndCapturePreview();
         assert.equal(
             await page.getByRole('dialog', { name: /자료 업로드/ }).isVisible(),
             true,
@@ -187,11 +210,7 @@ try {
             .getByLabel('PDF 비밀번호', { exact: true })
             .fill('corrected-fixture');
         assert.equal(await notice.count(), 0);
-        pending = null;
-        await button.click();
-        await page.waitForFunction(
-            () => document.querySelector('.preview-button')?.disabled === true
-        );
+        pending = await clickAndCapturePreview();
         assert.match(pending.request().postData(), /corrected-fixture/);
         await pending.abort('failed');
         await page.waitForFunction(
@@ -206,11 +225,7 @@ try {
             1
         );
         // Success, including saved-password account refresh, moves to the review heading.
-        pending = null;
-        await button.click();
-        await page.waitForFunction(
-            () => document.querySelector('.preview-button')?.disabled === true
-        );
+        pending = await clickAndCapturePreview();
         await pending.fulfill({
             json: {
                 reviewId: 'mobile-review',

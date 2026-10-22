@@ -108,6 +108,12 @@ try {
     await page
         .getByText('상장폐지 · 과거 이력 열람', { exact: true })
         .waitFor();
+    await page.getByText('최종 거래일 2026-06-09', { exact: true }).waitFor();
+    await page.getByText('거래중단일 2026-06-09', { exact: true }).waitFor();
+    await page.getByText('청산일 2026-06-16', { exact: true }).waitFor();
+    await page
+        .getByText(/거래소의 공식 상장폐지일은 확인되지 않았습니다/)
+        .waitFor();
     assert.equal(await page.getByRole('tab', { name: '공유정보' }).count(), 0);
     assert.equal(
         await page.getByRole('button', { name: '공유 카드 만들기' }).count(),
@@ -142,7 +148,7 @@ try {
     await page.getByRole('cell', { name: '2026-01-02', exact: true }).waitFor();
     await page.getByRole('tab', { name: '배당정보' }).click();
     await page
-        .getByRole('heading', { name: '배당 이력', exact: true })
+        .getByRole('heading', { name: '배당·ROC 이력', exact: true })
         .waitFor();
     assert.equal(
         await page.getByText('다음 배당락일', { exact: true }).count(),

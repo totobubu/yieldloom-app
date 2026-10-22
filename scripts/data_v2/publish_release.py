@@ -7,6 +7,7 @@ import json
 import sys
 import re
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 
@@ -48,10 +49,14 @@ def main() -> int:
             raise
     else:
         raise ValueError("Immutable release already exists; choose a new release ID")
-    for entry in manifest["files"]:
+    def upload_entry(entry: dict) -> None:
         relative = Path(entry["path"])
         body = (data_dir / relative).read_bytes()
         put(client, bucket, f"{release_prefix}/{relative.as_posix()}", body, "public, max-age=31536000, immutable")
+    # The boto3 client supports shared use by threads. Wait for every object,
+    # propagating any failure before making the manifest or pointer visible.
+    with ThreadPoolExecutor(max_workers=8) as uploads:
+        list(uploads.map(upload_entry, manifest["files"]))
     put(client, bucket, f"{release_prefix}/manifest.json", manifest_path.read_bytes(), "public, max-age=31536000, immutable")
     pointer = {"schemaVersion": 2, "releaseId": args.release_id, "manifestKey": f"{release_prefix}/manifest.json"}
     put(client, bucket, f"{PREFIX}/current.json", json.dumps(pointer, indent=2).encode(), "public, max-age=60")

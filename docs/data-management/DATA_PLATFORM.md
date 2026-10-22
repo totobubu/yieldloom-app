@@ -445,7 +445,10 @@ python scripts/data_platform/operations.py drill
 
 적용은 24시간 이내의 정확한 계획 해시를 요구하고 원격 인벤토리·포인터를 재검증한다.
 실제 데이터 삭제 전에 임시 UUID 객체로 잘못된 ETag의 PUT/DELETE가 거절되는지 확인한다.
-R2 조건부 DELETE의 실환경 지원은 아직 미확인이며, 거절 보장이 없으면 삭제를 중단한다.
+2026-10-22 이 버킷의 S3 실환경에서는 잘못된 ETag의 DELETE가 거절되지 않아
+실제 보존 정리 적용을 차단했다. 근거: https://github.com/totobubu/yieldloom-app/actions/runs/39782326752
+전체 복원 점검은 이 제한을 `conditionalDelete: false`·`retentionApply: blocked_conditional_delete_unsupported`로
+보고하고 계속 수행한다. 보존 정리 적용 명령은 기존과 같이 실제 백업 객체 삭제 전에 중단한다.
 실패한 점검의 임시 probe가 남아도 보존 정리는 이를 삭제하지 않는다.
 복구 점검은 모든 원문·압축 DB를 새 임시 경로로 완전히 복원하고 해시·SQLite 무결성을
 검증한 뒤 로컬 복원물을 제거한다. 빈 버킷은 연결 점검만 통과하며 복원 완료로 표시하지 않는다.

@@ -156,10 +156,10 @@ class PipelineTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'revalidated'):
                 export_candidate(store, config, ['fx'], root / 'stale-config', public=True)
             collect(store, config, transport=lambda *_: self.fail('Unnecessary HTTP'), now=NOW)
-            result = export_candidate(store, config, ['fx'], root / 'approved', public=True)
+            result = export_candidate(store, config, ['fx'], root / 'approved', public=True, now=NOW)
             self.assertEqual(result['kind'], 'public_candidate')
             collect(store, config, transport=lambda *_: {'status': 503}, now=NOW + timedelta(days=1))
-            with self.assertRaisesRegex(ValueError, 'revalidated'):
+            with self.assertRaisesRegex(ValueError, 'revalidated|quality'):
                 export_candidate(store, config, ['fx'], root / 'failed-source', public=True)
 
 

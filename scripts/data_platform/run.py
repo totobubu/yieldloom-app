@@ -55,10 +55,12 @@ def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None)
             result = collect(store, config, **options)
             result['health'] = health(store, config, clock)
             result['runId'] = run_id
+            from scripts.data_platform.quality import evaluate
+            result['quality'] = evaluate(store, config, now=clock)
             # Source failures still need durable retry state and successful-source updates.
             backup(store, remote, etag, run_id)
             result['checkpoint'] = 'saved'
-            result['status'] = 'degraded' if result['failed'] or any(
+            result['status'] = 'degraded' if result['failed'] or any(r['errors'] for r in result['quality']['sources']) or any(
                 r['collectionStale'] or r['dataStale'] for r in result['health']) else 'healthy'
             (root / 'review' / 'run.json').write_text(encode(result) + '\n')
             return result

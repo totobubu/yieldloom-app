@@ -4,6 +4,7 @@ on:
     pull_request:
         paths:
             - 'data-v2/dataset-registry.json'
+            - 'data-v2/source-policies.json'
             - 'scripts/data_platform/**'
             - 'tests/data_platform/**'
             - '.github/workflows/validate-data-platform.yml'
@@ -11,6 +12,7 @@ on:
         branches: [main, work]
         paths:
             - 'data-v2/dataset-registry.json'
+            - 'data-v2/source-policies.json'
             - 'scripts/data_platform/**'
             - 'tests/data_platform/**'
             - '.github/workflows/validate-data-platform.yml'

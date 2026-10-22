@@ -8,6 +8,7 @@ on:
         paths:
             - 'scripts/data_platform/**'
             - 'data-v2/dataset-registry.json'
+            - 'data-v2/source-policies.json'
             - '.github/workflows/collect-data-platform.yml'
     workflow_dispatch:
         inputs:

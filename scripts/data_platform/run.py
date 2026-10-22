@@ -10,7 +10,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from scripts.data_platform.checkpoints import R2Objects, current, restore, backup, MissingObject
+from scripts.data_platform.checkpoints import R2Objects, current, restore, backup, MissingObject, raw_loader, ObservedObjects
 from scripts.data_platform.locking import writer_lock
 from scripts.data_platform.pipeline import Store, collect, encode, load_registry, private_path
 
@@ -35,19 +35,22 @@ def health(store, config, now):
 
 
 def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None):
+    remote = ObservedObjects(remote)
     root = private_path(root)
     clock = now or datetime.now(timezone.utc)
     with writer_lock(root):
         if root.exists():
             raise ValueError('Scheduled root must be fresh; restore from the checkpoint each run')
         pointer, etag = current(remote)
+        previous = None
         if pointer:
             if bootstrap:
                 raise ValueError('Bootstrap cannot overwrite an existing checkpoint')
-            restore(remote, root, pointer)
+            previous = restore(remote, root, pointer, lazy_raw=True)
         elif not bootstrap:
             raise MissingObject('Explicit bootstrap required for the first collection')
-        store = Store(root)
+        store = Store(root, raw_loader=raw_loader(remote, previous) if previous else None)
+        initial_changes = store.db.total_changes
         try:
             options = {'now': clock}
             if transport:
@@ -58,8 +61,12 @@ def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None)
             from scripts.data_platform.quality import evaluate
             result['quality'] = evaluate(store, config, now=clock)
             # Source failures still need durable retry state and successful-source updates.
-            backup(store, remote, etag, run_id)
-            result['checkpoint'] = 'saved'
+            if not previous or store.db.total_changes != initial_changes:
+                backup(store, remote, etag, run_id, previous=previous)
+                result['checkpoint'] = 'saved'
+            else:
+                result['checkpoint'] = 'unchanged'
+            result['r2'] = remote.metrics.copy()
             result['status'] = 'degraded' if result['failed'] or any(r['errors'] for r in result['quality']['sources']) or any(
                 r['collectionStale'] or r['dataStale'] for r in result['health']) else 'healthy'
             (root / 'review' / 'run.json').write_text(encode(result) + '\n')
@@ -78,7 +85,8 @@ def main():
     print(encode(result))
     if os.environ.get('GITHUB_STEP_SUMMARY'):
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as target:
-            target.write(f"## Data platform: {result['status']}\n\nHTTP requests: {result['httpRequests']}; checkpoint: saved\n\n")
+            target.write(f"## Data platform: {result['status']}\n\nHTTP requests: {result['httpRequests']}; checkpoint: {result['checkpoint']}\n\n")
+            target.write(f"R2 API attempts: {encode(result['r2'])}\n\n")
             for item in result['health']:
                 target.write(f"- {item['sourceId']}: failures={item['failureCount']}, lastSuccess={item['lastSuccessAt']}, collectionStale={item['collectionStale']}, dataStale={item['dataStale']}\n")
             target.write('\n### Quality review\n\n')

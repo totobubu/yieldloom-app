@@ -31,6 +31,10 @@
       "evidenceUrls": [
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
       ]
     },
     {
@@ -45,6 +49,10 @@
       "status": "inactive_malformed_symbol",
       "evidencePaths": [
         "data-v2/catalog-seed.json"
+      ],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
       ]
     },
     {
@@ -62,6 +70,10 @@
       "evidenceUrls": [
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
       ]
     },
     {
@@ -96,6 +108,10 @@
       "evidenceUrls": [
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Original legacy source or broker instrument identifier resolving the conflicting fund name and issuer",
+        "Official identifier and listing evidence for that exact instrument"
       ]
     },
     {
@@ -113,6 +129,10 @@
       "evidenceUrls": [
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Original legacy source or broker instrument identifier resolving the conflicting fund name and issuer",
+        "Official identifier and listing evidence for that exact instrument"
       ]
     },
     {
@@ -127,6 +147,10 @@
       "status": "inactive_malformed_symbol",
       "evidencePaths": [
         "data-v2/catalog-seed.json"
+      ],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
       ]
     },
     {
@@ -141,6 +165,10 @@
       "status": "inactive_malformed_symbol",
       "evidencePaths": [
         "data-v2/catalog-seed.json"
+      ],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
       ]
     },
     {
@@ -155,6 +183,10 @@
       "status": "inactive_malformed_symbol",
       "evidencePaths": [
         "data-v2/catalog-seed.json"
+      ],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
       ]
     },
     {
@@ -170,6 +202,10 @@
       "candidateSymbol": "IREN",
       "evidenceUrls": [
         "https://www.nasdaqtrader.com/dynamic/symdir/nasdaqlisted.txt"
+      ],
+      "requiredEvidence": [
+        "Original broker/source identifier proving whether the legacy code maps to the named candidate",
+        "Exact instrument and listing evidence; similar spelling is insufficient"
       ]
     },
     {
@@ -187,6 +223,10 @@
       "evidenceUrls": [
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
       ]
     },
     {
@@ -202,6 +242,10 @@
       "candidateSymbol": "AMZP",
       "evidenceUrls": [
         "https://www.nasdaqtrader.com/dynamic/symdir/otherlisted.txt"
+      ],
+      "requiredEvidence": [
+        "Original broker/source identifier proving whether the legacy code maps to the named candidate",
+        "Exact instrument and listing evidence; similar spelling is insufficient"
       ]
     },
     {
@@ -217,6 +261,10 @@
       "candidateSymbol": "CRDO",
       "evidenceUrls": [
         "https://www.nasdaqtrader.com/dynamic/symdir/nasdaqlisted.txt"
+      ],
+      "requiredEvidence": [
+        "Original broker/source identifier proving whether the legacy code maps to the named candidate",
+        "Exact instrument and listing evidence; similar spelling is insufficient"
       ]
     },
     {
@@ -234,6 +282,10 @@
       "evidenceUrls": [
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
       ]
     },
     {
@@ -251,6 +303,10 @@
       "evidenceUrls": [
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
       ]
     },
     {
@@ -268,6 +324,10 @@
       "evidenceUrls": [
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
       ]
     },
     {
@@ -300,6 +360,10 @@
       "evidenceUrls": [
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_prospectus_2.pdf",
         "https://www.roundhillinvestments.com/assets/pdfs/roundhill_weeklypay_etfs_sai_2.pdf"
+      ],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
       ]
     }
   ]

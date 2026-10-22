@@ -88,6 +88,7 @@ var/content-studio/content-calendar.json
 var/content-studio/content-calendar.csv
 var/data-management/
 var/data-platform/
+var/.data-platform*.lock
 
 # Legacy generated market history is preserved outside this repository.
 # Yieldloom data releases use the small, versioned data-v2 manifest instead.

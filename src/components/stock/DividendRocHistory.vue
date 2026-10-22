@@ -16,7 +16,7 @@
         page = ref(0);
     const modes = [
         { label: '표', value: 'table', icon: 'pi pi-table' },
-        { label: '차트', value: 'chart', icon: 'pi pi-chart-bar' },
+        { label: '차트', value: 'chart', icon: 'pi pi-chart-line' },
     ];
     const rows = computed(() =>
         dividendRocHistory(props.history, props.observations, props.currency)
@@ -100,18 +100,6 @@
                 ></SelectButton
             >
         </header>
-        <div v-if="sources.length" class="history-sources">
-            <a
-                v-for="(source, index) in sources"
-                :key="source.url"
-                :href="source.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                >{{ source.label
-                }}{{ sources.length > 1 ? ` ${index + 1}` : '' }}
-                <i class="pi pi-external-link" aria-hidden="true"
-            /></a>
-        </div>
         <p v-if="loading" role="status" class="history-note">
             ROC 자료를 불러오는 중입니다.
         </p>
@@ -191,10 +179,24 @@
                 aria-label="배당·ROC 이력 페이지"
                 @page="page = $event.page" />
         </template>
-        <p class="history-note">
-            ‘—’는 값 미제공이며 0이 아닙니다. ROC는 분배금 중 자본환급으로
-            보고된 부분으로, 분배금에 더하지 않습니다.
-        </p>
+        <footer class="history-footer">
+            <p class="history-note">
+                ‘—’는 값 미제공이며 0이 아닙니다. ROC는 분배금 중 자본환급으로
+                보고된 부분으로, 분배금에 더하지 않습니다.
+            </p>
+            <div v-if="sources.length" class="history-sources">
+                <a
+                    v-for="(source, index) in sources"
+                    :key="source.url"
+                    :href="source.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >{{ source.label
+                    }}{{ sources.length > 1 ? ` ${index + 1}` : '' }}
+                    <i class="pi pi-external-link" aria-hidden="true"
+                /></a>
+            </div>
+        </footer>
         <details v-if="annual.length" class="annual-history">
             <summary>회계연도 누적 내역 · {{ annual.length }}건</summary>
             <p class="history-note">
@@ -273,12 +275,24 @@
     .history-heading p {
         margin: 4px 0 12px;
     }
+    .history-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px 20px;
+        margin-top: 12px;
+    }
+    .history-footer > p {
+        flex: 1 1 280px;
+        margin: 0;
+    }
     .history-sources {
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-end;
         gap: 8px 16px;
-        margin-bottom: 10px;
+        margin-left: auto;
     }
     .history-sources a {
         display: inline-flex;

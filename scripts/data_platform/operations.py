@@ -23,7 +23,7 @@ class UnsupportedConditionalOperation(RuntimeError):
         self.probe_key = probe_key
 
 
-def verify_conditions(remote):
+def put_probe(remote):
     # Only disposable UUID probe bytes are touched before conditional support is proven.
     key = f'{PREFIX}/probes/{uuid.uuid4().hex}'
     body = b'private checkpoint conditional operations probe\n'
@@ -31,16 +31,41 @@ def verify_conditions(remote):
     saved, etag = remote.get(key)
     if saved != body or not etag:
         raise ValueError('Probe read verification failed')
-    for operation in ('put', 'delete'):
-        try:
-            if operation == 'put':
-                remote.put(key, b'wrong precondition', expected='"00000000000000000000000000000000"')
-            else:
-                remote.delete(key, expected='"00000000000000000000000000000000"')
-        except ConditionalConflict:
-            pass
-        else:
-            raise UnsupportedConditionalOperation(operation, key)
+    try:
+        remote.put(key, b'duplicate create')
+    except ConditionalConflict:
+        pass
+    else:
+        raise UnsupportedConditionalOperation('create', key)
+    try:
+        remote.put(key, b'wrong precondition', expected='"00000000000000000000000000000000"')
+    except ConditionalConflict:
+        pass
+    else:
+        raise UnsupportedConditionalOperation('put', key)
+    if remote.get(key) != (body, etag):
+        raise ValueError('Conditional PUT probe changed unexpectedly')
+    return key, body, etag
+
+
+def verify_serialized_delete(remote, lease):
+    key, _, _ = put_probe(remote)
+    remote.delete_serialized(key, lease)
+    try:
+        remote.get(key)
+    except MissingObject:
+        return {'serializedDelete': True, 'serializedProbeRemoved': True}
+    raise ValueError('Serialized probe deletion was not verified')
+
+
+def verify_conditions(remote):
+    key, body, etag = put_probe(remote)
+    try:
+        remote.delete(key, expected='"00000000000000000000000000000000"')
+    except ConditionalConflict:
+        pass
+    else:
+        raise UnsupportedConditionalOperation('delete', key)
     if remote.get(key) != (body, etag):
         raise ValueError('Conditional probe changed unexpectedly')
     remote.delete(key, expected=etag)
@@ -54,7 +79,7 @@ def verify_conditions(remote):
 def drill(remote, root):
     root = private_path(root)
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
-    with remote_writer(remote, 'restore-drill'):
+    with remote_writer(remote, 'restore-drill') as lease:
         try:
             capabilities = {**verify_conditions(remote), 'retentionApply': 'supported'}
         except UnsupportedConditionalOperation as error:
@@ -69,6 +94,8 @@ def drill(remote, root):
                 removed = True
             capabilities = {'conditionalPut': True, 'conditionalDelete': False,
                             'probeRemoved': removed, 'retentionApply': 'blocked_conditional_delete_unsupported'}
+        capabilities.update(verify_serialized_delete(remote, lease))
+        capabilities['serializedRetentionApply'] = 'supported_with_reviewed_plan_and_exclusive_writer'
         pointer, _ = current(remote)
         if pointer is None:
             return {**capabilities, 'checkpoint': 'absent', 'restore': 'not_run'}
@@ -116,6 +143,7 @@ def main():
             summary.write(f"### Private recovery\n\nRestore: {result['restore']}\n\n")
             summary.write(f"Conditional PUT: {result['conditionalPut']}; conditional DELETE: {result['conditionalDelete']}\n\n")
             summary.write(f"Retention apply: {result['retentionApply']}\n\n")
+            summary.write(f"Serialized retention: {result['serializedRetentionApply']}\n\n")
 
 
 if __name__ == '__main__':

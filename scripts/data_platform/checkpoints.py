@@ -89,6 +89,22 @@ class R2Objects:
             raise
 
 
+    def delete_serialized(self, key, lease):
+        # R2 does not enforce DeleteObject If-Match. Only the shared non-expiring
+        # writer protocol may authorize this path; never use it for mutable keys.
+        if not re.fullmatch(r'platform/v1/(?:objects/[a-f0-9]{64}|manifests/[a-f0-9]{64}\.json|probes/[a-f0-9]{32})', key):
+            raise ValueError('Serialized deletion requires an immutable checkpoint or disposable probe')
+        if lease.remote is not self:
+            raise ValueError('Writer lease belongs to another remote')
+        lease.assert_owned()
+        # A timeout may leave a DELETE in flight. Keep the lease held on any
+        # uncertain outcome so a later writer cannot recreate its target yet.
+        lease.release_allowed = False
+        result = self.client.delete_object(Bucket=BUCKET, Key=key)
+        lease.release_allowed = True
+        return result
+
+
 def current(remote):
     try:
         body, etag = remote.get(f'{PREFIX}/current.json')

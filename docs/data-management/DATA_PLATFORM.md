@@ -438,6 +438,8 @@ GitHub `data-production` 환경에 `DATA_PRIVATE_R2_ACCOUNT_ID`, `DATA_PRIVATE_R
 
 ```sh
 python scripts/data_platform/retention.py --output var/data-platform-review/retention.json
+# R2용: 모든 platform/v1 작성자가 공용 잠금을 준수하는 경우의 별도 계획
+python scripts/data_platform/retention.py --delete-mode exclusive-writer --output var/data-platform-review/retention-r2.json
 # 위 명령의 planSha256과 비공개 계획의 삭제 대상을 확인한 후에만 사용
 python scripts/data_platform/retention.py --apply-plan var/data-platform-review/retention.json --plan-sha256 REVIEWED_SHA256
 python scripts/data_platform/operations.py drill
@@ -448,7 +450,28 @@ python scripts/data_platform/operations.py drill
 2026-10-22 이 버킷의 S3 실환경에서는 잘못된 ETag의 DELETE가 거절되지 않아
 실제 보존 정리 적용을 차단했다. 근거: https://github.com/totobubu/yieldloom-app/actions/runs/39782326752
 전체 복원 점검은 이 제한을 `conditionalDelete: false`·`retentionApply: blocked_conditional_delete_unsupported`로
-보고하고 계속 수행한다. 보존 정리 적용 명령은 기존과 같이 실제 백업 객체 삭제 전에 중단한다.
+보고하고 계속 수행한다. 기본 `conditional` 계획은 실제 백업 객체 삭제 전에 계속 중단한다.
+R2에는 `exclusive-writer` 계획을 별도로 생성할 수 있다. 삭제 방식은 계획 본문과 검토 해시에
+포함되므로 기존 계획의 방식을 바꾸어 적용할 수 없다. schemaVersion 1 계획은 재생성해야 한다.
+
+이 방식은 조건부 PUT으로 취득한 **만료 없는 공용 writer 잠금** 안에서 검토 당시 시각으로
+전체 계획을 다시 계산하고 일치를 확인한다. 임시 UUID 객체로 중복 생성·잘못된 ETag의 PUT이
+거절되는지와 직렬 삭제를 검증한 뒤, 각 삭제 직전에 잠금 owner/body/ETag를 다시 확인한다.
+내용 주소 manifest/objects만 삭제하며 current·writer·알 수 없는 키는 허용하지 않는다.
+정리와 백업이 같은 잠금을 사용하므로 정리 중 새 백업이 참조를 발행할 수 없다.
+잠금은 시간 경과로 탈취하지 않으며, 장애 후 복구는 실제 writer 종료 확인이 필요하다.
+DELETE 응답이 실패하거나 시간 초과로 결과를 확정할 수 없으면 잠금을 해제하지 않는다.
+늦게 완료되는 삭제와 다음 writer의 객체 재생성이 겹치지 않도록 원격 요청의 종료도 확인한 뒤 복구한다.
+
+이는 S3의 원자적 조건부 DELETE와 같은 보장이 아니다. Dashboard·다른 도구의 쓰기·삭제나
+잠금을 무시하는 writer는 함께 사용하면 안 된다. `platform/v1/`에 lifecycle 만료 규칙을
+걸지 않는다. 수동 과거 복원에 필요한 manifest는 계획에 pin을 추가한다. 이 전제를 지킬 수
+없으면 기본 차단 방식을 유지한다. 현재 workflow는 직렬 삭제의 **시험 객체**만 지우며,
+실제 체크포인트 삭제는 검토한 계획·정확한 해시를 전달하는 CLI에만 있다.
+근거: [R2 조건부 PUT 원자성](https://developers.cloudflare.com/r2/reference/consistency/#conditional-writes).
+
+복구 점검의 `serializedDelete: true`, `serializedProbeRemoved: true`는 이 별도 경로의
+연결 검증이며, `serializedRetentionApply`는 검토된 계획·공용 잠금이 필요한 상태임을 표시한다.
 실패한 점검의 임시 probe가 남아도 보존 정리는 이를 삭제하지 않는다.
 복구 점검은 모든 원문·압축 DB를 새 임시 경로로 완전히 복원하고 해시·SQLite 무결성을
 검증한 뒤 로컬 복원물을 제거한다. 빈 버킷은 연결 점검만 통과하며 복원 완료로 표시하지 않는다.
@@ -465,6 +488,7 @@ python scripts/data_platform/operations.py recover-writer --writer-stopped --exp
 
 `maintain-data-platform.yml`은 수동 복구 점검과 선택적인 삭제 계획 계산만 제공한다.
 수집 workflow와 동일한 concurrency를 사용하고 비공개 원문·DB·상세 계획은 artifact로 올리지 않는다.
+선택적 계획은 R2용 `exclusive-writer` 방식으로 계산한다. 계획 계산 자체는 읽기 전용이다.
 스케줄 삭제와 Actions 삭제 입력은 제공하지 않는다. 유지보수 workflow 자체를 `work`에 변경하면
 복구 점검을 한 번 실행하여 기본 브랜치 승격 전에도 실행 대상을 등록한다. 이후 수동 실행으로
 복구 점검과 선택적인 보존 계획을 확인할 수 있다. 이 실행은 체크포인트를 삭제하지 않는다.

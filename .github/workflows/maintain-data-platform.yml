@@ -42,7 +42,7 @@ jobs:
               run: python scripts/data_platform/operations.py drill
             - name: Calculate retention counts without deleting data
               if: inputs.retention_plan
-              run: python scripts/data_platform/retention.py --output var/data-platform-review/retention.json
+              run: python scripts/data_platform/retention.py --delete-mode exclusive-writer --output var/data-platform-review/retention.json
             - name: Operational summary
               if: always()
               run: echo 'This workflow never deletes checkpoints. Restore data and detailed retention plans remain private and are not uploaded as artifacts.' >> "$GITHUB_STEP_SUMMARY"

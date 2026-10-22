@@ -18,6 +18,9 @@ from scripts.data_platform.locking import writer_lock
 
 PREFIX = 'platform/v1'
 BUCKET = 'yieldloom-data-private'
+MAX_FILE_BYTES = 512 * 1024 * 1024
+MAX_TOTAL_BYTES = 2 * 1024 * 1024 * 1024
+MAX_FILES = 50000
 
 
 class MissingObject(Exception):
@@ -95,6 +98,9 @@ def backup(store, remote, expected_etag, run_id):
         if any(not re.fullmatch('[a-f0-9]{64}', sha) for sha in hashes):
             raise ValueError('Unsafe raw document address')
         paths = [('observations.sqlite', database)] + [('raw/' + sha, store.root / 'raw' / sha) for sha in sorted(hashes)]
+        sizes = [path.stat().st_size for _, path in paths]
+        if len(paths) > MAX_FILES or any(not 0 < size <= MAX_FILE_BYTES for size in sizes) or sum(sizes) > MAX_TOTAL_BYTES:
+            raise ValueError('Checkpoint exceeds supported restore budget; previous pointer is preserved')
         for name, path in paths:
             body = path.read_bytes()
             sha = digest(body)
@@ -130,18 +136,20 @@ def restore(remote, output, pointer=None):
         raise ValueError('Checkpoint manifest hash mismatch')
     manifest = json.loads(body)
     files = manifest.get('files', [])
-    if manifest.get('schemaVersion') != 1 or not files or len(files) > 50000:
+    if manifest.get('schemaVersion') != 1 or not files or len(files) > MAX_FILES:
         raise ValueError('Invalid checkpoint manifest')
     names = set()
     for entry in files:
         name, checksum = entry['path'], entry['sha256']
         if (name != 'observations.sqlite' and not re.fullmatch(r'raw/[a-f0-9]{64}', name)
                 or not re.fullmatch('[a-f0-9]{64}', checksum) or name in names
-                or not isinstance(entry['bytes'], int) or not 0 < entry['bytes'] <= 512 * 1024 * 1024):
+                or not isinstance(entry['bytes'], int) or not 0 < entry['bytes'] <= MAX_FILE_BYTES):
             raise ValueError('Unsafe checkpoint file')
         names.add(name)
     if 'observations.sqlite' not in names:
         raise ValueError('Checkpoint has no database')
+    if sum(entry['bytes'] for entry in files) > MAX_TOTAL_BYTES:
+        raise ValueError('Checkpoint exceeds supported restore budget')
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output.parent) as temporary:
         stage = Path(temporary) / 'restore'

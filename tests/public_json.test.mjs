@@ -203,3 +203,33 @@ test('one subscriber timing out does not expire another subscriber or cache inva
     );
     assert.equal(read.metrics().entries, 0);
 });
+
+test('immutable failures reload the HTTP cache on retry and report observed headers separately', async () => {
+    const modes = [];
+    const read = createPublicJsonClient({
+        fetcher: async (_url, options) => {
+            modes.push(options.cache);
+            return Response.json(
+                { valid: modes.length > 1 },
+                {
+                    headers: {
+                        'CF-Cache-Status': modes.length === 1 ? 'MISS' : 'HIT',
+                    },
+                }
+            );
+        },
+    });
+    const options = {
+        cachePolicy: 'immutable',
+        validate: (value) => value.valid,
+    };
+    await assert.rejects(read('/versioned', options), /형식/);
+    await read('/versioned', options);
+    await read('/versioned', options);
+    assert.deepEqual(modes, ['default', 'reload']);
+    assert.equal(read.metrics().fetchRequests, 2);
+    assert.deepEqual(read.metrics().responseCacheStatuses, { MISS: 1, HIT: 1 });
+    const copy = read.metrics();
+    copy.responseCacheStatuses.HIT = 900;
+    assert.equal(read.metrics().responseCacheStatuses.HIT, 1);
+});

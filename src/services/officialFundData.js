@@ -1,4 +1,5 @@
 import { readPublicJson } from './publicJson.js';
+import { releaseCacheOptions } from './releaseCache.js';
 
 const configuredBase = (
     import.meta.env?.VITE_DATA_PLATFORM_BASE_URL || ''
@@ -23,8 +24,7 @@ export function createOfficialFundClient({
             throw new Error('공식 데이터 조회 대상이 잘못되었습니다.');
         const prefix = `datasets/${dataset}`;
         const pointer = await read(`${base}/${prefix}/current.json`, {
-            ...options,
-            ttlMs: 60_000,
+            ...releaseCacheOptions(`${base}/${prefix}/current.json`, options),
             validate: (p) =>
                 p?.schemaVersion === 1 &&
                 p.dataset === dataset &&
@@ -33,8 +33,7 @@ export function createOfficialFundClient({
                     `${prefix}/releases/${p.releaseId}/manifest.json`,
         });
         const manifest = await read(`${base}/${pointer.manifestKey}`, {
-            ...options,
-            ttlMs: 180_000,
+            ...releaseCacheOptions(`${base}/${pointer.manifestKey}`, options),
             validate: (m) =>
                 m?.schemaVersion === 1 &&
                 m.dataset === dataset &&
@@ -50,8 +49,10 @@ export function createOfficialFundClient({
             throw new Error('공식 데이터 파일 경로가 잘못되었습니다.');
         const directory = pointer.manifestKey.replace(/manifest\.json$/, '');
         const data = await read(`${base}/${directory}${entry.path}`, {
-            ...options,
-            ttlMs: 180_000,
+            ...releaseCacheOptions(
+                `${base}/${directory}${entry.path}`,
+                options
+            ),
             validate: (v) =>
                 v?.schemaVersion === 1 &&
                 v.dataset === dataset &&

@@ -1,5 +1,6 @@
 import { getDataUrl } from '@/utils/dataUrl';
 import { readPublicJson } from './publicJson.js';
+import { releaseCacheOptions } from './releaseCache.js';
 
 export interface CoreInstrument {
     symbol: string;
@@ -54,17 +55,17 @@ async function currentRelease(): Promise<{
     manifest: CoreManifest;
 }> {
     const pointer = await readPublicJson(urlForKey('core/current.json'), {
-        ttlMs: 60_000,
+        ...releaseCacheOptions(urlForKey('core/current.json')),
         validate: (value: CorePointer) =>
             Boolean(
                 value.releaseId &&
-                    /^core\/releases\/[A-Za-z0-9._-]+\/manifest\.json$/.test(
-                        value.manifestKey || ''
-                    )
+                    /^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(value.releaseId) &&
+                    value.manifestKey ===
+                        `core/releases/${value.releaseId}/manifest.json`
             ),
     });
     const manifest = await readPublicJson(urlForKey(pointer.manifestKey), {
-        ttlMs: 180_000,
+        ...releaseCacheOptions(urlForKey(pointer.manifestKey)),
         validate: (value: CoreManifest) =>
             value.releaseId === pointer.releaseId &&
             value.catalogSearchIndexPath === 'catalog/search-index.json',
@@ -78,7 +79,9 @@ export async function loadCoreDirectory(): Promise<CoreInstrument[]> {
     const payload = await readPublicJson(
         urlForKey(`${releaseRoot}${manifest.catalogSearchIndexPath}`),
         {
-            ttlMs: 180_000,
+            ...releaseCacheOptions(
+                urlForKey(`${releaseRoot}${manifest.catalogSearchIndexPath}`)
+            ),
             validate: (value: { instruments: unknown }) =>
                 Array.isArray(value?.instruments),
         }
@@ -96,7 +99,9 @@ async function instrumentFromRelease(
         ...entry,
         ...(await readPublicJson(
             urlForKey(`${releaseRoot}${entry.instrumentPath}`),
-            { ttlMs: 180_000 }
+            releaseCacheOptions(
+                urlForKey(`${releaseRoot}${entry.instrumentPath}`)
+            )
         )),
     };
 }
@@ -117,7 +122,9 @@ export async function loadCoreDividendEvents(
     const releaseRoot = pointer.manifestKey.slice(0, -'manifest.json'.length);
     const payload = await readPublicJson(
         urlForKey(`${releaseRoot}${instrument.dividendHistoryPath}`),
-        { ttlMs: 180_000 }
+        releaseCacheOptions(
+            urlForKey(`${releaseRoot}${instrument.dividendHistoryPath}`)
+        )
     );
     return Array.isArray(payload?.events) ? payload.events : [];
 }

@@ -136,3 +136,50 @@ test('configured official ledger never falls back to legacy history during an ou
         calls.every((url) => url === 'https://core.example/core/current.json')
     );
 });
+
+test('server rechecks only the pointer after expiry and reuses verified immutable files on rollback', async (t) => {
+    let clock = 0;
+    t.mock.method(Date, 'now', () => clock);
+    const { loadCoreIndex } = await import('../lib/core-release.js');
+    let current = 'one';
+    const calls = [];
+    const index = { providers: ['fixture'], tickers: [] };
+    const fetcher = async (url) => {
+        calls.push(url);
+        const releaseId = url.match(/\/releases\/([^/]+)\//)?.[1] || current;
+        return Response.json(
+            url.endsWith('current.json')
+                ? {
+                      schemaVersion: 2,
+                      releaseId,
+                      manifestKey: `core/releases/${releaseId}/manifest.json`,
+                  }
+                : url.endsWith('manifest.json')
+                  ? {
+                        schemaVersion: 2,
+                        releaseId,
+                        indexPath: 'index.json',
+                        files: [
+                            {
+                                path: 'index.json',
+                                sha256: sha256(jsonBytes(index)),
+                            },
+                        ],
+                    }
+                  : index
+        );
+    };
+    await loadCoreIndex('https://data.test', fetcher);
+    assert.equal(calls.length, 3);
+    clock = 180_001;
+    await loadCoreIndex('https://data.test', fetcher);
+    assert.equal(calls.length, 4);
+    current = 'two';
+    clock += 60_001;
+    await loadCoreIndex('https://data.test', fetcher);
+    assert.equal(calls.length, 7);
+    current = 'one';
+    clock += 60_001;
+    await loadCoreIndex('https://data.test', fetcher);
+    assert.equal(calls.length, 8);
+});

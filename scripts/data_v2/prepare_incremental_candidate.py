@@ -7,7 +7,7 @@ import hashlib
 import json
 import sys
 from dataclasses import replace
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +20,17 @@ from scripts.data_v2.collection_schedule import due_reason, retry_at, schedule_f
 from scripts.data_v2.collection_state import load_local, load_r2, save_r2
 
 DEFAULT_PROVIDERS = sorted(PROVIDERS)
+
+
+def backfill_target(value: str) -> tuple[str, date]:
+    """Select an official historical source; never import legacy event values."""
+    try:
+        provider, ex_date = value.split(":", 1)
+        if provider not in PROVIDERS:
+            raise ValueError("unknown provider")
+        return provider, date.fromisoformat(ex_date)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError("expected a known provider:YYYY-MM-DD") from error
 
 
 def candidate_from_source(source: dict[str, Any]) -> SourceCandidate:
@@ -133,6 +144,8 @@ def all_events(state: dict[str, Any]) -> list[dict[str, Any]]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--provider", action="append", choices=DEFAULT_PROVIDERS)
+    parser.add_argument("--backfill", action="append", type=backfill_target, default=[],
+                        help="Fetch official historical sources for provider:ex-date")
     parser.add_argument("--run-id", default=datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))
     parser.add_argument("--candidate-output", type=Path, default=Path("data-v2/candidates/incremental-events.json"))
     parser.add_argument("--report-output", type=Path, default=Path("data-v2/review/incremental-report.json"))
@@ -141,6 +154,8 @@ def main() -> int:
     parser.add_argument("--now", help="UTC ISO timestamp for deterministic scheduling tests")
     args = parser.parse_args()
     providers = args.provider or DEFAULT_PROVIDERS
+    if any(provider not in providers for provider, _ in args.backfill):
+        parser.error("backfill provider must be included in --provider selection")
     state = load_local(args.state_file) if args.state_file else load_r2()
     next_state = {"schemaVersion": 2, "generatedAt": None, "sources": dict(state["sources"]), "catalogs": dict(state.get("catalogs", {}))}
     report: dict[str, Any] = {"schemaVersion": 2, "runId": args.run_id, "providers": {}, "summary": {"new": 0, "changed": 0, "suspectedRemoved": 0, "unchangedSources": 0, "failedSources": 0, "selectedSources": 0, "skippedSources": 0}}
@@ -164,13 +179,19 @@ def main() -> int:
                 report["providers"][slug] = provider_report
                 report["summary"]["failedSources"] += 1
                 continue
+        backfill_candidates = [candidate for provider, ex_date in args.backfill if provider == slug
+                               for candidate in adapter.discover_for_ex_date(ex_date)]
+        backfill_urls = {candidate.url for candidate in backfill_candidates}
+        candidates = list({(item.url, candidate_ticker(item)): item
+                           for item in [*candidates, *backfill_candidates]}.values())
         for candidate in candidates:
             ticker = candidate_ticker(candidate)
             key = source_key(slug, ticker, candidate.url)
             previous = next_state["sources"].get(key)
             if previous is None:
                 previous = next((item for item in known if item.get("url") == candidate.url and item.get("ticker", "*") == ticker), None)
-            reason = due_reason(previous, clock) if previous else "initial_observation"
+            reason = ("manual_backfill" if candidate.url in backfill_urls else
+                      due_reason(previous, clock) if previous else "initial_observation")
             if not reason:
                 report["summary"]["skippedSources"] += 1
                 continue

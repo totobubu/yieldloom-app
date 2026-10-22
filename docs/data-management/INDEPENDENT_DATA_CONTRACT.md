@@ -73,14 +73,49 @@ npm run core:cutover:check -- --data-dir /path/to/candidate-release --output /tm
 `Publish approved data v2 release`와 직접 발행 명령 모두 이 검사를 통과해야 한다.
 워크플로는 비교 결과를 별도 아티팩트로 보관한다.
 
-현재 체크아웃의 core manifest는 빈 bootstrap이다. 로컬 검사 결과 기존 확정
-이력 4,914건을 대체할 수 없어 전환을 차단했다. 이는 운영 R2의 현재 내용을
-검증한 결과가 아니다. 최신 수집 run `39559670797`은 성공 상태이나 이 환경의
-아티팩트 다운로드는 HTTP 403으로 거부되어 내용을 검증하지 못했다.
-GitHub 환경변수 조회도 권한 부족으로 확인하지 못했다.
-따라서 운영 원장 발행과 환경변수 변경은 아직 수행하지 않았다.
-검증 가능한 후보가 제공되면 위 대조를 통과한 결과를 발행하고, 동일 root 설정으로
-재배포한 뒤 검색·상세·포트폴리오 일정·OG·SEO를 함께 확인해야 한다.
+체크아웃의 core manifest는 빈 bootstrap이며 운영 릴리스는 별도로 발행한다.
+로컬 아티팩트 다운로드가 HTTP 403으로 거부되어, GitHub 실행 환경에서
+`review_only=true`로 비교하도록 검증 모드를 추가했다. 이 작업은 운영 환경과
+R2 자격 증명을 사용하지 않으며, 현재 catalog로 후보를 다시 생성해 비교한다.
+요약과 누락 항목은 check annotation, 전체 결과는 별도 아티팩트에 남긴다.
+
+2026-10-21 수집 run `39559670797`의 후보 5,049건을 대조한 결과, 기존 확정
+이력 4,914건 중 Roundhill 23건이 누락됐고 변경·중복은 없었다. 모두 10월 2일
+발표·10월 5일 배당락인 이벤트다. 공식 Cboe 원문을 다시 조회해 23건의 금액과
+날짜가 정확히 일치함을 확인했다. `--backfill roundhill:2026-10-05`로 공식
+출처를 보충 수집하고 정상 수집 상태에 보존했다. 구 이력의 값은 가져오지 않았다.
+
+보충 수집 run `39593238852`의 후보는 5,073건이다. 전체 비교 run
+`39593606171`은 snapshot 유효, 기존 이력 누락·변경·중복 각 0건, 새 이벤트
+159건으로 통과했다. 보충 수집 자체는 출처 오류 12개 때문에 실패 상태다.
+YieldMax 6개 URL의 HTTP 404와 Global X 6개 페이지의 history payload 파싱
+실패이며, 해당 출처의 기존 확정 이력은 보존됐다. 비교 통과는 모든 출처의 최신
+조회 성공을 뜻하지 않는다. 이 수집 오류는 별도로 해결해야 한다.
+Global X의 현재 QYLD HTML에는 기존 `distributionHistoryData`가 없고,
+9월 21일 금액도 기존 원문의 `0.1767` 대신 화면 표시용 `$0.18`로 나온다.
+이 표시 값을 원문 금액으로 가져오는 우회 파서는 추가하지 않았다.
+
+`candidate-39593238852`를 발행 run `39593732155`에서 발행 완료했다.
+R2 내부 조회로 2,332개 객체와 최종 manifest, 현재 pointer의 releaseId를 확인했다.
+공개 Node 조회로 pointer·manifest, catalog와 배당 index 및 샘플 AAPW 이력의
+해시를 검증했다. 116종목 배당과 2,188종목 catalog이며, 실제 서버 소비 코드로도
+TSLY 이력 88건이 조회됐다. 최초 Python 공개 요청은 HTTP 403이었으나 앱과
+동일한 Node fetch로 조회가 성공해 공개 검증기를 Node로 전환했다.
+
+초기 CORS는 Pages만 허용하고 새 Vercel 운영 주소가 빠져 있었다. 운영 환경의
+적용 run `39598010313`에서 기존 규칙을 보존하고
+`https://yieldloom-app.vercel.app`만 GET/HEAD 허용 목록에 추가했다. 공개 검증은
+Pages와 Vercel 양쪽 Origin으로 동일한 자료와 CORS를 확인했다. 설정 도구의
+기본값은 dry run이며, 워크플로의 `configure_core_cors=true`는 `data-production`
+환경에서 적용한다. 새 출처에 기존 쓰기 메서드가 부여되지 않는 경우도 검사했다.
+
+검증 모드 `verify_public=true`로 공개 조회를 다시 실행할 수 있다. 이후 같은 root를
+설정해 재배포하고 검색·상세·포트폴리오 일정·OG·SEO를 함께 확인해야 한다.
+Vercel `totobubus-projects` 환경변수 접근과 GitHub Actions 변수 조회는 현재
+403으로 거부되어 앱 소비 경로의 운영 전환은 아직 수행하지 않았다.
+후속 data-v2 Python 테스트는 35개 통과했다. 발행 파일 업로드를 최대 8개 병렬로
+바꾸고, 모든 파일 성공 후에만 manifest와 pointer를 기록하도록 유지했다.
+업로드 실패와 전환 검사 실패 시 최종 원장이 노출되지 않는 테스트를 포함한다.
 
 ## 요청 횟수 검증
 
@@ -103,7 +138,7 @@ manifest를 각각 1회만 읽는다. 이번 전환은 Firebase 호출을 추가
 - 기존 `tests/request-dedup.browser.mjs`는 가격·배당 중복 방지 assertions 이후,
   별도 계좌 권한 오류 메시지 대기 단계에서 타임아웃. 새 원장 전환 브라우저
   검사는 계좌 인증과 분리해 위 두 모드로 검증했다.
-- 공개 R2의 `core/current.json` 조회도 HTTP 403으로 거부되어 운영 원장은 미검증.
+- 초기 Python 공개 R2 조회는 HTTP 403이었다. 후속 Node 공개 조회 결과는 위에 기록했다.
 - `npm run lint:check` 종료 코드 0; 오류 0개, Vue 속성 순서 등 경고 80개.
 
 ## 최신 work 통합 검증

@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 from scripts.content_pipeline.models import DistributionEvent, SourceDocument
 from scripts.content_pipeline.providers import CollectionError, SourceCandidate
-from scripts.data_v2.prepare_incremental_candidate import main
+from scripts.data_v2.prepare_incremental_candidate import backfill_target, main
 
 
 class FakeAdapter:
@@ -38,16 +38,39 @@ class FakeAdapter:
 
 
 class IncrementalCollectionTests(unittest.TestCase):
-    def run_collection(self, root, adapter, now="2026-10-15T10:00:00Z"):
+    def run_collection(self, root, adapter, now="2026-10-15T10:00:00Z", extra_args=()):
         argv = ["collect", "--provider", "neos", "--state-file", str(root / "state.json"),
                 "--candidate-output", str(root / "events.json"),
                 "--report-output", str(root / "report.json"),
                 "--state-output", str(root / "state-copy.json"), "--now", now]
+        argv.extend(extra_args)
         with patch("sys.argv", argv), patch.dict(
             "scripts.data_v2.prepare_incremental_candidate.PROVIDERS", {"neos": lambda: adapter}
         ):
             self.assertEqual(main(), 0)
         return json.loads((root / "report.json").read_text()), json.loads((root / "state.json").read_text())
+
+    def test_backfill_fetches_official_source_once_even_when_not_due(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            adapter = FakeAdapter()
+            self.run_collection(root, adapter)
+            with patch.object(adapter, 'discover_for_ex_date', create=True,
+                              return_value=[adapter.candidate, adapter.candidate]) as discover, \
+                 patch.object(adapter, 'fetch', wraps=adapter.fetch) as fetch:
+                report, state = self.run_collection(root, adapter, "2026-10-15T11:00:00Z",
+                                                    ['--backfill', 'neos:2026-10-01'])
+            self.assertEqual(discover.call_args.args[0].isoformat(), '2026-10-01')
+            self.assertEqual(fetch.call_count, 1)
+            self.assertEqual(report['providers']['neos']['sources'][0]['reason'], 'manual_backfill')
+            self.assertEqual(len(state['sources']), 1)
+            self.assertEqual(json.loads((root / 'events.json').read_text()), [])
+
+    def test_backfill_rejects_unknown_providers_and_invalid_dates(self):
+        import argparse
+        for value in ('unknown:2026-10-01', 'neos:2026-99-01', 'neos'):
+            with self.subTest(value=value), self.assertRaises(argparse.ArgumentTypeError):
+                backfill_target(value)
 
     def test_review_rows_are_persisted_but_never_published_or_repeated_hourly(self):
         with tempfile.TemporaryDirectory() as directory:

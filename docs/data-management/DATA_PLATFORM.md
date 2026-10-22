@@ -111,3 +111,30 @@ identity의 두 디렉터리 건수는 각각 5,614 / 7,642이며 기존 catalog
 같은 수의 신규 투자 대상이라고 해석하지 않는다. IVV 보유자산의 안정된 행 식별자 변경은
 저장 원문으로 재처리했고 HTTP 추가 요청은 없었다. 직후 반복 실행의 외부 요청도 0건이었다.
 Firebase 읽기·쓰기·Auth 호출을 추가하지 않았다.
+
+## 1단계: 비공개 체크포인트
+
+Cloudflare 계정에 `yieldloom-data-private` 버킷을 생성했다. 2026-10-22 확인 결과
+`r2.dev` 공개 접근은 비활성화, 사용자 도메인은 0개다. 공개 배당 버킷과 분리한다.
+`scripts/data_platform/checkpoints.py`는 SQLite backup API 스냅샷과 DB에 기록된 모든
+원문을 내용 주소 객체로 저장하고, 원격 해시를 확인한 다음 manifest와 최신 포인터를 쓴다.
+포인터는 실행 시작 시 확보한 ETag로 조건부 갱신하여 오래된 실행의 덮어쓰기를 막는다.
+R2 조건부 쓰기 근거: https://developers.cloudflare.com/r2/api/s3/extensions/#conditional-operations-in-putobject
+
+전용 환경변수 `DATA_PRIVATE_R2_ACCOUNT_ID`, `DATA_PRIVATE_R2_ACCESS_KEY_ID`,
+`DATA_PRIVATE_R2_SECRET_ACCESS_KEY`, `DATA_PRIVATE_R2_BUCKET`을 사용한다. 마지막 값은
+`yieldloom-data-private`이며, 객체 읽기·쓰기 권한은 이 버킷으로 제한한다.
+기존 공개 R2 환경변수나 `.env.r2`를 읽어 대신 연결하지 않는다.
+
+```sh
+# 최초 백업만 bootstrap. 기존 체크포인트에는 사용 금지
+python scripts/data_platform/checkpoints.py backup --root var/data-platform --run-id initial --bootstrap
+# 복원 대상은 존재하지 않는 비공개 경로여야 함
+python scripts/data_platform/checkpoints.py restore --root var/data-platform-restored
+```
+
+복원은 manifest·객체 크기와 해시·SQLite 무결성·원문 전체 포함 여부를 검증한 뒤
+디렉터리를 노출한다. 실패 시 기존 디렉터리를 덮어쓰지 않는다. 원격 삭제·자동 보존기간은
+설정하지 않는다. 현재 실행 환경에는 전용 S3 자격증명이 없고 GitHub secrets 관리 API는
+403으로 거절되어, 실제 원격 업로드·복원은 아직 미확인이다. 메모리 원격 저장소를 통한
+왕복 복원·업로드 실패·조건부 쓰기 충돌·손상 파일 검증은 통과했다.

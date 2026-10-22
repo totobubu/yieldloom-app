@@ -34,6 +34,8 @@
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
     import DividendRocHistory from '@/components/stock/DividendRocHistory.vue';
     import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
+    import OfficialFundData from '@/components/stock/OfficialFundData.vue';
+    import { isOfficialFundConfigured } from '@/services/officialFundData.js';
     import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
     import { getAssetUrl } from '@/utils/dataUrl';
     import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
@@ -1061,7 +1063,15 @@
                                 수집 이력은 실제 보유 기간과 다를 수 있습니다.
                                 미확인 수치는 0으로 간주하지 않습니다.
                             </p>
-                        </section> </TabPanel
+                        </section>
+                        <OfficialFundData
+                            v-if="
+                                activeTab === 'details' &&
+                                isOfficialFundConfigured()
+                            "
+                            :symbol="
+                                normalize(route.params.ticker)
+                            " /> </TabPanel
                     ><TabPanel value="prices">
                         <section
                             v-if="activeTab === 'prices'"

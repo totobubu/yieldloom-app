@@ -184,3 +184,28 @@ SEC의 구조화된 사실·공시 메타데이터만 승인한다. 로고·첨�
 manifest에 넣는다. 단순 `publicDisplay` 토글만으로 통과하지 못한다. 정책 변경은 수집
 fingerprint를 무효화하며, 저장 원문 재처리를 거쳐야 다시 공개할 수 있다. 기존 운영의
 Yahoo 등 시세 공급 조건을 이번 검토로 승인한 것으로 해석하지 않는다.
+
+## 5단계: 영역별 릴리스와 ETF 상세 연결
+
+`scripts/data_platform/releases.py`는 승인된 출처만 골라 품질 검사 후 개체별 projection을
+생성한다. `datasets/{영역}/releases/{버전}/manifest.json`과 개체별 JSON을 먼저 검증·발행하고
+`datasets/{영역}/current.json`을 조건부 갱신한다. 배당 core 포인터와 독립적이다.
+보유자산은 상위 10개 요약과 전체 위치 파일로 나뉜다. 전체 위치 파일은 앱에서 자동 요청하지 않는다.
+
+```sh
+python scripts/data_platform/releases.py --dataset fx --release-id fx-review-001 --output var/data-platform/releases/fx-review-001
+# 같은 명령에 --publish를 명시하면 기존 공개 R2 환경변수로 발행 (현재 원격 미검증)
+# 직전 릴리스로 복구: 현재 버전 일치·정책 불변·파일 무결성·48시간 이내 조건을 검증
+python scripts/data_platform/releases.py rollback --dataset fx --release-id fx-review-001 --expected-current fx-review-002
+```
+
+종목 상세의 상세정보 탭에 공식 ETF 운용정보 컴포넌트를 연결했다. 활성화는
+`VITE_DATA_PLATFORM_BASE_URL`에 공개 릴리스 root를 지정한 뒤 재빌드하는 방식이다.
+기본값은 비활성이고 추가 요청이 없다. 공식 운용지표는 포인터·manifest·종목 파일 3개를
+공용 캐시로 공유하며, 보유자산 버튼을 누를 때 해당 영역의 3개 파일을 추가 조회한다.
+기준일·단위·출처·자료 미제공·실패/재시도를 구분하고, 탭 재진입은 캐시를 재사용한다.
+
+IVV 자료의 공개 이용 조건은 아직 미승인이므로 ETF 릴리스 생성은 차단되며 실제 앱 설정을
+활성화하지 않았다. UI는 합성 응답으로 모바일·다크 모드·재시도·지연 조회를 검증했다.
+실제 공개 후보·원격 업로드·운영 앱 전환은 각각 별개이며, 이번 단계에서 운영 전환을
+완료한 것으로 보고하지 않는다. Firebase·개인 계좌 조회는 추가하지 않았다.

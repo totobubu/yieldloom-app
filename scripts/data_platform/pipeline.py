@@ -281,12 +281,16 @@ def export_candidate(store, registry, datasets, output, public=False, now=None):
     used_policies = {}
     for state in store.db.execute('SELECT source_id,payload FROM state'):
         current = json.loads(state['payload'])
+        if state['source_id'] not in sources:
+            continue
         for identifier in current.get('currentObservationIds', []):
             row = json.loads(store.db.execute('SELECT payload FROM observations WHERE id=?', (identifier,)).fetchone()[0])
             if row['dataset'] not in records:
                 continue
             if public:
                 source = sources.get(state['source_id'], {'id': state['source_id']})
+                if not source.get('enabled'):
+                    raise ValueError('Source must be successfully revalidated: ' + state['source_id'])
                 policy = public_policy(source, registry, set(datasets) & set(source.get('datasets', [])))
                 used_policies[source['policyId']] = policy
                 from scripts.data_platform.quality import evaluate, publication_errors

@@ -28,6 +28,7 @@ class MemoryObjects:
         if (expected and (old is None or digest(old) != expected)) or (not expected and old is not None):
             raise ConditionalConflict('Conditional write conflict')
         self.objects[key] = body
+        return {'ETag': digest(body)}
 
 
 class CheckpointTests(unittest.TestCase):

@@ -24,8 +24,8 @@ class RunTests(unittest.TestCase):
             result = run(remote, root / 'three', registry(), 'three', transport=lambda *_: {'status': 503}, now=NOW + timedelta(days=1))
             self.assertEqual(result['status'], 'degraded')
             self.assertEqual(result['checkpoint'], 'saved')
-            self.assertEqual(result['r2']['getRequests'], 6)
-            self.assertEqual(result['r2']['putRequests'], 3)
+            self.assertEqual(result['r2']['getRequests'], 8)
+            self.assertEqual(result['r2']['putRequests'], 5)
             self.assertEqual(current(remote)[0]['runId'], 'three')
             restore(remote, root / 'verify')
             store = Store(root / 'verify')
@@ -55,8 +55,8 @@ class RunTests(unittest.TestCase):
             initial_data = next(e for e in initial_manifest['files'] if e['path'] == 'observations.sqlite')
             daily = run(remote, root / 'daily', registry(), 'daily',
                         transport=lambda *_: response(xml()), now=NOW + timedelta(days=1))
-            self.assertEqual(daily['r2']['getRequests'], 6)
-            self.assertEqual(daily['r2']['putRequests'], 3)
+            self.assertEqual(daily['r2']['getRequests'], 8)
+            self.assertEqual(daily['r2']['putRequests'], 5)
             self.assertEqual(len(list((root / 'daily' / 'raw').iterdir())), 1)
             daily_manifest = restore(remote, root / 'all')
             self.assertEqual(next(e for e in daily_manifest['files'] if e['path'] == 'observations.sqlite'), initial_data)
@@ -64,13 +64,13 @@ class RunTests(unittest.TestCase):
             self.assertEqual(len(list((root / 'all' / 'raw').iterdir())), 20)
             conditional = run(remote, root / 'conditional', registry(), 'conditional',
                               transport=lambda *_: {'status': 304}, now=NOW + timedelta(days=2))
-            self.assertEqual(conditional['r2']['getRequests'], 7)
-            self.assertEqual(conditional['r2']['putRequests'], 3)
+            self.assertEqual(conditional['r2']['getRequests'], 9)
+            self.assertEqual(conditional['r2']['putRequests'], 5)
             self.assertEqual(len(list((root / 'conditional' / 'raw').iterdir())), 1)
             updated = run(remote, root / 'updated', registry(), 'updated',
                           transport=lambda *_: response(xml() + b' '), now=NOW + timedelta(days=3))
-            self.assertEqual(updated['r2']['getRequests'], 8)
-            self.assertEqual(updated['r2']['putRequests'], 5)
+            self.assertEqual(updated['r2']['getRequests'], 10)
+            self.assertEqual(updated['r2']['putRequests'], 7)
             self.assertEqual(updated['httpRequests'], 1)
 
     def test_parser_change_reuses_one_lazy_document_without_external_http(self):
@@ -83,8 +83,8 @@ class RunTests(unittest.TestCase):
             result = run(remote, root / 'updated', changed, 'updated',
                          transport=lambda *_: self.fail('Duplicate HTTP'), now=NOW)
             self.assertEqual(result['httpRequests'], 0)
-            self.assertEqual(result['r2']['getRequests'], 7)
-            self.assertEqual(result['r2']['putRequests'], 3)
+            self.assertEqual(result['r2']['getRequests'], 9)
+            self.assertEqual(result['r2']['putRequests'], 5)
 
     def test_writer_exclusion_and_no_implicit_reset(self):
         with tempfile.TemporaryDirectory() as directory:

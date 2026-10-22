@@ -65,6 +65,12 @@
     ]);
     const display = (value) =>
         value == null || value === '' ? '—' : String(value);
+    const money = (value, currency) =>
+        value == null || value === ''
+            ? '—'
+            : currency === 'USD'
+              ? `$${value}`
+              : `${value} ${currency}`;
     const helpText =
         '배당락일·통화·금액이 일치하는 배당과 ROC 지급 내역을 연결합니다. 일치하지 않는 기록은 별도 행으로 표시합니다. ROC 금액은 원문 제공값만 표시하며 비율로 역산하지 않습니다. 추정 자료와 최종 세무 결과는 다를 수 있습니다. 같은 지급 건은 확정 자료를 우선하고 같은 단계의 ROC 값이 다르면 미확인으로 표시합니다. 회계연도 누적 자료는 지급 건별 이력에 합산하지 않습니다.';
     watch(rows, () => {
@@ -137,14 +143,10 @@
                                 {{ row.payableDate || '미확인' }}
                             </td>
                             <td data-label="주당 분배금" class="payment-number">
-                                {{ display(row.distributionAmount)
-                                }}<small>{{ row.currency }}</small>
+                                {{ money(row.distributionAmount, row.currency) }}
                             </td>
                             <td data-label="ROC 금액" class="payment-number">
-                                {{ display(row.rocAmount)
-                                }}<small v-if="row.rocAmount != null">{{
-                                    row.currency
-                                }}</small>
+                                {{ money(row.rocAmount, row.currency) }}
                             </td>
                             <td
                                 data-label="ROC 비율"
@@ -226,10 +228,9 @@
                                 >
                             </th>
                             <td>
-                                {{ display(row.distributionAmount) }}
-                                {{ row.currency }}
+                                {{ money(row.distributionAmount, row.currency) }}
                             </td>
-                            <td>{{ display(row.rocAmount) }}</td>
+                            <td>{{ money(row.rocAmount, row.currency) }}</td>
                             <td>
                                 {{ display(row.rocPercent)
                                 }}{{ row.rocPercent == null ? '' : '%' }}

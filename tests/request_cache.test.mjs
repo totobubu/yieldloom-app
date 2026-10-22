@@ -121,3 +121,59 @@ test('comparison and entry projections share one verified summary and directory'
     );
     assert.equal(calls, 5); // pointer + manifest + summary + two distinct histories.
 });
+
+test('projection pointer refresh reuses immutable files and a new release fetches changed data', async (t) => {
+    let clock = 0;
+    t.mock.method(Date, 'now', () => clock);
+    const summary = {
+        schemaVersion: 1,
+        symbol: 'AAA',
+        tickerInfo: { price: 100 },
+        priceDate: '2026-10-22',
+    };
+    const history = { symbol: 'AAA', backtestData: [] };
+    const manifestFor = (version) => ({
+        schemaVersion: 1,
+        tickers: {
+            AAA: {
+                root: `thumbnail/v1/objects/${symbolKey('AAA')}/${version.repeat(64)}`,
+                hashes: {
+                    summary: sha256(jsonBytes(summary)),
+                    'entry-efficiency': sha256(jsonBytes(history)),
+                },
+            },
+        },
+    });
+    let manifest = manifestFor('a');
+    const calls = [];
+    const fetcher = async (url) => {
+        calls.push(url);
+        const releaseId = sha256(jsonBytes(manifest));
+        return Response.json(
+            url.endsWith('/current.json')
+                ? {
+                      schemaVersion: 1,
+                      releaseId,
+                      manifestKey: `thumbnail/v1/releases/${releaseId}/manifest.json`,
+                  }
+                : url.endsWith('/manifest.json')
+                  ? manifest
+                  : url.endsWith('/summary.json')
+                    ? summary
+                    : history
+        );
+    };
+    const load = () => loadProjection('AAA', 'https://fixture.test', fetcher);
+    await load();
+    assert.equal(calls.length, 4);
+    clock = 61000;
+    await load();
+    assert.equal(calls.length, 5);
+    clock = 181000;
+    await load();
+    assert.equal(calls.length, 6); // previously 10: pointers + repeated manifest and payloads.
+    manifest = manifestFor('b');
+    clock = 242000;
+    await load();
+    assert.equal(calls.length, 10); // changed release: pointer + manifest + both objects.
+});

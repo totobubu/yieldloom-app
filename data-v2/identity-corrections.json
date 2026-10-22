@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "corrections": [
+    {
+      "symbol": "IWM",
+      "market": "NYSE",
+      "currency": "USD",
+      "previousIsin": "JP5841360000",
+      "isin": "US4642876555",
+      "cusip": "464287655",
+      "reviewedAt": "2026-10-22",
+      "evidenceUrl": "https://www.ishares.com/us/literature/fact-sheet/iwm-ishares-russell-2000-etf-fund-fact-sheet-ja-jp.pdf",
+      "evidenceAsOfDate": "2026-06-30",
+      "reason": "Issuer fact sheet identifies IWM, USD, NYSE Arca, ISIN and CUSIP. Previous identifier is not an alias of this instrument."
+    }
+  ]
+}

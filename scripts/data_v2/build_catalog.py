@@ -45,6 +45,31 @@ def normalized_entry(row: dict[str, Any]) -> dict[str, Any] | None:
             result[field] = row[field]
     return result
 
+
+def apply_identity_corrections(catalog, path=ROOT / 'data-v2/identity-corrections.json'):
+    """Apply reviewed exact matches; old mistaken IDs never become portfolio aliases."""
+    from scripts.data_platform.quality import valid_isin
+    config = json.loads(path.read_text(encoding='utf-8'))
+    if config.get('schemaVersion') != 1:
+        raise ValueError('Unsupported identity correction registry')
+    result = {symbol: dict(row) for symbol, row in catalog.items()}
+    seen = set()
+    for correction in config['corrections']:
+        symbol = correction['symbol']
+        if (symbol in seen or not valid_isin(correction['isin'])
+                or not correction.get('reviewedAt') or not correction.get('evidenceUrl', '').startswith('https://')):
+            raise ValueError('Invalid reviewed identity correction')
+        seen.add(symbol)
+        if symbol not in result:
+            continue
+        row = result[symbol]
+        if (any(row.get(key) != correction[key] for key in ('market', 'currency'))
+                or row.get('isin') not in (correction['previousIsin'], correction['isin'])):
+            raise ValueError(f'Identity correction precondition changed: {symbol}')
+        row['isin'] = correction['isin']
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Create a core catalog seed from a legacy nav snapshot.")
     parser.add_argument("--input", type=Path, required=True)
@@ -87,6 +112,7 @@ def main() -> int:
             entry = normalized_entry(status)
             if entry:
                 catalog[symbol] = entry
+    catalog = apply_identity_corrections(catalog)
     catalog = {symbol: apply_status(row, statuses) for symbol, row in catalog.items()}
     result = {
         "schemaVersion": 1,

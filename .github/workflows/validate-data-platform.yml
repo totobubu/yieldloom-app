@@ -8,6 +8,7 @@ on:
             - 'scripts/data_platform/**'
             - 'tests/data_platform/**'
             - '.github/workflows/validate-data-platform.yml'
+            - '.github/workflows/maintain-data-platform.yml'
     push:
         branches: [main, work]
         paths:
@@ -16,6 +17,7 @@ on:
             - 'scripts/data_platform/**'
             - 'tests/data_platform/**'
             - '.github/workflows/validate-data-platform.yml'
+            - '.github/workflows/maintain-data-platform.yml'
     workflow_dispatch:
 
 permissions:

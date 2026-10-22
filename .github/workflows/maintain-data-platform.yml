@@ -1,6 +1,10 @@
 name: Verify private data recovery
 
 on:
+    push:
+        branches: [work]
+        paths:
+            - '.github/workflows/maintain-data-platform.yml'
     workflow_dispatch:
         inputs:
             retention_plan:

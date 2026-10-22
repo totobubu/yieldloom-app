@@ -1,0 +1,167 @@
+{
+    "schemaVersion": 1,
+    "datasets": {
+        "identity": {
+            "owner": "reference-data",
+            "fields": ["listing"],
+            "identityPolicy": "discovery_candidates_only"
+        },
+        "fund-profile": {
+            "owner": "fund-data",
+            "fields": ["prospectusExpenseRatio"]
+        },
+        "fund-observations": {
+            "owner": "fund-data",
+            "fields": [
+                "nav",
+                "aum",
+                "sharesOutstanding",
+                "closingPrice",
+                "medianSpread30D",
+                "secYield30D",
+                "trailingYield12M"
+            ]
+        },
+        "holdings": {
+            "owner": "fund-data",
+            "fields": ["position"]
+        },
+        "fx": {
+            "owner": "reference-data",
+            "fields": ["referenceRate"]
+        },
+        "filings": {
+            "owner": "issuer-data",
+            "fields": ["filing"]
+        },
+        "market-prices": {
+            "owner": "market-data",
+            "managedBy": "existing_price_collectors",
+            "state": "supplier_rights_and_adjustment_contract_required"
+        },
+        "actions": {
+            "owner": "market-data",
+            "managedBy": "corporate_action_observations",
+            "state": "verified_source_expansion_required"
+        },
+        "distributions": {
+            "owner": "official-dividends",
+            "managedBy": "scripts/data_v2/prepare_incremental_candidate.py",
+            "state": "existing_authoritative_pipeline"
+        },
+        "tax-character": {
+            "owner": "fund-tax-data",
+            "managedBy": "scripts/content_pipeline/tax_character.py",
+            "state": "existing_observation_pipeline"
+        },
+        "financials": {
+            "owner": "issuer-data",
+            "state": "taxonomy_period_and_authentication_contract_required"
+        },
+        "exposures": {
+            "owner": "fund-data",
+            "state": "position_coverage_and_method_contract_required"
+        },
+        "macro": {
+            "owner": "reference-data",
+            "state": "series_and_vintage_contract_required"
+        },
+        "analytics": {
+            "owner": "analytics",
+            "state": "input_release_vector_required"
+        }
+    },
+    "sources": [
+        {
+            "id": "nasdaq-listed",
+            "enabled": true,
+            "parser": "nasdaq-directory",
+            "parserVersion": "1",
+            "datasets": ["identity"],
+            "url": "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "nasdaq-other-listed",
+            "enabled": true,
+            "parser": "nasdaq-directory",
+            "parserVersion": "1",
+            "datasets": ["identity"],
+            "url": "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "ishares-ivv-profile",
+            "enabled": true,
+            "parser": "ishares-profile",
+            "parserVersion": "1",
+            "datasets": ["fund-observations", "fund-profile"],
+            "url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+            "symbol": "IVV",
+            "entityId": "instrument:isin:US4642872000",
+            "fundName": "iShares Core S&P 500 ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "ishares-ivv-holdings",
+            "enabled": true,
+            "parser": "ishares-holdings",
+            "parserVersion": "3",
+            "datasets": ["holdings", "fund-observations"],
+            "url": "https://www.ishares.com/us/products/239726/ishares-core-s-p-500-etf/latest-holdings.csv",
+            "symbol": "IVV",
+            "entityId": "instrument:isin:US4642872000",
+            "fundName": "iShares Core S&P 500 ETF",
+            "currency": "USD",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "ecb-reference-fx",
+            "enabled": true,
+            "parser": "ecb-fx",
+            "parserVersion": "1",
+            "datasets": ["fx"],
+            "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "sec-aapl-submissions",
+            "enabled": true,
+            "parser": "sec-submissions",
+            "parserVersion": "1",
+            "datasets": ["filings"],
+            "url": "https://data.sec.gov/submissions/CIK0000320193.json",
+            "cik": "0000320193",
+            "maxFilings": 40,
+            "minIntervalSeconds": 86400,
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "opendart-financials",
+            "enabled": false,
+            "datasets": ["financials", "filings"],
+            "blockedReason": "API key, corporation mapping, CFS/OFS and reporting-period contract required",
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "krx-market-data",
+            "enabled": false,
+            "datasets": ["identity", "market-prices"],
+            "blockedReason": "Service authentication and permitted commercial/public use must be established",
+            "publicDisplay": "unreviewed"
+        },
+        {
+            "id": "commercial-market-data",
+            "enabled": false,
+            "datasets": ["market-prices", "actions", "financials"],
+            "blockedReason": "Provider, coverage, plan, adjustment basis and redistribution rights not selected",
+            "publicDisplay": "unreviewed"
+        }
+    ]
+}

@@ -100,6 +100,11 @@ node tests/request-dedup.browser.mjs
 
 검색 목록은 이 프로젝트의 `data-v2/catalog-seed.json`에서 만드는 `ticker-index.json`을 사용합니다. `VITE_DATA_RELEASE_BASE_URL`을 설정하면 자체 core 릴리스의 catalog를 읽습니다. 검색·API·빌드는 `nav.json`에 의존하지 않습니다. 가격 파일 경로는 `data-v2/market-sources.json`으로 분리했으며 가격 원본 공급은 아직 기존 설정을 사용합니다. 데이터 계약과 배당 릴리스 전환 조건은 [독립 데이터 안내](docs/data-management/INDEPENDENT_DATA_CONTRACT.md)를 참조하세요.
 
+확장 데이터는 `npm run data:collect`로 종목 후보·ETF 운용지표·보유자산·환율·공시를 영역별
+수집합니다. 원문·기준일·개정 이력은 비공개 `var/data-platform/`에 저장하고, 공개 이용 조건
+승인 전 앱에 배포하지 않습니다. 명령·데이터 계약·후속 영역은
+[확장 수집 운영 안내](docs/data-management/DATA_PLATFORM.md)를 참조하세요.
+
 종목 데이터가 체크아웃에 없다면 기존 데이터 저장소에서 복원하거나 `VITE_R2_PUBLIC_URL`을 설정해야 합니다. `VITE_USE_R2=true`로 종목 데이터를 R2에서 우선 읽을 수 있습니다. 환경변수를 바꾸면 개발 서버 재시작 또는 재빌드가 필요합니다.
 
 GitHub Pages 배포는 `VITE_API_BASE_URL` 설정이 없으면 정식 웹앱 API인 `https://yieldloom-app.vercel.app`을 사용합니다. 인증·계좌용 Node·Python API는 기본 프런트엔드 origin `https://totobubu.github.io`와 로컬 개발 주소를 허용하며, 추가 사이트는 서버의 `PUBLIC_APP_ORIGINS`에 명시합니다. 익명 시장 데이터만 반환하는 `/api/thumbnail-data`·`/api/stock-prices`는 CDN에 저장된 응답도 같은 방식으로 읽을 수 있도록 공개 CORS를 사용하며, 브라우저 자격증명은 허용하지 않습니다. `FIRESTORE_SA_KEY`·Toss 자격증명은 서버 전용으로 유지합니다. Pages에 Firebase 웹 설정이 없는 경우 로그인 화면에서 정식 웹앱으로 이동해 계좌 기능을 이용할 수 있습니다.

@@ -1,0 +1,446 @@
+{
+  "reviewDateKST": "2026-10-22",
+  "method": "공식 문서·소량 공개 표본을 직접 HTTP 조회. 본문 내용과 HTTP 상태를 별도 판정.",
+  "scopeLimit": "키가 필요한 상용 API·OpenDART·KRX의 인증 데이터 호출, 유료 계약, 운영 데이터 변경은 수행하지 않음. 원문 파일은 저장소에 포함하지 않음.",
+  "sourceCount": 42,
+  "httpStatuses": {
+    "200": 40,
+    "404": 1,
+    "503": 1
+  },
+  "repositorySnapshot": {
+    "navRows": 2173,
+    "navBytes": 1167113,
+    "catalogRows": 2173,
+    "priceRoutes": 2165,
+    "distributionAdapters": 15,
+    "insightRows": 4295,
+    "insightSnapshotDate": "2026-10-14",
+    "undatedAvailableNAV": 1524,
+    "undatedAvailableAUM": 1524,
+    "undatedAvailableExpenseRatio": 1525,
+    "officialNAVHistories": 3
+  },
+  "sources": [
+    {
+      "id": "alfred",
+      "url": "https://alfred.stlouisfed.org/",
+      "status": 200,
+      "bytes": 898,
+      "title": "Site Maintenance | St. Louis Fed<",
+      "sha256": "e40c189fd5efef72502235069c9f4e48d0e8c5e9f05edf4bafb1485f895b5d62",
+      "reviewNote": "HTTP 200이지만 점검 안내. vintage API 세부 기능 이번 조사에서 미검증.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "alphavantage",
+      "url": "https://www.alphavantage.co/documentation/",
+      "status": 200,
+      "bytes": 1060306,
+      "title": "API Documentation | Alpha Vantage",
+      "sha256": "e3175fa266cbcab873f6cf971fdc3bd949e27d79a1fd93be59e3158ccfa7b52a",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "alphavantage_terms",
+      "url": "https://www.alphavantage.co/terms_of_service/",
+      "status": 200,
+      "bytes": 156583,
+      "sha256": "88ed3d22fe0f3624e76e53a210db3498b4a90712ab0d934356cc84b19ed1468a",
+      "reviewNote": "약관 URL의 이용권한 본문을 추출·확인하지 못함. API 문서 확인과 별개로 처리.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "cboe_actions",
+      "url": "https://www.cboe.com/us/equities/notices/corporate_actions/",
+      "status": 200,
+      "bytes": 609700,
+      "title": "Cboe U.S. Equities Exchanges System Status Notices",
+      "sha256": "891636fde1a164901156ff4f2c56e439164addd448054c3762f48528f5da803c",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "dart_accounts_full",
+      "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS003&apiId=2019020",
+      "status": 200,
+      "bytes": 41236,
+      "title": "전자공시 OPENDART 시스템 | 개발가이드 | 상세",
+      "sha256": "c43e364f1948957f400a1a93a68c505ad8b2ab8c75593bcfc21cb868e5af140d",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "dart_financial",
+      "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS003&apiId=2019003",
+      "status": 200,
+      "bytes": 30991,
+      "title": "전자공시 OPENDART 시스템 | 개발가이드 | 상세",
+      "sha256": "866191e7fc1f1ee9188097d43e0bfeb52a31f548ecdef9f39c85bbb709f06959",
+      "reviewNote": "해당 API는 공시 원문 ZIP 다운로드. 재무제표 필드는 dart_accounts_full에서 확인.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "dart_financial_accounts",
+      "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS003&apiId=2019019",
+      "status": 200,
+      "bytes": 31706,
+      "type": "text/html; charset=UTF-8",
+      "title": "전자공시 OPENDART 시스템 | 개발가이드 | 상세",
+      "sha256": "4af21c557f753c67a5ba8f2eacaa82791387521db0c3b9278e73daa38138cb9b",
+      "reviewNote": "해당 API는 XBRL 원문 다운로드. 재무제표 전체 API와 혼동하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "ecb_api",
+      "url": "https://data.ecb.europa.eu/help/api/overview",
+      "status": 503,
+      "bytes": 12113,
+      "title": "European Central Bank",
+      "sha256": "1618304a9b1b74a3dcdda70bb69a0e4b9f33e45be06568b28b9f535a9c028666",
+      "reviewNote": "HTTP 503. 대체로 ECB 환율 안내와 XML 표본을 확인.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "ecb_fx",
+      "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html",
+      "status": 200,
+      "bytes": 119511,
+      "title": "Euro foreign exchange reference rates",
+      "sha256": "91da0a2ec42cc3da6d98a7df1ff4400323ef49b5288e637477a53acce3a10ba3",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "ecb_fx_xml",
+      "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
+      "status": 200,
+      "bytes": 1547,
+      "type": "text/xml",
+      "sha256": "c024487e020a7a3070cee240e0c1d7dac0f7fc9310a61f30286f5ceac470d436",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "ecos",
+      "url": "https://ecos.bok.or.kr/api/",
+      "status": 200,
+      "bytes": 4436,
+      "title": "한국은행 Open API 서비스",
+      "sha256": "e816ac56379793c00985c0371d386ddaa8a6b7a19e805f3b42585d65f504acbf",
+      "reviewNote": "포털 진입 페이지. ecos_statlist에서 실제 공개 sample JSON 확인.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "ecos_statlist",
+      "url": "https://ecos.bok.or.kr/api/StatisticTableList/sample/json/kr/1/5/",
+      "status": 200,
+      "bytes": 769,
+      "sha256": "281fd60a235ff85d0481ed02a19bd4bcbee2e5307e6f9c999ea9780006394130",
+      "reviewNote": "공개 sample 키로 통계목록 JSON 5행 확인. 실서비스 인증키·쿼터 테스트는 아님.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "finra_short",
+      "url": "https://www.finra.org/finra-data/browse-catalog/short-sale-volume-data",
+      "status": 200,
+      "bytes": 77166,
+      "title": "Short Sale Volume Data | FINRA.org",
+      "sha256": "eb4a005ae19f196b99ce6627243d38ac29194a27f206f9326baecdd0f7c1eccf",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "finra_volume_explainer",
+      "url": "https://www.finra.org/rules-guidance/notices/information-notice-051019",
+      "status": 200,
+      "bytes": 97691,
+      "type": "text/html; charset=UTF-8",
+      "title": "Information Notice 5/10/19 | FINRA.org",
+      "sha256": "5d190a3bc8219333641bd917fd420b2236908e6342dd09542db9086a06a73e66",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "fred_api",
+      "url": "https://fred.stlouisfed.org/docs/api/fred/",
+      "status": 200,
+      "bytes": 898,
+      "title": "Site Maintenance | St. Louis Fed<",
+      "sha256": "5c3ae5b1a1bc18b606f443811d617cfdc6bb34b67d951de7b900d28cad218c98",
+      "reviewNote": "HTTP 200이지만 점검 안내. API 기능 본문 검증 실패.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "fred_series",
+      "url": "https://fred.stlouisfed.org/docs/api/fred/series_observations.html",
+      "status": 200,
+      "bytes": 898,
+      "title": "Site Maintenance | St. Louis Fed<",
+      "sha256": "5c3ae5b1a1bc18b606f443811d617cfdc6bb34b67d951de7b900d28cad218c98",
+      "reviewNote": "HTTP 200이지만 점검 안내. API 기능 본문 검증 실패.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "gleif_api",
+      "url": "https://www.gleif.org/en/lei-data/gleif-api",
+      "status": 200,
+      "bytes": 208547,
+      "title": "GLEIF API - LEI Data – GLEIF",
+      "sha256": "6c7b0180b5109142f9b103fd412d7ae077b0a7ee01d4bb5406f813943694f5d3",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "ishares_ivv",
+      "url": "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+      "status": 200,
+      "bytes": 2986540,
+      "title": "iShares Core S&amp;P 500 ETF | IVV",
+      "sha256": "1294e5fb0bed4bea3403a62e41bf059cb4bada727be6b5e6929df59443f48134",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "ivv_holdings_csv",
+      "url": "https://www.ishares.com/us/products/239726/ishares-core-s-p-500-etf/latest-holdings.csv",
+      "status": 200,
+      "bytes": 83255,
+      "type": "text/plain; charset=utf-8",
+      "sha256": "e3782e4cb5cd146d4133946b240c7279b82113f3814810531335cc4bb4d7743a",
+      "reviewNote": "실제 CSV 508개 표 형식 행과 15개 열 확인. 표 범위 행 수이며 모두 주식이라는 뜻은 아님.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "krx_api",
+      "url": "https://openapi.krx.co.kr/",
+      "status": 200,
+      "bytes": 356,
+      "title": "정보데이터시스템 - OPEN API",
+      "sha256": "fbb490f85bf3b91e2a814e422de7ef0580619357c31ae046f713a70f87209b0b",
+      "reviewNote": "프레임 진입 페이지만 반환. krx_service_list에서 서비스 본문 확인.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "krx_contents",
+      "url": "https://openapi.krx.co.kr/contents/OPP/MAIN/main/index.cmd",
+      "status": 200,
+      "bytes": 17946,
+      "title": "KRX | Data Marketplace OPEN API",
+      "sha256": "69a8a39670bae502168ca72a80935fbc850ea30d71e9e45b93033db80ff68092",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "krx_products",
+      "url": "https://openapi.krx.co.kr/contents/OPP/USES/service/OPPUSES003_S1.cmd",
+      "status": 200,
+      "bytes": 21747,
+      "type": "text/html; charset=utf-8",
+      "title": "증권상품 - KRX | Data Marketplace OPEN API",
+      "sha256": "fdc504797e2a8ea25095cd59b7be21188b6018a30be22522809d5d7b0607d28b",
+      "reviewNote": "동적 서비스 표를 정적 HTML에서 확인하지 못함. krx_service_list 본문으로 확인.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "krx_service_list",
+      "url": "https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd",
+      "status": 200,
+      "bytes": 28577,
+      "title": "서비스 목록 - KRX | Data Marketplace OPEN API",
+      "sha256": "75862141539a47bb445a9041beb31d10106dcc960fd458bac26ea0eb90fc58b4",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "krx_terms",
+      "url": "https://openapi.krx.co.kr/contents/OPP/INFO/OPPINFO002.jsp",
+      "status": 200,
+      "bytes": 29832,
+      "type": "text/html; charset=utf-8",
+      "title": "국문 - KRX | Data Marketplace OPEN API",
+      "sha256": "f1dd54bba0048be7224fb7514e41465842493fefd7afa4f450bd08f0f9d2d94e",
+      "reviewNote": "비상업적 목적 이용 및 제3자 대가 청구 제한 조항 확인. 우리 서비스 적용 권리 검토 필요.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "massive_splits",
+      "url": "https://massive.com/docs/rest/stocks/corporate-actions/splits",
+      "status": 200,
+      "bytes": 1632244,
+      "type": "text/html; charset=utf-8",
+      "title": "Splits | Stocks REST API - Massive",
+      "sha256": "b6488251540df1a4715866e802b7724bd5fce14384b252a9d590874caa7398a1",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "nasdaq_sample",
+      "url": "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
+      "status": 200,
+      "bytes": 349019,
+      "sha256": "0b1be29316998ea4d5b89fedf845adad4bf24703c55d0222c96245ebd1b8df96",
+      "reviewNote": "5,622개 자료 행과 마지막 생성시각 행 확인. 시험 종목 8개. 전체 미국 상장 목록은 아님.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "nasdaq_symbols",
+      "url": "https://www.nasdaqtrader.com/Trader.aspx?id=SymbolDirDefs",
+      "status": 200,
+      "bytes": 114996,
+      "title": "Symbol Directory Definitions",
+      "sha256": "26f6a85c6ba4ebf9b40f139ba9195511be7dca9b7b7f88c7c2ea1252b44cded1",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "neos_roc_pdf",
+      "url": "https://neosfunds.com/wp-content/uploads/SPYI-19a-1-Notice-9.16.26-Confidential.pdf",
+      "status": 200,
+      "bytes": 227457,
+      "type": "application/pdf",
+      "sha256": "c65a43b73319ca369e8bb9ca9c01d3a0d8aa83ef54acd190353977c154812e4b",
+      "reviewNote": "실제 공개 19a PDF 확인. 문서는 추정값이며 세금 보고 목적이 아님을 명시.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "neos_spyi",
+      "url": "https://neosfunds.com/spyi/",
+      "status": 200,
+      "bytes": 307592,
+      "title": "SPYI - NEOS S&amp;P 500 High Income ETF | NEOS Investments",
+      "sha256": "635870694349d78c582e2af9018d34d8f77423249d252c9c84a6ec30ed729a3a",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "nport_readme_correct",
+      "url": "https://www.sec.gov/files/nport_readme.pdf",
+      "status": 200,
+      "bytes": 456536,
+      "type": "application/pdf",
+      "sha256": "de57ff40cb670cd7781bc7712ddbb0014366a7a73ed3143a1bfcca29e0a35120",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "opendart",
+      "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS003",
+      "status": 200,
+      "bytes": 25060,
+      "title": "전자공시 OPENDART 시스템 | 개발가이드",
+      "sha256": "239491f9d6a1efc7b0b72b52a3f1efeb89961e1e64ebd0362b487e7c1ce7ace1",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "openfigi",
+      "url": "https://www.openfigi.com/api/documentation",
+      "status": 200,
+      "bytes": 166243,
+      "title": "Documentation | OpenFIGI",
+      "sha256": "8489ccd858e5c5da8bf0d3e7f7fd1ea179c3b31db07b82a949fab506b6afc37d",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "openfigi_sample",
+      "url": "https://api.openfigi.com/v3/mapping",
+      "status": 200,
+      "bytes": 264,
+      "sha256": "e1ee9de1a1d99c46cd802dedbfe03d10202e1916fef03504d6afcb197a36be91",
+      "reviewNote": "인증키 없는 읽기 전용 POST로 AAPL/US 매핑 1회 확인. 미국 composite 식별자이며 MIC 확정 자료로 쓰지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "r2_public",
+      "url": "https://developers.cloudflare.com/r2/buckets/public-buckets/",
+      "status": 200,
+      "bytes": 137649,
+      "title": "Public buckets · Cloudflare R2 docs",
+      "sha256": "4d84190b66bb049b33a6dd1d4dbd77b92826dff14f7395138db49e7d510ddd48",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "sec_api",
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+      "status": 200,
+      "bytes": 69021,
+      "title": "SEC.gov | EDGAR Application Programming Interfaces (APIs)",
+      "sha256": "4043a2ac97efdc6bcd1f540c905dc5f2d4d75ec5efa2c8cb7476d11763bdcfa7",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "sec_fairaccess",
+      "url": "https://www.sec.gov/about/developer-resources",
+      "status": 200,
+      "bytes": 68453,
+      "title": "SEC.gov | Developer Resources",
+      "sha256": "7627c5a2be02c74b7486e919651b82ccc25a980436d0fd0deca12a2ff3863344",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "sec_nport",
+      "url": "https://www.sec.gov/data-research/sec-markets-data/form-n-port-data-sets",
+      "status": 200,
+      "bytes": 87601,
+      "title": "SEC.gov | Form N-PORT Data Sets",
+      "sha256": "f1514d0970009b9a47b59c7c7f0b87b2861d70712d63af61c793c319a333d878",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "sec_nport_readme",
+      "url": "https://www.sec.gov/files/dera/data/form-n-port-data-sets/form-nport-data-sets.pdf",
+      "status": 404,
+      "bytes": 53435,
+      "title": "SEC.gov | Oops! Page Not Found.",
+      "sha256": "ee242e8e000b149b3b700c2d82cb051d76e7c146a13ff52b3d7ce4e3acd6d06e",
+      "reviewNote": "초기 추정 URL 404. nport_readme_correct로 정정.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "sec_submission_sample",
+      "url": "https://data.sec.gov/submissions/CIK0000320193.json",
+      "status": 200,
+      "bytes": 163778,
+      "sha256": "c24afa8dfdd359593f193c737a5af2d49f172f81fe83b7019d7d7e2e3fc2cb5f",
+      "reviewNote": "AAPL submissions JSON 확인. 원본의 식별·공시 메타데이터만 검토.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "twelve_terms",
+      "url": "https://twelvedata.com/terms",
+      "status": 200,
+      "bytes": 184047,
+      "title": "Terms of Use | Twelve Data",
+      "sha256": "ac62d59618eb29c65f5de67524b30f24d355a9e90bf9d11a6bdc9ad9abe058e1",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "twelvedata",
+      "url": "https://twelvedata.com/docs",
+      "status": 200,
+      "bytes": 6272894,
+      "title": "API Documentation - Twelve Data",
+      "sha256": "9e2ca604277f87a2bbcf26e5e14ae6648966d958d6ba37f4f49f265bbbbdbbfb",
+      "reviewNote": "공식 문서 본문 확인. API 호출·전체 종목 범위·재배포 권한 검증을 의미하지 않음.",
+      "checkedAtKSTDate": "2026-10-22"
+    },
+    {
+      "id": "yfinance_terms",
+      "url": "https://ranaroussi.github.io/yfinance/",
+      "status": 200,
+      "bytes": 19155,
+      "title": "yfinance documentation &#8212; yfinance",
+      "sha256": "7fd290a8dc757f01c04eff8e6bfb11c87b5d63a6ebe9f1f19a54a1615ebf771f",
+      "reviewNote": "라이브러리 문서는 Yahoo API personal use 목적 및 Yahoo 약관 확인을 명시.",
+      "checkedAtKSTDate": "2026-10-22"
+    }
+  ]
+}

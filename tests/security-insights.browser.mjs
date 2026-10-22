@@ -56,6 +56,12 @@ try {
         // Quote identity is synthetic; financial insights use the real public snapshot.
         await mockQuote(page);
         await page.goto(base + '/stock/QLDY?tab=details');
+        await page
+            .getByRole('heading', { name: 'QLDY 종목 개요', exact: true })
+            .waitFor();
+        assert.equal(await page.locator('.security-insights').count(), 0);
+        assert.equal(requests.length, 0);
+        await page.getByRole('tab', { name: '배당정보', exact: true }).click();
         const panel = page.locator('.security-insights');
         await panel.locator('.roc-table tbody tr').first().waitFor();
         assert.equal(
@@ -91,6 +97,7 @@ try {
             '—'
         );
         const before = requests.length;
+        assert.equal(before, 1);
         const fundamentals = panel.locator('.fundamentals');
         assert.equal(await fundamentals.evaluate((el) => el.open), width > 600);
         await fundamentals.locator('summary').click();
@@ -112,6 +119,11 @@ try {
         await page.keyboard.press('Escape');
         await page.locator('.p-popover').waitFor({ state: 'hidden' });
         assert.equal(requests.length, before);
+        await page.getByRole('tab', { name: '상세정보', exact: true }).click();
+        assert.equal(await panel.count(), 0);
+        await page.getByRole('tab', { name: '배당정보', exact: true }).click();
+        await panel.locator('.roc-table tbody tr').first().waitFor();
+        assert.equal(requests.length, before);
         assert.ok(
             await page.evaluate(
                 () => document.documentElement.scrollWidth <= innerWidth + 1
@@ -132,7 +144,7 @@ try {
         viewport: { width: 390, height: 900 },
     });
     await mockQuote(page);
-    await page.goto(base + '/stock/SPYI?tab=details');
+    await page.goto(base + '/stock/SPYI?tab=dividends');
     const panel = page.locator('.security-insights');
     await panel.locator('.roc-group').first().waitFor();
     assert.ok(await panel.getByText('0.48085208', { exact: true }).count());
@@ -143,7 +155,7 @@ try {
         .waitFor();
     assert.equal(await panel.getByText('확정', { exact: true }).count(), 0);
     assert.equal(await panel.getByText('추정', { exact: true }).count(), 0);
-    await page.goto(base + '/stock/TXN?tab=details');
+    await page.goto(base + '/stock/TXN?tab=dividends');
     await panel
         .getByText('공개된 ROC 근거를 수집하지 못했습니다.', { exact: false })
         .waitFor();

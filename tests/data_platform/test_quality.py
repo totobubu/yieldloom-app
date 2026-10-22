@@ -42,3 +42,17 @@ class QualityTests(unittest.TestCase):
         report = {'errors': [], 'warnings': ['as_of_unknown']}
         self.assertIn('discovery_candidates_not_canonical_catalog', publication_errors(report, ['identity']))
         self.assertIn('as_of_unknown', publication_errors(report, ['fund-profile']))
+
+
+    def test_catalog_review_distinguishes_active_and_inactive_missing_identity(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(directory)
+            self.addCleanup(store.close)
+            catalog = [{'symbol': 'CURRENT', 'isin': None, 'active': True},
+                       {'symbol': 'OLD', 'isin': None, 'active': False},
+                       {'symbol': 'VALID', 'isin': 'US4642876555', 'active': True}]
+            report = evaluate(store, {'sources': []}, catalog, NOW)
+            self.assertEqual(report['catalogInvalidIsinCount'], 2)
+            self.assertEqual(report['catalogActiveInvalidIsinCount'], 1)
+            self.assertEqual(report['catalogInactiveInvalidIsinCount'], 1)
+            self.assertEqual([r['active'] for r in report['catalogIdentityReview']], [True, False])

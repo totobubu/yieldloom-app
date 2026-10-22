@@ -2675,7 +2675,7 @@
     {
       "noDividends": true,
       "symbol": "BRK.A",
-      "isin": null,
+      "isin": "US0846701086",
       "market": "NYSE",
       "currency": "USD",
       "koName": "버크셔 해서웨이 A",
@@ -22762,7 +22762,7 @@
       "ipoDate": "2025-11-13",
       "frequency": "매주",
       "symbol": "TSYW",
-      "isin": null,
+      "isin": "US77926X3952",
       "market": "BATS",
       "currency": "USD",
       "koName": "라운드힐 미국 장기 국채 위클리페이 ETF",

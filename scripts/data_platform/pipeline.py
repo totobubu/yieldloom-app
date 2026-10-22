@@ -17,6 +17,7 @@ from urllib.parse import parse_qsl, urlsplit
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.data_platform.parsers import PARSERS
+from scripts.data_platform.locking import writer_lock
 
 REGISTRY = ROOT / 'data-v2/dataset-registry.json'
 DEFAULT_ROOT = ROOT / 'var/data-platform'
@@ -321,18 +322,19 @@ def main():
     if args.command == 'registry':
         print(encode(registry))
         return 0
-    store = Store(args.root)
-    try:
-        if args.command == 'collect':
-            result = collect(store, registry, args.source, force=args.force)
-            print(encode(result))
-            return 1 if result['failed'] or result['blocked'] else 0
-        if args.output is None:
-            parser.error('export requires --output')
-        print(encode(export_candidate(store, registry, args.dataset, args.output, args.public)))
-        return 0
-    finally:
-        store.close()
+    with writer_lock(private_path(args.root)):
+        store = Store(args.root)
+        try:
+            if args.command == 'collect':
+                result = collect(store, registry, args.source, force=args.force)
+                print(encode(result))
+                return 1 if result['failed'] or result['blocked'] else 0
+            if args.output is None:
+                parser.error('export requires --output')
+            print(encode(export_candidate(store, registry, args.dataset, args.output, args.public)))
+            return 0
+        finally:
+            store.close()
 
 
 if __name__ == '__main__':

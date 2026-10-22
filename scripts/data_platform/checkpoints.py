@@ -14,6 +14,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.data_platform.pipeline import Store, digest, encode, private_path
+from scripts.data_platform.locking import writer_lock
 
 PREFIX = 'platform/v1'
 BUCKET = 'yieldloom-data-private'
@@ -170,20 +171,21 @@ def main():
     parser.add_argument('--bootstrap', action='store_true', help='Create the first pointer only')
     args = parser.parse_args()
     remote = R2Objects()
-    if args.command == 'restore':
-        result = restore(remote, args.root)
-    else:
-        if not args.run_id:
-            parser.error('backup requires --run-id')
-        if not args.bootstrap and not args.expected_etag:
-            parser.error('backup requires --expected-etag or explicit --bootstrap')
-        if not (args.root / 'observations.sqlite').is_file():
-            parser.error('backup requires an existing observation database')
-        store = Store(args.root)
-        try:
-            result = backup(store, remote, args.expected_etag, args.run_id)
-        finally:
-            store.close()
+    with writer_lock(private_path(args.root)):
+        if args.command == 'restore':
+            result = restore(remote, args.root)
+        else:
+            if not args.run_id:
+                parser.error('backup requires --run-id')
+            if not args.bootstrap and not args.expected_etag:
+                parser.error('backup requires --expected-etag or explicit --bootstrap')
+            if not (args.root / 'observations.sqlite').is_file():
+                parser.error('backup requires an existing observation database')
+            store = Store(args.root)
+            try:
+                result = backup(store, remote, args.expected_etag, args.run_id)
+            finally:
+                store.close()
     print(encode({'runId': result['runId'], 'files': len(result['files'])}))
 
 

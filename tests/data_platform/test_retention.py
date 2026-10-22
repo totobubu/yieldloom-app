@@ -113,26 +113,26 @@ class RetentionTests(unittest.TestCase):
     def test_real_serialized_adapter_checks_ownership_and_restricts_mutable_keys(self):
         from unittest.mock import Mock
         remote = R2Objects.__new__(R2Objects)
-        remote.client = Mock()
+        remote.serialized_delete_client = Mock()
         from scripts.data_platform.remote_lock import WriterLease
         lease = Mock(spec=WriterLease, remote=remote)
         key = f"{PREFIX}/objects/{'a' * 64}"
         remote.delete_serialized(key, lease)
         lease.assert_owned.assert_called_once()
-        self.assertEqual(remote.client.delete_object.call_args.kwargs, {'Bucket': 'yieldloom-data-private', 'Key': key})
+        self.assertEqual(remote.serialized_delete_client.delete_object.call_args.kwargs, {'Bucket': 'yieldloom-data-private', 'Key': key})
         for key in (LOCK_KEY, f'{PREFIX}/current.json', 'other/data', f'{PREFIX}/objects/../current.json'):
             with self.assertRaises(ValueError):
                 remote.delete_serialized(key, lease)
         lease.assert_owned.side_effect = RuntimeError('lease changed')
         with self.assertRaisesRegex(RuntimeError, 'lease changed'):
             remote.delete_serialized(f"{PREFIX}/objects/{'a' * 64}", lease)
-        self.assertEqual(remote.client.delete_object.call_count, 1)
+        self.assertEqual(remote.serialized_delete_client.delete_object.call_count, 1)
 
     def test_uncertain_serialized_delete_keeps_remote_lease_held(self):
         from unittest.mock import Mock
         remote = RetentionObjects()
-        remote.client = Mock()
-        remote.client.delete_object.side_effect = TimeoutError('Delete outcome unknown')
+        remote.serialized_delete_client = Mock()
+        remote.serialized_delete_client.delete_object.side_effect = TimeoutError('Delete outcome unknown')
         with self.assertRaises(TimeoutError):
             with remote_writer(remote, 'retention') as lease:
                 R2Objects.delete_serialized(remote, f"{PREFIX}/objects/{'a' * 64}", lease)

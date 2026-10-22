@@ -1,9 +1,11 @@
 from pathlib import Path
 import tempfile
+import gzip
+import json
 import unittest
 from unittest.mock import patch
 
-from scripts.data_platform.checkpoints import backup, current, restore, MissingObject, R2Objects, PREFIX
+from scripts.data_platform.checkpoints import backup, current, restore, MissingObject, R2Objects, PREFIX, raw_loader, read_object
 from scripts.data_platform.pipeline import Store, collect, digest
 from test_pipeline import registry, response, xml, NOW
 
@@ -91,6 +93,63 @@ class CheckpointTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'hash/size'):
                 restore(remote, target)
             self.assertFalse(target.exists())
+
+    def test_lazy_restore_checks_database_and_loads_verified_raw_only_on_demand(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            store = Store(root / 'original')
+            self.addCleanup(store.close)
+            collect(store, registry(), transport=lambda *_: response(xml()), now=NOW)
+            remote = MemoryObjects()
+            manifest = backup(store, remote, None, 'one')
+            restore(remote, root / 'lazy', lazy_raw=True)
+            self.assertFalse((root / 'lazy' / 'raw').exists())
+            copy = Store(root / 'lazy', raw_loader=raw_loader(remote, manifest))
+            self.addCleanup(copy.close)
+            sha = copy.db.execute('SELECT sha FROM cache').fetchone()[0]
+            self.assertEqual(copy.raw(sha), xml())
+            self.assertTrue((root / 'lazy' / 'raw' / sha).is_file())
+            (root / 'lazy' / 'raw' / sha).unlink()
+            remote.objects[f'{PREFIX}/objects/{sha}'] = b'corrupt'
+            with self.assertRaisesRegex(ValueError, 'hash/size'):
+                copy.raw(sha)
+            self.assertFalse((root / 'lazy' / 'raw' / sha).exists())
+            with self.assertRaisesRegex(ValueError, 'absent'):
+                copy.raw('a' * 64)
+
+    def test_compressed_database_and_legacy_uncompressed_restoration(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            store = Store(root / 'original')
+            self.addCleanup(store.close)
+            collect(store, registry(), transport=lambda *_: response(xml()), now=NOW)
+            remote = MemoryObjects()
+            manifest = backup(store, remote, None, 'one')
+            entry = next(e for e in manifest['files'] if e['path'] == 'observations.sqlite')
+            self.assertLess(entry['bytes'], entry['uncompressedBytes'])
+            body = read_object(remote, entry)
+            remote.objects[f'{PREFIX}/objects/{digest(body)}'] = body
+            entry.clear()
+            entry.update({'path': 'observations.sqlite', 'sha256': digest(body), 'bytes': len(body)})
+            encoded = json.dumps(manifest).encode()
+            remote.objects[f'{PREFIX}/manifests/{digest(encoded)}.json'] = encoded
+            restore(remote, root / 'legacy', {'manifestSha256': digest(encoded)})
+            copy = Store(root / 'legacy')
+            self.addCleanup(copy.close)
+            self.assertEqual(copy.state('ecb'), store.state('ecb'))
+
+    def test_compression_expansion_is_bounded_and_checks_plaintext_hash(self):
+        remote = MemoryObjects()
+        body = gzip.compress(b'x' * 10000)
+        sha = digest(body)
+        remote.objects[f'{PREFIX}/objects/{sha}'] = body
+        entry = {'sha256': sha, 'bytes': len(body), 'compression': 'gzip',
+                 'uncompressedBytes': 5, 'uncompressedSha256': digest(b'x' * 5)}
+        with self.assertRaisesRegex(ValueError, 'decompressed hash/size'):
+            read_object(remote, entry)
+        entry['uncompressedBytes'] = 10000
+        with self.assertRaisesRegex(ValueError, 'decompressed hash/size'):
+            read_object(remote, entry)
 
     def test_private_configuration_never_falls_back_to_public_credentials(self):
         with patch.dict('os.environ', {'R2_BUCKET_NAME': 'public'}, clear=True):

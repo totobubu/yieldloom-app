@@ -90,7 +90,8 @@ def fetch(url, headers):
 
 
 class Store:
-    def __init__(self, root):
+    def __init__(self, root, raw_loader=None):
+        self.raw_loader = raw_loader
         self.root = private_path(root)
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.db = sqlite3.connect(self.root / 'observations.sqlite')
@@ -121,9 +122,18 @@ class Store:
         self.db.execute('INSERT OR REPLACE INTO state VALUES (?,?)', (source_id, encode(value)))
 
     def raw(self, sha):
-        content = (self.root / 'raw' / sha).read_bytes()
+        if not re.fullmatch('[a-f0-9]{64}', sha):
+            raise ValueError('Unsafe raw document address')
+        path = self.root / 'raw' / sha
+        if not path.exists() and self.raw_loader:
+            content = self.raw_loader(sha)
+        else:
+            content = path.read_bytes()
         if digest(content) != sha:
             raise ValueError('Cached source hash mismatch')
+        if not path.exists():
+            path.parent.mkdir(exist_ok=True, mode=0o700)
+            path.write_bytes(content)
         return content
 
     def document(self, url, response, now):

@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import argparse
+import gzip
+import io
 from datetime import datetime, timezone
 import json
 import os
@@ -86,9 +88,11 @@ def check_database(path):
         return {r[0] for r in db.execute('SELECT DISTINCT sha FROM documents')}
 
 
-def backup(store, remote, expected_etag, run_id):
+def backup(store, remote, expected_etag, run_id, previous=None):
     if not re.fullmatch('[A-Za-z0-9._-]+', run_id):
         raise ValueError('Invalid run ID')
+    # Only reuse descriptors from the manifest verified during this run's restore.
+    known = {entry['path']: entry for entry in previous['files']} if previous else {}
     files = []
     with tempfile.TemporaryDirectory(dir=store.root) as temporary:
         database = Path(temporary) / 'observations.sqlite'
@@ -98,17 +102,39 @@ def backup(store, remote, expected_etag, run_id):
         if any(not re.fullmatch('[a-f0-9]{64}', sha) for sha in hashes):
             raise ValueError('Unsafe raw document address')
         paths = [('observations.sqlite', database)] + [('raw/' + sha, store.root / 'raw' / sha) for sha in sorted(hashes)]
-        sizes = [path.stat().st_size for _, path in paths]
+        sizes = [known[name]['bytes'] if name.startswith('raw/') and name in known
+                 else path.stat().st_size for name, path in paths]
         if len(paths) > MAX_FILES or any(not 0 < size <= MAX_FILE_BYTES for size in sizes) or sum(sizes) > MAX_TOTAL_BYTES:
             raise ValueError('Checkpoint exceeds supported restore budget; previous pointer is preserved')
+        pending = []
         for name, path in paths:
+            old = known.get(name)
+            if name.startswith('raw/') and old:
+                # Immutable archived bytes need neither restoring nor reading again.
+                files.append(dict(old))
+                continue
             body = path.read_bytes()
             sha = digest(body)
             if name.startswith('raw/') and name != 'raw/' + sha:
                 raise ValueError('Local raw hash mismatch')
-            key = f'{PREFIX}/objects/{sha}'
-            immutable(remote, key, body)
-            files.append({'path': name, 'sha256': sha, 'bytes': len(body)})
+            entry = {'path': name, 'sha256': sha, 'bytes': len(body)}
+            if name == 'observations.sqlite':
+                entry.update({'compression': 'gzip', 'uncompressedSha256': sha, 'uncompressedBytes': len(body)})
+                body = gzip.compress(body, compresslevel=6, mtime=0)
+                sha = digest(body)
+                entry.update({'sha256': sha, 'bytes': len(body)})
+                path = Path(temporary) / 'observations.sqlite.gz'
+                path.write_bytes(body)
+            files.append(entry)
+            if old != entry:
+                pending.append((sha, path))
+        if any(entry['bytes'] > MAX_FILE_BYTES for entry in files):
+            raise ValueError('Checkpoint exceeds supported restore budget; previous pointer is preserved')
+        for sha, path in pending:
+            body = path.read_bytes()
+            if digest(body) != sha:
+                raise ValueError('Local object changed during checkpoint')
+            immutable(remote, f'{PREFIX}/objects/{sha}', body)
     manifest = {'schemaVersion': 1, 'runId': run_id, 'files': files,
                 'createdAt': datetime.now(timezone.utc).isoformat()}
     body = (encode(manifest) + '\n').encode()
@@ -120,7 +146,7 @@ def backup(store, remote, expected_etag, run_id):
     return manifest
 
 
-def restore(remote, output, pointer=None):
+def restore(remote, output, pointer=None, lazy_raw=False):
     output = private_path(output)
     if output.exists():
         raise ValueError('Restore target must not exist')
@@ -145,21 +171,27 @@ def restore(remote, output, pointer=None):
                 or not re.fullmatch('[a-f0-9]{64}', checksum) or name in names
                 or not isinstance(entry['bytes'], int) or not 0 < entry['bytes'] <= MAX_FILE_BYTES):
             raise ValueError('Unsafe checkpoint file')
+        if 'compression' in entry:
+            if (name != 'observations.sqlite' or entry['compression'] != 'gzip'
+                    or not re.fullmatch('[a-f0-9]{64}', entry.get('uncompressedSha256', ''))
+                    or not isinstance(entry.get('uncompressedBytes'), int)
+                    or not 0 < entry['uncompressedBytes'] <= MAX_FILE_BYTES):
+                raise ValueError('Invalid compressed checkpoint descriptor')
+        if name.startswith('raw/') and name != 'raw/' + checksum:
+            raise ValueError('Checkpoint raw address mismatch')
         names.add(name)
     if 'observations.sqlite' not in names:
         raise ValueError('Checkpoint has no database')
-    if sum(entry['bytes'] for entry in files) > MAX_TOTAL_BYTES:
+    if sum(entry.get('uncompressedBytes', entry['bytes']) for entry in files) > MAX_TOTAL_BYTES:
         raise ValueError('Checkpoint exceeds supported restore budget')
     output.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=output.parent) as temporary:
         stage = Path(temporary) / 'restore'
         stage.mkdir(mode=0o700)
         for entry in files:
-            content, _ = remote.get(f"{PREFIX}/objects/{entry['sha256']}")
-            if len(content) != entry['bytes'] or digest(content) != entry['sha256']:
-                raise ValueError('Checkpoint object hash/size mismatch')
-            if entry['path'].startswith('raw/') and entry['path'] != 'raw/' + digest(content):
-                raise ValueError('Checkpoint raw address mismatch')
+            if lazy_raw and entry['path'].startswith('raw/'):
+                continue
+            content = read_object(remote, entry)
             path = stage / entry['path']
             path.parent.mkdir(exist_ok=True, mode=0o700)
             path.write_bytes(content)
@@ -168,6 +200,47 @@ def restore(remote, output, pointer=None):
             raise ValueError('Checkpoint raw coverage mismatch')
         stage.rename(output)
     return manifest
+
+
+def read_object(remote, entry):
+    content, _ = remote.get(f"{PREFIX}/objects/{entry['sha256']}")
+    if len(content) != entry['bytes'] or digest(content) != entry['sha256']:
+        raise ValueError('Checkpoint object hash/size mismatch')
+    if entry.get('compression') == 'gzip':
+        with gzip.GzipFile(fileobj=io.BytesIO(content)) as stream:
+            content = stream.read(entry['uncompressedBytes'] + 1)
+        if len(content) != entry['uncompressedBytes'] or digest(content) != entry['uncompressedSha256']:
+            raise ValueError('Checkpoint decompressed hash/size mismatch')
+    return content
+
+
+def raw_loader(remote, manifest):
+    entries = {entry['sha256']: entry for entry in manifest['files'] if entry['path'].startswith('raw/')}
+
+    def load(sha):
+        if sha not in entries:
+            raise ValueError('Raw document absent from verified checkpoint')
+        return read_object(remote, entries[sha])
+    return load
+
+
+class ObservedObjects:
+    """Logical API attempts and payload bytes, independent of source HTTP counters."""
+    def __init__(self, remote):
+        self.remote = remote
+        self.metrics = {'getRequests': 0, 'putRequests': 0, 'downloadedBytes': 0, 'uploadedBytes': 0}
+
+    def get(self, key):
+        self.metrics['getRequests'] += 1
+        body, etag = self.remote.get(key)
+        self.metrics['downloadedBytes'] += len(body)
+        return body, etag
+
+    def put(self, key, body, expected=None):
+        self.metrics['putRequests'] += 1
+        result = self.remote.put(key, body, expected=expected)
+        self.metrics['uploadedBytes'] += len(body)
+        return result
 
 
 def main():

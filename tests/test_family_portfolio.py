@@ -301,6 +301,31 @@ class FamilyApiTest(unittest.TestCase):
         self.assertEqual(self.get('accountId=' + self.account, 'outsider').status_code, 403)
         self.assertEqual(self.post('grant', {'accountId': self.account, 'uid': 'outsider', 'role': 'viewer'}).status_code, 400)
 
+    def test_account_settings_use_two_transaction_reads_and_skip_unchanged_writes(self):
+        self.join_bob()
+        original_set = Ref.set
+        with patch.object(Ref, 'set', autospec=True, side_effect=original_set) as writes:
+            for action, fields in [('renameAccount', {'alias': 'Updated'}),
+                                   ('grant', {'uid': 'bob', 'role': 'viewer'}),
+                                   ('grant', {'uid': 'bob', 'role': 'none'})]:
+                before = writes.call_count
+                result = self.post(action, {'accountId': self.account, **fields})
+                self.assertEqual(result.status_code, 200, result.json)
+                self.assertEqual(result.headers['X-Portfolio-Document-Reads'], '2')
+                self.assertEqual(writes.call_count, before + 1)
+                repeated = self.post(action, {'accountId': self.account, **fields})
+                self.assertEqual(repeated.status_code, 200, repeated.json)
+                self.assertEqual(repeated.headers['X-Portfolio-Document-Reads'], '2')
+                self.assertEqual(writes.call_count, before + 1)
+
+    def test_unchanged_settings_still_recheck_membership_and_account_authority(self):
+        self.join_bob()
+        self.post('grant', {'accountId': self.account, 'uid': 'bob', 'role': 'editor'})
+        self.assertEqual(self.post('renameAccount', {'accountId': self.account, 'alias': 'One'}, 'bob').status_code, 403)
+        self.db.data['familySpaces/' + self.family]['participantUids'].remove('alice')
+        for action, fields in [('renameAccount', {'alias': 'One'}), ('grant', {'uid': 'bob', 'role': 'editor'})]:
+            self.assertEqual(self.post(action, {'accountId': self.account, **fields}).status_code, 403)
+
     def test_ledger_validation_omits_holdings_and_counts_server_reads(self):
         row = self.db.data['investmentAccounts/' + self.account]
         row['entriesRevision'] = 3

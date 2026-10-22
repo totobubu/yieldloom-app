@@ -270,24 +270,31 @@ def re_last4(value):
 
 
 def edit_account(db, uid, body, permission=False):
-    ref, _ = account(db, body.get('accountId'), uid, True)
+    ref = db.collection('investmentAccounts').document(identifier(body.get('accountId')))
     @firestore.transactional
     def apply(tx):
         data = load(ref, tx)
+        require(can_access(data, uid, True), '계좌 접근 권한이 없습니다.', 403)
+        space = load(db.collection('familySpaces').document(identifier(data['familyId'])), tx)
+        require(uid in space['participantUids'], '가족 공간 접근 권한이 없습니다.', 403)
         require(data['authorityUid'] == uid, '명의자 또는 보호자만 계좌 설정을 변경할 수 있습니다.', 403)
         if permission:
             # Reading membership in the same transaction prevents grants to outsiders.
-            space = load(db.collection('familySpaces').document(data['familyId']), tx)
             target = identifier(body.get('uid'))
             require(target in space['participantUids'] and target != uid, '참여한 다른 성인을 선택하세요.')
             role = body.get('role')
             require(role in {'viewer', 'editor', 'none'}, '권한을 확인하세요.')
+            if (role != 'none' and data['permissions'].get(target) == role) or (role == 'none' and target not in data['permissions']):
+                return {'ok': True}
             if role == 'none':
                 data['permissions'].pop(target, None)
             else:
                 data['permissions'][target] = role
         else:
-            data['alias'] = text(body.get('alias'), '계좌 별칭')
+            alias = text(body.get('alias'), '계좌 별칭')
+            if data.get('alias') == alias:
+                return {'ok': True}
+            data['alias'] = alias
         tx.set(ref, data)
         return {'ok': True}
     return apply(db.transaction())

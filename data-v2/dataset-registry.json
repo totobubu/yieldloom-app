@@ -80,7 +80,8 @@
             "datasets": ["identity"],
             "url": "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
             "minIntervalSeconds": 86400,
-            "publicDisplay": "unreviewed"
+            "publicDisplay": "unreviewed",
+            "policyId": "nasdaq-directory-review-required"
         },
         {
             "id": "nasdaq-other-listed",
@@ -90,7 +91,8 @@
             "datasets": ["identity"],
             "url": "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt",
             "minIntervalSeconds": 86400,
-            "publicDisplay": "unreviewed"
+            "publicDisplay": "unreviewed",
+            "policyId": "nasdaq-directory-review-required"
         },
         {
             "id": "ishares-ivv-profile",
@@ -104,7 +106,8 @@
             "fundName": "iShares Core S&P 500 ETF",
             "currency": "USD",
             "minIntervalSeconds": 86400,
-            "publicDisplay": "unreviewed"
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required"
         },
         {
             "id": "ishares-ivv-holdings",
@@ -118,7 +121,8 @@
             "fundName": "iShares Core S&P 500 ETF",
             "currency": "USD",
             "minIntervalSeconds": 86400,
-            "publicDisplay": "unreviewed"
+            "publicDisplay": "unreviewed",
+            "policyId": "issuer-review-required"
         },
         {
             "id": "ecb-reference-fx",
@@ -128,7 +132,8 @@
             "datasets": ["fx"],
             "url": "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml",
             "minIntervalSeconds": 86400,
-            "publicDisplay": "unreviewed"
+            "publicDisplay": "approved",
+            "policyId": "ecb-public-information"
         },
         {
             "id": "sec-aapl-submissions",
@@ -140,7 +145,8 @@
             "cik": "0000320193",
             "maxFilings": 40,
             "minIntervalSeconds": 86400,
-            "publicDisplay": "unreviewed"
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information"
         },
         {
             "id": "opendart-financials",

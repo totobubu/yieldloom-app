@@ -1,0 +1,65 @@
+{
+    "schemaVersion": 1,
+    "freeSourcesOnly": true,
+    "policies": {
+        "ecb-public-information": {
+            "version": "2026-10-22",
+            "status": "approved",
+            "free": true,
+            "publicDisplay": true,
+            "redistribution": true,
+            "datasets": ["fx", "macro"],
+            "citation": "European Central Bank (ECB)",
+            "evidenceUrl": "https://www.ecb.europa.eu/services/disclaimer/html/index.en.html",
+            "evidenceExcerpt": "users of this website may make free use of the information obtained directly from it subject to the following conditions",
+            "conditions": [
+                "Reproduce accurately and cite ECB",
+                "Clearly identify modifications and derived calculations",
+                "For sold documents, inform buyers that source information is available free from ECB",
+                "Do not imply ECB endorsement or use its logo"
+            ],
+            "excluded": ["Named-author papers and third-party material"]
+        },
+        "sec-public-information": {
+            "version": "2026-10-22",
+            "status": "approved",
+            "free": true,
+            "publicDisplay": true,
+            "redistribution": true,
+            "datasets": ["filings", "financials"],
+            "citation": "U.S. Securities and Exchange Commission (SEC), EDGAR",
+            "evidenceUrl": "https://www.sec.gov/about/privacy-information",
+            "evidenceExcerpt": "Information presented on sec.gov is considered public information and may be copied or further distributed by users of the web site without the SEC’s permission.",
+            "conditions": [
+                "Cite SEC and the filing accession/date",
+                "Respect SEC fair-access limits",
+                "Do not imply SEC approval or use its seal, logos or artwork"
+            ],
+            "excluded": [
+                "Third-party filing attachments, logos and narrative documents; only structured facts and metadata are in scope"
+            ]
+        },
+        "issuer-review-required": {
+            "version": "2026-10-22",
+            "status": "unreviewed",
+            "free": null,
+            "publicDisplay": false,
+            "redistribution": false,
+            "datasets": [],
+            "citation": "iShares / BlackRock",
+            "evidenceUrl": "https://www.ishares.com/us/individual/terms-and-conditions",
+            "reason": "Page access alone does not establish permission for systematic redistribution of fund or holdings data"
+        },
+        "nasdaq-directory-review-required": {
+            "version": "2026-10-22",
+            "status": "unreviewed",
+            "free": null,
+            "publicDisplay": false,
+            "redistribution": false,
+            "datasets": [],
+            "citation": "Nasdaq Trader",
+            "evidenceUrl": "https://www.nasdaqtrader.com/Trader.aspx?id=Disclaimer",
+            "reason": "Directory access verified; automated public redistribution terms remain unverified"
+        }
+    }
+}

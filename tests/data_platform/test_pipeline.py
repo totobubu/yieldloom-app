@@ -15,10 +15,13 @@ def xml(rate='1.1234'):
 
 
 def registry():
-    return {'datasets': {'fx': {'fields': ['referenceRate']}}, 'sources': [{
+    return {'policies': {'test': {'version': '1', 'status': 'approved', 'free': True,
+        'publicDisplay': True, 'redistribution': True, 'datasets': ['fx'],
+        'citation': 'ECB', 'evidenceUrl': 'https://example.com/terms'}},
+        'datasets': {'fx': {'fields': ['referenceRate']}}, 'sources': [{
         'id': 'ecb', 'url': 'https://example.com/fx', 'enabled': True, 'datasets': ['fx'],
         'parser': 'ecb-fx', 'parserVersion': '1', 'minIntervalSeconds': 3600,
-        'publicDisplay': 'unreviewed',
+        'publicDisplay': 'unreviewed', 'policyId': 'test',
     }]}
 
 

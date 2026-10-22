@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.data_platform.parsers import PARSERS
 from scripts.data_platform.locking import writer_lock
+from scripts.data_platform.policies import public_policy, source_fingerprint
 
 REGISTRY = ROOT / 'data-v2/dataset-registry.json'
 DEFAULT_ROOT = ROOT / 'var/data-platform'
@@ -43,6 +44,11 @@ def load_registry(path=REGISTRY):
     config = json.loads(Path(path).read_text())
     if config.get('schemaVersion') != 1:
         raise ValueError('Unsupported dataset registry')
+    policy_file = ROOT / 'data-v2/source-policies.json'
+    policy_registry = json.loads(policy_file.read_text())
+    if policy_registry.get('schemaVersion') != 1 or policy_registry.get('freeSourcesOnly') is not True:
+        raise ValueError('A versioned free-source policy registry is required')
+    config['policies'] = policy_registry['policies']
     if any(not re.fullmatch(r'[a-z][a-z0-9-]*', name) for name in config['datasets']):
         raise ValueError('Invalid dataset identifier')
     identifiers = set()
@@ -55,6 +61,8 @@ def load_registry(path=REGISTRY):
         if not set(source['datasets']) <= config['datasets'].keys():
             raise ValueError('Source references unknown datasets')
         if source.get('enabled'):
+            if source.get('policyId') not in config['policies']:
+                raise ValueError('Source has no registered use policy')
             url = urlsplit(source['url'])
             credential_keys = {'apikey', 'api_key', 'key', 'token', 'access_token', 'secret', 'signature'}
             if (url.scheme != 'https' or not url.hostname or url.username or url.password or url.fragment
@@ -195,7 +203,7 @@ def collect(store, registry, selected=None, transport=fetch, now=None, force=Fal
                 report.append({'sourceId': source['id'], 'status': 'blocked', 'reason': source['blockedReason']})
             continue
         previous = store.state(source['id'])
-        fingerprint = digest(encode(source).encode())
+        fingerprint = source_fingerprint(source, registry)
         due = previous.get('lastSuccessAt')
         retry = previous.get('nextRetryAt')
         attempted = previous.get('lastAttemptFingerprint', previous.get('fingerprint'))
@@ -270,15 +278,17 @@ def export_candidate(store, registry, datasets, output, public=False, now=None):
     records = {dataset: [] for dataset in datasets}
     source_versions = {}
     quality = None
+    used_policies = {}
     for state in store.db.execute('SELECT source_id,payload FROM state'):
         current = json.loads(state['payload'])
         for identifier in current.get('currentObservationIds', []):
             row = json.loads(store.db.execute('SELECT payload FROM observations WHERE id=?', (identifier,)).fetchone()[0])
             if row['dataset'] not in records:
                 continue
-            if public and sources.get(state['source_id'], {}).get('publicDisplay') != 'approved':
-                raise ValueError(f"Public use not approved: {state['source_id']}")
             if public:
+                source = sources.get(state['source_id'], {'id': state['source_id']})
+                policy = public_policy(source, registry, set(datasets) & set(source.get('datasets', [])))
+                used_policies[source['policyId']] = policy
                 from scripts.data_platform.quality import evaluate, publication_errors
                 if quality is None:
                     quality = {r['sourceId']: r for r in evaluate(store, registry, now=now)['sources']}
@@ -289,10 +299,10 @@ def export_candidate(store, registry, datasets, output, public=False, now=None):
                 key: current.get(key) for key in ('fingerprint', 'parserVersion', 'sourceDocumentId',
                     'lastSuccessAt', 'lastCheckedAt', 'failureCount', 'lastError', 'asOfDates')}
             if (not current.get('parserVersion') and state['source_id'] in sources
-                    and current.get('fingerprint') == digest(encode(sources[state['source_id']]).encode())):
+                    and current.get('fingerprint') == source_fingerprint(sources[state['source_id']], registry)):
                 source_versions[state['source_id']]['parserVersion'] = sources[state['source_id']]['parserVersion']
             if public and (current.get('failureCount') or not sources.get(state['source_id'], {}).get('enabled')
-                    or current.get('fingerprint') != digest(encode(sources[state['source_id']]).encode())):
+                    or current.get('fingerprint') != source_fingerprint(sources[state['source_id']], registry)):
                 raise ValueError(f"Source must be successfully revalidated: {state['source_id']}")
             records[row['dataset']].append(row)
     if any(not rows for rows in records.values()):
@@ -308,7 +318,7 @@ def export_candidate(store, registry, datasets, output, public=False, now=None):
             (stage / filename).write_bytes(body)
             files.append({'dataset': dataset, 'path': filename, 'sha256': digest(body), 'observations': len(rows)})
         manifest = {'schemaVersion': 1, 'kind': 'public_candidate' if public else 'private_review_candidate',
-                    'files': files, 'sourceVersions': source_versions,
+                    'files': files, 'sourceVersions': source_versions, 'policies': used_policies,
                     'createdAt': datetime.now(timezone.utc).isoformat()}
         (stage / 'manifest.json').write_text(encode(manifest) + '\n')
         stage.rename(output)

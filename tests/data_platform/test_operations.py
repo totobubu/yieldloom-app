@@ -5,7 +5,9 @@ import unittest
 from scripts.data_platform.operations import drill, verify_conditions, recover_writer
 from scripts.data_platform.remote_lock import LOCK_KEY
 from scripts.data_platform.pipeline import encode, digest
-from test_retention import RetentionObjects, snapshots
+from scripts.data_platform.retention import plan, apply
+from test_retention import RetentionObjects, snapshots, NOW
+from datetime import timedelta
 
 
 class OperationsTests(unittest.TestCase):
@@ -33,6 +35,44 @@ class OperationsTests(unittest.TestCase):
         remote.delete = unsafe_delete
         with self.assertRaisesRegex(RuntimeError, 'ignored conditional delete'):
             verify_conditions(remote)
+
+    def test_unsupported_delete_still_verifies_restore_and_blocks_all_checkpoint_deletion(self):
+        with tempfile.TemporaryDirectory() as root:
+            remote, _, _ = snapshots(Path(root) / 'original')
+            before = {key: value for key, value in remote.objects.items() if key != LOCK_KEY}
+            def unsafe_delete(key, expected):
+                del remote.objects[key]
+                del remote.modified[key]
+            remote.delete = unsafe_delete
+            result = drill(remote, Path(root) / 'drill')
+            self.assertEqual(result['restore'], 'verified')
+            self.assertFalse(result['conditionalDelete'])
+            self.assertTrue(result['probeRemoved'])
+            self.assertEqual(result['retentionApply'], 'blocked_conditional_delete_unsupported')
+            clock = NOW + timedelta(days=50)
+            reviewed = plan(remote, clock, retain_days=7, minimum=2, grace_days=1)
+            self.assertTrue(reviewed['candidates'])
+            with self.assertRaisesRegex(RuntimeError, 'ignored conditional delete'):
+                apply(remote, reviewed, digest(encode(reviewed).encode()), clock)
+            self.assertEqual({key: value for key, value in remote.objects.items() if key != LOCK_KEY}, before)
+
+    def test_other_delete_errors_are_not_classified_as_unsupported(self):
+        with tempfile.TemporaryDirectory() as root:
+            remote = RetentionObjects()
+            def denied(key, expected):
+                raise PermissionError('Delete access denied')
+            remote.delete = denied
+            with self.assertRaises(PermissionError):
+                drill(remote, Path(root))
+
+    def test_unsupported_delete_does_not_hide_corrupt_restore_bytes(self):
+        with tempfile.TemporaryDirectory() as root:
+            remote, _, manifests = snapshots(Path(root) / 'original')
+            key = 'platform/v1/objects/' + manifests[-1]['files'][0]['sha256']
+            remote.objects[key] = b'corrupt'
+            remote.delete = lambda key, expected: remote.objects.pop(key)
+            with self.assertRaisesRegex(ValueError, 'hash/size'):
+                drill(remote, Path(root) / 'drill')
 
     def test_recovery_requires_exact_stopped_writer_and_cas(self):
         remote = RetentionObjects()

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -13,6 +14,13 @@ sys.path.insert(0, str(ROOT))
 from scripts.data_platform.checkpoints import R2Objects, PREFIX, MissingObject, ConditionalConflict, current, restore
 from scripts.data_platform.pipeline import encode, private_path
 from scripts.data_platform.remote_lock import LOCK_KEY, remote_writer
+
+
+class UnsupportedConditionalOperation(RuntimeError):
+    def __init__(self, operation, probe_key):
+        super().__init__(f'Remote ignored conditional {operation}; retention apply is disabled')
+        self.operation = operation
+        self.probe_key = probe_key
 
 
 def verify_conditions(remote):
@@ -32,7 +40,7 @@ def verify_conditions(remote):
         except ConditionalConflict:
             pass
         else:
-            raise RuntimeError(f'Remote ignored conditional {operation}; maintenance is disabled')
+            raise UnsupportedConditionalOperation(operation, key)
     if remote.get(key) != (body, etag):
         raise ValueError('Conditional probe changed unexpectedly')
     remote.delete(key, expected=etag)
@@ -47,7 +55,20 @@ def drill(remote, root):
     root = private_path(root)
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
     with remote_writer(remote, 'restore-drill'):
-        capabilities = verify_conditions(remote)
+        try:
+            capabilities = {**verify_conditions(remote), 'retentionApply': 'supported'}
+        except UnsupportedConditionalOperation as error:
+            if error.operation != 'delete':
+                raise
+            # A deletion capability failure must not suppress the independent read/restore drill.
+            # Retention apply still calls verify_conditions directly and refuses data deletion.
+            removed = False
+            try:
+                remote.get(error.probe_key)
+            except MissingObject:
+                removed = True
+            capabilities = {'conditionalPut': True, 'conditionalDelete': False,
+                            'probeRemoved': removed, 'retentionApply': 'blocked_conditional_delete_unsupported'}
         pointer, _ = current(remote)
         if pointer is None:
             return {**capabilities, 'checkpoint': 'absent', 'restore': 'not_run'}
@@ -90,6 +111,11 @@ def main():
         result = {k: value.get(k) for k in ('schemaVersion', 'state', 'owner', 'purpose', 'startedAt')}
         result['etag'] = etag
     print(encode(result))
+    if args.command == 'drill' and os.environ.get('GITHUB_STEP_SUMMARY'):
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+            summary.write(f"### Private recovery\n\nRestore: {result['restore']}\n\n")
+            summary.write(f"Conditional PUT: {result['conditionalPut']}; conditional DELETE: {result['conditionalDelete']}\n\n")
+            summary.write(f"Retention apply: {result['retentionApply']}\n\n")
 
 
 if __name__ == '__main__':

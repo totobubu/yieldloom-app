@@ -82,6 +82,12 @@ jobs:
                   node tests/portfolio-import-review.browser.mjs
                   node tests/mobile-import-feedback.browser.mjs
                   LISTING_STATUS_BASE_URL=http://127.0.0.1:5175 node tests/security-status.browser.mjs
+            - name: Official fund projections with synthetic public data
+              run: |
+                  env -u GITHUB_ACTIONS VITE_DATA_PLATFORM_BASE_URL=/official-fixture npm run dev -- --host 127.0.0.1 --port 5178 --strictPort > /tmp/vite-official.log 2>&1 &
+                  trap 'kill $(jobs -pr) 2>/dev/null || true' EXIT
+                  export CHROMIUM_PATH="$(node --input-type=module -e "import { chromium } from 'playwright'; process.stdout.write(chromium.executablePath());")"
+                  node tests/official-fund-data.browser.mjs
             - uses: actions/upload-artifact@v4
               if: failure()
               with:

@@ -458,8 +458,12 @@ python scripts/data_platform/operations.py recover-writer --writer-stopped --exp
 
 `maintain-data-platform.yml`은 수동 복구 점검과 선택적인 삭제 계획 계산만 제공한다.
 수집 workflow와 동일한 concurrency를 사용하고 비공개 원문·DB·상세 계획은 artifact로 올리지 않는다.
-스케줄 삭제와 Actions 삭제 입력은 제공하지 않는다. 새 workflow 수동 등록은 기본 브랜치 반영 후
-가능하다. 현재 전용 S3 secrets가 없어 실제 R2 왕복·삭제 조건·복구 성공은 아직 확인하지 못했다.
+스케줄 삭제와 Actions 삭제 입력은 제공하지 않는다. 유지보수 workflow 자체를 `work`에 변경하면
+복구 점검을 한 번 실행하여 기본 브랜치 승격 전에도 실행 대상을 등록한다. 이후 수동 실행으로
+복구 점검과 선택적인 보존 계획을 확인할 수 있다. 이 실행은 체크포인트를 삭제하지 않는다.
+전용 S3 secrets는 2026-10-22 등록 후 실제 R2 조회와 최초 수집·체크포인트 생성이 통과했다.
+실행 근거: https://github.com/totobubu/yieldloom-app/actions/runs/39780606319
+전체 복원 성공은 유지보수 workflow의 `restore: verified` 결과로 판정한다.
 
 
 ## 검토된 식별자 정정

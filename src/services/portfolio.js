@@ -1,25 +1,9 @@
 import { collection, getDocs, query } from 'firebase/firestore';
-import { db } from './firebaseClient';
+import { db, firebaseUser } from './firebaseClient';
 import { summarizePortfolio } from './portfolioSummary';
 import { apiUrl } from './apiUrl.js';
 
-const TRANSACTION_READ_CONCURRENCY = 6;
 const pendingDashboards = new Map();
-
-async function mapWithConcurrency(items, limit, work) {
-    const results = new Array(items.length);
-    let next = 0;
-    async function worker() {
-        while (next < items.length) {
-            const index = next++;
-            results[index] = await work(items[index], index);
-        }
-    }
-    await Promise.all(
-        Array.from({ length: Math.min(limit, items.length) }, () => worker())
-    );
-    return results;
-}
 
 export async function loadPortfolioAssets(uid) {
     if (!db || !uid) return [];
@@ -51,18 +35,6 @@ export function portfolioTickerStates(assets) {
     return states;
 }
 
-// Some older imports kept the ledger inline; do not erase it with an empty subcollection.
-async function loadAssetTransactions(uid, asset, store = 'portfolios') {
-    const snapshot = await getDocs(
-        collection(db, store, uid, 'assets', asset.id, 'transactions')
-    );
-    return snapshot.empty
-        ? Array.isArray(asset.transactions)
-            ? asset.transactions
-            : []
-        : snapshot.docs.map((item) => ({ ...item.data(), id: item.id }));
-}
-
 export async function loadPortfolioAsset(uid, ticker) {
     const dashboard = await loadPortfolioDashboard(uid);
     return (
@@ -72,84 +44,37 @@ export async function loadPortfolioAsset(uid, ticker) {
     );
 }
 
-async function fetchPortfolioDashboard(uid) {
-    const assets = await loadPortfolioAssets(uid);
-    if (!db || !uid) return summarizePortfolio([]);
-    const warnings = [];
-    const withTransactions = await mapWithConcurrency(
-        assets,
-        TRANSACTION_READ_CONCURRENCY,
-        async (asset) => {
-            try {
-                return {
-                    ...asset,
-                    transactions: await loadAssetTransactions(uid, asset),
-                };
-            } catch (error) {
-                warnings.push({
-                    stage: 'transactions',
-                    code: error.code || 'unknown',
-                });
-                return { ...asset, transactions: [], ledgerUnavailable: true };
-            }
+async function fetchPortfolioDashboard(uid, user, fetcher) {
+    if (!uid || user?.uid !== uid) return summarizePortfolio([]);
+    const response = await fetcher(
+        apiUrl('/api/portfolio-capital?view=dashboard'),
+        {
+            headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+            cache: 'no-store',
         }
     );
-    // Legacy migrations sometimes copied only holdings. Read the owner's old ledger
-    // when the active store has no rows, without writing or fabricating transactions.
-    if (
-        !warnings.length &&
-        !withTransactions.some((asset) => asset.transactions.length)
-    ) {
-        try {
-            const legacy = await getDocs(
-                collection(db, 'adminPortfolios', uid, 'assets')
-            );
-            const legacyAssets = await mapWithConcurrency(
-                legacy.docs,
-                TRANSACTION_READ_CONCURRENCY,
-                async (item) => {
-                    const asset = { ...item.data(), id: item.id };
-                    return {
-                        ...asset,
-                        transactions: await loadAssetTransactions(
-                            uid,
-                            asset,
-                            'adminPortfolios'
-                        ),
-                    };
-                }
-            );
-            for (const old of legacyAssets) {
-                const current = withTransactions.find(
-                    (asset) =>
-                        asset.id === old.id ||
-                        (asset.symbol &&
-                            old.symbol &&
-                            asset.symbol.toUpperCase() ===
-                                old.symbol.toUpperCase())
-                );
-                if (current) current.transactions = old.transactions;
-                else withTransactions.push(old);
-            }
-        } catch (error) {
-            warnings.push({ stage: 'legacy', code: error.code || 'unknown' });
-            for (const asset of withTransactions)
-                asset.ledgerUnavailable = true;
-        }
-    }
-    const dashboard = summarizePortfolio(withTransactions);
-    if (warnings.some((item) => item.stage === 'legacy')) {
-        // Unknown history must not be reported as a confirmed empty portfolio.
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok)
+        throw Object.assign(
+            new Error(payload.error || '포트폴리오를 불러오지 못했습니다.'),
+            { code: payload.code, status: response.status }
+        );
+    const warnings = Array.isArray(payload.warnings) ? payload.warnings : [];
+    const dashboard = summarizePortfolio(payload.assets || []);
+    if (warnings.some((item) => item.stage === 'legacy'))
         dashboard.summary.historicalCount = null;
-    }
     return { ...dashboard, warnings };
 }
 
-export function loadPortfolioDashboard(uid) {
-    if (!db || !uid) return Promise.resolve(summarizePortfolio([]));
+export function loadPortfolioDashboard(
+    uid,
+    { user = firebaseUser.value, fetcher = fetch } = {}
+) {
+    if (!uid || user?.uid !== uid)
+        return Promise.resolve(summarizePortfolio([]));
     const existing = pendingDashboards.get(uid);
     if (existing) return existing;
-    const request = fetchPortfolioDashboard(uid).finally(() => {
+    const request = fetchPortfolioDashboard(uid, user, fetcher).finally(() => {
         if (pendingDashboards.get(uid) === request)
             pendingDashboards.delete(uid);
     });

@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-17",
+  "asOf": "2026-10-22",
   "scope": [
     "src",
     "api",
@@ -597,13 +597,21 @@
     },
     {
       "area": "legacy Firestore dashboard and import",
-      "status": "fresh_reads_retained",
+      "status": "improved",
       "paths": [
         "src/services/portfolio.js",
+        "api/portfolio-capital.js",
+        "lib/portfolio-dashboard-handler.js",
         "api/portfolio-import.py",
         "api/portfolio_mapping.py"
       ],
-      "reason": "Legacy records have no reliable revision contract; per-asset subcollections and import duplicate checks serve distinct records and were not replaced with long-lived private caches."
+      "change": "Route the legacy dashboard through one authenticated API request and use document-path-bounded collection-group queries for transaction subcollections. Fresh authorization and uncached reads remain because legacy records have no reliable revision contract; import duplicate checks still serve a separate write-review flow.",
+      "scenario": {
+        "fourteenAssetsCurrentLedgerFirestoreQueryOperationsBefore": 15,
+        "after": 2,
+        "legacyFallbackMaximumAfter": 4,
+        "browserDashboardRequestsAfter": 1
+      }
     },
     {
       "area": "admin mapping endpoint",

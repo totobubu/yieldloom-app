@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-22T14:36:14.123541+00:00",
+  "reviewSha256": "1642defe44f017c51d28d32e2816db11445e1c43e8edb795e2b743a6664c7d90",
+  "scope": "Unresolved inactive identities only; directory absence does not establish delisting or alias identity",
+  "directoryEvidence": [
+    {
+      "directory": "nasdaqlisted",
+      "url": "https://www.nasdaqtrader.com/dynamic/symdir/nasdaqlisted.txt",
+      "sha256": "d329f6fa62d007c2b6e8c18bde9fdb598e6125d73050b43a7e5dc9aa0911c5be",
+      "bytes": 349038,
+      "fileCreationTime": "File Creation Time: 1022202610:01"
+    },
+    {
+      "directory": "otherlisted",
+      "url": "https://www.nasdaqtrader.com/dynamic/symdir/otherlisted.txt",
+      "sha256": "3158ba42153219e81679f9bf27f8c6a7753948180e25c70287a8c89cc254947a",
+      "bytes": 543250,
+      "fileCreationTime": "File Creation Time: 1022202610:01"
+    }
+  ],
+  "entries": [
+    {
+      "symbol": "ABNW",
+      "previousReviewStatus": "inactive_listing_unverified",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "AS _",
+      "previousReviewStatus": "inactive_malformed_symbol",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "ASMW",
+      "previousReviewStatus": "inactive_listing_unverified",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "CRWW",
+      "previousReviewStatus": "inactive_metadata_conflict",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Original legacy source or broker instrument identifier resolving the conflicting fund name and issuer",
+        "Official identifier and listing evidence for that exact instrument"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "DKNW",
+      "previousReviewStatus": "inactive_metadata_conflict",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Original legacy source or broker instrument identifier resolving the conflicting fund name and issuer",
+        "Official identifier and listing evidence for that exact instrument"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "FROM DJANGO.UTILS.TRANSLATION IMPORT DPSTTMF",
+      "previousReviewStatus": "inactive_malformed_symbol",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "FROM DJANGO.UTILS.TRANSLATION IMPORT UGETTEXT_LAZY AS _NFLP",
+      "previousReviewStatus": "inactive_malformed_symbol",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "FROM DJANGO.UTILS.TRANSLATION IMPORT UGETTEXT_LAZY AS _SLV",
+      "previousReviewStatus": "inactive_malformed_symbol",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Original uncorrupted source row or broker instrument identifier",
+        "Individual mapping review without splitting code fragments or guessing suffix aliases"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "IREM",
+      "previousReviewStatus": "inactive_ambiguous_legacy_code",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [
+        {
+          "directory": "nasdaqlisted",
+          "symbol": "IREN",
+          "name": "IREN Limited - Ordinary Shares",
+          "exchangeCode": null,
+          "marketCategory": "Q",
+          "etf": "N"
+        }
+      ],
+      "requiredEvidence": [
+        "Original broker/source identifier proving whether the legacy code maps to the named candidate",
+        "Exact instrument and listing evidence; similar spelling is insufficient"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "LMTW",
+      "previousReviewStatus": "inactive_listing_unverified",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "QMZP",
+      "previousReviewStatus": "inactive_ambiguous_legacy_code",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [
+        {
+          "directory": "otherlisted",
+          "symbol": "AMZP",
+          "name": "Kurv Yield Premium Strategy Amazon (AMZN) ETF",
+          "exchangeCode": "Z",
+          "marketCategory": null,
+          "etf": "Y"
+        }
+      ],
+      "requiredEvidence": [
+        "Original broker/source identifier proving whether the legacy code maps to the named candidate",
+        "Exact instrument and listing evidence; similar spelling is insufficient"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "QRDO",
+      "previousReviewStatus": "inactive_ambiguous_legacy_code",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [
+        {
+          "directory": "nasdaqlisted",
+          "symbol": "CRDO",
+          "name": "Credo Technology Group Holding Ltd - Ordinary Shares",
+          "exchangeCode": null,
+          "marketCategory": "Q",
+          "etf": "N"
+        }
+      ],
+      "requiredEvidence": [
+        "Original broker/source identifier proving whether the legacy code maps to the named candidate",
+        "Exact instrument and listing evidence; similar spelling is insufficient"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "RDDW",
+      "previousReviewStatus": "inactive_listing_unverified",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "SHOW",
+      "previousReviewStatus": "inactive_listing_unverified",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "TSMW",
+      "previousReviewStatus": "inactive_listing_unverified",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    },
+    {
+      "symbol": "XOMW",
+      "previousReviewStatus": "inactive_listing_unverified",
+      "exactDirectoryMatches": [],
+      "candidateDirectoryMatches": [],
+      "requiredEvidence": [
+        "Issuer or official exchange evidence of the current fund identity and ISIN/CUSIP",
+        "Primary US listing exchange reconciled with the legacy NASDAQ value"
+      ],
+      "outcome": "absent_from_supplied_directories",
+      "automaticAlias": false,
+      "listingActivation": false
+    }
+  ],
+  "summary": {
+    "reviewed": 16,
+    "exactMatchCount": 0,
+    "candidateOnlyCount": 3,
+    "automaticChanges": 0
+  }
+}

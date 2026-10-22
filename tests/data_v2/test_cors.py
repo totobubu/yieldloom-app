@@ -26,3 +26,16 @@ class CorsTests(unittest.TestCase):
         self.assertEqual(updated[0], rules[0])
         self.assertEqual(updated[1]['AllowedOrigins'], [ORIGIN])
         self.assertEqual(updated[1]['AllowedMethods'], ['GET', 'HEAD'])
+
+    def test_cache_diagnostics_are_opt_in_additive_and_idempotent(self):
+        rules = [{'AllowedMethods': ['GET', 'HEAD'], 'AllowedOrigins': [ORIGIN],
+                  'ExposeHeaders': ['etag', 'X-Existing'], 'MaxAgeSeconds': 3600}]
+        original = copy.deepcopy(rules)
+        updated = allow_production_origin(rules, expose_cache=True)
+        self.assertEqual(rules, original)
+        self.assertEqual(updated[0]['ExposeHeaders'], ['etag', 'X-Existing', 'Age', 'CF-Cache-Status'])
+        self.assertEqual(updated[0]['AllowedMethods'], ['GET', 'HEAD'])
+        self.assertEqual(updated[0]['MaxAgeSeconds'], 3600)
+        self.assertEqual(allow_production_origin(updated, expose_cache=True), updated)
+        wildcard = [{'AllowedMethods': ['GET'], 'AllowedOrigins': ['*'], 'ExposeHeaders': ['*']}]
+        self.assertEqual(allow_production_origin(wildcard, expose_cache=True), wildcard)

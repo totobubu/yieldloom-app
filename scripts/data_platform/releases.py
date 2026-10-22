@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from scripts.data_platform.pipeline import Store, digest, encode, export_candidate, load_registry, private_path
 from scripts.data_platform.policies import public_policy
-from scripts.data_platform.checkpoints import MissingObject, immutable
+from scripts.data_platform.checkpoints import MissingObject, immutable, ConditionalConflict
 from scripts.data_platform.locking import writer_lock
 
 
@@ -188,7 +188,12 @@ class PublicObjects:
     def put(self, key, body, expected=None):
         condition = {'IfMatch': expected} if expected else {'IfNoneMatch': '*'}
         cache = 'public, max-age=60' if key.endswith('/current.json') else 'public, max-age=31536000, immutable'
-        self.client.put_object(Bucket=self.bucket, Key=key, Body=body, ContentType='application/json', CacheControl=cache, **condition)
+        try:
+            self.client.put_object(Bucket=self.bucket, Key=key, Body=body, ContentType='application/json', CacheControl=cache, **condition)
+        except self.client.exceptions.ClientError as error:
+            if error.response['Error']['Code'] in ('PreconditionFailed', '412', 'ConditionalRequestConflict', '409'):
+                raise ConditionalConflict('Conditional write conflict') from error
+            raise
 
 
 def main():

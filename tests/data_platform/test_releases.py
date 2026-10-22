@@ -2,8 +2,11 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from types import SimpleNamespace
+from unittest.mock import Mock
+from scripts.data_platform.checkpoints import ConditionalConflict
 
-from scripts.data_platform.releases import build, publish, rollback
+from scripts.data_platform.releases import build, publish, rollback, PublicObjects
 from scripts.data_platform.pipeline import Store, collect, load_registry
 from test_checkpoints import MemoryObjects
 from test_pipeline import registry, response, xml, NOW
@@ -74,3 +77,23 @@ class ReleaseTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'No approved'):
                 build(store, load_registry(), 'holdings', 'one', target, NOW)
             self.assertFalse(target.exists())
+
+    def test_public_object_cache_headers_and_immutable_retry_conflicts(self):
+        class ClientError(Exception):
+            def __init__(self, code):
+                self.response = {'Error': {'Code': code}}
+        remote = PublicObjects.__new__(PublicObjects)
+        remote.bucket = 'fixture-public'
+        remote.client = SimpleNamespace(exceptions=SimpleNamespace(ClientError=ClientError), put_object=Mock())
+        remote.put('datasets/fx/current.json', b'{}', expected='old')
+        self.assertEqual(remote.client.put_object.call_args.kwargs['CacheControl'], 'public, max-age=60')
+        self.assertEqual(remote.client.put_object.call_args.kwargs['IfMatch'], 'old')
+        remote.put('datasets/fx/releases/one/manifest.json', b'{}')
+        self.assertEqual(remote.client.put_object.call_args.kwargs['CacheControl'], 'public, max-age=31536000, immutable')
+        self.assertEqual(remote.client.put_object.call_args.kwargs['IfNoneMatch'], '*')
+        remote.client.put_object.side_effect = ClientError('PreconditionFailed')
+        with self.assertRaises(ConditionalConflict):
+            remote.put('datasets/fx/releases/one/manifest.json', b'{}')
+        remote.client.put_object.side_effect = ClientError('AccessDenied')
+        with self.assertRaises(ClientError):
+            remote.put('datasets/fx/releases/one/manifest.json', b'{}')

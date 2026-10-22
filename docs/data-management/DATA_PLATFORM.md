@@ -276,6 +276,72 @@ IVV 자료의 공개 이용 조건은 아직 미승인이므로 ETF 릴리스 �
 실제 공개 후보·원격 업로드·운영 앱 전환은 각각 별개이며, 이번 단계에서 운영 전환을
 완료한 것으로 보고하지 않는다. Firebase·개인 계좌 조회는 추가하지 않았다.
 
+### 공개 릴리스 캐시 최적화 (2026-10-22)
+
+`releaseCacheOptions`는 `core/releases/{버전}/…json`과
+`datasets/{영역}/releases/{버전}/…json`에만 장기 캐시를 적용한다.
+포인터는 조회가 발생할 때 메모리에서 60초 재사용하고, 그 뒤 `no-store`로 확인한다.
+강제 새로고침은 포인터를 `reload`로 확인하며 버전이 같으면 하위 파일을 재요청하지 않는다.
+버전 파일은 제한된 메모리 캐시에 24시간 보관하고, 실제 HTTP 조회에는 `default`를 써서
+서버의 Cache-Control과 브라우저 HTTP 캐시를 따른다. `force-cache`로 만료 자료를 강제
+재사용하지 않는다. 메모리 한도 96개·8백만 문자, 동시 조회 공유와 소비자별 취소를 유지한다.
+
+공식 ETF·프런트 core 목록/배당 원장에 적용하며, 서버 core 소비자도 포인터 확인과
+manifest 캐시를 분리하고 해시 검증한 버전 파일을 최대 24시간 재사용한다. 서버 캐시는
+프로세스별 제한된 메모리이므로 새 서버 인스턴스의 첫 조회는 별개다. 계좌·인증·변동 시세
+경로에 장기 HTTP 캐시를 추가하지 않는다. 실패·스키마 오류는 정상 메모리 캐시에 넣지
+않으며, 잘못된 200 응답이 브라우저 HTTP 캐시에 남은 경우 다음 시도에 `reload`한다.
+
+R2 발행기는 이미 포인터 `public, max-age=60`, 버전 파일
+`public, max-age=31536000, immutable`을 설정한다. Vercel의 같은 경로에도 헤더를
+명시하여 일반 JSON의 1시간·stale-while-revalidate 설정이 포인터에 적용되지 않도록 한다.
+포인터는 `must-revalidate`를 설정한다. GitHub Pages 자체의 HTTP 헤더는 이 설정으로
+바뀌지 않으므로 배포 방식별 헤더를 구분한다.
+
+Playwright 라우팅을 쓰면 HTTP 캐시가 비활성화되므로 별도 실제 로컬 HTTP 서버와
+Chromium으로 검증했다(`tests/public-release-cache.browser.mjs`). 아래는 테스트 서버의
+요청 수이며 Cloudflare CDN·R2 청구량 측정이 아니다.
+
+| 동작 | 테스트 서버 요청 |
+| --- | --- |
+| 동시 최초 조회 | 3 |
+| 메모리 캐시가 유효한 재진입 | 0 |
+| 3분 후 같은 릴리스 조회 | 포인터 1 |
+| JS 메모리 만료 후 조회 | fetch 호출 3, 서버 요청은 포인터 1 |
+| 페이지 재로딩 후 같은 릴리스 조회 | 포인터 1, 하위 파일은 HTTP 캐시 |
+| 새 릴리스 강제 확인 | 3 |
+| 이전 릴리스로 롤백 | 포인터 1 |
+| 잘못 캐시된 개체 응답 수정 후 재시도 | 개체 1 |
+
+`publicJsonFor().metrics()`의 `fetchRequests`는 브라우저 HTTP 캐시 응답까지 포함한
+fetch 호출 수다. 기존 `networkRequests`는 호환용 동일 값이며 실제 네트워크 요청 수가
+아니다. `cacheHits`는 JS 메모리 재사용, `sharedRequests`는 진행 중 조회 합치기다.
+`responseCacheStatuses`는 읽을 수 있는 CF-Cache-Status 헤더의 관측 집계이며,
+헤더가 없거나 CORS로 가려지면 UNKNOWN이다. HTTP 캐시가 예전 헤더를 재사용할 수도
+있으므로 이 집계를 CDN 적중률·R2 원본 읽기나 청구 횟수로 해석하지 않는다.
+
+2026-10-22 읽기 전용 운영 점검: 공개 `divgrow-data` 버킷의 사용자 도메인은 0개이고
+관리형 r2.dev 접근만 활성이다. 포인터 GET과 manifest HEAD 각 1회에서 200과 위
+Cache-Control 값을 확인했으며 CF-Cache-Status·Age는 없었다. 비공개 버킷은 변경하지 않았다.
+[Cloudflare R2 공식 문서](https://developers.cloudflare.com/r2/buckets/public-buckets/#caching)는
+CDN 캐시에 사용자 도메인이 필요하고 JSON 캐시에는 별도 캐시 규칙이 필요함을 안내한다.
+사용자 요청에 따라 도메인 연결과 실제 CDN 설정·적중률 측정은 보류한다.
+
+향후 도메인 연결 시 공개 버킷의 버전 경로에만 캐시 허용 규칙을 적용하고, 원본
+Cache-Control을 존중하며 포인터의 60초 TTL을 덮어쓰지 않는다. 비공개·계좌·API
+경로에는 적용하지 않는다. CORS 진단 헤더 준비는 다음 명령으로 검토할 수 있다.
+
+```sh
+# 기존 origin·메서드·헤더를 보존하는 dry run. 실제 적용에는 별도로 --apply가 필요하다.
+python scripts/data_v2/configure_cors.py --expose-cache
+```
+
+이는 ETag·Age·CF-Cache-Status 응답 노출을 추가하는 선택 옵션이며 이번 작업에서는
+운영 CORS를 변경하지 않았다. 실제 측정에는 공개 데이터 도메인의 HIT/MISS, R2 작업
+집계·데이터 접근 로그를 같은 관측 기간에 대조해야 한다. 브라우저 요청 수만으로
+R2 절감률을 추정하지 않는다. fetch 캐시 모드 근거:
+[MDN Request.cache](https://developer.mozilla.org/en-US/docs/Web/API/Request/cache).
+
 ## 6단계: ETF·기업 공시 확대
 
 16개 출처에서 IVV·IWM·EFA·EEM·AGG의 운용지표/보유자산과 AAPL·MSFT·NVDA의 최근 공시를

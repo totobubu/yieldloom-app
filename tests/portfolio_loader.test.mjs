@@ -64,7 +64,7 @@ test('dashboard loader uses one authenticated API request and summarizes its ass
             };
         },
     });
-    assert.equal(request.url, '/api/portfolio-dashboard');
+    assert.equal(request.url, '/api/portfolio-capital?view=dashboard');
     assert.equal(request.options.headers.Authorization, 'Bearer token');
     assert.equal(request.options.cache, 'no-store');
     assert.equal(dashboard.summary.currentCount, 1);

@@ -600,7 +600,7 @@
       "status": "improved",
       "paths": [
         "src/services/portfolio.js",
-        "api/portfolio-dashboard.js",
+        "api/portfolio-capital.js",
         "lib/portfolio-dashboard-handler.js",
         "api/portfolio-import.py",
         "api/portfolio_mapping.py"

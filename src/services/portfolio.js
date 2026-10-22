@@ -46,10 +46,13 @@ export async function loadPortfolioAsset(uid, ticker) {
 
 async function fetchPortfolioDashboard(uid, user, fetcher) {
     if (!uid || user?.uid !== uid) return summarizePortfolio([]);
-    const response = await fetcher(apiUrl('/api/portfolio-dashboard'), {
-        headers: { Authorization: `Bearer ${await user.getIdToken()}` },
-        cache: 'no-store',
-    });
+    const response = await fetcher(
+        apiUrl('/api/portfolio-capital?view=dashboard'),
+        {
+            headers: { Authorization: `Bearer ${await user.getIdToken()}` },
+            cache: 'no-store',
+        }
+    );
     const payload = await response.json().catch(() => ({}));
     if (!response.ok)
         throw Object.assign(

@@ -110,7 +110,8 @@
         },
         {
             "id": "ishares-ivv-profile",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-profile",
             "parserVersion": "2",
             "datasets": ["fund-observations", "fund-profile"],
@@ -126,7 +127,8 @@
         },
         {
             "id": "ishares-ivv-holdings",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-holdings",
             "parserVersion": "5",
             "datasets": ["holdings", "fund-observations"],
@@ -188,7 +190,8 @@
         },
         {
             "id": "ishares-iwm-profile",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-profile",
             "parserVersion": "2",
             "datasets": ["fund-observations", "fund-profile"],
@@ -204,7 +207,8 @@
         },
         {
             "id": "ishares-iwm-holdings",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-holdings",
             "parserVersion": "5",
             "datasets": ["holdings", "fund-observations"],
@@ -219,7 +223,8 @@
         },
         {
             "id": "ishares-efa-profile",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-profile",
             "parserVersion": "2",
             "datasets": ["fund-observations", "fund-profile"],
@@ -235,7 +240,8 @@
         },
         {
             "id": "ishares-efa-holdings",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-holdings",
             "parserVersion": "5",
             "datasets": ["holdings", "fund-observations"],
@@ -250,7 +256,8 @@
         },
         {
             "id": "ishares-eem-profile",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-profile",
             "parserVersion": "2",
             "datasets": ["fund-observations", "fund-profile"],
@@ -266,7 +273,8 @@
         },
         {
             "id": "ishares-eem-holdings",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-holdings",
             "parserVersion": "5",
             "datasets": ["holdings", "fund-observations"],
@@ -281,7 +289,8 @@
         },
         {
             "id": "ishares-agg-profile",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-profile",
             "parserVersion": "2",
             "datasets": ["fund-observations", "fund-profile"],
@@ -297,7 +306,8 @@
         },
         {
             "id": "ishares-agg-holdings",
-            "enabled": true,
+            "enabled": false,
+            "blockedReason": "issuer_permission_required",
             "parser": "ishares-holdings",
             "parserVersion": "5",
             "datasets": ["holdings", "fund-observations"],

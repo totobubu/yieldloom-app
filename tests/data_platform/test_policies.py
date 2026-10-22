@@ -38,3 +38,34 @@ class PolicyTests(unittest.TestCase):
             self.assertEqual(result['httpRequests'], 0)
             manifest = export_candidate(store, config, ['fx'], Path(directory) / 'approved', True, NOW)
             self.assertEqual(manifest['policies']['test']['version'], '2')
+
+    def test_automation_permission_blocks_force_fetch_and_cached_reprocessing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(directory)
+            self.addCleanup(store.close)
+            config = registry()
+            source = config['sources'][0]
+            collect(store, config, transport=lambda *_: response(xml()), now=NOW)
+            before = store.state(source['id'])
+            config['policies']['test'].update(automatedCollection=False, reason='permission required')
+            result = collect(store, config, transport=lambda *_: self.fail('Blocked HTTP'), now=NOW, force=True)
+            self.assertEqual(result['httpRequests'], 0)
+            self.assertEqual(result['blocked'], 1)
+            self.assertEqual(result['sources'][0]['status'], 'blocked')
+            self.assertEqual(store.state(source['id']), before)
+            # The policy remains authoritative if a custom registry re-enables the source.
+            self.assertTrue(source['enabled'])
+
+    def test_restricted_issuer_sources_are_disabled_and_cannot_publish(self):
+        from scripts.data_platform.pipeline import load_registry
+        config = load_registry()
+        sources = [s for s in config['sources'] if s.get('policyId') == 'issuer-review-required']
+        self.assertEqual(len(sources), 10)
+        policy = config['policies']['issuer-review-required']
+        self.assertFalse(policy['automatedCollection'])
+        self.assertEqual(policy['status'], 'blocked')
+        for source in sources:
+            self.assertFalse(source['enabled'])
+            self.assertEqual(source['blockedReason'], 'issuer_permission_required')
+            with self.assertRaises(ValueError):
+                public_policy(source, config, source['datasets'])

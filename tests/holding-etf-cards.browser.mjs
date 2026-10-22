@@ -81,7 +81,7 @@ try {
                 },
             })
         );
-        await page.goto(base + '/stock/GIS');
+        await page.goto(base + '/stock/GIS?tab=dividends');
         const cards = page.locator('.holding-etf-card');
         await cards.first().waitFor();
         assert.equal(await cards.count(), 2);

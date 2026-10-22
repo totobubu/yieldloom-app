@@ -32,6 +32,7 @@
     import StockHoldingPanel from '@/components/stock/StockHoldingPanel.vue';
     import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
+    import DividendRocHistory from '@/components/stock/DividendRocHistory.vue';
     import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
     import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
     import { getAssetUrl } from '@/utils/dataUrl';
@@ -1060,13 +1061,7 @@
                                 수집 이력은 실제 보유 기간과 다를 수 있습니다.
                                 미확인 수치는 0으로 간주하지 않습니다.
                             </p>
-                        </section>
-                        <div
-                            v-show="activeTab === 'details'"
-                            class="stock-insights">
-                            <SecurityInsights
-                                :symbol="normalize(route.params.ticker)" />
-                        </div> </TabPanel
+                        </section> </TabPanel
                     ><TabPanel value="prices">
                         <section
                             v-if="activeTab === 'prices'"
@@ -1190,44 +1185,6 @@
                                     today()
                                 "
                                 :currency="selectedInfo.currency || 'USD'" />
-                            <h2 v-if="dividendState === 'available'">
-                                배당 이력
-                            </h2>
-                            <p
-                                v-if="dividendState === 'available'"
-                                class="hint">
-                                배당락일 기준 · 주당 세전
-                                {{ selectedInfo.currency }} ·
-                                {{ historyRows.length }}회 수집
-                            </p>
-                            <DataTable
-                                v-if="dividendState === 'available'"
-                                :value="historyRows"
-                                class="stock-data-table"
-                                striped-rows
-                                paginator
-                                :rows="12"
-                                :page-link-size="3"
-                                paginator-template="PrevPageLink PageLinks NextPageLink"
-                                :table-props="{ 'aria-label': '배당 이력' }"
-                                ><Column
-                                    field="date"
-                                    header="배당락일" /><Column
-                                    header="주당 배당금 · 세전"
-                                    ><template #body="{ data }"
-                                        >{{ displayNumber(amount(data), 6) }}
-                                        {{ selectedInfo.currency }}</template
-                                    ></Column
-                                ></DataTable
-                            >
-                            <p
-                                v-if="
-                                    dividendState === 'available' &&
-                                    !historyRows.length
-                                "
-                                class="hint">
-                                확인 가능한 배당 이력이 없습니다.
-                            </p>
                             <p
                                 v-if="
                                     !archived && dividendState === 'available'
@@ -1236,7 +1193,30 @@
                                 공시 전 일정은 추정치입니다. 개인별 수령액은
                                 보유 수량과 세금에 따라 다릅니다.
                             </p>
-                        </section> </TabPanel
+                        </section>
+                        <div
+                            v-if="activeTab === 'dividends'"
+                            class="stock-insights">
+                            <SecurityInsights
+                                :symbol="normalize(route.params.ticker)">
+                                <template
+                                    #history="{
+                                        observations,
+                                        loading: insightsLoading,
+                                        failed,
+                                    }">
+                                    <DividendRocHistory
+                                        :key="normalize(route.params.ticker)"
+                                        :history="historyRows"
+                                        :observations="observations"
+                                        :currency="
+                                            selectedInfo.currency || 'USD'
+                                        "
+                                        :loading="insightsLoading"
+                                        :failed="failed" />
+                                </template>
+                            </SecurityInsights>
+                        </div> </TabPanel
                     ><TabPanel v-if="!archived" value="share">
                         <section class="share-workspace stock-section">
                             <div class="section-heading">

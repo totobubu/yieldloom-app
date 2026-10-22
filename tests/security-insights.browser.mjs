@@ -142,8 +142,8 @@ try {
         );
         await ledger.getByRole('button', { name: '차트', exact: true }).click();
         await ledger.locator('.dividend-roc-chart svg').waitFor();
-        assert.equal(await ledger.locator('.distribution-bar').count(), 12);
-        assert.equal(await ledger.locator('.roc-bar').count(), 0);
+        assert.equal(await ledger.locator('.distribution-point').count(), 12);
+        assert.equal(await ledger.locator('.roc-point').count(), 0);
         assert.equal(await ledger.locator('.ratio-point').count(), 4);
         await ledger.locator('.chart-payment').last().focus();
         await page.keyboard.press('Enter');
@@ -208,7 +208,7 @@ try {
     assert.match(content, /95\.274833%/);
     assert.equal(await ledger.locator('.annual-history').count(), 1);
     await ledger.getByRole('button', { name: '차트', exact: true }).click();
-    assert.ok((await ledger.locator('.roc-bar').count()) > 0);
+    assert.ok((await ledger.locator('.roc-point').count()) > 0);
     assert.ok((await ledger.locator('.ratio-point').count()) > 0);
 
     assert.equal(await panel.getByText('확정', { exact: true }).count(), 0);
@@ -231,7 +231,7 @@ try {
     assert.ok((await ledger.locator('.history-table tbody tr').count()) > 0);
     await ledger.getByRole('button', { name: '차트', exact: true }).click();
     assert.equal(await ledger.locator('.ratio-point').count(), 0);
-    assert.equal(await ledger.locator('.roc-bar').count(), 0);
+    assert.equal(await ledger.locator('.roc-point').count(), 0);
     console.log(
         'PASS: SPYI precision and separate fiscal scope; TXN empty ROC and quarterly evidence'
     );

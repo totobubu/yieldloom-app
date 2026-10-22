@@ -30,6 +30,25 @@
             "evidenceUrl": "https://openapi.krx.co.kr/",
             "status": "not_selected",
             "reason": "Service authentication and commercial-use restrictions remain unresolved"
+        },
+        {
+            "provider": "Financial Datasets",
+            "evidenceUrl": "https://www.financialdatasets.ai/terms-of-use",
+            "status": "not_selected",
+            "reason": "Public display plans are distinct from raw/bulk API redistribution, which current terms restrict; verified free redistribution is absent"
+        },
+        {
+            "provider": "Finazon US Equities Basic",
+            "evidenceUrl": "https://finazon.io/dataset/us_stocks_essential",
+            "pricingEvidenceUrl": "https://finazon.io/pricing",
+            "status": "needs_free_access_and_adjustment_verification",
+            "reason": "Commercial redistribution is described, but license-free wording does not establish a free subscription or verified adjustment history"
+        },
+        {
+            "provider": "Stooq",
+            "evidenceUrl": "https://stooq.com/db/h/",
+            "status": "unverified",
+            "reason": "Official download page returned browser verification; public redistribution terms and adjustment contract could not be verified"
         }
     ],
     "requiredBeforeCutover": [
@@ -39,5 +58,6 @@
         "Explicit currency and adjustment basis",
         "Split and correction history",
         "Parallel comparison and rollback validation"
-    ]
+    ],
+    "candidateTool": "scripts/data_platform/market_import.py"
 }

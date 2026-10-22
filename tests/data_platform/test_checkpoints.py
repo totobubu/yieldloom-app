@@ -5,7 +5,7 @@ import json
 import unittest
 from unittest.mock import patch
 
-from scripts.data_platform.checkpoints import backup, current, restore, MissingObject, R2Objects, PREFIX, raw_loader, read_object
+from scripts.data_platform.checkpoints import backup, current, restore, MissingObject, R2Objects, PREFIX, raw_loader, read_object, ConditionalConflict
 from scripts.data_platform.pipeline import Store, collect, digest
 from test_pipeline import registry, response, xml, NOW
 
@@ -26,7 +26,7 @@ class MemoryObjects:
             raise RuntimeError('Injected upload failure')
         old = self.objects.get(key)
         if (expected and (old is None or digest(old) != expected)) or (not expected and old is not None):
-            raise RuntimeError('Conditional write conflict')
+            raise ConditionalConflict('Conditional write conflict')
         self.objects[key] = body
 
 

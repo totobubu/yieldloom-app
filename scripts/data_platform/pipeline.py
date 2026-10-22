@@ -94,12 +94,11 @@ class Store:
         self.raw_loader = raw_loader
         self.root = private_path(root)
         self.root.mkdir(parents=True, exist_ok=True, mode=0o700)
+        if (self.root / 'collection.sqlite').exists() and not (self.root / 'observations.sqlite').exists():
+            raise ValueError('Collection store requires its observation database')
         self.db = sqlite3.connect(self.root / 'observations.sqlite')
         self.db.row_factory = sqlite3.Row
         self.db.executescript('''
-            CREATE TABLE IF NOT EXISTS state (source_id TEXT PRIMARY KEY, payload TEXT NOT NULL);
-            CREATE TABLE IF NOT EXISTS cache (url TEXT PRIMARY KEY, sha TEXT NOT NULL,
-                etag TEXT, modified TEXT);
             CREATE TABLE IF NOT EXISTS documents (url TEXT, sha TEXT, fetched_at TEXT,
                 PRIMARY KEY(url, sha));
             CREATE TABLE IF NOT EXISTS observations (
@@ -110,16 +109,52 @@ class Store:
                 observation_id INTEGER, source_id TEXT, url TEXT, sha TEXT, observed_at TEXT,
                 UNIQUE(observation_id, source_id, url, sha));
         ''')
+        try:
+            self._open_collection_state()
+        except Exception:
+            self.db.close()
+            raise
+
+    def _open_collection_state(self):
+        version = self.db.execute('PRAGMA main.user_version').fetchone()[0]
+        if version > 2:
+            raise ValueError('Unsupported observation store version')
+        if version == 2 and not (self.root / 'collection.sqlite').is_file():
+            raise ValueError('Split observation store requires its collection database')
+        self.db.execute('PRAGMA main.journal_mode=DELETE')
+        # Keep one connection/transaction for atomic document+cache and acceptance+state writes.
+        # SQLite rollback journals provide atomic commits across these attached databases.
+        self.db.execute('ATTACH DATABASE ? AS collection', (str(self.root / 'collection.sqlite'),))
+        self.db.execute('PRAGMA collection.journal_mode=DELETE')
+        if version == 2:
+            # Existing split stores must never silently recreate missing state tables.
+            self.db.execute('SELECT source_id, payload FROM collection.state LIMIT 0')
+            self.db.execute('SELECT url, sha, etag, modified FROM collection.cache LIMIT 0')
+        self.db.executescript('''
+            CREATE TABLE IF NOT EXISTS collection.state (source_id TEXT PRIMARY KEY, payload TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS collection.cache (url TEXT PRIMARY KEY, sha TEXT NOT NULL,
+                etag TEXT, modified TEXT);
+        ''')
+        # Old checkpoints embed these tables in main. Move them in a single transaction;
+        # interruption before commit retains the original tables for the next open.
+        with self.db:
+            for table in ('state', 'cache'):
+                legacy = self.db.execute("SELECT 1 FROM main.sqlite_master WHERE type='table' AND name=?", (table,)).fetchone()
+                if legacy:
+                    self.db.execute(f'INSERT OR REPLACE INTO collection.{table} SELECT * FROM main.{table}')
+                    self.db.execute(f'DROP TABLE main.{table}')
+            if version != 2:
+                self.db.execute('PRAGMA main.user_version=2')
 
     def close(self):
         self.db.close()
 
     def state(self, source_id):
-        row = self.db.execute('SELECT payload FROM state WHERE source_id=?', (source_id,)).fetchone()
+        row = self.db.execute('SELECT payload FROM collection.state WHERE source_id=?', (source_id,)).fetchone()
         return json.loads(row[0]) if row else {}
 
     def set_state(self, source_id, value):
-        self.db.execute('INSERT OR REPLACE INTO state VALUES (?,?)', (source_id, encode(value)))
+        self.db.execute('INSERT OR REPLACE INTO collection.state VALUES (?,?)', (source_id, encode(value)))
 
     def raw(self, sha):
         if not re.fullmatch('[a-f0-9]{64}', sha):
@@ -137,7 +172,7 @@ class Store:
         return content
 
     def document(self, url, response, now):
-        cached = self.db.execute('SELECT * FROM cache WHERE url=?', (url,)).fetchone()
+        cached = self.db.execute('SELECT * FROM collection.cache WHERE url=?', (url,)).fetchone()
         if response['status'] == 304:
             if not cached:
                 raise ValueError('304 without archived source')
@@ -156,7 +191,7 @@ class Store:
                 target.write(body)
         with self.db:
             self.db.execute('INSERT OR IGNORE INTO documents VALUES (?,?,?)', (url, sha, now))
-            self.db.execute('INSERT OR REPLACE INTO cache VALUES (?,?,?,?)',
+            self.db.execute('INSERT OR REPLACE INTO collection.cache VALUES (?,?,?,?)',
                             (url, sha, response.get('etag'), response.get('lastModified')))
         return body, sha
 
@@ -224,7 +259,7 @@ def collect(store, registry, selected=None, transport=fetch, now=None, force=Fal
             report.append({'sourceId': source['id'], 'status': 'not_due'})
             continue
         try:
-            cached = store.db.execute('SELECT * FROM cache WHERE url=?', (source['url'],)).fetchone()
+            cached = store.db.execute('SELECT * FROM collection.cache WHERE url=?', (source['url'],)).fetchone()
             # A parser/configuration update can reprocess immutable bytes without a request.
             if cached and attempted is not None and attempted != fingerprint:
                 body, sha = store.raw(cached['sha']), cached['sha']
@@ -296,7 +331,7 @@ def export_candidate(store, registry, datasets, output, public=False, now=None):
     source_versions = {}
     quality = None
     used_policies = {}
-    for state in store.db.execute('SELECT source_id,payload FROM state'):
+    for state in store.db.execute('SELECT source_id,payload FROM collection.state'):
         current = json.loads(state['payload'])
         if state['source_id'] not in sources:
             continue

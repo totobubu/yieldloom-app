@@ -145,6 +145,21 @@ try {
         assert.equal(await ledger.locator('.distribution-point').count(), 12);
         assert.equal(await ledger.locator('.roc-point').count(), 0);
         assert.equal(await ledger.locator('.ratio-point').count(), 4);
+        assert.equal(await ledger.locator('.distribution-value').count(), 12);
+        assert.equal(await ledger.locator('.ratio-value').count(), 4);
+        assert.equal(await ledger.locator('.roc-value').count(), 0);
+        assert.match(
+            (await ledger.locator('.ratio-value').allTextContents()).join(' '),
+            /100%/
+        );
+        await ledger
+            .locator('.chart-payment')
+            .filter({ has: page.getByText('26-10-08', { exact: true }) })
+            .hover();
+        assert.match(
+            await ledger.locator('.chart-detail').innerText(),
+            /2026-10-08/
+        );
         await ledger.locator('.chart-payment').last().focus();
         await page.keyboard.press('Enter');
         assert.match(

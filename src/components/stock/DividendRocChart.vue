@@ -57,6 +57,26 @@
     );
     const display = (value) =>
         value == null || value === '' ? '미확인' : String(value);
+    const pointValue = (value, percent = false) =>
+        Number(value).toLocaleString('ko-KR', {
+            maximumFractionDigits: percent ? 2 : 4,
+        }) + (percent ? '%' : '');
+    function ratioLabelY(row) {
+        const y = ratioY(row.rocPercent);
+        const reserved = [
+            numeric(row.distributionAmount) == null
+                ? null
+                : moneyY(row.distributionAmount) - 12,
+            numeric(row.rocAmount) == null ? null : moneyY(row.rocAmount) + 18,
+        ].filter((value) => value != null);
+        return (
+            [y - 12, y + 18, y - 30, y + 34]
+                .map((value) => Math.max(28, Math.min(273, value)))
+                .find((value) =>
+                    reserved.every((other) => Math.abs(value - other) >= 14)
+                ) ?? Math.max(28, y - 30)
+        );
+    }
     const description = (row) =>
         `${row.exDate || row.payableDate || '날짜 미확인'}, 분배금 ${display(row.distributionAmount)} ${row.currency}, ROC 금액 ${display(row.rocAmount)}, ROC 비율 ${display(row.rocPercent)}${row.rocPercent == null ? '' : '%'}`;
     watch(
@@ -121,6 +141,7 @@
                     role="button"
                     :aria-label="description(row)"
                     :aria-pressed="current?.id === row.id"
+                    @pointerenter="selected = row.id"
                     @click="selected = row.id"
                     @focus="selected = row.id"
                     @keydown.enter.prevent="selected = row.id"
@@ -151,6 +172,33 @@
                         :cy="ratioY(row.rocPercent)"
                         r="5"
                         class="ratio-point" />
+                    <text
+                        v-if="numeric(row.distributionAmount) != null"
+                        :x="x(index)"
+                        :y="moneyY(row.distributionAmount) - 12"
+                        text-anchor="middle"
+                        class="point-value distribution-value"
+                        aria-hidden="true">
+                        {{ pointValue(row.distributionAmount) }}
+                    </text>
+                    <text
+                        v-if="numeric(row.rocAmount) != null"
+                        :x="x(index)"
+                        :y="Math.min(273, moneyY(row.rocAmount) + 18)"
+                        text-anchor="middle"
+                        class="point-value roc-value"
+                        aria-hidden="true">
+                        {{ pointValue(row.rocAmount) }}
+                    </text>
+                    <text
+                        v-if="numeric(row.rocPercent) != null"
+                        :x="x(index)"
+                        :y="ratioLabelY(row)"
+                        text-anchor="middle"
+                        class="point-value ratio-value"
+                        aria-hidden="true">
+                        {{ pointValue(row.rocPercent, true) }}
+                    </text>
                     <text :x="x(index)" y="285" text-anchor="middle">
                         {{
                             (row.exDate || row.payableDate || '미확인').slice(2)
@@ -175,8 +223,9 @@
         </p>
         <p class="chart-note">
             표의 현재 페이지와 같은 지급 내역입니다. 비어 있는 금액·비율은 0으로
-            그리지 않으며 해당 구간의 선도 연결하지 않습니다. 점을 선택하면 값을
-            확인할 수 있습니다.
+            그리지 않으며 해당 구간의 선도 연결하지 않습니다. 포인트 값은 간략히
+            표시하며, 마우스를 올리거나 점을 선택하면 아래에서 원문 정밀도의
+            값을 확인할 수 있습니다.
         </p>
     </div>
 </template>
@@ -282,6 +331,27 @@
     .chart-payment:focus .chart-hit {
         stroke: var(--app-accent);
         stroke-width: 2;
+    }
+    .point-value {
+        font-size: 11px;
+        font-weight: 650;
+        paint-order: stroke fill;
+        stroke: var(--app-surface);
+        stroke-width: 3px;
+        stroke-linejoin: round;
+        pointer-events: none;
+    }
+    .distribution-value {
+        fill: var(--app-accent);
+    }
+    .roc-value {
+        fill: #0d9488;
+    }
+    .ratio-value {
+        fill: #9333ea;
+    }
+    :global(.p-dark) .ratio-value {
+        fill: #d8b4fe;
     }
     .chart-detail {
         display: flex;

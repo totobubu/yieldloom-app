@@ -413,7 +413,7 @@ npm run data:analytics -- --output var/data-platform/analytics/holdings-review-0
 | 영역 | 구현/검증 | 남은 조건 |
 | --- | --- | --- |
 | 비공개 저장·정기 수집 | 버킷 생성, 복원·정정·장애 테스트, Actions 연결 | 전용 R2 secrets 등록과 실제 원격 왕복. 기본 브랜치 반영 전 일별 스케줄은 비활성 |
-| 식별자·품질 | 연결 제안·단위·날짜·정정·신선도 검사 | IWM의 공식 식별자와 기존 catalog 충돌 검토, 기존 ISIN 검토 대상 18건 |
+| 식별자·품질 | 연결 제안·단위·날짜·정정·신선도 검사 | IWM 공식 식별자 정정 완료. 기존 ISIN 검토 대상 18건은 개별 근거 필요 |
 | 공개 릴리스·앱 | 영역별 projection·발행/복구 코드와 ETF UI 검증 | iShares/Nasdaq 공개 이용 조건 확인. ETF 기능 기본 비활성 |
 | 가격 공급 | 계약과 무료 공급자 검토 기록 | 적합한 무료 공급자 선정·접근·병행 대조·과거 이관 |
 | 재무·거시·분석 | 실제 SEC/ECB 수집과 ETF 5종 비중 분석 | 원격 발행/소비 활성화와 후속 범위 확대 |
@@ -460,3 +460,15 @@ python scripts/data_platform/operations.py recover-writer --writer-stopped --exp
 수집 workflow와 동일한 concurrency를 사용하고 비공개 원문·DB·상세 계획은 artifact로 올리지 않는다.
 스케줄 삭제와 Actions 삭제 입력은 제공하지 않는다. 새 workflow 수동 등록은 기본 브랜치 반영 후
 가능하다. 현재 전용 S3 secrets가 없어 실제 R2 왕복·삭제 조건·복구 성공은 아직 확인하지 못했다.
+
+
+## 검토된 식별자 정정
+
+2026-10-22 iShares 공식 IWM factsheet의 2026-06-30 자료에서 ISIN `US4642876555`,
+CUSIP `464287655`, USD 및 NYSE Arca 상장을 확인했다.
+근거: https://www.ishares.com/us/literature/fact-sheet/iwm-ishares-russell-2000-etf-fund-fact-sheet-ja-jp.pdf
+`identity-corrections.json`에 이전 값·종목·시장·통화와 근거를 기록하고 catalog seed를 정정했다.
+빌더는 이전 값 또는 정정 값과 정확히 일치할 때만 적용하며, 예기치 않은 식별자/시장/통화는
+실패시킨다. 구 `JP5841360000`는 이 종목의 별칭으로 등록하지 않는다. 개인 거래의 자동 재연결이나
+수정은 수행하지 않는다. 이전 절의 IWM 격리 설명은 정정 이전 실행의 기록이다. 이 변경은
+공개 이용 조건 승인이나 기존 공개 릴리스 재발행을 의미하지 않는다.

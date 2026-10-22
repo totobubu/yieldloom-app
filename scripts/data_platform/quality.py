@@ -85,7 +85,9 @@ def evaluate(store, config, catalog=None, now=None):
                        'warnings': sorted(warnings), 'counts': dict(counts), 'fields': dict(fields)})
     return {'schemaVersion': 1, 'checkedAt': clock.isoformat(), 'sources': report,
             'catalogInvalidIsinCount': sum(not valid_isin(r.get('isin')) for r in catalog),
-            'catalogIdentityReview': [{'symbol': r['symbol'], 'reason': 'missing_isin' if not r.get('isin') else 'invalid_isin'}
+            'catalogActiveInvalidIsinCount': sum(r.get('active', True) and not valid_isin(r.get('isin')) for r in catalog),
+            'catalogInactiveInvalidIsinCount': sum(not r.get('active', True) and not valid_isin(r.get('isin')) for r in catalog),
+            'catalogIdentityReview': [{'symbol': r['symbol'], 'active': r.get('active', True), 'reason': 'missing_isin' if not r.get('isin') else 'invalid_isin'}
                                       for r in catalog if not valid_isin(r.get('isin'))],
             'identityPolicy': 'suggestions_only_no_catalog_mutation'}
 

@@ -61,11 +61,15 @@ def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None)
             from scripts.data_platform.quality import evaluate
             result['quality'] = evaluate(store, config, now=clock)
             # Source failures still need durable retry state and successful-source updates.
-            if not previous or store.db.total_changes != initial_changes:
-                backup(store, remote, etag, run_id, previous=previous)
+            if not previous or previous['schemaVersion'] != 2 or store.db.total_changes != initial_changes:
+                manifest = backup(store, remote, etag, run_id, previous=previous)
                 result['checkpoint'] = 'saved'
             else:
+                manifest = previous
                 result['checkpoint'] = 'unchanged'
+            old_files = {entry['path']: entry for entry in previous['files']} if previous else {}
+            result['checkpointFiles'] = {entry['path']: 'reused' if old_files.get(entry['path']) == entry else 'updated'
+                for entry in manifest['files'] if entry['path'] in ('observations.sqlite', 'collection.sqlite')}
             result['r2'] = remote.metrics.copy()
             result['status'] = 'degraded' if result['failed'] or any(r['errors'] for r in result['quality']['sources']) or any(
                 r['collectionStale'] or r['dataStale'] for r in result['health']) else 'healthy'
@@ -86,7 +90,7 @@ def main():
     if os.environ.get('GITHUB_STEP_SUMMARY'):
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as target:
             target.write(f"## Data platform: {result['status']}\n\nHTTP requests: {result['httpRequests']}; checkpoint: {result['checkpoint']}\n\n")
-            target.write(f"R2 API attempts: {encode(result['r2'])}\n\n")
+            target.write(f"R2 API attempts: {encode(result['r2'])}\n\nCheckpoint files: {encode(result['checkpointFiles'])}\n\n")
             for item in result['health']:
                 target.write(f"- {item['sourceId']}: failures={item['failureCount']}, lastSuccess={item['lastSuccessAt']}, collectionStale={item['collectionStale']}, dataStale={item['dataStale']}\n")
             target.write('\n### Quality review\n\n')

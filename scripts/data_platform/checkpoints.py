@@ -29,6 +29,10 @@ class MissingObject(Exception):
     pass
 
 
+class ConditionalConflict(RuntimeError):
+    pass
+
+
 class R2Objects:
     def __init__(self):
         # Deliberately no fallback to the public bucket or .env.r2.
@@ -56,8 +60,13 @@ class R2Objects:
 
     def put(self, key, body, expected=None):
         condition = {'IfMatch': expected} if expected else {'IfNoneMatch': '*'}
-        return self.client.put_object(Bucket=BUCKET, Key=key, Body=body,
-            CacheControl='private, no-store', **condition)
+        try:
+            return self.client.put_object(Bucket=BUCKET, Key=key, Body=body,
+                CacheControl='private, no-store', **condition)
+        except self.client.exceptions.ClientError as error:
+            if error.response['Error']['Code'] in ('PreconditionFailed', '412', 'ConditionalRequestConflict', '409'):
+                raise ConditionalConflict('Conditional write conflict') from error
+            raise
 
 
 def current(remote):
@@ -73,10 +82,11 @@ def current(remote):
 
 def immutable(remote, key, body):
     try:
-        existing, _ = remote.get(key)
-    except MissingObject:
         remote.put(key, body)
-        existing, _ = remote.get(key)
+    except ConditionalConflict:
+        # An earlier attempt may already have saved these content-addressed bytes.
+        pass
+    existing, _ = remote.get(key)
     if existing != body:
         raise ValueError('Remote immutable object verification failed')
 
@@ -85,7 +95,21 @@ def check_database(path):
     with sqlite3.connect(f'file:{path}?mode=ro', uri=True) as db:
         if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
             raise ValueError('SQLite checkpoint failed integrity check')
+        db.execute('SELECT id, identity_key, revision, value_hash, payload FROM observations LIMIT 0')
+        db.execute('SELECT observation_id, source_id, url, sha, observed_at FROM evidence LIMIT 0')
         return {r[0] for r in db.execute('SELECT DISTINCT sha FROM documents')}
+
+
+def check_collection(path, references=None):
+    with sqlite3.connect(f'file:{path}?mode=ro', uri=True) as db:
+        if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
+            raise ValueError('Collection checkpoint failed integrity check')
+        # Both tables are required even for an empty/initial state database.
+        db.execute('SELECT source_id, payload FROM state LIMIT 0')
+        db.execute('SELECT url, sha, etag, modified FROM cache LIMIT 0')
+        cached = {row[0] for row in db.execute('SELECT sha FROM cache')}
+        if references is not None and not cached <= references:
+            raise ValueError('Collection cache references absent archived documents')
 
 
 def backup(store, remote, expected_etag, run_id, previous=None):
@@ -99,9 +123,14 @@ def backup(store, remote, expected_etag, run_id, previous=None):
         with sqlite3.connect(database) as target:
             store.db.backup(target)
         hashes = check_database(database)
+        state_database = Path(temporary) / 'collection.sqlite'
+        with sqlite3.connect(state_database) as target:
+            store.db.backup(target, name='collection')
+        check_collection(state_database, hashes)
         if any(not re.fullmatch('[a-f0-9]{64}', sha) for sha in hashes):
             raise ValueError('Unsafe raw document address')
-        paths = [('observations.sqlite', database)] + [('raw/' + sha, store.root / 'raw' / sha) for sha in sorted(hashes)]
+        paths = [('observations.sqlite', database), ('collection.sqlite', state_database)]
+        paths += [('raw/' + sha, store.root / 'raw' / sha) for sha in sorted(hashes)]
         sizes = [known[name]['bytes'] if name.startswith('raw/') and name in known
                  else path.stat().st_size for name, path in paths]
         if len(paths) > MAX_FILES or any(not 0 < size <= MAX_FILE_BYTES for size in sizes) or sum(sizes) > MAX_TOTAL_BYTES:
@@ -118,12 +147,15 @@ def backup(store, remote, expected_etag, run_id, previous=None):
             if name.startswith('raw/') and name != 'raw/' + sha:
                 raise ValueError('Local raw hash mismatch')
             entry = {'path': name, 'sha256': sha, 'bytes': len(body)}
-            if name == 'observations.sqlite':
+            if name in ('observations.sqlite', 'collection.sqlite'):
+                if old and old.get('uncompressedSha256', old['sha256']) == sha:
+                    files.append(dict(old))
+                    continue
                 entry.update({'compression': 'gzip', 'uncompressedSha256': sha, 'uncompressedBytes': len(body)})
                 body = gzip.compress(body, compresslevel=6, mtime=0)
                 sha = digest(body)
                 entry.update({'sha256': sha, 'bytes': len(body)})
-                path = Path(temporary) / 'observations.sqlite.gz'
+                path = Path(temporary) / (name + '.gz')
                 path.write_bytes(body)
             files.append(entry)
             if old != entry:
@@ -135,7 +167,7 @@ def backup(store, remote, expected_etag, run_id, previous=None):
             if digest(body) != sha:
                 raise ValueError('Local object changed during checkpoint')
             immutable(remote, f'{PREFIX}/objects/{sha}', body)
-    manifest = {'schemaVersion': 1, 'runId': run_id, 'files': files,
+    manifest = {'schemaVersion': 2, 'runId': run_id, 'files': files,
                 'createdAt': datetime.now(timezone.utc).isoformat()}
     body = (encode(manifest) + '\n').encode()
     sha = digest(body)
@@ -162,26 +194,30 @@ def restore(remote, output, pointer=None, lazy_raw=False):
         raise ValueError('Checkpoint manifest hash mismatch')
     manifest = json.loads(body)
     files = manifest.get('files', [])
-    if manifest.get('schemaVersion') != 1 or not files or len(files) > MAX_FILES:
+    version = manifest.get('schemaVersion')
+    databases = {'observations.sqlite', 'collection.sqlite'} if version == 2 else {'observations.sqlite'}
+    if version not in (1, 2) or not files or len(files) > MAX_FILES:
         raise ValueError('Invalid checkpoint manifest')
     names = set()
     for entry in files:
         name, checksum = entry['path'], entry['sha256']
-        if (name != 'observations.sqlite' and not re.fullmatch(r'raw/[a-f0-9]{64}', name)
+        if (name not in databases and not re.fullmatch(r'raw/[a-f0-9]{64}', name)
                 or not re.fullmatch('[a-f0-9]{64}', checksum) or name in names
                 or not isinstance(entry['bytes'], int) or not 0 < entry['bytes'] <= MAX_FILE_BYTES):
             raise ValueError('Unsafe checkpoint file')
         if 'compression' in entry:
-            if (name != 'observations.sqlite' or entry['compression'] != 'gzip'
+            if (name not in databases or entry['compression'] != 'gzip'
                     or not re.fullmatch('[a-f0-9]{64}', entry.get('uncompressedSha256', ''))
                     or not isinstance(entry.get('uncompressedBytes'), int)
                     or not 0 < entry['uncompressedBytes'] <= MAX_FILE_BYTES):
                 raise ValueError('Invalid compressed checkpoint descriptor')
+        elif 'uncompressedBytes' in entry or 'uncompressedSha256' in entry:
+            raise ValueError('Compression metadata requires an encoding')
         if name.startswith('raw/') and name != 'raw/' + checksum:
             raise ValueError('Checkpoint raw address mismatch')
         names.add(name)
-    if 'observations.sqlite' not in names:
-        raise ValueError('Checkpoint has no database')
+    if not databases <= names:
+        raise ValueError('Checkpoint has no required database')
     if sum(entry.get('uncompressedBytes', entry['bytes']) for entry in files) > MAX_TOTAL_BYTES:
         raise ValueError('Checkpoint exceeds supported restore budget')
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -196,7 +232,14 @@ def restore(remote, output, pointer=None, lazy_raw=False):
             path.parent.mkdir(exist_ok=True, mode=0o700)
             path.write_bytes(content)
         references = check_database(stage / 'observations.sqlite')
-        if {'raw/' + value for value in references} != names - {'observations.sqlite'}:
+        if version == 2:
+            check_collection(stage / 'collection.sqlite', references)
+            with sqlite3.connect(stage / 'observations.sqlite') as db:
+                if db.execute('PRAGMA user_version').fetchone()[0] != 2:
+                    raise ValueError('Unsupported split checkpoint database version')
+                if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name IN ('state','cache')").fetchone():
+                    raise ValueError('Split checkpoint embeds legacy collection state')
+        if {'raw/' + value for value in references} != names - databases:
             raise ValueError('Checkpoint raw coverage mismatch')
         stage.rename(output)
     return manifest

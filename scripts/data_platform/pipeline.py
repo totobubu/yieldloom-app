@@ -244,6 +244,11 @@ def collect(store, registry, selected=None, transport=fetch, now=None, force=Fal
     for source in registry['sources']:
         if selected and source['id'] not in selected:
             continue
+        policy = registry.get('policies', {}).get(source.get('policyId'), {})
+        if policy.get('automatedCollection') is False:
+            report.append({'sourceId': source['id'], 'status': 'blocked',
+                           'reason': policy.get('reason', 'Automated collection permission required')})
+            continue
         if not source.get('enabled'):
             if selected:
                 report.append({'sourceId': source['id'], 'status': 'blocked', 'reason': source['blockedReason']})

@@ -81,3 +81,7 @@ python scripts/data_platform/market_import.py compare --root var/data-market-can
 이 도구의 로컬 왕복 복원·정정·중복·결측 검증과 실제 가격 공급자의 병행 실험은 별개다.
 무료 공급자 확정, 실제 응답 원문 어댑터, 분할 대조/보정 재계산, 철회 계약,
 과거 자료 병행 대조·복구 검증을 마친 후에만 기존 가격 경로를 전환한다.
+
+추가 무료 공급자 4곳과 iShares 자동 수집 조건의 실제 적용 결과는
+[무료 출처 재검토](FREE_SOURCE_REVIEW_2026-10-22.md)에 정리했다.
+현재 가격 공급자 결정은 계속 `blocked`이며, iShares 10개 출처는 공식 허가 확인 전 자동 수집도 중지한다.

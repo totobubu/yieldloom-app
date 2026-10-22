@@ -93,6 +93,11 @@ def main():
             target.write(f"R2 API attempts: {encode(result['r2'])}\n\nCheckpoint files: {encode(result['checkpointFiles'])}\n\n")
             for item in result['health']:
                 target.write(f"- {item['sourceId']}: failures={item['failureCount']}, lastSuccess={item['lastSuccessAt']}, collectionStale={item['collectionStale']}, dataStale={item['dataStale']}\n")
+            if result['blocked']:
+                target.write(f"\n### Collection permissions\n\nBlocked sources: {result['blocked']}\n\n")
+                for item in result['sources']:
+                    if item['status'] == 'blocked':
+                        target.write(f"- {item['sourceId']}: {item['reason']}\n")
             target.write('\n### Quality review\n\n')
             for item in result['quality']['sources']:
                 if item['errors'] or item['warnings']:

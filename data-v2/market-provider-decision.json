@@ -49,6 +49,34 @@
             "evidenceUrl": "https://stooq.com/db/h/",
             "status": "unverified",
             "reason": "Official download page returned browser verification; public redistribution terms and adjustment contract could not be verified"
+        },
+        {
+            "provider": "Alpaca",
+            "evidenceUrl": "https://raw.githubusercontent.com/alpacahq/bkdocs/master/content/market-data/_index.md",
+            "status": "not_selected",
+            "reason": "Broker API sandbox documentation permits free end-user IEX data but directs production activation to sales; SIP requires additional agreements and fees. Sandbox permission is not production redistribution permission."
+        },
+        {
+            "provider": "Finnhub",
+            "evidenceUrl": "https://finnhub.io/terms-of-service",
+            "status": "not_selected",
+            "reason": "Terms require written approval to redistribute data or derived results; listed plans are personal use unless explicitly stated otherwise."
+        },
+        {
+            "provider": "Marketstack (marketstack.com)",
+            "evidenceUrl": "https://marketstack.com/pricing/",
+            "additionalEvidenceUrls": [
+                "https://marketstack.com/faq",
+                "https://marketstack.com/terms"
+            ],
+            "status": "needs_quota_and_rights_verification",
+            "reason": "Pricing and FAQ disagree on free monthly quota; 12-month free history cannot cover the full migration, and raw public redistribution is unverified. marketstack.pro is a different service and is not evidence for this provider."
+        },
+        {
+            "provider": "Nasdaq Data Link WIKI",
+            "evidenceUrl": "https://data.nasdaq.com/databases/WIKIP",
+            "status": "not_selected",
+            "reason": "Official page says the feed is no longer actively supported as of April 11, 2018; unsuitable for ongoing independent collection."
         }
     ],
     "requiredBeforeCutover": [
@@ -59,5 +87,6 @@
         "Split and correction history",
         "Parallel comparison and rollback validation"
     ],
-    "candidateTool": "scripts/data_platform/market_import.py"
+    "candidateTool": "scripts/data_platform/market_import.py",
+    "reviewReport": "docs/data-management/FREE_SOURCE_REVIEW_2026-10-22.md"
 }

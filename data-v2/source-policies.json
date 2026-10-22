@@ -40,15 +40,17 @@
             ]
         },
         "issuer-review-required": {
-            "version": "2026-10-22",
-            "status": "unreviewed",
+            "version": "2026-10-22-reviewed",
+            "status": "blocked",
             "free": null,
             "publicDisplay": false,
             "redistribution": false,
             "datasets": [],
             "citation": "iShares / BlackRock",
-            "evidenceUrl": "https://www.ishares.com/us/individual/terms-and-conditions",
-            "reason": "Page access alone does not establish permission for systematic redistribution of fund or holdings data"
+            "evidenceUrl": "https://www.blackrock.com/corporate/compliance/terms-and-conditions",
+            "reason": "The terms linked by the iShares US product footer require permission for automated monitoring/copying and public or commercial reuse; no written permission is configured.",
+            "automatedCollection": false,
+            "evidenceExcerpt": "without BlackRock's written permission"
         },
         "nasdaq-directory-review-required": {
             "version": "2026-10-22",

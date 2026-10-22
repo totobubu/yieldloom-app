@@ -81,6 +81,10 @@ def main():
             target.write(f"## Data platform: {result['status']}\n\nHTTP requests: {result['httpRequests']}; checkpoint: saved\n\n")
             for item in result['health']:
                 target.write(f"- {item['sourceId']}: failures={item['failureCount']}, lastSuccess={item['lastSuccessAt']}, collectionStale={item['collectionStale']}, dataStale={item['dataStale']}\n")
+            target.write('\n### Quality review\n\n')
+            for item in result['quality']['sources']:
+                if item['errors'] or item['warnings']:
+                    target.write(f"- {item['sourceId']}: errors={','.join(item['errors']) or 'none'}; warnings={','.join(item['warnings']) or 'none'}\n")
     return 1 if result['status'] != 'healthy' else 0
 
 

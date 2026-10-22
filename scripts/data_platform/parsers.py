@@ -201,5 +201,112 @@ def filings(content: bytes, config: dict) -> list[dict]:
     return result
 
 
+FINANCIAL_CONCEPTS = {
+    'revenue': ['RevenueFromContractWithCustomerExcludingAssessedTax', 'Revenues', 'SalesRevenueNet'],
+    'netIncome': ['NetIncomeLoss'],
+    'operatingCashFlow': ['NetCashProvidedByUsedInOperatingActivities'],
+    'assets': ['Assets'], 'liabilities': ['Liabilities'],
+    'cash': ['CashAndCashEquivalentsAtCarryingValue'],
+    'capitalExpenditure': ['PaymentsToAcquirePropertyPlantAndEquipment'],
+    'dividendsPaid': ['PaymentsOfDividends', 'PaymentsOfDividendsCommonStock'],
+    'equity': ['StockholdersEquity'],
+}
+
+
+def companyfacts(content, config):
+    data = json.loads(content, parse_float=Decimal)
+    if str(data['cik']).zfill(10) != config['cik']:
+        raise ValueError('SEC companyfacts issuer identity mismatch')
+    facts = data['facts']['us-gaap']
+    result, seen = [], set()
+    for field, concepts in FINANCIAL_CONCEPTS.items():
+        for concept in concepts:
+            for unit, entries in facts.get(concept, {}).get('units', {}).items():
+                if not re.fullmatch('[A-Z]{3}', unit):
+                    raise ValueError('Unexpected monetary reporting unit')
+                eligible = [r for r in entries if r.get('form') in ('10-K', '10-Q', '10-K/A', '10-Q/A')]
+                eligible.sort(key=lambda r: (r['filed'], r['end'], r.get('start') or ''), reverse=True)
+                for row in eligible[:config.get('maxObservationsPerConcept', 60)]:
+                    end, filed = date(row['end']), date(row['filed'])
+                    start = date(row['start']) if row.get('start') else None
+                    if start and start > end:
+                        raise ValueError('Financial reporting period reversed')
+                    item = fact('financials', 'issuer:cik:' + config['cik'], field,
+                        decimal(str(row['val'])), end, 'currency', unit,
+                        taxonomy='us-gaap', concept=concept, periodStart=start, periodEnd=end,
+                        accessionNumber=row['accn'], reportForm=row['form'],
+                        fiscalYear=row.get('fy'), fiscalPeriod=row.get('fp'), frame=row.get('frame'),
+                        publishedAt=filed, scope='issuer_reported_no_cross_tag_merge')
+                    key = json.dumps(item, sort_keys=True)
+                    if key not in seen:
+                        seen.add(key)
+                        result.append(item)
+    if not {'revenue', 'netIncome', 'assets', 'operatingCashFlow'} <= {r['field'] for r in result}:
+        raise ValueError('Required financial concepts missing')
+    return result
+
+
+class TableRows(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.rows, self.cells, self.parts = [], [], None
+        self.superscript = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'sup':
+            self.superscript += 1
+        elif tag == 'tr':
+            self.cells = []
+        elif tag in ('td', 'th'):
+            self.parts = []
+
+    def handle_data(self, value):
+        if self.parts is not None and not self.superscript:
+            self.parts.append(value)
+
+    def handle_endtag(self, tag):
+        if tag == 'sup':
+            self.superscript = max(0, self.superscript - 1)
+        elif tag in ('td', 'th') and self.parts is not None:
+            self.cells.append(re.sub(r'\s+', ' ', ' '.join(self.parts)).strip())
+            self.parts = None
+        elif tag == 'tr' and self.cells:
+            self.rows.append(self.cells)
+            self.cells = []
+
+
+def policy_rates(content, config):
+    parser = TableRows()
+    parser.feed(content.decode('utf-8'))
+    year, result = None, []
+    for original in parser.rows:
+        cells = list(original)
+        if cells and re.fullmatch(r'(?:19|20)\d{2}', cells[0]):
+            year = cells.pop(0)
+        if not year or not cells:
+            continue
+        day = re.fullmatch(r'(\d{1,2})\s+([A-Za-z]+)\.?', cells[0])
+        rates = cells[1:]
+        if not day or len(rates) not in (3, 4):
+            continue
+        month = 'Sep' if day[2] == 'Sept' else day[2]
+        as_of = date(f'{month} {day[1]}, {year}')
+        labels = ['depositFacility', 'mainRefinancingFixed', 'mainRefinancingVariable', 'marginalLending'] if len(rates) == 4 else ['depositFacility', 'mainRefinancingFixed', 'marginalLending']
+        for label, value in zip(labels, rates):
+            value = value.strip().removesuffix('%').replace('−', '-')
+            if value in ('-', '', '−'):
+                continue
+            if not re.fullmatch(r'-?\d+(?:\.\d+)?', value):
+                raise ValueError('Unexpected ECB policy rate format')
+            result.append(fact('macro', 'macro:ECB:' + label, 'policyRate', decimal(value),
+                as_of, 'percent', 'EUR', series=label, dateBasis='effective_date', authority='ECB'))
+    days = sorted({r['asOfDate'] for r in result}, reverse=True)[:config.get('maxEffectiveDates', 30)]
+    result = [r for r in result if r['asOfDate'] in days]
+    if not result or not any(r['qualifiers']['series'] == 'depositFacility' for r in result):
+        raise ValueError('ECB policy rate table not found')
+    return result
+
+
 PARSERS = {'nasdaq-directory': nasdaq, 'ishares-holdings': holdings,
-           'ishares-profile': fund_page, 'ecb-fx': fx, 'sec-submissions': filings}
+           'ishares-profile': fund_page, 'ecb-fx': fx, 'sec-submissions': filings,
+           'sec-companyfacts': companyfacts, 'ecb-policy-rates': policy_rates}

@@ -134,7 +134,7 @@ class PipelineTests(unittest.TestCase):
             collect(store, config, transport=lambda *_: response(xml()), now=NOW)
             target = root / 'blocked'
             with self.assertRaisesRegex(ValueError, 'not approved'):
-                export_candidate(store, config, ['fx'], target, public=True)
+                export_candidate(store, config, ['fx'], target, public=True, now=NOW)
             self.assertFalse(target.exists())
             manifest = export_candidate(store, config, ['fx'], root / 'candidate')
             self.assertEqual(manifest['kind'], 'private_review_candidate')
@@ -157,13 +157,13 @@ class PipelineTests(unittest.TestCase):
             collect(store, config, transport=lambda *_: response(xml()), now=NOW)
             config['sources'][0]['publicDisplay'] = 'approved'
             with self.assertRaisesRegex(ValueError, 'revalidated'):
-                export_candidate(store, config, ['fx'], root / 'stale-config', public=True)
+                export_candidate(store, config, ['fx'], root / 'stale-config', public=True, now=NOW)
             collect(store, config, transport=lambda *_: self.fail('Unnecessary HTTP'), now=NOW)
             result = export_candidate(store, config, ['fx'], root / 'approved', public=True, now=NOW)
             self.assertEqual(result['kind'], 'public_candidate')
             collect(store, config, transport=lambda *_: {'status': 503}, now=NOW + timedelta(days=1))
             with self.assertRaisesRegex(ValueError, 'revalidated|quality'):
-                export_candidate(store, config, ['fx'], root / 'failed-source', public=True)
+                export_candidate(store, config, ['fx'], root / 'failed-source', public=True, now=NOW + timedelta(days=1))
 
 
 class ParserTests(unittest.TestCase):

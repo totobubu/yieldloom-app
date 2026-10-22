@@ -67,7 +67,63 @@ test('dashboard loader reads holdings and ledger through its real entry point', 
     }
 });
 
-async function dashboardWith(getDocs, tag) {
+test('concurrent dashboard loads for one owner share their Firestore reads', async () => {
+    let assetReads = 0,
+        transactionReads = 0;
+    const pending = deferred();
+    const loader = await dashboardModule(async (path) => {
+        if (path === 'portfolios/owner/assets') {
+            assetReads++;
+            await pending.promise;
+            return holdingSnapshot;
+        }
+        if (path === 'portfolios/owner/assets/A/transactions') {
+            transactionReads++;
+            return { empty: false, docs: [] };
+        }
+        if (path === 'adminPortfolios/owner/assets') return { docs: [] };
+        throw new Error(path);
+    }, 'shared-dashboard');
+    const first = loader.loadPortfolioDashboard('owner');
+    const second = loader.loadPortfolioDashboard('owner');
+    pending.resolve();
+    await Promise.all([first, second]);
+    assert.equal(assetReads, 1);
+    assert.equal(transactionReads, 1);
+});
+
+test('transaction subcollection reads use bounded concurrency', async () => {
+    let active = 0,
+        peak = 0;
+    const assets = Array.from({ length: 14 }, (_, index) => ({
+        id: `A${index}`,
+        data: () => ({ symbol: `T${index}`, portfolioPriority: 'current' }),
+    }));
+    const loader = await dashboardModule(async (path) => {
+        if (path === 'portfolios/owner/assets') return { docs: assets };
+        if (path.startsWith('portfolios/owner/assets/')) {
+            active++;
+            peak = Math.max(peak, active);
+            await new Promise((resolve) => setImmediate(resolve));
+            active--;
+            return { empty: false, docs: [] };
+        }
+        if (path === 'adminPortfolios/owner/assets') return { docs: [] };
+        throw new Error(path);
+    }, 'bounded-dashboard');
+    await loader.loadPortfolioDashboard('owner');
+    assert.equal(peak, 6);
+});
+
+const deferred = () => {
+    let resolve;
+    const promise = new Promise((yes) => {
+        resolve = yes;
+    });
+    return { promise, resolve };
+};
+
+async function dashboardModule(getDocs, tag) {
     const source = (
         await readFile(
             new URL('../src/services/portfolio.js', import.meta.url),
@@ -88,10 +144,15 @@ async function dashboardWith(getDocs, tag) {
         const module = await import(
             `data:text/javascript;base64,${Buffer.from(prelude + source + '\n//' + tag).toString('base64')}`
         );
-        return await module.loadPortfolioDashboard('owner');
+        return module;
     } finally {
         delete globalThis.__portfolioFixture;
     }
+}
+
+async function dashboardWith(getDocs, tag) {
+    const module = await dashboardModule(getDocs, tag);
+    return module.loadPortfolioDashboard('owner');
 }
 const holdingSnapshot = {
     docs: [

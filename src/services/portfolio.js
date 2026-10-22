@@ -3,6 +3,24 @@ import { db } from './firebaseClient';
 import { summarizePortfolio } from './portfolioSummary';
 import { apiUrl } from './apiUrl.js';
 
+const TRANSACTION_READ_CONCURRENCY = 6;
+const pendingDashboards = new Map();
+
+async function mapWithConcurrency(items, limit, work) {
+    const results = new Array(items.length);
+    let next = 0;
+    async function worker() {
+        while (next < items.length) {
+            const index = next++;
+            results[index] = await work(items[index], index);
+        }
+    }
+    await Promise.all(
+        Array.from({ length: Math.min(limit, items.length) }, () => worker())
+    );
+    return results;
+}
+
 export async function loadPortfolioAssets(uid) {
     if (!db || !uid) return [];
     let snapshot;
@@ -54,12 +72,14 @@ export async function loadPortfolioAsset(uid, ticker) {
     );
 }
 
-export async function loadPortfolioDashboard(uid) {
+async function fetchPortfolioDashboard(uid) {
     const assets = await loadPortfolioAssets(uid);
     if (!db || !uid) return summarizePortfolio([]);
     const warnings = [];
-    const withTransactions = await Promise.all(
-        assets.map(async (asset) => {
+    const withTransactions = await mapWithConcurrency(
+        assets,
+        TRANSACTION_READ_CONCURRENCY,
+        async (asset) => {
             try {
                 return {
                     ...asset,
@@ -72,7 +92,7 @@ export async function loadPortfolioDashboard(uid) {
                 });
                 return { ...asset, transactions: [], ledgerUnavailable: true };
             }
-        })
+        }
     );
     // Legacy migrations sometimes copied only holdings. Read the owner's old ledger
     // when the active store has no rows, without writing or fabricating transactions.
@@ -84,8 +104,10 @@ export async function loadPortfolioDashboard(uid) {
             const legacy = await getDocs(
                 collection(db, 'adminPortfolios', uid, 'assets')
             );
-            const legacyAssets = await Promise.all(
-                legacy.docs.map(async (item) => {
+            const legacyAssets = await mapWithConcurrency(
+                legacy.docs,
+                TRANSACTION_READ_CONCURRENCY,
+                async (item) => {
                     const asset = { ...item.data(), id: item.id };
                     return {
                         ...asset,
@@ -95,7 +117,7 @@ export async function loadPortfolioDashboard(uid) {
                             'adminPortfolios'
                         ),
                     };
-                })
+                }
             );
             for (const old of legacyAssets) {
                 const current = withTransactions.find(
@@ -121,6 +143,18 @@ export async function loadPortfolioDashboard(uid) {
         dashboard.summary.historicalCount = null;
     }
     return { ...dashboard, warnings };
+}
+
+export function loadPortfolioDashboard(uid) {
+    if (!db || !uid) return Promise.resolve(summarizePortfolio([]));
+    const existing = pendingDashboards.get(uid);
+    if (existing) return existing;
+    const request = fetchPortfolioDashboard(uid).finally(() => {
+        if (pendingDashboards.get(uid) === request)
+            pendingDashboards.delete(uid);
+    });
+    pendingDashboards.set(uid, request);
+    return request;
 }
 
 export async function previewTossStatement(user, file, password) {

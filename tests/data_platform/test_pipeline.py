@@ -226,3 +226,34 @@ Ticker,Name,Asset Class,Weight (%),Quantity,Market Value,Notional Value,Market C
         config = load_registry()
         self.assertTrue(any(s.get('blockedReason') for s in config['sources'] if not s.get('enabled')))
         self.assertEqual(config['datasets']['distributions']['state'], 'existing_authoritative_pipeline')
+
+    def test_bond_positions_keep_distinct_maturities_and_par_values(self):
+        text = '''Bond Fund
+Fund Holdings as of,"Oct 20, 2026"
+Ticker,Name,Asset Class,Weight (%),Par Value,Market Value,Notional Value,Market Currency,Maturity,Coupon (%)
+TREASURY,US TREASURY,Bond,2.00,100.00,99.00,99.00,USD,2030-01-01,3.00
+TREASURY,US TREASURY,Bond,1.00,100.00,98.00,98.00,USD,2031-01-01,3.00
+'''
+        rows = holdings(text.encode(), {'fundName': 'Bond Fund', 'entityId': 'fund:test'})
+        self.assertEqual(len(rows), 2)
+        self.assertNotEqual(rows[0]['qualifiers']['rowKey'], rows[1]['qualifiers']['rowKey'])
+        self.assertEqual(rows[0]['value']['Par Value'], '100.00')
+        bonds = text.replace('Ticker,Name,', 'ISIN,Name,').replace('TREASURY,US TREASURY,', 'US1234567890,US TREASURY,')
+        rows = holdings(bonds.encode(), {'fundName': 'Bond Fund', 'entityId': 'fund:test'})
+        self.assertEqual(len(rows), 2)
+        without_ticker = '''Bond Fund
+Fund Holdings as of,"Oct 20, 2026"
+Name,Asset Class,Weight (%),Par Value,Market Value,Notional Value,Market Currency,CUSIP,Duration,YTM (%)
+TREASURY NOTE,Fixed Income,0.00,100.00,99.00,99.00,USD,123456789,6.75,-0.50
+'''
+        row = holdings(without_ticker.encode(), {'fundName': 'Bond Fund', 'entityId': 'fund:test'})[0]
+        self.assertEqual(row['value']['Duration'], '6.75')
+        self.assertEqual(row['value']['YTM (%)'], '-0.50')
+
+    def test_cusip_and_sec_ticker_conflicts_are_not_accepted(self):
+        body = b'Fund IVV CUSIP 464287200 NAV as of Oct 21, 2026 $100 Net Assets of Fund $1000 as of Oct 21, 2026'
+        config = {'fundName': 'Fund', 'symbol': 'IVV', 'cusip': 'WRONG'}
+        with self.assertRaisesRegex(ValueError, 'CUSIP'):
+            fund_page(body, config)
+        with self.assertRaisesRegex(ValueError, 'ticker'):
+            filings(json.dumps({'cik': 1, 'tickers': ['OTHER']}).encode(), {'cik': '0000000001', 'symbol': 'AAPL'})

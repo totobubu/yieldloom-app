@@ -163,7 +163,12 @@
                         <li
                             v-for="row in holdings.observations"
                             :key="row.qualifiers.rowKey">
-                            {{ row.value.Name }} ({{ row.value.Ticker }}) ·
+                            {{ row.value.Name }} ({{
+                                row.value.Ticker ||
+                                row.value.ISIN ||
+                                row.value.CUSIP ||
+                                '식별자 미제공'
+                            }}) ·
                             {{ weight(row.value['Weight (%)']) }}
                         </li>
                     </ul>

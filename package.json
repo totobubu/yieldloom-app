@@ -66,7 +66,8 @@
         "core:cutover:check": "python scripts/data_v2/check_cutover.py",
         "data:registry": "python scripts/data_platform/pipeline.py registry",
         "data:collect": "python scripts/data_platform/pipeline.py collect",
-        "data:export-candidate": "python scripts/data_platform/pipeline.py export"
+        "data:export-candidate": "python scripts/data_platform/pipeline.py export",
+        "data:quality": "python scripts/data_platform/pipeline.py quality"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.1149.0",

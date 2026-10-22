@@ -260,7 +260,7 @@ def collect(store, registry, selected=None, transport=fetch, now=None, force=Fal
     return result
 
 
-def export_candidate(store, registry, datasets, output, public=False):
+def export_candidate(store, registry, datasets, output, public=False, now=None):
     if not datasets or not set(datasets) <= registry['datasets'].keys():
         raise ValueError('Select known datasets')
     output = private_path(output)
@@ -269,6 +269,7 @@ def export_candidate(store, registry, datasets, output, public=False):
     sources = {s['id']: s for s in registry['sources']}
     records = {dataset: [] for dataset in datasets}
     source_versions = {}
+    quality = None
     for state in store.db.execute('SELECT source_id,payload FROM state'):
         current = json.loads(state['payload'])
         for identifier in current.get('currentObservationIds', []):
@@ -277,6 +278,13 @@ def export_candidate(store, registry, datasets, output, public=False):
                 continue
             if public and sources.get(state['source_id'], {}).get('publicDisplay') != 'approved':
                 raise ValueError(f"Public use not approved: {state['source_id']}")
+            if public:
+                from scripts.data_platform.quality import evaluate, publication_errors
+                if quality is None:
+                    quality = {r['sourceId']: r for r in evaluate(store, registry, now=now)['sources']}
+                issues = publication_errors(quality[state['source_id']], set(datasets) & set(sources[state['source_id']]['datasets']))
+                if issues:
+                    raise ValueError(f"Publication quality failed: {state['source_id']}: {','.join(issues)}")
             source_versions[state['source_id']] = {
                 key: current.get(key) for key in ('fingerprint', 'parserVersion', 'sourceDocumentId',
                     'lastSuccessAt', 'lastCheckedAt', 'failureCount', 'lastError', 'asOfDates')}
@@ -309,7 +317,7 @@ def export_candidate(store, registry, datasets, output, public=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['collect', 'export', 'registry'])
+    parser.add_argument('command', choices=['collect', 'export', 'registry', 'quality'])
     parser.add_argument('--registry', type=Path, default=REGISTRY)
     parser.add_argument('--root', type=Path, default=DEFAULT_ROOT)
     parser.add_argument('--source', action='append')
@@ -325,6 +333,14 @@ def main():
     with writer_lock(private_path(args.root)):
         store = Store(args.root)
         try:
+            if args.command == 'quality':
+                from scripts.data_platform.quality import evaluate
+                result = evaluate(store, registry)
+                target = private_path(args.output or args.root / 'review' / 'quality.json')
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(encode(result) + '\n')
+                print(encode(result))
+                return int(any(r['errors'] for r in result['sources']))
             if args.command == 'collect':
                 result = collect(store, registry, args.source, force=args.force)
                 print(encode(result))

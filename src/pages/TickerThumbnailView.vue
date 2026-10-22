@@ -32,6 +32,7 @@
     import StockHoldingPanel from '@/components/stock/StockHoldingPanel.vue';
     import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
+    import DividendRocHistory from '@/components/stock/DividendRocHistory.vue';
     import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
     import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
     import { getAssetUrl } from '@/utils/dataUrl';
@@ -1184,44 +1185,6 @@
                                     today()
                                 "
                                 :currency="selectedInfo.currency || 'USD'" />
-                            <h2 v-if="dividendState === 'available'">
-                                배당 이력
-                            </h2>
-                            <p
-                                v-if="dividendState === 'available'"
-                                class="hint">
-                                배당락일 기준 · 주당 세전
-                                {{ selectedInfo.currency }} ·
-                                {{ historyRows.length }}회 수집
-                            </p>
-                            <DataTable
-                                v-if="dividendState === 'available'"
-                                :value="historyRows"
-                                class="stock-data-table"
-                                striped-rows
-                                paginator
-                                :rows="12"
-                                :page-link-size="3"
-                                paginator-template="PrevPageLink PageLinks NextPageLink"
-                                :table-props="{ 'aria-label': '배당 이력' }"
-                                ><Column
-                                    field="date"
-                                    header="배당락일" /><Column
-                                    header="주당 배당금 · 세전"
-                                    ><template #body="{ data }"
-                                        >{{ displayNumber(amount(data), 6) }}
-                                        {{ selectedInfo.currency }}</template
-                                    ></Column
-                                ></DataTable
-                            >
-                            <p
-                                v-if="
-                                    dividendState === 'available' &&
-                                    !historyRows.length
-                                "
-                                class="hint">
-                                확인 가능한 배당 이력이 없습니다.
-                            </p>
                             <p
                                 v-if="
                                     !archived && dividendState === 'available'
@@ -1235,7 +1198,24 @@
                             v-if="activeTab === 'dividends'"
                             class="stock-insights">
                             <SecurityInsights
-                                :symbol="normalize(route.params.ticker)" />
+                                :symbol="normalize(route.params.ticker)">
+                                <template
+                                    #history="{
+                                        observations,
+                                        loading: insightsLoading,
+                                        failed,
+                                    }">
+                                    <DividendRocHistory
+                                        :key="normalize(route.params.ticker)"
+                                        :history="historyRows"
+                                        :observations="observations"
+                                        :currency="
+                                            selectedInfo.currency || 'USD'
+                                        "
+                                        :loading="insightsLoading"
+                                        :failed="failed" />
+                                </template>
+                            </SecurityInsights>
                         </div> </TabPanel
                     ><TabPanel v-if="!archived" value="share">
                         <section class="share-workspace stock-section">

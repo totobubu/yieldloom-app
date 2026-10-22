@@ -34,9 +34,22 @@
         70 + ((index + 0.5) * 820) / Math.max(series.value.length, 1);
     const moneyY = (value) => 260 - (Number(value) / maximum.value) * 220;
     const ratioY = (value) => 260 - (Number(value) / ratioMaximum.value) * 220;
-    const barWidth = computed(() =>
-        Math.min(22, 240 / Math.max(series.value.length, 1))
-    );
+    function linePath(field, y) {
+        let connected = false;
+        return series.value
+            .map((row, index) => {
+                const value = numeric(row[field]);
+                if (value == null) {
+                    connected = false;
+                    return '';
+                }
+                const command = connected ? 'L' : 'M';
+                connected = true;
+                return `${command}${x(index)},${y(value)}`;
+            })
+            .filter(Boolean)
+            .join(' ');
+    }
     const current = computed(
         () =>
             series.value.find((row) => row.id === selected.value) ||
@@ -69,7 +82,7 @@
                 v-if="series.length"
                 viewBox="0 0 960 315"
                 role="group"
-                aria-label="주당 분배금과 ROC 금액 막대 및 ROC 비율 차트">
+                aria-label="주당 분배금·ROC 금액·ROC 비율 라인 차트">
                 <text x="14" y="18" class="axis-title">
                     {{ currency }} · 주당 세전
                 </text>
@@ -88,6 +101,18 @@
                         {{ Number(((ratioMaximum * tick) / 4).toFixed(1)) }}%
                     </text>
                 </g>
+                <path
+                    :d="linePath('distributionAmount', moneyY)"
+                    class="distribution-line"
+                    aria-hidden="true" />
+                <path
+                    :d="linePath('rocAmount', moneyY)"
+                    class="roc-line"
+                    aria-hidden="true" />
+                <path
+                    :d="linePath('rocPercent', ratioY)"
+                    class="ratio-line"
+                    aria-hidden="true" />
                 <g
                     v-for="(row, index) in series"
                     :key="row.id"
@@ -108,24 +133,18 @@
                         height="230"
                         class="chart-hit"
                         :class="{ active: current?.id === row.id }" />
-                    <rect
+                    <circle
                         v-if="numeric(row.distributionAmount) != null"
-                        :x="x(index) - barWidth"
-                        :y="moneyY(row.distributionAmount)"
-                        :width="barWidth"
-                        :height="
-                            Math.max(1, 260 - moneyY(row.distributionAmount))
-                        "
-                        rx="3"
-                        class="distribution-bar" />
-                    <rect
+                        :cx="x(index)"
+                        :cy="moneyY(row.distributionAmount)"
+                        r="4"
+                        class="distribution-point" />
+                    <circle
                         v-if="numeric(row.rocAmount) != null"
-                        :x="x(index) + 2"
-                        :y="moneyY(row.rocAmount)"
-                        :width="barWidth"
-                        :height="Math.max(1, 260 - moneyY(row.rocAmount))"
-                        rx="3"
-                        class="roc-bar" />
+                        :cx="x(index)"
+                        :cy="moneyY(row.rocAmount)"
+                        r="4"
+                        class="roc-point" />
                     <circle
                         v-if="numeric(row.rocPercent) != null"
                         :cx="x(index)"
@@ -156,7 +175,8 @@
         </p>
         <p class="chart-note">
             표의 현재 페이지와 같은 지급 내역입니다. 비어 있는 금액·비율은 0으로
-            그리지 않습니다. 막대 또는 점을 선택하면 값을 확인할 수 있습니다.
+            그리지 않으며 해당 구간의 선도 연결하지 않습니다. 점을 선택하면 값을
+            확인할 수 있습니다.
         </p>
     </div>
 </template>
@@ -174,29 +194,59 @@
         gap: 6px;
     }
     .chart-legend i {
-        width: 10px;
-        height: 10px;
+        width: 18px;
+        height: 0;
         display: inline-block;
-        border-radius: 2px;
+        border-top: 3px solid;
     }
-    .distribution-key,
-    .distribution-bar {
-        background: var(--app-accent);
+    .chart-legend .distribution-key {
+        border-color: var(--app-accent);
+    }
+    .chart-legend .roc-key {
+        border-color: #0d9488;
+        border-top-style: dashed;
+    }
+    .chart-legend .ratio-key {
+        border-color: #9333ea;
+        border-top-style: dotted;
+    }
+    .distribution-point {
         fill: var(--app-accent);
     }
-    .roc-key,
-    .roc-bar {
-        background: #0d9488;
+    .roc-point {
         fill: #0d9488;
     }
-    .ratio-key,
     .ratio-point {
-        background: #9333ea;
         fill: #9333ea;
-        border-radius: 50%;
+    }
+    .distribution-line,
+    .roc-line,
+    .ratio-line {
+        fill: none;
+        stroke-width: 2.5;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+        pointer-events: none;
+    }
+    .distribution-line {
+        stroke: var(--app-accent);
+    }
+    .roc-line {
+        stroke: #0d9488;
+        stroke-dasharray: 7 4;
+    }
+    .ratio-line {
+        stroke: #9333ea;
+        stroke-dasharray: 2 5;
     }
     :global(.p-dark) .ratio-point {
         fill: #d8b4fe;
+    }
+    :global(.p-dark) .ratio-line {
+        stroke: #d8b4fe;
+    }
+    :global(.p-dark) .ratio-key {
+        border-color: #d8b4fe;
     }
     .chart-scroll {
         overflow-x: auto;
@@ -222,7 +272,8 @@
         fill: transparent;
     }
     .chart-hit.active {
-        fill: var(--app-surface-muted);
+        stroke: var(--app-border);
+        stroke-dasharray: 4 3;
     }
     .chart-payment {
         cursor: pointer;

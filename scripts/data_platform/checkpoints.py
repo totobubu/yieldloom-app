@@ -69,6 +69,26 @@ class R2Objects:
             raise
 
 
+    def inventory(self, prefix, limit=100000):
+        entries = []
+        for page in self.client.get_paginator('list_objects_v2').paginate(Bucket=BUCKET, Prefix=prefix):
+            for row in page.get('Contents', []):
+                entries.append({'key': row['Key'], 'etag': row['ETag'], 'bytes': row['Size'],
+                                'modifiedAt': row['LastModified'].isoformat()})
+                if len(entries) > limit:
+                    raise ValueError('Remote inventory limit exceeded; no deletion is allowed')
+        return entries
+
+    def delete(self, key, expected):
+        # Maintenance additionally serializes writers and validates a reviewed inventory.
+        try:
+            return self.client.delete_object(Bucket=BUCKET, Key=key, IfMatch=expected)
+        except self.client.exceptions.ClientError as error:
+            if error.response['Error']['Code'] in ('PreconditionFailed', '412', 'ConditionalRequestConflict', '409'):
+                raise ConditionalConflict('Conditional delete conflict') from error
+            raise
+
+
 def current(remote):
     try:
         body, etag = remote.get(f'{PREFIX}/current.json')
@@ -113,6 +133,17 @@ def check_collection(path, references=None):
 
 
 def backup(store, remote, expected_etag, run_id, previous=None):
+    if not re.fullmatch('[A-Za-z0-9._-]+', run_id):
+        raise ValueError('Invalid run ID')
+    from scripts.data_platform.remote_lock import remote_writer
+    with remote_writer(remote, 'checkpoint'):
+        _, actual = current(remote)
+        if actual != expected_etag:
+            raise ConditionalConflict('Checkpoint pointer conflict before backup')
+        return _backup(store, remote, expected_etag, run_id, previous)
+
+
+def _backup(store, remote, expected_etag, run_id, previous=None):
     if not re.fullmatch('[A-Za-z0-9._-]+', run_id):
         raise ValueError('Invalid run ID')
     # Only reuse descriptors from the manifest verified during this run's restore.
@@ -194,6 +225,35 @@ def restore(remote, output, pointer=None, lazy_raw=False):
         raise ValueError('Checkpoint manifest hash mismatch')
     manifest = json.loads(body)
     files = manifest.get('files', [])
+    databases, names = validate_manifest(manifest)
+    version = manifest['schemaVersion']
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=output.parent) as temporary:
+        stage = Path(temporary) / 'restore'
+        stage.mkdir(mode=0o700)
+        for entry in files:
+            if lazy_raw and entry['path'].startswith('raw/'):
+                continue
+            content = read_object(remote, entry)
+            path = stage / entry['path']
+            path.parent.mkdir(exist_ok=True, mode=0o700)
+            path.write_bytes(content)
+        references = check_database(stage / 'observations.sqlite')
+        if version == 2:
+            check_collection(stage / 'collection.sqlite', references)
+            with sqlite3.connect(stage / 'observations.sqlite') as db:
+                if db.execute('PRAGMA user_version').fetchone()[0] != 2:
+                    raise ValueError('Unsupported split checkpoint database version')
+                if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name IN ('state','cache')").fetchone():
+                    raise ValueError('Split checkpoint embeds legacy collection state')
+        if {'raw/' + value for value in references} != names - databases:
+            raise ValueError('Checkpoint raw coverage mismatch')
+        stage.rename(output)
+    return manifest
+
+
+def validate_manifest(manifest):
+    files = manifest.get('files', [])
     version = manifest.get('schemaVersion')
     databases = {'observations.sqlite', 'collection.sqlite'} if version == 2 else {'observations.sqlite'}
     if version not in (1, 2) or not files or len(files) > MAX_FILES:
@@ -220,29 +280,7 @@ def restore(remote, output, pointer=None, lazy_raw=False):
         raise ValueError('Checkpoint has no required database')
     if sum(entry.get('uncompressedBytes', entry['bytes']) for entry in files) > MAX_TOTAL_BYTES:
         raise ValueError('Checkpoint exceeds supported restore budget')
-    output.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(dir=output.parent) as temporary:
-        stage = Path(temporary) / 'restore'
-        stage.mkdir(mode=0o700)
-        for entry in files:
-            if lazy_raw and entry['path'].startswith('raw/'):
-                continue
-            content = read_object(remote, entry)
-            path = stage / entry['path']
-            path.parent.mkdir(exist_ok=True, mode=0o700)
-            path.write_bytes(content)
-        references = check_database(stage / 'observations.sqlite')
-        if version == 2:
-            check_collection(stage / 'collection.sqlite', references)
-            with sqlite3.connect(stage / 'observations.sqlite') as db:
-                if db.execute('PRAGMA user_version').fetchone()[0] != 2:
-                    raise ValueError('Unsupported split checkpoint database version')
-                if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name IN ('state','cache')").fetchone():
-                    raise ValueError('Split checkpoint embeds legacy collection state')
-        if {'raw/' + value for value in references} != names - databases:
-            raise ValueError('Checkpoint raw coverage mismatch')
-        stage.rename(output)
-    return manifest
+    return databases, names
 
 
 def read_object(remote, entry):

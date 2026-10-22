@@ -130,7 +130,7 @@ DB 스냅샷은 결정적인 gzip(`mtime=0`)으로 압축하며 압축 전후 �
 복원은 압축 해제 크기를 제한하고 두 해시를 검증한다. 이전 v1의 압축·비압축 백업도
 복원할 수 있다. 기존 단일 DB는 열 때 상태·캐시를 별도 DB로 원자적으로 이관하고,
 다음 정기 실행은 외부 자료의 수집 주기가 아니어도 v2 백업을 한 번 생성한다.
-이전 원격 객체는 삭제하지 않으므로 기존 복구 지점도 유지된다.
+이전 원격 객체는 백업 과정에서 삭제하지 않는다. 별도 보존 정책은 아래 유지보수 절을 따른다.
 포인터는 실행 시작 시 확보한 ETag로 조건부 갱신하여 오래된 실행의 덮어쓰기를 막는다.
 R2 조건부 쓰기 근거: https://developers.cloudflare.com/r2/api/s3/extensions/#conditional-operations-in-putobject
 
@@ -147,8 +147,7 @@ python scripts/data_platform/checkpoints.py restore --root var/data-platform-res
 ```
 
 복원은 manifest·객체 크기와 해시·SQLite 무결성·원문 전체 포함 여부를 검증한 뒤
-디렉터리를 노출한다. 실패 시 기존 디렉터리를 덮어쓰지 않는다. 원격 삭제·자동 보존기간은
-설정하지 않는다. 현재 실행 환경에는 전용 S3 자격증명이 없고 GitHub secrets 관리 API는
+디렉터리를 노출한다. 실패 시 기존 디렉터리를 덮어쓰지 않는다. 자동 삭제는 활성화하지 않는다. 현재 실행 환경에는 전용 S3 자격증명이 없고 GitHub secrets 관리 API는
 403으로 거절되어, 실제 원격 업로드·복원은 아직 미확인이다. 메모리 원격 저장소를 통한
 왕복 복원·업로드 실패·조건부 쓰기 충돌·손상 파일 검증은 통과했다.
 첫 체크포인트 형식은 파일당 512 MiB, 전체 2 GiB, 파일 50,000개까지 지원한다.
@@ -219,7 +218,7 @@ SDK 내부 재시도 횟수는 아니다. 외부 출처 HTTP 요청과 R2 요청
 읽기를 포함한다. 업로드 절감률을 전체 전송량 절감률로 해석하지 않는다.
 
 현재도 새 실행은 관측 DB 전체를 다운로드한다. 관측 데이터 분할·304 재파싱 생략·
-보존기간 정책은 추가 확장 작업이다. 앱 공개 데이터의 캐시·CDN 원본 호출률은
+보존기간 정책은 별도 유지보수 명령으로 제공한다. 앱 공개 데이터의 캐시·CDN 원본 호출률은
 이번 변경 범위에 포함하지 않는다. v2 이관 뒤에는 두 파일과 새 복원 코드를 함께 사용한다.
 이전 코드로 v2를 읽는 다운그레이드는 지원하지 않으며, 필요하면 보존된 v1 복구 지점을 사용한다.
 
@@ -424,3 +423,40 @@ GitHub `data-production` 환경에 `DATA_PRIVATE_R2_ACCOUNT_ID`, `DATA_PRIVATE_R
 현재 연결의 secrets 관리 API는 403이라 에이전트가 등록하지 못했다. 값은 채팅·Git·로그로
 전달하지 않는다. 이후 전용 자격증명을 사용하는 최초 bootstrap과 새 환경 복원을 확인해야 한다.
 `work` ship은 운영 `main` 승격이나 스케줄 활성화를 포함하지 않는다.
+
+
+## 비공개 백업 보존·복구 점검
+
+`retention.py`는 기본 30일·최소 최근 7개 스냅샷·7일 유예 기간을 적용하는 **삭제 계획**만
+생성한다. 현재·핀 지정 manifest와 그 참조 객체를 보호하며, 원문 역사도 현재 manifest가
+참조하면 삭제하지 않는다. 인벤토리 10만 개 초과·손상 manifest·참조 누락은 중단한다.
+대상은 내용 주소 manifest/objects로 제한하며 알 수 없는 키는 보호한다.
+
+```sh
+python scripts/data_platform/retention.py --output var/data-platform-review/retention.json
+# 위 명령의 planSha256과 비공개 계획의 삭제 대상을 확인한 후에만 사용
+python scripts/data_platform/retention.py --apply-plan var/data-platform-review/retention.json --plan-sha256 REVIEWED_SHA256
+python scripts/data_platform/operations.py drill
+```
+
+적용은 24시간 이내의 정확한 계획 해시를 요구하고 원격 인벤토리·포인터를 재검증한다.
+실제 데이터 삭제 전에 임시 UUID 객체로 잘못된 ETag의 PUT/DELETE가 거절되는지 확인한다.
+R2 조건부 DELETE의 실환경 지원은 아직 미확인이며, 거절 보장이 없으면 삭제를 중단한다.
+실패한 점검의 임시 probe가 남아도 보존 정리는 이를 삭제하지 않는다.
+복구 점검은 모든 원문·압축 DB를 새 임시 경로로 완전히 복원하고 해시·SQLite 무결성을
+검증한 뒤 로컬 복원물을 제거한다. 빈 버킷은 연결 점검만 통과하며 복원 완료로 표시하지 않는다.
+
+백업·정리·복구 점검은 `platform/v1/writer.json`의 조건부 원격 쓰기 잠금을 공유한다.
+체크포인트가 실제 생성될 때만 잠금 GET 2회·PUT 2회가 추가된다. 수집 주기가 아닌 실행은
+기존 GET 4회·PUT 0회를 유지한다. 임의 만료·잠금 탈취는 하지 않는다. 중단 후 잠금이 남으면
+모든 쓰기 작업이 종료됐는지 확인하고 다음 명령에서 읽은 owner/ETag로만 복구한다.
+
+```sh
+python scripts/data_platform/operations.py inspect-writer
+python scripts/data_platform/operations.py recover-writer --writer-stopped --expected-owner INSPECTED_OWNER --expected-etag INSPECTED_ETAG
+```
+
+`maintain-data-platform.yml`은 수동 복구 점검과 선택적인 삭제 계획 계산만 제공한다.
+수집 workflow와 동일한 concurrency를 사용하고 비공개 원문·DB·상세 계획은 artifact로 올리지 않는다.
+스케줄 삭제와 Actions 삭제 입력은 제공하지 않는다. 새 workflow 수동 등록은 기본 브랜치 반영 후
+가능하다. 현재 전용 S3 secrets가 없어 실제 R2 왕복·삭제 조건·복구 성공은 아직 확인하지 못했다.

@@ -1060,13 +1060,7 @@
                                 수집 이력은 실제 보유 기간과 다를 수 있습니다.
                                 미확인 수치는 0으로 간주하지 않습니다.
                             </p>
-                        </section>
-                        <div
-                            v-show="activeTab === 'details'"
-                            class="stock-insights">
-                            <SecurityInsights
-                                :symbol="normalize(route.params.ticker)" />
-                        </div> </TabPanel
+                        </section> </TabPanel
                     ><TabPanel value="prices">
                         <section
                             v-if="activeTab === 'prices'"
@@ -1236,7 +1230,13 @@
                                 공시 전 일정은 추정치입니다. 개인별 수령액은
                                 보유 수량과 세금에 따라 다릅니다.
                             </p>
-                        </section> </TabPanel
+                        </section>
+                        <div
+                            v-if="activeTab === 'dividends'"
+                            class="stock-insights">
+                            <SecurityInsights
+                                :symbol="normalize(route.params.ticker)" />
+                        </div> </TabPanel
                     ><TabPanel v-if="!archived" value="share">
                         <section class="share-workspace stock-section">
                             <div class="section-heading">

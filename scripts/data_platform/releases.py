@@ -81,7 +81,7 @@ def build(store, registry, dataset, release_id, output, now=None):
         symbols = {r['symbol']: 'instrument:isin:' + r['isin'] for r in catalog
                    if r.get('isin') and 'instrument:isin:' + r['isin'] in entities}
         result = {'schemaVersion': 1, 'releaseId': release_id, 'dataset': dataset,
-                  'createdAt': datetime.now(timezone.utc).isoformat(), 'files': files,
+                  'createdAt': (now or datetime.now(timezone.utc)).isoformat(), 'files': files,
                   'entities': entities, 'symbols': symbols, 'policies': manifest['policies'],
                   'inputVersions': manifest['sourceVersions']}
         write_json(stage, 'manifest.json', result)
@@ -133,6 +133,8 @@ def publish(output, remote):
 def rollback(remote, dataset, target_release, expected_current, registry, now=None):
     if not re.fullmatch('[a-z][a-z0-9-]*', dataset):
         raise ValueError('Invalid dataset')
+    if any(not re.fullmatch('[A-Za-z0-9][A-Za-z0-9._-]*', value) for value in (target_release, expected_current)):
+        raise ValueError('Invalid rollback release ID')
     key = f'datasets/{dataset}/current.json'
     body, etag = remote.get(key)
     pointer = json.loads(body)

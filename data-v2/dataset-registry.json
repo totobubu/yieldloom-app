@@ -56,19 +56,33 @@
         },
         "financials": {
             "owner": "issuer-data",
-            "state": "taxonomy_period_and_authentication_contract_required"
+            "state": "pilot_collection",
+            "fields": [
+                "revenue",
+                "netIncome",
+                "operatingCashFlow",
+                "assets",
+                "liabilities",
+                "cash",
+                "capitalExpenditure",
+                "dividendsPaid",
+                "equity"
+            ]
         },
         "exposures": {
             "owner": "fund-data",
-            "state": "position_coverage_and_method_contract_required"
+            "state": "private_derived_candidate",
+            "managedBy": "scripts/data_platform/analytics.py"
         },
         "macro": {
             "owner": "reference-data",
-            "state": "series_and_vintage_contract_required"
+            "state": "pilot_collection",
+            "fields": ["policyRate"]
         },
         "analytics": {
             "owner": "analytics",
-            "state": "input_release_vector_required"
+            "state": "private_derived_candidate",
+            "managedBy": "scripts/data_platform/analytics.py"
         }
     },
     "sources": [
@@ -325,6 +339,64 @@
             "policyId": "sec-public-information",
             "symbol": "NVDA",
             "minHostIntervalSeconds": 1
+        },
+        {
+            "id": "sec-aapl-companyfacts",
+            "enabled": true,
+            "datasets": ["financials"],
+            "parser": "sec-companyfacts",
+            "parserVersion": "2",
+            "url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json",
+            "cik": "0000320193",
+            "symbol": "AAPL",
+            "maxObservationsPerConcept": 60,
+            "minIntervalSeconds": 86400,
+            "minHostIntervalSeconds": 1,
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information"
+        },
+        {
+            "id": "sec-msft-companyfacts",
+            "enabled": true,
+            "datasets": ["financials"],
+            "parser": "sec-companyfacts",
+            "parserVersion": "2",
+            "url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000789019.json",
+            "cik": "0000789019",
+            "symbol": "MSFT",
+            "maxObservationsPerConcept": 60,
+            "minIntervalSeconds": 86400,
+            "minHostIntervalSeconds": 1,
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information"
+        },
+        {
+            "id": "sec-nvda-companyfacts",
+            "enabled": true,
+            "datasets": ["financials"],
+            "parser": "sec-companyfacts",
+            "parserVersion": "2",
+            "url": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001045810.json",
+            "cik": "0001045810",
+            "symbol": "NVDA",
+            "maxObservationsPerConcept": 60,
+            "minIntervalSeconds": 86400,
+            "minHostIntervalSeconds": 1,
+            "publicDisplay": "approved",
+            "policyId": "sec-public-information"
+        },
+        {
+            "id": "ecb-policy-rates",
+            "enabled": true,
+            "datasets": ["macro"],
+            "parser": "ecb-policy-rates",
+            "parserVersion": "2",
+            "url": "https://www.ecb.europa.eu/stats/policy_and_exchange_rates/key_ecb_interest_rates/html/index.en.html",
+            "maxEffectiveDates": 30,
+            "minIntervalSeconds": 86400,
+            "minHostIntervalSeconds": 1,
+            "publicDisplay": "approved",
+            "policyId": "ecb-public-information"
         }
     ]
 }

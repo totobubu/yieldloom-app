@@ -67,7 +67,9 @@
         "data:registry": "python scripts/data_platform/pipeline.py registry",
         "data:collect": "python scripts/data_platform/pipeline.py collect",
         "data:export-candidate": "python scripts/data_platform/pipeline.py export",
-        "data:quality": "python scripts/data_platform/pipeline.py quality"
+        "data:quality": "python scripts/data_platform/pipeline.py quality",
+        "data:release": "python scripts/data_platform/releases.py",
+        "data:analytics": "python scripts/data_platform/analytics.py"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.1149.0",

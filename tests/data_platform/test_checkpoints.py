@@ -29,6 +29,19 @@ class MemoryObjects:
 
 
 class CheckpointTests(unittest.TestCase):
+    def test_oversized_checkpoint_never_replaces_a_restorable_pointer(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(directory)
+            self.addCleanup(store.close)
+            collect(store, registry(), transport=lambda *_: response(xml()), now=NOW)
+            remote = MemoryObjects()
+            backup(store, remote, None, 'one')
+            before, etag = current(remote)
+            with patch('scripts.data_platform.checkpoints.MAX_FILE_BYTES', 1):
+                with self.assertRaisesRegex(ValueError, 'restore budget'):
+                    backup(store, remote, etag, 'oversized')
+            self.assertEqual(current(remote)[0], before)
+
     def test_roundtrip_preserves_observations_state_and_conditional_http_cache(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

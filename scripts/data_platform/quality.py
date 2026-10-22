@@ -41,7 +41,7 @@ def evaluate(store, config, catalog=None, now=None):
     for source in config['sources']:
         if not source.get('enabled'):
             continue
-        errors, warnings, counts = set(), set(), Counter()
+        errors, warnings, counts, fields = set(), set(), Counter(), Counter()
         identity = source.get('entityId', '')
         if identity.startswith('instrument:isin:'):
             isin = identity.removeprefix('instrument:isin:')
@@ -52,6 +52,7 @@ def evaluate(store, config, catalog=None, now=None):
                 errors.add('catalog_identity_conflict')
         for row in observations(store, source['id']):
             counts[row['dataset']] += 1
+            fields[row['field']] += 1
             if row['field'] in UNITS and row['unit'] != UNITS[row['field']]:
                 errors.add('unit_contract_mismatch')
             if row['unit'].startswith('currency') and not re.fullmatch('[A-Z]{3}', row.get('currency') or ''):
@@ -81,7 +82,7 @@ def evaluate(store, config, catalog=None, now=None):
         if not success or clock - datetime.fromisoformat(success) > timedelta(hours=48):
             warnings.add('collection_stale')
         report.append({'sourceId': source['id'], 'errors': sorted(errors),
-                       'warnings': sorted(warnings), 'counts': dict(counts)})
+                       'warnings': sorted(warnings), 'counts': dict(counts), 'fields': dict(fields)})
     return {'schemaVersion': 1, 'checkedAt': clock.isoformat(), 'sources': report,
             'catalogInvalidIsinCount': sum(not valid_isin(r.get('isin')) for r in catalog),
             'catalogIdentityReview': [{'symbol': r['symbol'], 'reason': 'missing_isin' if not r.get('isin') else 'invalid_isin'}

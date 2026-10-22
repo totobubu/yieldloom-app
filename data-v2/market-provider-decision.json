@@ -1,0 +1,43 @@
+{
+    "schemaVersion": 1,
+    "checkedAt": "2026-10-22",
+    "status": "blocked",
+    "freeSourcesOnly": true,
+    "reason": "No provider in the reviewed set has verified free public redistribution, adjustment coverage and configured access together",
+    "legacyRoutesRetained": 2165,
+    "migrationStarted": false,
+    "candidates": [
+        {
+            "provider": "Yahoo / yfinance",
+            "evidenceUrl": "https://ranaroussi.github.io/yfinance/",
+            "status": "not_selected",
+            "reason": "Documentation identifies personal-use restrictions; production redistribution not established"
+        },
+        {
+            "provider": "Twelve Data",
+            "evidenceUrl": "https://twelvedata.com/terms",
+            "status": "not_selected",
+            "reason": "Internal and external uses have different conditions; free public redistribution not established"
+        },
+        {
+            "provider": "Alpha Vantage",
+            "evidenceUrl": "https://www.alphavantage.co/terms_of_service/",
+            "status": "not_selected",
+            "reason": "API access and endpoint coverage require configuration; free public redistribution not established"
+        },
+        {
+            "provider": "KRX",
+            "evidenceUrl": "https://openapi.krx.co.kr/",
+            "status": "not_selected",
+            "reason": "Service authentication and commercial-use restrictions remain unresolved"
+        }
+    ],
+    "requiredBeforeCutover": [
+        "Free public display and redistribution evidence",
+        "Source access configured",
+        "Historical and incremental coverage",
+        "Explicit currency and adjustment basis",
+        "Split and correction history",
+        "Parallel comparison and rollback validation"
+    ]
+}

@@ -627,7 +627,6 @@
                                     >G</span
                                 ></template
                             ></Button
-                        >
                         ></template
                     >
                     <Button

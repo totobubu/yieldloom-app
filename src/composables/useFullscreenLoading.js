@@ -1,4 +1,4 @@
-import { computed, onScopeDispose, readonly, ref, watch } from 'vue';
+import { computed, onScopeDispose, readonly, ref, toValue, watch } from 'vue';
 
 const loadingTasks = ref(new Map());
 
@@ -12,10 +12,10 @@ export function useFullscreenLoading(source, message) {
     const token = Symbol('fullscreen-loading');
 
     const stop = watch(
-        source,
-        (loading) => {
+        [source, () => toValue(message)],
+        ([loading, currentMessage]) => {
             const tasks = new Map(loadingTasks.value);
-            if (loading) tasks.set(token, message);
+            if (loading) tasks.set(token, currentMessage);
             else tasks.delete(token);
             loadingTasks.value = tasks;
         },

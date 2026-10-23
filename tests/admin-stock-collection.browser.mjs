@@ -125,6 +125,13 @@ try {
             await page
                 .getByText('QLDY 데이터를 수집하고 있습니다.', { exact: true })
                 .waitFor();
+            const loadingDialog = page.locator('.fullscreen-data-loading');
+            assert(await loadingDialog.isVisible());
+            await page.screenshot({
+                path: `/tmp/admin-stock-collection-loading-${width}.png`,
+            });
+            await page.keyboard.press('Escape');
+            assert(await loadingDialog.isVisible());
             assert(await button.isDisabled());
             assert.equal(posts, 1);
             await page.clock.runFor(15050);
@@ -146,6 +153,7 @@ try {
             assert.equal(polls, 3);
             assert.equal(reads, 1);
             assert(await button.isEnabled());
+            await loadingDialog.waitFor({ state: 'hidden' });
             await page.screenshot({
                 path: `/tmp/admin-stock-collection-${width}.png`,
                 fullPage: true,

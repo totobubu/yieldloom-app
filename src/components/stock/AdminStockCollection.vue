@@ -4,12 +4,14 @@
     import { firebaseUser } from '@/services/firebaseClient.js';
     import { isPortfolioAdmin } from '../../../lib/portfolio-admin.js';
     import { stockCollectionRequest } from '@/services/stockCollection.js';
+    import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
     const props = defineProps({ symbol: { type: String, required: true } });
     const emit = defineEmits(['collected']);
     const busy = ref(false),
         message = ref(''),
         error = ref(''),
         receipt = ref(null);
+    useFullscreenLoading(busy, () => message.value);
     let controller;
     const reset = () => {
         controller?.abort();
@@ -41,6 +43,7 @@
         const current = controller;
         busy.value = true;
         error.value = '';
+        message.value = `${symbol} 데이터 수집을 요청하고 있습니다.`;
         try {
             if (!receipt.value) {
                 const result = await stockCollectionRequest(user, symbol, {
@@ -108,7 +111,7 @@
             :disabled="busy"
             @click="collect" />
         <p v-if="error" class="collection-error" role="alert">{{ error }}</p>
-        <p v-else-if="message" role="status">{{ message }}</p>
+        <p v-else-if="message && !busy" role="status">{{ message }}</p>
     </div>
 </template>
 <style scoped>

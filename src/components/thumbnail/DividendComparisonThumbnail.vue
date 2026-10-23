@@ -146,7 +146,7 @@ const rows = computed(() => [
 			</section>
 		</template>
 		<p v-else class="unavailable">
-			최근 실제 배당 데이터를 찾지 못했습니다.
+			공유용으로 검증된 배당 이력을 확인하지 못했습니다.
 		</p>
 		<template #footer>주당 USD 기준 · 수익률은 해당 1회 배당금의 기준 주가
 			대비</template>

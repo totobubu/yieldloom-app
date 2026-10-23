@@ -29,7 +29,7 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 					`${Number(data.exDividendYield).toFixed(2)}%` : '—' }}</b><em>{{ data.referencePriceLabel || '배당락일 종가' }} 기준</em></div>
 			</section>
 		</template>
-		<p v-else class="unavailable">최근 실제 배당 데이터를 찾지 못했습니다.</p>
+		<p v-else class="unavailable">공유용으로 검증된 배당 이력을 확인하지 못했습니다.</p>
 		<section v-if="historyRows.length" class="history">
 			<header><b>최근 3회차 배당금 추이</b><small class="history-legend"><i />과거 <i />이번회차</small></header>
 			<div class="history-cells">

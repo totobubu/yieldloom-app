@@ -1253,6 +1253,24 @@
                                     @click="downloadPublishPackage" />
                             </div>
                             <Message
+                                v-if="
+                                    dividendState === 'available' &&
+                                    !thumbnailData.hasDividend
+                                "
+                                severity="info"
+                                :closable="false">
+                                공유 카드는 검증된 배당 이력만 사용합니다.
+                                배당정보의 배당·ROC 이력에는 검토 중인 공시
+                                자료도 포함될 수 있어 표시 내용이 다를 수
+                                있습니다.
+                                <Button
+                                    label="배당·ROC 이력 확인"
+                                    icon="pi pi-arrow-right"
+                                    text
+                                    size="small"
+                                    @click="selectTab('dividends')" />
+                            </Message>
+                            <Message
                                 v-if="dividendState !== 'available'"
                                 severity="info"
                                 :closable="false">

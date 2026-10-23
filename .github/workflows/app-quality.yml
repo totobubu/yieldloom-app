@@ -50,7 +50,7 @@ jobs:
                   python -m unittest discover -s tests -p 'test_portfolio_csv.py'
                   python -m unittest discover -s tests -p 'test_server_cors.py'
     browser:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         timeout-minutes: 20
         steps:
             - uses: actions/checkout@v4

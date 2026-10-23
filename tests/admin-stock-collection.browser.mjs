@@ -52,7 +52,8 @@ try {
         );
         let reads = 0,
             posts = 0,
-            polls = 0;
+            polls = 0,
+            simulateFailure = false;
         await page.route('**/api/thumbnail-data?**', (r) => {
             reads++;
             return r.fulfill({ json: data() });
@@ -76,7 +77,33 @@ try {
                     },
                 });
             }
+            if (
+                new URL(r.request().url()).searchParams.get('history') ===
+                'latest'
+            )
+                return r.fulfill({ json: { state: 'idle' } });
             polls++;
+            if (simulateFailure)
+                return r.fulfill({
+                    json: {
+                        state: 'failed',
+                        error: '수집 실패',
+                        runUrl: 'https://github.com/totobubu/yieldloom-app/actions/runs/123',
+                        diagnostics: {
+                            code: 'unsupported_source',
+                            reason: '공식 수집 대상 목록에 등록되어 있지 않습니다.',
+                            nextAction:
+                                '공식 자료 출처와 수집 대상 등록이 필요합니다.',
+                            steps: [
+                                {
+                                    name: '공식 자료 수집',
+                                    state: 'failure',
+                                    logUrl: 'https://github.com/totobubu/yieldloom-app/actions/runs/123/job/456#step:10:1',
+                                },
+                            ],
+                        },
+                    },
+                });
             return r.fulfill({
                 json:
                     polls === 1
@@ -121,6 +148,19 @@ try {
                 name: '데이터 수집',
                 exact: true,
             });
+            await page
+                .getByRole('button', { name: '수집 기록', exact: true })
+                .click();
+            await page
+                .getByText('이 종목의 최근 수집 실행 기록이 없습니다.', {
+                    exact: true,
+                })
+                .waitFor();
+            assert.equal(posts, 0);
+            await page.keyboard.press('Escape');
+            await page
+                .getByRole('dialog', { name: 'QLDY 수집 기록' })
+                .waitFor({ state: 'hidden' });
             await button.click();
             await page
                 .getByText('QLDY 데이터를 수집하고 있습니다.', { exact: true })
@@ -158,6 +198,46 @@ try {
                 path: `/tmp/admin-stock-collection-${width}.png`,
                 fullPage: true,
             });
+            simulateFailure = true;
+            await button.click();
+            await page
+                .getByText('공식 수집 대상 목록에 등록되어 있지 않습니다.', {
+                    exact: true,
+                })
+                .waitFor();
+            await loadingDialog.waitFor({ state: 'hidden' });
+            await page
+                .getByRole('button', { name: '수집 기록', exact: true })
+                .click();
+            const recordDialog = page.getByRole('dialog', {
+                name: 'QLDY 수집 기록',
+            });
+            await recordDialog.waitFor();
+            assert(
+                await recordDialog
+                    .getByText('실패', { exact: true })
+                    .isVisible()
+            );
+            assert.equal(
+                await recordDialog
+                    .getByRole('link', { name: 'GitHub 원본 실행 기록' })
+                    .getAttribute('href'),
+                'https://github.com/totobubu/yieldloom-app/actions/runs/123'
+            );
+            assert(
+                await recordDialog
+                    .getByText(
+                        '공식 자료 출처와 수집 대상 등록이 필요합니다.',
+                        { exact: true }
+                    )
+                    .isVisible()
+            );
+            await page.screenshot({
+                path: `/tmp/collection-diagnostics-${width}.png`,
+            });
+            await page.keyboard.press('Escape');
+            await recordDialog.waitFor({ state: 'hidden' });
+            assert.equal(reads, 1);
             await page.evaluate(
                 () => (window.__testCollectionUser.value = null)
             );

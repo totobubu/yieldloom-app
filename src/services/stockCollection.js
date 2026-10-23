@@ -2,19 +2,22 @@ import { apiUrl } from './apiUrl.js';
 export async function stockCollectionRequest(
     user,
     symbol,
-    { requestId, signal } = {}
+    { requestId, signal, history = false } = {}
 ) {
-    const url = requestId
-        ? `/api/stock-collection?symbol=${encodeURIComponent(symbol)}&requestId=${encodeURIComponent(requestId)}`
-        : '/api/stock-collection';
+    const readOnly = Boolean(requestId || history);
+    const url = history
+        ? `/api/stock-collection?symbol=${encodeURIComponent(symbol)}&history=latest`
+        : requestId
+          ? `/api/stock-collection?symbol=${encodeURIComponent(symbol)}&requestId=${encodeURIComponent(requestId)}`
+          : '/api/stock-collection';
     const response = await fetch(apiUrl(url), {
-        method: requestId ? 'GET' : 'POST',
+        method: readOnly ? 'GET' : 'POST',
         signal,
         headers: {
             Authorization: `Bearer ${await user.getIdToken()}`,
-            ...(!requestId ? { 'Content-Type': 'application/json' } : {}),
+            ...(!readOnly ? { 'Content-Type': 'application/json' } : {}),
         },
-        ...(!requestId ? { body: JSON.stringify({ symbol }) } : {}),
+        ...(!readOnly ? { body: JSON.stringify({ symbol }) } : {}),
     });
     const body = await response.json().catch(() => ({}));
     if (!response.ok)

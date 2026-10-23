@@ -89,23 +89,69 @@ const isoDate = (value) =>
         ? value
         : null;
 export function toBacktestData(events) {
-    return (events ?? [])
-        .map((event) => {
-            const date = isoDate(event?.ex_date ?? event?.exDate);
-            const amount = Number(
-                event?.distribution_per_share ??
-                    event?.amount?.raw ??
-                    event?.amount
-            );
-            // An explicitly review-only record is not a confirmed dividend and must not power public share copy.
-            const status =
-                event?.verification_status ?? event?.verificationStatus;
-            if (status && !['official', 'cross_checked'].includes(status))
-                return null;
-            if (!date || !Number.isFinite(amount) || amount <= 0) return null;
-            return { date, amount, amountFixed: amount };
-        })
-        .filter(Boolean)
+    const selected = new Map();
+    const rank = (status) =>
+        status === 'cross_checked'
+            ? 3
+            : status === 'official'
+              ? 2
+              : status === 'needs_review'
+                ? 0
+                : 1;
+    for (const event of events ?? []) {
+        const date = isoDate(event?.ex_date ?? event?.exDate ?? event?.date);
+        const raw =
+            event?.distribution_per_share ??
+            event?.amount?.raw ??
+            event?.amount;
+        const amount = raw == null || raw === '' ? NaN : Number(raw);
+        const status = event?.verification_status ?? event?.verificationStatus;
+        if (
+            status &&
+            !['official', 'cross_checked', 'needs_review'].includes(status)
+        )
+            continue;
+        if (
+            !date ||
+            !Number.isFinite(amount) ||
+            amount <= 0 ||
+            event.forecasted
+        )
+            continue;
+        const previous = selected.get(date);
+        // Duplicate issuer captures are one payment. A verified capture wins;
+        // otherwise retain the most recently declared capture, preserving first on ties.
+        const declared =
+            isoDate(event.declared_date ?? event.declaredDate) || '';
+        if (
+            previous &&
+            (rank(previous.status) > rank(status) ||
+                (rank(previous.status) === rank(status) &&
+                    previous.declared >= declared))
+        )
+            continue;
+        selected.set(date, {
+            status,
+            declared,
+            row: {
+                date,
+                amount,
+                amountFixed: amount,
+                ...(status === 'needs_review'
+                    ? {
+                          verificationStatus: 'needs_review',
+                          officialUrl:
+                              event.official_url ?? event.officialUrl ?? null,
+                          payableDate: isoDate(
+                              event.payable_date ?? event.payableDate
+                          ),
+                      }
+                    : {}),
+            },
+        });
+    }
+    return [...selected.values()]
+        .map((value) => value.row)
         .sort((left, right) => left.date.localeCompare(right.date));
 }
 
@@ -139,9 +185,7 @@ function toPriceRows(history, events) {
             return {
                 date,
                 close: Number(row.close),
-                ...(event
-                    ? { amount: event.amount, amountFixed: event.amountFixed }
-                    : {}),
+                ...(event || {}),
             };
         });
     return [...rows, ...officialAmounts.values()].sort((left, right) =>
@@ -319,6 +363,9 @@ async function fetchTicker(symbol, origin, options = {}) {
                       ? 'official_projection'
                       : 'none',
             dividendSourceUrl: officialHistoryReference(key),
+            dividendReviewCount: backtestData.filter(
+                (row) => row.verificationStatus === 'needs_review'
+            ).length,
             price: priceHistory?.source ?? 'unavailable',
             priceDate,
             quoteTime: priceHistory?.quoteTime ?? null,
@@ -402,9 +449,20 @@ async function tickerWithSnapshot(symbol, origin, options = {}) {
                               snapshot.value.backtestData,
                               value.backtestData
                           )
-                        : snapshot.value.backtestData,
+                        : value.sourceStatus.dividends !== 'unavailable'
+                          ? toPriceRows(snapshot.value, value.backtestData)
+                          : snapshot.value.backtestData,
                     sourceStatus: {
                         ...(snapshot.value.sourceStatus ?? {}),
+                        ...(value.sourceStatus.dividends !== 'unavailable'
+                            ? {
+                                  dividends: value.sourceStatus.dividends,
+                                  dividendSourceUrl:
+                                      value.sourceStatus.dividendSourceUrl,
+                                  dividendReviewCount:
+                                      value.sourceStatus.dividendReviewCount,
+                              }
+                            : {}),
                         freshness: 'stale',
                         staleSince: snapshot.savedAt,
                         reason: 'price_source_unavailable',

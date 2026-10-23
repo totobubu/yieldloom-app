@@ -2,8 +2,9 @@ name: Collect incremental data v2 candidate
 
 on:
   schedule:
-    # Hourly dispatcher. It fetches only source URLs currently due; GitHub cron is UTC.
-    - cron: '0 * * * 0-5'
+    # Daily review candidate; live provider refresh keeps its separate schedule.
+    # 13:10 Asia/Seoul. Additional candidates and backfills remain available manually.
+    - cron: '10 4 * * *'
   workflow_dispatch:
     inputs:
       backfill:
@@ -93,6 +94,7 @@ jobs:
   collect:
     if: inputs.inspect_release == '' && !inputs.configure_core_cors
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:

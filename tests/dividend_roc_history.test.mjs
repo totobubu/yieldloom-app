@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { dividendRocHistory } from '../lib/dividend-roc-history.js';
+import {
+    dividendRocHistory,
+    monthlyDividendRocSummary,
+} from '../lib/dividend-roc-history.js';
 const base = {
     scope: 'payment',
     classificationStatus: 'unclassified',
@@ -110,4 +113,93 @@ test('missing dates are not joined together and forecast rows are excluded', () 
         ).length,
         2
     );
+});
+
+test('monthly summary totals weekly payments and weights only known ROC percentages', () => {
+    const rows = [
+        {
+            id: '1',
+            exDate: '2026-10-01',
+            currency: 'USD',
+            distributionAmount: '1',
+            rocPercent: '80',
+        },
+        {
+            id: '2',
+            exDate: '2026-10-08',
+            currency: 'USD',
+            distributionAmount: '3',
+            rocPercent: '20',
+        },
+        {
+            id: '3',
+            exDate: '2026-10-15',
+            currency: 'USD',
+            distributionAmount: '2',
+            rocPercent: null,
+        },
+        {
+            id: '4',
+            exDate: '2026-09-24',
+            currency: 'USD',
+            distributionAmount: '0.5',
+            rocPercent: '0',
+        },
+        {
+            id: 'unknown',
+            exDate: null,
+            currency: 'USD',
+            distributionAmount: '9',
+            rocPercent: '100',
+        },
+    ];
+    const summary = monthlyDividendRocSummary(rows);
+    assert.equal(summary.length, 2);
+    assert.deepEqual(
+        summary.map(
+            ({
+                key,
+                distributionTotal,
+                paymentCount,
+                rocKnownCount,
+                weightedRocPercent,
+            }) => ({
+                key,
+                distributionTotal,
+                paymentCount,
+                rocKnownCount,
+                weightedRocPercent,
+            })
+        ),
+        [
+            {
+                key: '2026-09',
+                distributionTotal: 0.5,
+                paymentCount: 1,
+                rocKnownCount: 1,
+                weightedRocPercent: 0,
+            },
+            {
+                key: '2026-10',
+                distributionTotal: 6,
+                paymentCount: 3,
+                rocKnownCount: 2,
+                weightedRocPercent: 35,
+            },
+        ]
+    );
+});
+
+test('monthly summary keeps missing ROC distinct from zero ROC', () => {
+    const [month] = monthlyDividendRocSummary([
+        {
+            id: '1',
+            exDate: '2026-10-01',
+            currency: 'USD',
+            distributionAmount: '1',
+            rocPercent: null,
+        },
+    ]);
+    assert.equal(month.weightedRocPercent, null);
+    assert.equal(month.rocKnownCount, 0);
 });

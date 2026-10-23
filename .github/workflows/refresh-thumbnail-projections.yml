@@ -40,4 +40,40 @@ jobs:
         run: |
           args=()
           if [[ -n "$PROJECTION_SYMBOLS" && "$PROJECTION_SYMBOLS" != "ALL" ]]; then args+=(--symbols "$PROJECTION_SYMBOLS"); fi
-          node scripts/thumbnail_pipeline/refresh.mjs "${args[@]}"
+          node scripts/thumbnail_pipeline/refresh.mjs "${args[@]}" > thumbnail-projection-report.json
+      - name: Summarize projection refresh
+        if: always()
+        shell: bash
+        run: |
+          python - <<'PYREPORT'
+          import json
+          import os
+          from pathlib import Path
+          report_path = Path('thumbnail-projection-report.json')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              if not report_path.exists() or not report_path.read_text().strip():
+                  summary.write('Projection report unavailable. Inspect the failed setup or refresh step.\n')
+              else:
+                  report = json.loads(report_path.read_text())
+                  summary.write('## Projection refresh\n\n')
+                  for key in ('changed', 'unchanged', 'rejected', 'skipped'):
+                      summary.write(f'- {key}: {len(report.get(key, []))}\n')
+                  rejected = report.get('rejected', [])
+                  if rejected:
+                      summary.write('\n### Rejected sources\n\n')
+                      for row in rejected:
+                          # Escape source messages before displaying them in Markdown.
+                          import html
+                          symbol = html.escape(str(row['symbol']))
+                          reason = html.escape(str(row['reason']))
+                          retained = 'yes' if row.get('retainedPrevious') else 'no'
+                          summary.write(f'- <code>{symbol}</code>: <code>{reason}</code> (previous retained: {retained})\n')
+          PYREPORT
+      - name: Upload projection refresh report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: thumbnail-projection-review-${{ github.run_id }}
+          path: thumbnail-projection-report.json
+          if-no-files-found: ignore
+          retention-days: 14

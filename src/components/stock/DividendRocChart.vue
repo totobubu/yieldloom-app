@@ -1,5 +1,6 @@
 <script setup>
     import { computed, ref, watch } from 'vue';
+    import Message from 'primevue/message';
     const props = defineProps({
         rows: { type: Array, required: true },
         currency: { type: String, required: true },
@@ -221,12 +222,25 @@
                 }}{{ current.rocPercent == null ? '' : '%' }}</span
             >
         </p>
-        <p class="chart-note">
-            표의 현재 페이지와 같은 지급 내역입니다. 비어 있는 금액·비율은 0으로
-            그리지 않으며 해당 구간의 선도 연결하지 않습니다. 포인트 값은 간략히
-            표시하며, 마우스를 올리거나 점을 선택하면 아래에서 원문 정밀도의
-            값을 확인할 수 있습니다.
-        </p>
+        <Message
+            class="chart-note"
+            severity="info"
+            :closable="false"
+            role="note">
+            <div class="chart-note-content">
+                <strong>차트 읽는 방법</strong>
+                <p>
+                    표의 현재 페이지와 같은 지급 내역입니다. 비어 있는
+                    금액·비율은 0으로 그리지 않으며, 해당 구간의 선도 연결하지
+                    않습니다.
+                </p>
+                <p>
+                    포인트 값은 간략히 표시합니다. 마우스를 올리거나 점을
+                    선택하면 상세 영역에서 원문 정밀도의 값을 확인할 수
+                    있습니다.
+                </p>
+            </div>
+        </Message>
     </div>
 </template>
 <style scoped>
@@ -357,15 +371,24 @@
         display: flex;
         gap: 8px 20px;
         flex-wrap: wrap;
-        padding: 14px;
+        margin: 16px 0 0;
+        padding: 16px;
         background: var(--app-surface-muted);
         border-radius: 10px;
         font-size: 12px;
         font-variant-numeric: tabular-nums;
     }
     .chart-note {
-        font-size: 12px;
-        color: var(--app-muted);
-        line-height: 1.7;
+        margin: 16px 0 0;
+    }
+    .chart-note-content {
+        font-size: 13px;
+        line-height: 1.8;
+    }
+    .chart-note-content strong {
+        font-weight: 650;
+    }
+    .chart-note-content p {
+        margin: 6px 0 0;
     }
 </style>

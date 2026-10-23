@@ -18,8 +18,6 @@
     import Checkbox from 'primevue/checkbox';
     import Tag from 'primevue/tag';
     import Message from 'primevue/message';
-    import DataTable from 'primevue/datatable';
-    import Column from 'primevue/column';
     import { useToast } from 'primevue/usetoast';
     import DividendSummaryThumbnail from '@/components/thumbnail/DividendSummaryThumbnail.vue';
     import DividendComparisonThumbnail from '@/components/thumbnail/DividendComparisonThumbnail.vue';
@@ -32,7 +30,10 @@
     import StockDividendTrend from '@/components/stock/StockDividendTrend.vue';
     import StockHoldingPanel from '@/components/stock/StockHoldingPanel.vue';
     import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
+    import StockPriceHistory from '@/components/stock/StockPriceHistory.vue';
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
+    import { monthlyDividendSeries } from '@/services/stockAnalysis.js';
+    import DividendReviewPrompt from '@/components/stock/DividendReviewPrompt.vue';
     import DividendRocHistory from '@/components/stock/DividendRocHistory.vue';
     import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
     import OfficialFundData from '@/components/stock/OfficialFundData.vue';
@@ -91,6 +92,12 @@
         else router.push('/');
     };
     const selectedInfo = ref(null);
+    const candleState = ref(null);
+    const historyCandleState = computed(() =>
+        candleState.value?.symbol === selectedInfo.value?.symbol
+            ? candleState.value
+            : null
+    );
     const selectedData = ref(null);
     const archived = computed(() => isDelisted(selectedInfo.value));
     const loading = ref(true);
@@ -249,6 +256,11 @@
             .filter((row) => row.date <= new Date().toISOString().slice(0, 10))
             .reverse()
     );
+    const dividendReviewRows = computed(() =>
+        (selectedData.value?.backtestData ?? [])
+            .filter((row) => row.verificationStatus === 'needs_review')
+            .sort((a, b) => b.date.localeCompare(a.date))
+    );
     const dividendState = computed(() =>
         dividendAvailability({
             security: selectedInfo.value || {},
@@ -307,7 +319,6 @@
             )
             .sort((a, b) => a.date.localeCompare(b.date));
     const amount = (row) => Number(row?.amountFixed ?? row?.amount ?? 0);
-    const formatMonth = (date) => `${date.slice(2, 4)}.${date.slice(5, 7)}`;
 
     const thumbnailData = computed(() => {
         const rows = dividendRows(selectedData.value?.backtestData);
@@ -327,11 +338,6 @@
         const prevClose = Number(previous?.close);
         const validClose = Number.isFinite(exClose) && exClose > 0;
         const validPreviousClose = Number.isFinite(prevClose) && prevClose > 0;
-        const monthly = new Map();
-        rows.slice(-50).forEach((row) => {
-            const month = formatMonth(row.date);
-            monthly.set(month, (monthly.get(month) ?? 0) + amount(row));
-        });
         const company = String(selectedInfo.value?.company ?? '').toLowerCase();
         const background = company.includes('roundhill')
             ? 'blue.png'
@@ -376,9 +382,13 @@
             previousAfterTaxDividendYield: validPreviousClose
                 ? ((previousAmount * 0.85) / prevClose) * 100
                 : null,
-            monthlyTotals: [...monthly.entries()]
-                .slice(-4)
-                .map(([month, total]) => ({ month, total })),
+            monthlyTotals: monthlyDividendSeries(rows, today(), 3).map(
+                (row) => ({
+                    month: `${row.month.slice(2, 4)}.${row.month.slice(5, 7)}`,
+                    total: row.total,
+                    partial: row.partial,
+                })
+            ),
             backgroundImageUrl: getAssetUrl(`thumbnail/${background}`),
         };
     });
@@ -1090,43 +1100,26 @@
                                 v-if="!archived"
                                 :symbol="selectedInfo.symbol"
                                 :currency="selectedInfo.currency || ''"
-                                :events="stockEvents" />
-                            <details class="price-history">
-                                <summary>일별 종가 표 보기</summary>
-                                <h2>시세 이력</h2>
-                                <p class="hint">
-                                    최근 {{ Math.min(priceRows.length, 120) }}개
-                                    실제 종가 · {{ selectedInfo.currency }} 기준
-                                    · 가격 보정
-                                    {{
+                                :events="stockEvents"
+                                @prices-state="candleState = $event" />
+                            <div class="price-history">
+                                <StockPriceHistory
+                                    :symbol="selectedInfo.symbol"
+                                    :rows="priceRows"
+                                    :candles="
+                                        historyCandleState?.payload?.candles ||
+                                        []
+                                    "
+                                    :loading="
+                                        historyCandleState?.loading || false
+                                    "
+                                    :error="historyCandleState?.error || ''"
+                                    :currency="selectedInfo.currency || 'USD'"
+                                    :adjustment-basis="
                                         selectedData.sourceStatus
-                                            .adjustmentBasis || '미확인'
-                                    }}
-                                </p>
-                                <DataTable
-                                    :value="priceRows.slice(0, 120)"
-                                    class="stock-data-table"
-                                    striped-rows
-                                    scrollable
-                                    scroll-height="420px"
-                                    :table-props="{
-                                        'aria-label': '일별 종가 이력',
-                                    }"
-                                    ><Column
-                                        field="date"
-                                        header="기준일" /><Column header="종가"
-                                        ><template #body="{ data }"
-                                            >{{ displayNumber(data.close, 4) }}
-                                            {{
-                                                selectedInfo.currency
-                                            }}</template
-                                        ></Column
-                                    ></DataTable
-                                >
-                                <p v-if="!priceRows.length" class="hint">
-                                    확인 가능한 실제 종가가 없습니다.
-                                </p>
-                            </details>
+                                            ?.adjustmentBasis || ''
+                                    " />
+                            </div>
                         </section> </TabPanel
                     ><TabPanel value="dividends">
                         <section
@@ -1206,6 +1199,14 @@
                                 "
                                 :currency="selectedInfo.currency || 'USD'" />
                         </section>
+                        <DividendReviewPrompt
+                            v-if="
+                                activeTab === 'dividends' &&
+                                isPortfolioAdmin(firebaseUser)
+                            "
+                            :symbol="selectedInfo.symbol"
+                            :rows="dividendReviewRows"
+                            :currency="selectedInfo.currency || 'USD'" />
                         <div
                             v-if="activeTab === 'dividends'"
                             class="stock-insights">
@@ -1230,6 +1231,11 @@
                             </SecurityInsights>
                         </div> </TabPanel
                     ><TabPanel v-if="!archived" value="share">
+                        <DividendReviewPrompt
+                            v-if="isPortfolioAdmin(firebaseUser)"
+                            :symbol="selectedInfo.symbol"
+                            :rows="dividendReviewRows"
+                            :currency="selectedInfo.currency || 'USD'" />
                         <section class="share-workspace stock-section">
                             <div class="section-heading">
                                 <div>
@@ -1923,11 +1929,6 @@
         margin-top: 24px;
         border-top: 1px solid var(--app-border);
         padding-top: 20px;
-    }
-    .price-history summary {
-        cursor: pointer;
-        font-weight: 650;
-        margin-bottom: 16px;
     }
     .stock-data-table {
         margin-top: 20px;

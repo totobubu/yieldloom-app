@@ -144,7 +144,11 @@ try {
         });
     }
     await page.getByRole('tab', { name: '시세정보' }).click();
-    await page.getByText('일별 종가 표 보기', { exact: true }).click();
+    await page.locator('.stock-price-history').waitFor();
+    await page
+        .locator('.stock-price-history')
+        .getByRole('button', { name: '표', exact: true })
+        .click();
     await page.getByRole('cell', { name: '2026-01-02', exact: true }).waitFor();
     await page.getByRole('tab', { name: '배당정보' }).click();
     await page

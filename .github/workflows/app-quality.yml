@@ -50,6 +50,7 @@ jobs:
                   python -m unittest discover -s tests -p 'test_portfolio_csv.py'
                   python -m unittest discover -s tests -p 'test_server_cors.py'
     browser:
+        # Playwright 1.57 supports Ubuntu 24.04, not the moving latest image.
         runs-on: ubuntu-24.04
         timeout-minutes: 20
         steps:
@@ -81,6 +82,9 @@ jobs:
                   node tests/portfolio-enhancements.browser.mjs
                   node tests/portfolio-import-review.browser.mjs
                   node tests/mobile-import-feedback.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/public-dividend-review.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/share-monthly-history.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stock-price-calendar.browser.mjs
                   LISTING_STATUS_BASE_URL=http://127.0.0.1:5175 node tests/security-status.browser.mjs
             - name: Official fund projections with synthetic public data
               run: |

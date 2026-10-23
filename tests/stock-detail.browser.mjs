@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { unzipSync } from 'fflate';
+const base = process.env.UI_BASE_URL || 'http://127.0.0.1:5173';
 const browser = await chromium.launch({
     headless: true,
     executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
@@ -86,7 +87,7 @@ try {
             },
         })
     );
-    await page.goto('http://127.0.0.1:5173/thumbnail/TOPW?rivals=');
+    await page.goto(`${base}/thumbnail/TOPW?rivals=`);
     await page.getByRole('heading', { name: 'TOPW 종목 개요' }).waitFor();
     assert.match(page.url(), /\/stock\/TOPW\?rivals=/);
     const candleRows = Array.from({ length: 150 }, (_, i) => ({
@@ -156,16 +157,20 @@ try {
         fullPage: true,
     });
     await page.setViewportSize({ width: 1440, height: 1000 });
-    await page.getByText('일별 종가 표 보기', { exact: true }).click();
+    await page.locator('.stock-price-history').waitFor();
+    await page
+        .locator('.stock-price-history')
+        .getByRole('button', { name: '표', exact: true })
+        .click();
     await page
         .getByRole('heading', { name: '시세 이력', exact: true })
         .waitFor();
     assert.equal(
         await page
-            .getByRole('table', { name: '일별 종가 이력', exact: true })
+            .getByRole('table', { name: '일별 시세 표', exact: true })
             .locator('tbody tr')
             .count(),
-        16
+        120
     );
     await page.getByRole('tab', { name: '배당정보', exact: true }).click();
     await page
@@ -174,6 +179,41 @@ try {
     assert.equal(await page.locator('.month-bar').count(), 12);
     await page.getByRole('button', { name: '24개월', exact: true }).click();
     assert.equal(await page.locator('.month-bar').count(), 24);
+    const rocHistory = page.locator('.dividend-roc-history');
+    await rocHistory
+        .getByRole('heading', { name: '배당·ROC 이력', exact: true })
+        .waitFor();
+    assert.equal(await rocHistory.locator('.monthly-cell').count(), 16);
+    await rocHistory
+        .getByRole('button', { name: '2026년 4월 상세 보기', exact: true })
+        .click();
+    assert.match(
+        await rocHistory.locator('.selected-month').innerText(),
+        /4월/
+    );
+    await rocHistory
+        .getByRole('button', { name: '회차별 이력', exact: true })
+        .click();
+    await rocHistory
+        .getByRole('table', { name: '배당·ROC 지급 이력', exact: true })
+        .waitFor();
+    await rocHistory
+        .getByRole('button', { name: '월별 요약', exact: true })
+        .click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForFunction(
+        () => document.documentElement.scrollWidth <= innerWidth
+    );
+    assert.ok(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth
+        )
+    );
+    await page.screenshot({
+        path: '/tmp/dividend-roc-monthly-mobile.png',
+        fullPage: true,
+    });
+    await page.setViewportSize({ width: 1440, height: 1000 });
     await page.getByRole('tab', { name: '공유정보', exact: true }).click();
     await page
         .getByRole('button', { name: '요약 PNG 다운로드', exact: true })

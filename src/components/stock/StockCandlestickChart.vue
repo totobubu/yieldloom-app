@@ -4,6 +4,7 @@
     import { loadStockPrices } from '@/services/stockPrices.js';
     import { aggregateCandles } from '@/services/stockAnalysis';
     import { useFullscreenLoading } from '@/composables/useFullscreenLoading.js';
+    const emit = defineEmits(['prices-state']);
     const chartHost = ref(null),
         chartWidth = ref(1000);
     let observer;
@@ -57,6 +58,12 @@
         error.value = '';
         data.value = null;
         selected.value = null;
+        emit('prices-state', {
+            symbol,
+            loading: true,
+            payload: null,
+            error: '',
+        });
         try {
             const payload = await loadStockPrices(symbol, {
                 force,
@@ -72,7 +79,15 @@
                         ? '조회 시간이 초과되었습니다. 다시 시도해 주세요.'
                         : reason.message;
         } finally {
-            if (sequence === current) loading.value = false;
+            if (sequence === current) {
+                loading.value = false;
+                emit('prices-state', {
+                    symbol,
+                    loading: false,
+                    payload: data.value,
+                    error: error.value,
+                });
+            }
         }
     };
     watch(

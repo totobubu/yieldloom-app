@@ -31,13 +31,14 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 		</template>
 		<p v-else class="unavailable">표시할 배당 이력을 확인하지 못했습니다.</p>
 		<section v-if="historyRows.length" class="history">
-			<header><b>최근 3회차 배당금 추이</b><small class="history-legend"><i />과거 <i />이번회차</small></header>
+			<header><b>최근 3개월 배당금 추이</b><small class="history-legend"><i />이전 월 <i />이번 달</small></header>
 			<div class="history-cells">
 				<article v-for="(row, index) in historyRows" :key="row.month"
-					:class="{ latest: index === historyRows.length - 1 }"><span>{{ row.month }}</span><b>{{
-						usd(row.total, 4)
-					}}</b><em v-if="index === historyRows.length - 1">최신</em></article>
+					:class="{ latest: index === historyRows.length - 1 && row.total != null, missing: row.total == null }"><span>{{ row.month }}</span><b>{{
+						row.total == null ? '자료 없음' : usd(row.total, 4)
+					}}</b><em v-if="row.partial && row.total != null">집계 중</em></article>
 			</div>
+            <p class="history-note">배당락일 기준 · 확인된 주당 세전 금액 합계</p>
 		</section>
 		<template #footer>주당 USD 기준 · 세후 금액은 15% 원천징수 단순 가정</template>
 	</ThumbnailCardShell>
@@ -259,6 +260,10 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 	font-family: 'Plus Jakarta Sans', 'Pretendard', sans-serif;
 	font-weight: 800;
 }
+
+.history-note { margin: 8px 4px 0; font-size: 12px; color: #64748b; }
+.history-cells .missing { border-style: dashed; background: #f1f5f9; }
+.history-cells .missing b { color: #64748b; font-size: 18px; }
 
 .history-cells .latest {
 	border-color: #059669;

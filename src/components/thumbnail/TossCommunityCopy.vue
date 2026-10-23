@@ -18,7 +18,7 @@
     const text = computed(() => {
         const d = props.data;
         if (!d.hasDividend)
-            return `${d.symbol} 최근 배당 정보\n\n공유용으로 검증된 배당 이력을 확인하지 못했습니다.`;
+            return `${d.symbol} 최근 배당 정보\n\n표시할 배당 이력을 확인하지 못했습니다.`;
         const lines = [
             `${d.symbol} | ${d.exDate} 주당 ${usd(d.currentDividendAmount, 6)} 배당 정보`,
             '',

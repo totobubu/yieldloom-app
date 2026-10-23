@@ -125,8 +125,19 @@ Publisher and consumers use `core/current.json` with schemaVersion 2. Set
 `DATA_RELEASE_BASE_URL` on the server (or its existing VITE counterpart) and
 `VITE_DATA_RELEASE_BASE_URL` at frontend build time only after an approved release
 is actually published. Server ticker histories are checked against manifest
-hashes. Both official and cross-checked events are accepted; review-only rows
-are excluded.
+hashes. The public thumbnail read model accepts `official`, `cross_checked`,
+and `needs_review` events already present in the selected ledger. Review events
+retain their status and source URL and can power public cards before verification.
+Duplicate issuer captures for an ex-date are counted once, preferring verified
+records and then the latest declaration. Invalid, rejected and forecast records
+remain excluded. This read policy does not relax the core publisher's release gate.
+
+Verified administrators see a review badge and a source-comparison dialog on the
+stock's dividend/share tabs. The dialog reuses the API response without additional
+requests and exports review material for the existing ledger verification process.
+Downloading that material does not approve an event: the badge disappears only
+after the ledger verification status changes and the response is refreshed. The
+admin prompt is outside share-card artwork and disappears on logout.
 
 Production validation rejects the empty bootstrap, nonfinite/nonpositive amounts,
 changed decimal precision, invalid source evidence, ticker identity mismatches,

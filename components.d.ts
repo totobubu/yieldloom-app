@@ -28,6 +28,7 @@ declare module 'vue' {
     DividendComparisonThumbnail: typeof import('./src/components/thumbnail/DividendComparisonThumbnail.vue')['default']
     DividendEntryEfficiencyThumbnail: typeof import('./src/components/thumbnail/DividendEntryEfficiencyThumbnail.vue')['default']
     DividendReconciliation: typeof import('./src/components/portfolio/DividendReconciliation.vue')['default']
+    DividendReviewPrompt: typeof import('./src/components/stock/DividendReviewPrompt.vue')['default']
     DividendRocChart: typeof import('./src/components/stock/DividendRocChart.vue')['default']
     DividendRocHistory: typeof import('./src/components/stock/DividendRocHistory.vue')['default']
     DividendSummaryThumbnail: typeof import('./src/components/thumbnail/DividendSummaryThumbnail.vue')['default']

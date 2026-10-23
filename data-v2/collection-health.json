@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "providers": {
     "direxion": {
-      "lastAttemptAt": "2026-10-22T13:51:45.539454+00:00",
-      "lastSuccessAt": "2026-10-22T13:51:45.539454+00:00",
-      "lastCompleteAt": "2026-10-22T13:51:45.539454+00:00",
+      "lastAttemptAt": "2026-10-23T13:31:03.936909+00:00",
+      "lastSuccessAt": "2026-10-23T13:31:03.936909+00:00",
+      "lastCompleteAt": "2026-10-23T13:31:03.936909+00:00",
       "lastHealthyLinkCount": 51,
       "verifiedLinks": 51,
       "products": 54,
@@ -14,9 +14,9 @@
       "status": "healthy"
     },
     "kurv": {
-      "lastAttemptAt": "2026-10-22T13:51:45.539454+00:00",
-      "lastSuccessAt": "2026-10-22T13:51:45.539454+00:00",
-      "lastCompleteAt": "2026-10-22T13:51:45.539454+00:00",
+      "lastAttemptAt": "2026-10-23T13:31:03.936909+00:00",
+      "lastSuccessAt": "2026-10-23T13:31:03.936909+00:00",
+      "lastCompleteAt": "2026-10-23T13:31:03.936909+00:00",
       "lastHealthyLinkCount": 6,
       "verifiedLinks": 6,
       "products": 16,
@@ -26,8 +26,8 @@
       "status": "healthy"
     },
     "graniteshares": {
-      "lastAttemptAt": "2026-10-22T13:51:45.539454+00:00",
-      "lastSuccessAt": "2026-10-22T13:51:45.539454+00:00",
+      "lastAttemptAt": "2026-10-23T13:31:03.936909+00:00",
+      "lastSuccessAt": "2026-10-23T13:31:03.936909+00:00",
       "lastCompleteAt": null,
       "lastHealthyLinkCount": 0,
       "verifiedLinks": 67,
@@ -38,8 +38,8 @@
       "status": "degraded"
     },
     "roundhill": {
-      "lastAttemptAt": "2026-10-22T13:51:45.539454+00:00",
-      "lastSuccessAt": "2026-10-22T13:51:45.539454+00:00",
+      "lastAttemptAt": "2026-10-23T13:31:03.936909+00:00",
+      "lastSuccessAt": "2026-10-23T13:31:03.936909+00:00",
       "lastCompleteAt": null,
       "lastHealthyLinkCount": 0,
       "verifiedLinks": 19,
@@ -50,8 +50,8 @@
       "status": "degraded"
     },
     "yieldmax": {
-      "lastAttemptAt": "2026-10-22T13:51:45.539454+00:00",
-      "lastSuccessAt": "2026-10-22T13:51:45.539454+00:00",
+      "lastAttemptAt": "2026-10-23T13:31:03.936909+00:00",
+      "lastSuccessAt": "2026-10-23T13:31:03.936909+00:00",
       "lastCompleteAt": null,
       "lastHealthyLinkCount": 0,
       "verifiedLinks": 38,
@@ -62,8 +62,8 @@
       "status": "degraded"
     },
     "defiance": {
-      "lastAttemptAt": "2026-10-22T13:51:45.539454+00:00",
-      "lastSuccessAt": "2026-10-22T13:51:45.539454+00:00",
+      "lastAttemptAt": "2026-10-23T13:31:03.936909+00:00",
+      "lastSuccessAt": "2026-10-23T13:31:03.936909+00:00",
       "lastCompleteAt": null,
       "lastHealthyLinkCount": 0,
       "verifiedLinks": 31,
@@ -74,19 +74,19 @@
       "status": "degraded"
     },
     "rex": {
-      "lastAttemptAt": "2026-10-22T13:51:45.539454+00:00",
-      "lastSuccessAt": "2026-10-22T13:51:45.539454+00:00",
+      "lastAttemptAt": "2026-10-23T13:31:03.936909+00:00",
+      "lastSuccessAt": "2026-10-23T13:31:03.936909+00:00",
       "lastCompleteAt": null,
       "lastHealthyLinkCount": 0,
       "verifiedLinks": 25,
-      "products": 71,
-      "failureCount": 9,
+      "products": 72,
+      "failureCount": 10,
       "coverageDrop": false,
       "consecutiveFailedRuns": 0,
       "status": "degraded"
     },
     "proshares": {
-      "lastAttemptAt": "2026-10-22T13:51:45.539454+00:00",
+      "lastAttemptAt": "2026-10-23T13:31:03.936909+00:00",
       "lastSuccessAt": null,
       "lastCompleteAt": null,
       "lastHealthyLinkCount": 0,
@@ -94,7 +94,7 @@
       "products": 0,
       "failureCount": 1,
       "coverageDrop": false,
-      "consecutiveFailedRuns": 5,
+      "consecutiveFailedRuns": 6,
       "status": "failed"
     }
   }

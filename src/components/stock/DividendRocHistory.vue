@@ -72,7 +72,7 @@
               ? `$${value}`
               : `${value} ${currency}`;
     const helpText =
-        '배당락일·통화·금액이 일치하는 배당과 ROC 지급 내역을 연결합니다. 일치하지 않는 기록은 별도 행으로 표시합니다. ROC 금액은 원문 제공값만 표시하며 비율로 역산하지 않습니다. 추정 자료와 최종 세무 결과는 다를 수 있습니다. 같은 지급 건은 확정 자료를 우선하고 같은 단계의 ROC 값이 다르면 미확인으로 표시합니다. 회계연도 누적 자료는 지급 건별 이력에 합산하지 않습니다.';
+        '‘—’는 값 미제공이며 0이 아닙니다. ROC는 분배금 중 자본환급으로 보고된 부분으로, 분배금에 더하지 않습니다. 배당락일·통화·금액이 일치하는 배당과 ROC 지급 내역을 연결합니다. 일치하지 않는 기록은 별도 행으로 표시합니다. ROC 금액은 원문 제공값만 표시하며 비율로 역산하지 않습니다. 추정 자료와 최종 세무 결과는 다를 수 있습니다. 같은 지급 건은 확정 자료를 우선하고 같은 단계의 ROC 값이 다르면 미확인으로 표시합니다. 회계연도 누적 자료는 지급 건별 이력에 합산하지 않습니다.';
     watch(rows, () => {
         page.value = 0;
     });
@@ -89,6 +89,18 @@
                     <InfoHelp
                         label="배당·ROC 연결 및 금액 안내"
                         :text="helpText" />
+                    <div v-if="sources.length" class="history-sources">
+                        <a
+                            v-for="(source, index) in sources"
+                            :key="source.url"
+                            :href="source.url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            >{{ source.label
+                            }}{{ sources.length > 1 ? ` ${index + 1}` : '' }}
+                            <i class="pi pi-external-link" aria-hidden="true"
+                        /></a>
+                    </div>
                 </div>
                 <p>배당락일 기준 · 주당 세전 · 지급 내역 {{ rows.length }}건</p>
             </div>
@@ -143,7 +155,18 @@
                                 {{ row.payableDate || '미확인' }}
                             </td>
                             <td data-label="주당 분배금" class="payment-number">
-                                {{ money(row.distributionAmount, row.currency) }}
+                                <span
+                                    :class="{
+                                        'distribution-value':
+                                            row.distributionAmount != null,
+                                    }">
+                                    {{
+                                        money(
+                                            row.distributionAmount,
+                                            row.currency
+                                        )
+                                    }}
+                                </span>
                             </td>
                             <td data-label="ROC 금액" class="payment-number">
                                 {{ money(row.rocAmount, row.currency) }}
@@ -181,24 +204,7 @@
                 aria-label="배당·ROC 이력 페이지"
                 @page="page = $event.page" />
         </template>
-        <footer class="history-footer">
-            <p class="history-note">
-                ‘—’는 값 미제공이며 0이 아닙니다. ROC는 분배금 중 자본환급으로
-                보고된 부분으로, 분배금에 더하지 않습니다.
-            </p>
-            <div v-if="sources.length" class="history-sources">
-                <a
-                    v-for="(source, index) in sources"
-                    :key="source.url"
-                    :href="source.url"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >{{ source.label
-                    }}{{ sources.length > 1 ? ` ${index + 1}` : '' }}
-                    <i class="pi pi-external-link" aria-hidden="true"
-                /></a>
-            </div>
-        </footer>
+
         <details v-if="annual.length" class="annual-history">
             <summary>회계연도 누적 내역 · {{ annual.length }}건</summary>
             <p class="history-note">
@@ -228,7 +234,9 @@
                                 >
                             </th>
                             <td>
-                                {{ money(row.distributionAmount, row.currency) }}
+                                {{
+                                    money(row.distributionAmount, row.currency)
+                                }}
                             </td>
                             <td>{{ money(row.rocAmount, row.currency) }}</td>
                             <td>
@@ -261,6 +269,7 @@
     .history-title {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 6px;
     }
     h2 {
@@ -276,24 +285,11 @@
     .history-heading p {
         margin: 4px 0 12px;
     }
-    .history-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 4px 20px;
-        margin-top: 12px;
-    }
-    .history-footer > p {
-        flex: 1 1 280px;
-        margin: 0;
-    }
     .history-sources {
         display: flex;
         flex-wrap: wrap;
-        justify-content: flex-end;
+        align-items: center;
         gap: 8px 16px;
-        margin-left: auto;
     }
     .history-sources a {
         display: inline-flex;
@@ -332,6 +328,13 @@
     }
     tbody tr:last-child > * {
         border-bottom: 0;
+    }
+    .distribution-value {
+        color: var(--app-accent);
+        font-size: 17px;
+        font-weight: 750;
+        letter-spacing: -0.02em;
+        line-height: 1.5;
     }
     .payment-percent {
         color: var(--app-accent);

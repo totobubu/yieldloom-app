@@ -51,6 +51,7 @@ def event_snapshot(event) -> dict[str, str | None]:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Collect official ETF distributions")
     parser.add_argument("--provider", choices=sorted(PROVIDERS), required=True)
+    parser.add_argument("--ticker", help="Persist events only for this ticker")
     parser.add_argument("--url", help="Parse one explicit allowed official URL")
     parser.add_argument("--ex-date", type=date.fromisoformat,
                         help="Keep only events matching this ISO ex-dividend date")
@@ -82,10 +83,15 @@ def main() -> int:
         candidates = list(adapter.discover_for_ex_date(args.ex_date))
     else:
         candidates = list(adapter.discover())
+    target_ticker = args.ticker.strip().upper() if args.ticker else None
     seed_candidates = list(adapter.catalog_seed())
+    if target_ticker:
+        seed_candidates = [candidate for candidate in seed_candidates if target_ticker in candidate_tickers(candidate)]
     if database:
         for candidate in [*seed_candidates, *candidates]:
             for ticker in candidate_tickers(candidate):
+                if target_ticker and ticker != target_ticker:
+                    continue
                 database.upsert_provider_fund(
                     adapter.slug, ticker, candidate.url, candidate.source_type
                 )
@@ -95,6 +101,7 @@ def main() -> int:
         "events": 0,
         "catalogTickers": sorted({
             ticker for candidate in seed_candidates for ticker in candidate_tickers(candidate)
+            if not target_ticker or ticker == target_ticker
         }),
         "noData": [],
         "errors": [],
@@ -137,6 +144,8 @@ def main() -> int:
                 catalog_tickers: list[str] = []
                 for catalog_candidate in catalog_candidates:
                     for ticker in candidate_tickers(catalog_candidate):
+                        if target_ticker and ticker != target_ticker:
+                            continue
                         catalog_tickers.append(ticker)
                         if database:
                             database.upsert_provider_fund(
@@ -158,6 +167,10 @@ def main() -> int:
                 continue
 
             events = adapter.parse(document)
+            if target_ticker:
+                events = [event for event in events if event.ticker.upper() == target_ticker]
+                if not events:
+                    raise NoDataError(f"no official events matched ticker {target_ticker}")
             if args.ex_date:
                 events = [event for event in events if event.ex_date == args.ex_date.isoformat()]
                 if not events:

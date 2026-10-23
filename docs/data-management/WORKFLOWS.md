@@ -52,6 +52,10 @@ Playwright를 설치하는 수집·진단 job은 `ubuntu-24.04`로 고정한다.
 ## 관리자 종목 수집 버튼
 
 종목 상세 상단에서 관리자는 ‘공유 카드 만들기’ 대신 ‘데이터 수집’을 누른다.
+`/api/stock-collection`은 기존 종목 작업 함수로 rewrite하여 Hobby 요금제의
+12개 함수 제한 안에서 제공합니다. 수집과 피드백은 각자의 인증·캐시·CORS
+정책을 유지합니다.
+
 `POST /api/stock-collection`은 Firebase ID 토큰과 관리자 허용 목록을 서버에서
 검사한 뒤 기존 운영 워크플로를 `scope=ticker`, 선택 종목 하나로 호출한다.
 공식 배당 원장 또는 운용사 catalog에 수집 경로가 등록된 종목이 대상이며,

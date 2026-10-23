@@ -14,6 +14,10 @@
     ],
     "rewrites": [
         {
+            "source": "/api/stock-collection",
+            "destination": "/api/stock-feedback?action=collection"
+        },
+        {
             "source": "/:path((?!api/|.*\\.).*)",
             "destination": "/index.html"
         }

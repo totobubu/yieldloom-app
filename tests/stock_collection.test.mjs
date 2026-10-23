@@ -174,3 +174,26 @@ test('failed or cancelled workflows are never reported as collected', async () =
         );
     }
 });
+
+
+test('collection rewrite preserves method and receipt while feedback stays separate', async () => {
+    const { stockActionRouter } = await import('../lib/stock-actions.js');
+    const config = JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
+    const rewrite = config.rewrites.find(row => row.source === '/api/stock-collection');
+    assert.equal(rewrite.destination, '/api/stock-feedback?action=collection');
+    const calls = [];
+    const router = stockActionRouter({
+        collection: async (req, res) => calls.push(['collection', req, res]),
+        feedback: async (req, res) => calls.push(['feedback', req, res]),
+    });
+    for (const method of ['POST', 'GET', 'OPTIONS']) {
+        const req = { method, query: { action: 'collection', symbol: 'QLDY', requestId: id } };
+        const res = {};
+        await router(req, res);
+        assert.deepEqual(calls.at(-1), ['collection', req, res]);
+    }
+    const feedback = { method: 'POST', query: {}, body: { message: 'feedback' } };
+    await router(feedback, {});
+    assert.equal(calls.at(-1)[0], 'feedback');
+    assert.equal(calls.at(-1)[1], feedback);
+});

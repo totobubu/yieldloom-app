@@ -31,6 +31,7 @@
     import StockHoldingPanel from '@/components/stock/StockHoldingPanel.vue';
     import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
     import StockPriceHistory from '@/components/stock/StockPriceHistory.vue';
+    import AdminStockCollection from '@/components/stock/AdminStockCollection.vue';
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
     import { monthlyDividendSeries } from '@/services/stockAnalysis.js';
     import DividendReviewPrompt from '@/components/stock/DividendReviewPrompt.vue';
@@ -568,6 +569,26 @@
             if (sequence === loadSequence) loading.value = false;
         }
     };
+    function applyCollectedData(payload) {
+        if (payload.ticker?.symbol !== selectedInfo.value?.symbol) return;
+        selectedData.value = payload.ticker;
+        selectedInfo.value = {
+            ...selectedInfo.value,
+            ...payload.ticker.tickerInfo,
+        };
+        dataStatus.value = payload.dataStatus;
+        comparison.value = null;
+        candleState.value = null;
+        schedule.value = null;
+        loadDividendSchedule(selectedInfo.value.symbol, undefined, {
+            force: true,
+        })
+            .then((value) => {
+                if (payload.ticker.symbol === selectedInfo.value?.symbol)
+                    schedule.value = value;
+            })
+            .catch(() => {});
+    }
     const prepareExportDocument = (document, dimensions) => {
         document
             .querySelectorAll('.thumbnail-preview-artboard')
@@ -814,8 +835,12 @@
                         </div>
                     </div>
                 </div>
+                <AdminStockCollection
+                    v-if="!archived && isPortfolioAdmin(firebaseUser)"
+                    :symbol="selectedInfo.symbol"
+                    @collected="applyCollectedData" />
                 <Button
-                    v-if="!archived && activeTab !== 'share'"
+                    v-else-if="!archived && activeTab !== 'share'"
                     label="공유 카드 만들기"
                     icon="pi pi-share-alt"
                     severity="secondary"
@@ -1098,6 +1123,7 @@
                             class="stock-section">
                             <StockCandlestickChart
                                 v-if="!archived"
+                                :key="`${selectedInfo.symbol}:${selectedData.sourceStatus?.asOf || ''}`"
                                 :symbol="selectedInfo.symbol"
                                 :currency="selectedInfo.currency || ''"
                                 :events="stockEvents"

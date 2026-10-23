@@ -185,7 +185,7 @@ jobs:
         run: node scripts/content_pipeline/render_public_event.mjs '${{ inputs.eventId }}'
 
       - name: Enrich and verify rotating dividend evidence
-        if: ${{ always() && steps.restore.outcome == 'success' && steps.target.outputs.scope != 'render' }}
+        if: ${{ always() && steps.restore.outcome == 'success' && steps.target.outputs.scope != 'render' && steps.target.outputs.scope != 'ticker' }}
         continue-on-error: true
         run: python scripts/content_pipeline/enrich_dividends.py --limit 50 --search-limit 5
 
@@ -209,6 +209,9 @@ jobs:
         run: python scripts/content_pipeline/validate_refresh_outputs.py
 
       - name: Commit public Content Studio outputs
+        env:
+          REFRESH_REQUEST_ID: ${{ inputs.requestId }}
+          REFRESH_SCOPE: ${{ steps.target.outputs.scope }}
         if: ${{ always() && steps.validate.outcome == 'success' }}
         shell: bash
         run: |
@@ -216,7 +219,12 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add public/content-studio/
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'chore: refresh Content Studio data [skip ci]'
+          title='chore: refresh Content Studio data [skip ci]'
+          if [[ "$REFRESH_SCOPE" == 'ticker' && -n "$REFRESH_REQUEST_ID" ]]; then
+            # Manual single-ticker requests need normal deployment triggers.
+            title='chore: 선택 종목 수집 데이터 갱신'
+          fi
+          git commit -m "$title" -m "Refresh-Request: $REFRESH_REQUEST_ID"
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
       - name: Report refresh failure

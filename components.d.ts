@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AccountRecoveryOverview: typeof import('./src/components/portfolio/AccountRecoveryOverview.vue')['default']
+    AdminStockCollection: typeof import('./src/components/stock/AdminStockCollection.vue')['default']
     AdSlot: typeof import('./src/components/ads/AdSlot.vue')['default']
     AdvancedPortfolioInsights: typeof import('./src/components/portfolio/AdvancedPortfolioInsights.vue')['default']
     AssetAccountList: typeof import('./src/components/portfolio/AssetAccountList.vue')['default']

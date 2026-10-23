@@ -4,7 +4,10 @@
     import Paginator from 'primevue/paginator';
     import InfoHelp from '@/components/common/InfoHelp.vue';
     import DividendRocChart from './DividendRocChart.vue';
-    import { dividendRocHistory } from '../../../lib/dividend-roc-history.js';
+    import {
+        dividendRocHistory,
+        monthlyDividendRocSummary,
+    } from '../../../lib/dividend-roc-history.js';
     const props = defineProps({
         history: { type: Array, default: () => [] },
         observations: { type: Array, default: () => [] },
@@ -12,10 +15,12 @@
         loading: Boolean,
         failed: Boolean,
     });
-    const view = ref('table'),
-        page = ref(0);
+    const view = ref('monthly'),
+        page = ref(0),
+        selectedMonth = ref('');
     const modes = [
-        { label: '표', value: 'table', icon: 'pi pi-table' },
+        { label: '월별 요약', value: 'monthly', icon: 'pi pi-calendar' },
+        { label: '회차별 이력', value: 'table', icon: 'pi pi-list' },
         { label: '차트', value: 'chart', icon: 'pi pi-chart-line' },
     ];
     const rows = computed(() =>
@@ -23,6 +28,43 @@
     );
     const pageRows = computed(() =>
         rows.value.slice(page.value * 12, (page.value + 1) * 12)
+    );
+    const monthly = computed(() =>
+        monthlyDividendRocSummary(
+            rows.value.filter((row) => row.currency === props.currency)
+        )
+    );
+    const years = computed(() => [
+        ...new Set(monthly.value.map((row) => row.year)),
+    ]);
+    const monthlyByKey = computed(
+        () => new Map(monthly.value.map((row) => [row.key, row]))
+    );
+    const yearTotals = computed(
+        () =>
+            new Map(
+                years.value.map((year) => {
+                    const yearRows = monthly.value.filter(
+                        (row) => row.year === year
+                    );
+                    return [
+                        year,
+                        {
+                            distributionTotal: yearRows.reduce(
+                                (sum, row) => sum + row.distributionTotal,
+                                0
+                            ),
+                            paymentCount: yearRows.reduce(
+                                (sum, row) => sum + row.paymentCount,
+                                0
+                            ),
+                        },
+                    ];
+                })
+            )
+    );
+    const selectedSummary = computed(() =>
+        monthlyByKey.value.get(selectedMonth.value)
     );
     const annual = computed(() =>
         props.observations
@@ -71,11 +113,29 @@
             : currency === 'USD'
               ? `$${value}`
               : `${value} ${currency}`;
+    const summaryMoney = (value, currency) => {
+        const amount = Number(value).toLocaleString('ko-KR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 4,
+        });
+        return currency === 'USD' ? `$${amount}` : `${amount} ${currency}`;
+    };
+    const rocLabel = (row) => {
+        if (row?.weightedRocPercent == null) return 'ROC —';
+        const partial = row.rocKnownCount < row.paymentCount ? '*' : '';
+        return `ROC ${row.weightedRocPercent.toFixed(1)}%${partial}`;
+    };
     const helpText =
         '‘—’는 값 미제공이며 0이 아닙니다. ROC는 분배금 중 자본환급으로 보고된 부분으로, 분배금에 더하지 않습니다. 배당락일·통화·금액이 일치하는 배당과 ROC 지급 내역을 연결합니다. 일치하지 않는 기록은 별도 행으로 표시합니다. ROC 금액은 원문 제공값만 표시하며 비율로 역산하지 않습니다. 추정 자료와 최종 세무 결과는 다를 수 있습니다. 같은 지급 건은 확정 자료를 우선하고 같은 단계의 ROC 값이 다르면 미확인으로 표시합니다. 회계연도 누적 자료는 지급 건별 이력에 합산하지 않습니다.';
-    watch(rows, () => {
-        page.value = 0;
-    });
+    watch(
+        rows,
+        () => {
+            page.value = 0;
+            if (!monthlyByKey.value.has(selectedMonth.value))
+                selectedMonth.value = monthly.value.at(-1)?.key ?? '';
+        },
+        { immediate: true }
+    );
 </script>
 <template>
     <section
@@ -131,7 +191,187 @@
             확인 가능한 배당·ROC 지급 이력이 없습니다.
         </p>
         <template v-if="rows.length">
-            <div v-if="view === 'table'" class="history-table-wrap">
+            <div
+                v-if="view === 'monthly' && monthly.length"
+                class="monthly-history">
+                <div
+                    class="monthly-table-wrap"
+                    tabindex="0"
+                    role="region"
+                    aria-label="연도별 월간 배당과 ROC 요약">
+                    <table class="monthly-table">
+                        <caption class="studio-sr-only">
+                            연도별 월간 주당 분배금 합계, 지급 회차 및 ROC 비율
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">월</th>
+                                <th
+                                    v-for="year in years"
+                                    :key="year"
+                                    scope="col">
+                                    {{ year }}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="month in 12" :key="month">
+                                <th scope="row">{{ month }}월</th>
+                                <td v-for="year in years" :key="year">
+                                    <button
+                                        v-if="
+                                            monthlyByKey.get(
+                                                `${year}-${String(month).padStart(2, '0')}`
+                                            )
+                                        "
+                                        type="button"
+                                        class="monthly-cell"
+                                        :class="{
+                                            selected:
+                                                selectedMonth ===
+                                                `${year}-${String(month).padStart(2, '0')}`,
+                                        }"
+                                        :aria-pressed="
+                                            selectedMonth ===
+                                            `${year}-${String(month).padStart(2, '0')}`
+                                        "
+                                        :aria-label="`${year}년 ${month}월 상세 보기`"
+                                        @click="
+                                            selectedMonth = `${year}-${String(month).padStart(2, '0')}`
+                                        ">
+                                        <strong>{{
+                                            summaryMoney(
+                                                monthlyByKey.get(
+                                                    `${year}-${String(month).padStart(2, '0')}`
+                                                ).distributionTotal,
+                                                monthlyByKey.get(
+                                                    `${year}-${String(month).padStart(2, '0')}`
+                                                ).currency
+                                            )
+                                        }}</strong>
+                                        <small
+                                            >{{
+                                                monthlyByKey.get(
+                                                    `${year}-${String(month).padStart(2, '0')}`
+                                                ).paymentCount
+                                            }}회 ·
+                                            {{
+                                                rocLabel(
+                                                    monthlyByKey.get(
+                                                        `${year}-${String(month).padStart(2, '0')}`
+                                                    )
+                                                )
+                                            }}</small
+                                        >
+                                    </button>
+                                    <span v-else class="monthly-missing"
+                                        >—</span
+                                    >
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th scope="row">합계</th>
+                                <td v-for="year in years" :key="year">
+                                    <strong>{{
+                                        summaryMoney(
+                                            yearTotals.get(year)
+                                                .distributionTotal,
+                                            currency
+                                        )
+                                    }}</strong>
+                                    <small
+                                        >{{
+                                            yearTotals.get(year).paymentCount
+                                        }}회</small
+                                    >
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <section
+                    v-if="selectedSummary"
+                    class="selected-month"
+                    aria-live="polite"
+                    :aria-label="`${selectedSummary.year}년 ${selectedSummary.month}월 회차별 이력`">
+                    <header>
+                        <div>
+                            <h3>
+                                {{ selectedSummary.year }}년
+                                {{ selectedSummary.month }}월
+                            </h3>
+                            <p>
+                                총
+                                {{
+                                    summaryMoney(
+                                        selectedSummary.distributionTotal,
+                                        selectedSummary.currency
+                                    )
+                                }}
+                                · {{ selectedSummary.paymentCount }}회 ·
+                                {{ rocLabel(selectedSummary) }}
+                            </p>
+                        </div>
+                        <span
+                            v-if="
+                                selectedSummary.rocKnownCount <
+                                selectedSummary.paymentCount
+                            "
+                            >ROC {{ selectedSummary.rocKnownCount }}/{{
+                                selectedSummary.paymentCount
+                            }}회 확인</span
+                        >
+                    </header>
+                    <div class="selected-month-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">배당락일</th>
+                                    <th scope="col">지급일</th>
+                                    <th scope="col">주당 분배금</th>
+                                    <th scope="col">ROC 비율</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="row in selectedSummary.rows"
+                                    :key="row.id">
+                                    <th scope="row">{{ row.exDate }}</th>
+                                    <td>{{ row.payableDate || '미확인' }}</td>
+                                    <td>
+                                        {{
+                                            money(
+                                                row.distributionAmount,
+                                                row.currency
+                                            )
+                                        }}
+                                    </td>
+                                    <td class="payment-percent">
+                                        {{ display(row.rocPercent)
+                                        }}{{
+                                            row.rocPercent == null ? '' : '%'
+                                        }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                <p class="history-note monthly-note">
+                    * 일부 회차만 ROC 비율이 확인된 달입니다. 월 ROC는 확인된
+                    회차의 분배금으로 가중 계산합니다.
+                </p>
+            </div>
+            <p
+                v-else-if="view === 'monthly'"
+                class="history-empty"
+                role="status">
+                월별로 묶을 수 있는 배당락일과 분배금이 없습니다. 회차별
+                이력에서 원본 자료를 확인해 주세요.
+            </p>
+            <div v-else-if="view === 'table'" class="history-table-wrap">
                 <table class="history-table">
                     <caption class="studio-sr-only">
                         배당·ROC 지급 이력
@@ -195,7 +435,7 @@
             </div>
             <DividendRocChart v-else :rows="pageRows" :currency="currency" />
             <Paginator
-                v-if="rows.length > 12"
+                v-if="view !== 'monthly' && rows.length > 12"
                 :first="page * 12"
                 :rows="12"
                 :total-records="rows.length"
@@ -300,6 +540,132 @@
         color: var(--app-accent);
         text-decoration: none;
     }
+    .monthly-table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--app-border-subtle);
+        border-radius: 12px;
+    }
+    .monthly-table {
+        min-width: max-content;
+    }
+    .monthly-table th:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        min-width: 64px;
+        background: var(--app-surface);
+    }
+    .monthly-table thead th:first-child {
+        z-index: 2;
+        background: var(--app-surface-muted);
+    }
+    .monthly-table th:not(:first-child),
+    .monthly-table td {
+        min-width: 142px;
+        text-align: center;
+        padding: 0;
+    }
+    .monthly-table tbody th,
+    .monthly-table tfoot th {
+        padding: 16px 12px;
+    }
+    .monthly-table td {
+        border-left: 1px solid var(--app-border-subtle);
+    }
+    .monthly-cell {
+        display: flex;
+        width: 100%;
+        min-height: 68px;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 10px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: var(--app-text);
+        cursor: pointer;
+        font: inherit;
+    }
+    .monthly-cell:hover,
+    .monthly-cell:focus-visible {
+        background: var(--app-surface-muted);
+    }
+    .monthly-cell.selected {
+        background: color-mix(in srgb, var(--app-accent) 12%, transparent);
+        box-shadow: inset 0 0 0 2px var(--app-accent);
+    }
+    .monthly-cell strong,
+    .monthly-table tfoot strong {
+        color: var(--app-accent);
+        font-size: 13px;
+    }
+    .monthly-table small {
+        margin-top: 0;
+        white-space: nowrap;
+    }
+    .monthly-missing {
+        display: grid;
+        min-height: 68px;
+        place-items: center;
+        color: var(--app-muted);
+    }
+    .monthly-table tfoot th,
+    .monthly-table tfoot td {
+        background: var(--app-surface-muted);
+        border-top: 1px solid var(--app-border);
+        border-bottom: 0;
+    }
+    .monthly-table tfoot td {
+        padding: 12px;
+    }
+    .selected-month {
+        margin-top: 16px;
+        padding: 18px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface-muted);
+    }
+    .selected-month > header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .selected-month h3 {
+        margin: 0;
+        font-size: 16px;
+    }
+    .selected-month header p {
+        margin: 5px 0 0;
+        color: var(--app-muted);
+        font-size: 12px;
+    }
+    .selected-month header > span {
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--app-surface);
+        color: var(--app-muted);
+        font-size: 11px;
+        white-space: nowrap;
+    }
+    .selected-month-scroll {
+        overflow-x: auto;
+        border-radius: 8px;
+        background: var(--app-surface);
+    }
+    .selected-month-scroll table {
+        min-width: 560px;
+    }
+    .selected-month-scroll th:nth-child(n + 3),
+    .selected-month-scroll td:nth-child(n + 3) {
+        text-align: right;
+    }
+    .monthly-note {
+        margin: 10px 0 0;
+    }
     table {
         width: 100%;
         border-collapse: collapse;
@@ -391,6 +757,16 @@
         }
         .history-heading {
             align-items: flex-start;
+        }
+        .monthly-table th:not(:first-child),
+        .monthly-table td {
+            min-width: 132px;
+        }
+        .selected-month {
+            padding: 14px;
+        }
+        .selected-month > header {
+            flex-direction: column;
         }
         .history-table-wrap {
             border: 0;

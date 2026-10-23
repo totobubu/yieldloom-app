@@ -4,7 +4,8 @@
     import SelectButton from 'primevue/selectbutton';
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
-    import { monthDays } from '@/services/portfolioCalendar.js';
+    import InfoHelp from '@/components/common/InfoHelp.vue';
+    import { calendarToday, monthDays } from '@/services/portfolioCalendar.js';
     const props = defineProps({
         symbol: { type: String, required: true },
         rows: { type: Array, default: () => [] },
@@ -26,18 +27,22 @@
     const byDate = computed(
         () => new Map(prices.value.map((row) => [row.date, row]))
     );
+    const currentMonth = calendarToday().slice(0, 7);
     const latestMonth = computed(() => prices.value[0]?.date.slice(0, 7) || '');
+    const lastMonth = computed(() =>
+        latestMonth.value > currentMonth ? latestMonth.value : currentMonth
+    );
     const firstMonth = computed(
         () => prices.value.at(-1)?.date.slice(0, 7) || ''
     );
     watch(
-        [() => props.symbol, latestMonth, firstMonth],
+        [() => props.symbol, latestMonth, firstMonth, lastMonth],
         ([symbol], [previousSymbol] = []) => {
             if (
                 symbol !== previousSymbol ||
                 !period.value ||
                 period.value < firstMonth.value ||
-                period.value > latestMonth.value
+                period.value > lastMonth.value
             )
                 period.value = latestMonth.value;
         },
@@ -66,6 +71,10 @@
     );
     const number = (value) =>
         Number(value).toLocaleString('ko-KR', { maximumFractionDigits: 4 });
+    const price = (value) =>
+        props.currency === 'USD'
+            ? `$ ${number(value)}`
+            : `${number(value)} ${props.currency}`;
     function moveMonth(offset) {
         const date = new Date(`${period.value}-01T12:00:00Z`);
         date.setUTCMonth(date.getUTCMonth() + offset);
@@ -76,7 +85,12 @@
     <section class="stock-price-history" aria-label="일별 종가 이력">
         <header class="history-header">
             <div>
-                <h2>시세 이력</h2>
+                <div class="history-title">
+                    <h2>시세 이력</h2>
+                    <InfoHelp
+                        label="시세 이력 안내"
+                        :text="`${currency} 기준 · ‘—’는 시세 미제공입니다. 휴장일 또는 수집되지 않은 날짜에 가격을 채우지 않습니다.`" />
+                </div>
                 <p>
                     최근 {{ prices.length }}개 실제 종가 · {{ currency }} ·
                     {{ basisLabel }}
@@ -108,15 +122,15 @@
                     aria-label="다음 달 시세"
                     text
                     severity="secondary"
-                    :disabled="period >= latestMonth"
+                    :disabled="period >= lastMonth"
                     @click="moveMonth(1)" />
                 <Button
-                    label="최근 시세 월"
+                    label="현재 월"
                     text
                     size="small"
                     severity="secondary"
-                    :disabled="period === latestMonth"
-                    @click="period = latestMonth" />
+                    :disabled="period === currentMonth"
+                    @click="period = currentMonth" />
             </div>
             <div
                 class="calendar-scroll"
@@ -169,7 +183,7 @@
                                         day.day
                                     }}</time>
                                     <strong v-if="byDate.has(day.date)">{{
-                                        number(byDate.get(day.date).close)
+                                        price(byDate.get(day.date).close)
                                     }}</strong>
                                     <span
                                         v-else
@@ -183,10 +197,6 @@
                     </tbody>
                 </table>
             </div>
-            <p class="calendar-note">
-                {{ currency }} 기준 · ‘—’는 시세 미제공입니다. 휴장일 또는
-                수집되지 않은 날짜에 가격을 채우지 않습니다.
-            </p>
         </template>
         <DataTable
             v-else
@@ -197,17 +207,22 @@
             :table-props="{ 'aria-label': '일별 종가 표' }">
             <Column field="date" header="기준일" />
             <Column header="종가"
-                ><template #body="{ data }"
-                    >{{ number(data.close) }} {{ currency }}</template
-                ></Column
+                ><template #body="{ data }">{{
+                    price(data.close)
+                }}</template></Column
             >
         </DataTable>
     </section>
 </template>
 <style scoped>
     .stock-price-history {
-        margin-top: 20px;
+        margin-top: 0;
         min-width: 0;
+    }
+    .history-title {
+        display: flex;
+        align-items: center;
+        gap: 4px;
     }
     .history-header {
         display: flex;
@@ -220,8 +235,7 @@
         margin: 0;
         font-size: 20px;
     }
-    .history-header p,
-    .calendar-note {
+    .history-header p {
         font-size: 12px;
         color: var(--app-muted);
         line-height: 1.7;
@@ -280,9 +294,6 @@
     .no-price {
         color: var(--app-muted);
         font-size: 13px;
-    }
-    .calendar-note {
-        margin: 12px 0 0;
     }
     .empty {
         padding: 28px 16px;

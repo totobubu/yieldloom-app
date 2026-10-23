@@ -1095,8 +1095,7 @@
                                 :symbol="selectedInfo.symbol"
                                 :currency="selectedInfo.currency || ''"
                                 :events="stockEvents" />
-                            <details class="price-history">
-                                <summary>일별 종가 달력·표 보기</summary>
+                            <div class="price-history">
                                 <StockPriceHistory
                                     :symbol="selectedInfo.symbol"
                                     :rows="priceRows"
@@ -1105,7 +1104,7 @@
                                         selectedData.sourceStatus
                                             ?.adjustmentBasis || ''
                                     " />
-                            </details>
+                            </div>
                         </section> </TabPanel
                     ><TabPanel value="dividends">
                         <section
@@ -1915,11 +1914,6 @@
         margin-top: 24px;
         border-top: 1px solid var(--app-border);
         padding-top: 20px;
-    }
-    .price-history summary {
-        cursor: pointer;
-        font-weight: 650;
-        margin-bottom: 16px;
     }
     .stock-data-table {
         margin-top: 20px;

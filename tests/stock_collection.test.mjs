@@ -175,11 +175,16 @@ test('failed or cancelled workflows are never reported as collected', async () =
     }
 });
 
-
 test('collection rewrite preserves method and receipt while feedback stays separate', async () => {
     const { stockActionRouter } = await import('../lib/stock-actions.js');
-    const config = JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
-    const rewrite = config.rewrites.find(row => row.source === '/api/stock-collection');
+    const config = JSON.parse(
+        await (
+            await import('node:fs/promises')
+        ).readFile(new URL('../vercel.json', import.meta.url), 'utf8')
+    );
+    const rewrite = config.rewrites.find(
+        (row) => row.source === '/api/stock-collection'
+    );
     assert.equal(rewrite.destination, '/api/stock-feedback?action=collection');
     const calls = [];
     const router = stockActionRouter({
@@ -187,13 +192,151 @@ test('collection rewrite preserves method and receipt while feedback stays separ
         feedback: async (req, res) => calls.push(['feedback', req, res]),
     });
     for (const method of ['POST', 'GET', 'OPTIONS']) {
-        const req = { method, query: { action: 'collection', symbol: 'QLDY', requestId: id } };
+        const req = {
+            method,
+            query: { action: 'collection', symbol: 'QLDY', requestId: id },
+        };
         const res = {};
         await router(req, res);
         assert.deepEqual(calls.at(-1), ['collection', req, res]);
     }
-    const feedback = { method: 'POST', query: {}, body: { message: 'feedback' } };
+    const feedback = {
+        method: 'POST',
+        query: {},
+        body: { message: 'feedback' },
+    };
     await router(feedback, {});
     assert.equal(calls.at(-1)[0], 'feedback');
     assert.equal(calls.at(-1)[1], feedback);
+});
+
+test('failed collection exposes curated reason and step links without leaking raw logs', async () => {
+    let jobReads = 0,
+        logReads = 0;
+    const { handler } = setup({
+        fetcher: async (url) => {
+            if (url.includes('/actions/runs/123/jobs')) {
+                jobReads++;
+                return reply({
+                    jobs: [
+                        {
+                            id: 456,
+                            steps: [
+                                {
+                                    name: 'Refresh official data',
+                                    number: 10,
+                                    status: 'completed',
+                                    conclusion: 'success',
+                                },
+                                {
+                                    name: 'Commit public Content Studio outputs',
+                                    number: 17,
+                                    conclusion: 'success',
+                                },
+                            ],
+                        },
+                    ],
+                });
+            }
+            if (url.includes('/actions/jobs/456/logs')) {
+                logReads++;
+                return new Response(
+                    'SECRET_EXAMPLE_VALUE\nrefresh.py: error: ticker is not present in the official distribution or catalog index'
+                );
+            }
+            return finished('failure')(url);
+        },
+    });
+    for (let i = 0; i < 2; i++) {
+        const result = await call(handler, 'GET', {
+            symbol: 'QLDY',
+            requestId: id,
+        });
+        assert.equal(result.body.state, 'failed');
+        assert.equal(result.body.diagnostics.code, 'unsupported_source');
+        assert.equal(result.body.diagnostics.steps[0].state, 'failure');
+        assert.equal(result.body.diagnostics.steps[1].state, 'success');
+        assert.match(
+            result.body.diagnostics.steps[0].logUrl,
+            /runs\/123\/job\/456#step:10:1$/
+        );
+        assert(!JSON.stringify(result.body).includes('SECRET_EXAMPLE_VALUE'));
+    }
+    assert.equal(jobReads, 1);
+    assert.equal(logReads, 1);
+});
+
+test('unavailable diagnostic logs retain original failure and run link', async () => {
+    const { handler } = setup({ fetcher: finished('failure') });
+    const result = await call(handler, 'GET', {
+        symbol: 'QLDY',
+        requestId: id,
+    });
+    assert.equal(result.body.state, 'failed');
+    assert.equal(result.body.diagnostics.code, 'workflow_failed');
+    assert.equal(
+        result.body.runUrl,
+        'https://github.com/totobubu/yieldloom-app/actions/runs/123'
+    );
+});
+
+test('latest history is read-only, scoped to ticker and reuses its run lookup', async () => {
+    const { handler, calls } = setup({
+        fetcher: async (url) => {
+            if (url.includes('/actions/workflows/'))
+                return reply({
+                    workflow_runs: [
+                        {
+                            display_title: 'content-refresh:ticker:BAC_other',
+                            id: 999,
+                            status: 'completed',
+                            conclusion: 'failure',
+                        },
+                        {
+                            display_title: `content-refresh:ticker:${id}`,
+                            id: 123,
+                            status: 'completed',
+                            conclusion: 'cancelled',
+                        },
+                    ],
+                });
+            if (url.includes('/actions/runs/123/jobs'))
+                return reply({ jobs: [] });
+            throw Error('Unexpected request');
+        },
+    });
+    const result = await call(handler, 'GET', {
+        symbol: 'QLDY',
+        history: 'latest',
+    });
+    assert.equal(result.body.requestId, id);
+    assert.equal(result.body.diagnostics.code, 'cancelled');
+    assert.equal(
+        calls.filter(([url]) => url.includes('/actions/workflows/')).length,
+        1
+    );
+    assert(!calls.some(([, options]) => options.method === 'POST'));
+    const empty = setup();
+    assert.equal(
+        (
+            await call(empty.handler, 'GET', {
+                symbol: 'QLDY',
+                history: 'latest',
+            })
+        ).body.state,
+        'idle'
+    );
+    const member = setup({
+        user: { email: 'member@example.com', email_verified: true },
+    });
+    assert.equal(
+        (
+            await call(member.handler, 'GET', {
+                symbol: 'QLDY',
+                history: 'latest',
+            })
+        ).code,
+        403
+    );
+    assert.equal(member.calls.length, 0);
 });

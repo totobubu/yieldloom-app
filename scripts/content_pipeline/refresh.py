@@ -22,7 +22,7 @@ from scripts.data_pipeline.register_history import register as register_history
 
 
 def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None,
-                ex_date: date | None = None) -> dict:
+                ex_date: date | None = None, ticker: str | None = None) -> dict:
     command = [
         sys.executable,
         "scripts/content_pipeline/collect.py",
@@ -33,6 +33,8 @@ def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None,
         "--raw-dir",
         str(raw_dir),
     ]
+    if ticker:
+        command.extend(["--ticker", ticker])
     if url:
         command.extend(["--url", url])
     if ex_date:
@@ -151,7 +153,7 @@ def main() -> int:
         for provider in providers:
             try:
                 payload = run_collect(
-                    provider, args.db, args.raw_dir, selected_url, args.ex_date
+                    provider, args.db, args.raw_dir, selected_url, args.ex_date, ticker
                 )
                 step_status = "warning" if payload.get("status") == "partial" else "success"
                 warned = warned or step_status == "warning"

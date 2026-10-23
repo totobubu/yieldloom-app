@@ -555,16 +555,6 @@
                                 >{{ row.dividendEtfs.length }}개 ETF 편입</span
                             >
                         </div>
-                        <router-link
-                            :to="stockLink(row)"
-                            class="stock-detail-link"
-                            >{{
-                                hasDividendMetrics(row)
-                                    ? '상세 배당 분석'
-                                    : '종목 상세 보기'
-                            }}
-                            <i class="pi pi-angle-right" aria-hidden="true"
-                        /></router-link>
                     </div>
                 </li>
             </ul>
@@ -785,16 +775,6 @@
         line-height: 1.3;
         overflow-wrap: anywhere;
     }
-    .stock-detail-link {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 4px;
-        color: var(--app-accent);
-        font-size: 12px;
-        font-weight: 600;
-        text-decoration: none;
-    }
     .stock-card-heading span {
         min-height: 2.5em;
         overflow: hidden;
@@ -949,9 +929,6 @@
         .stock-card-meta {
             border-top: 0;
             padding-top: 0;
-        }
-        .stock-detail-link {
-            display: none;
         }
         .stock-card-grid,
         .loading-cards {

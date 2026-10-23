@@ -123,6 +123,9 @@ function finished(conclusion = 'success', release = sha) {
                         id: 123,
                         status: 'completed',
                         conclusion,
+                        created_at: '2026-10-23T01:00:00Z',
+                        run_started_at: '2026-10-23T01:01:00Z',
+                        updated_at: '2026-10-23T01:05:00Z',
                     },
                 ],
             });
@@ -130,7 +133,10 @@ function finished(conclusion = 'success', release = sha) {
             return reply([
                 {
                     sha,
-                    commit: { message: `update\n\nRefresh-Request: ${id}` },
+                    commit: {
+                        message: `update\n\nRefresh-Request: ${id}`,
+                        committer: { date: '2026-10-23T01:06:00Z' },
+                    },
                 },
             ]);
         if (url.includes('/app-release.json'))
@@ -162,6 +168,20 @@ test('collection success waits for production publication before returning fresh
     });
     assert.equal(r.body.state, 'ready');
     assert.equal(r.body.data.ticker.symbol, 'QLDY');
+    assert.deepEqual(
+        {
+            requestedAt: r.body.requestedAt,
+            startedAt: r.body.startedAt,
+            completedAt: r.body.completedAt,
+            publishedAt: r.body.publishedAt,
+        },
+        {
+            requestedAt: '2026-10-23T01:00:00Z',
+            startedAt: '2026-10-23T01:01:00Z',
+            completedAt: '2026-10-23T01:05:00Z',
+            publishedAt: '2026-10-23T01:06:00Z',
+        }
+    );
     assert.equal(r.headers['Cache-Control'], 'private, no-store');
 });
 test('failed or cancelled workflows are never reported as collected', async () => {
@@ -227,6 +247,8 @@ test('failed collection exposes curated reason and step links without leaking ra
                                     number: 10,
                                     status: 'completed',
                                     conclusion: 'success',
+                                    started_at: '2026-10-23T01:02:00Z',
+                                    completed_at: '2026-10-23T01:03:00Z',
                                 },
                                 {
                                     name: 'Commit public Content Studio outputs',
@@ -256,6 +278,10 @@ test('failed collection exposes curated reason and step links without leaking ra
         assert.equal(result.body.diagnostics.code, 'unsupported_source');
         assert.equal(result.body.diagnostics.steps[0].state, 'failure');
         assert.equal(result.body.diagnostics.steps[1].state, 'success');
+        assert.equal(
+            result.body.diagnostics.steps[0].completedAt,
+            '2026-10-23T01:03:00Z'
+        );
         assert.match(
             result.body.diagnostics.steps[0].logUrl,
             /runs\/123\/job\/456#step:10:1$/

@@ -88,6 +88,9 @@ try {
                     json: {
                         state: 'failed',
                         error: '수집 실패',
+                        requestedAt: '2026-10-23T01:00:00Z',
+                        startedAt: '2026-10-23T01:01:00Z',
+                        completedAt: '2026-10-23T01:05:00Z',
                         runUrl: 'https://github.com/totobubu/yieldloom-app/actions/runs/123',
                         diagnostics: {
                             code: 'unsupported_source',
@@ -98,6 +101,8 @@ try {
                                 {
                                     name: '공식 자료 수집',
                                     state: 'failure',
+                                    startedAt: '2026-10-23T01:02:00Z',
+                                    completedAt: '2026-10-23T01:03:00Z',
                                     logUrl: 'https://github.com/totobubu/yieldloom-app/actions/runs/123/job/456#step:10:1',
                                 },
                             ],
@@ -166,13 +171,19 @@ try {
                 .getByText('QLDY 데이터를 수집하고 있습니다.', { exact: true })
                 .waitFor();
             const loadingDialog = page.locator('.fullscreen-data-loading');
-            assert(await loadingDialog.isVisible());
+            await loadingDialog.waitFor({ state: 'hidden' });
             await page.screenshot({
                 path: `/tmp/admin-stock-collection-loading-${width}.png`,
             });
-            await page.keyboard.press('Escape');
-            assert(await loadingDialog.isVisible());
             assert(await button.isDisabled());
+            assert(
+                await page
+                    .getByRole('button', {
+                        name: '수집 기록',
+                        exact: true,
+                    })
+                    .isEnabled()
+            );
             assert.equal(posts, 1);
             await page.clock.runFor(15050);
             await page
@@ -216,6 +227,21 @@ try {
             assert(
                 await recordDialog
                     .getByText('실패', { exact: true })
+                    .isVisible()
+            );
+            assert(
+                await recordDialog
+                    .getByText('2026. 10. 23. 10:05:00 KST', { exact: true })
+                    .isVisible()
+            );
+            assert(
+                await recordDialog.getByText('5분', { exact: true }).isVisible()
+            );
+            assert(
+                await recordDialog
+                    .getByText('완료 2026. 10. 23. 10:03:00 KST', {
+                        exact: true,
+                    })
                     .isVisible()
             );
             assert.equal(

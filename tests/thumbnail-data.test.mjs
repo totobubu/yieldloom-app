@@ -149,9 +149,28 @@ test('no rivals avoids loading the underlying and duplicating the main ticker', 
     assert.deepEqual(payload.series,{});
 });
 
-test('cross checked official ledger events are usable but review-only events are excluded', () => {
+test('public dividends include review-only issuer captures and retain their review status', () => {
     const events=['official','cross_checked','needs_review'].map((verification_status,index)=>({ex_date:`2026-10-0${index+1}`,distribution_per_share:'0.1000',verification_status}));
-    assert.equal(toBacktestData(events).length,2);
+    const rows = toBacktestData(events);
+    assert.equal(rows.length,3);
+    assert.equal(rows[2].verificationStatus,'needs_review');
+    assert.equal(rows[0].verificationStatus,undefined);
+});
+
+test('duplicate issuer captures count once and verified payments win over review captures', () => {
+    const rows = toBacktestData([
+        {ex_date:'2026-10-01',declared_date:'2026-09-29',distribution_per_share:'0.10',verification_status:'needs_review'},
+        {ex_date:'2026-10-01',declared_date:'2026-09-30',distribution_per_share:'0.12',verification_status:'needs_review'},
+        {ex_date:'2026-10-02',distribution_per_share:'0.20',verification_status:'official'},
+        {ex_date:'2026-10-02',distribution_per_share:'0.90',verification_status:'needs_review'},
+        {ex_date:'2026-10-03',distribution_per_share:'0.30',verification_status:'rejected'},
+        {ex_date:'2026-10-04',distribution_per_share:'0.30',forecasted:true,verification_status:'needs_review'},
+    ]);
+    assert.equal(rows.length,2);
+    assert.equal(rows[0].amount,0.12);
+    assert.equal(rows[0].verificationStatus,'needs_review');
+    assert.equal(rows[1].amount,0.20);
+    assert.equal(rows[1].verificationStatus,undefined);
 });
 
 test('default rivals select every candidate when there are at most three', async () => {
@@ -177,4 +196,21 @@ test('explicit selection including an empty list overrides automatic defaults', 
     const loader = async symbol => ({ symbol, tickerInfo: { price: 100 }, backtestData: [] });
     assert.deepEqual((await buildThumbnailPayload('TSLY', [], loader)).rivals, []);
     assert.deepEqual((await buildThumbnailPayload('TSLY', ['TEST'], loader)).rivals, ['TEST']);
+});
+
+
+test('fresh review dividends survive price snapshot fallback without duplicate snapshot payments', async () => {
+    const value = await loadTickerWithSnapshot('QLDY', 'https://app.example', {
+        priceDataBaseUrl: 'https://prices.example',
+        fetcher: async url => String(url).includes('distribution-ticker-')
+            ? {ok:true,json:async()=>({history:[{ex_date:'2026-10-15',distribution_per_share:'0.1570',verification_status:'needs_review',official_url:'https://issuer.example/'}]})}
+            : {ok:false,status:403},
+        readSnapshot: async()=>({value:{symbol:'QLDY',tickerInfo:{price:40},backtestData:[{date:'2026-10-15',close:40,amount:9}],sourceStatus:{price:'r2_projection'}},savedAt:'2026-10-15T20:00:00Z'}),
+        writeSnapshot:async()=>false,
+    });
+    assert.equal(value.backtestData.length,1);
+    assert.equal(value.backtestData[0].amount,0.157);
+    assert.equal(value.backtestData[0].verificationStatus,'needs_review');
+    assert.equal(value.sourceStatus.dividendReviewCount,1);
+    assert.equal(value.sourceStatus.freshness,'stale');
 });

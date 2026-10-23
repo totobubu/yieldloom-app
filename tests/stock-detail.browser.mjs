@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { unzipSync } from 'fflate';
+const base = process.env.UI_BASE_URL || 'http://127.0.0.1:5173';
 const browser = await chromium.launch({
     headless: true,
     executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
@@ -86,7 +87,7 @@ try {
             },
         })
     );
-    await page.goto('http://127.0.0.1:5173/thumbnail/TOPW?rivals=');
+    await page.goto(`${base}/thumbnail/TOPW?rivals=`);
     await page.getByRole('heading', { name: 'TOPW 종목 개요' }).waitFor();
     assert.match(page.url(), /\/stock\/TOPW\?rivals=/);
     const candleRows = Array.from({ length: 150 }, (_, i) => ({
@@ -156,13 +157,17 @@ try {
         fullPage: true,
     });
     await page.setViewportSize({ width: 1440, height: 1000 });
-    await page.getByText('일별 종가 표 보기', { exact: true }).click();
+    await page.getByText('일별 종가 달력·표 보기', { exact: true }).click();
+    await page
+        .locator('.stock-price-history')
+        .getByRole('button', { name: '표', exact: true })
+        .click();
     await page
         .getByRole('heading', { name: '시세 이력', exact: true })
         .waitFor();
     assert.equal(
         await page
-            .getByRole('table', { name: '일별 종가 이력', exact: true })
+            .getByRole('table', { name: '일별 종가 표', exact: true })
             .locator('tbody tr')
             .count(),
         16

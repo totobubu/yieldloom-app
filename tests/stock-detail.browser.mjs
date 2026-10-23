@@ -167,10 +167,10 @@ try {
         .waitFor();
     assert.equal(
         await page
-            .getByRole('table', { name: '일별 종가 표', exact: true })
+            .getByRole('table', { name: '일별 시세 표', exact: true })
             .locator('tbody tr')
             .count(),
-        16
+        120
     );
     await page.getByRole('tab', { name: '배당정보', exact: true }).click();
     await page

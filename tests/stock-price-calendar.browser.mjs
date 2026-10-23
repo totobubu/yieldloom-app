@@ -55,13 +55,16 @@ try {
                     symbol: 'QLDY',
                     currency: 'USD',
                     source: 'fixture',
-                    candles: prices.map((p) => ({
-                        ...p,
-                        open: p.close,
-                        high: p.close,
-                        low: p.close,
-                        volume: 100,
-                    })),
+                    candles: prices
+                        .filter((p) => p.date !== '2026-10-21')
+                        .map((p) => ({
+                            ...p,
+                            open: p.close - 0.5,
+                            high: p.close + 1,
+                            low: p.close - 1,
+                            close: p.date === '2026-10-22' ? 44.5 : p.close,
+                            volume: p.date === '2026-10-22' ? 0 : 100,
+                        })),
                 },
             });
         });
@@ -88,7 +91,7 @@ try {
             await history
                 .locator('[data-date="2026-10-22"] strong')
                 .innerText(),
-            '$ 44'
+            '$ 44.5'
         );
         assert.equal(
             await history
@@ -126,7 +129,59 @@ try {
         await history
             .getByRole('button', { name: '현재 월', exact: true })
             .click();
+        const day = history.getByRole('button', {
+            name: '2026-10-22 시세 상세',
+            exact: true,
+        });
+        await day.focus();
+        await page.keyboard.press('Enter');
+        const detail = page.getByRole('dialog', {
+            name: '2026-10-22 시세 상세',
+            exact: true,
+        });
+        await detail.waitFor();
+        assert.deepEqual(await detail.locator('dd').allTextContents(), [
+            '$ 43.5',
+            '$ 45',
+            '$ 43',
+            '$ 44.5',
+            '0주',
+        ]);
+        await detail.screenshot({
+            path: `/tmp/stock-price-detail-${width}.png`,
+        });
+        await page.keyboard.press('Escape');
+        await detail.waitFor({ state: 'hidden' });
+        assert(await day.evaluate((el) => el === document.activeElement));
+        await history
+            .getByRole('button', { name: '2026-10-21 시세 상세', exact: true })
+            .click();
+        const fallback = page.getByRole('dialog', {
+            name: '2026-10-21 시세 상세',
+            exact: true,
+        });
+        await fallback.waitFor();
+        assert.deepEqual(await fallback.locator('dd').allTextContents(), [
+            '—',
+            '—',
+            '—',
+            '$ 43.25',
+            '—',
+        ]);
+        await page.keyboard.press('Escape');
         await history.getByRole('button', { name: '표', exact: true }).click();
+        assert.deepEqual(await history.locator('thead th').allTextContents(), [
+            '기준일',
+            '시가',
+            '고가',
+            '저가',
+            '종가',
+            '거래량',
+        ]);
+        assert.match(
+            await history.locator('tbody tr').first().innerText(),
+            /43\.5[\s\S]*45[\s\S]*43[\s\S]*44\.5[\s\S]*0주/
+        );
         assert.equal(await history.locator('tbody tr').count(), 7);
         assert.match(await history.locator('tbody').innerText(), /\$ 40\.5956/);
         await history
@@ -137,6 +192,23 @@ try {
             .waitFor({ state: 'hidden' });
         assert.equal(quotes, 1);
         assert.equal(candles, 1);
+        if (width === 1440) {
+            await page
+                .getByRole('tab', { name: '상세정보', exact: true })
+                .click();
+            await page
+                .getByRole('tab', { name: '시세정보', exact: true })
+                .click();
+            await history
+                .getByRole('button', {
+                    name: '2026-10-22 시세 상세',
+                    exact: true,
+                })
+                .filter({ hasText: '$ 44.5' })
+                .waitFor();
+            assert.equal(quotes, 1);
+            assert.equal(candles, 1);
+        }
         assert(
             await page.evaluate(
                 () => document.documentElement.scrollWidth <= innerWidth
@@ -200,6 +272,65 @@ try {
             .getByRole('button', { name: '현재 월', exact: true })
             .isDisabled()
     );
+    await staleHistory
+        .getByRole('button', { name: '이전 달 시세', exact: true })
+        .click();
+    await staleHistory
+        .getByRole('button', { name: '2026-10-22 시세 상세', exact: true })
+        .click();
+    const failedDetail = stale.getByRole('dialog', {
+        name: '2026-10-22 시세 상세',
+        exact: true,
+    });
+    await failedDetail.waitFor();
+    assert.deepEqual(await failedDetail.locator('dd').allTextContents(), [
+        '—',
+        '—',
+        '—',
+        '$ 44',
+        '—',
+    ]);
+    await stale.keyboard.press('Escape');
+    assert.match(
+        await staleHistory.locator('.history-status').innerText(),
+        /상세 일봉을 불러오지 못했습니다/
+    );
+    await stale.route('**/api/stock-prices?**', (r) =>
+        r.fulfill({
+            json: {
+                symbol: 'QLDY',
+                currency: 'USD',
+                candles: [
+                    {
+                        date: '2026-10-22',
+                        open: 43,
+                        high: 45,
+                        low: 42,
+                        close: 44.5,
+                        volume: 1200,
+                    },
+                ],
+            },
+        })
+    );
+    await stale.getByRole('button', { name: '다시 시도', exact: true }).click();
+    await staleHistory
+        .getByRole('button', { name: '2026-10-22 시세 상세', exact: true })
+        .filter({ hasText: '$ 44.5' })
+        .click();
+    const retried = stale.getByRole('dialog', {
+        name: '2026-10-22 시세 상세',
+        exact: true,
+    });
+    await retried.waitFor();
+    assert.deepEqual(await retried.locator('dd').allTextContents(), [
+        '$ 43',
+        '$ 45',
+        '$ 42',
+        '$ 44.5',
+        '1,200주',
+    ]);
+    assert.equal(await staleHistory.locator('.history-status').count(), 0);
     await stale.close();
     console.log(
         'PASS stale history: current month uses today rather than latest quoted month'

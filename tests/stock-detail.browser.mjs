@@ -157,7 +157,7 @@ try {
         fullPage: true,
     });
     await page.setViewportSize({ width: 1440, height: 1000 });
-    await page.getByText('일별 종가 달력·표 보기', { exact: true }).click();
+    await page.locator('.stock-price-history').waitFor();
     await page
         .locator('.stock-price-history')
         .getByRole('button', { name: '표', exact: true })

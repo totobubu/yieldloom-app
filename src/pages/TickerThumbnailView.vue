@@ -92,6 +92,12 @@
         else router.push('/');
     };
     const selectedInfo = ref(null);
+    const candleState = ref(null);
+    const historyCandleState = computed(() =>
+        candleState.value?.symbol === selectedInfo.value?.symbol
+            ? candleState.value
+            : null
+    );
     const selectedData = ref(null);
     const archived = computed(() => isDelisted(selectedInfo.value));
     const loading = ref(true);
@@ -1094,11 +1100,20 @@
                                 v-if="!archived"
                                 :symbol="selectedInfo.symbol"
                                 :currency="selectedInfo.currency || ''"
-                                :events="stockEvents" />
+                                :events="stockEvents"
+                                @prices-state="candleState = $event" />
                             <div class="price-history">
                                 <StockPriceHistory
                                     :symbol="selectedInfo.symbol"
                                     :rows="priceRows"
+                                    :candles="
+                                        historyCandleState?.payload?.candles ||
+                                        []
+                                    "
+                                    :loading="
+                                        historyCandleState?.loading || false
+                                    "
+                                    :error="historyCandleState?.error || ''"
                                     :currency="selectedInfo.currency || 'USD'"
                                     :adjustment-basis="
                                         selectedData.sourceStatus

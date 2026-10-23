@@ -4,11 +4,16 @@
     import SelectButton from 'primevue/selectbutton';
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
+    import Dialog from 'primevue/dialog';
+    import Message from 'primevue/message';
     import InfoHelp from '@/components/common/InfoHelp.vue';
     import { calendarToday, monthDays } from '@/services/portfolioCalendar.js';
     const props = defineProps({
         symbol: { type: String, required: true },
         rows: { type: Array, default: () => [] },
+        candles: { type: Array, default: () => [] },
+        loading: { type: Boolean, default: false },
+        error: { type: String, default: '' },
         currency: { type: String, default: 'USD' },
         adjustmentBasis: { type: String, default: '' },
     });
@@ -18,15 +23,36 @@
         { label: '달력', value: 'calendar' },
         { label: '표', value: 'table' },
     ];
-    // The page has already filtered actual prices. Sorting a copy avoids changing its chart input.
-    const prices = computed(() =>
-        [...props.rows]
+    const selectedDate = ref(null);
+    const fields = [
+        { key: 'open', label: '시가' },
+        { key: 'high', label: '고가' },
+        { key: 'low', label: '저가' },
+        { key: 'close', label: '종가' },
+    ];
+    // Prefer the complete candle row; never mix adjusted fallback closes with OHLC.
+    const prices = computed(() => {
+        const rows = new Map(
+            props.rows.map((row) => [
+                row.date,
+                { date: row.date, close: row.close },
+            ])
+        );
+        for (const row of props.candles) {
+            if (row.date <= calendarToday() && Number(row.close) > 0)
+                rows.set(row.date, { ...row, candle: true });
+        }
+        return [...rows.values()]
             .sort((a, b) => b.date.localeCompare(a.date))
-            .slice(0, 120)
-    );
+            .slice(0, 120);
+    });
     const byDate = computed(
         () => new Map(prices.value.map((row) => [row.date, row]))
     );
+    const selectedPrice = computed(() => byDate.value.get(selectedDate.value));
+    watch([() => props.symbol, period], () => {
+        selectedDate.value = null;
+    });
     const currentMonth = calendarToday().slice(0, 7);
     const latestMonth = computed(() => prices.value[0]?.date.slice(0, 7) || '');
     const lastMonth = computed(() =>
@@ -71,10 +97,13 @@
     );
     const number = (value) =>
         Number(value).toLocaleString('ko-KR', { maximumFractionDigits: 4 });
+    const provided = (value) => value != null && Number.isFinite(Number(value));
     const price = (value) =>
-        props.currency === 'USD'
-            ? `$ ${number(value)}`
-            : `${number(value)} ${props.currency}`;
+        !provided(value)
+            ? '—'
+            : props.currency === 'USD'
+              ? `$ ${number(value)}`
+              : `${number(value)} ${props.currency}`;
     function moveMonth(offset) {
         const date = new Date(`${period.value}-01T12:00:00Z`);
         date.setUTCMonth(date.getUTCMonth() + offset);
@@ -82,7 +111,7 @@
     }
 </script>
 <template>
-    <section class="stock-price-history" aria-label="일별 종가 이력">
+    <section class="stock-price-history" aria-label="일별 시세 이력">
         <header class="history-header">
             <div>
                 <div class="history-title">
@@ -92,8 +121,9 @@
                         :text="`${currency} 기준 · ‘—’는 시세 미제공입니다. 휴장일 또는 수집되지 않은 날짜에 가격을 채우지 않습니다.`" />
                 </div>
                 <p>
-                    최근 {{ prices.length }}개 실제 종가 · {{ currency }} ·
-                    {{ basisLabel }}
+                    최근 {{ prices.length }}거래일 · 달력은 종가 표시 ·
+                    {{ currency }} ·
+                    {{ candles.length ? '일봉 제공처 기준' : basisLabel }}
                 </p>
             </div>
             <SelectButton
@@ -104,6 +134,21 @@
                 :allow-empty="false"
                 aria-label="시세 이력 표시 방식" />
         </header>
+        <Message
+            v-if="loading"
+            severity="info"
+            :closable="false"
+            class="history-status"
+            >일별 시세를 불러오고 있습니다.</Message
+        >
+        <Message
+            v-else-if="error"
+            severity="warn"
+            :closable="false"
+            class="history-status"
+            >상세 일봉을 불러오지 못했습니다. 제공된 종가만 표시합니다. 위
+            차트에서 다시 시도할 수 있습니다.</Message
+        >
         <p v-if="!prices.length" class="empty" role="status">
             확인 가능한 실제 종가가 없습니다.
         </p>
@@ -178,20 +223,29 @@
                                     outside: !day.inMonth,
                                     quoted: day.inMonth && byDate.has(day.date),
                                 }">
-                                <template v-if="day.inMonth"
-                                    ><time :datetime="day.date">{{
+                                <button
+                                    v-if="day.inMonth && byDate.has(day.date)"
+                                    type="button"
+                                    class="quoted-day"
+                                    :aria-label="`${day.date} 시세 상세`"
+                                    @click="selectedDate = day.date">
+                                    <time :datetime="day.date">{{
                                         day.day
                                     }}</time>
-                                    <strong v-if="byDate.has(day.date)">{{
+                                    <strong>{{
                                         price(byDate.get(day.date).close)
                                     }}</strong>
+                                </button>
+                                <template v-else-if="day.inMonth">
+                                    <time :datetime="day.date">{{
+                                        day.day
+                                    }}</time>
                                     <span
-                                        v-else
                                         class="no-price"
                                         aria-label="시세 없음"
                                         >—</span
-                                    ></template
-                                >
+                                    >
+                                </template>
                             </td>
                         </tr>
                     </tbody>
@@ -204,14 +258,53 @@
             striped-rows
             scrollable
             scroll-height="420px"
-            :table-props="{ 'aria-label': '일별 종가 표' }">
+            :table-style="{ minWidth: '680px' }"
+            :table-props="{ 'aria-label': '일별 시세 표' }">
             <Column field="date" header="기준일" />
-            <Column header="종가"
-                ><template #body="{ data }">{{
-                    price(data.close)
-                }}</template></Column
-            >
+            <Column
+                v-for="field in fields"
+                :key="field.key"
+                :header="field.label">
+                <template #body="{ data }">{{
+                    price(data[field.key])
+                }}</template>
+            </Column>
+            <Column header="거래량">
+                <template #body="{ data }">{{
+                    provided(data.volume) ? `${number(data.volume)}주` : '—'
+                }}</template>
+            </Column>
         </DataTable>
+        <Dialog
+            :visible="!!selectedPrice"
+            modal
+            :header="`${selectedDate || ''} 시세 상세`"
+            :style="{ width: '440px', maxWidth: 'calc(100vw - 32px)' }"
+            @update:visible="selectedDate = null">
+            <template v-if="selectedPrice">
+                <p class="detail-source">
+                    {{ symbol }} ·
+                    {{ selectedPrice.candle ? '일봉 제공처 기준' : basisLabel }}
+                </p>
+                <dl class="price-detail">
+                    <div v-for="field in fields" :key="field.key">
+                        <dt>{{ field.label }}</dt>
+                        <dd>{{ price(selectedPrice[field.key]) }}</dd>
+                    </div>
+                    <div>
+                        <dt>거래량</dt>
+                        <dd>
+                            {{
+                                provided(selectedPrice.volume)
+                                    ? `${number(selectedPrice.volume)}주`
+                                    : '—'
+                            }}
+                        </dd>
+                    </div>
+                </dl>
+                <p class="detail-note">‘—’는 미제공 항목입니다.</p>
+            </template>
+        </Dialog>
     </section>
 </template>
 <style scoped>
@@ -287,6 +380,51 @@
         color: var(--app-accent);
         font-size: 14px;
         overflow-wrap: anywhere;
+    }
+    .quoted-day {
+        display: block;
+        width: 100%;
+        min-height: 60px;
+        padding: 0;
+        text-align: left;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        font: inherit;
+        cursor: pointer;
+    }
+    .quoted-day:hover {
+        background: var(--app-surface-muted);
+    }
+    .quoted-day:focus-visible {
+        outline: 2px solid var(--app-accent);
+        outline-offset: 3px;
+    }
+    .history-status {
+        margin: 12px 0;
+    }
+    .detail-source,
+    .detail-note {
+        color: var(--app-muted);
+        font-size: 13px;
+    }
+    .price-detail {
+        margin: 16px 0;
+        font-variant-numeric: tabular-nums;
+    }
+    .price-detail > div {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--app-border);
+    }
+    .price-detail dt {
+        color: var(--app-muted);
+    }
+    .price-detail dd {
+        margin: 0;
+        font-weight: 650;
     }
     .outside {
         background: var(--app-surface-muted);

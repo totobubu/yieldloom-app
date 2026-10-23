@@ -18,8 +18,6 @@
     import Checkbox from 'primevue/checkbox';
     import Tag from 'primevue/tag';
     import Message from 'primevue/message';
-    import DataTable from 'primevue/datatable';
-    import Column from 'primevue/column';
     import { useToast } from 'primevue/usetoast';
     import DividendSummaryThumbnail from '@/components/thumbnail/DividendSummaryThumbnail.vue';
     import DividendComparisonThumbnail from '@/components/thumbnail/DividendComparisonThumbnail.vue';
@@ -32,6 +30,7 @@
     import StockDividendTrend from '@/components/stock/StockDividendTrend.vue';
     import StockHoldingPanel from '@/components/stock/StockHoldingPanel.vue';
     import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
+    import StockPriceHistory from '@/components/stock/StockPriceHistory.vue';
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
     import { monthlyDividendSeries } from '@/services/stockAnalysis.js';
     import DividendReviewPrompt from '@/components/stock/DividendReviewPrompt.vue';
@@ -1097,40 +1096,15 @@
                                 :currency="selectedInfo.currency || ''"
                                 :events="stockEvents" />
                             <details class="price-history">
-                                <summary>일별 종가 표 보기</summary>
-                                <h2>시세 이력</h2>
-                                <p class="hint">
-                                    최근 {{ Math.min(priceRows.length, 120) }}개
-                                    실제 종가 · {{ selectedInfo.currency }} 기준
-                                    · 가격 보정
-                                    {{
+                                <summary>일별 종가 달력·표 보기</summary>
+                                <StockPriceHistory
+                                    :symbol="selectedInfo.symbol"
+                                    :rows="priceRows"
+                                    :currency="selectedInfo.currency || 'USD'"
+                                    :adjustment-basis="
                                         selectedData.sourceStatus
-                                            .adjustmentBasis || '미확인'
-                                    }}
-                                </p>
-                                <DataTable
-                                    :value="priceRows.slice(0, 120)"
-                                    class="stock-data-table"
-                                    striped-rows
-                                    scrollable
-                                    scroll-height="420px"
-                                    :table-props="{
-                                        'aria-label': '일별 종가 이력',
-                                    }"
-                                    ><Column
-                                        field="date"
-                                        header="기준일" /><Column header="종가"
-                                        ><template #body="{ data }"
-                                            >{{ displayNumber(data.close, 4) }}
-                                            {{
-                                                selectedInfo.currency
-                                            }}</template
-                                        ></Column
-                                    ></DataTable
-                                >
-                                <p v-if="!priceRows.length" class="hint">
-                                    확인 가능한 실제 종가가 없습니다.
-                                </p>
+                                            ?.adjustmentBasis || ''
+                                    " />
                             </details>
                         </section> </TabPanel
                     ><TabPanel value="dividends">

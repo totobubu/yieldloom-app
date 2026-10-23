@@ -46,6 +46,12 @@
                 </div>
                 <p>주당 세전 {{ currency }} · 배당락일 기준</p>
             </div>
+            <p
+                v-if="series.some((row) => row.total != null)"
+                class="trend-note">
+                <span><i class="blue" aria-hidden="true" />선택 연도</span>
+                <span><i class="gray" aria-hidden="true" />전년 동월</span>
+            </p>
             <div class="trend-controls">
                 <Button
                     :severity="length === n ? undefined : 'secondary'"
@@ -118,9 +124,6 @@
                 }}</b></span
             >
         </div>
-        <p v-if="series.some((row) => row.total != null)" class="trend-note">
-            <i class="blue" />선택 연도 <i class="gray" />전년 동월
-        </p>
     </section>
 </template>
 <style scoped>
@@ -128,11 +131,10 @@
         margin: 24px 0 32px;
     }
     .dividend-trend header {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
         align-items: center;
         gap: 16px;
-        flex-wrap: wrap;
     }
     .dividend-trend h2 {
         margin: 0 !important;
@@ -143,7 +145,18 @@
         font-size: 0.8rem;
         line-height: 1.7;
     }
+    .trend-note {
+        display: flex;
+        justify-self: center;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+    }
+    .trend-note span {
+        white-space: nowrap;
+    }
     .trend-controls {
+        grid-column: 3;
         display: flex;
         gap: 6px;
     }
@@ -263,5 +276,28 @@
         color: var(--app-muted);
         font-size: 12px;
         line-height: 1.7;
+    }
+    @media (max-width: 800px) {
+        .dividend-trend header {
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 8px 12px;
+        }
+        .dividend-trend header > div:first-child {
+            grid-column: 1 / -1;
+        }
+        .trend-note {
+            justify-self: start;
+        }
+        .trend-controls {
+            grid-column: 2;
+        }
+    }
+    @media (max-width: 420px) {
+        .trend-note {
+            grid-column: 1 / -1;
+        }
+        .trend-controls {
+            justify-self: end;
+        }
     }
 </style>

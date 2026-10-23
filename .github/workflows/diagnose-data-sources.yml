@@ -1,0 +1,101 @@
+name: Diagnose data sources
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '진단 대상'
+        required: true
+        default: providers
+        type: choice
+        options: [providers, email]
+      evidence_id:
+        description: '이메일 모드에만 필요: 로컬 업로드 명령이 반환한 SHA-256 증빙 ID'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-source-diagnostic-${{ inputs.mode }}-${{ inputs.evidence_id }}
+  cancel-in-progress: false
+
+jobs:
+  providers:
+    if: inputs.mode == 'providers'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-workflow.txt
+      - run: pip install -r requirements-workflow.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install browser for official sources
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Probe official providers without publishing
+        run: python scripts/data_v2/probe_providers.py --output provider-probe.json
+      - name: Upload provider diagnostic report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: official-provider-probe-${{ github.run_id }}
+          path: provider-probe.json
+          if-no-files-found: ignore
+          retention-days: 30
+  email:
+    if: inputs.mode == 'email'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Validate evidence identifier
+        env:
+          EVIDENCE_ID: ${{ inputs.evidence_id }}
+        shell: bash
+        run: |
+          if [[ ! "$EVIDENCE_ID" =~ ^[a-fA-F0-9]{64}$ ]]; then
+            echo '::error::Email mode requires a SHA-256 evidence ID.'
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-workflow.txt
+      - name: Install OCR engine
+        run: sudo apt-get update && sudo apt-get install --yes tesseract-ocr
+      - run: pip install -r requirements-workflow.txt
+      - name: Compare evidence with official collection state
+        env:
+          EVIDENCE_ID: ${{ inputs.evidence_id }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+          EVIDENCE_R2_ACCOUNT_ID: ${{ secrets.EVIDENCE_R2_ACCOUNT_ID }}
+          EVIDENCE_R2_ACCESS_KEY_ID: ${{ secrets.EVIDENCE_R2_ACCESS_KEY_ID }}
+          EVIDENCE_R2_SECRET_ACCESS_KEY: ${{ secrets.EVIDENCE_R2_SECRET_ACCESS_KEY }}
+          EVIDENCE_R2_BUCKET_NAME: ${{ secrets.EVIDENCE_R2_BUCKET_NAME }}
+        run: python scripts/data_v2/compare_email_evidence.py --evidence-id "$EVIDENCE_ID" --refresh-ocr --output email-evidence-report.json
+      - name: Upload review report only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: email-evidence-review-${{ github.run_id }}
+          path: email-evidence-report.json
+          if-no-files-found: ignore
+          retention-days: 30

@@ -18,6 +18,9 @@
 - `?rivals=CRSH,TSII`: 라이벌 선택 공유. 최대 3종.
 - 그 외 주소는 `/`로 이동합니다. `VITE_APP_MODE`에 따른 화면 전환은 제거했습니다.
 
+GitHub Actions의 수집·발행·진단 역할과 실행 방법은
+[워크플로 운영 안내](docs/data-management/WORKFLOWS.md)를 참조하세요.
+
 ## 개발 및 검증
 
 ```sh

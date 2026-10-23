@@ -33,6 +33,7 @@
     import StockHoldingPanel from '@/components/stock/StockHoldingPanel.vue';
     import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
+    import { monthlyDividendSeries } from '@/services/stockAnalysis.js';
     import DividendReviewPrompt from '@/components/stock/DividendReviewPrompt.vue';
     import DividendRocHistory from '@/components/stock/DividendRocHistory.vue';
     import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
@@ -313,7 +314,6 @@
             )
             .sort((a, b) => a.date.localeCompare(b.date));
     const amount = (row) => Number(row?.amountFixed ?? row?.amount ?? 0);
-    const formatMonth = (date) => `${date.slice(2, 4)}.${date.slice(5, 7)}`;
 
     const thumbnailData = computed(() => {
         const rows = dividendRows(selectedData.value?.backtestData);
@@ -333,11 +333,6 @@
         const prevClose = Number(previous?.close);
         const validClose = Number.isFinite(exClose) && exClose > 0;
         const validPreviousClose = Number.isFinite(prevClose) && prevClose > 0;
-        const monthly = new Map();
-        rows.slice(-50).forEach((row) => {
-            const month = formatMonth(row.date);
-            monthly.set(month, (monthly.get(month) ?? 0) + amount(row));
-        });
         const company = String(selectedInfo.value?.company ?? '').toLowerCase();
         const background = company.includes('roundhill')
             ? 'blue.png'
@@ -382,9 +377,13 @@
             previousAfterTaxDividendYield: validPreviousClose
                 ? ((previousAmount * 0.85) / prevClose) * 100
                 : null,
-            monthlyTotals: [...monthly.entries()]
-                .slice(-4)
-                .map(([month, total]) => ({ month, total })),
+            monthlyTotals: monthlyDividendSeries(rows, today(), 3).map(
+                (row) => ({
+                    month: `${row.month.slice(2, 4)}.${row.month.slice(5, 7)}`,
+                    total: row.total,
+                    partial: row.partial,
+                })
+            ),
             backgroundImageUrl: getAssetUrl(`thumbnail/${background}`),
         };
     });

@@ -66,9 +66,20 @@ try {
             });
         });
         await page.goto(`${base}/stock/QLDY?tab=prices`);
-        await page.locator('.price-history summary').click();
         const history = page.locator('.stock-price-history');
         await history.locator('.price-calendar').waitFor();
+        assert.equal(await page.locator('.price-history summary').count(), 0);
+        assert.equal(await history.locator('.calendar-note').count(), 0);
+        await history
+            .getByRole('button', { name: '시세 이력 안내', exact: true })
+            .click();
+        const help = page.getByRole('dialog', {
+            name: '시세 이력 안내',
+            exact: true,
+        });
+        await help.waitFor();
+        assert.match(await help.innerText(), /시세 미제공/);
+        await page.keyboard.press('Escape');
         assert.match(
             await history.locator('.month-navigation').innerText(),
             /2026년 10월/
@@ -77,13 +88,13 @@ try {
             await history
                 .locator('[data-date="2026-10-22"] strong')
                 .innerText(),
-            '44'
+            '$ 44'
         );
         assert.equal(
             await history
                 .locator('[data-date="2026-10-02"] strong')
                 .innerText(),
-            '40.5956'
+            '$ 40.5956'
         );
         assert.equal(
             await history.locator('[data-date="2026-10-03"] .no-price').count(),
@@ -105,7 +116,7 @@ try {
             await history
                 .locator('[data-date="2026-09-30"] strong')
                 .innerText(),
-            '38'
+            '$ 38'
         );
         assert(
             await history
@@ -113,14 +124,11 @@ try {
                 .isDisabled()
         );
         await history
-            .getByRole('button', { name: '최근 시세 월', exact: true })
+            .getByRole('button', { name: '현재 월', exact: true })
             .click();
         await history.getByRole('button', { name: '표', exact: true }).click();
         assert.equal(await history.locator('tbody tr').count(), 7);
-        assert.match(
-            await history.locator('tbody').innerText(),
-            /40\.5956 USD/
-        );
+        assert.match(await history.locator('tbody').innerText(), /\$ 40\.5956/);
         await history
             .getByRole('button', { name: '달력', exact: true })
             .click();
@@ -148,6 +156,54 @@ try {
         );
         await page.close();
     }
+    const stale = await browser.newPage();
+    await stale.clock.setFixedTime(new Date('2026-11-05T12:00:00Z'));
+    await stale.route('**/api/thumbnail-data?**', (r) =>
+        r.fulfill({
+            json: {
+                ticker: {
+                    symbol: 'QLDY',
+                    tickerInfo: { symbol: 'QLDY', currency: 'USD', price: 44 },
+                    sourceStatus: {
+                        freshness: 'stale',
+                        priceDate: '2026-10-22',
+                    },
+                    backtestData: prices,
+                },
+                catalog: { symbol: 'QLDY', securityType: 'etf' },
+                rivals: [],
+                rivalOptions: [],
+                series: {},
+                dataStatus: 'stale',
+            },
+        })
+    );
+    await stale.route('**/api/stock-prices?**', (r) =>
+        r.fulfill({ json: { symbol: 'QLDY', candles: [] } })
+    );
+    await stale.goto(`${base}/stock/QLDY?tab=prices`);
+    const staleHistory = stale.locator('.stock-price-history');
+    await staleHistory.locator('.price-calendar').waitFor();
+    await staleHistory
+        .getByRole('button', { name: '현재 월', exact: true })
+        .click();
+    assert.match(
+        await staleHistory.locator('.month-navigation').innerText(),
+        /2026년 11월/
+    );
+    assert.equal(
+        await staleHistory.locator('.price-calendar td strong').count(),
+        0
+    );
+    assert(
+        await staleHistory
+            .getByRole('button', { name: '현재 월', exact: true })
+            .isDisabled()
+    );
+    await stale.close();
+    console.log(
+        'PASS stale history: current month uses today rather than latest quoted month'
+    );
     const empty = await browser.newPage();
     await empty.route('**/api/thumbnail-data?**', (r) =>
         r.fulfill({
@@ -173,7 +229,6 @@ try {
         r.fulfill({ json: { symbol: 'QLDY', candles: [] } })
     );
     await empty.goto(`${base}/stock/QLDY?tab=prices`);
-    await empty.locator('.price-history summary').click();
     await empty.locator('.stock-price-history .empty').waitFor();
     assert.equal(await empty.locator('.price-calendar').count(), 0);
     console.log('PASS empty: no invented calendar prices');

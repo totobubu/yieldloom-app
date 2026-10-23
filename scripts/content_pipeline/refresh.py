@@ -12,6 +12,7 @@ if __package__ in {None, ""}:
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.content_pipeline.database import ContentDatabase, DEFAULT_DB_PATH
+from scripts.content_pipeline.official_discovery import collect_official_evidence
 from scripts.content_pipeline.export_admin_data import export_all
 from scripts.content_pipeline.export_dashboard import export_dashboard
 from scripts.content_pipeline.export_system_logs import export_system_logs
@@ -100,6 +101,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scope", choices=("all", "provider", "ticker", "ex_date"), default="all")
     parser.add_argument("--provider", choices=sorted(PROVIDERS))
     parser.add_argument("--ticker")
+    parser.add_argument("--market")
     parser.add_argument("--ex-date", type=date.fromisoformat)
     parser.add_argument("--request-id")
     parser.add_argument("--week-ending", type=date.fromisoformat, default=date.today())
@@ -114,6 +116,7 @@ def main() -> int:
     database = ContentDatabase(args.db)
     database.initialize()
     selected_url = None
+    collection_mode = "official"
     ticker = args.ticker.strip().upper() if args.ticker else None
     if args.scope == "provider":
         if not args.provider:
@@ -124,9 +127,10 @@ def main() -> int:
             parser.error("--scope ticker requires --ticker")
         try:
             provider, selected_url = _ticker_target(database, ticker)
-        except ValueError as exc:
-            parser.error(str(exc))
-        providers = [provider]
+            providers = [provider]
+        except ValueError:
+            collection_mode = "official_discovery"
+            providers = []
     elif args.scope == "ex_date":
         if not args.ex_date:
             parser.error("--scope ex_date requires --ex-date")
@@ -141,8 +145,10 @@ def main() -> int:
         "runId": run_id,
         "requestId": args.request_id,
         "scope": args.scope,
-        "provider": providers[0] if args.scope in {"provider", "ticker"} else None,
+        "provider": providers[0] if providers and args.scope in {"provider", "ticker"} else None,
         "ticker": ticker,
+        "market": args.market,
+        "collectionMode": collection_mode,
         "exDate": args.ex_date.isoformat() if args.ex_date else None,
         "recoveredInterruptedRuns": recovered,
         "providers": {},
@@ -150,6 +156,22 @@ def main() -> int:
     failed = False
     warned = False
     try:
+        if collection_mode == "official_discovery":
+            try:
+                payload = collect_official_evidence(ticker, args.market, args.db)
+                report["officialDiscovery"] = payload
+                warned = True
+                database.add_pipeline_step(
+                    run_id, "discover-official-source", "warning", retryable=False,
+                    message="official regulator evidence collected; dividend event extraction requires review",
+                    details=payload,
+                )
+            except Exception as exc:
+                database.add_pipeline_step(
+                    run_id, "discover-official-source", "failed", retryable=True,
+                    message=str(exc),
+                )
+                raise
         for provider in providers:
             try:
                 payload = run_collect(
@@ -238,6 +260,9 @@ def main() -> int:
     after = database.summary()
     report["addedEvents"] = max(0, after["distribution_events"] - before["distribution_events"])
     report["addedSources"] = max(0, after["source_documents"] - before["source_documents"])
+    report["addedObservations"] = max(
+        0, after["distribution_observations"] - before["distribution_observations"]
+    )
     if failed:
         report["outcome"] = "failed"
     elif warned:

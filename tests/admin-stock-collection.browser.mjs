@@ -77,13 +77,24 @@ try {
                 });
             }
             polls++;
+            const discovery = width === 390;
             return r.fulfill({
                 json:
                     polls === 1
                         ? { state: 'collecting' }
                         : polls === 2
                           ? { state: 'publishing' }
-                          : { state: 'ready', data: data(41) },
+                          : {
+                                state: 'ready',
+                                data: data(41),
+                                collectionMode: discovery
+                                    ? 'official_discovery'
+                                    : 'official',
+                                collectionOutcome: discovery
+                                    ? 'partial'
+                                    : 'success',
+                                addedObservations: 0,
+                            },
             });
         });
         await page.goto(`${base}/stock/QLDY?tab=details`);
@@ -140,7 +151,12 @@ try {
                 .waitFor();
             await page.clock.runFor(15050);
             await page
-                .getByText('최신 데이터로 업데이트했습니다.', { exact: true })
+                .getByText(
+                    width === 390
+                        ? '공식 공시 자료를 연결했습니다. 배당 일정 반영에는 추가 확인이 필요합니다.'
+                        : '최신 데이터로 업데이트했습니다.',
+                    { exact: true }
+                )
                 .waitFor();
             assert.equal(
                 await page

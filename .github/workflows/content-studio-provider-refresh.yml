@@ -41,6 +41,10 @@ on:
         description: Existing ticker for a targeted refresh
         required: false
         type: string
+      market:
+        description: Registered market used to route official-source discovery
+        required: false
+        type: string
       exDate:
         description: ISO ex-dividend date for a date-scoped refresh
         required: false
@@ -69,7 +73,8 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-      MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+      OPENDART_API_KEY: ${{ secrets.OPENDART_API_KEY }}
       BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
       EVENT_SCHEDULE: ${{ github.event.schedule }}
     steps:
@@ -162,21 +167,9 @@ jobs:
           args=(--scope '${{ steps.target.outputs.scope }}' --request-id '${{ inputs.requestId }}')
           if [[ '${{ steps.target.outputs.scope }}' == 'provider' ]]; then args+=(--provider '${{ steps.target.outputs.provider }}'); fi
           if [[ '${{ steps.target.outputs.scope }}' == 'ticker' ]]; then args+=(--ticker '${{ inputs.ticker }}'); fi
+          if [[ '${{ steps.target.outputs.scope }}' == 'ticker' ]]; then args+=(--market '${{ inputs.market }}'); fi
           if [[ '${{ steps.target.outputs.scope }}' == 'ex_date' ]]; then args+=(--ex-date '${{ inputs.exDate }}'); fi
           python scripts/content_pipeline/refresh.py "${args[@]}"
-
-      - name: Capture licensed fallback observation after official ticker failure
-        id: fallback
-        if: ${{ steps.refresh.outcome == 'failure' && steps.target.outputs.scope == 'ticker' }}
-        continue-on-error: true
-        shell: bash
-        run: |
-          echo 'captured=false' >> "$GITHUB_OUTPUT"
-          if [[ -z "$MASSIVE_API_KEY" ]]; then exit 0; fi
-          python scripts/content_pipeline/collect_fallback.py --service massive --ticker '${{ inputs.ticker }}'
-          python scripts/content_pipeline/export_admin_data.py
-          python scripts/content_pipeline/export_dashboard.py
-          echo 'captured=true' >> "$GITHUB_OUTPUT"
 
       - name: Generate one PNG
         id: render

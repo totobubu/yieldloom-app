@@ -61,11 +61,14 @@ def export_system_logs(db: Path, output: Path, limit: int = 50) -> dict:
                     "scope": report.get("scope", "all"),
                     "provider": report.get("provider"),
                     "ticker": report.get("ticker"),
+                    "market": report.get("market"),
                     "startedAt": run["started_at"],
                     "finishedAt": run["finished_at"],
                     "status": _outcome(run["status"], report),
+                    "collectionMode": report.get("collectionMode", "official"),
                     "addedEvents": report.get("addedEvents", 0),
                     "addedSources": report.get("addedSources", 0),
+                    "addedObservations": report.get("addedObservations", 0),
                     "steps": [
                         {
                             "name": step["step_name"],

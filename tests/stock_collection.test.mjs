@@ -18,6 +18,7 @@ function setup({
         handler: stockCollectionHandler({
             verify: async () => user,
             knownSymbol: (s) => ['QLDY', 'AAPL', 'COII'].includes(s),
+            marketForSymbol: () => 'NYSE',
             token: () => token,
             uuid: () => id.split('_')[1],
             fetcher: async (...args) => {
@@ -83,7 +84,12 @@ test('dispatch is restricted to one ticker on main; concurrent clicks share one 
     assert.equal(posts.length, 1);
     assert.deepEqual(JSON.parse(posts[0][1].body), {
         ref: 'main',
-        inputs: { scope: 'ticker', ticker: 'QLDY', requestId: id },
+        inputs: {
+            scope: 'ticker',
+            ticker: 'QLDY',
+            market: 'NYSE',
+            requestId: id,
+        },
     });
 });
 test('existing same-ticker job is reused while other jobs are ignored', async () => {
@@ -164,6 +170,28 @@ test('collection success waits for production publication before returning fresh
     assert.equal(r.body.data.ticker.symbol, 'QLDY');
     assert.equal(r.headers['Cache-Control'], 'private, no-store');
 });
+test('ready response exposes official discovery summary from the published run log', async () => {
+    const fetcher = async (url) => {
+        if (url.includes('/content-studio/system-logs.json'))
+            return reply({
+                runs: [
+                    {
+                        requestId: id,
+                        collectionMode: 'official_discovery',
+                        status: 'partial',
+                        addedObservations: 3,
+                    },
+                ],
+            });
+        return finished()(url);
+    };
+    const { handler } = setup({ fetcher });
+    const r = await call(handler, 'GET', { symbol: 'QLDY', requestId: id });
+    assert.equal(r.body.state, 'ready');
+    assert.equal(r.body.collectionMode, 'official_discovery');
+    assert.equal(r.body.collectionOutcome, 'partial');
+    assert.equal(r.body.addedObservations, 3);
+});
 test('failed or cancelled workflows are never reported as collected', async () => {
     for (const conclusion of ['failure', 'cancelled', 'timed_out']) {
         const { handler } = setup({ fetcher: finished(conclusion) });
@@ -175,11 +203,16 @@ test('failed or cancelled workflows are never reported as collected', async () =
     }
 });
 
-
 test('collection rewrite preserves method and receipt while feedback stays separate', async () => {
     const { stockActionRouter } = await import('../lib/stock-actions.js');
-    const config = JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
-    const rewrite = config.rewrites.find(row => row.source === '/api/stock-collection');
+    const config = JSON.parse(
+        await (
+            await import('node:fs/promises')
+        ).readFile(new URL('../vercel.json', import.meta.url), 'utf8')
+    );
+    const rewrite = config.rewrites.find(
+        (row) => row.source === '/api/stock-collection'
+    );
     assert.equal(rewrite.destination, '/api/stock-feedback?action=collection');
     const calls = [];
     const router = stockActionRouter({
@@ -187,12 +220,19 @@ test('collection rewrite preserves method and receipt while feedback stays separ
         feedback: async (req, res) => calls.push(['feedback', req, res]),
     });
     for (const method of ['POST', 'GET', 'OPTIONS']) {
-        const req = { method, query: { action: 'collection', symbol: 'QLDY', requestId: id } };
+        const req = {
+            method,
+            query: { action: 'collection', symbol: 'QLDY', requestId: id },
+        };
         const res = {};
         await router(req, res);
         assert.deepEqual(calls.at(-1), ['collection', req, res]);
     }
-    const feedback = { method: 'POST', query: {}, body: { message: 'feedback' } };
+    const feedback = {
+        method: 'POST',
+        query: {},
+        body: { message: 'feedback' },
+    };
     await router(feedback, {});
     assert.equal(calls.at(-1)[0], 'feedback');
     assert.equal(calls.at(-1)[1], feedback);

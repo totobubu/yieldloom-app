@@ -15,11 +15,14 @@ const feedback = createApiHandler(
     })
 );
 
-const symbols = new Set(catalog.instruments.map((row) => row.symbol));
+const instruments = new Map(
+    catalog.instruments.map((row) => [row.symbol, row])
+);
 const collection = createApiHandler(
     stockCollectionHandler({
         verify: verifyFirebaseBearer,
-        knownSymbol: (symbol) => symbols.has(symbol),
+        knownSymbol: (symbol) => instruments.has(symbol),
+        marketForSymbol: (symbol) => instruments.get(symbol)?.market || '',
     }),
     { publicCors: true }
 );

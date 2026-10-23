@@ -76,9 +76,11 @@
                 if (result.state === 'ready') {
                     receipt.value = null;
                     message.value =
-                        result.data?.dataStatus === 'fresh'
-                            ? '최신 데이터로 업데이트했습니다.'
-                            : '수집은 완료됐으며 일부 자료는 확인이 필요합니다.';
+                        result.collectionMode === 'official_discovery'
+                            ? '공식 공시 자료를 연결했습니다. 배당 일정 반영에는 추가 확인이 필요합니다.'
+                            : result.data?.dataStatus === 'fresh'
+                              ? '최신 데이터로 업데이트했습니다.'
+                              : '수집은 완료됐으며 일부 자료는 확인이 필요합니다.';
                     emit('collected', result.data);
                     return;
                 }

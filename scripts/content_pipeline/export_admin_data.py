@@ -51,6 +51,7 @@ def export_all(db: Path, bundles: Path, output: Path, *, legacy_exports: bool = 
                    verification_status, observed_at
             FROM distribution_observations
             WHERE canonical_event_id IS NULL
+              AND source_provider != 'massive'
             ORDER BY observed_at DESC, id DESC
             LIMIT 200
         """)]

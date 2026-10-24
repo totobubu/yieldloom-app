@@ -1,15 +1,20 @@
 <script setup>
-    import { computed } from 'vue';
+    import { computed, reactive } from 'vue';
     import { useHead } from '@vueuse/head';
     import Button from 'primevue/button';
     import Card from 'primevue/card';
     import Message from 'primevue/message';
+    import InputNumber from 'primevue/inputnumber';
+    import DataTable from 'primevue/datatable';
+    import Column from 'primevue/column';
     import ProgressBar from 'primevue/progressbar';
     import Tag from 'primevue/tag';
     import {
         dividendRecoveryRate,
         sheetPortfolioExample,
+        temporaryProjectionHoldings,
     } from '@/services/adminPortfolioExample.js';
+    import { simulateHeldPortfolio } from '@/services/holdingSimulation.js';
 
     useHead({ title: '포트폴리오 원금 기준안' });
 
@@ -81,6 +86,72 @@
             formula: '모든 입·출금 날짜를 사용한 XIRR',
             use: '성과 지표',
             description: '돈을 언제 넣고 뺈지까지 반영해 연환산 성과를 봅니다.',
+        },
+    ];
+    const projectionSetup = reactive({
+        contribution: 500,
+        reduction: 20,
+        months: 60,
+        taxRate: 15,
+        fee: 0,
+        annualPriceChange: -5,
+    });
+    const projection = computed(() =>
+        simulateHeldPortfolio(temporaryProjectionHoldings, {
+            ...projectionSetup,
+            currency: 'USD',
+        })
+    );
+    const projectionCards = computed(() =>
+        projection.value.scenarios.map((scenario) => ({
+            ...scenario,
+            monthlyDividend: scenario.rows.at(-1)?.net || 0,
+        }))
+    );
+    const projectionTable = computed(() => {
+        const indexes = [12, 24, 36, 60]
+            .filter((month) => month <= projectionSetup.months)
+            .map((month) => month - 1);
+        if (
+            projectionSetup.months > 0 &&
+            !indexes.includes(projectionSetup.months - 1)
+        )
+            indexes.push(projectionSetup.months - 1);
+        return indexes.map((index) => ({
+            month: index + 1,
+            cash: projection.value.scenarios[0].rows[index].net,
+            reinvest: projection.value.scenarios[1].rows[index].net,
+            reduced: projection.value.scenarios[2].rows[index].net,
+        }));
+    });
+    const projectionFields = [
+        {
+            key: 'contribution',
+            label: '월 추가 투자금',
+            min: 0,
+            max: 100000,
+            suffix: ' USD',
+        },
+        {
+            key: 'months',
+            label: '예측 기간',
+            min: 12,
+            max: 360,
+            suffix: '개월',
+        },
+        {
+            key: 'reduction',
+            label: '분배금 감소',
+            min: 0,
+            max: 100,
+            suffix: '%',
+        },
+        {
+            key: 'annualPriceChange',
+            label: '연 주가 변화',
+            min: -95,
+            max: 100,
+            suffix: '%',
         },
     ];
 </script>
@@ -162,6 +233,93 @@
                     </template>
                 </Card>
             </div>
+        </section>
+
+        <section class="projection" aria-labelledby="projection-title">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">TEMPORARY PROJECTION</span>
+                    <h2 id="projection-title">배당 재투자 테스트</h2>
+                </div>
+                <Tag value="임시 데이터 · 저장 안 됨" severity="warn" />
+            </div>
+            <Message severity="info" :closable="false">
+                시트의 최근 수량과 분배금을 옮긴 테스트입니다. YMAX 가격 등 일부
+                값은 임시 가정이며, 입력값은 서버나 Google Sheets에 저장하지
+                않습니다.
+            </Message>
+            <div class="projection-layout">
+                <form class="projection-form" @submit.prevent>
+                    <h3>계산 가정</h3>
+                    <label
+                        v-for="field in projectionFields"
+                        :key="field.key"
+                        :for="`projection-${field.key}`">
+                        {{ field.label }}
+                        <InputNumber
+                            v-model="projectionSetup[field.key]"
+                            :input-id="`projection-${field.key}`"
+                            :min="field.min"
+                            :max="field.max"
+                            :suffix="field.suffix"
+                            :max-fraction-digits="0" />
+                    </label>
+                    <div class="assumption-note">
+                        <strong>고정 가정</strong>
+                        <span>세율 15% · 소수주 매수 · 월초 추가 투자</span>
+                    </div>
+                </form>
+                <div class="projection-results" aria-live="polite">
+                    <article
+                        v-for="scenario in projectionCards"
+                        :key="scenario.key">
+                        <span>{{ scenario.label }}</span>
+                        <strong>{{
+                            usd.format(scenario.monthlyDividend)
+                        }}</strong>
+                        <small>기간 말 월 세후 배당</small>
+                        <dl>
+                            <div>
+                                <dt>누적 세후 배당</dt>
+                                <dd>
+                                    {{ usd.format(scenario.summary.netTotal) }}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>기간 말 자산</dt>
+                                <dd>
+                                    {{ usd.format(scenario.summary.wealth) }}
+                                </dd>
+                            </div>
+                        </dl>
+                    </article>
+                </div>
+            </div>
+            <DataTable :value="projectionTable" class="projection-table">
+                <Column field="month" header="경과 개월">
+                    <template #body="{ data }">{{ data.month }}개월</template>
+                </Column>
+                <Column header="현금 보관 월배당">
+                    <template #body="{ data }">{{
+                        usd.format(data.cash)
+                    }}</template>
+                </Column>
+                <Column header="전액 재투자 월배당">
+                    <template #body="{ data }">{{
+                        usd.format(data.reinvest)
+                    }}</template>
+                </Column>
+                <Column :header="`분배금 ${projectionSetup.reduction}% 감소`">
+                    <template #body="{ data }">{{
+                        usd.format(data.reduced)
+                    }}</template>
+                </Column>
+            </DataTable>
+            <p class="projection-disclaimer">
+                이 결과는 투자 예측이 아니라 계산식 검증용입니다. 주가 변화와
+                분배금 변동을 단순화했으며 액면병합, 환율, 매매세금은 반영하지
+                않습니다.
+            </p>
         </section>
 
         <section class="classification" aria-labelledby="classification-title">
@@ -291,7 +449,8 @@
         letter-spacing: -0.035em;
     }
     .snapshot-grid,
-    .source-grid {
+    .source-grid,
+    .projection-results {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 16px;
@@ -311,6 +470,8 @@
         margin-bottom: 16px;
     }
     .source-grid article,
+    .projection-form,
+    .projection-results article,
     .standards li,
     .decision {
         border: 1px solid var(--p-content-border-color);
@@ -320,6 +481,85 @@
     .source-grid article {
         min-height: 250px;
         padding: 24px;
+    }
+    .projection-layout {
+        display: grid;
+        grid-template-columns: minmax(240px, 0.72fr) minmax(0, 2fr);
+        gap: 16px;
+        margin-top: 18px;
+    }
+    .projection-form,
+    .projection-results article {
+        padding: 22px;
+    }
+    .projection-form h3 {
+        margin: 0 0 16px;
+    }
+    .projection-form label {
+        display: grid;
+        gap: 7px;
+        margin-top: 14px;
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+    .projection-form :deep(.p-inputnumber),
+    .projection-form :deep(.p-inputtext) {
+        width: 100%;
+    }
+    .assumption-note {
+        display: grid;
+        gap: 4px;
+        margin-top: 20px;
+        color: var(--p-text-muted-color);
+        font-size: 0.82rem;
+    }
+    .projection-results article {
+        min-width: 0;
+        border: 1px solid var(--p-content-border-color);
+        border-radius: 18px;
+        background: var(--p-content-background);
+    }
+    .projection-results article:nth-child(2) {
+        border-color: var(--p-primary-color);
+        background: color-mix(in srgb, var(--p-primary-color), transparent 95%);
+    }
+    .projection-results article > span,
+    .projection-results small {
+        display: block;
+        color: var(--p-text-muted-color);
+    }
+    .projection-results article > strong {
+        display: block;
+        margin: 14px 0 3px;
+        font-size: clamp(1.6rem, 3vw, 2.35rem);
+        letter-spacing: -0.04em;
+    }
+    .projection-results dl {
+        display: grid;
+        gap: 8px;
+        margin: 22px 0 0;
+    }
+    .projection-results dl div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .projection-results dt,
+    .projection-results dd {
+        margin: 0;
+        font-size: 0.82rem;
+    }
+    .projection-results dt {
+        color: var(--p-text-muted-color);
+    }
+    .projection-table {
+        margin-top: 16px;
+    }
+    .projection-disclaimer {
+        margin: 14px 0 0;
+        color: var(--p-text-muted-color);
+        font-size: 0.84rem;
+        line-height: 1.6;
     }
     .source-number,
     .standard-index {
@@ -412,6 +652,8 @@
         }
         .snapshot-grid,
         .source-grid,
+        .projection-results,
+        .projection-layout,
         .standards ol {
             grid-template-columns: 1fr;
         }

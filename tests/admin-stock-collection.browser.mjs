@@ -248,13 +248,13 @@ try {
                     .count(),
                 1
             );
-            const endTimeField = progressDialog
-                .locator('.collection-times > div')
-                .filter({
-                    has: progressDialog.getByText('실행 종료', { exact: true }),
-                });
+            const endTimeLabel = progressDialog
+                .locator('.collection-times dt')
+                .filter({ hasText: '실행 종료' });
             assert.equal(
-                await endTimeField.locator('dd').innerText(),
+                await endTimeLabel.evaluate((el) =>
+                    el.nextElementSibling.textContent.trim()
+                ),
                 '미확인'
             );
             assert(

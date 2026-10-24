@@ -155,6 +155,9 @@ export function simulateHeldPortfolio(models, setup) {
         }));
         const fields = [
             'contributed',
+            'gross',
+            'tax',
+            'net',
             'grossTotal',
             'taxTotal',
             'netTotal',

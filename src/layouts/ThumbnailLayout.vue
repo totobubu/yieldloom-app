@@ -280,6 +280,13 @@
                     @click="router.push('/admin/portfolio-mappings')" />
                 <Button
                     v-if="isAdmin"
+                    label="부부 거래 목록 · 시험"
+                    icon="pi pi-table"
+                    severity="secondary"
+                    text
+                    @click="router.push('/admin/sheet-ledger')" />
+                <Button
+                    v-if="isAdmin"
                     label="원금 기준안"
                     icon="pi pi-chart-pie"
                     severity="secondary"

@@ -364,6 +364,14 @@ try {
                     )
                     .isVisible()
             );
+            assert(
+                await recordDialog
+                    .getByText(
+                        '공식 자료 출처와 수집 대상 등록이 필요합니다.',
+                        { exact: true }
+                    )
+                    .isVisible()
+            );
             await page.keyboard.press('Escape');
             await recordDialog.waitFor({ state: 'hidden' });
             simulatedOutcome = 'cancelled';
@@ -408,7 +416,7 @@ try {
             assert(
                 await recordDialog
                     .getByText(
-                        '공식 자료 출처와 수집 대상 등록이 필요합니다.',
+                        '다른 수집 실행 여부를 확인한 후 다시 요청해 주세요.',
                         { exact: true }
                     )
                     .isVisible()

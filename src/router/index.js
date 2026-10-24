@@ -28,6 +28,12 @@ const router = createRouter({
     },
     routes: [
         {
+            path: '/admin/sheet-ledger',
+            name: 'sheet-trial-ledger',
+            component: () => import('../pages/SheetTrialLedgerView.vue'),
+            beforeEnter: requirePortfolioAdmin,
+        },
+        {
             path: '/underlying/:symbol',
             name: 'underlying-explorer',
             component: () => import('../pages/UnderlyingExplorerView.vue'),

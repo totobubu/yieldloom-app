@@ -27,6 +27,14 @@
         in_progress: '진행 중',
         completed: '종료',
     };
+    const recordStateLabels = {
+        ready: '성공 · 화면 반영 완료',
+        publishing: '성공 · 화면 반영 중',
+        failed: '실패',
+        cancelled: '취소',
+        collecting: '진행 중',
+        queued: '대기 중',
+    };
     const fallbackSteps = computed(() => [
         {
             name: '수집 요청 접수',
@@ -35,14 +43,15 @@
         },
         {
             name: '공식 자료 수집 · 결과 검증',
-            state:
-                record.value?.state === 'failed'
-                    ? 'failure'
-                    : ['publishing', 'ready'].includes(record.value?.state)
-                      ? 'success'
-                      : 'in_progress',
+            state: ['failed', 'cancelled'].includes(record.value?.state)
+                ? record.value.state === 'cancelled'
+                    ? 'cancelled'
+                    : 'failure'
+                : ['publishing', 'ready'].includes(record.value?.state)
+                  ? 'success'
+                  : 'in_progress',
             startedAt: record.value?.startedAt,
-            completedAt: record.value?.completedAt,
+            completedAt: record.value?.completedAt || record.value?.endedAt,
         },
         {
             name: '운영 배포 · 화면 반영',
@@ -188,7 +197,7 @@
                 )
                     return;
                 record.value = { ...record.value, ...result };
-                if (result.state === 'failed') {
+                if (['failed', 'cancelled'].includes(result.state)) {
                     receipt.value = null;
                     throw new Error(result.diagnostics?.reason || result.error);
                 }
@@ -271,12 +280,34 @@
                         </dd>
                     </div>
                     <div>
-                        <dt>수집 완료</dt>
+                        <dt>수집 시작</dt>
                         <dd>
                             <time
-                                v-if="record.completedAt"
-                                :datetime="record.completedAt"
-                                >{{ formatTime(record.completedAt) }}</time
+                                v-if="record.startedAt"
+                                :datetime="record.startedAt"
+                                >{{ formatTime(record.startedAt) }}</time
+                            ><span v-else>미확인</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>실행 결과</dt>
+                        <dd>
+                            {{ recordStateLabels[record.state] || '확인 필요' }}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>
+                            {{ record.completedAt ? '수집 완료' : '실행 종료' }}
+                        </dt>
+                        <dd>
+                            <time
+                                v-if="record.completedAt || record.endedAt"
+                                :datetime="record.completedAt || record.endedAt"
+                                >{{
+                                    formatTime(
+                                        record.completedAt || record.endedAt
+                                    )
+                                }}</time
                             ><span v-else>미확인</span>
                         </dd>
                     </div>
@@ -296,14 +327,16 @@
                             {{
                                 formatDuration(
                                     record.requestedAt,
-                                    record.publishedAt || record.completedAt
+                                    record.publishedAt ||
+                                        record.completedAt ||
+                                        record.endedAt
                                 )
                             }}
                         </dd>
                     </div>
                 </dl>
                 <template v-if="record?.diagnostics">
-                    <h3>실패 이유</h3>
+                    <h3>실행 상세</h3>
                     <p role="alert">{{ record.diagnostics.reason }}</p>
                     <p>{{ record.diagnostics.nextAction }}</p>
                 </template>
@@ -318,19 +351,29 @@
                             stateLabels[step.state] || '확인 필요'
                         }}</strong>
                         <small class="step-time">
-                            <template v-if="step.completedAt">
-                                완료
-                                <time :datetime="step.completedAt">{{
-                                    formatTime(step.completedAt)
-                                }}</time>
-                            </template>
-                            <template v-else-if="step.startedAt">
+                            <template v-if="step.startedAt">
                                 시작
                                 <time :datetime="step.startedAt">{{
                                     formatTime(step.startedAt)
                                 }}</time>
                             </template>
-                            <template v-else>시각 미확인</template>
+                            <template v-if="step.completedAt">
+                                <span v-if="step.startedAt"> · </span>
+                                {{
+                                    ['failure', 'cancelled'].includes(
+                                        step.state
+                                    )
+                                        ? '종료'
+                                        : '완료'
+                                }}
+                                <time :datetime="step.completedAt">{{
+                                    formatTime(step.completedAt)
+                                }}</time>
+                            </template>
+                            <template
+                                v-if="!step.startedAt && !step.completedAt">
+                                시각 미확인
+                            </template>
                         </small>
                         <a
                             v-if="step.logUrl"
@@ -343,13 +386,13 @@
                         /></a>
                     </li>
                 </ol>
-                <p v-if="record?.state === 'failed'">
+                <p v-if="['failed', 'cancelled'].includes(record?.state)">
                     저장·검증 단계가 완료되어도 전체 수집 성공을 뜻하지
-                    않습니다. 실패 후 정리 작업이 포함될 수 있습니다.
+                    않습니다. 실패·취소 후 정리 작업이 포함될 수 있습니다.
                 </p>
                 <p
                     v-if="
-                        record?.state === 'failed' &&
+                        ['failed', 'cancelled'].includes(record?.state) &&
                         !record?.diagnostics?.steps?.length
                     ">
                     세부 단계를 불러오지 못했습니다. 원본 실행 기록을 확인해
@@ -413,7 +456,7 @@
     .collection-record h3:first-child {
         margin-top: 0;
     }
-    .collection-record small {
+    .collection-record > small {
         display: block;
         margin-top: 16px;
         overflow-wrap: anywhere;

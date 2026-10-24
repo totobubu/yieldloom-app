@@ -170,29 +170,72 @@ test('collection success waits for production publication before returning fresh
     assert.equal(r.body.data.ticker.symbol, 'QLDY');
     assert.deepEqual(
         {
+            workflowStatus: r.body.workflowStatus,
+            conclusion: r.body.conclusion,
             requestedAt: r.body.requestedAt,
             startedAt: r.body.startedAt,
             completedAt: r.body.completedAt,
+            endedAt: r.body.endedAt,
             publishedAt: r.body.publishedAt,
         },
         {
+            workflowStatus: 'completed',
+            conclusion: 'success',
             requestedAt: '2026-10-23T01:00:00Z',
             startedAt: '2026-10-23T01:01:00Z',
             completedAt: '2026-10-23T01:05:00Z',
+            endedAt: '2026-10-23T01:05:00Z',
             publishedAt: '2026-10-23T01:06:00Z',
         }
     );
     assert.equal(r.headers['Cache-Control'], 'private, no-store');
 });
-test('failed or cancelled workflows are never reported as collected', async () => {
+test('failed, cancelled and timed out workflows expose end time without a successful completion time', async () => {
     for (const conclusion of ['failure', 'cancelled', 'timed_out']) {
         const { handler } = setup({ fetcher: finished(conclusion) });
+        const result = await call(handler, 'GET', {
+            symbol: 'QLDY',
+            requestId: id,
+        });
         assert.equal(
-            (await call(handler, 'GET', { symbol: 'QLDY', requestId: id })).body
-                .state,
-            'failed'
+            result.body.state,
+            conclusion === 'cancelled' ? 'cancelled' : 'failed'
         );
+        assert.equal(result.body.workflowStatus, 'completed');
+        assert.equal(result.body.conclusion, conclusion);
+        assert.equal(result.body.completedAt, null);
+        assert.equal(result.body.endedAt, '2026-10-23T01:05:00Z');
     }
+});
+
+test('in progress workflows expose request and start times but no end time', async () => {
+    const { handler } = setup({
+        fetcher: async () =>
+            reply({
+                workflow_runs: [
+                    {
+                        display_title: `content-refresh:ticker:${id}`,
+                        id: 123,
+                        status: 'in_progress',
+                        conclusion: null,
+                        created_at: '2026-10-23T01:00:00Z',
+                        run_started_at: '2026-10-23T01:01:00Z',
+                        updated_at: '2026-10-23T01:02:00Z',
+                    },
+                ],
+            }),
+    });
+    const result = await call(handler, 'GET', {
+        symbol: 'QLDY',
+        requestId: id,
+    });
+    assert.equal(result.body.state, 'collecting');
+    assert.equal(result.body.workflowStatus, 'in_progress');
+    assert.equal(result.body.conclusion, null);
+    assert.equal(result.body.requestedAt, '2026-10-23T01:00:00Z');
+    assert.equal(result.body.startedAt, '2026-10-23T01:01:00Z');
+    assert.equal(result.body.completedAt, null);
+    assert.equal(result.body.endedAt, null);
 });
 
 test('collection rewrite preserves method and receipt while feedback stays separate', async () => {

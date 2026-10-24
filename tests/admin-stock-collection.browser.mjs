@@ -259,12 +259,14 @@ try {
             );
             assert(
                 await progressDialog
-                    .getByText('2026. 10. 23. 10:00:00 KST', { exact: true })
+                    .locator('.collection-times dd')
+                    .filter({ hasText: '2026. 10. 23. 10:00:00 KST' })
                     .isVisible()
             );
             assert(
                 await progressDialog
-                    .getByText('2026. 10. 23. 10:01:00 KST', { exact: true })
+                    .locator('.collection-times dd')
+                    .filter({ hasText: '2026. 10. 23. 10:01:00 KST' })
                     .isVisible()
             );
             await page.keyboard.press('Escape');

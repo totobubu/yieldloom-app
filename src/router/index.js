@@ -50,6 +50,12 @@ const router = createRouter({
             beforeEnter: requirePortfolioAdmin,
         },
         {
+            path: '/admin/portfolio-example',
+            name: 'admin-portfolio-example',
+            component: () => import('../pages/AdminPortfolioExampleView.vue'),
+            beforeEnter: requirePortfolioAdmin,
+        },
+        {
             path: '/',
             name: 'thumbnail-home',
             component: () => import('../pages/ThumbnailHomeView.vue'),

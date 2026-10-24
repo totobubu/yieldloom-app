@@ -53,7 +53,7 @@ try {
         let reads = 0,
             posts = 0,
             polls = 0,
-            simulateFailure = false;
+            simulatedOutcome = null;
         await page.route('**/api/thumbnail-data?**', (r) => {
             reads++;
             return r.fulfill({ json: data() });
@@ -83,34 +83,83 @@ try {
             )
                 return r.fulfill({ json: { state: 'idle' } });
             polls++;
-            if (simulateFailure)
+            if (simulatedOutcome)
                 return r.fulfill({
                     json: {
-                        state: 'failed',
-                        error: '수집 실패',
+                        state: simulatedOutcome,
+                        error:
+                            simulatedOutcome === 'cancelled'
+                                ? '수집 취소'
+                                : '수집 실패',
+                        workflowStatus: 'completed',
+                        conclusion:
+                            simulatedOutcome === 'cancelled'
+                                ? 'cancelled'
+                                : 'failure',
+                        requestedAt: '2026-10-23T01:00:00Z',
+                        startedAt: '2026-10-23T01:01:00Z',
+                        completedAt: null,
+                        endedAt: '2026-10-23T01:05:00Z',
                         runUrl: 'https://github.com/totobubu/yieldloom-app/actions/runs/123',
                         diagnostics: {
-                            code: 'unsupported_source',
-                            reason: '공식 수집 대상 목록에 등록되어 있지 않습니다.',
+                            code:
+                                simulatedOutcome === 'cancelled'
+                                    ? 'cancelled'
+                                    : 'unsupported_source',
+                            reason:
+                                simulatedOutcome === 'cancelled'
+                                    ? '수집 실행이 취소됐습니다.'
+                                    : '공식 수집 대상 목록에 등록되어 있지 않습니다.',
                             nextAction:
-                                '공식 자료 출처와 수집 대상 등록이 필요합니다.',
+                                simulatedOutcome === 'cancelled'
+                                    ? '다른 수집 실행 여부를 확인한 후 다시 요청해 주세요.'
+                                    : '공식 자료 출처와 수집 대상 등록이 필요합니다.',
                             steps: [
                                 {
                                     name: '공식 자료 수집',
-                                    state: 'failure',
+                                    state:
+                                        simulatedOutcome === 'cancelled'
+                                            ? 'cancelled'
+                                            : 'failure',
+                                    startedAt: '2026-10-23T01:02:00Z',
+                                    completedAt: '2026-10-23T01:03:00Z',
                                     logUrl: 'https://github.com/totobubu/yieldloom-app/actions/runs/123/job/456#step:10:1',
                                 },
                             ],
                         },
                     },
                 });
+            const timing = {
+                requestedAt: '2026-10-23T01:00:00Z',
+                startedAt: '2026-10-23T01:01:00Z',
+            };
             return r.fulfill({
                 json:
                     polls === 1
-                        ? { state: 'collecting' }
+                        ? {
+                              state: 'collecting',
+                              workflowStatus: 'in_progress',
+                              ...timing,
+                          }
                         : polls === 2
-                          ? { state: 'publishing' }
-                          : { state: 'ready', data: data(41) },
+                          ? {
+                                state: 'publishing',
+                                workflowStatus: 'completed',
+                                conclusion: 'success',
+                                completedAt: '2026-10-23T01:05:00Z',
+                                endedAt: '2026-10-23T01:05:00Z',
+                                ...timing,
+                            }
+                          : {
+                                state: 'ready',
+                                workflowStatus: 'completed',
+                                conclusion: 'success',
+                                completedAt: '2026-10-23T01:05:00Z',
+                                endedAt: '2026-10-23T01:05:00Z',
+                                publishedAt: '2026-10-23T01:06:00Z',
+                                ...timing,
+                                data: data(41),
+                            },
             });
         });
         await page.goto(`${base}/stock/QLDY?tab=details`);
@@ -166,13 +215,62 @@ try {
                 .getByText('QLDY 데이터를 수집하고 있습니다.', { exact: true })
                 .waitFor();
             const loadingDialog = page.locator('.fullscreen-data-loading');
-            assert(await loadingDialog.isVisible());
+            await loadingDialog.waitFor({ state: 'hidden' });
             await page.screenshot({
                 path: `/tmp/admin-stock-collection-loading-${width}.png`,
             });
-            await page.keyboard.press('Escape');
-            assert(await loadingDialog.isVisible());
             assert(await button.isDisabled());
+            assert(
+                await page
+                    .getByRole('button', {
+                        name: '수집 기록',
+                        exact: true,
+                    })
+                    .isEnabled()
+            );
+            await page
+                .getByRole('button', { name: '수집 기록', exact: true })
+                .click();
+            const progressDialog = page.getByRole('dialog', {
+                name: 'QLDY 수집 기록',
+            });
+            await progressDialog.waitFor();
+            assert(
+                await progressDialog
+                    .locator('.collection-times dd')
+                    .filter({ hasText: '진행 중' })
+                    .isVisible()
+            );
+            assert.equal(
+                await progressDialog
+                    .locator('dt')
+                    .filter({ hasText: '실행 종료' })
+                    .count(),
+                1
+            );
+            const endTimeLabel = progressDialog
+                .locator('.collection-times dt')
+                .filter({ hasText: '실행 종료' });
+            assert.equal(
+                await endTimeLabel.evaluate((el) =>
+                    el.nextElementSibling.textContent.trim()
+                ),
+                '미확인'
+            );
+            assert(
+                await progressDialog
+                    .locator('.collection-times dd')
+                    .filter({ hasText: '2026. 10. 23. 10:00:00 KST' })
+                    .isVisible()
+            );
+            assert(
+                await progressDialog
+                    .locator('.collection-times dd')
+                    .filter({ hasText: '2026. 10. 23. 10:01:00 KST' })
+                    .isVisible()
+            );
+            await page.keyboard.press('Escape');
+            await progressDialog.waitFor({ state: 'hidden' });
             assert.equal(posts, 1);
             await page.clock.runFor(15050);
             await page
@@ -194,11 +292,35 @@ try {
             assert.equal(reads, 1);
             assert(await button.isEnabled());
             await loadingDialog.waitFor({ state: 'hidden' });
+            await page
+                .getByRole('button', { name: '수집 기록', exact: true })
+                .click();
+            const successDialog = page.getByRole('dialog', {
+                name: 'QLDY 수집 기록',
+            });
+            await successDialog.waitFor();
+            assert(
+                await successDialog
+                    .getByText('성공 · 화면 반영 완료', { exact: true })
+                    .isVisible()
+            );
+            assert(
+                await successDialog
+                    .getByText(
+                        '시작 2026. 10. 23. 10:01:00 KST · 완료 2026. 10. 23. 10:05:00 KST',
+                        {
+                            exact: true,
+                        }
+                    )
+                    .isVisible()
+            );
+            await page.keyboard.press('Escape');
+            await successDialog.waitFor({ state: 'hidden' });
             await page.screenshot({
                 path: `/tmp/admin-stock-collection-${width}.png`,
                 fullPage: true,
             });
-            simulateFailure = true;
+            simulatedOutcome = 'failed';
             await button.click();
             await page
                 .getByText('공식 수집 대상 목록에 등록되어 있지 않습니다.', {
@@ -215,8 +337,75 @@ try {
             await recordDialog.waitFor();
             assert(
                 await recordDialog
-                    .getByText('실패', { exact: true })
+                    .getByText('실행 결과', { exact: true })
                     .isVisible()
+            );
+            assert(
+                await recordDialog
+                    .locator('.collection-times dd')
+                    .filter({ hasText: '실패' })
+                    .isVisible()
+            );
+            assert(
+                await recordDialog
+                    .getByText('2026. 10. 23. 10:05:00 KST', { exact: true })
+                    .isVisible()
+            );
+            assert(
+                await recordDialog.getByText('5분', { exact: true }).isVisible()
+            );
+            assert(
+                await recordDialog
+                    .getByText(
+                        '시작 2026. 10. 23. 10:02:00 KST · 종료 2026. 10. 23. 10:03:00 KST',
+                        {
+                            exact: true,
+                        }
+                    )
+                    .isVisible()
+            );
+            assert(
+                await recordDialog
+                    .getByText(
+                        '공식 자료 출처와 수집 대상 등록이 필요합니다.',
+                        { exact: true }
+                    )
+                    .isVisible()
+            );
+            await page.keyboard.press('Escape');
+            await recordDialog.waitFor({ state: 'hidden' });
+            simulatedOutcome = 'cancelled';
+            await button.click();
+            await page
+                .getByText('수집 실행이 취소됐습니다.', { exact: true })
+                .waitFor();
+            await page
+                .getByRole('button', { name: '수집 기록', exact: true })
+                .click();
+            await recordDialog.waitFor();
+            assert(
+                await recordDialog
+                    .locator('.collection-times dd')
+                    .filter({ hasText: '취소' })
+                    .isVisible()
+            );
+            assert(
+                await recordDialog
+                    .getByText('2026. 10. 23. 10:05:00 KST', { exact: true })
+                    .isVisible()
+            );
+            assert.equal(
+                await recordDialog
+                    .locator('dt')
+                    .filter({ hasText: '실행 종료' })
+                    .count(),
+                1
+            );
+            assert.equal(
+                await recordDialog
+                    .getByText('수집 완료', { exact: true })
+                    .count(),
+                0
             );
             assert.equal(
                 await recordDialog
@@ -227,7 +416,7 @@ try {
             assert(
                 await recordDialog
                     .getByText(
-                        '공식 자료 출처와 수집 대상 등록이 필요합니다.',
+                        '다른 수집 실행 여부를 확인한 후 다시 요청해 주세요.',
                         { exact: true }
                     )
                     .isVisible()

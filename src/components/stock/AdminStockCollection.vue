@@ -9,6 +9,7 @@
     const props = defineProps({ symbol: { type: String, required: true } });
     const emit = defineEmits(['collected']);
     const busy = ref(false),
+        blocking = ref(false),
         message = ref(''),
         error = ref(''),
         receipt = ref(null),
@@ -26,34 +27,79 @@
         in_progress: '진행 중',
         completed: '종료',
     };
+    const recordStateLabels = {
+        ready: '성공 · 화면 반영 완료',
+        publishing: '성공 · 화면 반영 중',
+        failed: '실패',
+        cancelled: '취소',
+        collecting: '진행 중',
+        queued: '대기 중',
+    };
+    const fallbackSteps = computed(() => [
+        {
+            name: '수집 요청 접수',
+            state: 'success',
+            completedAt: record.value?.requestedAt,
+        },
+        {
+            name: '공식 자료 수집 · 결과 검증',
+            state: ['failed', 'cancelled'].includes(record.value?.state)
+                ? record.value.state === 'cancelled'
+                    ? 'cancelled'
+                    : 'failure'
+                : ['publishing', 'ready'].includes(record.value?.state)
+                  ? 'success'
+                  : 'in_progress',
+            startedAt: record.value?.startedAt,
+            completedAt: record.value?.completedAt || record.value?.endedAt,
+        },
+        {
+            name: '운영 배포 · 화면 반영',
+            state:
+                record.value?.state === 'ready'
+                    ? 'success'
+                    : record.value?.state === 'publishing'
+                      ? 'in_progress'
+                      : 'queued',
+            startedAt: record.value?.completedAt,
+            completedAt: record.value?.publishedAt,
+        },
+    ]);
     const steps = computed(() =>
         record.value?.diagnostics?.steps?.length
             ? record.value.diagnostics.steps
-            : [
-                  { name: '수집 요청 접수', state: 'success' },
-                  {
-                      name: '공식 자료 수집 · 결과 검증',
-                      state:
-                          record.value?.state === 'failed'
-                              ? 'failure'
-                              : ['publishing', 'ready'].includes(
-                                      record.value?.state
-                                  )
-                                ? 'success'
-                                : 'in_progress',
-                  },
-                  {
-                      name: '운영 배포 · 화면 반영',
-                      state:
-                          record.value?.state === 'ready'
-                              ? 'success'
-                              : record.value?.state === 'publishing'
-                                ? 'in_progress'
-                                : 'queued',
-                  },
-              ]
+            : fallbackSteps.value
     );
-    useFullscreenLoading(busy, () => message.value);
+    const formatTime = (value) => {
+        if (!value || !Number.isFinite(Date.parse(value))) return '미확인';
+        const [date, time] = new Intl.DateTimeFormat('sv-SE', {
+            timeZone: 'Asia/Seoul',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        })
+            .format(new Date(value))
+            .split(' ');
+        return `${date.replaceAll('-', '. ')}. ${time} KST`;
+    };
+    const formatDuration = (start, end) => {
+        const duration = Date.parse(end) - Date.parse(start);
+        if (!Number.isFinite(duration) || duration < 0) return '미확인';
+        const seconds = Math.round(duration / 1000);
+        if (seconds < 60) return `${seconds}초`;
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        if (minutes < 60)
+            return `${minutes}분${remainingSeconds ? ` ${remainingSeconds}초` : ''}`;
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return `${hours}시간${remainingMinutes ? ` ${remainingMinutes}분` : ''}`;
+    };
+    useFullscreenLoading(blocking, () => message.value);
     let controller, recordController;
     async function openRecord() {
         showRecord.value = true;
@@ -88,6 +134,7 @@
         recordLoading.value = false;
         recordError.value = '';
         busy.value = false;
+        blocking.value = false;
         receipt.value = null;
         record.value = null;
         showRecord.value = false;
@@ -116,6 +163,7 @@
         controller = new AbortController();
         const current = controller;
         busy.value = true;
+        blocking.value = !receipt.value;
         error.value = '';
         message.value = `${symbol} 데이터 수집을 요청하고 있습니다.`;
         try {
@@ -132,6 +180,9 @@
                     return;
                 receipt.value = result;
                 record.value = result;
+                blocking.value = false;
+                message.value =
+                    '수집 요청을 접수했습니다. 다른 기능을 이용해도 수집은 계속됩니다.';
             }
             for (let i = 0; i < 40; i++) {
                 if (current.signal.aborted) return;
@@ -146,7 +197,7 @@
                 )
                     return;
                 record.value = { ...record.value, ...result };
-                if (result.state === 'failed') {
+                if (['failed', 'cancelled'].includes(result.state)) {
                     receipt.value = null;
                     throw new Error(result.diagnostics?.reason || result.error);
                 }
@@ -173,7 +224,10 @@
             if (current.signal.aborted) return;
             error.value = reason.message;
         } finally {
-            if (controller === current) busy.value = false;
+            if (controller === current) {
+                busy.value = false;
+                blocking.value = false;
+            }
         }
     }
 </script>
@@ -188,14 +242,16 @@
             :disabled="busy"
             @click="collect" />
         <p v-if="error" class="collection-error" role="alert">{{ error }}</p>
-        <p v-else-if="message && !busy" role="status">{{ message }}</p>
+        <p v-else-if="message" role="status" aria-live="polite">
+            {{ message }}
+        </p>
         <Button
-            v-if="!busy"
             label="수집 기록"
             icon="pi pi-list"
             severity="secondary"
             text
             size="small"
+            :disabled="blocking"
             @click="openRecord" />
         <Dialog
             v-model:visible="showRecord"
@@ -212,8 +268,75 @@
                 이 종목의 최근 수집 실행 기록이 없습니다.
             </p>
             <div v-else-if="record" class="collection-record">
+                <dl class="collection-times">
+                    <div>
+                        <dt>요청 시각</dt>
+                        <dd>
+                            <time
+                                v-if="record.requestedAt"
+                                :datetime="record.requestedAt"
+                                >{{ formatTime(record.requestedAt) }}</time
+                            ><span v-else>미확인</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>수집 시작</dt>
+                        <dd>
+                            <time
+                                v-if="record.startedAt"
+                                :datetime="record.startedAt"
+                                >{{ formatTime(record.startedAt) }}</time
+                            ><span v-else>미확인</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>실행 결과</dt>
+                        <dd>
+                            {{ recordStateLabels[record.state] || '확인 필요' }}
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>
+                            {{ record.completedAt ? '수집 완료' : '실행 종료' }}
+                        </dt>
+                        <dd>
+                            <time
+                                v-if="record.completedAt || record.endedAt"
+                                :datetime="record.completedAt || record.endedAt"
+                                >{{
+                                    formatTime(
+                                        record.completedAt || record.endedAt
+                                    )
+                                }}</time
+                            ><span v-else>미확인</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>화면 반영</dt>
+                        <dd>
+                            <time
+                                v-if="record.publishedAt"
+                                :datetime="record.publishedAt"
+                                >{{ formatTime(record.publishedAt) }}</time
+                            ><span v-else>미확인</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>전체 소요</dt>
+                        <dd>
+                            {{
+                                formatDuration(
+                                    record.requestedAt,
+                                    record.publishedAt ||
+                                        record.completedAt ||
+                                        record.endedAt
+                                )
+                            }}
+                        </dd>
+                    </div>
+                </dl>
                 <template v-if="record?.diagnostics">
-                    <h3>실패 이유</h3>
+                    <h3>실행 상세</h3>
                     <p role="alert">{{ record.diagnostics.reason }}</p>
                     <p>{{ record.diagnostics.nextAction }}</p>
                 </template>
@@ -227,6 +350,31 @@
                         <strong>{{
                             stateLabels[step.state] || '확인 필요'
                         }}</strong>
+                        <small class="step-time">
+                            <template v-if="step.startedAt">
+                                시작
+                                <time :datetime="step.startedAt">{{
+                                    formatTime(step.startedAt)
+                                }}</time>
+                            </template>
+                            <template v-if="step.completedAt">
+                                <span v-if="step.startedAt"> · </span>
+                                {{
+                                    ['failure', 'cancelled'].includes(
+                                        step.state
+                                    )
+                                        ? '종료'
+                                        : '완료'
+                                }}
+                                <time :datetime="step.completedAt">{{
+                                    formatTime(step.completedAt)
+                                }}</time>
+                            </template>
+                            <template
+                                v-if="!step.startedAt && !step.completedAt">
+                                시각 미확인
+                            </template>
+                        </small>
                         <a
                             v-if="step.logUrl"
                             :href="step.logUrl"
@@ -238,13 +386,13 @@
                         /></a>
                     </li>
                 </ol>
-                <p v-if="record?.state === 'failed'">
+                <p v-if="['failed', 'cancelled'].includes(record?.state)">
                     저장·검증 단계가 완료되어도 전체 수집 성공을 뜻하지
-                    않습니다. 실패 후 정리 작업이 포함될 수 있습니다.
+                    않습니다. 실패·취소 후 정리 작업이 포함될 수 있습니다.
                 </p>
                 <p
                     v-if="
-                        record?.state === 'failed' &&
+                        ['failed', 'cancelled'].includes(record?.state) &&
                         !record?.diagnostics?.steps?.length
                     ">
                     세부 단계를 불러오지 못했습니다. 원본 실행 기록을 확인해
@@ -280,6 +428,27 @@
     .collection-record {
         text-align: left;
     }
+    .collection-times {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 8px;
+        margin: 0;
+    }
+    .collection-times div {
+        padding: 12px;
+        border-radius: 10px;
+        background: var(--app-surface-muted);
+    }
+    .collection-times dt {
+        color: var(--app-muted);
+        font-size: 11px;
+    }
+    .collection-times dd {
+        margin: 6px 0 0;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.5;
+    }
     .collection-record h3 {
         margin: 20px 0 8px;
         font-size: 15px;
@@ -287,7 +456,7 @@
     .collection-record h3:first-child {
         margin-top: 0;
     }
-    .collection-record small {
+    .collection-record > small {
         display: block;
         margin-top: 16px;
         overflow-wrap: anywhere;
@@ -316,6 +485,13 @@
         flex: 1;
         min-width: 140px;
     }
+    .collection-steps .step-time {
+        flex-basis: 100%;
+        order: 3;
+        margin: 0;
+        color: var(--app-muted);
+        font-size: 11px;
+    }
     .collection-steps li[data-state='failure'] strong {
         color: var(--p-red-600);
     }
@@ -329,6 +505,9 @@
     @media (max-width: 600px) {
         .admin-stock-collection {
             text-align: left;
+        }
+        .collection-times {
+            grid-template-columns: 1fr;
         }
     }
 </style>

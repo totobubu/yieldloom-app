@@ -280,6 +280,13 @@
                     @click="router.push('/admin/portfolio-mappings')" />
                 <Button
                     v-if="isAdmin"
+                    label="원금 기준안"
+                    icon="pi pi-chart-pie"
+                    severity="secondary"
+                    text
+                    @click="router.push('/admin/portfolio-example')" />
+                <Button
+                    v-if="isAdmin"
                     label="로그아웃"
                     icon="pi pi-sign-out"
                     severity="secondary"

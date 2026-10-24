@@ -248,12 +248,24 @@ try {
                     .count(),
                 1
             );
+            const endTimeField = progressDialog
+                .locator('.collection-times > div')
+                .filter({
+                    has: progressDialog.getByText('실행 종료', { exact: true }),
+                });
             assert.equal(
+                await endTimeField.locator('dd').innerText(),
+                '미확인'
+            );
+            assert(
                 await progressDialog
-                    .locator('dd')
-                    .filter({ hasText: '미확인' })
-                    .count(),
-                1
+                    .getByText('2026. 10. 23. 10:00:00 KST', { exact: true })
+                    .isVisible()
+            );
+            assert(
+                await progressDialog
+                    .getByText('2026. 10. 23. 10:01:00 KST', { exact: true })
+                    .isVisible()
             );
             await page.keyboard.press('Escape');
             await progressDialog.waitFor({ state: 'hidden' });

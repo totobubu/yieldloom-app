@@ -1,5 +1,6 @@
 <script setup>
     import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
+    import Select from 'primevue/select';
     import { firebaseUser } from '@/services/firebaseClient.js';
     import {
         connectGoogleSheet,
@@ -11,6 +12,7 @@
         numericFields,
         statuses,
         summarize,
+        spreadsheetId,
         types,
     } from '../../lib/sheet-ledger.js';
 
@@ -19,6 +21,7 @@
         version = ref(0),
         preview = ref(null),
         busy = ref(false),
+        progress = ref(''),
         error = ref(''),
         notice = ref('');
     const url = ref(
@@ -100,18 +103,29 @@
                       : 4,
         }).format(value);
     }
-    async function run(operation) {
+    async function run(operation, message = '') {
         if (busy.value) return;
         const current = generation;
         busy.value = true;
+        progress.value = message;
         error.value = '';
         notice.value = '';
         try {
             await operation(current);
         } catch (e) {
-            if (current === generation) error.value = e.message;
+            if (current === generation) {
+                if (e.code === 'google_reconnect_required') {
+                    googleToken = null;
+                    connected.value = false;
+                    error.value =
+                        'Google 연결이 만료되었습니다. 미리보기 분석을 눌러 다시 연결해 주세요.';
+                } else error.value = e.message;
+            }
         } finally {
-            if (current === generation) busy.value = false;
+            if (current === generation) {
+                busy.value = false;
+                progress.value = '';
+            }
         }
     }
     function apply(result) {
@@ -122,26 +136,35 @@
         await run(async (current) => {
             const result = await client.load(firebaseUser.value);
             if (current === generation) apply(result);
-        });
-    }
-    async function connect() {
-        await run(async (current) => {
-            const token = await connectGoogleSheet(firebaseUser.value);
-            if (current === generation) {
-                googleToken = token;
-                connected.value = true;
-            }
-        });
+        }, '시험 장부를 불러오는 중입니다.');
     }
     async function analyze() {
         await run(async (current) => {
+            if (!firebaseUser.value)
+                throw new Error('관리자 로그인이 필요합니다.');
+            // Validate in the page as well so native form validation cannot silently
+            // suppress clicks and keyboard submissions.
+            spreadsheetId(url.value);
+            if (!googleToken) {
+                progress.value =
+                    'Google 읽기 권한을 연결하는 중입니다. 열린 팝업을 확인해 주세요.';
+                const token = await connectGoogleSheet(firebaseUser.value);
+                if (current !== generation) return;
+                googleToken = token;
+                connected.value = true;
+            }
+            progress.value =
+                '구글시트 내용을 읽고 실제 거래를 분석하는 중입니다.';
             const result = await client.mutate(firebaseUser.value, 'POST', {
                 action: 'preview',
                 url: url.value,
                 googleToken,
             });
-            if (current === generation) preview.value = result;
-        });
+            if (current === generation) {
+                preview.value = result;
+                notice.value = `분석 완료: ${result.rows.length}개 거래를 미리보기에서 확인해 주세요.`;
+            }
+        }, '시트 불러오기를 시작합니다.');
     }
     async function commit() {
         await run(async (current) => {
@@ -177,17 +200,24 @@
     watch(url, () => {
         preview.value = null;
     });
-    watch(firebaseUser, () => {
-        generation++;
-        client.clear();
-        rows.value = [];
-        preview.value = null;
-        editing.value = null;
-        googleToken = null;
-        connected.value = false;
-        busy.value = false;
-        if (firebaseUser.value) load();
-    });
+    watch(
+        () =>
+            firebaseUser.value
+                ? `${firebaseUser.value.uid}:${firebaseUser.value.email}:${firebaseUser.value.emailVerified}`
+                : null,
+        () => {
+            generation++;
+            client.clear();
+            rows.value = [];
+            preview.value = null;
+            editing.value = null;
+            googleToken = null;
+            connected.value = false;
+            busy.value = false;
+            progress.value = '';
+            if (firebaseUser.value) load();
+        }
+    );
     onMounted(load);
     onBeforeUnmount(() => {
         generation++;
@@ -227,7 +257,7 @@
                 夫·夫배당은 남편, 妻·妻배당은 아내 계좌로 가져옵니다. 실제
                 거래만 미리보기에서 확인한 후 저장하세요.
             </p>
-            <form class="import-actions" @submit.prevent="analyze">
+            <form class="import-actions" novalidate @submit.prevent="analyze">
                 <label class="url-field" for="sheet-url"
                     >시트 URL<InputText
                         id="sheet-url"
@@ -237,20 +267,21 @@
                         :disabled="busy"
                 /></label>
                 <Button
-                    :label="
-                        connected ? 'Google 다시 연결' : 'Google 읽기 권한 연결'
-                    "
-                    icon="pi pi-google"
-                    severity="secondary"
-                    :disabled="busy"
-                    @click="connect" />
-                <Button
-                    type="submit"
-                    label="미리보기 분석"
+                    type="button"
+                    :label="busy ? '처리 중' : '미리보기 분석'"
                     icon="pi pi-search"
                     :loading="busy"
-                    :disabled="!connected" />
+                    :disabled="busy"
+                    @click="analyze" />
             </form>
+            <p role="status" aria-live="polite">
+                {{
+                    progress ||
+                    (connected
+                        ? 'Google 연결됨 · 다시 연결할 필요 없이 분석할 수 있습니다.'
+                        : '분석 버튼을 누르면 필요한 경우 Google 읽기 권한을 연결합니다.')
+                }}
+            </p>
             <p class="muted">
                 최초 이전용 · 저장 후 수정은 시험 장부에 반영됩니다. 누락 비용은
                 0원이 아닌 ‘미확인’입니다.

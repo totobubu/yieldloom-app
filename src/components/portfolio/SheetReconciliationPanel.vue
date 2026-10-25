@@ -241,8 +241,8 @@
                 PDF Firebase 데이터는 수정하지 않습니다.
             </p>
             <p v-if="!archives.length">
-                아직 서버에 보존된 원본이 없습니다. 로컬 후보 보관은 원격 등록이
-                아닙니다.
+                원본 스냅샷은 아직 없습니다. 거래 등록 여부와는 별개이며 기존
+                구글시트 원본은 그대로 유지됩니다.
             </p>
             <div
                 v-for="archive in archives"
@@ -386,7 +386,7 @@
                         label(data.field)
                     }}</template></Column
                 >
-                <Column header="시트 등록값"
+                <Column header="최초 등록값"
                     ><template #body="{ data }">{{
                         display(data.baseline)
                     }}</template></Column

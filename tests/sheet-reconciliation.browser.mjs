@@ -308,6 +308,7 @@ try {
         .click();
     await page.getByRole('option', { name: '남편', exact: true }).click();
     assert.equal(requests.length, beforeFilter);
+    await page.locator('.p-select-overlay').last().waitFor({ state: 'hidden' });
     await page.evaluate(() => document.documentElement.classList.add('p-dark'));
     await page.setViewportSize({ width: 390, height: 844 });
     assert(
@@ -315,9 +316,53 @@ try {
             .getByRole('heading', { name: '출처 대조 · 원금 검증' })
             .isVisible()
     );
+    await page.screenshot({ path: '/tmp/yieldloom-trial-mobile.png' });
     assert(
         await page.evaluate(
             () => document.documentElement.scrollWidth <= window.innerWidth + 2
+        ),
+        JSON.stringify(
+            await page.evaluate(() => ({
+                width: window.innerWidth,
+                scroll: document.documentElement.scrollWidth,
+                containers: [
+                    ...document.querySelectorAll(
+                        '.p-datatable-table-container'
+                    ),
+                ].map((e) => ({
+                    w: e.clientWidth,
+                    s: e.scrollWidth,
+                    h: e.clientHeight,
+                    sh: e.scrollHeight,
+                    x: getComputedStyle(e).overflowX,
+                })),
+                outside: [...document.querySelectorAll('body *')]
+                    .filter(
+                        (e) =>
+                            !e.closest('main') &&
+                            e.getBoundingClientRect().right >
+                                window.innerWidth + 2
+                    )
+                    .slice(0, 5)
+                    .map((e) => ({
+                        tag: e.tagName,
+                        cls: e.className,
+                        w: e.getBoundingClientRect().width,
+                    })),
+                wide: [...document.querySelectorAll('main *')]
+                    .filter((e) => !e.closest('.p-datatable'))
+                    .filter(
+                        (e) =>
+                            e.getBoundingClientRect().right >
+                            window.innerWidth + 3
+                    )
+                    .slice(0, 8)
+                    .map((e) => ({
+                        tag: e.tagName,
+                        cls: e.className,
+                        width: e.getBoundingClientRect().width,
+                    })),
+            }))
         )
     );
     assert.deepEqual(errors, []);

@@ -11,6 +11,76 @@ import {
 } from '../lib/sheet-reconciliation.js';
 import { sheetLedgerHandler } from '../lib/sheet-ledger-handler.js';
 
+test('manual add keeps unknowns and precision, survives reads and retry without duplicate writes', async () => {
+    const h = harness();
+    const body = {
+        action: 'add-manual',
+        requestId: '00000000-0000-4000-8000-000000000001',
+        version: 0,
+        data: {
+            accountId: 'wife',
+            type: 'BUY',
+            symbol: 'FAKE',
+            values: {
+                date: '2025-02-03',
+                transactionAt: '2025-02-03 13:42',
+                purchaseUsd: 123,
+                commissionUsd: null,
+                timeZone: null,
+            },
+        },
+    };
+    const added = await h.invoke('POST', body);
+    assert.equal(added.code, 200, added.payload.error);
+    const r = added.payload.rows[0];
+    assert.equal(r.source.kind, 'manual');
+    assert.equal(r.needsReview, true);
+    assert.equal(r.status, '미확인');
+    assert.equal(r.commissionUsd, null);
+    assert.equal(r.timePrecision, 'minute');
+    assert.equal(r.transactionAt, '2025-02-03 13:42');
+    const writes = h.db.writes.length;
+    const retry = await h.invoke('POST', body);
+    assert.equal(retry.code, 200);
+    assert.equal(retry.payload.imported, 0);
+    assert.equal(h.db.writes.length, writes);
+    assert.deepEqual((await h.invoke('GET')).payload.rows, added.payload.rows);
+    assert.equal(
+        (
+            await h.invoke('POST', {
+                ...body,
+                data: {
+                    ...body.data,
+                    values: { date: '2025-02-03', purchaseUsd: 999 },
+                },
+            })
+        ).code,
+        409
+    );
+    assert.equal(
+        (
+            await h.invoke('POST', {
+                ...body,
+                requestId: '00000000-0000-4000-8000-000000000002',
+                version: 1,
+                data: {
+                    ...body.data,
+                    values: { date: '2025-02-30', commissionUsd: -1 },
+                },
+            })
+        ).code,
+        400
+    );
+    assert.equal(h.googleReads(), 0);
+    assert(
+        h.db.writes.every(
+            (p) =>
+                p === 'sheetTrialLedgers/admin' ||
+                p.startsWith('sheetTrialLedgers/admin/')
+        )
+    );
+});
+
 const buy = (id = 'sheet:buy', accountId = 'wife') => ({
     id,
     accountId,

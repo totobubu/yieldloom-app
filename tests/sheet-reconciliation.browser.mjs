@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { sheetLedgerHandler } from '../lib/sheet-ledger-handler.js';
 import { numericFields } from '../lib/sheet-ledger.js';
+import { memoryDb } from './helpers/sheet-memory-db.mjs';
+import { submitObservationBatch } from '../lib/sheet-observation-store.js';
 
 const row = {
     ...Object.fromEntries(numericFields.map((f) => [f, null])),
@@ -22,30 +24,11 @@ const row = {
     reinvested: null,
     needsReview: true,
 };
-const store = new Map([
+const db = memoryDb([
     ['sheetTrialLedgers/browser-admin', { version: 1, pageCount: 1 }],
     ['sheetTrialLedgers/browser-admin/pages/0', { rows: [row] }],
 ]);
-const ref = (path) => ({
-    path,
-    collection: (name) => ({ doc: (id) => ref(`${path}/${name}/${id}`) }),
-    get: async () => ({
-        exists: store.has(path),
-        data: () => structuredClone(store.get(path)),
-    }),
-});
-const db = {
-    collection: (name) => ({ doc: (id) => ref(`${name}/${id}`) }),
-    runTransaction: async (fn) => {
-        const pending = [];
-        const result = await fn({
-            get: (r) => r.get(),
-            set: (r, v) => pending.push([r.path, structuredClone(v)]),
-        });
-        for (const [p, v] of pending) store.set(p, v);
-        return result;
-    },
-};
+const { store } = db;
 const handler = sheetLedgerHandler({
     database: () => db,
     verify: async () => ({
@@ -364,6 +347,51 @@ try {
                     })),
             }))
         )
+    );
+    // Exercise real cursor routes and document-window rendering with >2,000 synthetic observations.
+    const root = db.doc('sheetTrialLedgers/browser-admin');
+    for (let offset = 0; offset < 2400; offset += 100) {
+        const added = Array.from({ length: 100 }, (_, i) => ({
+            ...observations[1],
+            sourceId: `bulk-${String(offset + i).padStart(4, '0')}`,
+            location: `합성 대량 상세 ${offset + i}`,
+        }));
+        await submitObservationBatch(db, root, {
+            accountId: 'wife',
+            batchId: `bulk-${offset}`,
+            checkpoint: { sourceHash: 'b'.repeat(64), offset, count: 100 },
+            observations: added,
+        });
+    }
+    const readsBeforeReload = requests.length;
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.reload();
+    await panel.getByText('대조 자료 목록 · 2404건', { exact: true }).waitFor();
+    const readsAfterReload = requests.length;
+    assert.equal(readsAfterReload - readsBeforeReload, 27); // canonical 1 + 25 observation pages + version 1; no empty legacy transition request
+    const listDetails = panel.locator('details').filter({
+        has: page.locator('summary').filter({ hasText: '대조 자료 목록' }),
+    });
+    if (!(await listDetails.evaluate((e) => e.open)))
+        await listDetails.locator('summary').click();
+    assert.equal(await listDetails.locator('.p-paginator').count(), 0);
+    assert.equal(await listDetails.locator('tbody tr').count(), 100);
+    await listDetails
+        .getByRole('button', { name: '대조 자료 끝으로', exact: true })
+        .focus();
+    await page.keyboard.press('Enter');
+    await listDetails
+        .getByRole('cell', { name: '합성 대량 상세 2399', exact: true })
+        .waitFor();
+    await listDetails.getByLabel('대조 자료 검색').fill('bulk-2399');
+    await panel.getByText('대조 자료 목록 · 1건', { exact: true }).waitFor();
+    assert.equal(await listDetails.locator('tbody tr').count(), 1);
+    assert.equal(requests.length, readsAfterReload); // full-dataset search is local, not first-page-only
+    assert.equal(
+        await listDetails
+            .locator('.p-datatable-table-container')
+            .evaluate((e) => e.scrollHeight > e.clientHeight + 2),
+        false
     );
     assert.deepEqual(errors, []);
     console.log(

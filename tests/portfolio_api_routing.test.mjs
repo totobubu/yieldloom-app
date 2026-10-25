@@ -33,7 +33,10 @@ beforeEach((t) => {
             reads.push(path);
             return { docs: [] };
         },
-        doc: (id) => ({ path: `${path}/${id}` }),
+        doc: (id) => ({
+            path: `${path}/${id}`,
+            collection: (name) => query(`${path}/${id}/${name}`),
+        }),
         orderBy() {
             return this;
         },
@@ -102,12 +105,16 @@ async function invoke(url, { method = 'GET', body, token = true } = {}) {
     return res;
 }
 
-test('the compatibility URL reads only the sheet ledger, once, with private CORS', async () => {
+test('the compatibility URL reads ledger and two observation checkpoints only, with private CORS', async () => {
     const res = await invoke('/api/sheet-ledger?accountId=unrelated');
     assert.equal(res.statusCode, 200);
     assert.deepEqual(res.payload.rows, []);
     assert.equal(res.payload.version, 0);
-    assert.deepEqual(reads, ['sheetTrialLedgers/routing-admin']);
+    assert.deepEqual(reads, [
+        'sheetTrialLedgers/routing-admin',
+        'sheetTrialLedgers/routing-admin/reconciliationAccounts/wife',
+        'sheetTrialLedgers/routing-admin/reconciliationAccounts/husband',
+    ]);
     assert.deepEqual(writes, []);
     assert.deepEqual(verifications, [false]);
     assert.equal(res.headers['Cache-Control'], 'private, no-store');

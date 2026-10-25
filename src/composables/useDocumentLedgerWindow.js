@@ -33,7 +33,12 @@ export function useDocumentLedgerWindow(rows, region, table) {
     );
     function refresh() {
         frame = 0;
-        if (!region.value || !table.value) return;
+        if (
+            !region.value ||
+            !table.value ||
+            !region.value.getClientRects().length
+        )
+            return;
         const measured = new Map(heights.value);
         let changed = false;
         for (const element of table.value.querySelectorAll(

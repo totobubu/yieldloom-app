@@ -1,10 +1,14 @@
 <script setup>
     import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
-    import { firebaseUser } from '@/services/firebaseClient.js';
+    import Select from 'primevue/select';
+    import { useDocumentLedgerWindow } from '@/composables/useDocumentLedgerWindow.js';
+    import SheetReconciliationPanel from '@/components/portfolio/SheetReconciliationPanel.vue';
     import {
-        connectGoogleSheet,
-        createSheetLedgerClient,
-    } from '@/services/sheetLedger.js';
+        comparisonFields,
+        extraFields,
+    } from '../../lib/sheet-reconciliation.js';
+    import { firebaseUser } from '@/services/firebaseClient.js';
+    import { createSheetLedgerClient } from '@/services/sheetLedger.js';
     import {
         accounts,
         fundingSources,
@@ -16,14 +20,14 @@
 
     const client = createSheetLedgerClient();
     const rows = ref([]),
+        observations = ref([]),
+        archives = ref([]),
+        evidencePreview = ref(null),
         version = ref(0),
-        preview = ref(null),
         busy = ref(false),
+        progress = ref(''),
         error = ref(''),
         notice = ref('');
-    const url = ref(
-        'https://docs.google.com/spreadsheets/d/15j5-2_FBiHp4Ie95yCytS-i07fiojpw2TyLhd-aVAe8/edit'
-    );
     const account = ref(null),
         type = ref(null),
         status = ref(null),
@@ -35,9 +39,14 @@
             if (!open) editing.value = null;
         },
     });
-    let googleToken = null,
-        generation = 0;
-    const connected = ref(false);
+    let generation = 0;
+    const creating = ref(false),
+        manualRequestId = ref(null),
+        addedId = ref(null);
+    const sortField = ref('date'),
+        sortOrder = ref(-1),
+        listRegion = ref(null),
+        tableElement = ref(null);
     const labels = {
         quantity: '수량(주)',
         unitPriceUsd: '매수단가($)',
@@ -56,14 +65,26 @@
         taxKrw: '원천징수세(₩)',
         fxFeeUsd: '환전비용($)',
         fxFeeKrw: '환전비용(₩)',
+        ...extraFields,
     };
     const typeLabels = {
         BUY: '매수',
         SELL: '매도',
         DIVIDEND: '배당',
         FEE: '비용',
+        DEPOSIT: '입금',
+        WITHDRAWAL: '출금',
+        FX: '환전',
     };
-    const activeRows = computed(() => preview.value?.rows || rows.value);
+    const activeRows = computed(() => rows.value);
+    const additionalColumns = computed(() =>
+        Object.keys(extraFields).filter(
+            (field) =>
+                !numericFields.includes(field) &&
+                (activeRows.value.some((r) => r[field] != null) ||
+                    observations.value.some((o) => o.values[field] != null))
+        )
+    );
     const filtered = computed(() =>
         activeRows.value.filter(
             (r) =>
@@ -74,15 +95,76 @@
                         ? r.needsReview
                         : r.status === status.value)) &&
                 (!search.value ||
-                    `${r.symbol} ${r.source.sheet}`
+                    `${r.symbol} ${r.source.sheet} ${r.id}`
                         .toLowerCase()
                         .includes(search.value.toLowerCase()))
         )
     );
     const summary = computed(() => summarize(filtered.value));
-    const newCount = computed(
-        () => preview.value?.rows.filter((r) => !r.duplicate).length || 0
+
+    const sortedRows = computed(() =>
+        [...filtered.value].sort((a, b) => {
+            const x = a[sortField.value],
+                y = b[sortField.value];
+            if (x == null || y == null)
+                return x == null && y == null
+                    ? a.id.localeCompare(b.id)
+                    : x == null
+                      ? 1
+                      : -1;
+            return (
+                (typeof x === 'number' && typeof y === 'number'
+                    ? x - y
+                    : String(x).localeCompare(String(y))) * sortOrder.value ||
+                a.id.localeCompare(b.id)
+            );
+        })
     );
+    const {
+        start: windowStart,
+        renderedRows,
+        paddingTop,
+        paddingBottom,
+        rowAttributes,
+        jump,
+    } = useDocumentLedgerWindow(sortedRows, listRegion, tableElement);
+    watch(editing, (value) => {
+        if (!value) {
+            creating.value = false;
+            manualRequestId.value = null;
+        }
+    });
+    function sortList(event) {
+        sortField.value = event.sortField;
+        sortOrder.value = event.sortOrder;
+    }
+    function addManual() {
+        creating.value = true;
+        manualRequestId.value = crypto.randomUUID();
+        error.value = '';
+        editing.value = {
+            ...Object.fromEntries(numericFields.map((f) => [f, null])),
+            accountId: account.value,
+            type: 'BUY',
+            symbol: '',
+            date: null,
+            exDate: null,
+            paymentDate: null,
+            transactionAt: null,
+            timeZone: null,
+            fundingSource: '미확인',
+            reinvested: null,
+            status: '미확인',
+            note: '',
+        };
+    }
+    function showAdded() {
+        account.value = null;
+        type.value = null;
+        status.value = null;
+        search.value = addedId.value;
+    }
+
     const money = (value, currency = 'USD') =>
         new Intl.NumberFormat('ko-KR', {
             style: 'currency',
@@ -100,98 +182,134 @@
                       : 4,
         }).format(value);
     }
-    async function run(operation) {
+    async function run(operation, message = '') {
         if (busy.value) return;
         const current = generation;
         busy.value = true;
+        progress.value = message;
         error.value = '';
         notice.value = '';
         try {
             await operation(current);
         } catch (e) {
-            if (current === generation) error.value = e.message;
+            if (current === generation) {
+                error.value = e.message;
+            }
         } finally {
-            if (current === generation) busy.value = false;
+            if (current === generation) {
+                busy.value = false;
+                progress.value = '';
+            }
         }
     }
     function apply(result) {
         rows.value = result.rows;
         version.value = result.version;
+        observations.value = result.observations || [];
+        archives.value = result.archives || [];
+        evidencePreview.value = null;
     }
     async function load() {
         await run(async (current) => {
             const result = await client.load(firebaseUser.value);
             if (current === generation) apply(result);
-        });
-    }
-    async function connect() {
-        await run(async (current) => {
-            const token = await connectGoogleSheet(firebaseUser.value);
-            if (current === generation) {
-                googleToken = token;
-                connected.value = true;
-            }
-        });
-    }
-    async function analyze() {
-        await run(async (current) => {
-            const result = await client.mutate(firebaseUser.value, 'POST', {
-                action: 'preview',
-                url: url.value,
-                googleToken,
-            });
-            if (current === generation) preview.value = result;
-        });
-    }
-    async function commit() {
-        await run(async (current) => {
-            const result = await client.mutate(firebaseUser.value, 'POST', {
-                action: 'commit',
-                url: url.value,
-                googleToken,
-                version: preview.value.version,
-                fingerprint: preview.value.fingerprint,
-            });
-            if (current !== generation) return;
-            apply(result);
-            preview.value = null;
-            googleToken = null;
-            connected.value = false;
-            notice.value = `${result.imported}개 거래를 시험 계좌에 저장했습니다.`;
-        });
+        }, '시험 장부를 불러오는 중입니다.');
     }
     async function save() {
         await run(async (current) => {
-            const result = await client.mutate(firebaseUser.value, 'PATCH', {
-                id: editing.value.id,
-                version: version.value,
-                patch: editing.value,
-            });
+            const isNew = creating.value;
+            const draft = editing.value;
+            const body = isNew
+                ? {
+                      action: 'add-manual',
+                      version: version.value,
+                      requestId: manualRequestId.value,
+                      data: {
+                          accountId: draft.accountId,
+                          type: draft.type,
+                          symbol: draft.symbol,
+                          note: draft.note || '',
+                          values: Object.fromEntries(
+                              comparisonFields
+                                  .filter((f) => Object.hasOwn(draft, f))
+                                  .map((f) => [
+                                      f,
+                                      draft[f] === '' ? null : draft[f],
+                                  ])
+                          ),
+                      },
+                  }
+                : { id: draft.id, version: version.value, patch: draft };
+            const result = await client.mutate(
+                firebaseUser.value,
+                isNew ? 'POST' : 'PATCH',
+                body
+            );
             if (current === generation) {
                 apply(result);
                 editing.value = null;
-                notice.value = '거래를 수정했습니다.';
+                if (isNew) addedId.value = result.addedId;
+                notice.value = isNew
+                    ? '수동 거래를 시험 장부에 추가했습니다. 원본 대조 전 검토 필요 상태입니다.'
+                    : '거래를 수정했습니다.';
             }
         });
     }
-    watch(url, () => {
-        preview.value = null;
-    });
-    watch(firebaseUser, () => {
-        generation++;
-        client.clear();
-        rows.value = [];
-        preview.value = null;
-        editing.value = null;
-        googleToken = null;
-        connected.value = false;
-        busy.value = false;
-        if (firebaseUser.value) load();
-    });
+    async function reconcile(command) {
+        await run(async (current) => {
+            const result = await client.mutate(firebaseUser.value, 'POST', {
+                ...command,
+                version: version.value,
+            });
+            if (current !== generation) return;
+            if (command.action === 'evidence-preview')
+                evidencePreview.value = result;
+            else {
+                apply(result);
+                notice.value =
+                    command.action === 'evidence-commit'
+                        ? `${result.importedEvidence}건의 대조 자료를 저장했습니다. 거래값은 자동 변경하지 않았습니다.`
+                        : '시험 장부의 관리자 검토를 반영했습니다. 원본 자료는 유지됩니다.';
+            }
+        }, '시험 장부의 출처 대조를 처리하는 중입니다.');
+    }
+    async function downloadArchive(id) {
+        await run(async (current) => {
+            const result = await client.archive(firebaseUser.value, id);
+            if (current !== generation) return;
+            const objectUrl = URL.createObjectURL(
+                new Blob([JSON.stringify(result.archive, null, 2)], {
+                    type: 'application/json',
+                })
+            );
+            const link = document.createElement('a');
+            link.href = objectUrl;
+            link.download = `sheet-source-${id.slice(0, 12)}.json`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+        }, '보존 원본을 내려받는 중입니다.');
+    }
+    watch(
+        () =>
+            firebaseUser.value
+                ? `${firebaseUser.value.uid}:${firebaseUser.value.email}:${firebaseUser.value.emailVerified}`
+                : null,
+        () => {
+            generation++;
+            client.clear();
+            rows.value = [];
+            observations.value = [];
+            archives.value = [];
+            evidencePreview.value = null;
+            editing.value = null;
+            busy.value = false;
+            progress.value = '';
+            if (firebaseUser.value) load();
+        }
+    );
     onMounted(load);
     onBeforeUnmount(() => {
         generation++;
-        googleToken = null;
         client.clear();
     });
 </script>
@@ -212,7 +330,7 @@
                 icon="pi pi-refresh"
                 severity="secondary"
                 :loading="busy"
-                :disabled="Boolean(preview)"
+                :disabled="busy"
                 @click="load" />
         </header>
         <Message v-if="error" severity="error" :closable="false">{{
@@ -221,83 +339,10 @@
         <Message v-if="notice" severity="success" :closable="false">{{
             notice
         }}</Message>
-        <section class="import-panel" aria-label="구글시트 가져오기">
-            <h2>구글시트 가져오기</h2>
-            <p>
-                夫·夫배당은 남편, 妻·妻배당은 아내 계좌로 가져옵니다. 실제
-                거래만 미리보기에서 확인한 후 저장하세요.
-            </p>
-            <form class="import-actions" @submit.prevent="analyze">
-                <label class="url-field" for="sheet-url"
-                    >시트 URL<InputText
-                        id="sheet-url"
-                        v-model="url"
-                        type="url"
-                        required
-                        :disabled="busy"
-                /></label>
-                <Button
-                    :label="
-                        connected ? 'Google 다시 연결' : 'Google 읽기 권한 연결'
-                    "
-                    icon="pi pi-google"
-                    severity="secondary"
-                    :disabled="busy"
-                    @click="connect" />
-                <Button
-                    type="submit"
-                    label="미리보기 분석"
-                    icon="pi pi-search"
-                    :loading="busy"
-                    :disabled="!connected" />
-            </form>
-            <p class="muted">
-                최초 이전용 · 저장 후 수정은 시험 장부에 반영됩니다. 누락 비용은
-                0원이 아닌 ‘미확인’입니다.
-            </p>
-            <div v-if="preview" class="preview-notice">
-                <Message severity="info" :closable="false"
-                    >미리보기: 신규 {{ newCount }}개 · 중복
-                    {{ preview.rows.length - newCount }}개 · 제외/보류
-                    {{ preview.excluded.length }}개 · 기준일
-                    {{ preview.cutoff }}</Message
-                >
-                <p v-for="warning in preview.warnings" :key="warning">
-                    {{ warning }}
-                </p>
-                <div class="import-actions">
-                    <Button
-                        label="확인한 신규 거래 저장"
-                        icon="pi pi-check"
-                        :loading="busy"
-                        :disabled="!newCount"
-                        @click="commit" /><Button
-                        label="미리보기 닫기"
-                        severity="secondary"
-                        :disabled="busy"
-                        @click="preview = null" />
-                </div>
-                <details>
-                    <summary>제외·보류 행과 사유 확인</summary>
-                    <DataTable
-                        :value="preview.excluded"
-                        paginator
-                        :rows="10"
-                        size="small"
-                        ><Column field="sheet" header="원본 시트" /><Column
-                            field="row"
-                            header="행" /><Column
-                            field="symbol"
-                            header="티커" /><Column
-                            field="reason"
-                            header="사유"
-                    /></DataTable>
-                </details>
-            </div>
-        </section>
+        <p role="status" aria-live="polite">{{ progress }}</p>
         <section class="summary-grid" aria-label="거래 요약">
             <article>
-                <span>확인된 본인원금</span
+                <span>본인원금 분류 매수액 · 납입원금 아님</span
                 ><strong>{{ money(summary.principalUsd) }}</strong>
             </article>
             <article>
@@ -318,16 +363,45 @@
                 ><small>{{ money(summary.costsKrw, 'KRW') }}</small>
             </article>
             <article>
-                <span>배당 재투자금 · 추정 포함</span
-                ><strong>{{ money(summary.reinvestedUsd) }}</strong>
-            </article>
-            <article>
                 <span>미확인·검토 필요</span
                 ><strong>{{ summary.unknown }}행</strong>
             </article>
         </section>
+        <SheetReconciliationPanel
+            :key="
+                firebaseUser
+                    ? `${firebaseUser.uid}:${firebaseUser.email}:${firebaseUser.emailVerified}`
+                    : 'signed-out'
+            "
+            :rows="rows"
+            :observations="observations"
+            :archives="archives"
+            :busy="busy"
+            :preview="evidencePreview"
+            :account-id="account"
+            :labels="labels"
+            @command="reconcile"
+            @clear-preview="evidencePreview = null"
+            @archive="downloadArchive" />
         <section class="ledger-list" aria-label="거래 목록">
             <div class="filters">
+                <Button
+                    label="처음 거래로 이동"
+                    severity="secondary"
+                    @click="jump(false)" />
+                <Button
+                    label="마지막 거래로 이동"
+                    severity="secondary"
+                    @click="jump(true)" />
+                <Button
+                    label="거래 행 추가"
+                    :disabled="busy"
+                    @click="addManual" />
+                <Button
+                    v-if="addedId"
+                    label="추가한 거래 보기"
+                    severity="secondary"
+                    @click="showAdded" />
                 <Select
                     v-model="account"
                     :options="accounts"
@@ -360,178 +434,292 @@
                     placeholder="티커·원본 시트 검색"
                     aria-label="거래 검색" />
                 <span
-                    >{{ filtered.length }}개 거래{{
-                        preview ? ' · 미리보기' : ''
-                    }}</span
+                    >검색/필터 {{ filtered.length }}건 · 전체
+                    {{ rows.length }}건 · {{ renderedRows.length }}건 표시</span
                 >
             </div>
             <p class="muted">
                 USD와 KRW는 같은 금액의 통화별 표기이며 합산하지 않습니다. 매도
                 행의 거래금액은 매도대금입니다.
             </p>
-            <DataTable
-                :value="filtered"
-                data-key="id"
-                scrollable
-                scroll-height="560px"
-                paginator
-                :rows="25"
-                :rows-per-page-options="[25, 50, 100]"
-                sort-field="date"
-                :sort-order="-1"
-                size="small"
-                striped-rows
-                :loading="busy"
-                table-style="min-width: 3700px">
-                <template #empty
-                    >저장된 거래가 없습니다. Google 읽기 권한을 연결하고 시트를
-                    분석해 주세요.</template
-                >
-                <Column
-                    field="accountId"
-                    header="계좌"
-                    frozen
-                    style="min-width: 80px"
-                    ><template #body="{ data }">{{
-                        accounts.find((a) => a.id === data.accountId)?.name
-                    }}</template></Column
-                >
-                <Column
-                    field="date"
-                    header="거래일"
-                    sortable
-                    frozen
-                    style="min-width: 120px" />
-                <Column
-                    field="type"
-                    header="유형"
-                    frozen
-                    style="min-width: 75px"
-                    ><template #body="{ data }">{{
-                        typeLabels[data.type]
-                    }}</template></Column
-                >
-                <Column
-                    field="symbol"
-                    header="티커"
-                    sortable
-                    frozen
-                    style="min-width: 90px" />
-                <Column
-                    field="exDate"
-                    header="배당락일"
-                    style="min-width: 120px"
-                    ><template #body="{ data }">{{
-                        data.exDate || '—'
-                    }}</template></Column
-                >
-                <Column
-                    field="paymentDate"
-                    header="배당지급일"
-                    style="min-width: 120px"
-                    ><template #body="{ data }">{{
-                        data.paymentDate || '—'
-                    }}</template></Column
-                >
-                <Column
-                    v-for="field in numericFields"
-                    :key="field"
-                    :field="field"
-                    :header="labels[field]"
-                    sortable
-                    style="min-width: 145px"
-                    ><template #body="{ data }"
-                        ><span
-                            :title="
-                                data.fieldStatus[field] ||
-                                (data[field] == null ? '미확인' : '원본값')
-                            "
-                            >{{ display(data[field], field)
-                            }}<small v-if="data.fieldStatus[field] === '추정'">
-                                (추정)</small
-                            ></span
-                        ></template
-                    ></Column
-                >
-                <Column
-                    field="fundingSource"
-                    header="원금출처"
-                    style="min-width: 120px" />
-                <Column
-                    field="reinvested"
-                    header="재투자여부"
-                    style="min-width: 130px"
-                    ><template #body="{ data }"
-                        >{{
-                            data.reinvested == null
-                                ? '미확인'
-                                : data.reinvested
-                                  ? '예'
-                                  : '아니오'
-                        }}{{
-                            data.fieldStatus.reinvested === '추정'
-                                ? ' (추정)'
-                                : ''
-                        }}</template
-                    ></Column
-                >
-                <Column field="status" header="상태" style="min-width: 110px"
-                    ><template #body="{ data }"
-                        ><Tag
-                            :value="data.duplicate ? '중복' : data.status"
-                            :severity="
-                                data.status === '확정' ? 'success' : 'warn'
-                            " /></template
-                ></Column>
-                <Column header="원본·검토 근거" style="min-width: 250px"
-                    ><template #body="{ data }"
-                        ><a
-                            :href="`https://docs.google.com/spreadsheets/d/${data.source.spreadsheetId}/edit#gid=${data.source.sheetId}&range=A${data.source.row}`"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            >{{ data.source.sheet }} {{ data.source.row }}행</a
+            <div ref="listRegion" class="document-list-region">
+                <div
+                    aria-hidden="true"
+                    :style="{ height: `${paddingTop}px` }" />
+                <div ref="tableElement">
+                    <DataTable
+                        :value="renderedRows"
+                        :pt="{
+                            table: { 'aria-rowcount': filtered.length + 1 },
+                            bodyRow: rowAttributes,
+                        }"
+                        lazy
+                        data-key="id"
+                        scrollable
+                        :sort-field="sortField"
+                        :sort-order="sortOrder"
+                        size="small"
+                        striped-rows
+                        :loading="busy"
+                        table-style="min-width: 3700px"
+                        @sort="sortList">
+                        <template #empty
+                            >조건에 맞는 거래가 없습니다. 필터를 확인하거나 수동
+                            거래를 추가해 주세요.</template
                         >
-                        <details v-if="data.evidence.length">
-                            <summary>근거 {{ data.evidence.length }}개</summary>
-                            <p v-for="(e, i) in data.evidence" :key="i">
-                                {{ e }}
-                            </p>
-                        </details></template
-                    ></Column
-                >
-                <Column header="수정" style="min-width: 90px"
-                    ><template #body="{ data }"
-                        ><Button
-                            label="수정"
-                            size="small"
-                            severity="secondary"
-                            :disabled="Boolean(preview) || busy"
-                            @click="
-                                editing = JSON.parse(JSON.stringify(data))
-                            " /></template
-                ></Column>
-            </DataTable>
+                        <Column
+                            field="accountId"
+                            header="계좌"
+                            frozen
+                            style="min-width: 80px"
+                            ><template #body="{ data }">{{
+                                accounts.find((a) => a.id === data.accountId)
+                                    ?.name
+                            }}</template></Column
+                        >
+                        <Column
+                            field="date"
+                            header="거래일"
+                            sortable
+                            frozen
+                            style="min-width: 120px" />
+                        <Column
+                            field="type"
+                            header="유형"
+                            frozen
+                            style="min-width: 75px"
+                            ><template #body="{ data }">{{
+                                typeLabels[data.type]
+                            }}</template></Column
+                        >
+                        <Column
+                            field="symbol"
+                            header="티커"
+                            sortable
+                            frozen
+                            style="min-width: 90px" />
+                        <Column
+                            field="exDate"
+                            header="배당락일"
+                            style="min-width: 120px"
+                            ><template #body="{ data }">{{
+                                data.exDate || '—'
+                            }}</template></Column
+                        >
+                        <Column
+                            field="paymentDate"
+                            header="배당지급일"
+                            style="min-width: 120px"
+                            ><template #body="{ data }">{{
+                                data.paymentDate || '—'
+                            }}</template></Column
+                        >
+                        <Column
+                            v-for="field in numericFields"
+                            :key="field"
+                            :field="field"
+                            :header="labels[field]"
+                            sortable
+                            style="min-width: 145px"
+                            ><template #body="{ data }"
+                                ><span
+                                    :title="
+                                        data.fieldStatus[field] ||
+                                        (data[field] == null
+                                            ? '미확인'
+                                            : '원본값')
+                                    "
+                                    >{{ display(data[field], field)
+                                    }}<small
+                                        v-if="
+                                            data.fieldStatus[field] === '추정'
+                                        ">
+                                        (추정)</small
+                                    ></span
+                                ></template
+                            ></Column
+                        >
+                        <Column
+                            v-for="field in additionalColumns"
+                            :key="field"
+                            :field="field"
+                            :header="labels[field]"
+                            style="min-width: 190px">
+                            <template #body="{ data }">{{
+                                data[field] == null
+                                    ? '미확인'
+                                    : data[field] === true
+                                      ? '포함'
+                                      : data[field] === false
+                                        ? '별도'
+                                        : data[field]
+                            }}</template>
+                        </Column>
+                        <Column
+                            field="fundingSource"
+                            header="원금출처"
+                            style="min-width: 120px" />
+                        <Column
+                            field="reinvested"
+                            header="재투자여부"
+                            style="min-width: 130px"
+                            ><template #body="{ data }"
+                                >{{
+                                    data.reinvested == null
+                                        ? '미확인'
+                                        : data.reinvested
+                                          ? '예'
+                                          : '아니오'
+                                }}{{
+                                    data.fieldStatus.reinvested === '추정'
+                                        ? ' (추정)'
+                                        : ''
+                                }}</template
+                            ></Column
+                        >
+                        <Column
+                            field="status"
+                            header="상태"
+                            style="min-width: 110px"
+                            ><template #body="{ data }"
+                                ><Tag
+                                    :value="
+                                        data.duplicate ? '중복' : data.status
+                                    "
+                                    :severity="
+                                        data.status === '확정'
+                                            ? 'success'
+                                            : 'warn'
+                                    " /></template
+                        ></Column>
+                        <Column header="원본·검토 근거" style="min-width: 250px"
+                            ><template #body="{ data }"
+                                ><a
+                                    v-if="data.source.spreadsheetId"
+                                    :href="`https://docs.google.com/spreadsheets/d/${data.source.spreadsheetId}/edit#gid=${data.source.sheetId}&range=A${data.source.row}`"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    >{{ data.source.sheet }}
+                                    {{ data.source.row }}행</a
+                                ><span v-else
+                                    >{{ data.source.sheet }} · 검토 필요</span
+                                >
+                                <details v-if="data.evidence.length">
+                                    <summary>
+                                        근거 {{ data.evidence.length }}개
+                                    </summary>
+                                    <p v-for="(e, i) in data.evidence" :key="i">
+                                        {{ e }}
+                                    </p>
+                                </details></template
+                            ></Column
+                        >
+                        <Column header="수정" style="min-width: 90px"
+                            ><template #body="{ data }"
+                                ><Button
+                                    label="수정"
+                                    size="small"
+                                    severity="secondary"
+                                    :disabled="busy"
+                                    @click="
+                                        editing = JSON.parse(
+                                            JSON.stringify(data)
+                                        )
+                                    " /></template
+                        ></Column>
+                    </DataTable>
+                </div>
+                <div
+                    aria-hidden="true"
+                    :style="{ height: `${paddingBottom}px` }" />
+            </div>
+            <p class="list-progress" role="status" aria-live="polite">
+                전체 {{ filtered.length }}건 중
+                {{ filtered.length ? windowStart + 1 : 0 }}–{{
+                    windowStart + renderedRows.length
+                }}행 · 브라우저 스크롤/PageDown으로 전체 목록을 확인하세요.
+            </p>
+            <p v-if="windowStart + renderedRows.length >= filtered.length">
+                목록 끝
+            </p>
         </section>
         <Dialog
             v-model:visible="editOpen"
             modal
-            header="거래 수정"
+            :header="creating ? '수동 거래 추가' : '거래 수정'"
             :style="{ width: '760px', maxWidth: '95vw' }"
             :closable="!busy">
             <form v-if="editing" class="edit-form" @submit.prevent="save">
                 <p>
-                    빈 금액은 미확인으로 저장됩니다. 원본 추적 정보와 거래유형은
-                    유지됩니다.
+                    빈 금액·시간대는 미확인입니다.
+                    {{
+                        creating
+                            ? '수동 입력은 원본 대조 전 검토 필요로 저장합니다. 표시되지 않은 초·수수료는 입력하지 마세요.'
+                            : '원본 추적 정보와 거래유형은 유지됩니다.'
+                    }}
                 </p>
                 <Message v-if="error" severity="error" :closable="false">{{
                     error
                 }}</Message>
                 <div class="edit-grid">
+                    <template v-if="creating">
+                        <label for="manual-account"
+                            >계좌<Select
+                                v-model="editing.accountId"
+                                input-id="manual-account"
+                                aria-label="추가 계좌"
+                                :options="accounts"
+                                option-label="name"
+                                option-value="id"
+                                placeholder="계좌 선택"
+                        /></label>
+                        <label for="manual-type"
+                            >거래유형<Select
+                                v-model="editing.type"
+                                input-id="manual-type"
+                                aria-label="추가 거래유형"
+                                :options="
+                                    types.map((value) => ({
+                                        value,
+                                        label: typeLabels[value],
+                                    }))
+                                "
+                                option-label="label"
+                                option-value="value"
+                        /></label>
+                        <label for="manual-time"
+                            >거래 일시 · 표시 정밀도 그대로<InputText
+                                id="manual-time"
+                                :model-value="editing.transactionAt || ''"
+                                placeholder="2026-01-02 14:51 또는 14:51:05.123"
+                                @update:model-value="
+                                    editing.transactionAt = $event || null
+                                "
+                        /></label>
+                        <label for="manual-zone"
+                            >표시 시간대<InputText
+                                id="manual-zone"
+                                :model-value="editing.timeZone || ''"
+                                placeholder="미확인 · 확인된 경우만 입력"
+                                @update:model-value="
+                                    editing.timeZone = $event || null
+                                "
+                        /></label>
+                        <label for="manual-note"
+                            >수동 입력 메모<InputText
+                                id="manual-note"
+                                v-model="editing.note"
+                        /></label>
+                    </template>
                     <label for="edit-symbol"
                         >티커<InputText
                             id="edit-symbol"
                             v-model="editing.symbol"
-                            required
+                            :required="
+                                ['BUY', 'SELL', 'DIVIDEND'].includes(
+                                    editing.type
+                                )
+                            "
                     /></label>
                     <label
                         v-for="key in ['date', 'exDate', 'paymentDate']"
@@ -589,7 +777,8 @@
                 </div>
                 <Button
                     type="submit"
-                    label="수정 저장"
+                    :label="creating ? '추가 저장' : '수정 저장'"
+                    :disabled="busy"
                     :loading="busy" /><Button
                     label="취소"
                     severity="secondary"
@@ -602,6 +791,9 @@
 
 <style scoped>
     .trial-ledger {
+        width: 100%;
+        box-sizing: border-box;
+        min-width: 0;
         max-width: 1800px;
         margin: auto;
         padding: 2rem;
@@ -676,6 +868,16 @@
     .edit-grid label {
         display: grid;
         gap: 0.5rem;
+    }
+    .document-list-region {
+        min-width: 0;
+        max-width: 100%;
+    }
+    .filters > * {
+        min-width: 0;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow-wrap: anywhere;
     }
     .edit-form > button {
         margin-right: 0.5rem;

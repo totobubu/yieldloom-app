@@ -14,6 +14,10 @@ export async function connectGoogleSheet(user) {
         if (!token) throw new Error('Google 읽기 권한을 확인하지 못했습니다.');
         return token;
     } catch (error) {
+        if (error.code === 'auth/popup-blocked')
+            throw new Error(
+                'Google 연결 창이 차단되었습니다. 이 사이트의 팝업을 허용하고 다시 분석해 주세요.'
+            );
         if (
             [
                 'auth/popup-closed-by-user',
@@ -28,23 +32,56 @@ export async function connectGoogleSheet(user) {
         throw error;
     }
 }
-export function createSheetLedgerClient({ fetchImpl = fetch } = {}) {
+export function createSheetLedgerClient({
+    fetchImpl = fetch,
+    timeoutMs = 45000,
+} = {}) {
     let pending = null,
         owner = null;
-    async function request(user, method = 'GET', body) {
-        const response = await fetchImpl(apiUrl('/api/sheet-ledger'), {
-            method,
-            headers: {
-                Authorization: `Bearer ${await user.getIdToken()}`,
-                ...(body ? { 'Content-Type': 'application/json' } : {}),
-            },
-            ...(body ? { body: JSON.stringify(body) } : {}),
-        });
-        const payload = await response.json();
+    async function request(user, method = 'GET', body, query = '') {
+        let response;
+        try {
+            response = await fetchImpl(apiUrl(`/api/sheet-ledger${query}`), {
+                method,
+                headers: {
+                    Authorization: `Bearer ${await user.getIdToken()}`,
+                    ...(body ? { 'Content-Type': 'application/json' } : {}),
+                },
+                ...(body ? { body: JSON.stringify(body) } : {}),
+                signal: AbortSignal.timeout(timeoutMs),
+            });
+        } catch (error) {
+            if (error.name === 'TimeoutError' || error.name === 'AbortError')
+                throw new Error(
+                    '시트 응답 시간이 초과되었습니다. 잠시 후 다시 분석해 주세요.'
+                );
+            throw new Error(
+                '서버에 연결하지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.'
+            );
+        }
+        const payload = await response.json().catch(() => null);
+        if (!payload || typeof payload !== 'object')
+            throw new Error(
+                '서버 응답을 읽지 못했습니다. 잠시 후 다시 시도해 주세요.'
+            );
         if (!response.ok)
             throw Object.assign(
                 new Error(payload.error || '시험 장부를 읽지 못했습니다.'),
-                { status: response.status }
+                { status: response.status, code: payload.code }
+            );
+        if (!Array.isArray(payload.rows) || !Number.isInteger(payload.version))
+            throw new Error(
+                '거래 목록 응답 형식이 올바르지 않습니다. 새로고침 후 다시 시도해 주세요.'
+            );
+        if (
+            body?.action === 'preview' &&
+            (!Array.isArray(payload.excluded) ||
+                !Array.isArray(payload.warnings) ||
+                typeof payload.fingerprint !== 'string' ||
+                typeof payload.cutoff !== 'string')
+        )
+            throw new Error(
+                '분석 결과를 읽지 못했습니다. 잠시 후 다시 분석해 주세요.'
             );
         return payload;
     }
@@ -61,6 +98,14 @@ export function createSheetLedgerClient({ fetchImpl = fetch } = {}) {
         mutate(user, method, body) {
             pending = null;
             return request(user, method, body);
+        },
+        archive(user, id) {
+            return request(
+                user,
+                'GET',
+                undefined,
+                `?sourceArchive=${encodeURIComponent(id)}`
+            );
         },
         clear() {
             pending = null;

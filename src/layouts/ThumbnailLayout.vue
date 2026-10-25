@@ -243,6 +243,13 @@
                     outlined
                     @click="router.push('/mypage')" />
                 <Button
+                    v-if="isAdmin"
+                    label="구글시트 거래 목록"
+                    icon="pi pi-table"
+                    severity="secondary"
+                    outlined
+                    @click="router.push('/admin/sheet-ledger')" />
+                <Button
                     :label="
                         isDarkMode ? '라이트 모드로 보기' : '다크 모드로 보기'
                     "
@@ -278,13 +285,6 @@
                     severity="secondary"
                     text
                     @click="router.push('/admin/portfolio-mappings')" />
-                <Button
-                    v-if="isAdmin"
-                    label="부부 거래 목록 · 시험"
-                    icon="pi pi-table"
-                    severity="secondary"
-                    text
-                    @click="router.push('/admin/sheet-ledger')" />
                 <Button
                     v-if="isAdmin"
                     label="원금 기준안"

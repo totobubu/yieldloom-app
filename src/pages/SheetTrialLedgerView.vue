@@ -411,6 +411,11 @@
             </article>
         </section>
         <SheetReconciliationPanel
+            :key="
+                firebaseUser
+                    ? `${firebaseUser.uid}:${firebaseUser.email}:${firebaseUser.emailVerified}`
+                    : 'signed-out'
+            "
             :rows="rows"
             :observations="observations"
             :archives="archives"

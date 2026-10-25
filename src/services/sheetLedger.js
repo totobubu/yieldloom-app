@@ -38,10 +38,10 @@ export function createSheetLedgerClient({
 } = {}) {
     let pending = null,
         owner = null;
-    async function request(user, method = 'GET', body) {
+    async function request(user, method = 'GET', body, query = '') {
         let response;
         try {
-            response = await fetchImpl(apiUrl('/api/sheet-ledger'), {
+            response = await fetchImpl(apiUrl(`/api/sheet-ledger${query}`), {
                 method,
                 headers: {
                     Authorization: `Bearer ${await user.getIdToken()}`,
@@ -98,6 +98,14 @@ export function createSheetLedgerClient({
         mutate(user, method, body) {
             pending = null;
             return request(user, method, body);
+        },
+        archive(user, id) {
+            return request(
+                user,
+                'GET',
+                undefined,
+                `?sourceArchive=${encodeURIComponent(id)}`
+            );
         },
         clear() {
             pending = null;

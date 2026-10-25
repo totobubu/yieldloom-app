@@ -276,7 +276,7 @@ try {
     assert(
         await panel
             .getByRole('button', {
-                name: '선택한 값만 시험 장부에 채택',
+                name: '배당 근거를 기존 입금에 연결',
                 exact: true,
             })
             .isDisabled()

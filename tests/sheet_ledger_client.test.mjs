@@ -196,3 +196,71 @@ test('logout/user switches and writes discard outstanding older reads rather tha
     resolvers[2](ok({ rows: [], version: 3, partial: true, rowDelta: [] }));
     assert.deepEqual((await mutation).rows, [{ id: 'new' }]);
 });
+
+test('fixed-version row ranges load at most three concurrently, preserve order and fill byte-limited partial pages', async () => {
+    const rows = Array.from({ length: 2285 }, (_, i) => ({
+        id: `synthetic-${i}`,
+    }));
+    let active = 0,
+        maximum = 0,
+        calls = 0;
+    const client = createSheetLedgerClient({
+        fetchImpl: async (url) => {
+            calls++;
+            const q = new URL(url, 'https://test.invalid').searchParams;
+            if (!q.has('offset'))
+                return ok({
+                    rows: rows.slice(0, 500),
+                    version: 1,
+                    totalRows: rows.length,
+                    parallelRows: true,
+                    nextCursor: 'continuation',
+                });
+            assert.equal(q.get('version'), '1');
+            const offset = Number(q.get('offset')),
+                limit = Number(q.get('limit'));
+            active++;
+            maximum = Math.max(maximum, active);
+            await new Promise((resolve) =>
+                setTimeout(resolve, offset === 500 ? 8 : 2)
+            );
+            active--;
+            const size = offset === 500 ? 200 : limit;
+            return ok({ rows: rows.slice(offset, offset + size), version: 1 });
+        },
+    });
+    const first = client.load(user),
+        second = client.load(user);
+    assert.equal(first, second);
+    assert.deepEqual((await first).rows, rows);
+    assert.equal(maximum, 3);
+    assert.equal(calls, 6);
+});
+
+test('parallel range failures and malformed manifests never publish a partial ledger', async () => {
+    const client = createSheetLedgerClient({
+        fetchImpl: async (url) => {
+            const q = new URL(url, 'https://test.invalid').searchParams;
+            if (!q.has('offset'))
+                return ok({
+                    rows: [{ id: 'a' }],
+                    version: 1,
+                    totalRows: 1002,
+                    parallelRows: true,
+                    nextCursor: 'next',
+                });
+            return ok({ rows: [{ id: 'b' }], version: 2 });
+        },
+    });
+    await assert.rejects(client.load(user), /버전/);
+    const malformed = createSheetLedgerClient({
+        fetchImpl: async () =>
+            ok({
+                rows: [],
+                version: 1,
+                parallelRows: true,
+                nextCursor: 'next',
+            }),
+    });
+    await assert.rejects(malformed.load(user), /전체 거래 수/);
+});

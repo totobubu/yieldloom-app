@@ -110,21 +110,85 @@ export function createSheetLedgerClient({
             observations = [...(first.observations || [])];
         let cursor = first.nextCursor;
         const seen = new Set();
-        while (cursor) {
-            if (seen.has(cursor))
-                throw new Error('장부 페이지 커서가 반복되었습니다.');
-            seen.add(cursor);
-            const page = await request(
-                user,
-                'GET',
-                undefined,
-                queryString({ resource: 'rows', cursor })
+        if (first.parallelRows && cursor) {
+            if (
+                !Number.isSafeInteger(first.totalRows) ||
+                first.totalRows < rows.length
+            )
+                throw new Error('전체 거래 수를 확인해 주세요.');
+            const ranges = [];
+            for (
+                let offset = rows.length;
+                offset < first.totalRows;
+                offset += 500
+            )
+                ranges.push({
+                    offset,
+                    end: Math.min(first.totalRows, offset + 500),
+                    rows: [],
+                });
+            let next = 0,
+                failed = false;
+            const worker = async () => {
+                while (next < ranges.length && !failed) {
+                    const range = ranges[next++];
+                    try {
+                        while (range.offset + range.rows.length < range.end) {
+                            if (failed) return;
+                            if (current !== generation)
+                                throw new Error(
+                                    '로그인 상태가 변경되어 이전 조회를 폐기했습니다.'
+                                );
+                            const offset = range.offset + range.rows.length;
+                            const page = await request(
+                                user,
+                                'GET',
+                                undefined,
+                                queryString({
+                                    resource: 'rows',
+                                    offset,
+                                    limit: range.end - offset,
+                                    version: first.version,
+                                })
+                            );
+                            if (
+                                page.version !== first.version ||
+                                !page.rows.length ||
+                                page.rows.length > range.end - offset
+                            )
+                                throw new Error(
+                                    '거래 페이지 범위 또는 버전을 확인해 주세요.'
+                                );
+                            range.rows.push(...page.rows);
+                        }
+                    } catch (error) {
+                        failed = true;
+                        throw error;
+                    }
+                }
+            };
+            await Promise.all(
+                Array.from({ length: Math.min(3, ranges.length) }, worker)
             );
-            if (page.version !== first.version)
-                throw new Error('장부가 변경되었습니다. 다시 조회해 주세요.');
-            rows.push(...page.rows);
-            cursor = page.nextCursor;
-        }
+            rows.push(...ranges.flatMap((range) => range.rows));
+        } else
+            while (cursor) {
+                if (seen.has(cursor))
+                    throw new Error('장부 페이지 커서가 반복되었습니다.');
+                seen.add(cursor);
+                const page = await request(
+                    user,
+                    'GET',
+                    undefined,
+                    queryString({ resource: 'rows', cursor })
+                );
+                if (page.version !== first.version)
+                    throw new Error(
+                        '장부가 변경되었습니다. 다시 조회해 주세요.'
+                    );
+                rows.push(...page.rows);
+                cursor = page.nextCursor;
+            }
         if (
             first.totalRows != null &&
             (rows.length !== first.totalRows ||

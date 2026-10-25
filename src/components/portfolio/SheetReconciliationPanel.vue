@@ -2,6 +2,10 @@
     import { computed, ref, watch } from 'vue';
     import Select from 'primevue/select';
     import { useDocumentLedgerWindow } from '../../composables/useDocumentLedgerWindow.js';
+    import {
+        dividendState,
+        dividendStatusLabel,
+    } from '../../../lib/sheet-dividend-state.js';
     import { accounts } from '../../../lib/sheet-ledger.js';
     import {
         compareEvidence,
@@ -61,7 +65,9 @@
                   .filter(
                       (r) =>
                           r.accountId === selected.value.accountId &&
-                          r.type === selected.value.type
+                          (selected.value.type === 'DIVIDEND'
+                              ? ['DIVIDEND', 'DEPOSIT'].includes(r.type)
+                              : r.type === selected.value.type)
                   )
                   .map((r) => ({
                       id: r.id,
@@ -83,6 +89,14 @@
                   )
               )
             : []
+    );
+    const isDividend = computed(() => selected.value?.type === 'DIVIDEND');
+    const canReviewSelected = computed(
+        () =>
+            selected.value &&
+            (isDividend.value
+                ? dividendState(selected.value)?.cashEligible
+                : !selected.value.forecast)
     );
     const capital = computed(() =>
         summarizeCapital(props.rows, props.accountId)
@@ -370,8 +384,8 @@
             </div>
             <div v-if="preview" role="status">
                 신규 {{ preview.staged.additions.length }}건 · 중복
-                {{ preview.staged.duplicates }}건. 예상 배당은 실제 거래에
-                포함되지 않습니다.
+                {{ preview.staged.duplicates }}건. 대조 자료 저장은 실제 입금을
+                추가하지 않습니다. 배당 지급 상태는 별도로 검토합니다.
             </div>
         </details>
         <details :open="visibleObservations.length <= 100">
@@ -431,13 +445,15 @@
                         <Column field="location" header="원본 위치" />
                         <Column header="상태"
                             ><template #body="{ data }">{{
-                                data.forecast
-                                    ? '예상 · 실제 거래 제외'
-                                    : data.acceptedTargetId
-                                      ? '관리자 채택 이력 있음'
-                                      : data.targetId
-                                        ? '연결 후보 · 미확정'
-                                        : '미매칭 · 확인 필요'
+                                data.type === 'DIVIDEND'
+                                    ? `${dividendStatusLabel(data)}${data.receiptLink ? ' · 입금 근거 연결됨' : ''}`
+                                    : data.forecast
+                                      ? '예상 · 실제 거래 제외'
+                                      : data.acceptedTargetId
+                                        ? '관리자 채택 이력 있음'
+                                        : data.targetId
+                                          ? '연결 후보 · 미확정'
+                                          : '미매칭 · 확인 필요'
                             }}</template></Column
                         >
                         <Column header="검토"
@@ -466,6 +482,9 @@
                 {{ selected.symbol || selected.type }}
             </h3>
             <p>{{ selected.location }} · {{ selected.capture }}</p>
+            <p v-if="selected.stateIssue" role="alert">
+                상태 검토 필요: {{ selected.stateIssue }}
+            </p>
             <details v-if="selected.original">
                 <summary>보존된 제출 원문</summary>
                 <pre class="example">{{
@@ -486,12 +505,18 @@
                 ]"
                 option-label="label"
                 option-value="id"
-                :disabled="busy || disabled || selected.forecast" />
-            <p v-if="selected.forecast">
-                예상 배당은 대조 자료로만 보존하며 실제 입금으로 채택할 수
-                없습니다.
+                :disabled="busy || disabled || !canReviewSelected" />
+            <p v-if="isDividend">
+                {{ dividendStatusLabel(selected) }}. 확정·지급 원문과 실제
+                지급일·금액을 확인한 자료만 기존 입금에 근거로 연결합니다. 새
+                입금이나 배당 거래를 만들지 않습니다.
             </p>
-            <label v-if="!targetId && !selected.forecast" class="field-choice">
+            <p v-if="selected.receiptLink">
+                입금 근거 연결: {{ selected.receiptLink.note }}
+            </p>
+            <label
+                v-if="!targetId && !isDividend && !selected.forecast"
+                class="field-choice">
                 <input
                     v-model="separateEvent"
                     type="checkbox"
@@ -540,7 +565,10 @@
                     ></Column
                 >
             </DataTable>
-            <fieldset :disabled="busy || disabled || selected.forecast">
+            <fieldset
+                :disabled="
+                    busy || disabled || !canReviewSelected || isDividend
+                ">
                 <legend>채택할 관측값 · 원본은 유지됩니다</legend>
                 <label
                     v-for="(value, field) in selected.values"
@@ -561,17 +589,26 @@
                 rows="2"
                 :disabled="busy || disabled" />
             <Button
-                label="선택한 값만 시험 장부에 채택"
+                :label="
+                    isDividend
+                        ? '배당 근거를 기존 입금에 연결'
+                        : '선택한 값만 시험 장부에 채택'
+                "
                 :disabled="
                     busy ||
                     disabled ||
-                    selected.forecast ||
+                    !canReviewSelected ||
                     !note.trim() ||
+                    (isDividend && !targetId) ||
                     !fields.length
                 "
                 @click="accept" />
             <fieldset
-                v-if="target && ['DEPOSIT', 'WITHDRAWAL'].includes(target.type)"
+                v-if="
+                    !isDividend &&
+                    target &&
+                    ['DEPOSIT', 'WITHDRAWAL'].includes(target.type)
+                "
                 :disabled="busy || disabled">
                 <legend>입출금 자금 출처 확인 · 자동 FIFO/비례배분 없음</legend>
                 <label for="cash-scope">이동 범위</label>

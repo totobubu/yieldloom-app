@@ -259,6 +259,7 @@ test('legacy evidence remains readable and deduplicated; large exact rawText and
     db.store.set(`${root.path}/evidencePages/0`, { observations: [legacy] });
     const result = await submitObservationBatch(db, root, batch(0, [obs(0)]));
     assert.equal(result.receipt.inserted, 0);
+    assert.equal((await listObservations(root, 'wife')).nextCursor, null);
     assert.deepEqual(
         (await all(root, 'wife')).map((o) => o.id),
         [legacy.id]
@@ -443,5 +444,42 @@ test('server rejects expired/non-admin requests before DB and retires only legac
     );
     assert.equal(res.code, 410);
     assert.equal(res.value.code, 'OBSERVATION_BATCH_REQUIRED');
+    assert.equal(db.writes.length, 0);
+});
+
+test('independent canonical ranges require a fixed version, stay bounded and fail on missing pages', async () => {
+    const db = memoryDb(),
+        root = db.doc('sheetTrialLedgers/synthetic-ranges');
+    db.store.set(root.path, { version: 4, pageCount: 2, rowCount: 150 });
+    const rows = Array.from({ length: 150 }, (_, i) => ({ id: `row-${i}` }));
+    db.store.set(`${root.path}/pages/0`, { rows: rows.slice(0, 100) });
+    db.store.set(`${root.path}/pages/1`, { rows: rows.slice(100) });
+    assert.deepEqual(
+        (
+            await readLedgerPage(db, root, {
+                offset: '100',
+                limit: '50',
+                version: '4',
+            })
+        ).rows,
+        rows.slice(100)
+    );
+    await assert.rejects(
+        readLedgerPage(db, root, { offset: 100 }),
+        (e) => e.status === 400
+    );
+    await assert.rejects(
+        readLedgerPage(db, root, { offset: 100, version: 3 }),
+        (e) => e.status === 409
+    );
+    await assert.rejects(
+        readLedgerPage(db, root, { offset: -1, version: 4 }),
+        (e) => e.status === 400
+    );
+    db.store.delete(`${root.path}/pages/1`);
+    await assert.rejects(
+        readLedgerPage(db, root, { offset: 100, version: 4 }),
+        (e) => e.status === 409
+    );
     assert.equal(db.writes.length, 0);
 });

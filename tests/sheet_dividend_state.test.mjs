@@ -153,7 +153,12 @@ test('status claims require matching raw evidence; contradictory flags, unpaid p
         /지급 상태/
     );
     assert.throws(
-        () => normalizeObservation({ ...input(), kind: 'TOSS_ORDER', type: 'BUY' }),
+        () =>
+            normalizeObservation({
+                ...input(),
+                kind: 'TOSS_ORDER',
+                type: 'BUY',
+            }),
         /배당 관측/
     );
 });

@@ -1,9 +1,11 @@
 <script setup>
     import { computed, ref, watch } from 'vue';
     import Select from 'primevue/select';
+    import { useDocumentLedgerWindow } from '../../composables/useDocumentLedgerWindow.js';
     import { accounts } from '../../../lib/sheet-ledger.js';
     import {
         compareEvidence,
+        candidates,
         extraFields,
         sourceKinds,
         summarizeCapital,
@@ -19,7 +21,16 @@
         accountId: { type: String, default: null },
         labels: { type: Object, required: true },
     });
-    const emit = defineEmits(['command', 'clear-preview', 'archive']);
+    const emit = defineEmits([
+        'command',
+        'clear-preview',
+        'archive',
+        'inspect',
+    ]);
+    const batchDraft = ref(null),
+        observationRegion = ref(null),
+        observationTable = ref(null),
+        observationSearch = ref('');
     const separateEvent = ref(false);
     const input = ref(''),
         inputError = ref(''),
@@ -30,8 +41,19 @@
         scope = ref('UNKNOWN'),
         origin = ref('UNKNOWN'),
         peer = ref(null);
+    const suggestedObservations = computed(() =>
+        props.observations.map((o) => {
+            if (o.acceptedTargetId || o.targetId) return o;
+            const matches = candidates(props.rows, o);
+            return {
+                ...o,
+                candidateIds: matches.map((r) => r.id),
+                targetId: matches.length === 1 ? matches[0].id : null,
+            };
+        })
+    );
     const selected = computed(() =>
-        props.observations.find((o) => o.id === selectedId.value)
+        suggestedObservations.value.find((o) => o.id === selectedId.value)
     );
     const targets = computed(() =>
         selected.value
@@ -51,15 +73,40 @@
         props.rows.find((r) => r.id === targetId.value)
     );
     const comparisons = computed(() =>
-        target.value ? compareEvidence(target.value, props.observations) : []
+        target.value
+            ? compareEvidence(
+                  target.value,
+                  suggestedObservations.value.map((o) =>
+                      o.id === selectedId.value
+                          ? { ...o, targetId: target.value.id }
+                          : o
+                  )
+              )
+            : []
     );
     const capital = computed(() =>
         summarizeCapital(props.rows, props.accountId)
     );
     const visibleObservations = computed(() =>
-        props.observations.filter(
-            (o) => !props.accountId || o.accountId === props.accountId
-        )
+        suggestedObservations.value
+            .filter(
+                (o) =>
+                    (!props.accountId || o.accountId === props.accountId) &&
+                    `${o.symbol} ${o.sourceId} ${o.location}`
+                        .toLowerCase()
+                        .includes(observationSearch.value.toLowerCase())
+            )
+            .toSorted(
+                (a, b) =>
+                    String(b.values?.date || '').localeCompare(
+                        String(a.values?.date || '')
+                    ) || a.id.localeCompare(b.id)
+            )
+    );
+    const observationWindow = useDocumentLedgerWindow(
+        visibleObservations,
+        observationRegion,
+        observationTable
     );
     const label = (field) =>
         props.labels[field] ||
@@ -95,6 +142,7 @@
     });
     watch(input, () => {
         inputError.value = '';
+        batchDraft.value = null;
         emit('clear-preview');
     });
     watch(
@@ -109,25 +157,53 @@
             if (id && selected.value?.accountId !== id) selectedId.value = null;
         }
     );
-    function submit(action) {
+    async function submit(action) {
         inputError.value = '';
         try {
             const observations = JSON.parse(input.value);
+            if (
+                !Array.isArray(observations) ||
+                !observations.length ||
+                observations.length > 100 ||
+                new Set(observations.map((o) => o.accountId)).size !== 1
+            )
+                throw new Error();
+            if (!batchDraft.value) {
+                const hash = await crypto.subtle.digest(
+                    'SHA-256',
+                    new TextEncoder().encode(input.value)
+                );
+                batchDraft.value = {
+                    accountId: observations[0].accountId,
+                    batchId: crypto.randomUUID(),
+                    checkpoint: {
+                        sourceHash: [...new Uint8Array(hash)]
+                            .map((v) => v.toString(16).padStart(2, '0'))
+                            .join(''),
+                        offset: 0,
+                        count: observations.length,
+                    },
+                };
+            }
             emit('command', {
                 action,
+                ...batchDraft.value,
                 observations,
-                ...(action === 'evidence-commit'
+                ...(action === 'batch-commit'
                     ? { fingerprint: props.preview.fingerprint }
                     : {}),
             });
         } catch {
-            inputError.value = '대조 자료를 JSON 배열 형식으로 입력해 주세요.';
+            inputError.value =
+                '동일 계좌의 대조 자료 1~100건을 JSON 배열로 입력해 주세요.';
         }
     }
     function accept() {
         emit('command', {
             action: 'accept-evidence',
             observationId: selected.value.id,
+            accountId: selected.value.accountId,
+            reviewVersion: selected.value.reviewVersion,
             targetId: targetId.value || null,
             fields: fields.value,
             note: note.value,
@@ -285,12 +361,12 @@
                 <Button
                     label="대조 자료 미리보기"
                     :disabled="busy || disabled || !input.trim()"
-                    @click="submit('evidence-preview')" />
+                    @click="submit('batch-preview')" />
                 <Button
                     v-if="preview"
                     label="대조 자료만 저장"
                     :disabled="busy || disabled"
-                    @click="submit('evidence-commit')" />
+                    @click="submit('batch-commit')" />
             </div>
             <div v-if="preview" role="status">
                 신규 {{ preview.staged.additions.length }}건 · 중복
@@ -298,56 +374,104 @@
                 포함되지 않습니다.
             </div>
         </details>
-        <DataTable
-            :value="visibleObservations"
-            paginator
-            :rows="5"
-            data-key="id"
-            scrollable
-            size="small"
-            table-style="min-width: 720px">
-            <template #empty
-                >등록된 대조 자료가 없습니다. 토스 브라우저 수집 완료를 의미하지
-                않습니다.</template
-            >
-            <Column header="계좌"
-                ><template #body="{ data }">{{
-                    accounts.find((a) => a.id === data.accountId)?.name
-                }}</template></Column
-            >
-            <Column header="출처"
-                ><template #body="{ data }">{{
-                    sourceKinds[data.kind]
-                }}</template></Column
-            >
-            <Column field="symbol" header="티커" />
-            <Column field="location" header="원본 위치" />
-            <Column header="상태"
-                ><template #body="{ data }">{{
-                    data.forecast
-                        ? '예상 · 실제 거래 제외'
-                        : data.acceptedTargetId
-                          ? '관리자 채택 이력 있음'
-                          : data.targetId
-                            ? '연결 후보 · 미확정'
-                            : '미매칭 · 확인 필요'
-                }}</template></Column
-            >
-            <Column header="검토"
-                ><template #body="{ data }"
-                    ><Button
-                        label="출처 비교"
-                        severity="secondary"
-                        :disabled="busy || disabled"
-                        @click="selectedId = data.id" /></template
-            ></Column>
-        </DataTable>
+        <details :open="visibleObservations.length <= 100">
+            <summary>
+                대조 자료 목록 · {{ visibleObservations.length }}건
+            </summary>
+            <label for="observation-search">대조 자료 검색</label>
+            <InputText
+                id="observation-search"
+                v-model="observationSearch"
+                placeholder="티커·원본 번호·위치" />
+            <div class="actions">
+                <Button
+                    label="대조 자료 처음으로"
+                    severity="secondary"
+                    @click="observationWindow.jump(false)" />
+                <Button
+                    label="대조 자료 끝으로"
+                    severity="secondary"
+                    @click="observationWindow.jump(true)" />
+            </div>
+            <div ref="observationRegion">
+                <div
+                    :style="{
+                        height: observationWindow.paddingTop.value + 'px',
+                    }"
+                    aria-hidden="true" />
+                <div ref="observationTable">
+                    <DataTable
+                        :value="observationWindow.renderedRows.value"
+                        :pt="{
+                            bodyRow: observationWindow.rowAttributes,
+                            table: {
+                                'aria-rowcount': visibleObservations.length + 1,
+                            },
+                        }"
+                        data-key="id"
+                        scrollable
+                        size="small"
+                        table-style="min-width: 720px">
+                        <template #empty
+                            >등록된 대조 자료가 없습니다. 토스 브라우저 수집
+                            완료를 의미하지 않습니다.</template
+                        >
+                        <Column header="계좌"
+                            ><template #body="{ data }">{{
+                                accounts.find((a) => a.id === data.accountId)
+                                    ?.name
+                            }}</template></Column
+                        >
+                        <Column header="출처"
+                            ><template #body="{ data }">{{
+                                sourceKinds[data.kind]
+                            }}</template></Column
+                        >
+                        <Column field="symbol" header="티커" />
+                        <Column field="location" header="원본 위치" />
+                        <Column header="상태"
+                            ><template #body="{ data }">{{
+                                data.forecast
+                                    ? '예상 · 실제 거래 제외'
+                                    : data.acceptedTargetId
+                                      ? '관리자 채택 이력 있음'
+                                      : data.targetId
+                                        ? '연결 후보 · 미확정'
+                                        : '미매칭 · 확인 필요'
+                            }}</template></Column
+                        >
+                        <Column header="검토"
+                            ><template #body="{ data }"
+                                ><Button
+                                    label="출처 비교"
+                                    severity="secondary"
+                                    :disabled="busy || disabled"
+                                    @click="
+                                        selectedId = data.id;
+                                        emit('inspect', data);
+                                    " /></template
+                        ></Column>
+                    </DataTable>
+                </div>
+                <div
+                    :style="{
+                        height: observationWindow.paddingBottom.value + 'px',
+                    }"
+                    aria-hidden="true" />
+            </div>
+        </details>
         <div v-if="selected" class="review-editor">
             <h3>
                 {{ sourceKinds[selected.kind] }} ·
                 {{ selected.symbol || selected.type }}
             </h3>
             <p>{{ selected.location }} · {{ selected.capture }}</p>
+            <details v-if="selected.original">
+                <summary>보존된 제출 원문</summary>
+                <pre class="example">{{
+                    JSON.stringify(selected.original, null, 2)
+                }}</pre>
+            </details>
             <pre v-if="selected.rawText" class="example">{{
                 selected.rawText
             }}</pre>

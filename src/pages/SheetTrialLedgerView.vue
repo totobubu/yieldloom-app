@@ -1,6 +1,8 @@
 <script setup>
     import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
     import Select from 'primevue/select';
+    import SheetReconciliationPanel from '@/components/portfolio/SheetReconciliationPanel.vue';
+    import { extraFields } from '../../lib/sheet-reconciliation.js';
     import { firebaseUser } from '@/services/firebaseClient.js';
     import {
         connectGoogleSheet,
@@ -18,6 +20,9 @@
 
     const client = createSheetLedgerClient();
     const rows = ref([]),
+        observations = ref([]),
+        archives = ref([]),
+        evidencePreview = ref(null),
         version = ref(0),
         preview = ref(null),
         busy = ref(false),
@@ -59,14 +64,26 @@
         taxKrw: '원천징수세(₩)',
         fxFeeUsd: '환전비용($)',
         fxFeeKrw: '환전비용(₩)',
+        ...extraFields,
     };
     const typeLabels = {
         BUY: '매수',
         SELL: '매도',
         DIVIDEND: '배당',
         FEE: '비용',
+        DEPOSIT: '입금',
+        WITHDRAWAL: '출금',
+        FX: '환전',
     };
     const activeRows = computed(() => preview.value?.rows || rows.value);
+    const additionalColumns = computed(() =>
+        Object.keys(extraFields).filter(
+            (field) =>
+                !numericFields.includes(field) &&
+                (activeRows.value.some((r) => r[field] != null) ||
+                    observations.value.some((o) => o.values[field] != null))
+        )
+    );
     const filtered = computed(() =>
         activeRows.value.filter(
             (r) =>
@@ -131,6 +148,9 @@
     function apply(result) {
         rows.value = result.rows;
         version.value = result.version;
+        observations.value = result.observations || [];
+        archives.value = result.archives || [];
+        evidencePreview.value = null;
     }
     async function load() {
         await run(async (current) => {
@@ -197,6 +217,40 @@
             }
         });
     }
+    async function reconcile(command) {
+        await run(async (current) => {
+            const result = await client.mutate(firebaseUser.value, 'POST', {
+                ...command,
+                version: version.value,
+            });
+            if (current !== generation) return;
+            if (command.action === 'evidence-preview')
+                evidencePreview.value = result;
+            else {
+                apply(result);
+                notice.value =
+                    command.action === 'evidence-commit'
+                        ? `${result.importedEvidence}건의 대조 자료를 저장했습니다. 거래값은 자동 변경하지 않았습니다.`
+                        : '시험 장부의 관리자 검토를 반영했습니다. 원본 자료는 유지됩니다.';
+            }
+        }, '시험 장부의 출처 대조를 처리하는 중입니다.');
+    }
+    async function downloadArchive(id) {
+        await run(async (current) => {
+            const result = await client.archive(firebaseUser.value, id);
+            if (current !== generation) return;
+            const objectUrl = URL.createObjectURL(
+                new Blob([JSON.stringify(result.archive, null, 2)], {
+                    type: 'application/json',
+                })
+            );
+            const link = document.createElement('a');
+            link.href = objectUrl;
+            link.download = `sheet-source-${id.slice(0, 12)}.json`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+        }, '보존 원본을 내려받는 중입니다.');
+    }
     watch(url, () => {
         preview.value = null;
     });
@@ -209,6 +263,9 @@
             generation++;
             client.clear();
             rows.value = [];
+            observations.value = [];
+            archives.value = [];
+            evidencePreview.value = null;
             preview.value = null;
             editing.value = null;
             googleToken = null;
@@ -328,7 +385,7 @@
         </section>
         <section class="summary-grid" aria-label="거래 요약">
             <article>
-                <span>확인된 본인원금</span
+                <span>본인원금 분류 매수액 · 납입원금 아님</span
                 ><strong>{{ money(summary.principalUsd) }}</strong>
             </article>
             <article>
@@ -349,14 +406,22 @@
                 ><small>{{ money(summary.costsKrw, 'KRW') }}</small>
             </article>
             <article>
-                <span>배당 재투자금 · 추정 포함</span
-                ><strong>{{ money(summary.reinvestedUsd) }}</strong>
-            </article>
-            <article>
                 <span>미확인·검토 필요</span
                 ><strong>{{ summary.unknown }}행</strong>
             </article>
         </section>
+        <SheetReconciliationPanel
+            :rows="rows"
+            :observations="observations"
+            :archives="archives"
+            :busy="busy"
+            :disabled="Boolean(preview)"
+            :preview="evidencePreview"
+            :account-id="account"
+            :labels="labels"
+            @command="reconcile"
+            @clear-preview="evidencePreview = null"
+            @archive="downloadArchive" />
         <section class="ledger-list" aria-label="거래 목록">
             <div class="filters">
                 <Select
@@ -484,6 +549,22 @@
                         ></template
                     ></Column
                 >
+                <Column
+                    v-for="field in additionalColumns"
+                    :key="field"
+                    :field="field"
+                    :header="labels[field]"
+                    style="min-width: 190px">
+                    <template #body="{ data }">{{
+                        data[field] == null
+                            ? '미확인'
+                            : data[field] === true
+                              ? '포함'
+                              : data[field] === false
+                                ? '별도'
+                                : data[field]
+                    }}</template>
+                </Column>
                 <Column
                     field="fundingSource"
                     header="원금출처"

@@ -10,6 +10,7 @@ import {
     summarizeCapital,
 } from '../lib/sheet-reconciliation.js';
 import { sheetLedgerHandler } from '../lib/sheet-ledger-handler.js';
+import { memoryDb } from './helpers/sheet-memory-db.mjs';
 
 test('manual add keeps unknowns and precision, survives reads and retry without duplicate writes', async () => {
     const h = harness();
@@ -413,40 +414,7 @@ test('cash classification requires linked same-account evidence and explicit rea
     assert.equal(revised.rows[0].capital, null);
 });
 
-function fakeDb() {
-    const store = new Map(),
-        reads = [],
-        writes = [];
-    const ref = (path) => ({
-        path,
-        collection: (name) => ({ doc: (id) => ref(`${path}/${name}/${id}`) }),
-        get: async () => {
-            reads.push(path);
-            return {
-                exists: store.has(path),
-                data: () => structuredClone(store.get(path)),
-            };
-        },
-    });
-    return {
-        store,
-        reads,
-        writes,
-        collection: (name) => ({ doc: (id) => ref(`${name}/${id}`) }),
-        runTransaction: async (fn) => {
-            const pending = [];
-            const result = await fn({
-                get: (r) => r.get(),
-                set: (r, v) => pending.push([r.path, structuredClone(v)]),
-            });
-            for (const [p, v] of pending) {
-                store.set(p, v);
-                writes.push(p);
-            }
-            return result;
-        },
-    };
-}
+const fakeDb = memoryDb;
 const response = () => ({
     setHeader() {},
     status(code) {
@@ -572,26 +540,33 @@ test('API evidence import uses existing administrator auth without Google reconn
             values: { date: '2025-02-03', cashKrw: 1000 },
         });
     const preview = await h.invoke('POST', {
-        action: 'evidence-preview',
+        action: 'batch-preview',
+        batchId: 'test-0',
+        accountId: 'wife',
+        checkpoint: { sourceHash: 'a'.repeat(64), offset: 0, count: 1 },
         version: 0,
         observations: [obs],
     });
     assert.equal(preview.code, 200);
     assert.equal(h.db.writes.length, 0);
     const saved = await h.invoke('POST', {
-        action: 'evidence-commit',
+        action: 'batch-commit',
+        batchId: 'test-0',
+        accountId: 'wife',
+        checkpoint: { sourceHash: 'a'.repeat(64), offset: 0, count: 1 },
         version: 0,
         observations: [obs],
         fingerprint: preview.payload.fingerprint,
     });
     assert.equal(saved.code, 200, saved.payload.error);
     assert.equal(saved.payload.rows.length, 0);
-    assert.equal(saved.payload.observations.length, 1);
+    assert.equal(saved.payload.observationDelta.length, 1);
     assert.equal(h.googleReads(), 0);
     const accepted = await h.invoke('POST', {
         action: 'accept-evidence',
         version: saved.payload.version,
-        observationId: saved.payload.observations[0].id,
+        observationId: saved.payload.observationDelta[0].id,
+        accountId: 'wife',
         targetId: null,
         fields: ['date', 'cashKrw'],
         note: '입금 상세 확인',
@@ -604,7 +579,7 @@ test('API evidence import uses existing administrator auth without Google reconn
         id: accepted.payload.rows[0].id,
         scope: 'EXTERNAL',
         origin: 'PRINCIPAL',
-        evidenceIds: [saved.payload.observations[0].id],
+        evidenceIds: [saved.payload.observationDelta[0].id],
         note: '외부 원금 입금 근거',
     });
     assert.equal(classified.code, 200, classified.payload.error);

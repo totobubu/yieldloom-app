@@ -262,16 +262,28 @@
                 version: version.value,
             });
             if (current !== generation) return;
-            if (command.action === 'evidence-preview')
+            if (command.action === 'batch-preview')
                 evidencePreview.value = result;
             else {
                 apply(result);
                 notice.value =
-                    command.action === 'evidence-commit'
+                    command.action === 'batch-commit'
                         ? `${result.importedEvidence}건의 대조 자료를 저장했습니다. 거래값은 자동 변경하지 않았습니다.`
                         : '시험 장부의 관리자 검토를 반영했습니다. 원본 자료는 유지됩니다.';
             }
         }, '시험 장부의 출처 대조를 처리하는 중입니다.');
+    }
+    async function inspectObservation(observation) {
+        await run(async (current) => {
+            const detailed = await client.detail(
+                firebaseUser.value,
+                observation
+            );
+            if (current !== generation) return;
+            observations.value = observations.value.map((o) =>
+                o.id === detailed.id ? { ...o, ...detailed } : o
+            );
+        }, '보존된 관측 원문을 확인하는 중입니다.');
     }
     async function downloadArchive(id) {
         await run(async (current) => {
@@ -381,6 +393,7 @@
             :account-id="account"
             :labels="labels"
             @command="reconcile"
+            @inspect="inspectObservation"
             @clear-preview="evidencePreview = null"
             @archive="downloadArchive" />
         <section class="ledger-list" aria-label="거래 목록">

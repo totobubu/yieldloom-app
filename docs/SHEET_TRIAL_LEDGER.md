@@ -64,9 +64,11 @@ URL → 미리보기 분석(필요할 때 Google 읽기 권한 연결) → 제�
   commit은 미리보기의 `fingerprint`, `version`을 요구한다. 클라이언트 거래 배열은 무시한다.
 - `PATCH`: `id`, `version`, `patch`로 수정. 버전 충돌은 409.
 
-화면 진입/명시적 새로고침마다 장부 API 1회, 필터·정렬은 0회다.
+화면 진입/명시적 새로고침마다 장부를 페이지 조회하며, 필터·정렬은 0회다.
 동시 조회는 클라이언트에서 합친다. 장부를 세션 밖이나 영구 브라우저 캐시에 저장하지 않는다.
-서버 조회는 메타 문서 1개와 `ceil(거래수/100)`개 페이지를 일관된 읽기 트랜잭션으로 읽는다.
+서버 조회는 페이지별 메타 문서와 필요한 거래 페이지만 일관된 읽기 트랜잭션으로 읽는다.
+최초 페이지는 계좌별 관측 체크포인트 2개도 확인한다. 페이지 계약은
+[관측 배치 계약](SHEET_OBSERVATION_BATCHES.md)을 따른다.
 가져오기 분석/저장마다 Google Sheets 요청 1회, 저장은 메타 문서로 충돌을 확인하고
 변경된 페이지만 쓴다. 완전 중복 가져오기는 쓰기 0회다.
 이는 코드상 예상 횟수이며 실제 Firestore 청구량을 뜻하지 않는다.
@@ -108,21 +110,26 @@ URL → 미리보기 분석(필요할 때 Google 읽기 권한 연결) → 제�
 `sheetTrialLedgers/{uid}/sourceArchives/{sha256}`에 불변 스냅샷으로 보존한다.
 실제 거래에 제외 행을 섞지 않으며 기존 Google 원본·PDF Firebase 자료에는 쓰지 않는다.
 원본+제외 내역은 4MB, 보존 버전은 8개로 제한한다. 원본은 소유 관리자 인증 후 명시적
-다운로드만 가능하다. 대조 자료는 100건 단위 페이지, 총 2,000건/요청 100건 한도다.
-거래+대조 자료의 전체 조회 응답은 4MB 한도이며 초과 시 기존 장부를 보존하고 거절한다.
+다운로드만 가능하다. 새 대조 자료는 계좌별 독립 관측/원문/완료 배치로 저장하며
+누적 2,000건/전체 응답 4MB 한도를 제거했다. 기존 자료는 이전/삭제하지 않는다.
+요청당 100건/3MB 이하로 원문을 나누며, 조회는 커서 페이지를 사용한다.
 
-추가 API는 모두 기존 관리자 인증·장부 버전 검증을 유지한다.
+추가 API는 기존 관리자 인증을 유지한다. 거래 수정은 장부 버전을 검증하며,
+불변 관측 배치 저장은 별도 fingerprint/중복 검증으로 병렬 수집을 허용한다.
 
-- POST `evidence-preview|evidence-commit`: `observations`, `version`; 확정 시 미리보기 `fingerprint` 필수.
-- POST `accept-evidence`: `observationId`, `targetId`, `fields`, `note`, `version`; 신규 사건은 거래일 필수.
+- POST `batch-preview|batch-commit`: `accountId`, `batchId`, `checkpoint`, `observations`; [전체 계약](SHEET_OBSERVATION_BATCHES.md).
+  구형 `evidence-preview|evidence-commit` 쓰기는 410이며 기존 관측 읽기는 유지한다.
+- POST `accept-evidence`: `accountId`, `observationId`, `reviewVersion`, `targetId`, `fields`, `note`, `version`; 신규 사건은 거래일 필수.
 - POST `classify-cash`: `id`, `scope`, `origin`, `peerAccountId`, `evidenceIds`, `note`, `version`.
 - GET `?sourceArchive={id}`: 현재 관리자에게 연결된 보존 원본만 다운로드.
 
-추가 조회량: 장부 진입/새로고침 1회 GET에서 기존 메타/거래 페이지에 대조 페이지
-`ceil(대조건수/100)` 읽기가 추가된다. 필터·비교·행 선택은 추가 HTTP/DB 조회 0회다.
+추가 조회량: 거래 페이지와 관측 요약 페이지를 분리하며 페이지마다 인증/버전 검증을 유지한다.
+전체 검색/정렬/필터는 받은 요약에서 계산하여 추가 HTTP/DB 조회 0회다.
+관측 선택 시 해당 원문의 완료 영수증·청크를 필요한 때만 조회한다.
 원본 다운로드는 메타 1개+원본 메타 1개+원본 청크 N개이며 거래/대조 페이지는 읽지 않는다.
 최초 원본 보존은 원본 메타 1회 읽기 후 청크 N개+메타 1개 쓰기이며 동일 지문의 재가져오기는
-원본을 다시 쓰지 않는다. 대조 중복 제출도 실제 변경 없으면 쓰기 0회다.
+원본을 다시 쓰지 않는다. 동일 배치 재전송은 쓰기 0회다. 다른 배치의 중복 원본 제출은
+관측은 중복 생성하지 않지만 별도 배치 원문/영수증은 보존한다.
 이 수치는 코드상 예상이며 실제 운영 과금 측정값이 아니다.
 
 추가 검증: `node tests/sheet_reconciliation.test.mjs`,

@@ -113,6 +113,13 @@ class MagyObservationTest(unittest.TestCase):
         def fetch(candidates):
             self.assertEqual(len(candidates), 1)
             candidate = candidates[0]
+            if candidate.source_type == "official_issuer_distribution_json":
+                # The newer TOPW collector also checks the issuer before the
+                # observer retries Wednesday. An empty issuer response is no data.
+                return [FetchOutcome(candidate, SourceDocument(
+                    "roundhill", candidate.url, candidate.source_type, b"[]",
+                    metadata=candidate.metadata,
+                ))]
             query = parse_qs(urlparse(candidate.url).query)
             self.assertEqual(query["symbols"], ["MAGY"])
             requested_dates.append(query["declaration_dt"][0])

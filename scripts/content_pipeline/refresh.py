@@ -22,7 +22,8 @@ from scripts.data_pipeline.register_history import register as register_history
 
 
 def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None,
-                ex_date: date | None = None, ticker: str | None = None) -> dict:
+                ex_date: date | None = None, ticker: str | None = None,
+                declaration_date: date | None = None) -> dict:
     command = [
         sys.executable,
         "scripts/content_pipeline/collect.py",
@@ -39,6 +40,8 @@ def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None,
         command.extend(["--url", url])
     if ex_date:
         command.extend(["--ex-date", ex_date.isoformat()])
+    if declaration_date:
+        command.extend(["--declaration-date", declaration_date.isoformat()])
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     try:
         payload = json.loads(result.stdout)
@@ -101,6 +104,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--provider", choices=sorted(PROVIDERS))
     parser.add_argument("--ticker")
     parser.add_argument("--ex-date", type=date.fromisoformat)
+    parser.add_argument("--declaration-date", type=date.fromisoformat)
     parser.add_argument("--request-id")
     parser.add_argument("--week-ending", type=date.fromisoformat, default=date.today())
     parser.add_argument("--with-insights", action="store_true", help="ROC와 미국 주식·ETF 유용한 정보도 누적 수집")
@@ -115,6 +119,11 @@ def main() -> int:
     database.initialize()
     selected_url = None
     ticker = args.ticker.strip().upper() if args.ticker else None
+    if args.declaration_date and (
+        args.scope != "ticker" or args.provider != "roundhill" or args.ex_date
+        or ticker not in PROVIDERS["roundhill"].tracked_symbols
+    ):
+        parser.error("--declaration-date requires --scope ticker --provider roundhill and a registered --ticker")
     if args.scope == "provider":
         if not args.provider:
             parser.error("--scope provider requires --provider")
@@ -122,10 +131,15 @@ def main() -> int:
     elif args.scope == "ticker":
         if not ticker:
             parser.error("--scope ticker requires --ticker")
-        try:
-            provider, selected_url = _ticker_target(database, ticker)
-        except ValueError as exc:
-            parser.error(str(exc))
+        if args.declaration_date:
+            # Scheduled announcements must discover today's notice, rather than
+            # replaying the dated URL stored with a previous distribution.
+            provider = args.provider
+        else:
+            try:
+                provider, selected_url = _ticker_target(database, ticker)
+            except ValueError as exc:
+                parser.error(str(exc))
         providers = [provider]
     elif args.scope == "ex_date":
         if not args.ex_date:
@@ -144,6 +158,7 @@ def main() -> int:
         "provider": providers[0] if args.scope in {"provider", "ticker"} else None,
         "ticker": ticker,
         "exDate": args.ex_date.isoformat() if args.ex_date else None,
+        "declarationDate": args.declaration_date.isoformat() if args.declaration_date else None,
         "recoveredInterruptedRuns": recovered,
         "providers": {},
     }
@@ -153,7 +168,8 @@ def main() -> int:
         for provider in providers:
             try:
                 payload = run_collect(
-                    provider, args.db, args.raw_dir, selected_url, args.ex_date, ticker
+                    provider, args.db, args.raw_dir, selected_url, args.ex_date, ticker,
+                    args.declaration_date,
                 )
                 step_status = "warning" if payload.get("status") == "partial" else "success"
                 warned = warned or step_status == "warning"
@@ -202,7 +218,9 @@ def main() -> int:
             args.db,
             args.legacy_data_dir,
             args.public_dir / "reconciliation.json",
-            onboard_missing=True,
+            # Announcement polling must not start unrelated ticker onboarding
+            # (which can fetch other issuers while scanning the shared ledger).
+            onboard_missing=not bool(args.declaration_date),
         )
         has_differences = bool(
             reconciliation["summary"].get("missing_date", 0)

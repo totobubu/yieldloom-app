@@ -38,7 +38,59 @@ try {
         }),
         requests = [],
         errors = [];
+    const reportRequests = [];
     page.on('pageerror', (e) => errors.push(e.message));
+    await page.route('**/api/portfolio-capital?*', async (route) => {
+        const query = new URL(route.request().url()).searchParams;
+        if (query.get('view') !== 'sheet-reports') return route.fallback();
+        const accountId = query.get('accountId'),
+            section = query.get('section');
+        reportRequests.push({ accountId, section });
+        return route.fulfill({
+            json: {
+                schemaVersion: 1,
+                runId: 'synthetic-cloud-review',
+                accountId,
+                section,
+                readOnly: true,
+                adoptionAvailable: false,
+                snapshotAt: '2026-01-01T00:00:00Z',
+                overallStatus: '합성 검증 자료',
+                metrics: [
+                    {
+                        id: 'fictional',
+                        label: '합성 수집 건수',
+                        value: 4,
+                        unit: '대상',
+                        note: '금융사건 수 아님',
+                    },
+                ],
+                flows: [],
+                holds: [],
+                manualEvidence: [],
+                limitations: ['합성 자료'],
+                nonblocking: {
+                    label: '합성 보류',
+                    note: '추가 수집 요청 없음',
+                },
+                items: [
+                    {
+                        id: 'synthetic-reference',
+                        accountId,
+                        category: 'blocking',
+                        date: '2026-01-01',
+                        symbol: 'TEST',
+                        label: '합성 비교',
+                        reason: '값 채택 없음',
+                        existing: [{ field: '합성 기존값', value: 3 }],
+                        compared: [{ field: '합성 비교값', value: 4 }],
+                        sourceReferences: [],
+                        nextAction: '합성 검토',
+                    },
+                ],
+            },
+        });
+    });
     await page.route('**/src/services/firebaseClient*', (r) =>
         r.fulfill({
             contentType: 'application/javascript',
@@ -95,6 +147,23 @@ try {
         () => document.querySelectorAll('.ledger-list tbody tr').length >= 100
     );
     const initialMs = Date.now() - start;
+    const cloud = page.getByRole('region', { name: '클라우드 수집·대조 현황' });
+    await cloud.getByText('합성 수집 건수', { exact: true }).waitFor();
+    assert.equal(reportRequests.length, 1, 'Summary only at initial entry');
+    await cloud.getByRole('button', { name: '비교값·원문 위치 확인' }).click();
+    await cloud.getByText('합성 기존값', { exact: true }).waitFor();
+    assert.equal(
+        reportRequests.filter((x) => x.section === 'details').length,
+        1
+    );
+    await cloud.getByRole('button', { name: '비교 근거 접기' }).click();
+    await cloud.getByRole('button', { name: '비교값·원문 위치 확인' }).click();
+    assert.equal(
+        reportRequests.filter((x) => x.section === 'details').length,
+        1,
+        'Details reused when reopened'
+    );
+    await cloud.getByRole('button', { name: '비교 근거 접기' }).click();
     console.log(`List initial render ${initialMs}ms`);
     assert(initialMs < 20000);
     assert.equal(await bodyRows.count(), 100);

@@ -3,6 +3,7 @@
     import Select from 'primevue/select';
     import { useDocumentLedgerWindow } from '@/composables/useDocumentLedgerWindow.js';
     import SheetReconciliationPanel from '@/components/portfolio/SheetReconciliationPanel.vue';
+    import SheetCloudReview from '@/components/portfolio/SheetCloudReview.vue';
     import {
         comparisonFields,
         extraFields,
@@ -352,6 +353,7 @@
             notice
         }}</Message>
         <p role="status" aria-live="polite">{{ progress }}</p>
+        <SheetCloudReview :user="firebaseUser" />
         <section class="summary-grid" aria-label="거래 요약">
             <article>
                 <span>본인원금 분류 매수액 · 납입원금 아님</span

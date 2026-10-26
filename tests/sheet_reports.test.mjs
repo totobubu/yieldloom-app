@@ -270,3 +270,32 @@ test('authentication failure not cached; token SDK not force-refreshed', async (
     await assert.rejects(c.load(u, 'wife'), /expired/);
     assert.equal(calls, 2);
 });
+
+test('permission status reaches UI so rendered report can be purged', async () => {
+    const c = createSheetReportClient({
+        fetchImpl: async () => ({
+            ok: false,
+            status: 403,
+            json: async () => ({ error: 'forbidden' }),
+        }),
+    });
+    await assert.rejects(
+        c.load(fictionalUser(), 'wife'),
+        (error) => error.status === 403
+    );
+});
+test('token SDK revocation clears session and exposes authentication status', async () => {
+    const c = createSheetReportClient({
+        fetchImpl: async () => {
+            throw new Error('must not fetch');
+        },
+    });
+    const user = {
+        getIdToken: async () => {
+            throw Object.assign(new Error('revoked'), {
+                code: 'auth/user-token-expired',
+            });
+        },
+    };
+    await assert.rejects(c.load(user, 'wife'), (error) => error.status === 401);
+});

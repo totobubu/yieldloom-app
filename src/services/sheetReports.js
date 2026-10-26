@@ -61,8 +61,11 @@ export function createSheetReportClient({
                     current === generation
                 )
                     clear();
-                throw new Error(
-                    value.error || '비공개 대조 보고서 조회에 실패했습니다.'
+                throw Object.assign(
+                    new Error(
+                        value.error || '비공개 대조 보고서 조회에 실패했습니다.'
+                    ),
+                    { status: response.status }
                 );
             }
             if (current !== generation || owner !== user)
@@ -77,9 +80,17 @@ export function createSheetReportClient({
                 throw new Error('보고서 계좌 또는 형식을 확인해 주세요.');
             cache.set(key, { value, expires: now() + 30_000 });
             return value;
-        })().finally(() => {
-            if (pending.get(key) === task) pending.delete(key);
-        });
+        })()
+            .catch((error) => {
+                if (String(error.code || '').startsWith('auth/')) {
+                    if (current === generation) clear();
+                    error.status = 401;
+                }
+                throw error;
+            })
+            .finally(() => {
+                if (pending.get(key) === task) pending.delete(key);
+            });
         pending.set(key, task);
         return task;
     }

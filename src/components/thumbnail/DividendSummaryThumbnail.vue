@@ -13,7 +13,7 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 </script>
 
 <template>
-	<ThumbnailCardShell class="summary-card" :class="tone" :title="data.symbol" context-label="배당 요약" badge="배당 정보"
+	<ThumbnailCardShell class="summary-card" :class="tone" :title="data.symbol" context-label="배당 요약" :badge="data.referenceData ? '참고 배당 · 검토 필요' : '배당 정보'"
 		date-label="배당락일" :date-value="date(data.exDate)" data-thumbnail-kind="summary">
 		<template v-if="data.hasDividend">
 			<section class="hero">
@@ -38,9 +38,9 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 						row.total == null ? '자료 없음' : usd(row.total, 4)
 					}}</b><em v-if="row.partial && row.total != null">집계 중</em></article>
 			</div>
-            <p class="history-note">배당락일 기준 · 확인된 주당 세전 금액 합계</p>
+            <p class="history-note">배당락일 기준 · {{ data.referenceData ? '참고 주당 세전 금액 합계' : '확인된 주당 세전 금액 합계' }}</p>
 		</section>
-		<template #footer>주당 USD 기준 · 세후 금액은 15% 원천징수 단순 가정</template>
+		<template #footer><span v-if="data.referenceData">Yahoo Finance 참고 배당 · 검토 필요 · </span>주당 USD 기준 · 세후 금액은 15% 원천징수 단순 가정</template>
 	</ThumbnailCardShell>
 </template>
 

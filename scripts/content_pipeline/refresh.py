@@ -124,6 +124,17 @@ def main() -> int:
         or ticker not in PROVIDERS["roundhill"].tracked_symbols
     ):
         parser.error("--declaration-date requires --scope ticker --provider roundhill and a registered --ticker")
+    if args.scope == "ticker" and ticker:
+        from scripts.content_pipeline.stock_collection import collect_stock, is_us_stock
+        catalog = json.loads((Path(__file__).resolve().parents[2] / 'data-v2/catalog-seed.json').read_text())["instruments"]
+        instrument = next((row for row in catalog if row["symbol"] == ticker), None)
+        if instrument and is_us_stock(instrument):
+            database.recover_interrupted_pipeline_runs()
+            result = collect_stock(ticker, database, args.raw_dir, args.public_dir, args.request_id)
+            export_dashboard(args.db, args.public_dir / "dashboard.json")
+            export_system_logs(args.db, args.public_dir / "system-logs.json")
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 1 if result["status"] == "failed" else 0
     if args.scope == "provider":
         if not args.provider:
             parser.error("--scope provider requires --provider")

@@ -25,9 +25,14 @@ jobs:
             - run: npm ci --no-audit --no-fund
             - run: npm run data:validate-status
             - run: python -m unittest discover -s tests/metadata -p 'test_security_status.py'
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: '3.12'
+            - run: python -m pip install beautifulsoup4==4.14.3
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_ticker_collection.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_publish_public_snapshots.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_validate_refresh_outputs.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_stock_collection.py'
             - run: npm run lint:check
             # build includes the Vue/TypeScript check and prerender validation.
             # Asset contract tests below read the generated dist/ticker-index.json.
@@ -93,6 +98,7 @@ jobs:
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/share-monthly-history.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stock-price-calendar.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/admin-stock-collection.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/general-stock-collection.browser.mjs
                   LISTING_STATUS_BASE_URL=http://127.0.0.1:5175 node tests/security-status.browser.mjs
             - name: Official fund projections with synthetic public data
               run: |

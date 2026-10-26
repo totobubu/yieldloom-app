@@ -32,6 +32,7 @@
     import StockFeedbackForm from '@/components/stock/StockFeedbackForm.vue';
     import StockPriceHistory from '@/components/stock/StockPriceHistory.vue';
     import AdminStockCollection from '@/components/stock/AdminStockCollection.vue';
+    import StockIssuerAnnouncements from '@/components/stock/StockIssuerAnnouncements.vue';
     import StockCandlestickChart from '@/components/stock/StockCandlestickChart.vue';
     import { monthlyDividendSeries } from '@/services/stockAnalysis.js';
     import DividendReviewPrompt from '@/components/stock/DividendReviewPrompt.vue';
@@ -41,6 +42,7 @@
     import { isOfficialFundConfigured } from '@/services/officialFundData.js';
     import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
     import { getAssetUrl } from '@/utils/dataUrl';
+    import { seedStockReference } from '@/services/dividendLedger.js';
     import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
     import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
     import { calculateEntryIncomeEfficiency } from '@/services/thumbnail/entryIncomeEfficiency';
@@ -135,7 +137,14 @@
             ? []
             : [
                   { kind: 'summary', label: '배당 요약' },
-                  { kind: 'comparison', label: '배당 비교' },
+                  {
+                      kind: 'comparison',
+                      label: '배당 비교',
+                      disabled: Boolean(
+                          selectedData.value?.sourceStatus
+                              ?.corporateActionReview
+                      ),
+                  },
                   ...(selectedInfo.value?.underlying
                       ? [
                             {
@@ -205,6 +214,7 @@
                 thumbnail_projection: '수집 시세',
                 r2_projection: '수집 시세',
                 yahoo_quote: 'Yahoo Finance',
+                stock_reference: 'Yahoo Finance · 참고',
                 unavailable: '미확인',
             })[selectedData.value?.sourceStatus?.price] || '수집 시세'
     );
@@ -273,7 +283,11 @@
         () => dividendState.value === 'unavailable'
     );
     const trailingDividend = computed(() => {
-        if (archived.value) return null;
+        if (
+            archived.value ||
+            selectedData.value?.sourceStatus?.corporateActionReview
+        )
+            return null;
         const end = selectedData.value?.sourceStatus?.priceDate;
         if (!end) return null;
         const cutoff = new Date(`${end}T12:00:00Z`);
@@ -325,6 +339,9 @@
         const rows = dividendRows(selectedData.value?.backtestData);
         const current = rows.at(-1);
         const previous = rows.at(-2);
+        const reviewBasis = Boolean(
+            selectedData.value?.sourceStatus?.corporateActionReview
+        );
         const currentAmount = amount(current);
         const previousAmount = amount(previous);
         const referencePrice = dividendPrice(
@@ -349,15 +366,17 @@
             symbol:
                 selectedInfo.value?.symbol ?? normalize(route.params.ticker),
             hasDividend: Boolean(current),
+            referenceData: Boolean(current?.isReference),
             exDate: current?.date ?? null,
             previousExDate: previous?.date ?? null,
             currentDividendAmount: currentAmount,
             previousDividendAmount: previous ? previousAmount : null,
-            dividendDifference: previous
-                ? currentAmount - previousAmount
-                : null,
+            dividendDifference:
+                previous && !reviewBasis
+                    ? currentAmount - previousAmount
+                    : null,
             dividendChangePercent:
-                previousAmount > 0
+                previousAmount > 0 && !reviewBasis
                     ? ((currentAmount - previousAmount) / previousAmount) * 100
                     : null,
             afterTaxDividendAmount: current ? currentAmount * 0.85 : null,
@@ -371,18 +390,22 @@
                 ? '최신 주가'
                 : '배당락일 종가',
             previousExDividendClose: validPreviousClose ? prevClose : null,
-            exDividendYield: validClose
-                ? (currentAmount / exClose) * 100
-                : null,
-            previousExDividendYield: validPreviousClose
-                ? (previousAmount / prevClose) * 100
-                : null,
-            afterTaxDividendYield: validClose
-                ? ((currentAmount * 0.85) / exClose) * 100
-                : null,
-            previousAfterTaxDividendYield: validPreviousClose
-                ? ((previousAmount * 0.85) / prevClose) * 100
-                : null,
+            exDividendYield:
+                validClose && !reviewBasis
+                    ? (currentAmount / exClose) * 100
+                    : null,
+            previousExDividendYield:
+                validPreviousClose && !reviewBasis
+                    ? (previousAmount / prevClose) * 100
+                    : null,
+            afterTaxDividendYield:
+                validClose && !reviewBasis
+                    ? ((currentAmount * 0.85) / exClose) * 100
+                    : null,
+            previousAfterTaxDividendYield:
+                validPreviousClose && !reviewBasis
+                    ? ((previousAmount * 0.85) / prevClose) * 100
+                    : null,
             monthlyTotals: monthlyDividendSeries(rows, today(), 3).map(
                 (row) => ({
                     month: `${row.month.slice(2, 4)}.${row.month.slice(5, 7)}`,
@@ -513,6 +536,7 @@
                 symbol: payload.ticker.symbol,
                 rivalOptions: payload.rivalOptions,
             };
+            seedStockReference(payload.ticker);
             selectedData.value = payload.ticker;
             dataStatus.value =
                 payload.dataStatus ??
@@ -571,6 +595,7 @@
     };
     function applyCollectedData(payload) {
         if (payload.ticker?.symbol !== selectedInfo.value?.symbol) return;
+        seedStockReference(payload.ticker);
         selectedData.value = payload.ticker;
         selectedInfo.value = {
             ...selectedInfo.value,
@@ -968,6 +993,9 @@
                     이력이 확인될 때만 표시합니다.
                 </span>
             </div>
+            <StockIssuerAnnouncements
+                :announcements="selectedData?.issuerAnnouncements || []"
+                :result="selectedData?.stockCollection || null" />
             <Tabs
                 :value="activeTab"
                 @update:value="selectTab"

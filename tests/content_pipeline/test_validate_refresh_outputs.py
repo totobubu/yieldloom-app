@@ -7,11 +7,14 @@ from scripts.content_pipeline.validate_refresh_outputs import validate
 
 
 class RefreshOutputValidationTest(unittest.TestCase):
-    def test_topw_observer_reuses_conflict_safe_branch_publisher(self):
-        workflow = Path(".github/workflows/observe-roundhill-topw.yml").read_text(encoding="utf-8")
-        self.assertIn('publish_public_snapshots.sh "$GITHUB_REF_NAME"', workflow)
-        self.assertIn("content-studio/state/branches/${safe_ref}.tar.gz", workflow)
-        self.assertNotIn("git push", workflow)
+    def test_roundhill_observers_reuse_conflict_safe_branch_publisher(self):
+        for ticker in ("topw", "magy"):
+            with self.subTest(ticker=ticker):
+                workflow = Path(f".github/workflows/observe-roundhill-{ticker}.yml").read_text(encoding="utf-8")
+                self.assertIn('publish_public_snapshots.sh "$GITHUB_REF_NAME"', workflow)
+                self.assertIn("content-studio/state/branches/${safe_ref}.tar.gz", workflow)
+                self.assertIn("group: content-studio-state-write", workflow)
+                self.assertNotIn("git push", workflow)
 
     def test_workflow_keeps_feature_branch_state_and_push_isolated(self):
         workflow = Path(".github/workflows/content-studio-provider-refresh.yml").read_text(encoding="utf-8")

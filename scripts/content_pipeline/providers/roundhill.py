@@ -20,7 +20,7 @@ class RoundhillAdapter(OfficialHTTPAdapter):
     cboe_url = "https://www.cboe.com/us/equities/notices/dividends/details/"
     tracked_symbols = (
         "AAPW", "AMDW", "AMZW", "ARMW", "AVGW", "BABW", "BRKW", "COIW",
-        "COSW", "GDXW", "GLDW", "GOOW", "HOOW", "METW", "MSFW", "MSTW",
+        "COSW", "GDXW", "GLDW", "GOOW", "HOOW", "MAGY", "METW", "MSFW", "MSTW",
         "NFLW", "NVDW", "PLTW", "TOPW", "TSLW", "TSYW", "UBEW", "UNHW",
     )
 

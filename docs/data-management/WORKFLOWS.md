@@ -6,6 +6,7 @@
 | --- | --- | --- |
 | `content-studio-provider-refresh.yml` | 운영용 운용사 수집·검증·공개 Content Studio 갱신 | 기존 운용사별 일정, 수동 |
 | `observe-roundhill-topw.yml` | TOPW 월요일 발표 집중 수집·누락 재확인 | 월 21:45~22:30 5분 간격, 월 23:00·화 09:00, 수동 (한국 시간) |
+| `observe-roundhill-magy.yml` | MAGY 목요일 발표 집중 수집·누락 재확인 | 목 19:45~20:30 5분 간격, 목 21:00·금 09:00, 수동 (한국 시간) |
 | `collect-incremental-data-v2.yml` | 전체 공식 배당 릴리스의 검토 후보 생성 | 매일 한국 시간 13:10, 수동 |
 | `publish-data-v2.yml` | 후보 대조·검토 및 승인된 core 릴리스 발행 | 수동 |
 | `refresh-thumbnail-projections.yml` | 시세 원본을 앱 조회용 R2 데이터로 가공 | 화~토 한국 시간 12:30, 수동 |
@@ -90,6 +91,44 @@ Firebase/Auth 호출도 추가하지 않는다. 공개 스냅샷 검증과 core 
 python scripts/content_pipeline/observe_topw.py
 python scripts/content_pipeline/observe_topw.py --declaration-date 2026-10-26 --require-announcement
 python -m unittest discover -s tests/content_pipeline -p 'test_topw_observation.py' -v
+```
+
+## MAGY 목요일 발표 관찰
+
+`observe-roundhill-magy.yml`은 메일 목록에서 관찰한 목요일 20시 전후 발송 패턴을
+초기 일정으로 사용한다. 한국 시간 목요일 19:45~20:30에 5분 간격으로 실행하고,
+21:00과 금요일 09:00에 재확인한다. UTC cron은 목요일 10:45~11:30, 12:00 및
+금요일 00:00이다. 금요일 복구 실행도 직전 목요일 발표를 대상으로 한다.
+
+TOPW와 MAGY는 `observe_roundhill.py`의 공용 완료 감지·오류 처리·보고서를 사용한다.
+기존 TOPW 명령과 일정은 유지한다. MAGY는 기존 공식 수집 대상에도 등록해 운용사
+정기 수집과 수동 종목 수집에서도 공시를 읽을 수 있다. 초기 등록 시 Cboe의
+2026-10-22 MAGY 공식 공시를 실제 조회해 주당 금액·배당락일·기준일·지급일을 확인했다.
+메일 발송 시각을 공시 게시 시각으로 단정하지 않으며, 운용사 웹사이트 대신 기존
+Cboe 공식 공시 경로를 재사용한다.
+
+일반 실행은 `symbols=MAGY`와 해당 목요일 날짜로 공식 원문 1건만 조회한다.
+원장과 공개 스냅샷에 같은 주의 완료된 MAGY 발표가 있으면 외부 요청은 0건이다.
+다른 티커나 전주 자료는 완료로 인정하지 않는다. 전체 운용사 조회·관련 없는 종목
+온보딩·유료 공급자·Firebase/Auth 호출은 추가하지 않는다. R2 쓰기 잠금과 공개
+스냅샷 게시 재시도·검증·core 발행 승인 절차는 TOPW와 동일하다.
+
+메일 목록에는 수요일 발송 사례도 있으므로 금요일 최종 재확인에서 목요일 공시가
+정상 무자료 응답이면 바로 전 수요일 공시 한 건을 추가 조회한다(최대 2건).
+이미 수요일 발표가 원장과 공개 스냅샷에 있으면 목요일 반복 조회도 생략한다.
+실제 공시의 발표 날짜를 그대로 보관하고 `matchedDeclarationDate`로 보고한다.
+목요일 조회가 실패했을 때는 오류를 무자료로 바꾸지 않으며, 두 날짜 모두 미발견이면
+`missing`으로 실패 처리한다. 임의의 과거 날짜나 다음 날 발표를 추정해 채우지 않는다.
+
+실행별 `magy-observation-{run_id}` 아티팩트에 보고서를 30일 보관한다. 수동 실행의
+`declarationDate`를 비우면 서울 날짜 기준 가장 최근 목요일을 사용한다. 과거의
+목요일 또는 조기 발표의 수요일을 직접 지정할 수 있으며 미래 날짜는 거절한다.
+정기 실행은 main 반영 후 활성화되고 GitHub cron의 지연·누락 가능성은 유지된다.
+
+```sh
+python scripts/content_pipeline/observe_roundhill.py --ticker MAGY
+python scripts/content_pipeline/observe_roundhill.py --ticker MAGY --declaration-date 2026-10-22 --require-announcement
+python -m unittest discover -s tests/content_pipeline -p 'test_*observation.py' -v
 ```
 
 ## 관리자 종목 수집 버튼

@@ -126,7 +126,15 @@ def main() -> int:
 
     max_sources = args.max_sources if args.max_sources is not None else len(candidates)
     selected_candidates = candidates[:max_sources]
-    for outcome in adapter.fetch_many(selected_candidates):
+
+    def outcomes():
+        yield from adapter.fetch_many(selected_candidates)
+        if args.provider == "roundhill" and target_ticker and args.declaration_date and not any(
+            key[1] == target_ticker and key[2] == args.declaration_date.isoformat() for key in seen_events
+        ):
+            yield from adapter.fetch_many([adapter.issuer_candidate(target_ticker)])
+
+    for outcome in outcomes():
         candidate = outcome.candidate
         try:
             if outcome.error:
@@ -140,7 +148,7 @@ def main() -> int:
                 continue
             assert outcome.document is not None
             document = outcome.document
-            suffix = ".txt" if document.metadata.get("browserContent") == "text" or adapter.browser_content == "text" else ".html"
+            suffix = ".json" if document.source_type.endswith("_json") else ".txt" if document.metadata.get("browserContent") == "text" or adapter.browser_content == "text" else ".html"
             raw_path = args.raw_dir / adapter.slug / f"{document.content_sha256}{suffix}"
             if not args.dry_run:
                 raw_path.parent.mkdir(parents=True, exist_ok=True)
@@ -187,6 +195,9 @@ def main() -> int:
                 if not events:
                     raise NoDataError(f"no official events matched ex-date {args.ex_date.isoformat()}")
             if args.declaration_date:
+                events = [event for event in events if event.declared_date == args.declaration_date.isoformat()]
+                if not events:
+                    raise NoDataError(f"no official events matched declaration date {args.declaration_date.isoformat()}")
                 for event in events:
                     if not (
                         event.declared_date == args.declaration_date.isoformat()

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import re
+from decimal import Decimal, InvalidOperation
 
 from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
-from .base import SourceCandidate
+from .base import NoDataError, SourceCandidate
 from .http import OfficialHTTPAdapter
 from .parsing import date_from_timestamp, extract_labeled_date, extract_roc_percent, is_roc_column, parse_date
 
@@ -13,7 +14,7 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
     slug = "yieldmax"
     display_name = "YieldMax"
     official_homepage = "https://yieldmaxetfs.com/"
-    parser_version = "2"
+    parser_version = "3"
     allowed_hosts = ("yieldmaxetfs.com",)
     catalog_url = "https://yieldmaxetfs.com/our-etfs/"
     # Fund history pages contain the official amount plus declaration, ex,
@@ -44,6 +45,8 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
         except ValueError as press_release_error:
             try:
                 return self._parse_fund_history(document, parsed)
+            except NoDataError:
+                raise
             except ValueError as fund_history_error:
                 raise ValueError(
                     f"unsupported YieldMax page: {press_release_error}; {fund_history_error}"
@@ -126,6 +129,23 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
             if not amount_match:
                 continue
             roc = extract_roc_percent(row[roc_index]) if roc_index is not None and roc_index < len(row) else None
+            review_note = None
+            verification_status = "official"
+            if roc_index is not None:
+                invalid_roc = False
+                if roc is not None:
+                    try:
+                        invalid_roc = not Decimal("0") <= Decimal(roc) <= Decimal("100")
+                    except InvalidOperation:
+                        invalid_roc = True
+                if invalid_roc:
+                    raw_roc = row[roc_index].strip() if roc_index < len(row) else ""
+                    review_note = (
+                        f"Issuer-published ROC value {raw_roc!r} is outside 0–100%; "
+                        "the reported value was withheld pending review."
+                    )
+                    roc = None
+                    verification_status = "needs_review"
             event = DistributionEvent(
                 provider_slug=self.slug,
                 ticker=ticker,
@@ -136,10 +156,11 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
                 payable_date=parse_date(row[payable_index]),
                 frequency="weekly",
                 roc_percent=roc,
+                verification_status=verification_status,
+                verification_note=review_note,
                 official_url=document.source_url,
-                verification_status="official",
             )
             events_by_key[event.event_key] = event
         if not events_by_key:
-            raise ValueError("YieldMax fund history contained no distribution rows")
+            raise NoDataError("YieldMax official fund history contained no distribution rows")
         return list(events_by_key.values())

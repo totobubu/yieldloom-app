@@ -69,6 +69,7 @@ def to_candidate(event: Any, document: Any) -> dict[str, Any]:
         "officialUrl": event.official_url,
         "sourceSha256": document.content_sha256,
         "verificationStatus": event.verification_status,
+        "verificationNote": event.verification_note,
         "collectionMethod": "official_fetch",
     }
 
@@ -255,7 +256,11 @@ def main() -> int:
                     provider_report["warnings"].append(f"{candidate.url}: {error}; using reviewed catalog seed, not distribution evidence")
                     continue
                 provider_report["status"] = "partial" if provider_report["sources"] else "failed"
-                provider_report["errors"].append(f"{candidate.url}: {error}")
+                classification = (
+                    f" [code={error.code}; retryable={str(error.retryable).lower()}]"
+                    if isinstance(error, CollectionError) else " [code=parse_error]"
+                )
+                provider_report["errors"].append(f"{candidate.url}: {error}{classification}")
                 failed = checked_source(previous, slug, candidate, now)
                 failed["failureCount"] = int(failed.get("failureCount", 0)) + 1
                 failed["nextRetryAt"] = retry_at(clock, failed["failureCount"])

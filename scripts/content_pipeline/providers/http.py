@@ -20,6 +20,7 @@ class OfficialHTTPAdapter(ProviderAdapter):
     timeout_seconds = 25
     fetch_mode = "http"
     browser_ready_text = ""
+    browser_ready_selector = ""
     browser_content = "html"
     browser_response_path = ""
     browser_min_delay_ms = 5_000
@@ -48,7 +49,12 @@ class OfficialHTTPAdapter(ProviderAdapter):
             with urlopen(request, timeout=self.timeout_seconds) as response:
                 return response.read()
         except HTTPError as exc:
-            code = "rate_limited" if exc.code == 429 else "blocked" if exc.code == 403 else "http_error"
+            code = (
+                "rate_limited" if exc.code == 429 else
+                "blocked" if exc.code == 403 else
+                "not_found" if exc.code == 404 else
+                "http_error"
+            )
             raise CollectionError(
                 f"official source returned HTTP {exc.code}: {url}",
                 code=code,
@@ -98,6 +104,7 @@ class OfficialHTTPAdapter(ProviderAdapter):
                     "readyTextExact": candidate.metadata.get("browserReadyExact", True),
                     "content": candidate.metadata.get("browserContent", self.browser_content),
                     "responsePath": candidate.metadata.get("browserResponsePath", self.browser_response_path),
+                    "readySelector": candidate.metadata.get("browserReadySelector", self.browser_ready_selector),
                 }
                 for candidate in candidates
             ],

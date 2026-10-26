@@ -3,7 +3,7 @@ name: Application quality
 on:
     pull_request:
     push:
-        branches: [main]
+        branches: [main, work]
 
 permissions:
     contents: read
@@ -26,6 +26,8 @@ jobs:
             - run: npm run data:validate-status
             - run: python -m unittest discover -s tests/metadata -p 'test_security_status.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_ticker_collection.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_publish_public_snapshots.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_validate_refresh_outputs.py'
             - run: npm run lint:check
             # build includes the Vue/TypeScript check and prerender validation.
             # Asset contract tests below read the generated dist/ticker-index.json.

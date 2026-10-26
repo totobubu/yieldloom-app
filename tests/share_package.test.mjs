@@ -109,3 +109,15 @@ test('non-square package filenames and manifest describe the selected output', a
     });
     assert.equal(manifest.dataStatus, 'stale');
 });
+
+test('stock reference dividends are never called confirmed in social copy', () => {
+    const data = {
+        symbol: 'BAC',
+        hasDividend: true,
+        referenceData: true,
+        currentDividendAmount: 0.32,
+        exDate: '2026-09-04',
+    };
+    assert.match(createCardShareText('summary', data), /참고 배당/);
+    assert.doesNotMatch(createCardShareText('summary', data), /확정 배당/);
+});

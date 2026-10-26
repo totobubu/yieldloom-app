@@ -19,6 +19,8 @@
         recordError = ref('');
     const stateLabels = {
         success: '완료',
+        partial: '부분 완료',
+        unsupported: '미지원',
         failure: '실패',
         skipped: '건너뜀',
         cancelled: '취소',
@@ -206,7 +208,8 @@
                     message.value =
                         result.data?.dataStatus === 'fresh'
                             ? '최신 데이터로 업데이트했습니다.'
-                            : '수집은 완료됐으며 일부 자료는 확인이 필요합니다.';
+                            : result.diagnostics?.reason ||
+                              '수집은 완료됐으며 일부 자료는 확인이 필요합니다.';
                     emit('collected', result.data);
                     return;
                 }
@@ -292,7 +295,13 @@
                     <div>
                         <dt>실행 결과</dt>
                         <dd>
-                            {{ recordStateLabels[record.state] || '확인 필요' }}
+                            {{
+                                record.state === 'ready' &&
+                                record.diagnostics?.code === 'partial_evidence'
+                                    ? '부분 완료 · 화면 반영 완료'
+                                    : recordStateLabels[record.state] ||
+                                      '확인 필요'
+                            }}
                         </dd>
                     </div>
                     <div>
@@ -347,6 +356,11 @@
                         :key="index"
                         :data-state="step.state">
                         <span>{{ step.name }}</span>
+                        <small
+                            v-if="step.detail"
+                            class="collection-step-detail"
+                            >{{ step.detail }}</small
+                        >
                         <strong>{{
                             stateLabels[step.state] || '확인 필요'
                         }}</strong>
@@ -494,6 +508,11 @@
     }
     .collection-steps li[data-state='failure'] strong {
         color: var(--p-red-600);
+    }
+    .collection-step-detail {
+        flex-basis: 100%;
+        order: 2;
+        color: var(--app-muted);
     }
     .collection-steps a,
     .collection-run-link {

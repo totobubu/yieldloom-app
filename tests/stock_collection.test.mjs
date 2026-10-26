@@ -409,3 +409,38 @@ test('latest history is read-only, scoped to ticker and reuses its run lookup', 
     );
     assert.equal(member.calls.length, 0);
 });
+
+test('partial stock evidence is returned with its limitations rather than full-success diagnostics', async () => {
+    const base = finished();
+    const { handler } = setup({
+        fetcher: async (url) => {
+            if (url.includes('/api/thumbnail-data'))
+                return reply({
+                    ticker: {
+                        symbol: 'QLDY',
+                        stockCollection: {
+                            status: 'partial',
+                            requestId: id,
+                            message: '배당락일 미확인',
+                            steps: [
+                                {
+                                    name: '기업 공식 공시 수집',
+                                    state: 'partial',
+                                },
+                            ],
+                        },
+                    },
+                    dataStatus: 'partial',
+                });
+            return base(url);
+        },
+    });
+    const result = await call(handler, 'GET', {
+        symbol: 'QLDY',
+        requestId: id,
+    });
+    assert.equal(result.body.state, 'ready');
+    assert.equal(result.body.data.dataStatus, 'partial');
+    assert.equal(result.body.diagnostics.code, 'partial_evidence');
+    assert.equal(result.body.diagnostics.reason, '배당락일 미확인');
+});

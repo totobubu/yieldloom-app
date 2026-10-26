@@ -2,8 +2,12 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
+
+if __package__ in {None, ''}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 REQUIRED_SNAPSHOTS = (
     "content.json",
@@ -52,6 +56,10 @@ def validate(root: Path = Path("public/content-studio")) -> dict[str, int]:
         raise ValueError("price quality snapshot must contain findings")
     if reconciliation.get("writeMode") != "approval-gated":
         raise ValueError("reconciliation snapshot lost its approval gate")
+    stock_index = root / "stock-evidence-index.json"
+    if stock_index.exists():
+        from scripts.content_pipeline.stock_collection import validate_stock_export
+        validate_stock_export(root)
     return {
         "providers": len(dashboard["providers"]),
         "tickers": len(distribution_index["tickers"]),

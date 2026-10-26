@@ -116,6 +116,7 @@ class MagyObservationTest(unittest.TestCase):
             if candidate.source_type.endswith('_json'):
                 return [FetchOutcome(candidate, SourceDocument('roundhill', candidate.url,
                     candidate.source_type, b'[]', metadata=candidate.metadata))]
+
             query = parse_qs(urlparse(candidate.url).query)
             self.assertEqual(query["symbols"], ["MAGY"])
             requested_dates.append(query["declaration_dt"][0])

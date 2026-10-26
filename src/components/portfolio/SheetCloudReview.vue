@@ -87,7 +87,16 @@
                 );
             details.value = result;
         } catch (e) {
-            if (current === generation) detailError.value = e.message;
+            if (current === generation) {
+                detailError.value = e.message;
+                if ([401, 403].includes(e.status)) {
+                    summary.value = null;
+                    details.value = null;
+                    showDetails.value = false;
+                    showBacklog.value = false;
+                    error.value = e.message;
+                }
+            }
         } finally {
             if (current === generation) detailLoading.value = false;
         }

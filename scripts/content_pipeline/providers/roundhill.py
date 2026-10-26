@@ -15,17 +15,32 @@ from .http import OfficialHTTPAdapter
 from .parsing import parse_date
 
 
+ANNOUNCEMENT_GROUPS = {
+    "topw": (0, ("TOPW",)),
+    "crypto": (1, ("YBTC", "YETH")),
+    "zero-dte": (2, ("XDTE", "QDTE", "RDTE")),
+    "magy": (3, ("MAGY",)),
+    "weeklypay": (4, (
+        "AAPW", "AMDW", "AMZW", "ARMW", "AVGW", "BABW", "BRKW", "COIW",
+        "COSW", "GOOW", "HOOW", "METW", "MSFW", "NFLW", "NVDW", "PLTW",
+        "TSLW", "UBEW", "UNHW", "GDXW", "GLDW", "TSYW",
+    )),
+}
+
+
 class RoundhillAdapter(OfficialHTTPAdapter):
     slug = "roundhill"
     display_name = "Roundhill Investments"
     official_homepage = "https://www.roundhillinvestments.com/"
     parser_version = "2"
+    http_requests = 0
     allowed_hosts = ("roundhillinvestments.com", "cboe.com")
     cboe_url = "https://www.cboe.com/us/equities/notices/dividends/details/"
     tracked_symbols = (
         "AAPW", "AMDW", "AMZW", "ARMW", "AVGW", "BABW", "BRKW", "COIW",
         "COSW", "GDXW", "GLDW", "GOOW", "HOOW", "MAGY", "METW", "MSFW", "MSTW",
         "NFLW", "NVDW", "PLTW", "TOPW", "TSLW", "TSYW", "UBEW", "UNHW",
+        "XDTE", "QDTE", "RDTE", "YBTC", "YETH",
     )
 
     def discover(self):
@@ -41,10 +56,10 @@ class RoundhillAdapter(OfficialHTTPAdapter):
             yield self._candidate(ex_date - timedelta(days=offset), symbols)
 
     def discover_for_declaration_date(self, declaration_date: date, ticker: str):
-        ticker = ticker.strip().upper()
-        if ticker not in self.tracked_symbols:
-            raise ValueError(f"unregistered Roundhill ticker: {ticker}")
-        yield self._candidate(declaration_date, ticker)
+        tickers = sorted({value.strip().upper() for value in ticker.split(",") if value.strip()})
+        if not tickers or any(value not in self.tracked_symbols for value in tickers):
+            raise ValueError(f"unregistered Roundhill tickers: {ticker}")
+        yield self._candidate(declaration_date, ",".join(tickers))
 
     def issuer_candidate(self, ticker: str) -> SourceCandidate:
         ticker = ticker.strip().upper()
@@ -55,6 +70,10 @@ class RoundhillAdapter(OfficialHTTPAdapter):
             source_type="official_issuer_distribution_json",
             metadata={"issuerTicker": ticker, "tickers": [ticker]},
         )
+
+    def request_bytes(self, url: str) -> bytes:
+        self.http_requests += 1
+        return super().request_bytes(url)
 
     def fetch(self, candidate: SourceCandidate) -> SourceDocument:
         match = re.fullmatch(r"/etf/([a-z0-9]+)/?", urlparse(candidate.url).path)
@@ -74,6 +93,7 @@ class RoundhillAdapter(OfficialHTTPAdapter):
         }
         if not hasattr(self, "_issuer_opener"):
             opener = build_opener(HTTPCookieProcessor(CookieJar()))
+            self.http_requests += 1
             with opener.open(Request(
                 f"{self.official_homepage}assets/php/server.php", headers=headers,
             ), timeout=self.timeout_seconds) as response:
@@ -84,6 +104,7 @@ class RoundhillAdapter(OfficialHTTPAdapter):
         endpoint = f"{self.official_homepage}assets/php/distribution-call.php"
         payload = urlencode({"upperetf": ticker, "loweretf": f"{ticker.lower()}/",
                              "token": self._issuer_token, "is_ajax": 1}).encode()
+        self.http_requests += 1
         with self._issuer_opener.open(Request(endpoint, data=payload, headers=headers),
                                       timeout=self.timeout_seconds) as response:
             content = response.read()

@@ -23,7 +23,7 @@ from scripts.data_pipeline.register_history import register as register_history
 
 def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None,
                 ex_date: date | None = None, ticker: str | None = None,
-                declaration_date: date | None = None) -> dict:
+                declaration_date: date | None = None, tickers: list[str] | None = None) -> dict:
     command = [
         sys.executable,
         "scripts/content_pipeline/collect.py",
@@ -36,6 +36,8 @@ def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None,
     ]
     if ticker:
         command.extend(["--ticker", ticker])
+    if tickers:
+        command.extend(["--tickers", ",".join(tickers)])
     if url:
         command.extend(["--url", url])
     if ex_date:
@@ -103,6 +105,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--scope", choices=("all", "provider", "ticker", "ex_date"), default="all")
     parser.add_argument("--provider", choices=sorted(PROVIDERS))
     parser.add_argument("--ticker")
+    parser.add_argument("--tickers")
     parser.add_argument("--ex-date", type=date.fromisoformat)
     parser.add_argument("--declaration-date", type=date.fromisoformat)
     parser.add_argument("--request-id")
@@ -119,9 +122,13 @@ def main() -> int:
     database.initialize()
     selected_url = None
     ticker = args.ticker.strip().upper() if args.ticker else None
+    tickers = sorted({value.strip().upper() for value in (args.tickers or "").split(",") if value.strip()})
+    if args.tickers and (args.scope != "provider" or args.provider != "roundhill" or ticker or not args.declaration_date):
+        parser.error("--tickers requires --scope provider --provider roundhill --declaration-date, without --ticker")
     if args.declaration_date and (
-        args.scope != "ticker" or args.provider != "roundhill" or args.ex_date
-        or ticker not in PROVIDERS["roundhill"].tracked_symbols
+        args.provider != "roundhill" or args.ex_date
+        or not ((args.scope == "ticker" and ticker in PROVIDERS["roundhill"].tracked_symbols)
+                or (args.scope == "provider" and tickers and all(value in PROVIDERS["roundhill"].tracked_symbols for value in tickers)))
     ):
         parser.error("--declaration-date requires --scope ticker --provider roundhill and a registered --ticker")
     if args.scope == "ticker" and ticker:
@@ -168,6 +175,7 @@ def main() -> int:
         "scope": args.scope,
         "provider": providers[0] if args.scope in {"provider", "ticker"} else None,
         "ticker": ticker,
+        "tickers": tickers,
         "exDate": args.ex_date.isoformat() if args.ex_date else None,
         "declarationDate": args.declaration_date.isoformat() if args.declaration_date else None,
         "recoveredInterruptedRuns": recovered,
@@ -180,7 +188,7 @@ def main() -> int:
             try:
                 payload = run_collect(
                     provider, args.db, args.raw_dir, selected_url, args.ex_date, ticker,
-                    args.declaration_date,
+                    args.declaration_date, tickers or None,
                 )
                 step_status = "warning" if payload.get("status") == "partial" else "success"
                 warned = warned or step_status == "warning"

@@ -56,6 +56,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--url", help="Parse one explicit allowed official URL")
     parser.add_argument("--ex-date", type=date.fromisoformat,
                         help="Keep only events matching this ISO ex-dividend date")
+    parser.add_argument("--declaration-date", type=date.fromisoformat,
+                        help="Fetch one Roundhill ticker's notice for this declaration date")
     parser.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
     parser.add_argument("--raw-dir", type=Path, default=Path("var/content-studio/raw"))
     parser.add_argument("--dry-run", action="store_true")
@@ -65,8 +67,14 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
-    args = build_parser().parse_args()
+    parser = build_parser()
+    args = parser.parse_args()
     adapter = PROVIDERS[args.provider]()
+    if args.declaration_date and (
+        args.provider != "roundhill" or not args.ticker or args.url or args.ex_date
+        or args.ticker.strip().upper() not in adapter.tracked_symbols
+    ):
+        parser.error("--declaration-date requires a registered Roundhill --ticker and no --url/--ex-date")
     database = None
     if not args.dry_run:
         database = ContentDatabase(args.db)
@@ -78,7 +86,9 @@ def main() -> int:
             adapter.parser_version,
         )
 
-    if args.url:
+    if args.declaration_date:
+        candidates = list(adapter.discover_for_declaration_date(args.declaration_date, args.ticker))
+    elif args.url:
         candidates = [SourceCandidate(url=args.url, source_type="explicit_official_url")]
     elif args.ex_date:
         candidates = list(adapter.discover_for_ex_date(args.ex_date))
@@ -176,6 +186,14 @@ def main() -> int:
                 events = [event for event in events if event.ex_date == args.ex_date.isoformat()]
                 if not events:
                     raise NoDataError(f"no official events matched ex-date {args.ex_date.isoformat()}")
+            if args.declaration_date:
+                for event in events:
+                    if not (
+                        event.declared_date == args.declaration_date.isoformat()
+                        and event.record_date and event.payable_date
+                        and event.declared_date <= event.ex_date <= event.record_date <= event.payable_date
+                    ):
+                        raise ValueError("dated announcement has incomplete or inconsistent distribution dates")
             accepted_events = []
             for event in events:
                 key = stable_event_key(event)

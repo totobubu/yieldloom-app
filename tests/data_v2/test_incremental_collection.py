@@ -118,6 +118,16 @@ class IncrementalCollectionTests(unittest.TestCase):
             self.assertEqual(source["failureCount"], 0)
             self.assertNotIn("nextRetryAt", source)
 
+    def test_404_is_reported_as_not_found_and_not_as_empty_data(self):
+        with tempfile.TemporaryDirectory() as directory:
+            adapter = FakeAdapter()
+            adapter.error = CollectionError("official source returned HTTP 404", code="not_found", retryable=False)
+            report, _ = self.run_collection(Path(directory), adapter)
+            self.assertEqual(report["summary"]["failedSources"], 1)
+            self.assertIn("HTTP 404", report["providers"]["neos"]["errors"][0])
+            self.assertIn("code=not_found", report["providers"]["neos"]["errors"][0])
+            self.assertIn("retryable=false", report["providers"]["neos"]["errors"][0])
+
     def test_review_only_result_keeps_previously_approved_events(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

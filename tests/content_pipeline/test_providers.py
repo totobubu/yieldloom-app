@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.content_pipeline.models import SourceDocument
+from scripts.content_pipeline.providers.base import CollectionError, NoDataError
 from scripts.content_pipeline.collect import event_snapshot, stable_event_key
 from scripts.content_pipeline.providers import (
     AmplifyAdapter,
@@ -151,18 +152,99 @@ class ProviderParserTest(unittest.TestCase):
         self.assertEqual(events[0].distribution_per_share, "0.18264")
         self.assertEqual(events[0].payable_date, "2026-01-30")
 
-    def test_global_x_distribution_history_payload(self):
-        events = GlobalXAdapter().parse(
+    def test_global_x_rendered_history_table_after_client_render(self):
+        adapter = GlobalXAdapter()
+        events = adapter.parse(
             document(
                 "globalx",
-                "globalx_history.html",
+                "globalx_history_rendered.html",
                 "https://www.globalxetfs.com/funds/qyld",
                 metadata={"ticker": "QYLD"},
             )
         )
+        self.assertEqual(adapter.fetch_mode, "browser")
         self.assertEqual(events[0].ticker, "QYLD")
         self.assertEqual(events[0].distribution_per_share, "0.1653")
         self.assertEqual(events[0].ex_date, "2026-07-20")
+        self.assertEqual(events[0].record_date, "2026-07-20")
+        self.assertEqual(events[0].payable_date, "2026-07-27")
+        self.assertEqual(events[0].declared_date, events[0].ex_date)
+
+        candidate = next(iter(adapter.discover()))
+        completed = subprocess.CompletedProcess(
+            args=[], returncode=0,
+            stdout=json.dumps([{
+                "ok": True, "httpStatus": 200, "finalUrl": candidate.url,
+                "pageTitle": "Global X QYLD",
+                "contentBase64": base64.b64encode(b"<table></table>").decode(),
+            }]), stderr="",
+        )
+        with patch("scripts.content_pipeline.providers.http.subprocess.run", return_value=completed) as run:
+            adapter.fetch_many([candidate])
+        payload = json.loads(run.call_args.kwargs["input"])
+        self.assertEqual(
+            payload["sources"][0]["readySelector"],
+            'table[aria-label="Distributions table"]',
+        )
+
+    def test_global_x_empty_rendered_table_is_no_data_not_parse_failure(self):
+        empty = SourceDocument(
+            provider_slug="globalx",
+            source_url="https://www.globalxetfs.com/funds/qyld",
+            source_type="fixture",
+            content=b'<table aria-label="Distributions table"><thead><tr><th>Ex-Date</th><th>Record Date</th><th>Payable Date</th><th>Amount</th></tr></thead><tbody></tbody></table>',
+            metadata={"ticker": "QYLD"},
+        )
+        with self.assertRaisesRegex(NoDataError, "no distribution rows"):
+            GlobalXAdapter().parse(empty)
+
+    def test_global_x_initial_next_page_skeleton_is_a_structure_mismatch(self):
+        with self.assertRaisesRegex(ValueError, "required HTML table not found"):
+            GlobalXAdapter().parse(document(
+                "globalx", "globalx_history_skeleton.html",
+                "https://www.globalxetfs.com/funds/qyld",
+                metadata={"ticker": "QYLD"},
+            ))
+
+    def test_yieldmax_invalid_roc_is_withheld_for_review_without_dropping_rows(self):
+        events = YieldMaxAdapter().parse(document(
+            "yieldmax", "yieldmax_invalid_roc.html",
+            "https://yieldmaxetfs.com/our-etfs/pypy/",
+            metadata={"ticker": "PYPY"},
+        ))
+        self.assertEqual(len(events), 4)
+        self.assertEqual(events[0].roc_percent, "96.60")
+        self.assertEqual(events[0].verification_status, "official")
+        self.assertEqual(events[1].distribution_per_share, "0.1539")
+        self.assertIsNone(events[1].roc_percent)
+        self.assertEqual(events[1].verification_status, "needs_review")
+        self.assertIn("110.19%", events[1].verification_note)
+        self.assertEqual(events[2].roc_percent, "89.86")
+        self.assertEqual(events[2].verification_status, "official")
+        self.assertIsNone(events[3].roc_percent)
+        self.assertEqual(events[3].verification_status, "official")
+
+    def test_official_http_adapter_classifies_404_separately(self):
+        from urllib.error import HTTPError
+        from unittest.mock import patch
+
+        error = HTTPError("https://yieldmaxetfs.com/our-etfs/yskh/", 404, "Not Found", {}, None)
+        with patch("scripts.content_pipeline.providers.http.urlopen", side_effect=error):
+            with self.assertRaises(CollectionError) as caught:
+                YieldMaxAdapter().request_bytes("https://yieldmaxetfs.com/our-etfs/yskh/")
+        self.assertEqual(caught.exception.code, "not_found")
+        self.assertFalse(caught.exception.retryable)
+
+    def test_yieldmax_empty_history_table_is_no_data(self):
+        empty = SourceDocument(
+            provider_slug="yieldmax",
+            source_url="https://yieldmaxetfs.com/our-etfs/pypy/",
+            source_type="fixture",
+            content=b'<table><tr><th>Distribution per Share</th><th>Declared Date</th><th>Ex Date</th><th>Record Date</th><th>Payable Date</th><th>ROC</th></tr></table>',
+            metadata={"ticker": "PYPY"},
+        )
+        with self.assertRaisesRegex(NoDataError, "no distribution rows"):
+            YieldMaxAdapter().parse(empty)
 
     def test_ishares_catalog_and_distribution_history(self):
         adapter = ISharesAdapter()

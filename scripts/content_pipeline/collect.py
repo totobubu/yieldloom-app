@@ -45,6 +45,7 @@ def event_snapshot(event) -> dict[str, str | None]:
         "frequency": event.frequency,
         "rocPercent": event.roc_percent,
         "verificationStatus": event.verification_status,
+        "verificationNote": event.verification_note,
     }
 
 

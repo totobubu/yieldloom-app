@@ -93,6 +93,7 @@ class DistributionEvent:
     frequency: str | None = None
     roc_percent: str | int | float | Decimal | None = None
     verification_status: str = "official"
+    verification_note: str | None = None
     collected_at: str = field(default_factory=utc_now_iso)
 
     def __post_init__(self) -> None:

@@ -68,7 +68,7 @@ try {
             if (status !== null && status >= 400) {
                 results.push({
                     ok: false,
-                    code: 'http_error',
+                    code: status === 404 ? 'not_found' : 'http_error',
                     retryable: status >= 500,
                     message: `official source returned HTTP ${status}`,
                 });
@@ -82,6 +82,8 @@ try {
                 JSON.parse(responseContent);
             } else if (source.readyText) {
                 await page.getByText(source.readyText, { exact: source.readyTextExact !== false }).waitFor({ timeout: timeoutMs });
+            } else if (source.readySelector) {
+                await page.locator(source.readySelector).waitFor({ state: 'visible', timeout: timeoutMs });
             } else {
                 await page.waitForLoadState('networkidle', { timeout: Math.min(timeoutMs, 15_000) }).catch(() => {});
             }

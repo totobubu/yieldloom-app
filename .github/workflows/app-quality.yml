@@ -30,6 +30,7 @@ jobs:
                   python-version: '3.12'
             - run: python -m pip install beautifulsoup4==4.14.3
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_ticker_collection.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_*observation.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_publish_public_snapshots.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_validate_refresh_outputs.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_stock_collection.py'

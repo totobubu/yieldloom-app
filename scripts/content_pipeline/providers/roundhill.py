@@ -36,6 +36,12 @@ class RoundhillAdapter(OfficialHTTPAdapter):
         for offset in range(1, 8):
             yield self._candidate(ex_date - timedelta(days=offset), symbols)
 
+    def discover_for_declaration_date(self, declaration_date: date, ticker: str):
+        ticker = ticker.strip().upper()
+        if ticker not in self.tracked_symbols:
+            raise ValueError(f"unregistered Roundhill ticker: {ticker}")
+        yield self._candidate(declaration_date, ticker)
+
     def _candidate(self, declaration_date: date, symbols: str) -> SourceCandidate:
         query = urlencode({
             "declaration_dt": declaration_date.isoformat(),
@@ -49,7 +55,7 @@ class RoundhillAdapter(OfficialHTTPAdapter):
             metadata={
                 "primary_provider": "Roundhill Investments",
                 "exchange": "Cboe",
-                "tickers": list(self.tracked_symbols),
+                "tickers": symbols.split(","),
             },
         )
 

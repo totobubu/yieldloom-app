@@ -73,6 +73,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SecurityInsights: typeof import('./src/components/thumbnail/SecurityInsights.vue')['default']
+    SheetCloudReview: typeof import('./src/components/portfolio/SheetCloudReview.vue')['default']
     SheetReconciliationPanel: typeof import('./src/components/portfolio/SheetReconciliationPanel.vue')['default']
     SimulationScenarioForm: typeof import('./src/components/portfolio/SimulationScenarioForm.vue')['default']
     SnapshotHistory: typeof import('./src/components/portfolio/SnapshotHistory.vue')['default']

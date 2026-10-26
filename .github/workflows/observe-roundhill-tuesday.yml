@@ -1,0 +1,28 @@
+name: Observe Roundhill Tuesday announcements
+
+on:
+  schedule:
+    # Asia/Seoul Tuesday 19:45–20:30, every five minutes.
+    - cron: '45,50,55 10 * * 2'
+    - cron: '0,5,10,15,20,25,30 11 * * 2'
+    # Recovery at 21:00 and the following day 09:00 KST.
+    - cron: '0 12 * * 2'
+    - cron: '0 0 * * 3'
+  workflow_dispatch:
+    inputs:
+      declarationDate:
+        description: Declaration date (YYYY-MM-DD); blank uses the most recent scheduled day in Seoul
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  observe:
+    uses: ./.github/workflows/observe-roundhill-group.yml
+    with:
+      group: crypto
+      declarationDate: ${{ inputs.declarationDate || '' }}
+      requireAnnouncement: ${{ github.event.schedule == '0 0 * * 3' }}
+    secrets: inherit

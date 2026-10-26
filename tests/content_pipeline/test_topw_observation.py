@@ -9,7 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 
-from scripts.content_pipeline import collect, observe_topw, refresh
+from scripts.content_pipeline import collect, observe_roundhill as observe_topw, refresh
 from scripts.content_pipeline.database import ContentDatabase
 from scripts.content_pipeline.models import DistributionEvent, SourceDocument
 from scripts.content_pipeline.providers.base import FetchOutcome

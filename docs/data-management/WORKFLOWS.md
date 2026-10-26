@@ -6,6 +6,10 @@
 | --- | --- | --- |
 | `content-studio-provider-refresh.yml` | 운영용 운용사 수집·검증·공개 Content Studio 갱신 | 기존 운용사별 일정, 수동 |
 | `observe-roundhill-topw.yml` | TOPW 월요일 발표 집중 수집·누락 재확인 | 월 21:45~22:30 5분 간격, 월 23:00·화 09:00, 수동 (한국 시간) |
+| `observe-roundhill-magy.yml` | MAGY 목요일 발표 집중 수집·누락 재확인 | 목 19:45~20:30 5분 간격, 목 21:00·금 09:00, 수동 (한국 시간) |
+| `observe-roundhill-tuesday.yml` | YBTC·YETH 그룹 수집 | 화 19:45~20:30 5분 간격, 화 21:00·수 09:00, 수동 (한국 시간) |
+| `observe-roundhill-wednesday.yml` | XDTE·QDTE·RDTE 그룹 수집 | 수 19:45~20:30 5분 간격, 수 21:00·목 09:00, 수동 (한국 시간) |
+| `observe-roundhill-friday.yml` | WeeklyPay 22종목 그룹 수집 | 금 19:45~20:30 5분 간격, 금 21:00·토 09:00, 수동 (한국 시간) |
 | `collect-incremental-data-v2.yml` | 전체 공식 배당 릴리스의 검토 후보 생성 | 매일 한국 시간 13:10, 수동 |
 | `publish-data-v2.yml` | 후보 대조·검토 및 승인된 core 릴리스 발행 | 수동 |
 | `refresh-thumbnail-projections.yml` | 시세 원본을 앱 조회용 R2 데이터로 가공 | 화~토 한국 시간 12:30, 수동 |
@@ -54,14 +58,15 @@ Playwright를 설치하는 수집·진단 job은 `ubuntu-24.04`로 고정한다.
 
 `observe-roundhill-topw.yml`은 메일함에서 관찰한 월요일 22시 전후 발송 패턴을
 초기 일정으로 사용한다. 메일은 읽지 않으며, 기존 Roundhill 수집기의 공식 거래소
-Cboe 공시 경로를 재사용한다. 운용사 웹사이트 직접 수집은 이 작업에 포함하지 않는다.
-메일 도착과 Cboe 게시 시각이 같다고 가정하지 않는다.
+Cboe 공시를 먼저 조회한다. 대상 공시가 없으면 운용사 상품 페이지의 공개 데이터로
+보완한다. 메일 도착·Cboe 게시·운용사 게시 시각이 같다고 가정하지 않는다.
 
 - 한국 시간 월요일 21:45~22:30에 5분 간격으로 실행하고 23:00과 화요일 09:00에
   재확인한다. UTC cron은 월요일 12:45~13:30, 14:00 및 화요일 00:00이다.
 - 실행 시 서울 날짜로 해당 주 월요일을 계산한다. 화요일 복구 실행도 월요일
   공시를 조회하며, 저장된 전주 공시 URL을 재사용하지 않는다. Cboe 요청은
-  `symbols=TOPW`, `declaration_dt=해당 월요일`로 한정해 회당 원문 1건만 조회한다.
+  `symbols=TOPW`, `declaration_dt=해당 월요일`로 한정한다. Cboe 원문 1건으로 완료할 수
+  있으며 지연 시 운용사 공개 요청 토큰 GET과 분배금 데이터 POST를 추가한다.
 - 공식 또는 교차 검증 상태의 해당 월요일 TOPW 분배금과 배당락일·기준일·지급일이
   원장과 공개 스냅샷에 일치하면 외부 조회·재가공·원장 저장을 생략한다. 이전 발표, 검토 필요 자료,
   날짜 누락·역전은 수집 완료로 인정하지 않는다. 다른 티커는 저장하지 않는다.
@@ -91,6 +96,91 @@ python scripts/content_pipeline/observe_topw.py
 python scripts/content_pipeline/observe_topw.py --declaration-date 2026-10-26 --require-announcement
 python -m unittest discover -s tests/content_pipeline -p 'test_topw_observation.py' -v
 ```
+
+## MAGY 목요일 발표 관찰
+
+`observe-roundhill-magy.yml`은 메일 목록에서 관찰한 목요일 20시 전후 발송 패턴을
+초기 일정으로 사용한다. 한국 시간 목요일 19:45~20:30에 5분 간격으로 실행하고,
+21:00과 금요일 09:00에 재확인한다. UTC cron은 목요일 10:45~11:30, 12:00 및
+금요일 00:00이다. 금요일 복구 실행도 직전 목요일 발표를 대상으로 한다.
+
+TOPW와 MAGY는 `observe_roundhill.py`의 공용 완료 감지·오류 처리·보고서를 사용한다.
+기존 TOPW 명령과 일정은 유지한다. MAGY는 기존 공식 수집 대상에도 등록해 운용사
+정기 수집과 수동 종목 수집에서도 공시를 읽을 수 있다. 초기 등록 시 Cboe의
+2026-10-22 MAGY 공식 공시를 실제 조회해 주당 금액·배당락일·기준일·지급일을 확인했다.
+메일 발송 시각을 공시 게시 시각으로 단정하지 않으며, Cboe에 없는 대상 공시는
+운용사 상품 페이지의 공개 데이터로 보완한다.
+
+일반 실행은 `symbols=MAGY`와 해당 목요일 날짜로 Cboe 원문 1건을 조회한다.
+해당 자료가 없으면 운용사 공개 토큰 GET과 분배금 데이터 POST를 추가한다.
+원장과 공개 스냅샷에 같은 주의 완료된 MAGY 발표가 있으면 외부 요청은 0건이다.
+다른 티커나 전주 자료는 완료로 인정하지 않는다. 전체 운용사 조회·관련 없는 종목
+온보딩·유료 공급자·Firebase/Auth 호출은 추가하지 않는다. R2 쓰기 잠금과 공개
+스냅샷 게시 재시도·검증·core 발행 승인 절차는 TOPW와 동일하다.
+
+메일 목록에는 수요일 발송 사례도 있으므로 금요일 최종 재확인에서 목요일 공시가
+정상 무자료 응답이면 바로 전 수요일 공시를 추가 조회한다(Cboe 날짜 조회 최대 2개).
+이미 수요일 발표가 원장과 공개 스냅샷에 있으면 목요일 반복 조회도 생략한다.
+실제 공시의 발표 날짜를 그대로 보관하고 `matchedDeclarationDate`로 보고한다.
+목요일 조회가 실패했을 때는 오류를 무자료로 바꾸지 않으며, 두 날짜 모두 미발견이면
+`missing`으로 실패 처리한다. 임의의 과거 날짜나 다음 날 발표를 추정해 채우지 않는다.
+
+실행별 `magy-observation-{run_id}` 아티팩트에 보고서를 30일 보관한다. 수동 실행의
+`declarationDate`를 비우면 서울 날짜 기준 가장 최근 목요일을 사용한다. 과거의
+목요일 또는 조기 발표의 수요일을 직접 지정할 수 있으며 미래 날짜는 거절한다.
+정기 실행은 main 반영 후 활성화되고 GitHub cron의 지연·누락 가능성은 유지된다.
+
+```sh
+python scripts/content_pipeline/observe_roundhill.py --ticker MAGY
+python scripts/content_pipeline/observe_roundhill.py --ticker MAGY --declaration-date 2026-10-22 --require-announcement
+python -m unittest discover -s tests/content_pipeline -p 'test_*observation.py' -v
+```
+
+## 화·수·금요일 Roundhill 그룹 관찰
+
+각 요일의 워크플로우는 `observe-roundhill-group.yml`을 호출하며, 기존 TOPW·MAGY와
+같은 원장·공개 스냅샷·R2 쓰기 잠금·게시 재시도 도구를 사용한다.
+
+| 요일 | 그룹 | 대상 |
+| --- | --- | --- |
+| 화 | `crypto` | YBTC, YETH |
+| 수 | `zero-dte` | XDTE, QDTE, RDTE |
+| 금 | `weeklypay` | AAPW, AMDW, AMZW, ARMW, AVGW, BABW, BRKW, COIW, COSW, GOOW, HOOW, METW, MSFW, NFLW, NVDW, PLTW, TSLW, UBEW, UNHW, GDXW, GLDW, TSYW |
+
+각 요일 한국시간 19:45~20:30에 5분 간격으로 관찰하고 21:00과 다음 날 09:00에
+재확인한다. UTC로는 해당 요일 10:45~11:30, 12:00 및 다음 날 00:00이다.
+다음 날 실행도 원래 발표 요일을 대상으로 하며, 최종 확인에서만 바로 전날의
+조기 발표까지 확인한다. 금요일 그룹의 마지막 확인은 토요일 오전 9시다.
+
+먼저 완료되지 않은 종목만 Cboe의 `symbols` 인자로 묶어 공시 1건을 요청한다.
+이미 받은 종목은 요청과 저장 대상에서 제외하고 그룹 밖 종목은 저장하지 않는다.
+공시 반영이 늦으면 누락 종목만 운용사 공개 데이터로 보완한다. 공개 요청 토큰과
+세션 쿠키는 한 수집 실행 안에서 재사용하고 파일·로그·원문 메타데이터에 저장하지 않는다.
+Cboe 요청 1회로 완료되면 추가 요청은 없고, 운용사 보완이 필요하면 토큰 GET 1회와
+누락 종목 수만큼의 데이터 POST가 추가된다. `httpRequests`는 수집기가 시도한 HTTP
+호출 수이며 자동 리디렉션의 내부 요청이나 Firebase 청구 건수를 의미하지 않는다.
+
+그룹 전체가 완료돼야 `collected`가 된다. 일부만 받아도 그 종목의 공개 자료를
+게시하고 남은 종목만 재시도하며, 새로 완료된 자료가 없는 실행은 공개 커밋·배포를
+생략한다. 최종 미발견은 `missingTickers` 목록과 함께 실패로 남긴다. 원장과 공개
+스냅샷이 일치하는 완료 종목은 다시 조회하지 않으므로 전체 완료 후 외부 요청은 0회다.
+코드 내 로컬 완료 검사는 SQLite와 공개 파일만 읽으며 Firebase/Auth 호출은 없다.
+
+새 발표를 게시할 때는 기존 `REFRESH_SCOPE=ticker`, 고유 `REFRESH_REQUEST_ID` 경로를
+사용해 CI 생략 표시 없이 정상 배포를 시작한다. TOPW·MAGY도 새 발표 수집 성공 시
+같은 방식으로 배포하며, 미발견 관찰 로그 때문에 매 5분마다 배포하지 않는다.
+실행 보고서는 `roundhill-{group}-{run_id}` 아티팩트로 30일 보관한다. R2 원장 저장과
+공개 스냅샷 검증은 유지하고, core 릴리스 승인 절차는 자동으로 진행하지 않는다.
+
+```sh
+python scripts/content_pipeline/observe_roundhill.py --group crypto
+python scripts/content_pipeline/observe_roundhill.py --group zero-dte
+python scripts/content_pipeline/observe_roundhill.py --group weeklypay --require-announcement
+python -m unittest discover -s tests/content_pipeline -p 'test_*observation.py' -v
+```
+
+수동 날짜는 각 그룹의 발표 요일 또는 바로 전날의 과거 날짜만 허용한다.
+정기 실행은 main 반영 후 활성화되며 GitHub cron의 지연·누락 가능성은 유지된다.
 
 ## 관리자 종목 수집 버튼
 

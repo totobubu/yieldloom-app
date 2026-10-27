@@ -35,13 +35,16 @@ def health(store, config, now):
     return rows
 
 
-def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None, request_symbols=None, request_fetcher=None, request_dividends=False, write_status=False):
+def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None, request_symbols=None, request_fetcher=None, request_dividends=False, write_status=False, enrich_identities=False, prepare_candidate=False):
     if request_symbols is not None:
         request_symbols=list(dict.fromkeys(str(value).strip().upper() for value in request_symbols))
         if not 1 <= len(request_symbols) <= 20 or any(not re.fullmatch(r'[A-Z0-9][A-Z0-9.-]{0,19}',value) for value in request_symbols):
             raise ValueError('Expected at most 20 valid targeted symbols')
-    if write_status and not request_symbols:
-        raise ValueError('Status projection requires explicit targets')
+    if (write_status or enrich_identities or prepare_candidate) and not request_symbols:
+        raise ValueError('Optional collection projections require explicit targets')
+    if enrich_identities or prepare_candidate:
+        from scripts.data_platform.collection_scope import TARGETS
+        if not set(request_symbols)<=TARGETS: raise ValueError('Outside acceptance scope')
     remote = ObservedObjects(remote)
     root = private_path(root)
     clock = now or datetime.now(timezone.utc)
@@ -73,9 +76,23 @@ def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None,
             if request_symbols:
                 from scripts.data_platform.request_bridge import process_requests
                 catalog=json.loads((ROOT/'data-v2/catalog-seed.json').read_text())['instruments']
+                if enrich_identities:
+                    from scripts.data_platform.identity_enrichment import enrich_targets,effective_catalog
+                    result['identityEnrichment']=enrich_targets(store,request_symbols,clock.date().isoformat(),catalog=catalog,enabled=True,now=clock)
+                    catalog=effective_catalog(store,catalog)
                 request_options={'fetcher':request_fetcher} if request_fetcher else {}
                 result['requestedCollection']=process_requests(store,remote,request_symbols,catalog,
                     enabled=True,now=clock,dividends=request_dividends,**request_options)
+            if prepare_candidate:
+                from scripts.data_platform.core_candidate import build_candidate
+                from scripts.data_v2.check_cutover import read_legacy
+                try:
+                    result['coreCandidate']=build_candidate(store,catalog,read_legacy(ROOT/'public/content-studio'),
+                        request_symbols,root/'review/core-candidate',run_id,now=clock)
+                except Exception:
+                    # A failed candidate must not discard successful collection/checkpoint work.
+                    result['coreCandidate']={'candidateBuilt':False,'readyForPublication':False,
+                        'published':False,'error':'candidate_validation_failed'}
             result['health'] = health(store, active_config, clock)
             result['runId'] = run_id
             from scripts.data_platform.quality import evaluate
@@ -116,10 +133,12 @@ def main():
     parser.add_argument('--request-symbol', action='append', help='Explicitly process a targeted API outbox request; omitted by default')
     parser.add_argument('--request-dividends', action='store_true', help='Also run one official dividend backfill and its private release review')
     parser.add_argument('--write-status', action='store_true', help='Write private status projections after a targeted checkpoint; disabled by default')
+    parser.add_argument('--enrich-identities', action='store_true', help='Enrich at most two already discovered target listings')
+    parser.add_argument('--prepare-core-candidate', action='store_true', help='Build and validate a local private candidate only')
     args = parser.parse_args()
-    if (args.request_dividends or args.write_status) and not args.request_symbol:
-        parser.error('--request-dividends and --write-status require --request-symbol')
-    result = run(R2Objects(), args.root, load_registry(), args.run_id, args.bootstrap, request_symbols=args.request_symbol, request_dividends=args.request_dividends, write_status=args.write_status)
+    if (args.request_dividends or args.write_status or args.enrich_identities or args.prepare_core_candidate) and not args.request_symbol:
+        parser.error('Optional target operations require --request-symbol')
+    result = run(R2Objects(), args.root, load_registry(), args.run_id, args.bootstrap, request_symbols=args.request_symbol, request_dividends=args.request_dividends, write_status=args.write_status, enrich_identities=args.enrich_identities, prepare_candidate=args.prepare_core_candidate)
     print(encode(result))
     if os.environ.get('GITHUB_STEP_SUMMARY'):
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as target:

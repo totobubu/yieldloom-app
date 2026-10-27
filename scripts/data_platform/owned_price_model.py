@@ -1,5 +1,6 @@
 """Build a private API-compatible long-history candidate; performs no remote writes."""
 import math
+from datetime import date
 from datetime import datetime,timezone
 from scripts.data_platform.request_bridge import stored_prices
 from scripts.data_platform.pipeline import private_path,encode
@@ -25,7 +26,7 @@ def build_model(store,instrument):
     collection_coverage={row['dataset']:row['coverage'] for row in status['datasets']}
     # Unreviewed price adjustment basis/incomplete OHLC must not certify a calculation.
     collection_coverage['market-prices']['complete']=False
-    return {'collectionCoverage':collection_coverage,'schemaVersion':1,'identity':{k:instrument.get(k) for k in ('symbol','isin','market','currency','ipoDate')},
+    model={'collectionCoverage':collection_coverage,'schemaVersion':1,'identity':{k:instrument.get(k) for k in ('symbol','isin','market','currency','ipoDate')},
             'symbol':instrument['symbol'],'currency':instrument['currency'],'candles':candles,'events':[],
             'asOf':datetime.now(timezone.utc).isoformat(),'source':'Yieldloom owned history',
             'coverage':{'status':'partial','targetStart':instrument.get('ipoDate'),
@@ -33,6 +34,8 @@ def build_model(store,instrument):
                         'conflictingDates':saved['conflictingDates']},
             'collectionRequest':{'status':'partial','dataset':'market-prices','targetStart':instrument.get('ipoDate')},
             'revisions':[],'adjustmentBasis':'upstream_unverified'}
+    validate_model(model,instrument)
+    return model
 
 
 def export_model(store,instrument,output):
@@ -42,3 +45,28 @@ def export_model(store,instrument,output):
     path.parent.mkdir(parents=True,exist_ok=True,mode=0o700)
     path.write_text(encode(model)+'\n')
     return {'symbol':model['symbol'],'candles':len(model['candles']),'published':False}
+
+
+def validate_model(model,instrument):
+    if model.get('schemaVersion')!=1 or model.get('symbol')!=instrument['symbol'] or model.get('currency')!=instrument['currency']:
+        raise ValueError('Price model identity mismatch')
+    if any(model.get('identity',{}).get(k)!=instrument.get(k) for k in ('symbol','isin','market','currency','ipoDate')):
+        raise ValueError('Price model listing identity mismatch')
+    rows=model.get('candles')
+    if not isinstance(rows,list) or not rows: raise ValueError('Empty price model')
+    previous=None
+    for row in rows:
+        day=date.fromisoformat(row['date'])
+        if previous and day<=previous: raise ValueError('Duplicate or unsorted price dates')
+        previous=day
+        values=[row.get(k) for k in ('open','high','low','close')]
+        if any(isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) or v<=0 for v in values):
+            raise ValueError('Invalid model OHLC')
+        if not row['low']<=min(row['open'],row['close'])<=max(row['open'],row['close'])<=row['high']:
+            raise ValueError('Invalid model OHLC bounds')
+        volume=row.get('volume')
+        if volume is not None and (isinstance(volume,bool) or not isinstance(volume,(int,float)) or not math.isfinite(volume) or volume<0):
+            raise ValueError('Invalid model volume')
+    if model.get('collectionCoverage',{}).get('market-prices',{}).get('complete') and (
+            model.get('adjustmentBasis')!='split_adjusted_verified' or model.get('coverage',{}).get('conflictingDates')):
+        raise ValueError('Unverified price model cannot certify completeness')

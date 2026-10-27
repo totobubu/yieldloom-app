@@ -96,8 +96,11 @@ class RequestBridgeTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);clock=datetime.now(timezone.utc)
             result=run(remote,root/'one',registry(),'request-run',True,transport=lambda *_:self.fail('Targeted run must not collect unrelated sources'),now=clock,
-                       request_symbols=['AAPL'],request_fetcher=provider,write_status=True)
+                       request_symbols=['AAPL'],request_fetcher=provider,write_status=True,prepare_candidate=True)
             self.assertEqual(result['requestedCollection']['jobs'][0]['status'],'partial')
+            self.assertTrue(result['coreCandidate']['candidateBuilt'])
+            self.assertFalse(result['coreCandidate']['readyForPublication'])
+            self.assertTrue((root/'one/review/core-candidate/core/manifest.json').exists())
             status=json.loads(remote.get('market/v1/status/AAPL.json')[0])
             self.assertEqual(status['datasets'][0]['status'],'partial')
             self.assertIsNotNone(status['datasets'][0]['observedStart'])
@@ -107,6 +110,12 @@ class RequestBridgeTest(unittest.TestCase):
             entity=store.db.execute("SELECT entity FROM collection.jobs WHERE status='partial'").fetchone()['entity']
             self.assertEqual(len(stored_prices(store,entity)['candles']),1)
             store.close()
+            from unittest.mock import patch
+            with patch('scripts.data_platform.core_candidate.build_candidate',side_effect=ValueError('invalid candidate')):
+                failed=run(remote,root/'two',registry(),'candidate-failed',request_symbols=['AAPL'],
+                    request_fetcher=provider,prepare_candidate=True,now=clock)
+            self.assertFalse(failed['coreCandidate']['candidateBuilt'])
+            self.assertEqual(failed['checkpoint'],'saved')
 
     def test_forged_identity_does_not_enqueue_or_fetch(self):
         objects=json.loads(subprocess.run(['node','--input-type=module','-e',NODE],cwd=ROOT,text=True,capture_output=True,check=True).stdout)

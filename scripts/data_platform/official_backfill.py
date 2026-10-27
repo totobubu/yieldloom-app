@@ -11,11 +11,12 @@ from scripts.data_platform.pipeline import encode, private_path
 from scripts.data_v2.build_release import normalize
 from scripts.data_v2.validate_snapshot import validate_event
 from scripts.data_v2.check_cutover import compare
+from scripts.data_platform.collection_scope import FUND_ROUTES
 
 ROOT=Path(__file__).resolve().parents[2]
 
 
-def official_adapter(catalog, *, providers=None, index=None, now=None):
+def official_adapter(catalog, *, providers=None, index=None, now=None, issuer_fetcher=None):
     if providers is None:
         from scripts.content_pipeline.providers import PROVIDERS
         providers=PROVIDERS
@@ -29,18 +30,25 @@ def official_adapter(catalog, *, providers=None, index=None, now=None):
     def collect(store,job):
         instrument=instruments.get(job['entity'])
         target=targets.get(instrument['symbol']) if instrument else None
-        if not target or job['dataset']!='dividends': raise ValueError('Official route not registered')
-        slug=target['providerSlug']
+        if not instrument or job['dataset']!='dividends': raise ValueError('Official route not registered')
+        route=FUND_ROUTES.get(instrument['symbol'])
+        if not target and not route:
+            if instrument['symbol']=='BAC':
+                return collect_bac(store,instrument,job,fetcher=issuer_fetcher,now=clock)
+            raise ValueError('Official route not registered')
+        slug=route[0] if route else target['providerSlug']
         if slug not in providers: raise ValueError('Official adapter not registered')
         adapter=adapters.setdefault(slug,providers[slug]())
         candidates=[]
         if hasattr(adapter,'issuer_candidate'):
             try: candidates.append(adapter.issuer_candidate(instrument['symbol']))
             except ValueError: pass
-        url=target['latest'].get('official_url')
+        if route and not candidates:
+            candidates.append(SourceCandidate(url=route[1],metadata={'ticker':instrument['symbol']}))
+        url=(target or {}).get('latest',{}).get('official_url')
         if url and url not in {c.url for c in candidates}:
             candidates.append(SourceCandidate(url=url,metadata={'ticker':instrument['symbol']}))
-        successful=False; evidence=None
+        successful=False; evidence=None; errors=[]
         for candidate in candidates[:2]:
             try:
                 adapter.validate_url(candidate.url)
@@ -63,25 +71,29 @@ def official_adapter(catalog, *, providers=None, index=None, now=None):
                 if rows:
                     store.accept({'id':'official-'+slug,'url':document.source_url,'parserVersion':adapter.parser_version},
                                  rows,evidence,clock.isoformat(),'official-backfill-v1')
-                    successful=True
-                    break
                 successful=True
-            except Exception:
+            except Exception as error:
+                errors.append(getattr(error,'code','parse_or_fetch_failed'))
+                # A denial is not an invitation to try another URL for the same provider.
+                if getattr(error,'code',None) in {'blocked','rate_limited'}: break
                 continue
         if not successful: raise RuntimeError('Official routes failed')
-        return {'outcome':'partial','evidence':evidence}
+        return {'outcome':'partial','evidence':evidence,'routeErrors':errors}
     return collect
 
 
-def candidate_review(store, baseline, output=None):
+def candidate_review(store, baseline, output=None, *, entities=None):
     groups={}
     for row in store.db.execute('SELECT identity_key,payload FROM observations ORDER BY id'):
         record=json.loads(row['payload'])
-        if record.get('dataset')=='dividends' and record.get('field')=='distribution':
-            groups.setdefault(row['identity_key'],[]).append(record)
+        if (record.get('dataset')=='dividends' and record.get('field')=='distribution'
+                and (entities is None or record.get('entityId') in entities)):
+            value=record['value']
+            key=encode([record['entityId'],value.get('provider'),value.get('exDate'),value.get('currency')])
+            groups.setdefault(key,[]).append(record)
     candidates=[]; conflicts=[]; rejected=[]
     for key,versions in groups.items():
-        if len({encode(v['value']) for v in versions})>1:
+        if len({encode({k:value for k,value in v['value'].items() if k not in {'officialUrl','collectionMethod'}}) for v in versions})>1:
             conflicts.append(key);continue
         record=versions[-1]
         event={**record['value'],'sourceSha256':record['sourceDocumentId']}
@@ -102,3 +114,29 @@ def candidate_review(store, baseline, output=None):
         (path/'candidates.json').write_text(encode(candidates)+'\n')
         (path/'review.json').write_text(encode(result)+'\n')
     return result
+
+
+def collect_bac(store,instrument,job,*,fetcher=None,now):
+    from scripts.content_pipeline.stock_collection import fetch_source,discover_bac,parse_bac,validate_issuer_url
+    issuer=json.loads((ROOT/'data-v2/issuer-sources.json').read_text())['issuers']['BAC']
+    if instrument['currency']!=issuer['currency']: raise ValueError('Issuer currency mismatch')
+    fetcher=fetcher or fetch_source
+    index_url=issuer['indexUrl'];validate_issuer_url(index_url,issuer)
+    content=fetcher(index_url)
+    store.document(index_url,{'status':200,'body':content},now.isoformat())
+    evidence=None;success=False
+    for url in sorted(discover_bac(content,issuer),reverse=True)[:2]:
+        # Existing issuer parser excludes preferred stock and never invents an ex-date.
+        validate_issuer_url(url,issuer)
+        body=fetcher(url)
+        _,evidence=store.document(url,{'status':200,'body':body},now.isoformat())
+        rows=[]
+        for value in parse_bac(body,url,issuer):
+            day=value['exDate'] or value['declaredDate']
+            if not job['start']<=day<=job['end']: continue
+            rows.append(fact('dividends',job['entity'],'issuer_partial_distribution',value,
+                as_of=day,unit='record',currency=instrument['currency'],sourceClass='issuer_official'))
+        if rows: store.accept({'id':'official-bac','url':url,'parserVersion':'1'},rows,evidence,now.isoformat(),'issuer-backfill-v1')
+        success=True
+    if not success: raise RuntimeError('Issuer announcements unavailable')
+    return {'outcome':'partial','evidence':evidence}

@@ -58,6 +58,13 @@ def yahoo_adapter(catalog, *, fetcher=fetch_source, now=None):
         rows=[fact('market-prices',job['entity'],'daily_ohlcv',row,as_of=row['date'],unit='record',
                    currency=instrument['currency'],priceBasis='upstream_unverified')
               for row in parsed['candles'] if job['start']<=row['date']<=job['end']]
+        # Keep aggregator dividends and split events as observations, never approved core events.
+        rows += [fact('dividends',job['entity'],'reference_distribution',row,as_of=row['ex_date'],
+                      unit='record',currency=instrument['currency'],sourceClass='public_aggregator')
+                 for row in parsed['history'] if job['start']<=row['ex_date']<=job['end']]
+        rows += [fact('market-prices',job['entity'],'split_observation',row,as_of=row['date'],
+                      unit='record',priceBasis='upstream_unverified')
+                 for row in parsed['splits'] if job['start']<=row['date']<=job['end']]
         if not rows: return {'outcome':'partial','evidence':sha}
         source={'id':'yahoo-history-'+symbol.lower().replace('.','-'),'url':url,'parserVersion':'1'}
         store.accept(source,rows,sha,timestamp,'yahoo-history-v1')
@@ -68,6 +75,8 @@ def yahoo_adapter(catalog, *, fetcher=fetch_source, now=None):
 
 def process_requests(store, remote, symbols, catalog, *, enabled=False, now=None, fetcher=fetch_source, max_jobs=1, dividends=False, official_providers=None, official_index=None):
     if not enabled: return {'status':'disabled','requests':[],'jobs':[]}
+    from scripts.data_platform.identity_enrichment import effective_catalog
+    catalog=effective_catalog(store,catalog)
     if not 1<=max_jobs<=5: raise ValueError('Worker batch must be 1..5 jobs')
     clock=now or datetime.now(timezone.utc)
     if len(symbols)>20: raise ValueError('At most 20 targeted requests per run')

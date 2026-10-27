@@ -28,3 +28,34 @@ class LegacyPriceReviewTest(unittest.TestCase):
         with self.assertRaises(ValueError): review(source,source,'MSFT','USD')
         duplicate = body([{'date':'2000-01-03','close':10}]*2)
         with self.assertRaises(ValueError): review(source,duplicate,'AAPL','USD')
+
+    def test_change_details_keep_decimal_prices_and_signed_differences(self):
+        source = body([{'date': '2020-01-02', 'close': '0.100000000000000001'},
+                       {'date': '2020-01-03', 'close': '20'}])
+        destination = body([{'date': '2020-01-02', 'close': '0.100000000000000002'},
+                            {'date': '2020-01-03', 'close': '19.75'}])
+        result = review(source, destination, 'AAPL', 'USD')
+        self.assertEqual(result['comparedPriceCount'], 2)
+        self.assertEqual(result['priceChanges'][0]['difference'], '1E-18')
+        self.assertEqual(result['priceChanges'][1]['difference'], '-0.25')
+        self.assertEqual(result['priceChanges'][1]['relativeDifference'], '-0.0125')
+        self.assertFalse(result['sameByteHash'])
+        self.assertEqual(result['writesPerformed'], 0)
+        self.assertFalse(result['cutoverReady'])
+
+    def test_same_prices_with_different_serialization_do_not_require_identical_bytes(self):
+        source = body([{'date': '2020-01-02', 'close': 10}])
+        destination = json.dumps(json.loads(source), indent=2).encode()
+        result = review(source, destination, 'AAPL', 'USD')
+        self.assertTrue(result['preservesSourcePrices'])
+        self.assertFalse(result['sameByteHash'])
+        self.assertEqual(result['priceChanges'], [])
+        self.assertEqual(result['comparedPriceCount'], 1)
+
+    def test_no_overlap_does_not_invent_zero_prices_or_differences(self):
+        result = review(body([{'date': '2020-01-02', 'close': 10}]),
+                        body([{'date': '2021-01-04', 'close': 20}]), 'AAPL', 'USD')
+        self.assertEqual(result['comparedPriceCount'], 0)
+        self.assertEqual(result['priceChanges'], [])
+        self.assertFalse(result['preservesSourcePrices'])
+        self.assertEqual(result['missingDates'], ['2020-01-02'])

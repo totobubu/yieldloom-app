@@ -1,10 +1,18 @@
-// Synthetic identities, in-memory API and local report only. No real financial data.
+// Synthetic identities and in-memory authenticated report API. No financial originals.
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
-const browser = await chromium.launch({
-    executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
-    args: ['--no-sandbox'],
-});
+import { followupFixture } from './support/toss-followup-fixture.mjs';
+import {
+    verifiedFollowup,
+    followupResponse,
+} from '../lib/toss-followup-report.js';
+const f = followupFixture(),
+    report = followupResponse(
+        verifiedFollowup(f.zip, f.evidence, f.descriptor),
+        'wife',
+        f.workbookSha256,
+        f.descriptor
+    );
 const obs = Array.from({ length: 250 }, (_, i) => ({
     id: `fixture-order:${i}`,
     sourceId: `fixture:${i}`,
@@ -38,46 +46,17 @@ const rows = [
         needsReview: true,
     },
 ];
-const report = {
-    schemaVersion: 2,
-    sourceEvidence: { objectKey: 'fixture/review.json' },
-    orders: [
-        {
-            caseId: 'case-04',
-            account: 'wife',
-            quantity: '2',
-            purchaseAmountUsd: '9.12',
-            orderNo: '1',
-            uiSelectionUrlPanelVerified: true,
-            evidenceFiles: ['fixture-a.json'],
-        },
-        {
-            caseId: 'case-14',
-            account: 'wife',
-            quantity: '3',
-            purchaseAmountUsd: '8',
-            orderNo: '2',
-            uiSelectionUrlPanelVerified: true,
-            exactPriorOpaqueIdMatch: false,
-            evidenceFiles: ['fixture-b.json'],
-        },
-    ],
-    remainingEightRows: Array.from({ length: 8 }, (_, i) => ({
-        caseId: i === 3 ? 'case-04' : i === 7 ? 'case-14' : `fixture-case-${i}`,
-        symbol: 'TEST',
-        referenceDate: '2025-02-03',
-        category: 'fixture',
-        availableFact: i % 2 ? '합성 금액·수량 혼합' : '합성 정밀도 차이',
-        missingEvidence: '합성 기록 범위',
-        nextAction: '시트 참고 연결 보류',
-    })),
-};
+const browser = await chromium.launch({
+    executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
+    args: ['--no-sandbox'],
+});
 try {
     const page = await browser.newPage({
-        viewport: { width: 1440, height: 1000 },
-    });
-    const requests = [],
+            viewport: { width: 1440, height: 1000 },
+        }),
+        requests = [],
         errors = [];
+    let denyReport = false;
     page.on('pageerror', (e) => errors.push(e.message));
     await page.route('**/src/services/firebaseClient*', (r) =>
         r.fulfill({
@@ -87,11 +66,7 @@ try {
     );
     await page.route('**/api/**', async (r) => {
         requests.push({ method: r.request().method(), url: r.request().url() });
-        assert.equal(
-            r.request().method(),
-            'GET',
-            'Broker view and report opening never write'
-        );
+        assert.equal(r.request().method(), 'GET');
         const u = new URL(r.request().url());
         if (u.pathname.endsWith('/sheet-ledger')) {
             if (u.searchParams.get('resource') === 'observation') {
@@ -110,9 +85,26 @@ try {
             }
             return r.fulfill({ json: { version: 1, rows, observations: obs } });
         }
+        if (u.searchParams.get('section') === 'followup') {
+            assert.equal(r.request().headers().authorization, 'Bearer fixture');
+            if (denyReport)
+                return r.fulfill({
+                    status: 403,
+                    json: { error: '합성 권한 거부' },
+                });
+            if (u.searchParams.get('accountId') === 'husband')
+                return r.fulfill({
+                    status: 404,
+                    json: {
+                        error: '이 계좌의 후속 보고서 미연결',
+                        code: 'REPORT_NOT_FOUND',
+                    },
+                });
+            return r.fulfill({ json: report });
+        }
         return r.fulfill({
             status: 409,
-            json: { error: '합성 보고서 미연결' },
+            json: { error: '합성 기존 보고서 미연결' },
         });
     });
     await page.goto(
@@ -122,7 +114,18 @@ try {
     const region = page.getByRole('region', {
         name: '토스 원본 중심 시험 장부',
     });
-    await region.getByText(/토스 관측 250행/).waitFor();
+    await region.getByText(/토스 관측 254행/).waitFor();
+    await region.getByText(/서버 검증 완료 · 체크포인트 SHA-256:/).waitFor();
+    assert.equal(await region.locator('.review-finding').count(), 8);
+    assert.equal(
+        await region.getByText('보고서상 연결 확인', { exact: true }).count(),
+        2
+    );
+    assert.equal(await region.getByText(/시트 매핑 미승인/).count(), 8);
+    assert.equal(
+        requests.filter((r) => r.url.includes('section=followup')).length,
+        1
+    );
     const reads = requests.length;
     assert(
         (await region.locator('tbody tr[data-ledger-index]').count()) <= 100
@@ -141,7 +144,7 @@ try {
     assert.equal(
         requests.length,
         reads,
-        'Search, full sort and document scroll use loaded memory'
+        'Search/sort/scroll reuse loaded observations and report'
     );
     assert.equal(await region.locator('.p-paginator').count(), 0);
     assert(
@@ -161,33 +164,16 @@ try {
         .waitFor();
     await detail.getByRole('button', { name: '저장 원문 읽기' }).click();
     await detail.getByText(/합성 원문 원래 값/).waitFor({ state: 'attached' });
-    const afterDetail = requests.length;
-    await region.getByLabel('검토 보고서 JSON', { exact: true }).setInputFiles({
-        name: 'fixture-review.json',
-        mimeType: 'application/json',
-        buffer: Buffer.from(JSON.stringify(report)),
-    });
-    await region.getByText(/열어본 파일 SHA-256:/).waitFor();
-    assert.equal(await region.locator('.review-finding').count(), 8);
-    assert.equal(
-        await region.getByText('보고서상 연결 확인', { exact: true }).count(),
-        2
-    );
-    assert.equal(await region.getByText(/시트 매핑 미승인/).count(), 8);
-    assert.equal(
-        requests.length,
-        afterDetail,
-        'Local checkpoint files cause no HTTP or DB requests'
-    );
+    assert.equal(requests.length, reads + 1, 'One targeted raw detail request');
     await page.screenshot({
-        path: '/tmp/yieldloom-toss-trial-desktop.png',
+        path: '/tmp/yieldloom-toss-trial-connected-desktop.png',
         fullPage: false,
     });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.evaluate(() => document.documentElement.classList.add('p-dark'));
     await region.scrollIntoViewIfNeeded();
     await page.screenshot({
-        path: '/tmp/yieldloom-toss-trial-mobile.png',
+        path: '/tmp/yieldloom-toss-trial-connected-mobile.png',
         fullPage: false,
     });
     assert(
@@ -203,23 +189,42 @@ try {
         await page.evaluate(
             () => document.documentElement.scrollWidth > innerWidth + 2
         ),
-        false,
-        'No full-page horizontal overflow'
+        false
     );
     await region
-        .getByRole('button', { name: '보고서 닫기', exact: true })
+        .getByLabel('후속 보고서 계좌', { exact: true })
+        .selectOption('husband');
+    await region
+        .getByRole('alert')
+        .filter({ hasText: '이 계좌의 후속 보고서 미연결' })
+        .waitFor();
+    assert.equal(
+        await region.locator('.review-finding').count(),
+        0,
+        'Account switch purges previous report'
+    );
+    await region
+        .getByLabel('후속 보고서 계좌', { exact: true })
+        .selectOption('wife');
+    await region.getByText(/서버 검증 완료 · 체크포인트 SHA-256:/).waitFor();
+    assert.equal(
+        requests.filter((r) => r.url.includes('section=followup')).length,
+        2,
+        'Account return uses session cache'
+    );
+    denyReport = true;
+    await region
+        .getByRole('button', { name: '후속 보고서 새로고침', exact: true })
         .click();
+    await region
+        .getByRole('alert')
+        .filter({ hasText: '합성 권한 거부' })
+        .waitFor();
     assert.equal(await region.locator('.review-finding').count(), 0);
-    await region.getByLabel('검토 보고서 JSON', { exact: true }).setInputFiles({
-        name: 'bad.json',
-        mimeType: 'application/json',
-        buffer: Buffer.from('{"schemaVersion":1}'),
-    });
-    await region.getByRole('alert').waitFor();
-    assert.equal(requests.length, afterDetail);
+    assert.equal(await region.getByText(/서버 검증 완료/).count(), 0);
     assert.deepEqual(errors, []);
     console.log(
-        'Toss primary rows, all-row search/sort, document scroll, raw detail, local eight-case report, desktop/mobile, zero writes: passed'
+        'PASS: automatic authenticated eight-case report/four independent source orders, full search/sort, document scroll, raw detail, account/error purge, mobile/dark, zero writes.'
     );
 } finally {
     await browser.close();

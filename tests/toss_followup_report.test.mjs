@@ -144,7 +144,8 @@ test('pinned ZIP, manifest, nine originals and four selection/URL/panel chains v
     );
     const json = JSON.stringify(response);
     for (const secret of [
-        '0000',
+        'accountLast4',
+        '"last4"',
         'fictional-order',
         'canonicalRowId',
         'capturedDetailUrl',

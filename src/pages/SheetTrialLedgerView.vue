@@ -559,6 +559,7 @@
                     : 'signed-out'
             "
             :observations="observations"
+            :user="firebaseUser"
             :sheet-rows="rows"
             :labels="labels"
             :busy="busy"

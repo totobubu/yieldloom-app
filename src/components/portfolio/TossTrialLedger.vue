@@ -1,15 +1,17 @@
 <script setup>
-    import { computed, onBeforeUnmount, ref, shallowRef } from 'vue';
+    import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
     import {
         buildTossTrialRows,
         filterTossTrialRows,
         projectTrialReviewReport,
     } from '../../../lib/toss-trial-view.js';
+    import { createSheetReportClient } from '@/services/sheetReports.js';
     import { useDocumentLedgerWindow } from '@/composables/useDocumentLedgerWindow.js';
     const props = defineProps({
         observations: { type: Array, default: () => [] },
         sheetRows: { type: Array, default: () => [] },
         busy: Boolean,
+        user: { type: Object, default: null },
         labels: { type: Object, default: () => ({}) },
     });
     const emit = defineEmits(['inspect']);
@@ -20,8 +22,23 @@
         selectedId = ref(null);
     const region = ref(null),
         table = ref(null);
+    const client = createSheetReportClient();
+    const checkpoint = shallowRef(null),
+        reportAccount = ref('wife'),
+        reportError = ref(''),
+        reportLoading = ref(false);
+    let reportGeneration = 0;
+    const review = computed(() =>
+        checkpoint.value ? projectTrialReviewReport(checkpoint.value) : []
+    );
+    const reportHash = computed(
+        () => checkpoint.value?.integrity?.checkpointSha256 || ''
+    );
     const all = computed(() =>
-        buildTossTrialRows(props.observations, props.sheetRows)
+        buildTossTrialRows(
+            [...props.observations, ...(checkpoint.value?.observations || [])],
+            props.sheetRows
+        )
     );
     const filtered = computed(() =>
         filterTossTrialRows(all.value, {
@@ -36,10 +53,6 @@
     const selected = computed(() =>
         all.value.find((r) => r.id === selectedId.value)
     );
-    const review = shallowRef([]),
-        reportError = ref(''),
-        reportHash = ref('');
-    let fileGeneration = 0;
     const text = (value) =>
         value == null || value === '' ? '미확인' : String(value);
     const sourceName = (kind) =>
@@ -56,39 +69,49 @@
             direction.value = -1;
         }
     }
-    async function openReport(event) {
-        const file = event.target.files?.[0],
-            current = ++fileGeneration;
-        review.value = [];
-        reportHash.value = '';
+    async function loadReport(refresh = false) {
+        const current = ++reportGeneration;
+        checkpoint.value = null;
         reportError.value = '';
-        if (!file) return;
+        reportLoading.value = false;
+        if (!props.user) return;
+        reportLoading.value = true;
         try {
-            if (file.size > 1_000_000)
-                throw Error('보고서는 1MB 이하 JSON만 열 수 있습니다.');
-            const bytes = await file.arrayBuffer();
-            const rows = projectTrialReviewReport(
-                JSON.parse(new TextDecoder().decode(bytes))
+            const value = await client.load(
+                props.user,
+                reportAccount.value,
+                'followup',
+                { refresh }
             );
-            const digest = await crypto.subtle.digest('SHA-256', bytes);
-            if (current !== fileGeneration) return;
-            review.value = rows;
-            reportHash.value = Array.from(new Uint8Array(digest), (n) =>
-                n.toString(16).padStart(2, '0')
-            ).join('');
+            projectTrialReviewReport(value);
+            if (current === reportGeneration) checkpoint.value = value;
         } catch (error) {
-            if (current === fileGeneration) reportError.value = error.message;
+            if (current === reportGeneration)
+                reportError.value =
+                    error.code === 'REPORT_STORAGE_DENIED'
+                        ? '기존 비공개 R2 읽기 권한이 거부됐습니다. 자료를 빈 결과로 처리하지 않습니다.'
+                        : error.message;
         } finally {
-            event.target.value = '';
+            if (current === reportGeneration) reportLoading.value = false;
         }
     }
-    function clearReport() {
-        fileGeneration++;
-        review.value = [];
-        reportHash.value = '';
-        reportError.value = '';
-    }
-    onBeforeUnmount(clearReport);
+    watch(
+        () => [props.user, props.user?.email, props.user?.emailVerified],
+        () => {
+            client.clear();
+            loadReport();
+        },
+        { immediate: true }
+    );
+    watch(reportAccount, () => loadReport());
+    watch(account, (value) => {
+        if (value) reportAccount.value = value;
+    });
+    onBeforeUnmount(() => {
+        reportGeneration++;
+        client.clear();
+        checkpoint.value = null;
+    });
 </script>
 
 <template>
@@ -189,7 +212,12 @@
                         </td>
                         <td>{{ text(row.date) }}</td>
                         <td>{{ row.symbol }} · {{ row.type }}</td>
-                        <td>{{ sourceName(row.kind) }}</td>
+                        <td>
+                            {{ sourceName(row.kind)
+                            }}<small v-if="row.observation.uiLinkVerified"
+                                >보존 후속 보고서 발췌</small
+                            >
+                        </td>
                         <td>{{ text(row.quantity) }}</td>
                         <td>{{ text(row.amountUsd) }}</td>
                         <td>
@@ -276,6 +304,8 @@
                                 labels[field] ||
                                 {
                                     date: '원문 거래 기준일',
+                                    purchasedUiAt:
+                                        '구매 시각(화면 · 분 정밀도)',
                                     paymentDate: '지급일',
                                     exDate: '배당락일',
                                 }[field] ||
@@ -316,32 +346,52 @@
         <section class="checkpoint-review" aria-label="후속 대조 보고서">
             <h3>정밀도·기록 범위·주문 연결 검토</h3>
             <p>
-                보존한 후속 보고서의 JSON을 열면 미확정 행과 주문 연결 기록을
-                확인합니다. 파일은 이 화면 메모리에서만 읽으며 전송·저장·자동
-                승인하지 않습니다.
+                기존 관리자 인증으로 비공개 R2 체크포인트와 원문 증거의
+                해시·버전·계좌를 서버에서 검증해 읽습니다. 조회는
+                원문·장부·승인값을 바꾸지 않습니다.
             </p>
-            <label
-                >검토 보고서 JSON
-                <input
-                    type="file"
-                    accept="application/json,.json"
-                    aria-label="검토 보고서 JSON"
-                    @change="openReport"
-            /></label>
-            <Button
-                v-if="reportHash"
-                label="보고서 닫기"
-                severity="secondary"
-                @click="clearReport" />
-            <p v-if="reportError" role="alert">{{ reportError }}</p>
-            <p v-if="!reportHash">
-                후속 보고서 미연결 · case-04/14의 새 확인 결과를 기존
-                보고서만으로 추정하지 않습니다.
+            <div class="controls">
+                <label
+                    >후속 보고서 계좌
+                    <select
+                        v-model="reportAccount"
+                        aria-label="후속 보고서 계좌">
+                        <option value="wife">아내 보고서</option>
+                        <option value="husband">남편 보고서</option>
+                    </select></label
+                >
+                <Button
+                    label="후속 보고서 새로고침"
+                    severity="secondary"
+                    :disabled="reportLoading || !user"
+                    :loading="reportLoading"
+                    @click="loadReport(true)" />
+            </div>
+            <p v-if="!user">관리자 로그인 후 조회할 수 있습니다.</p>
+            <p v-else-if="reportLoading" role="status">
+                선택 계좌의 후속 보고서와 보존 원문을 검증하고 있습니다.
+            </p>
+            <p v-else-if="reportError" role="alert">{{ reportError }}</p>
+            <p v-else-if="!reportHash">
+                후속 보고서 미연결 · 이슈 없음이나 검증 완료를 뜻하지 않습니다.
             </p>
             <template v-else>
+                <p>
+                    보고서 계좌:
+                    {{ checkpoint.accountId === 'wife' ? '아내' : '남편' }} ·
+                    버전 {{ checkpoint.schemaVersion }} · 검토 기준
+                    {{ checkpoint.snapshotAt }}
+                </p>
                 <p class="hash">
-                    열어본 파일 SHA-256: {{ reportHash }}. 이는 파일 지문이며
-                    내용의 독립 검증·승인 증명이 아닙니다.
+                    서버 검증 완료 · 체크포인트 SHA-256: {{ reportHash }} ·
+                    보고서 SHA-256: {{ checkpoint.integrity.reportSha256 }} ·
+                    원문 증거 SHA-256: {{ checkpoint.integrity.evidenceSha256 }}
+                </p>
+                <p>
+                    원문 파일 {{ checkpoint.integrity.evidenceFileCount }}개
+                    검증 · 목록↔상세 연결 확인은 시트 매핑 승인이나 개별 체결
+                    검증이 아닙니다. 위 독립 관측에는 보고서의 주문 발췌가
+                    포함되며 같은 경제적 사건을 합산하지 않습니다.
                 </p>
                 <article
                     v-for="item in review"

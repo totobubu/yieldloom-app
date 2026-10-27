@@ -9,6 +9,9 @@ export function followupFixture({
     wrongWorkbook = false,
     duplicateOrderId = false,
     reportVersion = 2,
+    extraPanelPrecision = false,
+    concatenatedDate = false,
+    wrongReferenceDate = false,
 } = {}) {
     const descriptor = {
         accountId: 'wife',
@@ -50,7 +53,7 @@ export function followupFixture({
             new URLSearchParams(fields);
         const file = `order-${i}.json`,
             panelFile = i < 2 ? file : `panel-${i}.txt`;
-        const panel = `TEST\n구매 수량\n${mixedPanel && i === 0 ? '999' : quantity}주\n총 구매 금액\n$${amount}\n구매 시간\n2025년 2월 3일 12:34`;
+        const panel = `TEST\n구매 수량\n${mixedPanel && i === 0 ? '999' : quantity}주\n총 구매 금액\n$${extraPanelPrecision && i === 0 ? amount + '01' : concatenatedDate && i === 0 ? amount + '2025년 2월 3일' : amount}\n구매 시간\n2025년 2월 3일 12:34`;
         const selection = {
             accountLast4: '0000',
             selectedRow: `TEST ${quantity}주 $${amount}`,
@@ -119,7 +122,8 @@ export function followupFixture({
             caseId:
                 i === 3 ? 'case-04' : i === 7 ? 'case-14' : `fixture-case-${i}`,
             symbol: 'TEST',
-            referenceDate: '2025-02-03',
+            referenceDate:
+                wrongReferenceDate && i === 3 ? '2025-02-04' : '2025-02-03',
             canonicalRowId: `${wrongWorkbook ? 'another-workbook' : 'fictional-workbook'}:1:${i}:BUY:TEST`,
             category:
                 i % 2

@@ -159,6 +159,8 @@ test('digest, member hash, version, account, mixed panel and duplicate order ide
         { corruptMember: true },
         { crossAccount: true },
         { mixedPanel: true },
+        { extraPanelPrecision: true },
+        { concatenatedDate: true },
         { duplicateOrderId: true },
         { reportVersion: 1 },
     ]) {
@@ -278,4 +280,13 @@ test('followup client coalesces, reuses cache and separates account; denied refr
     await c.load(user, 'wife', 'followup');
     assert.equal(calls, 4);
     await assert.rejects(c.load(user, 'husband', 'followup'), /계좌/);
+});
+
+test('order UI linkage does not permit assigning that order to a different reference date', () => {
+    const f = followupFixture({ wrongReferenceDate: true });
+    const value = verifiedFollowup(f.zip, f.evidence, f.descriptor);
+    assert.throws(
+        () => followupResponse(value, 'wife', f.workbookSha256, f.descriptor),
+        (e) => e.code === 'REPORT_INTEGRITY_FAILED'
+    );
 });

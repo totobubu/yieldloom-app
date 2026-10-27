@@ -1,4 +1,5 @@
 import { apiUrl } from './apiUrl.js';
+import { validSourceTimeItems } from '../../lib/sheet-source-times.js';
 
 export function createSheetReportClient({
     fetchImpl = fetch,
@@ -30,7 +31,7 @@ export function createSheetReportClient({
         if (
             !user ||
             !['wife', 'husband'].includes(accountId) ||
-            !['summary', 'details'].includes(section)
+            !['summary', 'details', 'times'].includes(section)
         )
             throw new Error('로그인과 계좌를 확인해 주세요.');
         const key = `${accountId}:${section}`;
@@ -78,7 +79,15 @@ export function createSheetReportClient({
                 value.readOnly !== true
             )
                 throw new Error('보고서 계좌 또는 형식을 확인해 주세요.');
-            cache.set(key, { value, expires: now() + 30_000 });
+            if (
+                section === 'times' &&
+                !validSourceTimeItems(value.items, accountId)
+            )
+                throw new Error('원문 시각 보고서 형식을 확인해 주세요.');
+            cache.set(key, {
+                value,
+                expires: now() + (section === 'times' ? 300_000 : 30_000),
+            });
             return value;
         })()
             .catch((error) => {

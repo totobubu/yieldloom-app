@@ -13,6 +13,7 @@ if __package__ in {None, ""}:
 
 from scripts.content_pipeline.database import ContentDatabase, DEFAULT_DB_PATH
 from scripts.content_pipeline.providers import NoDataError, PROVIDERS, SourceCandidate
+from scripts.content_pipeline.roundhill_schedule import parse_dates
 
 
 def candidate_tickers(candidate: SourceCandidate) -> list[str]:
@@ -57,8 +58,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--url", help="Parse one explicit allowed official URL")
     parser.add_argument("--ex-date", type=date.fromisoformat,
                         help="Keep only events matching this ISO ex-dividend date")
-    parser.add_argument("--declaration-date", type=date.fromisoformat,
+    dated = parser.add_mutually_exclusive_group()
+    dated.add_argument("--declaration-date", type=date.fromisoformat,
                         help="Fetch one Roundhill ticker's notice for this declaration date")
+    dated.add_argument("--declaration-dates", type=parse_dates,
+                       help="Up to seven actual declaration dates, sharing the issuer fallback")
     parser.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
     parser.add_argument("--raw-dir", type=Path, default=Path("var/content-studio/raw"))
     parser.add_argument("--dry-run", action="store_true")
@@ -72,11 +76,13 @@ def main() -> int:
     args = parser.parse_args()
     adapter = PROVIDERS[args.provider]()
     target_tickers = {value.strip().upper() for value in (args.tickers or args.ticker or "").split(",") if value.strip()}
+    declared_dates = args.declaration_dates or ([args.declaration_date] if args.declaration_date else [])
+    declared_values = {value.isoformat() for value in declared_dates}
     if args.ticker and (len(target_tickers) != 1 or "," in args.ticker):
         parser.error("--ticker accepts one symbol; use --tickers for a Roundhill group")
-    if args.tickers and (args.provider != "roundhill" or args.ticker or not args.declaration_date):
+    if args.tickers and (args.provider != "roundhill" or args.ticker or not declared_dates):
         parser.error("--tickers requires --provider roundhill and --declaration-date, without --ticker")
-    if args.declaration_date and (
+    if declared_dates and (
         args.provider != "roundhill" or not target_tickers or args.url or args.ex_date
         or any(ticker not in adapter.tracked_symbols for ticker in target_tickers)
     ):
@@ -92,8 +98,9 @@ def main() -> int:
             adapter.parser_version,
         )
 
-    if args.declaration_date:
-        candidates = list(adapter.discover_for_declaration_date(args.declaration_date, ",".join(sorted(target_tickers))))
+    if declared_dates:
+        candidates = [candidate for declared in declared_dates
+                      for candidate in adapter.discover_for_declaration_date(declared, ",".join(sorted(target_tickers)))]
     elif args.url:
         candidates = [SourceCandidate(url=args.url, source_type="explicit_official_url")]
     elif args.ex_date:
@@ -134,8 +141,8 @@ def main() -> int:
 
     def outcomes():
         yield from adapter.fetch_many(selected_candidates)
-        if selected_candidates and args.provider == "roundhill" and target_tickers and args.declaration_date:
-            collected = {key[1] for key in seen_events if key[2] == args.declaration_date.isoformat()}
+        if selected_candidates and args.provider == "roundhill" and target_tickers and declared_dates:
+            collected = {key[1] for key in seen_events if key[2] in declared_values}
             missing = sorted(target_tickers - collected)
             if missing:
                 yield from adapter.fetch_many([adapter.issuer_candidate(ticker) for ticker in missing])
@@ -200,13 +207,13 @@ def main() -> int:
                 events = [event for event in events if event.ex_date == args.ex_date.isoformat()]
                 if not events:
                     raise NoDataError(f"no official events matched ex-date {args.ex_date.isoformat()}")
-            if args.declaration_date:
-                events = [event for event in events if event.declared_date == args.declaration_date.isoformat()]
+            if declared_dates:
+                events = [event for event in events if event.declared_date in declared_values]
                 if not events:
-                    raise NoDataError(f"no official events matched declaration date {args.declaration_date.isoformat()}")
+                    raise NoDataError(f"no official events matched declaration dates {','.join(sorted(declared_values))}")
                 for event in events:
                     if not (
-                        event.declared_date == args.declaration_date.isoformat()
+                        event.declared_date in declared_values
                         and event.record_date and event.payable_date
                         and event.declared_date <= event.ex_date <= event.record_date <= event.payable_date
                     ):

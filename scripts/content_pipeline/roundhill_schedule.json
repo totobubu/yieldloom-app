@@ -1,0 +1,15 @@
+{
+  "timezone": "Asia/Seoul",
+  "earlyDays": 3,
+  "lateDays": 3,
+  "overdueBusinessDays": 2,
+  "maxCyclesPerRecovery": 5,
+  "groups": {
+    "topw": {"weekday": 0, "hour": 22, "tickers": ["TOPW"]},
+    "crypto": {"weekday": 1, "hour": 20, "tickers": ["YBTC", "YETH"]},
+    "zero-dte": {"weekday": 2, "hour": 20, "tickers": ["XDTE", "QDTE", "RDTE"]},
+    "magy": {"weekday": 3, "hour": 20, "tickers": ["MAGY"]},
+    "weeklypay": {"weekday": 4, "hour": 20, "tickers": ["AAPW", "AMDW", "AMZW", "ARMW", "AVGW", "BABW", "BRKW", "COIW", "COSW", "GOOW", "HOOW", "METW", "MSFW", "NFLW", "NVDW", "PLTW", "TSLW", "UBEW", "UNHW", "GDXW", "GLDW", "TSYW"]}
+  },
+  "extraUsClosures": ["2018-12-05", "2025-01-09"]
+}

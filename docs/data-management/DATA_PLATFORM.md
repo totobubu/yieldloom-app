@@ -524,3 +524,28 @@ CUSIP `464287655`, USD 및 NYSE Arca 상장을 확인했다.
 개별 판정과 근거는 [18건 검토 기록](IDENTITY_REVIEW_2026-10-22.md)과
 `data-v2/identity-review.json`을 참조한다. 비활성·형식 오류·이름 충돌을 자동 별칭이나
 상장폐지로 판정하지 않으며 개인 거래는 변경하지 않는다.
+
+## 조회 요청과 영속 작업 실행 기반 (운영 미활성)
+
+`discovery_requests.request_collection`은 서버가 신뢰하는 catalog의 티커·거래소를
+정확히 대조하고, ISIN·통화·상장일이 있으면 상장일부터 요청 종료일까지 가격/배당
+작업을 등록한다. 같은 요청과 종료일만 늘어난 요청은 기존 구간을 재사용한다.
+미등록 종목은 최근 48시간 이내 성공한 공식 Nasdaq 디렉터리의 현재 관측값으로
+티커·거래소를 대조한다. 이름 검색 결과나 과거에 삭제된 listing은 등록하지 않는다.
+일치한 신규 listing은 비공개 `identity_enrichment_pending` 상태로 보관한다.
+이 목록에는 통화·상장일·ISIN이 없으므로 이를 추정하여 공개 catalog로 승격하지 않는다.
+
+`collection_worker.run_next`는 기본 비활성이며 호출자가 등록한 adapter만 실행한다.
+기존 platform writer lock 안에서 실행하고 기존 두 DB/원문 체크포인트에 저장해야 한다.
+출처별 실행 작업은 하나로 제한하고, 실패는 출처 전체에 지수 backoff를 적용한다.
+프로세스 종료를 확인한 운영자만 `collection_jobs.recover(..., worker_stopped=True)`로
+소유 토큰을 대조해 작업을 재개한다. 시간 만료만으로 실행 중인 작업을 탈취하지 않는다.
+이전 소유자의 늦은 완료 처리는 거절한다. adapter는 재실행에도 중복 저장되지 않아야 한다.
+빈 adapter 결과는 `partial`이며, 전체 요청 구간과 저장된 원문 근거가 있어야만
+`complete`/`no_dividends`로 기록한다. 부분 완료 구간은 자동으로 완료 처리하지 않는다.
+
+검증된 것은 Python 조회 등록 → 대기열 → 주입한 합성 adapter 실행 경로다.
+브라우저 조회 API에서 이 Python 진입점을 호출하는 transport, 신규 listing의 식별자
+보충 adapter, 실제 Yahoo/공식 배당 adapter의 worker 연결과 운영 스케줄 활성화는
+아직 연결하지 않았다. Node 일봉 저장소의 pending 요청도 아직 이 큐로 전송하지 않는다.
+운영 활성화나 실제 신규 종목 자동 수집 완료로 해석하지 않는다.

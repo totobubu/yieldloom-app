@@ -506,8 +506,8 @@ export function tracePortfolioFunding({
             cash: totalCash,
             cost,
             trackedAssetsAtCost: totalCash + cost,
-            principalRecovered:
-                buckets[currency].principalRecovered +
+            principalRecovered: buckets[currency].principalRecovered,
+            estimatedPrincipalRecovered:
                 buckets[currency].estimatedPrincipalRecovered,
             principalAssets:
                 [...accounts.values()]
@@ -567,6 +567,8 @@ export function tracePortfolioFunding({
                 timelines[currency].at(-1)?.principalAssets || 0,
             currentReinvestedAssets:
                 timelines[currency].at(-1)?.reinvestedAssets || 0,
+            currentAcquisitionCost:
+                timelines[currency].at(-1)?.trackedAssetsAtCost || 0,
             unattributedRecovered: Math.max(
                 0,
                 value.recovered -
@@ -580,24 +582,20 @@ export function tracePortfolioFunding({
                     : null,
             principalRate:
                 value.deposits > 0
-                    ? ((value.principalRecovered +
-                          value.estimatedPrincipalRecovered) /
-                          value.deposits) *
-                      100
+                    ? (value.principalRecovered / value.deposits) * 100
                     : null,
+            netContributedPrincipal: Math.max(
+                0,
+                value.deposits - value.principalRecovered
+            ),
             remainingPrincipal: Math.max(
                 0,
-                value.deposits -
-                    value.principalRecovered -
-                    value.estimatedPrincipalRecovered
+                value.deposits - value.principalRecovered
             ),
             // Compatibility: rate now means the primary, principal-only rate.
             rate:
                 value.deposits > 0
-                    ? ((value.principalRecovered +
-                          value.estimatedPrincipalRecovered) /
-                          value.deposits) *
-                      100
+                    ? (value.principalRecovered / value.deposits) * 100
                     : null,
         })),
         stocks: [...stocks.values()].map((s) => ({

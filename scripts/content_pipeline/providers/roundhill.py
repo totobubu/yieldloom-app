@@ -10,22 +10,10 @@ from urllib.request import HTTPCookieProcessor, Request, build_opener
 
 from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
+from ..roundhill_schedule import ANNOUNCEMENT_GROUPS
 from .base import NoDataError, SourceCandidate
 from .http import OfficialHTTPAdapter
 from .parsing import parse_date
-
-
-ANNOUNCEMENT_GROUPS = {
-    "topw": (0, ("TOPW",)),
-    "crypto": (1, ("YBTC", "YETH")),
-    "zero-dte": (2, ("XDTE", "QDTE", "RDTE")),
-    "magy": (3, ("MAGY",)),
-    "weeklypay": (4, (
-        "AAPW", "AMDW", "AMZW", "ARMW", "AVGW", "BABW", "BRKW", "COIW",
-        "COSW", "GOOW", "HOOW", "METW", "MSFW", "NFLW", "NVDW", "PLTW",
-        "TSLW", "UBEW", "UNHW", "GDXW", "GLDW", "TSYW",
-    )),
-}
 
 
 class RoundhillAdapter(OfficialHTTPAdapter):

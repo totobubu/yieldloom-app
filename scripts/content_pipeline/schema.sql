@@ -317,3 +317,25 @@ CREATE TABLE IF NOT EXISTS frequency_regime_observations (
 );
 
 PRAGMA user_version = 9;
+
+-- Stock evidence is deliberately separate from the authoritative ETF ledger.
+CREATE TABLE IF NOT EXISTS stock_source_documents (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ticker TEXT NOT NULL, source_url TEXT NOT NULL, source_class TEXT NOT NULL,
+    content_sha256 TEXT NOT NULL, local_path TEXT NOT NULL, observed_at TEXT NOT NULL,
+    UNIQUE(ticker, source_url, content_sha256)
+);
+CREATE TABLE IF NOT EXISTS stock_issuer_announcements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ticker TEXT NOT NULL, event_key TEXT NOT NULL, fact_hash TEXT NOT NULL,
+    source_document_id INTEGER NOT NULL REFERENCES stock_source_documents(id),
+    declared_date TEXT NOT NULL, ex_date TEXT,
+    payload_json TEXT NOT NULL,
+    UNIQUE(ticker, event_key, fact_hash)
+);
+CREATE TABLE IF NOT EXISTS stock_market_snapshots (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ticker TEXT NOT NULL, source_document_id INTEGER NOT NULL REFERENCES stock_source_documents(id),
+    payload_json TEXT NOT NULL,
+    UNIQUE(ticker, source_document_id)
+);

@@ -70,7 +70,7 @@ const rows = computed(() => [
 ]);
 </script>
 <template>
-	<ThumbnailCardShell class="comparison-card" :class="tone" :title="data.symbol" badge="ETF · 배당 비교"
+	<ThumbnailCardShell class="comparison-card" :class="tone" :title="data.symbol" :badge="data.referenceData ? '일반 주식 · 참고 배당' : 'ETF · 배당 비교'"
 		context-label="배당 비교" date-label="배당락일" :date-value="date(data.exDate)" data-thumbnail-kind="comparison">
 		<template v-if="data.hasDividend">
 			<section class="kpis">
@@ -81,7 +81,7 @@ const rows = computed(() => [
 							? `${difference >= 0 ? '+' : ''
 							}${pct(data.dividendChangePercent)}`
 							: '비교 불가'
-					}}</strong><small>직전 확정 회차 대비</small><span class="kpi-icon" aria-hidden="true">
+					}}</strong><small>{{ data.referenceData ? '직전 참고 회차 대비' : '직전 확정 회차 대비' }}</small><span class="kpi-icon" aria-hidden="true">
 
 						<svg class="kpi-trend-icon" :class="{ 'is-down': tone === 'down' }" fill="none"
 							stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24">
@@ -91,7 +91,7 @@ const rows = computed(() => [
 				<article>
 					<p>주당 배당 {{ directionLabel }}액</p>
 					<strong>{{ difference >= 0 ? '+' : '−'
-					}}{{ usd(Math.abs(difference)) }}</strong><small>직전 확정 회차 대비</small><span class="kpi-icon"
+					}}{{ usd(Math.abs(difference)) }}</strong><small>{{ data.referenceData ? '직전 참고 회차 대비' : '직전 확정 회차 대비' }}</small><span class="kpi-icon"
 						aria-hidden="true"><svg v-if="tone === 'down'" fill="none" stroke="currentColor"
 							stroke-width="2.8" viewBox="0 0 24 24">
 							<path d="M5 14l7 7m0 0 7-7m-7 7V3" stroke-linecap="round" stroke-linejoin="round" />
@@ -148,7 +148,7 @@ const rows = computed(() => [
 		<p v-else class="unavailable">
 			표시할 배당 이력을 확인하지 못했습니다.
 		</p>
-		<template #footer>주당 USD 기준 · 수익률은 해당 1회 배당금의 기준 주가
+		<template #footer><span v-if="data.referenceData">Yahoo Finance 참고 배당 · 검토 필요 · </span>주당 USD 기준 · 수익률은 해당 1회 배당금의 기준 주가
 			대비</template>
 	</ThumbnailCardShell>
 </template>

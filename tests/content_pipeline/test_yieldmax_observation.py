@@ -249,6 +249,23 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
         self.assertEqual(len(report['cycles']), 1)
         self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), 43)
 
+    def test_read_only_smoke_reads_existing_facts_without_collecting_or_saving(self):
+        for symbol in GROUPS['group-3']['tickers']:
+            self.seed(symbol, '2026-10-19')
+        before = self.database.path.read_bytes()
+        args = ['schedule_yieldmax.py', '--dry-run', '--group', 'group-3', '--declaration-date', '2026-10-19',
+                '--db', str(self.database.path), '--state', str(self.state), '--public-dir', str(self.public),
+                '--report', str(self.root/'smoke.json')]
+        with patch('sys.argv', args), patch.object(runner, 'run_refresh') as run, redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(runner.main(), 0)
+        run.assert_not_called()
+        report = json.loads(output.getvalue())
+        self.assertTrue(report['stateAccessible'])
+        self.assertEqual(report['checks'][0]['verifiedTickerCount'], 3)
+        self.assertEqual((report['attempted'], report['publish'], report['stateChanged']), (False, False, False))
+        self.assertFalse(self.state.exists())
+        self.assertEqual(self.database.path.read_bytes(), before)
+
 
 if __name__ == '__main__':
     unittest.main()

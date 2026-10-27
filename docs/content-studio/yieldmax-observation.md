@@ -73,6 +73,8 @@ Actions의 **Observe YieldMax announcements**에서 `auto` 또는
 지정해 연결한다. 날짜는 공식 자료 기준이며 미래 날짜는 허용하지 않는다.
 자동 상태가 처음 생길 때는 직전 주기와 3일 이내의 다음 주기를 만든다.
 오래된 중단 기간을 처음부터 복구할 때는 수동 주기를 지정한다.
+`dryRun=true`는 기존 R2 원장을 복원해 읽기만 한다. 외부 공시 수집, R2 상태 저장,
+공개 데이터 커밋을 모두 건너뛰므로 운영 자격 증명과 상태 접근 점검에 사용할 수 있다.
 
 ```sh
 python scripts/content_pipeline/schedule_yieldmax.py --plan-only \

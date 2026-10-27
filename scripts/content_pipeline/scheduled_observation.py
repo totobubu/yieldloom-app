@@ -143,6 +143,28 @@ def build_observer(schedule, provider: str):
                 break
         return matched, ambiguous
 
+    def inspect_state(request: dict, database: ContentDatabase, *, now: datetime,
+                      state_path: Path, public_dir: Path) -> dict:
+        """Inspect restored state without collection, schema changes or state saves."""
+        if not database.path.is_file():
+            raise ValueError("restored official ledger is missing")
+        state = read_state(state_path)
+        today = now.astimezone(SEOUL).date()
+        groups = list(GROUPS) if request["group"] == "auto" else [request["group"]]
+        checks = []
+        for group in groups:
+            anchor = date.fromisoformat(request["anchor"]) if request.get("anchor") else today - timedelta(days=(today.weekday() - GROUPS[group]["weekday"]) % 7)
+            cycle = {"group": group, "anchorDate": anchor.isoformat()}
+            if request.get("declarationDate"):
+                cycle["declarationDates"] = [request["declarationDate"]]
+            facts = _facts(database, cycle, today, public_dir)
+            checks.append({"group": group, "anchorDate": anchor.isoformat(),
+                           "targetCount": len(GROUPS[group]["tickers"]),
+                           "verifiedTickerCount": len({ticker for ticker, _ in facts})})
+        return {"provider": provider, "request": request, "status": "checked", "dryRun": True,
+                "stateAccessible": True, "queuedCycles": len(state["cycles"]), "checks": checks,
+                "attempted": False, "publish": False, "stateChanged": False}
+
 
     def run_observations(request: dict, database: ContentDatabase, *, now: datetime, state_path: Path,
                          raw_dir: Path, public_dir: Path, legacy_data_dir: Path, refresh_runner=run_refresh) -> tuple[dict, int]:
@@ -270,6 +292,7 @@ def build_observer(schedule, provider: str):
         default_state=Path(f"var/content-studio/generated/{provider}-observations.json"),
         default_report=Path(f"var/content-studio/{provider}-observation.json"),
         request_for=request_for, run_observations=run_observations,
+        inspect_state=inspect_state,
         read_state=read_state, write_state=write_state, _add_cycle=_add_cycle,
         _facts=_facts, _matches=_matches, _cycle_matches=_cycle_matches,
     )
@@ -278,6 +301,7 @@ def build_observer(schedule, provider: str):
 def main(observer, execute) -> int:
     parser = argparse.ArgumentParser(description=f"Observe scheduled {observer.provider} announcements")
     parser.add_argument("--plan-only", action="store_true")
+    parser.add_argument("--dry-run", action="store_true", help="Inspect restored state without collecting or saving")
     parser.add_argument("--event-schedule", default="")
     parser.add_argument("--scheduled-at", type=datetime.fromisoformat)
     parser.add_argument("--group", choices=["auto", *observer.groups], default="auto")
@@ -300,8 +324,13 @@ def main(observer, execute) -> int:
     if args.plan_only:
         report, code = {"enabled": request["enabled"], "request": request}, 0
     else:
-        report, code = execute(request, ContentDatabase(args.db), now=now, state_path=args.state,
-            raw_dir=args.raw_dir, public_dir=args.public_dir, legacy_data_dir=args.legacy_data_dir)
+        if args.dry_run:
+            report = observer.inspect_state(request, ContentDatabase(args.db), now=now,
+                                            state_path=args.state, public_dir=args.public_dir)
+            code = 0
+        else:
+            report, code = execute(request, ContentDatabase(args.db), now=now, state_path=args.state,
+                raw_dir=args.raw_dir, public_dir=args.public_dir, legacy_data_dir=args.legacy_data_dir)
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if args.github_output:

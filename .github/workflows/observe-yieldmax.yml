@@ -25,6 +25,10 @@ on:
         description: Optional nominal cycle date to resolve with that official declaration date
         type: string
         required: false
+      dryRun:
+        description: Inspect restored ledger only; skip collection, state save and publication
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -80,6 +84,7 @@ jobs:
       OBSERVATION_GROUP: ${{ inputs.group || 'auto' }}
       DECLARATION_DATE: ${{ inputs.declarationDate }}
       CYCLE_DATE: ${{ inputs.cycleDate }}
+      DRY_RUN: ${{ inputs.dryRun || false }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -110,6 +115,7 @@ jobs:
           args=(--event-schedule "$EVENT_SCHEDULE" --scheduled-at "$RUN_CREATED_AT" --group "$OBSERVATION_GROUP" --github-output "$GITHUB_OUTPUT")
           if [[ -n "$DECLARATION_DATE" ]]; then args+=(--declaration-date "$DECLARATION_DATE"); fi
           if [[ -n "$CYCLE_DATE" ]]; then args+=(--cycle-date "$CYCLE_DATE"); fi
+          if [[ "$DRY_RUN" == 'true' ]]; then args+=(--dry-run); fi
           python scripts/content_pipeline/schedule_yieldmax.py "${args[@]}"
       - name: Validate generated snapshots
         id: validate

@@ -89,3 +89,33 @@ def request_collection(store, symbol, market, end, *, catalog=None, now=None):
         jobs[dataset]={'ids':enqueue(store,entity,dataset,inception,end,source=source),
                        'coverage':coverage(store,entity,dataset,inception,end)}
     return {'status':'queued','registered':True,'entityId':entity,'jobs':jobs}
+
+
+def valid_isin(value):
+    if not isinstance(value,str) or not re.fullmatch(r'[A-Z]{2}[A-Z0-9]{9}[0-9]',value): return False
+    digits=''.join(str(ord(c)-55) if c.isalpha() else c for c in value)
+    total=0
+    for index,c in enumerate(reversed(digits)):
+        digit=int(c)*(2 if index%2 else 1)
+        total+=digit//10+digit%10
+    return total%10==0
+
+
+def resolve_registered_listing(store, listing_id, end, *, catalog=None, now=None):
+    """Enrich pending listings only from the server's reviewed catalog; never guess IDs."""
+    from pathlib import Path
+    row=store.db.execute('SELECT payload FROM collection.lookup_registrations WHERE listing_id=?',(listing_id,)).fetchone()
+    if not row: raise ValueError('Unknown pending listing')
+    pending=json.loads(row['payload'])
+    if catalog is None:
+        catalog=json.loads((Path(__file__).resolve().parents[2]/'data-v2/catalog-seed.json').read_text())['instruments']
+    matches=[r for r in catalog if r.get('symbol')==pending['symbol'] and r.get('market')==pending['market'] and r.get('active',True)]
+    if len(matches)!=1 or not valid_isin(matches[0].get('isin')):
+        return {'status':'identity_enrichment_pending','registered':True}
+    result=request_collection(store,pending['symbol'],pending['market'],end,catalog=catalog,now=now)
+    if result['status']=='queued':
+        with store.db:
+            pending['reviewedIdentity']={k:matches[0].get(k) for k in ('isin','currency','ipoDate','market','symbol')}
+            store.db.execute('UPDATE collection.lookup_registrations SET payload=?,status=? WHERE listing_id=?',
+                             (encode(pending),'identity_verified',listing_id))
+    return result

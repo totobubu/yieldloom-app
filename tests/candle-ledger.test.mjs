@@ -73,3 +73,23 @@ test('identity verification rejects wrong currency, symbol and exchange before p
     for (const change of [{ symbol: 'MSFT' }, { currency: 'KRW' }, { exchangeName: 'NYQ' }])
         assert.equal(verifiedCandleIdentity('AAPL', { ...meta, ...change }), null);
 });
+
+test('optional owned history extends the API response and retains fallback on read errors', async () => {
+    const owned = mergeCandles(null, value([row('2000-01-03')]), identity, 'fixture');
+    owned.coverage.conflictingDates = ['2000-01-03'];
+    const fetcher = async () => upstream();
+    const load = createStockCandleLoader({ getLedger: () => null,
+        getOwnedReader: () => ({ read: async () => ({ value: owned }) }) });
+    const result = await load('AAPL', fetcher);
+    assert.equal(result.historySource, 'owned');
+    assert.deepEqual(result.candles.map(r => r.date), ['2000-01-03', '2026-01-01']);
+    assert.equal(result.coverage.status, 'partial');
+    assert.deepEqual(result.coverage.conflictingDates, ['2000-01-03']);
+    assert.equal(result.coverage.reason, 'corrections_require_review');
+    const fallback = createStockCandleLoader({ getLedger: () => null,
+        getOwnedReader: () => ({ read: async () => { throw Error('unavailable'); } }) });
+    assert.equal((await fallback('AAPL', fetcher)).candles.length, 1);
+    const stale = createStockCandleLoader({ getLedger: () => null,
+        getOwnedReader: () => ({ read: async () => ({ value: owned }) }) });
+    assert.equal((await stale('AAPL', async () => ({ ok: false, status: 503 }))).stale, true);
+});

@@ -45,3 +45,25 @@ class DiscoveryTest(unittest.TestCase):
             self.assertEqual(run_next(store,'yahoo-chart',adapter,enabled=True,now=NOW)['status'],'partial')
             self.assertEqual(windows,[['1980-12-12','1980-12-31']])
             store.close()
+
+    def test_pending_listing_requires_reviewed_valid_identity_and_exact_exchange(self):
+        import json
+        from scripts.data_platform.discovery_requests import resolve_registered_listing,valid_isin
+        self.assertTrue(valid_isin('US0378331005'))
+        self.assertFalse(valid_isin('US0378331006'))
+        with tempfile.TemporaryDirectory() as d:
+            store=Store(Path(d))
+            store.db.execute('CREATE TABLE collection.lookup_registrations (listing_id TEXT PRIMARY KEY,payload TEXT,status TEXT)')
+            with store.db:
+                store.db.execute('INSERT INTO collection.lookup_registrations VALUES (?,?,?)',
+                    ('listing:NASDAQ:AAPL',json.dumps({'symbol':'AAPL','market':'NASDAQ'}),'identity_enrichment_pending'))
+            row={'symbol':'AAPL','market':'NASDAQ','currency':'USD','isin':'US0378331005','ipoDate':'1980-12-12'}
+            for catalog in ([],[{**row,'market':'NYSE'}],[{**row,'isin':'US0378331006'}],[{**row,'ipoDate':None}]):
+                result=resolve_registered_listing(store,'listing:NASDAQ:AAPL','2025-12-31',catalog=catalog,now=NOW)
+                self.assertEqual(result['status'],'identity_enrichment_pending')
+            first=resolve_registered_listing(store,'listing:NASDAQ:AAPL','2025-12-31',catalog=[row],now=NOW)
+            second=resolve_registered_listing(store,'listing:NASDAQ:AAPL','2025-12-31',catalog=[row],now=NOW)
+            self.assertEqual(first,second)
+            self.assertEqual(first['status'],'queued')
+            self.assertEqual(store.db.execute('SELECT status FROM collection.lookup_registrations').fetchone()[0],'identity_verified')
+            store.close()

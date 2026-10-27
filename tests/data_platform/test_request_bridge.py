@@ -59,6 +59,14 @@ class RequestBridgeTest(unittest.TestCase):
             saved=stored_prices(store,row['entity'])
             self.assertEqual(saved['candles'][0]['date'],row['start'])
             self.assertEqual(saved['candles'][0]['close'],'11')
+            from scripts.data_platform.owned_price_model import export_model
+            instrument=next(r for r in catalog if r['symbol']=='AAPL')
+            candidate=Path(directory)/'review'/'owned-aapl.json'
+            self.assertFalse(export_model(store,instrument,candidate)['published'])
+            model=json.loads(candidate.read_text())
+            self.assertEqual(model['candles'][0]['close'],11)
+            self.assertEqual(model['coverage']['status'],'partial')
+            with self.assertRaises(ValueError): export_model(store,instrument,candidate)
             count=store.db.execute('SELECT COUNT(*) FROM collection.jobs').fetchone()[0]
             from scripts.data_platform.request_bridge import receive_requests
             receive_requests(store,Remote(objects),['AAPL'],catalog,datetime.now(timezone.utc))

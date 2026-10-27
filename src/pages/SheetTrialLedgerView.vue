@@ -1,6 +1,9 @@
 <script setup>
     import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
     import Select from 'primevue/select';
+    import DocumentLedgerHeader from '@/components/portfolio/DocumentLedgerHeader.vue';
+    import SheetEvidenceCell from '@/components/portfolio/SheetEvidenceCell.vue';
+    import { buildLedgerReview } from '../../lib/sheet-review.js';
     import { useDocumentLedgerWindow } from '@/composables/useDocumentLedgerWindow.js';
     import SheetReconciliationPanel from '@/components/portfolio/SheetReconciliationPanel.vue';
     import SheetCloudReview from '@/components/portfolio/SheetCloudReview.vue';
@@ -20,8 +23,23 @@
     } from '../../lib/sheet-ledger.js';
 
     const client = createSheetLedgerClient();
+    const identityQuery =
+        typeof window === 'undefined'
+            ? null
+            : window.matchMedia('(min-width: 900px)');
+    const freezeIdentity = ref(Boolean(identityQuery?.matches));
+    const updateIdentityLayout = () => {
+        freezeIdentity.value = Boolean(identityQuery?.matches);
+    };
+    onMounted(() =>
+        identityQuery?.addEventListener('change', updateIdentityLayout)
+    );
+    onBeforeUnmount(() =>
+        identityQuery?.removeEventListener('change', updateIdentityLayout)
+    );
     const rows = ref([]),
         observations = ref([]),
+        observationStates = ref({}),
         archives = ref([]),
         evidencePreview = ref(null),
         version = ref(0),
@@ -86,14 +104,125 @@
                     observations.value.some((o) => o.values[field] != null))
         )
     );
+    const review = computed(() =>
+        buildLedgerReview(rows.value, observations.value)
+    );
+    const valueColumns = computed(() => [
+        ...numericFields,
+        ...additionalColumns.value,
+    ]);
+    const fieldDrafts = ref({}),
+        approvalRowId = ref(null),
+        approvalNote = ref('');
+    const approvalOpen = computed({
+        get: () => approvalRowId.value !== null,
+        set: (value) => {
+            if (!value) approvalRowId.value = null;
+        },
+    });
+    const pendingApprovals = computed(() =>
+        Object.keys(fieldDrafts.value)
+            .filter((id) => Object.keys(fieldDrafts.value[id].choices).length)
+            .map((id) => rows.value.find((row) => row.id === id))
+            .filter(Boolean)
+    );
+    const approvalRow = computed(() =>
+        rows.value.find((row) => row.id === approvalRowId.value)
+    );
+    const approvalChanges = computed(() =>
+        Object.entries(
+            fieldDrafts.value[approvalRowId.value]?.choices || {}
+        ).map(([field, id]) => ({
+            field,
+            before: approvalRow.value?.[field],
+            source: review.value.byRow
+                .get(approvalRowId.value)
+                ?.fields.get(field)
+                ?.sources.find((item) => item.id === id),
+        }))
+    );
+    const draftStale = (id) =>
+        fieldDrafts.value[id]?.signature !==
+        review.value.byRow.get(id)?.signature;
+    const rowLabel = (row) =>
+        `${accounts.find((item) => item.id === row.accountId)?.name || row.accountId} ${row.date} ${row.symbol}`;
+    function chooseField(row, field, id) {
+        const current = fieldDrafts.value[row.id];
+        if (current && draftStale(row.id)) {
+            error.value =
+                '대조값이 바뀌었습니다. 이 행의 선택을 취소하고 최신 값을 다시 선택해 주세요.';
+            return;
+        }
+        const draft = current || {
+            signature: review.value.byRow.get(row.id).signature,
+            choices: {},
+        };
+        const choices = { ...draft.choices };
+        if (id == null) delete choices[field];
+        else choices[field] = id;
+        fieldDrafts.value = {
+            ...fieldDrafts.value,
+            [row.id]: { ...draft, choices },
+        };
+    }
+    function discardChoices(id) {
+        const next = { ...fieldDrafts.value };
+        delete next[id];
+        fieldDrafts.value = next;
+    }
+    function openApproval(row) {
+        approvalRowId.value = row.id;
+        approvalNote.value = '';
+        error.value = '';
+    }
+    function displayEvidence(value) {
+        return value == null
+            ? '미제공'
+            : typeof value === 'boolean'
+              ? value
+                  ? '포함'
+                  : '별도'
+              : typeof value === 'number'
+                ? value.toLocaleString('ko-KR', { maximumFractionDigits: 20 })
+                : String(value);
+    }
+    async function approveFields() {
+        const row = approvalRow.value;
+        if (!row || draftStale(row.id)) return;
+        await run(async (current) => {
+            const draft = fieldDrafts.value[row.id],
+                model = review.value.byRow.get(row.id);
+            const result = await client.mutate(firebaseUser.value, 'POST', {
+                action: 'resolve-fields',
+                version: version.value,
+                id: row.id,
+                signature: draft.signature,
+                choices: { ...draft.choices },
+                note: approvalNote.value,
+                evidence: model.observations.map((item) => ({
+                    id: item.id,
+                    accountId: item.accountId,
+                    reviewVersion: item.reviewVersion,
+                })),
+                observationSequence:
+                    observationStates.value[row.accountId]?.sequence || 0,
+            });
+            if (current !== generation) return;
+            apply(result);
+            discardChoices(row.id);
+            approvalRowId.value = null;
+            notice.value =
+                '선택한 출처 값을 승인·저장했습니다. 원본과 관리자 감사 이력을 보존했습니다.';
+        }, '선택한 값을 관리자 시험 장부에 승인·저장하는 중입니다.');
+    }
     const filtered = computed(() =>
         activeRows.value.filter(
             (r) =>
                 (!account.value || r.accountId === account.value) &&
                 (!type.value || r.type === type.value) &&
                 (!status.value ||
-                    (status.value === '검토 필요'
-                        ? r.needsReview
+                    (status.value === '출처 충돌'
+                        ? review.value.byRow.get(r.id)?.unresolved > 0
                         : r.status === status.value)) &&
                 (!search.value ||
                     `${r.symbol} ${r.source.sheet} ${r.id}`
@@ -172,17 +301,6 @@
             currency,
             maximumFractionDigits: currency === 'KRW' ? 0 : 2,
         }).format(value);
-    function display(value, field) {
-        if (value == null) return '미확인';
-        return new Intl.NumberFormat('ko-KR', {
-            maximumFractionDigits:
-                field === 'quantity' || field === 'dividendPerShare'
-                    ? 6
-                    : field.endsWith('Krw')
-                      ? 0
-                      : 4,
-        }).format(value);
-    }
     async function run(operation, message = '') {
         if (busy.value) return;
         const current = generation;
@@ -207,6 +325,8 @@
         rows.value = result.rows;
         version.value = result.version;
         observations.value = result.observations || [];
+        observationStates.value =
+            result.observationStates || observationStates.value;
         archives.value = result.archives || [];
         evidencePreview.value = null;
     }
@@ -312,9 +432,13 @@
             client.clear();
             rows.value = [];
             observations.value = [];
+            observationStates.value = {};
             archives.value = [];
             evidencePreview.value = null;
             editing.value = null;
+            fieldDrafts.value = {};
+            approvalRowId.value = null;
+            approvalNote.value = '';
             busy.value = false;
             progress.value = '';
             if (firebaseUser.value) load();
@@ -377,10 +501,41 @@
                 ><small>{{ money(summary.costsKrw, 'KRW') }}</small>
             </article>
             <article>
-                <span>미확인·검토 필요</span
-                ><strong>{{ summary.unknown }}행</strong>
+                <span>출처 값 충돌 · 미해결</span>
+                <strong>{{ review.counts.conflictRows }}행</strong>
+                <small
+                    >{{ review.counts.conflictFields }}개 필드 · 전체 장부
+                    기준</small
+                >
+            </article>
+            <article>
+                <span>대조 자료 연결 필요</span>
+                <strong
+                    >{{
+                        review.counts.unmatched + review.counts.ambiguous
+                    }}건</strong
+                >
+                <small
+                    >미매칭 {{ review.counts.unmatched }} · 다중 후보
+                    {{ review.counts.ambiguous }} · 대조 대상 제외
+                    {{ review.counts.outsideScope }}</small
+                >
+            </article>
+            <article>
+                <span>수수료·환전비용 미제공</span>
+                <strong>{{ review.counts.missingValues }}행</strong>
+                <small>교차 검증 잔여 건수가 아닙니다.</small>
             </article>
         </section>
+        <p class="review-counts" aria-label="출처 대조 집계">
+            전체 등록 거래 {{ rows.length }}행 · 저장된 대조 원문
+            {{ review.counts.sourceRecords }}건 · 고유 거래 후보
+            {{ review.counts.matchedTransactions }}행 · 승인된 연결
+            {{ review.counts.confirmedTransactions }}행 · 비교값 일치
+            {{ review.counts.agreedTransactions }}행 · 관리자 연결·채택 대기
+            {{ review.counts.awaitingApproval }}건. 일치한 값은 자동 채택하지
+            않으며, 비교 자료가 없는 행은 검증 완료로 계산하지 않습니다.
+        </p>
         <SheetReconciliationPanel
             :key="
                 firebaseUser
@@ -399,6 +554,32 @@
             @clear-preview="evidencePreview = null"
             @archive="downloadArchive" />
         <section class="ledger-list" aria-label="거래 목록">
+            <div
+                v-if="pendingApprovals.length"
+                class="approval-toolbar"
+                aria-label="출처 값 승인 대기">
+                <div v-for="row in pendingApprovals" :key="row.id">
+                    <span
+                        >{{ rowLabel(row) }} ·
+                        {{ Object.keys(fieldDrafts[row.id].choices).length }}개
+                        선택</span
+                    >
+                    <strong v-if="draftStale(row.id)"
+                        >값 변경됨 · 다시 선택 필요</strong
+                    >
+                    <Button
+                        label="선택값 승인·저장"
+                        size="small"
+                        :disabled="busy || draftStale(row.id)"
+                        @click="openApproval(row)" />
+                    <Button
+                        label="선택 취소"
+                        text
+                        size="small"
+                        :disabled="busy"
+                        @click="discardChoices(row.id)" />
+                </div>
+            </div>
             <div class="filters">
                 <Button
                     label="처음 거래로 이동"
@@ -440,7 +621,7 @@
                     aria-label="거래유형 필터" />
                 <Select
                     v-model="status"
-                    :options="[...statuses, '검토 필요']"
+                    :options="[...statuses, '출처 충돌']"
                     show-clear
                     placeholder="전체 상태"
                     aria-label="상태 필터" />
@@ -485,7 +666,7 @@
                         <Column
                             field="accountId"
                             header="계좌"
-                            frozen
+                            :frozen="freezeIdentity"
                             style="min-width: 80px"
                             ><template #body="{ data }">{{
                                 accounts.find((a) => a.id === data.accountId)
@@ -496,12 +677,32 @@
                             field="date"
                             header="거래일"
                             sortable
-                            frozen
-                            style="min-width: 120px" />
+                            :frozen="freezeIdentity"
+                            style="min-width: 180px">
+                            <template #body="{ data }">
+                                <SheetEvidenceCell
+                                    :comparison="
+                                        review.byRow
+                                            .get(data.id)
+                                            ?.fields.get('date')
+                                    "
+                                    :selected="
+                                        fieldDrafts[data.id]?.choices.date ||
+                                        null
+                                    "
+                                    label="거래일"
+                                    :row-label="rowLabel(data)"
+                                    :format="displayEvidence"
+                                    :disabled="busy"
+                                    @choose="
+                                        chooseField(data, 'date', $event)
+                                    " />
+                            </template>
+                        </Column>
                         <Column
                             field="type"
                             header="유형"
-                            frozen
+                            :frozen="freezeIdentity"
                             style="min-width: 75px"
                             ><template #body="{ data }">{{
                                 typeLabels[data.type]
@@ -511,64 +712,87 @@
                             field="symbol"
                             header="티커"
                             sortable
-                            frozen
+                            :frozen="freezeIdentity"
                             style="min-width: 90px" />
                         <Column
                             field="exDate"
                             header="배당락일"
-                            style="min-width: 120px"
-                            ><template #body="{ data }">{{
-                                data.exDate || '—'
-                            }}</template></Column
-                        >
+                            style="min-width: 210px">
+                            <template #body="{ data }">
+                                <SheetEvidenceCell
+                                    :comparison="
+                                        review.byRow
+                                            .get(data.id)
+                                            ?.fields.get('exDate')
+                                    "
+                                    :selected="
+                                        fieldDrafts[data.id]?.choices.exDate ||
+                                        null
+                                    "
+                                    label="배당락일"
+                                    :row-label="rowLabel(data)"
+                                    :format="displayEvidence"
+                                    :disabled="busy"
+                                    @choose="
+                                        chooseField(data, 'exDate', $event)
+                                    " />
+                            </template>
+                        </Column>
                         <Column
                             field="paymentDate"
                             header="배당지급일"
-                            style="min-width: 120px"
-                            ><template #body="{ data }">{{
-                                data.paymentDate || '—'
-                            }}</template></Column
-                        >
-                        <Column
-                            v-for="field in numericFields"
-                            :key="field"
-                            :field="field"
-                            :header="labels[field]"
-                            sortable
-                            style="min-width: 145px"
-                            ><template #body="{ data }"
-                                ><span
-                                    :title="
-                                        data.fieldStatus[field] ||
-                                        (data[field] == null
-                                            ? '미확인'
-                                            : '원본값')
+                            style="min-width: 210px">
+                            <template #body="{ data }">
+                                <SheetEvidenceCell
+                                    :comparison="
+                                        review.byRow
+                                            .get(data.id)
+                                            ?.fields.get('paymentDate')
                                     "
-                                    >{{ display(data[field], field)
-                                    }}<small
-                                        v-if="
-                                            data.fieldStatus[field] === '추정'
-                                        ">
-                                        (추정)</small
-                                    ></span
-                                ></template
-                            ></Column
-                        >
+                                    :selected="
+                                        fieldDrafts[data.id]?.choices
+                                            .paymentDate || null
+                                    "
+                                    label="배당지급일"
+                                    :row-label="rowLabel(data)"
+                                    :format="displayEvidence"
+                                    :disabled="busy"
+                                    @choose="
+                                        chooseField(data, 'paymentDate', $event)
+                                    " />
+                            </template>
+                        </Column>
                         <Column
-                            v-for="field in additionalColumns"
+                            v-for="field in valueColumns"
                             :key="field"
                             :field="field"
-                            :header="labels[field]"
-                            style="min-width: 190px">
-                            <template #body="{ data }">{{
-                                data[field] == null
-                                    ? '미확인'
-                                    : data[field] === true
-                                      ? '포함'
-                                      : data[field] === false
-                                        ? '별도'
-                                        : data[field]
-                            }}</template>
+                            :header="labels[field] || field"
+                            sortable
+                            style="min-width: 210px">
+                            <template #body="{ data }">
+                                <SheetEvidenceCell
+                                    :comparison="
+                                        review.byRow
+                                            .get(data.id)
+                                            ?.fields.get(field)
+                                    "
+                                    :selected="
+                                        fieldDrafts[data.id]?.choices[field] ||
+                                        null
+                                    "
+                                    :label="labels[field] || field"
+                                    :row-label="rowLabel(data)"
+                                    :format="displayEvidence"
+                                    :status="data.fieldStatus?.[field]"
+                                    :disabled="
+                                        busy ||
+                                        review.byRow.get(data.id)?.observations
+                                            .length > 100
+                                    "
+                                    @choose="
+                                        chooseField(data, field, $event)
+                                    " />
+                            </template>
                         </Column>
                         <Column
                             field="fundingSource"
@@ -658,6 +882,65 @@
                 목록 끝
             </p>
         </section>
+        <DocumentLedgerHeader :container="tableElement" :region="listRegion" />
+        <Dialog
+            v-model:visible="approvalOpen"
+            modal
+            header="선택 출처 값 승인"
+            :style="{ width: '700px', maxWidth: 'calc(100vw - 24px)' }">
+            <template v-if="approvalRow">
+                <Message v-if="error" severity="error" :closable="false">{{
+                    error
+                }}</Message>
+                <p>
+                    {{ rowLabel(approvalRow) }} · 기존 거래를 유지하고 선택한
+                    필드만 변경합니다.
+                </p>
+                <dl class="approval-changes">
+                    <div v-for="change in approvalChanges" :key="change.field">
+                        <dt>{{ labels[change.field] || change.field }}</dt>
+                        <dd>
+                            {{ displayEvidence(change.before) }} →
+                            {{ displayEvidence(change.source?.value) }}
+                        </dd>
+                        <small
+                            >{{ change.source?.label }} ·
+                            {{ change.source?.location }}</small
+                        >
+                    </div>
+                </dl>
+                <label for="inline-review-note">관리자 확인 근거</label>
+                <Textarea
+                    id="inline-review-note"
+                    v-model="approvalNote"
+                    rows="3"
+                    fluid
+                    :disabled="busy" />
+                <p>
+                    구글 시트·토스 원문은 변경하지 않습니다. 선택값, 원래 값,
+                    출처와 승인자·시각을 감사 이력에 보존합니다.
+                </p>
+                <p v-if="draftStale(approvalRow.id)" role="alert">
+                    대조값이 변경되었습니다. 취소 후 다시 선택해 주세요.
+                </p>
+            </template>
+            <template #footer>
+                <Button
+                    label="취소"
+                    text
+                    :disabled="busy"
+                    @click="approvalRowId = null" />
+                <Button
+                    label="관리자 승인·저장"
+                    :loading="busy"
+                    :disabled="
+                        !approvalNote.trim() ||
+                        busy ||
+                        draftStale(approvalRowId)
+                    "
+                    @click="approveFields" />
+            </template>
+        </Dialog>
         <Dialog
             v-model:visible="editOpen"
             modal
@@ -883,6 +1166,34 @@
     .edit-grid label {
         display: grid;
         gap: 0.5rem;
+    }
+    .approval-toolbar {
+        position: sticky;
+        top: var(--studio-header-height, 73px);
+        z-index: 5;
+        background: var(--p-content-background);
+        border: 1px solid var(--p-content-border-color);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    .approval-toolbar > div {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .approval-changes > div {
+        border-bottom: 1px solid var(--p-content-border-color);
+        padding: 10px 0;
+    }
+    .approval-changes dd {
+        margin: 6px 0;
+        font-weight: 600;
+    }
+    .review-counts {
+        color: var(--p-text-muted-color);
+        font-size: 13px;
     }
     .document-list-region {
         min-width: 0;

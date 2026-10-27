@@ -24,6 +24,11 @@
         { label: '표', value: 'table' },
     ];
     const selectedDate = ref(null);
+    const calendarFields = [
+        { key: 'high', label: '고가' },
+        { key: 'close', label: '종가' },
+        { key: 'low', label: '저가' },
+    ];
     const fields = [
         { key: 'open', label: '시가' },
         { key: 'high', label: '고가' },
@@ -121,7 +126,7 @@
                         :text="`${currency} 기준 · ‘—’는 시세 미제공입니다. 휴장일 또는 수집되지 않은 날짜에 가격을 채우지 않습니다.`" />
                 </div>
                 <p>
-                    최근 {{ prices.length }}거래일 · 달력은 종가 표시 ·
+                    최근 {{ prices.length }}거래일 · 고가·종가·저가 표시 ·
                     {{ currency }} ·
                     {{ candles.length ? '일봉 제공처 기준' : basisLabel }}
                 </p>
@@ -181,7 +186,7 @@
                 class="calendar-scroll"
                 tabindex="0"
                 role="region"
-                aria-label="일별 종가 달력, 좁은 화면에서 좌우로 이동">
+                aria-label="일별 고가·종가·저가 달력, 좁은 화면에서 좌우로 이동">
                 <table class="price-calendar">
                     <caption class="studio-sr-only">
                         {{
@@ -190,7 +195,7 @@
                         {{
                             monthLabel
                         }}
-                        일별 종가 ·
+                        일별 고가·종가·저가 ·
                         {{
                             currency
                         }}
@@ -228,13 +233,41 @@
                                     type="button"
                                     class="quoted-day"
                                     :aria-label="`${day.date} 시세 상세`"
+                                    :aria-describedby="`${symbol}-prices-${day.date}`"
                                     @click="selectedDate = day.date">
                                     <time :datetime="day.date">{{
                                         day.day
                                     }}</time>
-                                    <strong>{{
-                                        price(byDate.get(day.date).close)
-                                    }}</strong>
+                                    <span
+                                        :id="`${symbol}-prices-${day.date}`"
+                                        class="day-prices">
+                                        <span
+                                            v-for="field in calendarFields"
+                                            :key="field.key"
+                                            class="day-price"
+                                            :class="field.key">
+                                            <span class="price-label">{{
+                                                field.label
+                                            }}</span>
+                                            <strong
+                                                v-if="field.key === 'close'"
+                                                >{{
+                                                    price(
+                                                        byDate.get(day.date)[
+                                                            field.key
+                                                        ]
+                                                    )
+                                                }}</strong
+                                            >
+                                            <span v-else class="range-price">{{
+                                                price(
+                                                    byDate.get(day.date)[
+                                                        field.key
+                                                    ]
+                                                )
+                                            }}</span>
+                                        </span>
+                                    </span>
                                 </button>
                                 <template v-else-if="day.inMonth">
                                     <time :datetime="day.date">{{
@@ -353,7 +386,7 @@
     .price-calendar {
         table-layout: fixed;
         width: 100%;
-        min-width: 520px;
+        min-width: 700px;
         border-collapse: collapse;
         font-variant-numeric: tabular-nums;
     }
@@ -364,7 +397,7 @@
         font-size: 12px;
     }
     td {
-        height: 84px;
+        height: 120px;
         padding: 10px;
         vertical-align: top;
         border: 1px solid var(--app-border-subtle);
@@ -384,7 +417,7 @@
     .quoted-day {
         display: block;
         width: 100%;
-        min-height: 60px;
+        min-height: 96px;
         padding: 0;
         text-align: left;
         border: 0;
@@ -392,6 +425,30 @@
         background: transparent;
         font: inherit;
         cursor: pointer;
+    }
+    .day-prices {
+        display: grid;
+        gap: 5px;
+    }
+    .day-price {
+        display: grid;
+        grid-template-columns: 24px minmax(0, 1fr);
+        align-items: baseline;
+        gap: 4px;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    .price-label {
+        color: var(--app-muted);
+        font-size: 11px;
+    }
+    .range-price,
+    .day-price strong {
+        text-align: right;
+        white-space: nowrap;
+    }
+    .range-price {
+        color: var(--app-text);
     }
     .quoted-day:hover {
         background: var(--app-surface-muted);
@@ -441,7 +498,7 @@
     @media (max-width: 600px) {
         td {
             padding: 8px;
-            height: 76px;
+            height: 112px;
         }
         td strong {
             font-size: 12px;

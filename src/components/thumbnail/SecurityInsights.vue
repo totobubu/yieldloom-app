@@ -33,7 +33,10 @@
     const etfSymbol = (row) =>
         String(row.ticker || row.etf || '').toUpperCase();
     const profile = (row) => etfProfiles[etfSymbol(row)];
-    const props = defineProps({ symbol: { type: String, required: true } });
+    const props = defineProps({
+        symbol: { type: String, required: true },
+        securityType: { type: String, default: '' },
+    });
     const data = ref(null),
         loading = ref(false),
         failed = ref(false),
@@ -96,7 +99,10 @@
         {
             key: 'trading',
             title: '상품 및 거래 정보',
-            rows: [6, 11, 7, 10, 9, 8].map((index) => metrics.value[index]),
+            rows: ((props.securityType || data.value?.securityType) === 'stock'
+                ? [10, 9, 8]
+                : [6, 11, 7, 10, 9, 8]
+            ).map((index) => metrics.value[index]),
         },
     ]);
     watch(
@@ -355,7 +361,7 @@
                         </dl>
                         <div class="holding-etf-links">
                             <router-link :to="'/stock/' + etfSymbol(row)"
-                                >ETF 상세 보기
+                                ><span>ETF 상세 보기</span>
                                 <i class="pi pi-angle-right" aria-hidden="true"
                             /></router-link>
                             <a
@@ -363,7 +369,7 @@
                                 :href="safeUrl(row.sourceUrl)"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                >편입 근거 원문
+                                ><span>편입 근거 원문</span>
                                 <i
                                     class="pi pi-external-link"
                                     aria-hidden="true"
@@ -373,7 +379,7 @@
                                 :href="profile(row).url"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                >운용사 상품 안내</a
+                                ><span>운용사 상품 안내</span></a
                             >
                         </div>
                     </article>
@@ -499,6 +505,10 @@
         color: var(--app-accent);
         font-size: 12px;
         min-height: 44px;
+        text-decoration: none;
+    }
+    .holding-etf-links a > span {
+        text-decoration: underline;
     }
     small {
         display: block;

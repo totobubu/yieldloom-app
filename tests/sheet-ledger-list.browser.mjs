@@ -201,7 +201,14 @@ try {
         .getByRole('columnheader', { name: '수량(주)', exact: true })
         .click();
     assert.equal(
-        (await bodyRows.first().locator('td').nth(6).innerText()).trim(),
+        (
+            await bodyRows
+                .first()
+                .locator('td')
+                .nth(6)
+                .locator('strong')
+                .innerText()
+        ).trim(),
         '2,285'
     );
     assert.equal(

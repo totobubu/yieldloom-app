@@ -111,8 +111,8 @@ export function createTossLocalSync({
             });
             assertContext(start, run);
             if (
-                !preview.canonicalUnchanged ||
-                typeof preview.fingerprint !== 'string'
+                preview?.canonicalUnchanged !== true ||
+                !/^[a-f0-9]{64}$/.test(preview.fingerprint || '')
             )
                 throw Error('원문 보존 미리보기 응답을 확인해 주세요.');
             emit(
@@ -125,10 +125,25 @@ export function createTossLocalSync({
                 fingerprint: preview.fingerprint,
             });
             assertContext(start, run);
-            if (!result.canonicalUnchanged)
-                throw Error('원문 보존 응답을 확인해 주세요.');
+            const receipt = result?.receipt;
+            if (
+                result?.canonicalUnchanged !== true ||
+                receipt?.status !== 'complete' ||
+                receipt.batchId !== command.batchId ||
+                receipt.accountId !== command.accountId ||
+                receipt.fingerprint !== preview.fingerprint ||
+                receipt.count !== command.observations.length ||
+                !['sourceHash', 'offset', 'count'].every(
+                    (key) =>
+                        receipt.checkpoint?.[key] === command.checkpoint?.[key]
+                )
+            )
+                throw Error(
+                    '완료 영수증이 제출 배치와 일치하지 않아 체크포인트를 진행하지 않았습니다. 같은 배치를 다시 확인해 주세요.'
+                );
             // Apply cloud result even if collector acknowledgement subsequently fails.
             onSaved(result);
+            assertContext(start, run);
             await connector.acknowledge({
                 accountId: start.accountId,
                 batchId: batch.batchId,

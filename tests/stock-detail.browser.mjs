@@ -342,18 +342,14 @@ try {
         });
     });
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.locator('.holding-panel').getByText(/10주/).first().waitFor();
-    assert.ok(
-        (await page.locator('.holding-panel').innerText()).includes('13,000')
-    );
-    assert.ok(
-        (await page.locator('.holding-panel').innerText()).includes('KRW')
-    );
-    assert.equal(familyRequests, 2);
-    assert.ok(
-        (await page.locator('.holding-panel').innerText()).includes(
-            '2026-10-15'
-        )
+    await page
+        .getByRole('heading', { name: 'TOPW 종목 개요', exact: true })
+        .waitFor();
+    assert.equal(await page.locator('.holding-panel').count(), 0);
+    assert.equal(
+        familyRequests,
+        0,
+        'Stock details must not request personal family holdings'
     );
     await page.screenshot({
         path: '/tmp/stock-holding-mobile.png',

@@ -6,7 +6,14 @@ const browser = await chromium.launch({
     args: ['--no-sandbox'],
 });
 try {
-    for (const width of [1440, 390, 360]) {
+    for (const [width, securityType, dividendMode = 'paying'] of [
+        [1440, 'stock'],
+        [390, 'stock'],
+        [360, 'stock'],
+        [1440, 'etf'],
+        [390, 'stock', 'none'],
+        [390, 'stock', 'unavailable'],
+    ]) {
         const page = await browser.newPage({
             viewport: { width, height: 1100 },
         });
@@ -31,16 +38,26 @@ try {
                         sourceStatus: {
                             freshness: 'fresh',
                             priceDate: '2026-10-13',
+                            dividends:
+                                dividendMode === 'paying'
+                                    ? 'official_projection'
+                                    : dividendMode,
                         },
                         backtestData: Array.from({ length: 46 }, (_, i) => ({
                             date: new Date(Date.UTC(2023, i, 5))
                                 .toISOString()
                                 .slice(0, 10),
                             close: 50 + i,
-                            amount: 0.5,
+                            ...(dividendMode === 'paying'
+                                ? { amount: 0.5 }
+                                : {}),
                         })),
                     },
-                    catalog: { symbol: 'GIS', securityType: 'stock' },
+                    catalog: {
+                        symbol: 'GIS',
+                        securityType,
+                        noDividends: dividendMode === 'none',
+                    },
                     rivals: [],
                     rivalOptions: [],
                     series: {},
@@ -82,9 +99,90 @@ try {
             })
         );
         await page.goto(base + '/stock/GIS?tab=dividends');
+        if (dividendMode !== 'paying') {
+            await page
+                .getByRole('tab', { name: '상세정보', exact: true })
+                .click();
+            await page
+                .getByRole('heading', { name: 'GIS 종목 개요', exact: true })
+                .waitFor();
+            for (const label of [
+                '최근 12개월 주당 배당',
+                '최근 12개월 배당수익률',
+            ]) {
+                assert.equal(
+                    await page.getByText(label, { exact: true }).count(),
+                    dividendMode === 'none' ? 0 : 1
+                );
+            }
+            assert.equal(await page.locator('.holding-panel').count(), 0);
+            assert.equal(
+                await page
+                    .locator('.stock-facts dt')
+                    .getByText('운용사', { exact: true })
+                    .count(),
+                0
+            );
+            assert.equal(
+                await page
+                    .locator('.stock-facts dt')
+                    .getByText('기초자산', { exact: true })
+                    .count(),
+                0
+            );
+            await page
+                .getByRole('tab', { name: '공유정보', exact: true })
+                .click();
+            await page.locator('.stock-overview-share-card').waitFor();
+            assert.equal(await page.locator('.share-selector').count(), 0);
+            assert.equal(await page.locator('.artwork-grid').count(), 0);
+            assert.equal(
+                await page.locator('[data-thumbnail-kind]').count(),
+                0
+            );
+            assert.equal(
+                await page
+                    .getByRole('button', { name: /선택 카드 ZIP/ })
+                    .count(),
+                0
+            );
+            assert.equal(await page.locator('.content-grid').count(), 0);
+            assert.match(
+                await page.locator('.share-workspace .p-message').innerText(),
+                dividendMode === 'none'
+                    ? /무배당으로 확인/
+                    : /무배당을 의미하지 않습니다/
+            );
+            assert.deepEqual(errors, []);
+            console.log(
+                `PASS ${width} stock ${dividendMode}: correct dividend state, no dividend cards or export controls, no family panel or ETF facts`
+            );
+            await page.close();
+            continue;
+        }
         const cards = page.locator('.holding-etf-card');
         await cards.first().waitFor();
         assert.equal(await cards.count(), 2);
+        const trading = page.getByRole('region', {
+            name: '상품 및 거래 정보',
+            exact: true,
+        });
+        for (const name of ['운용 보수', 'NAV 관측값', '운용자산']) {
+            assert.equal(
+                await trading
+                    .getByRole('heading', { name, exact: true })
+                    .count(),
+                securityType === 'stock' ? 0 : 1
+            );
+        }
+        for (const name of ['현재 호가 스프레드', '평균 거래량', '시가총액']) {
+            assert.equal(
+                await trading
+                    .getByRole('heading', { name, exact: true })
+                    .count(),
+                1
+            );
+        }
         const schd = cards.filter({
             has: page.getByRole('link', { name: 'SCHD', exact: true }),
         });
@@ -152,9 +250,23 @@ try {
             .getByRole('button', { name: '다크 모드', exact: true })
             .click();
         assert.equal(await page.locator('html.p-dark').count(), 1);
+        await page.getByRole('tab', { name: '상세정보', exact: true }).click();
+        await page
+            .getByRole('heading', { name: 'GIS 종목 개요', exact: true })
+            .waitFor();
+        for (const label of ['운용사', '기초자산']) {
+            assert.equal(
+                await page
+                    .locator('.stock-facts dt')
+                    .getByText(label, { exact: true })
+                    .count(),
+                securityType === 'etf' ? 1 : 0
+            );
+        }
+        assert.equal(await page.locator('.holding-panel').count(), 0);
         assert.deepEqual(errors, []);
         console.log(
-            `PASS ${width}: SCHD/VYM metadata and weights/source, responsive cards, keyboard help/source, 1 shared insights request, dark and no overflow/errors`
+            `PASS ${width} ${securityType}: SCHD/VYM metadata and weights/source, responsive cards, keyboard help/source, 1 shared insights request, dark and no overflow/errors`
         );
         await page.close();
     }

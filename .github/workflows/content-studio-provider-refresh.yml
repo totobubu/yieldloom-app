@@ -66,7 +66,7 @@ concurrency:
 
 jobs:
   refresh:
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/codex/')
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/backup/official-source-discovery' || startsWith(github.ref, 'refs/heads/codex/')
     runs-on: ubuntu-24.04
     env:
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}

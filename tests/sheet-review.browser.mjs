@@ -248,6 +248,20 @@ try {
     });
     const sticky = page.locator('.document-ledger-header');
     await sticky.waitFor({ state: 'visible' });
+    await page.waitForFunction(() => {
+        const dialog = document
+            .querySelector('.ledger-dialog-scroll')
+            ?.closest('[role="dialog"]');
+        const bounds = dialog?.getBoundingClientRect();
+        return (
+            bounds &&
+            Math.abs(bounds.width - innerWidth) < 2 &&
+            Math.abs(bounds.height - innerHeight) < 2 &&
+            dialog
+                .getAnimations()
+                .every((animation) => animation.playState !== 'running')
+        );
+    });
     const alignment = await page.evaluate(() => {
         const header = document
             .querySelector('.ledger-dialog-scroll')
@@ -257,9 +271,23 @@ try {
         const clone = document
             .querySelector('.document-ledger-header')
             .getBoundingClientRect();
-        return Math.abs(header.bottom - clone.top);
+        return {
+            delta: Math.abs(header.bottom - clone.top),
+            headerBottom: header.bottom,
+            cloneTop: clone.top,
+            scrollRootTop: document
+                .querySelector('.ledger-dialog-scroll')
+                .getBoundingClientRect().top,
+            dialogTop: document
+                .querySelector('.ledger-dialog-scroll')
+                .closest('.p-dialog')
+                .getBoundingClientRect().top,
+        };
     });
-    assert(alignment < 2, 'Pinned header stays below the dialog header');
+    assert(
+        alignment.delta < 2,
+        `Pinned header stays below the dialog header: ${JSON.stringify(alignment)}`
+    );
     await ledger.locator('.p-datatable-table-container').evaluate((element) => {
         element.scrollLeft = 650;
     });

@@ -31,7 +31,7 @@ export function createSheetReportClient({
         if (
             !user ||
             !['wife', 'husband'].includes(accountId) ||
-            !['summary', 'details', 'times'].includes(section)
+            !['summary', 'details', 'times', 'followup'].includes(section)
         )
             throw new Error('로그인과 계좌를 확인해 주세요.');
         const key = `${accountId}:${section}`;
@@ -66,7 +66,7 @@ export function createSheetReportClient({
                     new Error(
                         value.error || '비공개 대조 보고서 조회에 실패했습니다.'
                     ),
-                    { status: response.status }
+                    { status: response.status, code: value.code }
                 );
             }
             if (current !== generation || owner !== user)
@@ -84,6 +84,22 @@ export function createSheetReportClient({
                 !validSourceTimeItems(value.items, accountId)
             )
                 throw new Error('원문 시각 보고서 형식을 확인해 주세요.');
+            if (
+                section === 'followup' &&
+                (value.schemaVersion !== 2 ||
+                    value.integrity?.verified !== true ||
+                    !/^[a-f0-9]{64}$/.test(
+                        value.integrity?.checkpointSha256 || ''
+                    ) ||
+                    !Array.isArray(value.observations) ||
+                    value.observations.some((o) => o.accountId !== accountId) ||
+                    !Array.isArray(value.orders) ||
+                    value.orders.some((o) => o.account !== accountId) ||
+                    !Array.isArray(value.remainingEightRows))
+            )
+                throw new Error(
+                    '후속 보고서 버전·검증·계좌 형식을 확인해 주세요.'
+                );
             cache.set(key, {
                 value,
                 expires: now() + (section === 'times' ? 300_000 : 30_000),

@@ -145,7 +145,16 @@ try {
         .waitFor();
     const cloud = page.getByRole('region', { name: '클라우드 수집·대조 현황' });
     await cloud.getByText('합성 수집 건수', { exact: true }).waitFor();
-    assert.equal(reportRequests.length, 1, 'Summary only at initial entry');
+    assert.equal(
+        reportRequests.filter((x) => x.section === 'summary').length,
+        1,
+        'One summary at initial entry'
+    );
+    assert.equal(
+        reportRequests.filter((x) => x.section === 'followup').length,
+        1,
+        'One authenticated followup at initial entry'
+    );
     await cloud.getByRole('button', { name: '비교값·원문 위치 확인' }).click();
     await cloud.getByText('합성 기존값', { exact: true }).waitFor();
     assert.equal(

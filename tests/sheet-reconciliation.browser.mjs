@@ -148,7 +148,11 @@ try {
     await page
         .getByRole('heading', { name: '출처 대조 · 원금 검증' })
         .waitFor();
+    await page.getByRole('button', { name: '확인', exact: true }).click();
     await page.getByRole('cell', { name: 'TEST', exact: true }).waitFor();
+    await page
+        .getByRole('dialog', { name: '거래 목록', exact: true })
+        .press('Escape');
     assert.equal(requests.length, 1);
     await panel
         .getByText('대조 자료 제출 · 실제 웹 자동수집과 구분', { exact: true })
@@ -210,10 +214,14 @@ try {
             .sourceValues.purchaseUsd,
         10
     );
+    await page.getByRole('button', { name: '확인', exact: true }).click();
     await page
         .locator('.ledger-list')
         .getByRole('columnheader', { name: '체결 일시', exact: true })
         .waitFor();
+    await page
+        .getByRole('dialog', { name: '거래 목록', exact: true })
+        .press('Escape');
     await panel
         .getByRole('row')
         .filter({

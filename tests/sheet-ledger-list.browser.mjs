@@ -143,10 +143,6 @@ try {
         .getByText(/전체 2285건/)
         .first()
         .waitFor();
-    await page.waitForFunction(
-        () => document.querySelectorAll('.ledger-list tbody tr').length >= 100
-    );
-    const initialMs = Date.now() - start;
     const cloud = page.getByRole('region', { name: '클라우드 수집·대조 현황' });
     await cloud.getByText('합성 수집 건수', { exact: true }).waitFor();
     assert.equal(reportRequests.length, 1, 'Summary only at initial entry');
@@ -164,6 +160,44 @@ try {
         'Details reused when reopened'
     );
     await cloud.getByRole('button', { name: '비교 근거 접기' }).click();
+    assert.equal(
+        await ledger.count(),
+        0,
+        'No inline table before confirmation'
+    );
+    const readsBeforeOpen = requests.length;
+    await page.getByRole('button', { name: '확인', exact: true }).click();
+    await page.waitForFunction(
+        () => document.querySelectorAll('.ledger-list tbody tr').length >= 100
+    );
+    const fullScreen = page.getByRole('dialog', {
+        name: '거래 목록',
+        exact: true,
+    });
+    await page.waitForFunction(() => {
+        const bounds = document
+            .querySelector('.ledger-dialog-scroll')
+            ?.closest('[role="dialog"]')
+            ?.getBoundingClientRect();
+        return (
+            bounds &&
+            Math.abs(bounds.width - innerWidth) < 2 &&
+            Math.abs(bounds.height - innerHeight) < 2
+        );
+    });
+    const fullBounds = await fullScreen.boundingBox();
+    assert(Math.abs(fullBounds.width - 1440) < 2);
+    assert(Math.abs(fullBounds.height - 1000) < 2);
+    await fullScreen.press('Escape');
+    await fullScreen.waitFor({ state: 'hidden' });
+    await page.getByRole('button', { name: '확인', exact: true }).click();
+    await fullScreen.waitFor();
+    assert.equal(
+        requests.length,
+        readsBeforeOpen,
+        'Open/close/reopen uses loaded data'
+    );
+    const initialMs = Date.now() - start;
     console.log(`List initial render ${initialMs}ms`);
     assert(initialMs < 20000);
     assert.equal(await bodyRows.count(), 100);
@@ -174,9 +208,9 @@ try {
             .locator('.p-datatable-table-container')
             .evaluate((el) => Math.abs(el.scrollHeight - el.clientHeight) < 2)
     );
-    await page.evaluate(() =>
-        window.scrollTo(0, document.documentElement.scrollHeight)
-    );
+    await page
+        .locator('.ledger-dialog-scroll')
+        .evaluate((el) => el.scrollTo(0, el.scrollHeight));
     await page.waitForFunction(
         () =>
             Number(
@@ -200,12 +234,16 @@ try {
     await ledger
         .getByRole('columnheader', { name: '수량(주)', exact: true })
         .click();
+    const quantityColumnIndex = (
+        await ledger.getByRole('columnheader').allTextContents()
+    ).findIndex((label) => label.trim().startsWith('수량(주)'));
+    assert(quantityColumnIndex >= 0);
     assert.equal(
         (
             await bodyRows
                 .first()
                 .locator('td')
-                .nth(6)
+                .nth(quantityColumnIndex)
                 .locator('strong')
                 .innerText()
         ).trim(),
@@ -219,7 +257,10 @@ try {
     await page
         .getByRole('button', { name: '거래 행 추가', exact: true })
         .click();
-    const dialog = page.getByRole('dialog');
+    const dialog = page.getByRole('dialog', {
+        name: '수동 거래 추가',
+        exact: true,
+    });
     await dialog.getByRole('button', { name: '취소', exact: true }).click();
     assert.equal(requests.length, 1);
     await page
@@ -285,6 +326,7 @@ try {
         .getByText(/전체 2286건/)
         .first()
         .waitFor();
+    await page.getByRole('button', { name: '확인', exact: true }).click();
     await page
         .getByRole('textbox', { name: '거래 검색', exact: true })
         .fill(id);
@@ -320,9 +362,9 @@ try {
         rows.length,
         { timeout: 60000 }
     );
-    await page.evaluate(() =>
-        window.scrollTo(0, document.documentElement.scrollHeight)
-    );
+    await page
+        .locator('.ledger-dialog-scroll')
+        .evaluate((el) => el.scrollTo(0, el.scrollHeight));
     await page.getByText('목록 끝', { exact: true }).waitFor();
     assert((await bodyRows.count()) <= 100, 'DOM window must remain bounded');
     assert.equal(requests.filter((r) => r.method === 'GET').length, 2);

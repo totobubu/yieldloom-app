@@ -52,6 +52,13 @@ test('same evidence ID conflicts preserve variants rather than overwrite; null f
     const result = buildTossTrialRows([a, b]);
     assert.equal(result.length, 2);
     assert(result.every((r) => r.identityConflict));
+    assert.deepEqual(
+        result.map((r) => r.id).sort(),
+        buildTossTrialRows([b, a])
+            .map((r) => r.id)
+            .sort(),
+        'Revision identity is stable across response order'
+    );
     assert.equal(a.values.commissionUsd, null);
 });
 test('URL orderId changes cannot merge orders or become a permanent identity', () => {
@@ -149,4 +156,20 @@ test('report connection confirmation stays separate from mapping approval and fi
     assert.throws(() =>
         projectTrialReviewReport({ ...report, schemaVersion: 1 })
     );
+});
+
+test('expected and unpaid dividends remain observations, never confirmed cash receipts', () => {
+    const result = buildTossTrialRows([
+        observation('expected', {
+            kind: 'TOSS_EXPECTED_DIVIDEND',
+            type: 'DIVIDEND',
+            forecast: true,
+            values: { netDividendUsd: 7 },
+        }),
+    ]);
+    assert.equal(
+        result[0].eventStatus,
+        '예상·지급 미확인 · 실제 입금 확정 아님'
+    );
+    assert.equal(result[0].approvalStatus, '미승인');
 });

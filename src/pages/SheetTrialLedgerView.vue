@@ -8,6 +8,7 @@
         watch,
     } from 'vue';
     import Select from 'primevue/select';
+    import TossTrialLedger from '@/components/portfolio/TossTrialLedger.vue';
     import DocumentLedgerHeader from '@/components/portfolio/DocumentLedgerHeader.vue';
     import SheetEvidenceCell from '@/components/portfolio/SheetEvidenceCell.vue';
     import { buildLedgerReview } from '../../lib/sheet-review.js';
@@ -530,7 +531,7 @@
         <header>
             <div>
                 <span class="eyebrow">관리자 · 시험 계좌</span>
-                <h1>부부 거래 목록</h1>
+                <h1>토스 원본 기반 부부 시험 장부</h1>
                 <p>
                     남편과 아내의 매수·배당을 시간순으로 확인하고, 빠진 비용과
                     자금 출처를 정리하세요.
@@ -551,6 +552,22 @@
             notice
         }}</Message>
         <p role="status" aria-live="polite">{{ progress }}</p>
+        <TossTrialLedger
+            :key="
+                firebaseUser
+                    ? `${firebaseUser.uid}:${firebaseUser.email}:${firebaseUser.emailVerified}`
+                    : 'signed-out'
+            "
+            :observations="observations"
+            :sheet-rows="rows"
+            :labels="labels"
+            :busy="busy"
+            @inspect="inspectObservation" />
+        <h2>기존 시트 참고 · 이행 대조</h2>
+        <p>
+            아래 합계와 승인·수동 추가는 기존 시험 장부 기준입니다. 위 토스
+            관측과 합산하지 않습니다.
+        </p>
         <SheetCloudReview :user="firebaseUser" />
         <section class="summary-grid" aria-label="거래 요약">
             <article>

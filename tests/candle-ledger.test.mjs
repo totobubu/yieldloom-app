@@ -59,13 +59,13 @@ test('API shares requests, persists once and returns history after empty respons
     await Promise.all([load('AAPL', fetcher), load('aapl', fetcher)]);
     await load('AAPL', fetcher);
     assert.equal(calls, 1);
-    assert.equal(f.puts(), 2); // One source observation and one merged ledger.
+    assert.equal(f.puts(), 3); // Source observation, ledger and durable collection request.
     for (const failed of [async () => ({ ok: false, status: 503 }), async () => ({ ok: true, json: async () => ({ chart: { result: [] } }) })]) {
         const saved = await make()('AAPL', failed);
         assert.equal(saved.stale, true);
         assert.equal(saved.candles.length, 1);
     }
-    assert.equal(f.puts(), 2);
+    assert.equal(f.puts(), 3);
 });
 test('identity verification rejects wrong currency, symbol and exchange before persistence', () => {
     const meta = { symbol: 'AAPL', exchangeName: 'NMS', currency: 'USD' };

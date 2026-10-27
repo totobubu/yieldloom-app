@@ -197,9 +197,8 @@ Persistence currently requires a registered catalog instrument whose Yahoo
 symbol, currency and exchange match. Unverified identities are not registered.
 Each saved instrument retains one pending inception-backfill request and partial
 coverage; a successful two-year fetch is never claimed as complete history.
-The pending request is not yet dispatched to the Python collection queue.
-Unknown-symbol discovery, queue dispatch, inception backfill, publication and
-OpenDART are separate unfinished integrations. Raw source payloads and revision
+The API also writes a small conditional outbox object at `market/v1/requests/<symbol>.json`. The targeted Python runner consumes it through `--request-symbol SYMBOL`, revalidates identity against the owned catalog, and registers inception-to-date jobs.
+Unknown-symbol enrichment and automatic scheduler discovery remain unfinished; targeted backfill execution and private release review are connected but disabled in scheduled workflows. Raw source payloads and revision
 records are never included in the anonymous API response.
 
 Validation: `node --test tests/candle-ledger.test.mjs tests/stock-prices.test.mjs`.

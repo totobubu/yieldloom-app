@@ -34,7 +34,7 @@ def health(store, config, now):
     return rows
 
 
-def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None):
+def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None, request_symbols=None, request_fetcher=None, request_dividends=False):
     remote = ObservedObjects(remote)
     root = private_path(root)
     clock = now or datetime.now(timezone.utc)
@@ -55,11 +55,18 @@ def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None)
             options = {'now': clock}
             if transport:
                 options['transport'] = transport
-            result = collect(store, config, **options)
-            result['health'] = health(store, config, clock)
+            active_config = {**config, 'sources': []} if request_symbols else config
+            result = collect(store, active_config, **options)
+            if request_symbols:
+                from scripts.data_platform.request_bridge import process_requests
+                catalog=json.loads((ROOT/'data-v2/catalog-seed.json').read_text())['instruments']
+                request_options={'fetcher':request_fetcher} if request_fetcher else {}
+                result['requestedCollection']=process_requests(store,remote,request_symbols,catalog,
+                    enabled=True,now=clock,dividends=request_dividends,**request_options)
+            result['health'] = health(store, active_config, clock)
             result['runId'] = run_id
             from scripts.data_platform.quality import evaluate
-            result['quality'] = evaluate(store, config, now=clock)
+            result['quality'] = evaluate(store, active_config, now=clock)
             # Source failures still need durable retry state and successful-source updates.
             if not previous or previous['schemaVersion'] != 2 or store.db.total_changes != initial_changes:
                 manifest = backup(store, remote, etag, run_id, previous=previous)
@@ -71,7 +78,8 @@ def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None)
             result['checkpointFiles'] = {entry['path']: 'reused' if old_files.get(entry['path']) == entry else 'updated'
                 for entry in manifest['files'] if entry['path'] in ('observations.sqlite', 'collection.sqlite')}
             result['r2'] = remote.metrics.copy()
-            result['status'] = 'degraded' if result['failed'] or any(r['errors'] for r in result['quality']['sources']) or any(
+            requested_failure = any(r.get('status') == 'invalid_request' for r in result.get('requestedCollection', {}).get('requests', [])) or any(j.get('status') == 'retry' for j in result.get('requestedCollection', {}).get('jobs', [])) or result.get('requestedCollection', {}).get('dividendJob', {}).get('status') == 'retry'
+            result['status'] = 'degraded' if requested_failure or result['failed'] or any(r['errors'] for r in result['quality']['sources']) or any(
                 r['collectionStale'] or r['dataStale'] for r in result['health']) else 'healthy'
             (root / 'review' / 'run.json').write_text(encode(result) + '\n')
             return result
@@ -84,8 +92,12 @@ def main():
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--run-id', required=True)
     parser.add_argument('--bootstrap', action='store_true')
+    parser.add_argument('--request-symbol', action='append', help='Explicitly process a targeted API outbox request; omitted by default')
+    parser.add_argument('--request-dividends', action='store_true', help='Also run one official dividend backfill and its private release review')
     args = parser.parse_args()
-    result = run(R2Objects(), args.root, load_registry(), args.run_id, args.bootstrap)
+    if args.request_dividends and not args.request_symbol:
+        parser.error('--request-dividends requires --request-symbol')
+    result = run(R2Objects(), args.root, load_registry(), args.run_id, args.bootstrap, request_symbols=args.request_symbol, request_dividends=args.request_dividends)
     print(encode(result))
     if os.environ.get('GITHUB_STEP_SUMMARY'):
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as target:

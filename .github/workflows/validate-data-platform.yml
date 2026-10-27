@@ -34,5 +34,6 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                   node-version: '24'
+            - run: npm ci --no-audit --no-fund
             - run: python -m unittest discover -s tests/data_platform -v
             - run: node --check scripts/data_platform/fetch.mjs

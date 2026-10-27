@@ -127,6 +127,7 @@ try {
         await route.fulfill({ status: response.code, json: response.payload });
     });
     await page.goto(`${base}/admin/sheet-ledger`);
+    await page.getByRole('button', { name: '확인', exact: true }).click();
     const ledger = page.getByRole('region', { name: '거래 목록', exact: true });
     await ledger
         .getByRole('columnheader', { name: '주문 금액($)', exact: true })
@@ -134,6 +135,25 @@ try {
     await ledger
         .getByRole('columnheader', { name: '주문 일시', exact: true })
         .waitFor();
+    assert.deepEqual(
+        (await ledger.getByRole('columnheader').allTextContents())
+            .slice(0, 4)
+            .map((label) => label.trim()),
+        ['계좌', '거래일', '거래시간', '유형']
+    );
+    assert.equal(
+        await ledger
+            .getByRole('columnheader', { name: '거래시간', exact: true })
+            .count(),
+        1
+    );
+    assert.equal(
+        await ledger
+            .getByText('구글 시트: 2025-02-03', { exact: true })
+            .count(),
+        0,
+        'Identical date source lines are hidden without changing source data'
+    );
     assert.match(
         await page.getByLabel('출처 대조 집계').innerText(),
         /전체 등록 거래 35행/
@@ -213,29 +233,33 @@ try {
         'immutable'
     );
     await page.reload();
+    await page.getByRole('button', { name: '확인', exact: true }).click();
     await ledger.locator('.approved').first().waitFor();
     assert.equal(await conflictCount.innerText(), '0행');
     const writes = db.writes.length,
         beforeScroll = requests.length;
     await page.evaluate(() => {
         const region = document.querySelector('.document-list-region');
-        window.scrollTo(
-            0,
-            region.getBoundingClientRect().top + window.scrollY + 200
-        );
+        const root = document.querySelector('.ledger-dialog-scroll');
+        root.scrollTop +=
+            region.getBoundingClientRect().top -
+            root.getBoundingClientRect().top +
+            200;
     });
     const sticky = page.locator('.document-ledger-header');
     await sticky.waitFor({ state: 'visible' });
     const alignment = await page.evaluate(() => {
         const header = document
-            .querySelector('.studio-header')
+            .querySelector('.ledger-dialog-scroll')
+            .closest('.p-dialog')
+            .querySelector('.p-dialog-header')
             .getBoundingClientRect();
         const clone = document
             .querySelector('.document-ledger-header')
             .getBoundingClientRect();
         return Math.abs(header.bottom - clone.top);
     });
-    assert(alignment < 2, 'Pinned header stays below the site header');
+    assert(alignment < 2, 'Pinned header stays below the dialog header');
     await ledger.locator('.p-datatable-table-container').evaluate((element) => {
         element.scrollLeft = 650;
     });
@@ -280,10 +304,11 @@ try {
     );
     await page.evaluate(() => {
         const region = document.querySelector('.document-list-region');
-        window.scrollTo(
-            0,
-            region.getBoundingClientRect().top + window.scrollY + 200
-        );
+        const root = document.querySelector('.ledger-dialog-scroll');
+        root.scrollTop +=
+            region.getBoundingClientRect().top -
+            root.getBoundingClientRect().top +
+            200;
     });
     await sticky.waitFor({ state: 'visible' });
     await page.screenshot({ path: '/tmp/sheet-review-mobile.png' });

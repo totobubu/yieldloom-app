@@ -9,6 +9,7 @@
         format: { type: Function, required: true },
         disabled: Boolean,
         status: { type: String, default: '' },
+        hideMatchingSources: Boolean,
     });
     defineEmits(['choose']);
     const approvalTime = (value) =>
@@ -23,16 +24,36 @@
                 text: `${props.format(source.value)} · ${source.label}${source.alias ? ' · 티커 별칭 후보' : ''} · ${source.location}`,
             }))
     );
+    const matchesCurrent = (source) =>
+        props.hideMatchingSources &&
+        props.comparison?.current != null &&
+        source.eligible &&
+        source.value === props.comparison.current;
+    const visibleSources = computed(() =>
+        (props.comparison?.sources || []).filter(
+            (source) => !matchesCurrent(source)
+        )
+    );
+    const matchingProvenance = computed(() => {
+        const matching = (props.comparison?.sources || []).filter(
+            matchesCurrent
+        );
+        return matching.length
+            ? `일치 출처: ${matching.map((source) => `${source.label} · ${source.location}`).join('\n')}`
+            : undefined;
+    });
 </script>
 <template>
     <div class="evidence-cell">
-        <strong v-if="comparison?.current != null">{{
-            format(comparison.current)
-        }}</strong>
+        <strong
+            v-if="comparison?.current != null"
+            :title="matchingProvenance"
+            >{{ format(comparison.current) }}</strong
+        >
         <span v-else class="missing">미제공</span>
         <small v-if="status === '추정'">계산 추정값</small>
         <template v-if="comparison?.sources.length">
-            <small v-for="source in comparison.sources" :key="source.id">
+            <small v-for="source in visibleSources" :key="source.id">
                 {{ source.label }}: {{ format(source.value) }}
                 <span v-if="!source.eligible"> · 연결 확인 필요</span>
             </small>

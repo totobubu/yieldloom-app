@@ -3,12 +3,13 @@
     const props = defineProps({
         container: { type: Object, default: null },
         region: { type: Object, default: null },
+        scrollRoot: { type: Object, default: null },
     });
     const host = ref(null);
     let dispose = () => {};
     watch(
-        () => [props.container, props.region, host.value],
-        ([container, region, overlay]) => {
+        () => [props.container, props.region, host.value, props.scrollRoot],
+        ([container, region, overlay, scrollRoot]) => {
             dispose();
             if (!container || !region || !overlay) return;
             const scroller = container.querySelector(
@@ -57,12 +58,22 @@
                 }
                 const bounds = scroller.getBoundingClientRect();
                 const regionBounds = region.getBoundingClientRect();
-                const top = Math.max(
-                    0,
-                    document
-                        .querySelector('.studio-header')
-                        ?.getBoundingClientRect().bottom || 0
-                );
+                let top = scrollRoot
+                    ? scrollRoot.getBoundingClientRect().top
+                    : Math.max(
+                          0,
+                          document
+                              .querySelector('.studio-header')
+                              ?.getBoundingClientRect().bottom || 0
+                      );
+                const toolbar = scrollRoot?.querySelector('.approval-toolbar');
+                const toolbarBounds = toolbar?.getBoundingClientRect();
+                if (
+                    toolbarBounds &&
+                    toolbarBounds.top <= top + 1 &&
+                    toolbarBounds.bottom > top
+                )
+                    top = toolbarBounds.bottom;
                 const height = head.getBoundingClientRect().height;
                 const visible =
                     regionBounds.top < top &&
@@ -92,6 +103,8 @@
                 attributes: true,
                 characterData: true,
             });
+            const section = scrollRoot?.querySelector('.ledger-list');
+            if (section) mutations.observe(section, { childList: true });
             const sort = (event) => {
                 const cell = event.target.closest('th[data-original-column]');
                 if (cell)
@@ -101,7 +114,10 @@
             };
             overlay.addEventListener('click', sort);
             scroller.addEventListener('scroll', schedule, { passive: true });
-            window.addEventListener('scroll', schedule, { passive: true });
+            const scrollTarget = scrollRoot || window;
+            scrollTarget.addEventListener('scroll', schedule, {
+                passive: true,
+            });
             window.addEventListener('resize', rebuild, { passive: true });
             schedule();
             dispose = () => {
@@ -110,7 +126,7 @@
                 mutations.disconnect();
                 overlay.removeEventListener('click', sort);
                 scroller.removeEventListener('scroll', schedule);
-                window.removeEventListener('scroll', schedule);
+                scrollTarget.removeEventListener('scroll', schedule);
                 window.removeEventListener('resize', rebuild);
                 overlay.replaceChildren();
             };
@@ -120,7 +136,7 @@
     onBeforeUnmount(() => dispose());
 </script>
 <template>
-    <Teleport to="body">
+    <Teleport :to="scrollRoot || 'body'">
         <div
             ref="host"
             class="p-datatable document-ledger-header"

@@ -206,3 +206,15 @@ Validation: `node --test tests/candle-ledger.test.mjs tests/stock-prices.test.mj
 Tests use an in-memory conditional object store, including competing writers,
 process recreation, history shrinkage, corrections, empty responses, outages and
 identity mismatches. No production storage requests are made.
+
+Read-only migration review of two downloaded legacy-format files:
+
+```sh
+python -m scripts.data_platform.legacy_price_review --source /private/source.json --destination /private/copy.json --symbol AAPL --currency USD
+```
+
+The command prints hashes, observed date bounds, missing/changed dates and a
+preservation verdict; it performs no network or storage writes. A successful
+copy comparison does not establish inception completeness or adjustment basis.
+The local checkout has no `public/data` source archive, so this change was tested
+with synthetic files, not a production price migration.

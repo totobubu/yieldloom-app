@@ -81,21 +81,20 @@ try {
                 Math.abs(el.scrollHeight - el.clientHeight) < 2
         )
     );
-    const before = await ledger
-        .locator('.p-datatable-frozen-column')
-        .first()
-        .boundingBox();
-    await container.evaluate((el) => (el.scrollLeft = 700));
-    const after = await ledger
-        .locator('.p-datatable-frozen-column')
-        .first()
-        .boundingBox();
-    assert(Math.abs(before.x - after.x) < 2);
+    assert.equal(
+        await ledger.locator('.p-datatable-frozen-column').count(),
+        0,
+        'Narrow screens keep every field reachable by horizontal scroll'
+    );
+    await container.evaluate((el) => {
+        el.scrollLeft = 700;
+    });
+    assert(await container.evaluate((el) => el.scrollLeft > 0));
     assert.equal(await page.getByLabel('시트 URL', { exact: true }).count(), 0);
     assert.equal(await ledger.locator('.p-paginator').count(), 0);
     assert.deepEqual(errors, []);
     console.log(
-        'Passed: synthetic edit/filter, importer removed, no pagination or inner Y scroll, mobile horizontal/frozen columns; GET=1, PATCH=1, filter requests=0.'
+        'Passed: synthetic edit/filter, importer removed, no pagination or inner Y scroll, mobile horizontal scrolling and responsive column freezing; GET=1, PATCH=1, filter requests=0.'
     );
 } finally {
     await browser.close();

@@ -10,6 +10,7 @@
         disabled: Boolean,
         status: { type: String, default: '' },
         hideMatchingSources: Boolean,
+        missingLabel: { type: String, default: '미제공' },
     });
     defineEmits(['choose']);
     const approvalTime = (value) =>
@@ -50,7 +51,7 @@
             :title="matchingProvenance"
             >{{ format(comparison.current) }}</strong
         >
-        <span v-else class="missing">미제공</span>
+        <span v-else class="missing">{{ missingLabel }}</span>
         <small v-if="status === '추정'">계산 추정값</small>
         <template v-if="comparison?.sources.length">
             <small v-for="source in visibleSources" :key="source.id">

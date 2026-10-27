@@ -4,18 +4,84 @@ import { createApiHandler } from '../lib/api-handler.js';
 import { normalizeSymbol, validSymbol } from '../lib/thumbnail-projection.js';
 import { fetchJson, PriceError } from '../lib/thumbnail-prices.js';
 import { createTransportCache } from '../lib/request-cache.js';
+import { configuredCandleLedger, configuredOwnedCandleReader, mergeCandles } from '../lib/candle-ledger.js';
+import catalog from '../data-v2/catalog-seed.json' with { type: 'json' };
 
-const candleCache = createTransportCache({ ttlMs: 300_000, maxEntries: 200 });
-export function loadStockCandles(symbol, fetcher = fetch) {
-    const ticker = normalizeSymbol(symbol);
-    if (!validSymbol(ticker))
-        return Promise.reject(
-            new PriceError('올바른 티커를 입력해 주세요.', 400)
-        );
-    return candleCache(fetcher)(ticker, () =>
-        fetchStockCandles(ticker, fetcher)
-    );
+const identities = new Map(catalog.instruments.map(row => [row.symbol, row]));
+const exchangeMarkets = { NMS: 'NASDAQ', NGM: 'NASDAQ', NCM: 'NASDAQ', NYQ: 'NYSE', PCX: 'NYSEARCA', ASE: 'NYSEAMERICAN', BATS: 'BATS' };
+export function verifiedCandleIdentity(symbol, meta, instrument = identities.get(symbol)) {
+    const equivalent = value => normalizeSymbol(value).replace(/\.([AB])$/, '-$1');
+    if (!instrument?.isin || instrument.active === false || equivalent(meta?.symbol) !== equivalent(symbol)
+        || meta.currency !== instrument.currency || exchangeMarkets[meta.exchangeName] !== instrument.market) return null;
+    return { symbol, isin: instrument.isin, market: instrument.market, currency: instrument.currency,
+        ipoDate: instrument.ipoDate ?? null };
 }
+
+const publicLedger = (value, stale = false) => ({
+    symbol: value.symbol, currency: value.currency, timezone: value.timezone, source: value.source,
+    candles: value.candles, events: value.events, asOf: value.asOf,
+    persistence: 'stored', stale, coverage: value.coverage,
+    collectionCoverage: value.collectionCoverage ?? null,
+    collection: value.collectionRequest, adjustmentBasis: value.adjustmentBasis ?? 'upstream_unverified',
+});
+
+export function createStockCandleLoader({ getLedger = configuredCandleLedger, getOwnedReader = configuredOwnedCandleReader, resolveIdentity = verifiedCandleIdentity } = {}) {
+    const cache = createTransportCache({ ttlMs: 300_000, maxEntries: 200 });
+    return (symbol, fetcher = fetch) => {
+        const ticker = normalizeSymbol(symbol);
+        if (!validSymbol(ticker)) return Promise.reject(new PriceError('올바른 티커를 입력해 주세요.', 400));
+        return cache(fetcher)(ticker, async () => {
+            const ledger = isDelisted(ticker) ? null : getLedger();
+            let owned;
+            try {
+                const reader = isDelisted(ticker) ? null : getOwnedReader();
+                if (reader) {
+                    const result = await reader.read(ticker);
+                    const instrument = identities.get(ticker);
+                    if (result?.value?.identity && instrument &&
+                        ['symbol', 'isin', 'currency', 'market', 'ipoDate'].every(key =>
+                            (result.value.identity[key] ?? null) === (instrument[key] ?? null))) owned = result;
+                }
+            } catch { /* A missing or corrupt optional model keeps the established quote route. */ }
+            let saved;
+            if (ledger) saved = await ledger.read(ticker);
+            let live;
+            try { live = await fetchStockCandles(ticker, fetcher); }
+            catch (error) {
+                if (saved?.value?.candles?.length) {
+                    if (owned?.value?.candles?.length) {
+                        try { return publicLedger(mergeCandles(owned.value, saved.value, owned.value.identity, 'saved-reference'), true); }
+                        catch { /* Keep the existing saved response if histories cannot be joined. */ }
+                    }
+                    return publicLedger(saved.value, true);
+                }
+                if (owned?.value?.candles?.length) return publicLedger(owned.value, true);
+                throw error;
+            }
+            const { rawObservation, ...value } = live;
+            const withOwned = payload => {
+                if (!owned?.value?.candles?.length || !resolveIdentity(ticker, rawObservation?.chart?.result?.[0]?.meta)) return payload;
+                try {
+                    const merged = mergeCandles(owned.value, payload, owned.value.identity, 'live-reference');
+                    return { ...publicLedger(merged), persistence: payload.persistence,
+                        historySource: 'owned', stale: payload.stale ?? false, coverage: merged.coverage };
+                } catch { return payload; }
+            };
+            if (!ledger) return withOwned({ ...value, persistence: 'disabled' });
+            const identity = resolveIdentity(ticker, rawObservation?.chart?.result?.[0]?.meta);
+            if (!identity) {
+                if (saved?.value?.candles?.length) return { ...publicLedger(saved.value, true), collectionError: 'identity_unverified' };
+                return { ...value, persistence: 'identity_unverified' };
+            }
+            try { return withOwned(publicLedger(await ledger.append(value, identity, rawObservation))); }
+            catch {
+                return { ...(saved?.value ? publicLedger(saved.value, true) : value), persistence: 'write_failed' };
+            }
+        });
+    };
+}
+
+export const loadStockCandles = createStockCandleLoader();
 async function fetchStockCandles(symbol, fetcher) {
     const ticker = normalizeSymbol(symbol);
     if (!validSymbol(ticker))
@@ -128,7 +194,7 @@ async function fetchStockCandles(symbol, fetcher) {
         ],
         asOf: new Date().toISOString(),
     };
-    return value;
+    return { ...value, rawObservation: payload };
 }
 
 export default createApiHandler(

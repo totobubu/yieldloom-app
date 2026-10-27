@@ -1,5 +1,12 @@
 <script setup>
-    import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
+    import {
+        computed,
+        onMounted,
+        onBeforeUnmount,
+        ref,
+        shallowRef,
+        watch,
+    } from 'vue';
     import Select from 'primevue/select';
     import DocumentLedgerHeader from '@/components/portfolio/DocumentLedgerHeader.vue';
     import SheetEvidenceCell from '@/components/portfolio/SheetEvidenceCell.vue';
@@ -7,6 +14,14 @@
     import { useDocumentLedgerWindow } from '@/composables/useDocumentLedgerWindow.js';
     import SheetReconciliationPanel from '@/components/portfolio/SheetReconciliationPanel.vue';
     import SheetCloudReview from '@/components/portfolio/SheetCloudReview.vue';
+    import SheetTossSyncPanel from '@/components/portfolio/SheetTossSyncPanel.vue';
+    import SheetSourceTimes from '@/components/portfolio/SheetSourceTimes.vue';
+    import { createSheetReportClient } from '@/services/sheetReports.js';
+    import {
+        indexSourceTimes,
+        sourceTimesForRow,
+        observationTimeItems,
+    } from '../../lib/sheet-source-times.js';
     import {
         comparisonFields,
         extraFields,
@@ -23,6 +38,40 @@
     } from '../../lib/sheet-ledger.js';
 
     const client = createSheetLedgerClient();
+    const timeClient = createSheetReportClient();
+    const sourceTimes = shallowRef([]),
+        timeError = ref(''),
+        timeLoading = ref(false);
+    const timeIndex = computed(() => indexSourceTimes(sourceTimes.value));
+    let timeGeneration = 0;
+    async function loadSourceTimes(refresh = false) {
+        const current = ++timeGeneration;
+        const user = firebaseUser.value;
+        if (!user || !rows.value.length) return;
+        timeLoading.value = true;
+        timeError.value = '';
+        const ids = account.value
+            ? [account.value]
+            : [...new Set(rows.value.map((r) => r.accountId))];
+        const results = await Promise.allSettled(
+            ids.map((id) => timeClient.load(user, id, 'times', { refresh }))
+        );
+        if (current !== timeGeneration || user !== firebaseUser.value) return;
+        const denied = results.some(
+            (r) =>
+                r.status === 'rejected' && [401, 403].includes(r.reason.status)
+        );
+        sourceTimes.value = denied
+            ? []
+            : results.flatMap((r) =>
+                  r.status === 'fulfilled' ? r.value.items : []
+              );
+        timeError.value = results
+            .filter((r) => r.status === 'rejected')
+            .map((r) => r.reason.message)
+            .join(' / ');
+        timeLoading.value = false;
+    }
     const identityQuery =
         typeof window === 'undefined'
             ? null
@@ -69,6 +118,9 @@
         listScrollRoot = ref(null),
         ledgerLayoutVersion = ref(0),
         ledgerOpen = ref(false);
+    watch([ledgerOpen, account], ([open]) => {
+        if (open) loadSourceTimes();
+    });
     const labels = {
         quantity: '수량(주)',
         unitPriceUsd: '매수단가($)',
@@ -444,6 +496,11 @@
         () => {
             generation++;
             client.clear();
+            timeGeneration++;
+            timeClient.clear();
+            sourceTimes.value = [];
+            timeError.value = '';
+            timeLoading.value = false;
             rows.value = [];
             observations.value = [];
             observationStates.value = {};
@@ -463,6 +520,8 @@
     onBeforeUnmount(() => {
         generation++;
         client.clear();
+        timeGeneration++;
+        timeClient.clear();
     });
 </script>
 
@@ -551,6 +610,10 @@
             {{ review.counts.awaitingApproval }}건. 일치한 값은 자동 채택하지
             않으며, 비교 자료가 없는 행은 검증 완료로 계산하지 않습니다.
         </p>
+        <SheetTossSyncPanel
+            :user="firebaseUser"
+            :ledger-client="client"
+            @saved="apply" />
         <SheetReconciliationPanel
             :key="
                 firebaseUser
@@ -738,7 +801,21 @@
                         ‘대조 자료 목록 → 출처 비교’에서 확인하세요. 비공개 R2
                         보고서의 수집 건수와 이 표에 연결된 자료 수는 다릅니다.
                         거래시간은 원문의 거래 일시이며 주문·체결·결제 일시와
-                        구분합니다. 저장된 시각이 없으면 미제공으로 표시합니다.
+                        구분합니다. ‘토스 원문 시각’을 펼치면 저장된 시각과 원문
+                        위치를 확인합니다. 후보 조회는 장부값 승인과 별개입니다.
+                        보관된 자료를 조회하며 최신 토스 웹 자동 수집을 실행하지
+                        않습니다.
+                    </p>
+                    <p v-if="timeLoading" role="status">
+                        저장된 토스 원문 시각을 읽고 있습니다.
+                    </p>
+                    <p v-else-if="timeError" role="alert">
+                        {{ timeError }}
+                        <Button
+                            label="원문 시각 다시 조회"
+                            size="small"
+                            severity="secondary"
+                            @click="loadSourceTimes(true)" />
                     </p>
                     <div ref="listRegion" class="document-list-region">
                         <div
@@ -830,6 +907,7 @@
                                                     .transactionAt || null
                                             "
                                             label="거래시간"
+                                            missing-label="장부 시각 미확정"
                                             hide-matching-sources
                                             :row-label="rowLabel(data)"
                                             :format="displayEvidence"
@@ -845,6 +923,18 @@
                                                     $event
                                                 )
                                             " />
+                                        <SheetSourceTimes
+                                            :candidates="[
+                                                ...sourceTimesForRow(
+                                                    data,
+                                                    timeIndex
+                                                ),
+                                                ...observationTimeItems(
+                                                    data,
+                                                    review.byRow.get(data.id)
+                                                        ?.observations || []
+                                                ),
+                                            ]" />
                                     </template>
                                 </Column>
                                 <Column

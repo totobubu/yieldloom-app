@@ -13,8 +13,6 @@ from pathlib import Path
 from urllib.parse import urlencode, urljoin, urlparse
 from zoneinfo import ZoneInfo
 
-from bs4 import BeautifulSoup
-
 from .database import ContentDatabase
 from .models import utc_now_iso
 
@@ -58,6 +56,7 @@ def validate_issuer_url(url, issuer):
 
 
 def discover_bac(content, issuer):
+    from bs4 import BeautifulSoup
     soup = BeautifulSoup(content, 'html.parser')
     links = set()
     for link in soup.select('a[href]'):
@@ -75,6 +74,7 @@ def discover_bac(content, issuer):
 
 def parse_bac(content, url, issuer):
     validate_issuer_url(url, issuer)
+    from bs4 import BeautifulSoup
     soup = BeautifulSoup(content, 'html.parser')
     paragraphs = [re.sub(r'\s+', ' ', ' '.join(p.stripped_strings)).strip() for p in soup.find_all('p')]
     dates = {m.group(1) for p in paragraphs if (m := re.fullmatch(r'\s*(' + DATE_TEXT + r')\s+at\s+.+', p))}

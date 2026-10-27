@@ -21,7 +21,8 @@ const frequencyLabel = (frequency) => ({ 매주: '주배당', 매월: '월배당
 		:date-label="`비교 기간 · 약 ${periodMonths ?? '—'}개월`"
 		:date-value="data?.comparison ? `${date(data.comparison.startDate)} — ${date(data.comparison.endDate)}` : ''"
 		data-thumbnail-kind="rival">
-		<template v-if="data?.comparison">
+		<p v-if="data?.comparison?.quality?.message" role="status">{{ data.comparison.quality.message }}</p>
+		<template v-if="data?.comparison && data.comparison.available !== false">
 			<section class="base"><span>기준 {{ data.underlying }}</span><b>{{
 				price(data.comparison.underlying.startPrice) }} → {{ price(data.comparison.underlying.endPrice)
 					}}</b><b>{{ pct(data.comparison.underlying.priceReturn)
@@ -48,7 +49,7 @@ const frequencyLabel = (frequency) => ({ 매주: '주배당', 매월: '월배당
 							}}</em></span></div>
 			</section>
 		</template>
-		<p v-else class="unavailable">라이벌을 선택하면 공통 가격 이력 기준 비교를 만들 수 있습니다.</p>
+		<p v-else-if="!data?.comparison" class="unavailable">라이벌을 선택하면 공통 가격 이력 기준 비교를 만들 수 있습니다.</p>
 		<template #footer>동일 기초자산 ETF · 초기 투자금 $10,000 · 배당 재투자 기준</template>
 	</ThumbnailCardShell>
 </template>

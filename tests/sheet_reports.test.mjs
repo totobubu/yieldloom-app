@@ -7,6 +7,7 @@ import {
     createPrivateReportStore,
     reportDigest,
     reportIndexKey,
+    sourceTimesIndexKey,
 } from '../lib/private-report-store.js';
 import { createSheetReportClient } from '../src/services/sheetReports.js';
 
@@ -15,6 +16,9 @@ function fixture({
     workbook = 'fictional-workbook',
     corrupt = false,
     crossAccount = false,
+    times = false,
+    timeSidecar = false,
+    staleTimeSidecar = false,
 } = {}) {
     let storeReads = [],
         dbReads = 0;
@@ -28,7 +32,10 @@ function fixture({
             ['wife', 'husband'].map((accountId) => [
                 accountId,
                 Object.fromEntries(
-                    ['summary', 'details'].map((section) => [
+                    (times
+                        ? ['summary', 'details', 'times']
+                        : ['summary', 'details']
+                    ).map((section) => [
                         section,
                         {
                             key: `reconciliation/dashboard/v1/synthetic/${accountId}/${section}.json`,
@@ -41,7 +48,11 @@ function fixture({
     };
     const report = (key) => {
         const accountId = key.includes('/wife/') ? 'wife' : 'husband',
-            section = key.endsWith('details.json') ? 'details' : 'summary';
+            section = key.endsWith('times.json')
+                ? 'times'
+                : key.endsWith('details.json')
+                  ? 'details'
+                  : 'summary';
         return {
             schemaVersion: 1,
             runId: 'synthetic-run',
@@ -90,6 +101,26 @@ function fixture({
         store: {
             read: async (key) => {
                 storeReads.push(key);
+                if (key === sourceTimesIndexKey) {
+                    if (!timeSidecar)
+                        throw Object.assign(new Error('missing'), {
+                            name: 'NoSuchKey',
+                        });
+                    return {
+                        schemaVersion: 1,
+                        runId: staleTimeSidecar ? 'old-run' : index.runId,
+                        sourceBinding: index.sourceBinding,
+                        descriptors: Object.fromEntries(
+                            ['wife', 'husband'].map((id) => [
+                                id,
+                                {
+                                    key: `reconciliation/dashboard/v1/synthetic/${id}/times.json`,
+                                    sha256: 'a'.repeat(64),
+                                },
+                            ])
+                        ),
+                    };
+                }
                 return key === reportIndexKey ? index : report(key);
             },
         },
@@ -157,6 +188,51 @@ test('POST cannot adopt or change any financial values', async () => {
     const f = fixture();
     assert.equal((await f.invoke({}, 'POST')).statusCode, 405);
     assert.equal(f.usage().storeReads.length, 0);
+});
+test('missing time index is explicit, not an empty or zero-event result', async () => {
+    const f = fixture();
+    const r = await f.invoke({ section: 'times' });
+    assert.equal(r.statusCode, 409);
+    assert.match(r.body.error, /시각이 없다는 뜻은 아닙니다/);
+    assert.equal(f.usage().dbReads, 2);
+});
+test('time projection uses the same private workbook binding and never enables adoption', async () => {
+    const f = fixture({ times: true });
+    const result = await f.invoke({ section: 'times' });
+    assert.equal(result.statusCode, 200);
+    assert.equal(result.body.adoptionAvailable, false);
+    assert.deepEqual(result.body.items, []);
+    assert.equal(f.usage().dbReads, 2);
+    assert.equal(
+        (
+            await fixture({ times: true, workbook: 'other' }).invoke({
+                section: 'times',
+            })
+        ).statusCode,
+        403
+    );
+    assert.equal(
+        (
+            await fixture({ times: true, crossAccount: true }).invoke({
+                section: 'times',
+            })
+        ).statusCode,
+        503
+    );
+});
+test('separate time read model preserves original index and rejects stale basis', async () => {
+    const f = fixture({ timeSidecar: true });
+    assert.equal((await f.invoke({ section: 'times' })).statusCode, 200);
+    assert.equal(f.usage().dbReads, 2);
+    assert.equal(f.usage().storeReads.length, 3);
+    assert.equal(
+        (
+            await fixture({ timeSidecar: true, staleTimeSidecar: true }).invoke(
+                { section: 'times' }
+            )
+        ).statusCode,
+        409
+    );
 });
 test('cross-account payload rejected', async () => {
     assert.equal(
@@ -269,6 +345,40 @@ test('authentication failure not cached; token SDK not force-refreshed', async (
     await assert.rejects(c.load(u, 'wife'), /expired/);
     await assert.rejects(c.load(u, 'wife'), /expired/);
     assert.equal(calls, 2);
+});
+test('time reports coalesce, reuse session cache, and refresh without forced token renewal', async () => {
+    let calls = 0;
+    const c = createSheetReportClient({
+        fetchImpl: async () => {
+            calls++;
+            return {
+                ok: true,
+                json: async () => ({
+                    accountId: 'wife',
+                    section: 'times',
+                    readOnly: true,
+                    items: [],
+                }),
+            };
+        },
+    });
+    const user = {
+        getIdToken: async (force) => {
+            assert.equal(force, undefined);
+            return 'synthetic';
+        },
+    };
+    await Promise.all([
+        c.load(user, 'wife', 'times'),
+        c.load(user, 'wife', 'times'),
+    ]);
+    await c.load(user, 'wife', 'times');
+    assert.equal(calls, 1);
+    await c.load(user, 'wife', 'times', { refresh: true });
+    assert.equal(calls, 2);
+    c.clear();
+    await c.load(user, 'wife', 'times');
+    assert.equal(calls, 3);
 });
 
 test('permission status reaches UI so rendered report can be purged', async () => {

@@ -1,3 +1,4 @@
+import { calculationCoverage } from './calculationCoverage.js';
 const TAX_RATE = 0.15;
 const MAX_SAMPLES = 24;
 const MIN_SAMPLES = 1;
@@ -102,11 +103,14 @@ export function calculateEntryIncomeEfficiency(ticker, options = {}) {
         };
     }
 
+    const quality = calculationCoverage(ticker, oneCalendarYearEarlier(samples[0].date), samples.at(-1).date);
+    if (quality.status === 'conflict') return { available: false, quality, reason: quality.message, samples: [] };
     const best = samples.reduce((winner, sample) =>
         sample.afterTaxYield > winner.afterTaxYield ? sample : winner
     );
     return {
         available: true,
+        quality,
         limitedHistory: samples.length < 6,
         symbol: ticker?.symbol ?? ticker?.tickerInfo?.symbol ?? '',
         asOfDate,

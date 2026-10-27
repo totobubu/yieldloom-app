@@ -403,6 +403,7 @@ async function fetchTicker(symbol, origin, options = {}) {
             price: currentPrice,
         },
         backtestData,
+        collectionCoverage: priceHistory?.collectionCoverage ?? null,
         issuerAnnouncements: evidence?.announcements ?? [],
         stockReferenceHistory: evidence?.history ?? null,
         stockCollection: evidence?.result ?? null,

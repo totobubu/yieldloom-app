@@ -3,12 +3,16 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.content_pipeline.collect_fallback import massive_observations
+from scripts.content_pipeline.collect_fallback import massive_observations, fetch_massive
 from scripts.content_pipeline.database import ContentDatabase
 from scripts.content_pipeline.export_admin_data import export_all
 
 
 class FallbackObservationTest(unittest.TestCase):
+    def test_massive_collection_is_disabled_even_with_credentials(self):
+        with self.assertRaisesRegex(RuntimeError, "disabled"):
+            fetch_massive("SCHD", "test-key")
+
     def test_vendor_amount_preserves_lexical_precision_and_stays_noncanonical(self):
         payload = b'{"results":[{"ticker":"SCHD","cash_amount":0.252500000,"ex_dividend_date":"2026-06-24","declaration_date":"2026-06-20","record_date":"2026-06-24","pay_date":"2026-06-29","currency":"USD"}]}'
         observations = massive_observations(

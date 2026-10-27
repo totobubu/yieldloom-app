@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createTossLocalSync } from '../src/services/tossLocalSync.js';
 const user = { synthetic: true };
+const fingerprint = 'b'.repeat(64);
 const batch = () => ({
     accountId: 'wife',
     batchId: 'synthetic-1',
@@ -44,7 +45,18 @@ function fixture({ status = {}, input = batch(), failCommit = false } = {}) {
                 throw Error('synthetic disconnect');
             return {
                 canonicalUnchanged: true,
-                fingerprint: 'synthetic-digest',
+                fingerprint,
+                receipt: {
+                    status:
+                        command.action === 'batch-commit'
+                            ? 'complete'
+                            : 'preview',
+                    batchId: command.batchId,
+                    accountId: command.accountId,
+                    fingerprint,
+                    count: command.observations.length,
+                    checkpoint: structuredClone(command.checkpoint),
+                },
                 replayed: false,
             };
         },
@@ -61,6 +73,7 @@ function fixture({ status = {}, input = batch(), failCommit = false } = {}) {
         calls,
         states,
         connector,
+        client,
         change: (next) => {
             ctx = next;
         },
@@ -74,7 +87,7 @@ test('user click verifies account, collects read-only, previews/commits evidence
         ['collect', 'batch-preview', 'batch-commit', 'saved', 'ack']
     );
     assert.deepEqual(f.calls[0][1], { accountId: 'wife', readOnly: true });
-    assert.equal(f.calls[2][1].fingerprint, 'synthetic-digest');
+    assert.equal(f.calls[2][1].fingerprint, fingerprint);
     assert.equal(f.states.at(-1).phase, 'saved');
 });
 test('missing connector or unverified/wrong account blocks all collection and cloud writes', async () => {
@@ -144,4 +157,92 @@ test('one click remains one batch and concurrent clicks cannot submit duplicate 
     release(batch());
     await first;
     assert.equal(f.calls.filter((c) => c[0] === 'batch-commit').length, 1);
+});
+
+test('missing, partial or mismatched receipts never publish success or advance the collector', async () => {
+    for (const change of [
+        (result) => {
+            delete result.receipt;
+        },
+        (result) => {
+            result.canonicalUnchanged = 'true';
+        },
+        (result) => {
+            result.receipt.status = 'preview';
+        },
+        (result) => {
+            result.receipt.batchId = 'other-batch';
+        },
+        (result) => {
+            result.receipt.accountId = 'husband';
+        },
+        (result) => {
+            result.receipt.fingerprint = 'c'.repeat(64);
+        },
+        (result) => {
+            result.receipt.count = 2;
+        },
+        (result) => {
+            delete result.receipt.checkpoint;
+        },
+        (result) => {
+            result.receipt.checkpoint.sourceHash = 'd'.repeat(64);
+        },
+        (result) => {
+            result.receipt.checkpoint.offset = 1;
+        },
+        (result) => {
+            result.receipt.checkpoint.count = 2;
+        },
+    ]) {
+        const f = fixture();
+        const mutate = f.client.mutate;
+        f.client.mutate = async (...args) => {
+            const result = await mutate(...args);
+            if (args[2].action === 'batch-commit') change(result);
+            return result;
+        };
+        await assert.rejects(f.controller.update(), /완료 영수증/);
+        assert.equal(
+            f.calls.some(([name]) => ['saved', 'ack'].includes(name)),
+            false
+        );
+    }
+});
+test('after a lost receipt the exact batch can resume with a verified replay receipt', async () => {
+    const f = fixture();
+    const mutate = f.client.mutate;
+    let loseReceipt = true;
+    f.client.mutate = async (...args) => {
+        const result = await mutate(...args);
+        if (args[2].action === 'batch-commit') {
+            if (loseReceipt) delete result.receipt;
+            else result.replayed = true;
+        }
+        return result;
+    };
+    await assert.rejects(f.controller.update(), /완료 영수증/);
+    loseReceipt = false;
+    const result = await f.controller.update();
+    assert.equal(result.replayed, true);
+    const commits = f.calls.filter(([name]) => name === 'batch-commit');
+    assert.deepEqual(commits[0][1], commits[1][1]);
+    assert.equal(f.calls.filter(([name]) => name === 'ack').length, 1);
+});
+test('account changes during saved notification prevent collector acknowledgement', async () => {
+    const f = fixture();
+    const controller = createTossLocalSync({
+        connector: f.connector,
+        ledgerClient: f.client,
+        context: () => ctx,
+        onSaved: () => {
+            ctx = { user, accountId: 'husband' };
+        },
+    });
+    let ctx = { user, accountId: 'wife' };
+    await assert.rejects(controller.update(), /로그인 또는 선택 계좌/);
+    assert.equal(
+        f.calls.some(([name]) => name === 'ack'),
+        false
+    );
 });

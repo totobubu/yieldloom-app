@@ -20,7 +20,12 @@ def build_model(store,instrument):
         if volume is not None and (not math.isfinite(volume) or volume<0): raise ValueError('Invalid owned volume')
         candles.append({'date':row['date'],**values,'volume':volume})
     if not candles: raise ValueError('No complete observed candles to export')
-    return {'schemaVersion':1,'identity':{k:instrument.get(k) for k in ('symbol','isin','market','currency','ipoDate')},
+    from scripts.data_platform.collection_status import build_status
+    status=build_status(store,instrument,datetime.now(timezone.utc).date().isoformat())
+    collection_coverage={row['dataset']:row['coverage'] for row in status['datasets']}
+    # Unreviewed price adjustment basis/incomplete OHLC must not certify a calculation.
+    collection_coverage['market-prices']['complete']=False
+    return {'collectionCoverage':collection_coverage,'schemaVersion':1,'identity':{k:instrument.get(k) for k in ('symbol','isin','market','currency','ipoDate')},
             'symbol':instrument['symbol'],'currency':instrument['currency'],'candles':candles,'events':[],
             'asOf':datetime.now(timezone.utc).isoformat(),'source':'Yieldloom owned history',
             'coverage':{'status':'partial','targetStart':instrument.get('ipoDate'),

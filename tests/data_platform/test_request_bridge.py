@@ -96,8 +96,12 @@ class RequestBridgeTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);clock=datetime.now(timezone.utc)
             result=run(remote,root/'one',registry(),'request-run',True,transport=lambda *_:self.fail('Targeted run must not collect unrelated sources'),now=clock,
-                       request_symbols=['AAPL'],request_fetcher=provider)
+                       request_symbols=['AAPL'],request_fetcher=provider,write_status=True)
             self.assertEqual(result['requestedCollection']['jobs'][0]['status'],'partial')
+            status=json.loads(remote.get('market/v1/status/AAPL.json')[0])
+            self.assertEqual(status['datasets'][0]['status'],'partial')
+            self.assertIsNotNone(status['datasets'][0]['observedStart'])
+            self.assertFalse(status['datasets'][0]['coverage']['complete'])
             restore(remote,root/'restored')
             store=Store(root/'restored')
             entity=store.db.execute("SELECT entity FROM collection.jobs WHERE status='partial'").fetchone()['entity']

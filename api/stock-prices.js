@@ -21,6 +21,7 @@ const publicLedger = (value, stale = false) => ({
     symbol: value.symbol, currency: value.currency, timezone: value.timezone, source: value.source,
     candles: value.candles, events: value.events, asOf: value.asOf,
     persistence: 'stored', stale, coverage: value.coverage,
+    collectionCoverage: value.collectionCoverage ?? null,
     collection: value.collectionRequest, adjustmentBasis: value.adjustmentBasis ?? 'upstream_unverified',
 });
 

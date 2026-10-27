@@ -5,6 +5,7 @@ import argparse
 from datetime import datetime, timedelta, timezone
 import json
 import os
+import re
 from pathlib import Path
 import sys
 
@@ -34,7 +35,13 @@ def health(store, config, now):
     return rows
 
 
-def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None, request_symbols=None, request_fetcher=None, request_dividends=False):
+def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None, request_symbols=None, request_fetcher=None, request_dividends=False, write_status=False):
+    if request_symbols is not None:
+        request_symbols=list(dict.fromkeys(str(value).strip().upper() for value in request_symbols))
+        if not 1 <= len(request_symbols) <= 20 or any(not re.fullmatch(r'[A-Z0-9][A-Z0-9.-]{0,19}',value) for value in request_symbols):
+            raise ValueError('Expected at most 20 valid targeted symbols')
+    if write_status and not request_symbols:
+        raise ValueError('Status projection requires explicit targets')
     remote = ObservedObjects(remote)
     root = private_path(root)
     clock = now or datetime.now(timezone.utc)
@@ -52,6 +59,12 @@ def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None,
         store = Store(root, raw_loader=raw_loader(remote, previous) if previous else None)
         initial_changes = store.db.total_changes
         try:
+            status_versions = {}
+            if write_status:
+                for symbol in request_symbols:
+                    try:
+                        _, status_versions[symbol] = remote.get('market/v1/status/'+symbol+'.json')
+                    except MissingObject: status_versions[symbol] = None
             options = {'now': clock}
             if transport:
                 options['transport'] = transport
@@ -77,6 +90,14 @@ def run(remote, root, config, run_id, bootstrap=False, transport=None, now=None,
             old_files = {entry['path']: entry for entry in previous['files']} if previous else {}
             result['checkpointFiles'] = {entry['path']: 'reused' if old_files.get(entry['path']) == entry else 'updated'
                 for entry in manifest['files'] if entry['path'] in ('observations.sqlite', 'collection.sqlite')}
+            if write_status and request_symbols:
+                from scripts.data_platform.collection_status import build_status,publish_status
+                result['collectionStatus'] = []
+                for symbol in request_symbols:
+                    matches=[r for r in catalog if r['symbol']==symbol and r.get('active',True) and r.get('isin') and r.get('ipoDate')]
+                    if len(matches)==1:
+                        status=build_status(store,matches[0],clock.date().isoformat())
+                        result['collectionStatus'].append(publish_status(remote,status,enabled=True,expected=status_versions[symbol]))
             result['r2'] = remote.metrics.copy()
             requested_failure = any(r.get('status') == 'invalid_request' for r in result.get('requestedCollection', {}).get('requests', [])) or any(j.get('status') == 'retry' for j in result.get('requestedCollection', {}).get('jobs', [])) or result.get('requestedCollection', {}).get('dividendJob', {}).get('status') == 'retry'
             result['status'] = 'degraded' if requested_failure or result['failed'] or any(r['errors'] for r in result['quality']['sources']) or any(
@@ -94,10 +115,11 @@ def main():
     parser.add_argument('--bootstrap', action='store_true')
     parser.add_argument('--request-symbol', action='append', help='Explicitly process a targeted API outbox request; omitted by default')
     parser.add_argument('--request-dividends', action='store_true', help='Also run one official dividend backfill and its private release review')
+    parser.add_argument('--write-status', action='store_true', help='Write private status projections after a targeted checkpoint; disabled by default')
     args = parser.parse_args()
-    if args.request_dividends and not args.request_symbol:
-        parser.error('--request-dividends requires --request-symbol')
-    result = run(R2Objects(), args.root, load_registry(), args.run_id, args.bootstrap, request_symbols=args.request_symbol, request_dividends=args.request_dividends)
+    if (args.request_dividends or args.write_status) and not args.request_symbol:
+        parser.error('--request-dividends and --write-status require --request-symbol')
+    result = run(R2Objects(), args.root, load_registry(), args.run_id, args.bootstrap, request_symbols=args.request_symbol, request_dividends=args.request_dividends, write_status=args.write_status)
     print(encode(result))
     if os.environ.get('GITHUB_STEP_SUMMARY'):
         with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as target:

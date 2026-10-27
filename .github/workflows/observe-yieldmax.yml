@@ -1,0 +1,150 @@
+name: Observe YieldMax announcements
+
+on:
+  schedule:
+    # Mon–Wed 19:45–20:30 KST; add 20:45–21:30 in US standard time.
+    - cron: '45,50,55 10 * * 1-3'
+    - cron: '0,5,10,15,20,25,30 11 * * 1-3'
+    - cron: '45,50,55 11 * * 1-3'
+    - cron: '0,5,10,15,20,25,30 12 * * 1-3'
+    - cron: '0 13 * * 1-3'
+    # Daily 09:37, 12:37, 18:37, 23:37 KST, including weekends/holidays.
+    - cron: '37 0,3,9,14 * * *'
+  workflow_dispatch:
+    inputs:
+      group:
+        description: Group to recover; auto checks pending and upcoming cycles
+        type: choice
+        default: auto
+        options: [auto, group-3, group-1, group-2]
+      declarationDate:
+        description: Optional actual official declaration date (YYYY-MM-DD); requires a specific group
+        type: string
+        required: false
+      cycleDate:
+        description: Optional nominal cycle date to resolve with that official declaration date
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  plan:
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/codex/')
+    runs-on: ubuntu-24.04
+    outputs:
+      enabled: ${{ steps.plan.outputs.enabled }}
+      createdAt: ${{ steps.plan.outputs.createdAt }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Resolve original scheduled slot before acquiring the writer lock
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_SCHEDULE: ${{ github.event.schedule }}
+          OBSERVATION_GROUP: ${{ inputs.group || 'auto' }}
+          DECLARATION_DATE: ${{ inputs.declarationDate }}
+          CYCLE_DATE: ${{ inputs.cycleDate }}
+        shell: bash
+        run: |
+          created_at=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .created_at)
+          echo "createdAt=$created_at" >> "$GITHUB_OUTPUT"
+          args=(--plan-only --event-schedule "$EVENT_SCHEDULE" --scheduled-at "$created_at" --group "$OBSERVATION_GROUP" --github-output "$GITHUB_OUTPUT")
+          if [[ -n "$DECLARATION_DATE" ]]; then args+=(--declaration-date "$DECLARATION_DATE"); fi
+          if [[ -n "$CYCLE_DATE" ]]; then args+=(--cycle-date "$CYCLE_DATE"); fi
+          python scripts/content_pipeline/schedule_yieldmax.py "${args[@]}"
+
+  observe:
+    needs: plan
+    if: needs.plan.outputs.enabled == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    # Restore/read/modify/save/publication remain serialized with other collectors.
+    concurrency:
+      group: content-studio-state-write
+      cancel-in-progress: false
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      EVENT_SCHEDULE: ${{ github.event.schedule }}
+      RUN_CREATED_AT: ${{ needs.plan.outputs.createdAt }}
+      OBSERVATION_GROUP: ${{ inputs.group || 'auto' }}
+      DECLARATION_DATE: ${{ inputs.declarationDate }}
+      CYCLE_DATE: ${{ inputs.cycleDate }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install collection dependencies
+        run: pip install -r requirements-workflow.txt
+      - name: Select durable state
+        shell: bash
+        run: |
+          state_key='content-studio/state/latest.tar.gz'
+          if [[ "$GITHUB_REF_NAME" != 'main' ]]; then
+            safe_ref="${GITHUB_REF_NAME//\//-}"
+            state_key="content-studio/state/branches/${safe_ref}.tar.gz"
+          fi
+          echo "CONTENT_STATE_KEY=$state_key" >> "$GITHUB_ENV"
+      - name: Restore durable Content Studio state
+        id: restore
+        run: python scripts/content_pipeline/content_state_store.py restore --key "$CONTENT_STATE_KEY"
+      - name: Observe selected and pending YieldMax cycles
+        id: observation
+        continue-on-error: true
+        shell: bash
+        run: |
+          args=(--event-schedule "$EVENT_SCHEDULE" --scheduled-at "$RUN_CREATED_AT" --group "$OBSERVATION_GROUP" --github-output "$GITHUB_OUTPUT")
+          if [[ -n "$DECLARATION_DATE" ]]; then args+=(--declaration-date "$DECLARATION_DATE"); fi
+          if [[ -n "$CYCLE_DATE" ]]; then args+=(--cycle-date "$CYCLE_DATE"); fi
+          python scripts/content_pipeline/schedule_yieldmax.py "${args[@]}"
+      - name: Validate generated snapshots
+        id: validate
+        if: ${{ always() && steps.observation.outputs.attempted == 'true' }}
+        continue-on-error: true
+        run: python scripts/content_pipeline/validate_refresh_outputs.py
+      - name: Save durable Content Studio state and pending cycles
+        id: save
+        if: ${{ always() && steps.restore.outcome == 'success' && steps.observation.outputs.stateChanged == 'true' }}
+        run: python scripts/content_pipeline/content_state_store.py save --key "$CONTENT_STATE_KEY"
+      - name: Commit public Content Studio outputs
+        if: ${{ always() && steps.save.outcome == 'success' && steps.validate.outcome == 'success' && steps.observation.outputs.publish == 'true' }}
+        env:
+          REFRESH_SCOPE: ticker
+          REFRESH_REQUEST_ID: yieldmax-${{ github.run_id }}
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          bash scripts/content_pipeline/publish_public_snapshots.sh "$GITHUB_REF_NAME"
+      - name: Upload observation audit
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: yieldmax-${{ github.run_id }}
+          path: var/content-studio/yieldmax-observation.json
+          if-no-files-found: ignore
+          retention-days: 30
+      - name: Report observation status
+        if: ${{ always() }}
+        env:
+          OBSERVATION_STATUS: ${{ steps.observation.outputs.status }}
+          OBSERVATION_OUTCOME: ${{ steps.observation.outcome }}
+          VALIDATION_OUTCOME: ${{ steps.validate.outcome }}
+        shell: bash
+        run: |
+          echo "YieldMax observation: ${OBSERVATION_STATUS:-not_run}; pending/overdue details are in the audit artifact." >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$OBSERVATION_OUTCOME" == 'failure' || "$VALIDATION_OUTCOME" == 'failure' ]]; then exit 1; fi

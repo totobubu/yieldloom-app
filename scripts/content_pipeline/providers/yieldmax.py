@@ -5,6 +5,7 @@ from decimal import Decimal, InvalidOperation
 
 from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
+from ..yieldmax_schedule import TRACKED_SYMBOLS
 from .base import NoDataError, SourceCandidate
 from .http import OfficialHTTPAdapter
 from .parsing import date_from_timestamp, extract_labeled_date, extract_roc_percent, is_roc_column, parse_date
@@ -20,6 +21,23 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
     # Fund history pages contain the official amount plus declaration, ex,
     # record and payment dates.  GlobeNewswire is not a collection source.
     default_max_sources = 100
+    tracked_symbols = TRACKED_SYMBOLS
+    http_requests = 0
+
+    def request_bytes(self, url: str) -> bytes:
+        self.http_requests += 1
+        return super().request_bytes(url)
+
+    def discover_for_tickers(self, tickers):
+        symbols = list(dict.fromkeys(ticker.strip().upper() for ticker in tickers))
+        if not symbols or any(symbol not in self.tracked_symbols for symbol in symbols):
+            raise ValueError("unconfigured YieldMax target ticker")
+        for symbol in symbols:
+            yield SourceCandidate(
+                url=f"{self.official_homepage}our-etfs/{symbol.lower()}/",
+                source_type="official_fund_history",
+                metadata={"ticker": symbol},
+            )
 
     def discover(self):
         parsed = parse_html(self.request_bytes(self.catalog_url), self.catalog_url)
@@ -40,6 +58,11 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
 
     def parse(self, document: SourceDocument) -> list[DistributionEvent]:
         parsed = parse_html(document.content, document.source_url)
+        if document.source_type == "official_fund_history":
+            # Targeted observations require the issuer's explicit declared date.
+            # A release table elsewhere on the page must not use fetched_at as
+            # evidence that this is a newly declared distribution.
+            return self._parse_fund_history(document, parsed)
         try:
             return self._parse_press_release(document, parsed)
         except ValueError as press_release_error:

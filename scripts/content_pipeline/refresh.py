@@ -130,14 +130,14 @@ def main() -> int:
     ticker = args.ticker.strip().upper() if args.ticker else None
     tickers = sorted({value.strip().upper() for value in (args.tickers or "").split(",") if value.strip()})
     dated = bool(args.declaration_date or args.declaration_dates)
-    if args.tickers and (args.scope != "provider" or args.provider != "roundhill" or ticker or not dated):
-        parser.error("--tickers requires --scope provider --provider roundhill --declaration-date, without --ticker")
+    if args.tickers and (args.scope != "provider" or args.provider not in {"roundhill", "yieldmax"} or ticker or not dated):
+        parser.error("--tickers requires a supported provider, declaration date(s), provider scope and no --ticker")
     if dated and (
-        args.provider != "roundhill" or args.ex_date
-        or not ((args.scope == "ticker" and ticker in PROVIDERS["roundhill"].tracked_symbols)
-                or (args.scope == "provider" and tickers and all(value in PROVIDERS["roundhill"].tracked_symbols for value in tickers)))
+        args.provider not in {"roundhill", "yieldmax"} or args.ex_date
+        or not ((args.scope == "ticker" and ticker in PROVIDERS[args.provider].tracked_symbols)
+                or (args.scope == "provider" and tickers and all(value in PROVIDERS[args.provider].tracked_symbols for value in tickers)))
     ):
-        parser.error("--declaration-date requires --scope ticker --provider roundhill and a registered --ticker")
+        parser.error("declaration dates require a supported provider and configured ticker target(s)")
     if args.scope == "ticker" and ticker:
         from scripts.content_pipeline.stock_collection import collect_stock, is_us_stock
         catalog = json.loads((Path(__file__).resolve().parents[2] / 'data-v2/catalog-seed.json').read_text())["instruments"]

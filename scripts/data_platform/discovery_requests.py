@@ -76,8 +76,8 @@ def request_collection(store, symbol, market, end, *, catalog=None, now=None):
     if not matches:
         return register_lookup(store,normalized,market,now=clock)
     instrument=matches[0]
-    if (not re.fullmatch(r'[A-Z]{2}[A-Z0-9]{9}[0-9]',instrument.get('isin',''))
-            or not re.fullmatch(r'[A-Z]{3}',instrument.get('currency',''))
+    if (not valid_isin(instrument.get('isin'))
+            or not re.fullmatch(r'[A-Z]{3}',instrument.get('currency') or '')
             or not instrument.get('ipoDate')):
         return {'status':'identity_enrichment_pending','registered':True}
     inception=instrument['ipoDate']

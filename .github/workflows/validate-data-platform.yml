@@ -35,5 +35,6 @@ jobs:
               with:
                   node-version: '24'
             - run: npm ci --no-audit --no-fund
+            - run: pip install beautifulsoup4
             - run: python -m unittest discover -s tests/data_platform -v
             - run: node --check scripts/data_platform/fetch.mjs

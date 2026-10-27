@@ -90,6 +90,7 @@ jobs:
                   FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/broker-spreadsheet.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-ledger.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-ledger-list.browser.mjs
+                  SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/toss-trial-ledger.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-reconciliation.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-review.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-dividend-status.browser.mjs

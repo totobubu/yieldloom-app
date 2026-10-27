@@ -42,9 +42,17 @@ def review(source, destination, symbol, currency):
     new, right = inspect(destination, symbol, currency)
     missing = sorted(old.keys() - new.keys())
     changed = sorted(day for day in old.keys() & new.keys() if old[day] != new[day])
+    changes = [{'date': day, 'sourceClose': str(old[day]),
+                'destinationClose': str(new[day]),
+                'difference': str(new[day] - old[day]),
+                'relativeDifference': str((new[day] - old[day]) / old[day])}
+               for day in changed]
     return {'schemaVersion': 1, 'symbol': symbol, 'currency': currency,
             'source': left, 'destination': right, 'missingDates': missing,
-            'changedDates': changed, 'addedDates': sorted(new.keys()-old.keys()),
+            'changedDates': changed, 'priceChanges': changes,
+            'comparedPriceCount': len(old.keys() & new.keys()),
+            'sameByteHash': left['sha256'] == right['sha256'],
+            'addedDates': sorted(new.keys()-old.keys()),
             'preservesSourcePrices': not missing and not changed,
             'priceBasis': 'upstream_unverified', 'historicalCompleteness': 'unverified',
             'cutoverReady': False, 'writesPerformed': 0}

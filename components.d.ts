@@ -97,6 +97,7 @@ declare module 'vue' {
     ThumbnailPreview: typeof import('./src/components/thumbnail/ThumbnailPreview.vue')['default']
     TossCommunityCopy: typeof import('./src/components/thumbnail/TossCommunityCopy.vue')['default']
     TossPdfImportReview: typeof import('./src/components/portfolio/TossPdfImportReview.vue')['default']
+    TossTrialLedger: typeof import('./src/components/portfolio/TossTrialLedger.vue')['default']
     TransactionAmount: typeof import('./src/components/portfolio/TransactionAmount.vue')['default']
     WithdrawalSplit: typeof import('./src/components/portfolio/WithdrawalSplit.vue')['default']
   }

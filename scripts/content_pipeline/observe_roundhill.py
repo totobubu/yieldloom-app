@@ -34,14 +34,15 @@ def announcement_dates(declared: date, ticker: str) -> list[date]:
 
 
 def announcement_collected(database: ContentDatabase, declared: date,
-                           public_dir: Path | None = None, ticker: str = "TOPW") -> bool:
+                           public_dir: Path | None = None, ticker: str = "TOPW", *,
+                           provider: str = "roundhill") -> bool:
     with database.connect() as connection:
         row = connection.execute(
             """
             SELECT provider_slug, ticker, declared_date, distribution_per_share,
                    currency, ex_date, record_date, payable_date, verification_status
             FROM distribution_events
-            WHERE provider_slug = 'roundhill' AND ticker = ?
+            WHERE provider_slug = ? AND ticker = ?
               AND declared_date = ? AND currency = 'USD'
               AND verification_status IN ('official', 'cross_checked')
               AND CAST(distribution_per_share AS REAL) > 0
@@ -49,7 +50,7 @@ def announcement_collected(database: ContentDatabase, declared: date,
               AND record_date <= payable_date
             LIMIT 1
             """,
-            (ticker, declared.isoformat()),
+            (provider, ticker, declared.isoformat()),
         ).fetchone()
     if row is None:
         return False

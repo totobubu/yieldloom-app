@@ -90,18 +90,19 @@ def completed_business_days_since(anchor: date, now: datetime) -> int:
     return business_days_since(anchor, cutoff)
 
 
-def candidate_dates(anchor: date, today: date) -> list[date]:
+def candidate_dates(anchor: date, today: date, *, policy: dict | None = None) -> list[date]:
     # Non-overlapping weekly windows prevent a newer week's notice from completing
     # a missing older cycle. Closed days remain eligible: issuers may still publish.
-    dates = [anchor + timedelta(days=offset) for offset in range(-POLICY["earlyDays"], POLICY["lateDays"] + 1)]
+    policy = policy or POLICY
+    dates = [anchor + timedelta(days=offset) for offset in range(-policy["earlyDays"], policy["lateDays"] + 1)]
     return sorted((day for day in dates if day <= today),
                   key=lambda day: (day != anchor, not us_business_day(day), abs((day - anchor).days), day))
 
 
-def scheduled_slot(cron: str, created_at: datetime) -> datetime:
+def scheduled_slot(cron: str, created_at: datetime, *, allowed_crons: tuple[str, ...] | None = None) -> datetime:
     """Recover the cron slot from the run's immutable creation time, including reruns."""
-    if cron not in (*DAILY_CRONS, *TOPW_CRONS, RECOVERY_CRON):
-        raise ValueError("unknown Roundhill schedule")
+    if cron not in (allowed_crons or (*DAILY_CRONS, *TOPW_CRONS, RECOVERY_CRON)):
+        raise ValueError("unknown announcement schedule")
     minute, hour, _, _, weekdays = cron.split()
 
     def matches(value: int, field: str) -> bool:

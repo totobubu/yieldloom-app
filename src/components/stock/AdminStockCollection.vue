@@ -263,6 +263,19 @@
             block-scroll
             :draggable="false"
             :style="{ width: 'min(580px, calc(100vw - 32px))' }">
+            <section v-if="record?.collection" aria-label="종목별 데이터 수집 상태">
+                <h3>확보한 데이터</h3>
+                <p v-if="record.collection.status === 'disabled'">수집 상태 조회가 아직 활성화되지 않았습니다.</p>
+                <p v-else-if="record.collection.status === 'unavailable'" role="alert">수집 상태를 읽지 못했습니다.</p>
+                <p v-else-if="!record.collection.datasets?.length">아직 확보된 수집 상태가 없습니다.</p>
+                <dl v-for="item in record.collection.datasets" :key="item.dataset" class="collection-times">
+                    <div><dt>{{ item.dataset === 'dividends' ? '배당' : '시세' }}</dt><dd>{{ ({complete:'기간 검증 완료',retry:'오류 · 재시도 대기',partial:'부분 확보',pending:'수집 대기',uncollected:'미확보'})[item.status] || '확인 필요' }}</dd></div>
+                    <div><dt>관측된 기간 · 완전성 별도</dt><dd>{{ item.observedStart || '미확보' }} ~ {{ item.observedEnd || '미확보' }}</dd></div>
+                    <div><dt>출처</dt><dd>{{ item.sources?.join(', ') || '미확인' }}</dd></div>
+                    <div><dt>마지막 확보</dt><dd>{{ formatTime(item.lastSuccessAt) }}</dd></div>
+                    <div><dt>미해결 오류</dt><dd>{{ item.lastError ? '제공처 요청 실패 · 오류 발생 시각 미확인' : '기록 없음' }}</dd></div>
+                </dl>
+            </section>
             <p v-if="recordLoading" role="status">
                 최근 수집 기록을 불러오고 있습니다.
             </p>

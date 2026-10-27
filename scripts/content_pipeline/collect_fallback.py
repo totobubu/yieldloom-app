@@ -6,8 +6,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
 
 if __package__ in {None, ""}:
     import sys
@@ -16,17 +14,8 @@ if __package__ in {None, ""}:
 from scripts.content_pipeline.database import ContentDatabase, DEFAULT_DB_PATH
 
 
-MASSIVE_ENDPOINT = "https://api.massive.com/v3/reference/dividends"
-
-
 def fetch_massive(ticker: str, api_key: str) -> tuple[bytes, str]:
-    public_url = f"{MASSIVE_ENDPOINT}?{urlencode({'ticker': ticker, 'limit': 1000})}"
-    request = Request(
-        public_url,
-        headers={"Authorization": f"Bearer {api_key}", "Accept": "application/json"},
-    )
-    with urlopen(request, timeout=30) as response:
-        return response.read(), public_url
+    raise RuntimeError("Massive collection is disabled by project policy; historical evidence parsing remains available.")
 
 
 def massive_observations(payload: bytes, source_url: str) -> list[dict]:

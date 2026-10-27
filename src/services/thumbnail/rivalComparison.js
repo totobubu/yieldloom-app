@@ -1,3 +1,4 @@
+import { calculationCoverage } from './calculationCoverage.js';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const INITIAL_INVESTMENT = 10_000;
 
@@ -129,6 +130,12 @@ export function calculateRivalComparison(tickers, underlyingTicker, asOfDate) {
         [...dates].reverse().find((date) => date <= asOfDate) ?? dates.at(-1);
     if (!startDate || !endDate || startDate >= endDate) return null;
 
+    const inputs = [...tickers, underlyingTicker];
+    const coverage = inputs.map((ticker, index) => calculationCoverage(ticker, dateKey(oneYearAgo), asOfDate,
+        index === inputs.length - 1 ? ['market-prices'] : ['market-prices', 'dividends']));
+    const quality = coverage.find(item => item.status === 'conflict')
+        ?? coverage.find(item => !item.complete) ?? coverage[0];
+    if (quality.status === 'conflict') return { available: false, quality, startDate, endDate };
     const calculated = series
         .map((item) => calculateMetric(item, startDate, endDate))
         .filter(Boolean);
@@ -141,6 +148,8 @@ export function calculateRivalComparison(tickers, underlyingTicker, asOfDate) {
     }));
 
     return {
+        available: true,
+        quality,
         initialInvestment: INITIAL_INVESTMENT,
         startDate,
         endDate,

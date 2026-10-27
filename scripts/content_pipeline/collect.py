@@ -54,13 +54,13 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Collect official ETF distributions")
     parser.add_argument("--provider", choices=sorted(PROVIDERS), required=True)
     parser.add_argument("--ticker", help="Persist events only for this ticker")
-    parser.add_argument("--tickers", help="Comma-separated registered Roundhill tickers for one declaration date")
+    parser.add_argument("--tickers", help="Comma-separated configured Roundhill or YieldMax targets")
     parser.add_argument("--url", help="Parse one explicit allowed official URL")
     parser.add_argument("--ex-date", type=date.fromisoformat,
                         help="Keep only events matching this ISO ex-dividend date")
     dated = parser.add_mutually_exclusive_group()
     dated.add_argument("--declaration-date", type=date.fromisoformat,
-                        help="Fetch one Roundhill ticker's notice for this declaration date")
+                        help="Fetch official announcements matching this declaration date")
     dated.add_argument("--declaration-dates", type=parse_dates,
                        help="Up to seven actual declaration dates, sharing the issuer fallback")
     parser.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
@@ -79,14 +79,14 @@ def main() -> int:
     declared_dates = args.declaration_dates or ([args.declaration_date] if args.declaration_date else [])
     declared_values = {value.isoformat() for value in declared_dates}
     if args.ticker and (len(target_tickers) != 1 or "," in args.ticker):
-        parser.error("--ticker accepts one symbol; use --tickers for a Roundhill group")
-    if args.tickers and (args.provider != "roundhill" or args.ticker or not declared_dates):
-        parser.error("--tickers requires --provider roundhill and --declaration-date, without --ticker")
+        parser.error("--ticker accepts one symbol; use --tickers for an announcement group")
+    if args.tickers and (args.provider not in {"roundhill", "yieldmax"} or args.ticker or not declared_dates):
+        parser.error("--tickers requires a supported provider and declaration date(s), without --ticker")
     if declared_dates and (
-        args.provider != "roundhill" or not target_tickers or args.url or args.ex_date
+        args.provider not in {"roundhill", "yieldmax"} or not target_tickers or args.url or args.ex_date
         or any(ticker not in adapter.tracked_symbols for ticker in target_tickers)
     ):
-        parser.error("--declaration-date requires a registered Roundhill --ticker and no --url/--ex-date")
+        parser.error("declaration dates require configured Roundhill/YieldMax targets and no --url/--ex-date")
     database = None
     if not args.dry_run:
         database = ContentDatabase(args.db)
@@ -99,8 +99,13 @@ def main() -> int:
         )
 
     if declared_dates:
-        candidates = [candidate for declared in declared_dates
-                      for candidate in adapter.discover_for_declaration_date(declared, ",".join(sorted(target_tickers)))]
+        if args.provider == "yieldmax":
+            # One fund history contains every candidate date. Never rediscover
+            # the full catalog or fetch that history once per declaration date.
+            candidates = list(adapter.discover_for_tickers(sorted(target_tickers)))
+        else:
+            candidates = [candidate for declared in declared_dates
+                          for candidate in adapter.discover_for_declaration_date(declared, ",".join(sorted(target_tickers)))]
     elif args.url:
         candidates = [SourceCandidate(url=args.url, source_type="explicit_official_url")]
     elif args.ex_date:

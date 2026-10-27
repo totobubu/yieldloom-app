@@ -174,6 +174,17 @@ try {
         name: '거래 목록',
         exact: true,
     });
+    await page.waitForFunction(() => {
+        const bounds = document
+            .querySelector('.ledger-dialog-scroll')
+            ?.closest('[role="dialog"]')
+            ?.getBoundingClientRect();
+        return (
+            bounds &&
+            Math.abs(bounds.width - innerWidth) < 2 &&
+            Math.abs(bounds.height - innerHeight) < 2
+        );
+    });
     const fullBounds = await fullScreen.boundingBox();
     assert(Math.abs(fullBounds.width - 1440) < 2);
     assert(Math.abs(fullBounds.height - 1000) < 2);

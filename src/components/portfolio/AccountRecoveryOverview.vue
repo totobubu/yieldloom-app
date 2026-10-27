@@ -242,29 +242,28 @@
                             <dd>{{ money(item.deposits, item.currency) }}</dd>
                         </div>
                         <div>
-                            <dt>원금 회수</dt>
+                            <dt>확정 원금 회수</dt>
                             <dd>
                                 {{
                                     money(
-                                        item.principalRecovered +
-                                            item.estimatedPrincipalRecovered,
+                                        item.principalRecovered,
                                         item.currency
                                     )
                                 }}
                                 <small v-if="item.estimatedPrincipalRecovered">
-                                    추정
+                                    미확정 추정
                                     {{
                                         money(
                                             item.estimatedPrincipalRecovered,
                                             item.currency
                                         )
                                     }}
-                                    포함
+                                    제외
                                 </small>
                             </dd>
                         </div>
                         <div>
-                            <dt>미회수 원금</dt>
+                            <dt>순투입 원금</dt>
                             <dd>
                                 {{
                                     item.principalRate === null
@@ -276,6 +275,17 @@
                                 }}
                             </dd>
                         </div>
+                        <div>
+                            <dt>보유 취득원가 · 투자 대기 현금</dt>
+                            <dd>
+                                {{
+                                    money(
+                                        item.currentAcquisitionCost,
+                                        item.currency
+                                    )
+                                }}
+                            </dd>
+                        </div>
                     </dl>
                 </article>
             </div>
@@ -283,9 +293,10 @@
                 미분류 {{ pending }}건을 제외한 잠정 수치입니다.
             </p>
             <p>
-                원금 회수율 = 원금으로 귀속된 외부 출금 ÷ 누적 투자 원금.
-                배당·수익 출금은 총 현금 회수에만 포함합니다. 배당·매도금
-                재투자와 계좌 간 이동은 새 원금으로 더하지 않습니다.
+                원금 회수율 = 확정된 원금 외부 출금 ÷ 누적 투자 원금. 배당·수익
+                출금은 총 현금 회수에만 포함합니다. 배당·매도금 재투자와 계좌 간
+                이동은 새 원금으로 더하지 않습니다. 출처를 확정하지 않은 추정
+                원금은 대표 회수율과 순투입 원금에서 제외합니다.
             </p>
             <p>
                 현재 평가액은 아래 가족 합산 잔고에서 확인하세요. 현금 잔액과
@@ -305,8 +316,9 @@
                                 <th>계좌</th>
                                 <th>통화</th>
                                 <th>누적 투자 원금</th>
-                                <th>원금 회수</th>
-                                <th>미회수 원금</th>
+                                <th>확정 원금 회수</th>
+                                <th>순투입 원금</th>
+                                <th>보유 취득원가·현금</th>
                                 <th>회수율</th>
                                 <th>자료 상태</th>
                                 <th>상세</th>
@@ -324,14 +336,13 @@
                                 <td>
                                     {{
                                         money(
-                                            item.principalRecovered +
-                                                item.estimatedPrincipalRecovered,
+                                            item.principalRecovered,
                                             item.currency
                                         )
                                     }}
                                     <small
                                         v-if="item.estimatedPrincipalRecovered">
-                                        추정 포함
+                                        추정 제외
                                     </small>
                                 </td>
                                 <td>
@@ -342,6 +353,14 @@
                                                   item.remainingPrincipal,
                                                   item.currency
                                               )
+                                    }}
+                                </td>
+                                <td>
+                                    {{
+                                        money(
+                                            item.currentAcquisitionCost,
+                                            item.currency
+                                        )
                                     }}
                                 </td>
                                 <td>{{ percent(item.principalRate) }}</td>
@@ -362,7 +381,7 @@
                                 </td>
                             </tr>
                             <tr v-if="!accountRecovery.length">
-                                <td colspan="8">조회할 계좌가 없습니다.</td>
+                                <td colspan="9">조회할 계좌가 없습니다.</td>
                             </tr>
                         </tbody>
                     </table>

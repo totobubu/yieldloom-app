@@ -16,6 +16,7 @@
 - `/legal`: 데이터 출처·갱신·투자 면책 및 개인정보 안내.
 - `/admin/feedback`: 공개 종목 상세에서 익명으로 접수한 요청·질문을 관리자만 검토하고 처리합니다.
 - `/admin/portfolio-example`: 구글 시트 샘플을 기준으로 실납입·재투자·현금 회수를 분리한 관리자용 원금 기준안입니다.
+- `/admin/sheet-ledger`: 토스 관측을 독립 행으로 검토하고 기존 시트 거래·승인값을 보조 대조하는 시험 화면입니다. [인증 준비와 데이터 규칙](docs/SHEET_TRIAL_LEDGER.md)을 참고하세요.
 - `?rivals=CRSH,TSII`: 라이벌 선택 공유. 최대 3종.
 - 그 외 주소는 `/`로 이동합니다. `VITE_APP_MODE`에 따른 화면 전환은 제거했습니다.
 
@@ -166,6 +167,9 @@ node tests/underlying-search.browser.mjs
 npm run content:run
 npm run content:refresh -- --scope provider --provider yieldmax
 ```
+
+Roundhill은 [통합 공시 관측 워크플로우](docs/content-studio/roundhill-observation.md)에서
+요일별 티커 수집, DST 추가 확인, 휴장 전후 발표일 조회와 미확인 주기 이월을 관리한다.
 
 수집 파이프라인은 기본적으로 카드용 데이터 작업을 수행합니다. 기존 블로그 Bundle·편집 캘린더·주간 대본 생성은 `--include-editorial`을 명시한 경우에만 실행합니다. 호환 도구와 기존 저장 데이터는 보존합니다.
 

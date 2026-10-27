@@ -7,11 +7,22 @@ from scripts.content_pipeline.validate_refresh_outputs import validate
 
 
 class RefreshOutputValidationTest(unittest.TestCase):
+    def test_roundhill_observers_reuse_conflict_safe_branch_publisher(self):
+        workflow = Path(".github/workflows/observe-roundhill.yml").read_text(encoding="utf-8")
+        self.assertIn('publish_public_snapshots.sh "$GITHUB_REF_NAME"', workflow)
+        self.assertIn("content-studio/state/branches/${safe_ref}.tar.gz", workflow)
+        self.assertIn("group: content-studio-state-write", workflow)
+        self.assertNotIn("git push", workflow)
+
     def test_workflow_keeps_feature_branch_state_and_push_isolated(self):
         workflow = Path(".github/workflows/content-studio-provider-refresh.yml").read_text(encoding="utf-8")
         self.assertNotIn("git push origin HEAD:main", workflow)
-        self.assertIn('git push origin "HEAD:${GITHUB_REF_NAME}"', workflow)
+        self.assertIn('publish_public_snapshots.sh "$GITHUB_REF_NAME"', workflow)
         self.assertIn("content-studio/state/branches/${safe_ref}.tar.gz", workflow)
+        publisher = Path("scripts/content_pipeline/publish_public_snapshots.sh").read_text(encoding="utf-8")
+        self.assertIn("git fetch --no-tags origin", publisher)
+        self.assertIn("git rebase \"$remote_ref\"", publisher)
+        self.assertNotIn("--force", publisher)
         self.assertNotIn("canary", workflow)
         for provider in (
             "amplify", "defiance", "firsttrust", "globalx", "graniteshares",

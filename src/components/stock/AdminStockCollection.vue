@@ -19,6 +19,8 @@
         recordError = ref('');
     const stateLabels = {
         success: '완료',
+        partial: '부분 완료',
+        unsupported: '미지원',
         failure: '실패',
         skipped: '건너뜀',
         cancelled: '취소',
@@ -206,7 +208,8 @@
                     message.value =
                         result.data?.dataStatus === 'fresh'
                             ? '최신 데이터로 업데이트했습니다.'
-                            : '수집은 완료됐으며 일부 자료는 확인이 필요합니다.';
+                            : result.diagnostics?.reason ||
+                              '수집은 완료됐으며 일부 자료는 확인이 필요합니다.';
                     emit('collected', result.data);
                     return;
                 }
@@ -260,6 +263,19 @@
             block-scroll
             :draggable="false"
             :style="{ width: 'min(580px, calc(100vw - 32px))' }">
+            <section v-if="record?.collection" aria-label="종목별 데이터 수집 상태">
+                <h3>확보한 데이터</h3>
+                <p v-if="record.collection.status === 'disabled'">수집 상태 조회가 아직 활성화되지 않았습니다.</p>
+                <p v-else-if="record.collection.status === 'unavailable'" role="alert">수집 상태를 읽지 못했습니다.</p>
+                <p v-else-if="!record.collection.datasets?.length">아직 확보된 수집 상태가 없습니다.</p>
+                <dl v-for="item in record.collection.datasets" :key="item.dataset" class="collection-times">
+                    <div><dt>{{ item.dataset === 'dividends' ? '배당' : '시세' }}</dt><dd>{{ ({complete:'기간 검증 완료',retry:'오류 · 재시도 대기',partial:'부분 확보',pending:'수집 대기',uncollected:'미확보'})[item.status] || '확인 필요' }}</dd></div>
+                    <div><dt>관측된 기간 · 완전성 별도</dt><dd>{{ item.observedStart || '미확보' }} ~ {{ item.observedEnd || '미확보' }}</dd></div>
+                    <div><dt>출처</dt><dd>{{ item.sources?.join(', ') || '미확인' }}</dd></div>
+                    <div><dt>마지막 확보</dt><dd>{{ formatTime(item.lastSuccessAt) }}</dd></div>
+                    <div><dt>미해결 오류</dt><dd>{{ item.lastError ? '제공처 요청 실패 · 오류 발생 시각 미확인' : '기록 없음' }}</dd></div>
+                </dl>
+            </section>
             <p v-if="recordLoading" role="status">
                 최근 수집 기록을 불러오고 있습니다.
             </p>
@@ -292,7 +308,13 @@
                     <div>
                         <dt>실행 결과</dt>
                         <dd>
-                            {{ recordStateLabels[record.state] || '확인 필요' }}
+                            {{
+                                record.state === 'ready' &&
+                                record.diagnostics?.code === 'partial_evidence'
+                                    ? '부분 완료 · 화면 반영 완료'
+                                    : recordStateLabels[record.state] ||
+                                      '확인 필요'
+                            }}
                         </dd>
                     </div>
                     <div>
@@ -347,6 +369,11 @@
                         :key="index"
                         :data-state="step.state">
                         <span>{{ step.name }}</span>
+                        <small
+                            v-if="step.detail"
+                            class="collection-step-detail"
+                            >{{ step.detail }}</small
+                        >
                         <strong>{{
                             stateLabels[step.state] || '확인 필요'
                         }}</strong>
@@ -494,6 +521,11 @@
     }
     .collection-steps li[data-state='failure'] strong {
         color: var(--p-red-600);
+    }
+    .collection-step-detail {
+        flex-basis: 100%;
+        order: 2;
+        color: var(--app-muted);
     }
     .collection-steps a,
     .collection-run-link {

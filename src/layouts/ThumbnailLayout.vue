@@ -243,6 +243,13 @@
                     outlined
                     @click="router.push('/mypage')" />
                 <Button
+                    v-if="isAdmin"
+                    label="구글시트 거래 목록"
+                    icon="pi pi-table"
+                    severity="secondary"
+                    outlined
+                    @click="router.push('/admin/sheet-ledger')" />
+                <Button
                     :label="
                         isDarkMode ? '라이트 모드로 보기' : '다크 모드로 보기'
                     "

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "issuers": {
+    "BAC": {
+      "issuerId": "bank-of-america",
+      "name": "Bank of America Corporation",
+      "adapter": "bank-of-america-newsroom",
+      "currency": "USD",
+      "indexUrl": "https://investor.bankofamerica.com/press-releases",
+      "articleOrigin": "https://newsroom.bankofamerica.com",
+      "allowedHosts": ["investor.bankofamerica.com", "newsroom.bankofamerica.com"]
+    }
+  }
+}

@@ -7,7 +7,12 @@ const rounded = (value, digits = 2) => {
 
 const optionalNonNegative = (value, fallback = 0) => {
     if (value === undefined) return fallback;
-    if (value === null) return null;
+    if (
+        value === null ||
+        !['number', 'string'].includes(typeof value) ||
+        (typeof value === 'string' && !value.trim())
+    )
+        return null;
     const number = Number(value);
     return Number.isFinite(number) && number >= 0 ? number : null;
 };
@@ -28,6 +33,64 @@ export const sheetPortfolioExample = Object.freeze({
         displayedRecoveryRate: 94.82,
     },
 });
+
+export const temporaryProjectionHoldings = Object.freeze(
+    [
+        {
+            symbol: 'JEPI',
+            currency: 'USD',
+            quantity: 41.353744,
+            price: 57.48,
+            annualDividend: 0.37142 * 12,
+            frequency: 'monthly',
+        },
+        {
+            symbol: 'LFGY',
+            currency: 'USD',
+            quantity: 105.682598,
+            price: 15.96,
+            annualDividend: 0.1295 * 52,
+            frequency: 'weekly',
+        },
+        {
+            symbol: 'MSTY',
+            currency: 'USD',
+            quantity: 40,
+            price: 14.49,
+            annualDividend: 0.1671 * 52,
+            frequency: 'weekly',
+        },
+        {
+            symbol: 'TOPW',
+            currency: 'USD',
+            quantity: 244.024235,
+            price: 32,
+            annualDividend: 0.235513 * 52,
+            frequency: 'weekly',
+        },
+        {
+            symbol: 'TSLY',
+            currency: 'USD',
+            quantity: 240,
+            price: 21.59,
+            annualDividend: 0.1909 * 52,
+            frequency: 'weekly',
+        },
+        {
+            symbol: 'YMAX',
+            currency: 'USD',
+            quantity: 1782.875167,
+            price: 7.9,
+            annualDividend: 0.0563 * 52,
+            frequency: 'weekly',
+        },
+    ].map((holding) =>
+        Object.freeze({
+            ...holding,
+            initial: holding.quantity * holding.price,
+        })
+    )
+);
 
 export function dividendRecoveryRate(principal, dividends) {
     const basis = finite(principal);
@@ -76,8 +139,11 @@ export function recoveryModel(input = {}) {
         input.currentValueUsd !== null &&
         currentValueUsd === null;
     const hasKrw = krwContribution !== null && krwContribution > 0;
+    const absentFxRate =
+        input.krwPerUsd == null ||
+        (typeof input.krwPerUsd === 'string' && !input.krwPerUsd.trim());
     const invalidFxRate =
-        input.krwPerUsd !== undefined && (krwPerUsd === null || krwPerUsd <= 0);
+        !absentFxRate && (krwPerUsd === null || krwPerUsd <= 0);
     const missingFxRate =
         hasKrw && (krwPerUsd === null || krwPerUsd <= 0) && !invalidFxRate;
     const convertedMoreThanContributed =
@@ -94,9 +160,7 @@ export function recoveryModel(input = {}) {
     const principalUsd =
         invalidInput || missingFxRate
             ? null
-            : rounded(
-                  usdContribution + (hasKrw ? krwContribution / krwPerUsd : 0)
-              );
+            : usdContribution + (hasKrw ? krwContribution / krwPerUsd : 0);
     const hasPrincipal = principalUsd !== null && principalUsd > 0;
     const cashRecoveryRate =
         hasPrincipal && cashWithdrawnUsd !== null
@@ -132,12 +196,11 @@ export function recoveryModel(input = {}) {
         cashRecoveryRate,
         unrecoveredUsd:
             hasPrincipal && cashWithdrawnUsd !== null
-                ? rounded(Math.max(0, principalUsd - cashWithdrawnUsd))
+                ? Math.max(0, principalUsd - cashWithdrawnUsd)
                 : null,
         afterTaxLiquidationValueUsd,
         economicRecoveryRate,
-        currentRiskUsd:
-            currentValueUsd === null ? null : rounded(currentValueUsd),
+        currentRiskUsd: currentValueUsd,
         status: invalidInput
             ? 'invalid_input'
             : issues.length > 0

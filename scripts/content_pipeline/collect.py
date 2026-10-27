@@ -13,6 +13,7 @@ if __package__ in {None, ""}:
 
 from scripts.content_pipeline.database import ContentDatabase, DEFAULT_DB_PATH
 from scripts.content_pipeline.providers import NoDataError, PROVIDERS, SourceCandidate
+from scripts.content_pipeline.roundhill_schedule import parse_dates
 
 
 def candidate_tickers(candidate: SourceCandidate) -> list[str]:
@@ -45,6 +46,7 @@ def event_snapshot(event) -> dict[str, str | None]:
         "frequency": event.frequency,
         "rocPercent": event.roc_percent,
         "verificationStatus": event.verification_status,
+        "verificationNote": event.verification_note,
     }
 
 
@@ -52,9 +54,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Collect official ETF distributions")
     parser.add_argument("--provider", choices=sorted(PROVIDERS), required=True)
     parser.add_argument("--ticker", help="Persist events only for this ticker")
+    parser.add_argument("--tickers", help="Comma-separated registered Roundhill tickers for one declaration date")
     parser.add_argument("--url", help="Parse one explicit allowed official URL")
     parser.add_argument("--ex-date", type=date.fromisoformat,
                         help="Keep only events matching this ISO ex-dividend date")
+    dated = parser.add_mutually_exclusive_group()
+    dated.add_argument("--declaration-date", type=date.fromisoformat,
+                        help="Fetch one Roundhill ticker's notice for this declaration date")
+    dated.add_argument("--declaration-dates", type=parse_dates,
+                       help="Up to seven actual declaration dates, sharing the issuer fallback")
     parser.add_argument("--db", type=Path, default=DEFAULT_DB_PATH)
     parser.add_argument("--raw-dir", type=Path, default=Path("var/content-studio/raw"))
     parser.add_argument("--dry-run", action="store_true")
@@ -64,8 +72,21 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
-    args = build_parser().parse_args()
+    parser = build_parser()
+    args = parser.parse_args()
     adapter = PROVIDERS[args.provider]()
+    target_tickers = {value.strip().upper() for value in (args.tickers or args.ticker or "").split(",") if value.strip()}
+    declared_dates = args.declaration_dates or ([args.declaration_date] if args.declaration_date else [])
+    declared_values = {value.isoformat() for value in declared_dates}
+    if args.ticker and (len(target_tickers) != 1 or "," in args.ticker):
+        parser.error("--ticker accepts one symbol; use --tickers for a Roundhill group")
+    if args.tickers and (args.provider != "roundhill" or args.ticker or not declared_dates):
+        parser.error("--tickers requires --provider roundhill and --declaration-date, without --ticker")
+    if declared_dates and (
+        args.provider != "roundhill" or not target_tickers or args.url or args.ex_date
+        or any(ticker not in adapter.tracked_symbols for ticker in target_tickers)
+    ):
+        parser.error("--declaration-date requires a registered Roundhill --ticker and no --url/--ex-date")
     database = None
     if not args.dry_run:
         database = ContentDatabase(args.db)
@@ -77,20 +98,22 @@ def main() -> int:
             adapter.parser_version,
         )
 
-    if args.url:
+    if declared_dates:
+        candidates = [candidate for declared in declared_dates
+                      for candidate in adapter.discover_for_declaration_date(declared, ",".join(sorted(target_tickers)))]
+    elif args.url:
         candidates = [SourceCandidate(url=args.url, source_type="explicit_official_url")]
     elif args.ex_date:
         candidates = list(adapter.discover_for_ex_date(args.ex_date))
     else:
         candidates = list(adapter.discover())
-    target_ticker = args.ticker.strip().upper() if args.ticker else None
     seed_candidates = list(adapter.catalog_seed())
-    if target_ticker:
-        seed_candidates = [candidate for candidate in seed_candidates if target_ticker in candidate_tickers(candidate)]
+    if target_tickers:
+        seed_candidates = [candidate for candidate in seed_candidates if target_tickers.intersection(candidate_tickers(candidate))]
     if database:
         for candidate in [*seed_candidates, *candidates]:
             for ticker in candidate_tickers(candidate):
-                if target_ticker and ticker != target_ticker:
+                if target_tickers and ticker not in target_tickers:
                     continue
                 database.upsert_provider_fund(
                     adapter.slug, ticker, candidate.url, candidate.source_type
@@ -101,7 +124,7 @@ def main() -> int:
         "events": 0,
         "catalogTickers": sorted({
             ticker for candidate in seed_candidates for ticker in candidate_tickers(candidate)
-            if not target_ticker or ticker == target_ticker
+            if not target_tickers or ticker in target_tickers
         }),
         "noData": [],
         "errors": [],
@@ -115,7 +138,16 @@ def main() -> int:
 
     max_sources = args.max_sources if args.max_sources is not None else len(candidates)
     selected_candidates = candidates[:max_sources]
-    for outcome in adapter.fetch_many(selected_candidates):
+
+    def outcomes():
+        yield from adapter.fetch_many(selected_candidates)
+        if selected_candidates and args.provider == "roundhill" and target_tickers and declared_dates:
+            collected = {key[1] for key in seen_events if key[2] in declared_values}
+            missing = sorted(target_tickers - collected)
+            if missing:
+                yield from adapter.fetch_many([adapter.issuer_candidate(ticker) for ticker in missing])
+
+    for outcome in outcomes():
         candidate = outcome.candidate
         try:
             if outcome.error:
@@ -129,7 +161,7 @@ def main() -> int:
                 continue
             assert outcome.document is not None
             document = outcome.document
-            suffix = ".txt" if document.metadata.get("browserContent") == "text" or adapter.browser_content == "text" else ".html"
+            suffix = ".json" if document.source_type.endswith("_json") else ".txt" if document.metadata.get("browserContent") == "text" or adapter.browser_content == "text" else ".html"
             raw_path = args.raw_dir / adapter.slug / f"{document.content_sha256}{suffix}"
             if not args.dry_run:
                 raw_path.parent.mkdir(parents=True, exist_ok=True)
@@ -144,7 +176,7 @@ def main() -> int:
                 catalog_tickers: list[str] = []
                 for catalog_candidate in catalog_candidates:
                     for ticker in candidate_tickers(catalog_candidate):
-                        if target_ticker and ticker != target_ticker:
+                        if target_tickers and ticker not in target_tickers:
                             continue
                         catalog_tickers.append(ticker)
                         if database:
@@ -167,14 +199,25 @@ def main() -> int:
                 continue
 
             events = adapter.parse(document)
-            if target_ticker:
-                events = [event for event in events if event.ticker.upper() == target_ticker]
+            if target_tickers:
+                events = [event for event in events if event.ticker.upper() in target_tickers]
                 if not events:
-                    raise NoDataError(f"no official events matched ticker {target_ticker}")
+                    raise NoDataError(f"no official events matched tickers {','.join(sorted(target_tickers))}")
             if args.ex_date:
                 events = [event for event in events if event.ex_date == args.ex_date.isoformat()]
                 if not events:
                     raise NoDataError(f"no official events matched ex-date {args.ex_date.isoformat()}")
+            if declared_dates:
+                events = [event for event in events if event.declared_date in declared_values]
+                if not events:
+                    raise NoDataError(f"no official events matched declaration dates {','.join(sorted(declared_values))}")
+                for event in events:
+                    if not (
+                        event.declared_date in declared_values
+                        and event.record_date and event.payable_date
+                        and event.declared_date <= event.ex_date <= event.record_date <= event.payable_date
+                    ):
+                        raise ValueError("dated announcement has incomplete or inconsistent distribution dates")
             accepted_events = []
             for event in events:
                 key = stable_event_key(event)
@@ -223,6 +266,8 @@ def main() -> int:
         report["status"] = "success"
     else:
         report["status"] = "no_change"
+    if hasattr(adapter, "http_requests"):
+        report["httpRequests"] = adapter.http_requests
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 1 if report["status"] == "failed" else 0
 

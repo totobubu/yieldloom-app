@@ -84,9 +84,11 @@ test('sale preserves original principal across stocks and unknown withdrawals es
     near(b.principalHeld, 600);
     near(b.reinvestedHeld, 0);
     near(b.quantity, 6);
-    near(r.currencies[0].principalRate, 40);
+    near(r.currencies[0].principalRate, 0);
     near(r.currencies[0].totalRecoveryRate, 60);
     near(r.currencies[0].estimatedPrincipalRecovered, 400);
+    near(r.currencies[0].netContributedPrincipal, 1000);
+    near(r.currencies[0].currentAcquisitionCost, 600);
     near(r.timelines.USD.at(-1).trackedAssetsAtCost, 600);
 });
 
@@ -188,6 +190,8 @@ test('confirmed principal withdrawal alone increases principal recovery', () => 
     const metric = r.currencies.find((row) => row.currency === 'USD');
     near(metric.principalRecovered, 250);
     near(metric.estimatedPrincipalRecovered, 0);
+    near(metric.netContributedPrincipal, 750);
+    near(metric.currentAcquisitionCost, 750);
     near(metric.remainingPrincipal, 750);
     near(metric.principalRate, 25);
 });

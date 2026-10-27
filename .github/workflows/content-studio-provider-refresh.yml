@@ -69,7 +69,6 @@ jobs:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-      MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
       BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
       EVENT_SCHEDULE: ${{ github.event.schedule }}
     steps:
@@ -165,19 +164,6 @@ jobs:
           if [[ '${{ steps.target.outputs.scope }}' == 'ex_date' ]]; then args+=(--ex-date '${{ inputs.exDate }}'); fi
           python scripts/content_pipeline/refresh.py "${args[@]}"
 
-      - name: Capture licensed fallback observation after official ticker failure
-        id: fallback
-        if: ${{ steps.refresh.outcome == 'failure' && steps.target.outputs.scope == 'ticker' }}
-        continue-on-error: true
-        shell: bash
-        run: |
-          echo 'captured=false' >> "$GITHUB_OUTPUT"
-          if [[ -z "$MASSIVE_API_KEY" ]]; then exit 0; fi
-          python scripts/content_pipeline/collect_fallback.py --service massive --ticker '${{ inputs.ticker }}'
-          python scripts/content_pipeline/export_admin_data.py
-          python scripts/content_pipeline/export_dashboard.py
-          echo 'captured=true' >> "$GITHUB_OUTPUT"
-
       - name: Generate one PNG
         id: render
         if: ${{ steps.target.outputs.scope == 'render' }}
@@ -217,15 +203,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add public/content-studio/
-          if git diff --cached --quiet; then exit 0; fi
-          title='chore: refresh Content Studio data [skip ci]'
-          if [[ "$REFRESH_SCOPE" == 'ticker' && -n "$REFRESH_REQUEST_ID" ]]; then
-            # Manual single-ticker requests need normal deployment triggers.
-            title='chore: 선택 종목 수집 데이터 갱신'
-          fi
-          git commit -m "$title" -m "Refresh-Request: $REFRESH_REQUEST_ID"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          bash scripts/content_pipeline/publish_public_snapshots.sh "$GITHUB_REF_NAME"
 
       - name: Report refresh failure
         if: ${{ always() && (steps.refresh.outcome == 'failure' || steps.render.outcome == 'failure' || steps.validate.outcome == 'failure') }}

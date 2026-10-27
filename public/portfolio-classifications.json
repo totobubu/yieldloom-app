@@ -2266,6 +2266,10 @@
       "provider": "Nicholas",
       "underlying": null
     },
+    "GIF": {
+      "provider": "REX",
+      "underlying": null
+    },
     "GLD": {
       "provider": "SPDR",
       "underlying": null

@@ -11,15 +11,16 @@ export const formatShareAmount = (value) => {
         : '확정 배당 정보 없음';
 };
 
-// Keep this short enough for social previews while using only confirmed dividend rows.
+// Preserve reference status in social text as well as the rendered card.
 export const createShareText = ({
     symbol,
     hasDividend,
     currentDividendAmount,
     exDate,
+    referenceData = false,
 }) =>
     hasDividend
-        ? `${symbol} 최신 배당 ${formatShareAmount(currentDividendAmount)} · 배당락일 ${formatShareDate(exDate)} · 토또부부 배당 스튜디오에서 확인`
+        ? `${symbol} 최신 ${referenceData ? '참고 배당' : '배당'} ${formatShareAmount(currentDividendAmount)} · 배당락일 ${formatShareDate(exDate)} · 토또부부 배당 스튜디오에서 확인`
         : `${symbol} 배당 정보 · 토또부부 배당 스튜디오에서 확인`;
 
 const statusSuffix = (status) =>
@@ -51,8 +52,8 @@ export function createCardShareText(
     const current = formatShareAmount(data.currentDividendAmount);
     const copy =
         {
-            summary: `${data.symbol} 최신 확정 배당 ${current} · 배당락일 ${formatShareDate(data.exDate)}`,
-            comparison: `${data.symbol} 직전 대비 배당 ${formatDividendDifference(data.dividendDifference)}`,
+            summary: `${data.symbol} 최신 ${data.referenceData ? '참고' : '확정'} 배당 ${current} · 배당락일 ${formatShareDate(data.exDate)}`,
+            comparison: `${data.symbol} ${data.referenceData ? '참고 ' : ''}직전 대비 배당 ${formatDividendDifference(data.dividendDifference)}`,
             rival: `${data.symbol} 동일 기초자산 ETF 비교 결과`,
             calendar: `${data.symbol} 다음 배당 일정과 국내 영업일 기준 입금 예상`,
             'entry-efficiency': `${data.symbol} 과거 매수 시점별 배당률`,

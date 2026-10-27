@@ -57,6 +57,7 @@
         date-label="분석 기준일"
         :date-value="date(data.asOfDate)"
         data-thumbnail-kind="entry-efficiency">
+        <p v-if="data.quality?.message && data.available" role="status">{{ data.quality.message }}</p>
         <template v-if="data.available">
             <section class="intro">
                 <h2>과거 매수 시점별 배당률은 어땠을까?</h2>

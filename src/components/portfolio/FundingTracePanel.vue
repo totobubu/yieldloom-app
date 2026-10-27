@@ -150,20 +150,26 @@
                     ><strong>{{ money(metric.deposits) }}</strong>
                 </article>
                 <article>
-                    <small>원금 회수</small
+                    <small>순투입 원금</small
+                    ><strong>{{
+                        money(metric.netContributedPrincipal)
+                    }}</strong>
+                </article>
+                <article>
+                    <small>보유 취득원가 · 투자 대기 현금</small
+                    ><strong>{{ money(metric.currentAcquisitionCost) }}</strong>
+                </article>
+                <article>
+                    <small>확정 원금 회수</small
                     ><strong>{{ money(metric.principalRecovered) }}</strong>
                     <span v-if="metric.estimatedPrincipalRecovered">
-                        추정
-                        {{ money(metric.estimatedPrincipalRecovered) }} 별도
+                        미확정 추정
+                        {{ money(metric.estimatedPrincipalRecovered) }} 제외
                     </span>
                 </article>
                 <article>
                     <small>원금 회수율</small
                     ><strong>{{ percent(metric.principalRate) }}</strong>
-                </article>
-                <article>
-                    <small>미회수 원금</small
-                    ><strong>{{ money(metric.remainingPrincipal) }}</strong>
                 </article>
                 <article>
                     <small>현재 원금 기반 자산</small
@@ -177,10 +183,11 @@
                 </article>
             </div>
             <p>
-                원금 회수율 = 원금으로 귀속된 외부 출금 ÷ 누적 투자 원금.
+                원금 회수율 = 확정된 원금 외부 출금 ÷ 누적 투자 원금.
                 배당·수익의 출금은 총 현금 회수에는 포함하지만 원금 회수에는
-                포함하지 않습니다. 손실은 현재 원금 기반 자산을 줄여도 누적 투자
-                원금을 줄이지 않습니다.
+                포함하지 않으며, 출처를 확정하지 않은 추정 원금도 대표 회수율과
+                순투입 원금에서 제외합니다. 손실은 현재 원금 기반 자산을 줄여도
+                누적 투자 원금을 줄이지 않습니다.
             </p>
             <p>
                 총 현금 회수 {{ money(metric.recovered) }} · 출처 미확인
@@ -199,7 +206,7 @@
                 <svg
                     viewBox="0 0 800 225"
                     role="img"
-                    aria-label="누적 투자 원금, 취득원가 기준 추적 자산, 누적 원금 회수 추이">
+                    aria-label="누적 투자 원금, 보유 취득원가와 투자 대기 현금, 확정 원금 회수 추이">
                     <title>
                         평가액이 아닌 취득원가 기준 자금 흐름입니다. 아래 표에서
                         일자별 금액을 확인할 수 있습니다.

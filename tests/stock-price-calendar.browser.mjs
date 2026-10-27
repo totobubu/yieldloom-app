@@ -99,6 +99,31 @@ try {
                 .innerText(),
             '$ 40.5956'
         );
+        assert.deepEqual(
+            await history
+                .locator('[data-date="2026-10-22"] .day-price')
+                .evaluateAll((rows) =>
+                    rows.map((row) => ({
+                        label: row
+                            .querySelector('.price-label')
+                            .textContent.trim(),
+                        value: row
+                            .querySelector('strong, .range-price')
+                            .textContent.trim(),
+                    }))
+                ),
+            [
+                { label: '고가', value: '$ 45' },
+                { label: '종가', value: '$ 44.5' },
+                { label: '저가', value: '$ 43' },
+            ]
+        );
+        assert.deepEqual(
+            await history
+                .locator('[data-date="2026-10-21"] .range-price')
+                .allTextContents(),
+            ['—', '—']
+        );
         assert.equal(
             await history.locator('[data-date="2026-10-03"] .no-price').count(),
             1

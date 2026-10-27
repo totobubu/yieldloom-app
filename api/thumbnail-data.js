@@ -1,3 +1,5 @@
+import { loadStockEvidence } from '../lib/load-stock-evidence.js';
+import { mergeStockReference } from '../lib/stock-evidence.js';
 import {
     applySecurityStatus,
     archiveTicker,
@@ -140,6 +142,9 @@ export function toBacktestData(events) {
                 ...(status === 'needs_review'
                     ? {
                           verificationStatus: 'needs_review',
+                          ...(event.source_class === 'public_aggregator'
+                              ? { isReference: true }
+                              : {}),
                           officialUrl:
                               event.official_url ?? event.officialUrl ?? null,
                           payableDate: isoDate(
@@ -262,34 +267,12 @@ async function fetchTicker(symbol, origin, options = {}) {
     if (cached && cached.expiresAt > Date.now()) return cached.value;
     const instrument = instruments.get(key) ?? pricePaths.get(key);
     let priceError;
-    const [historyResult, priceResult] = await Promise.allSettled([
-        loadOfficialHistory(key, origin, fetcher),
-        (async () => {
-            if (isDelisted(key)) {
-                const archive = await loadPriceHistory(
-                    key,
-                    fetcher,
-                    baseUrl,
-                    historyKind,
-                    options.asOfDate ?? new Date().toISOString().slice(0, 10)
-                ).catch(() => null);
-                if (archive) return { ...archive, source: 'r2_projection' };
-                return loadProjection(
-                    key,
-                    projectionBase,
-                    fetcher,
-                    historyKind
-                ).catch(() => null);
-            }
-            const projection = await loadProjection(
-                key,
-                projectionBase,
-                fetcher,
-                historyKind
-            ).catch(() => null);
-            if (projection) {
-                if (!projection.tickerInfo?.marketCap) {
-                    const legacy = await loadPriceHistory(
+    const [historyResult, priceResult, evidenceResult] =
+        await Promise.allSettled([
+            loadOfficialHistory(key, origin, fetcher),
+            (async () => {
+                if (isDelisted(key)) {
+                    const archive = await loadPriceHistory(
                         key,
                         fetcher,
                         baseUrl,
@@ -297,39 +280,104 @@ async function fetchTicker(symbol, origin, options = {}) {
                         options.asOfDate ??
                             new Date().toISOString().slice(0, 10)
                     ).catch(() => null);
-                    projection.tickerInfo.marketCap =
-                        legacy?.tickerInfo?.marketCap ?? null;
+                    if (archive) return { ...archive, source: 'r2_projection' };
+                    return loadProjection(
+                        key,
+                        projectionBase,
+                        fetcher,
+                        historyKind
+                    ).catch(() => null);
                 }
-                return projection;
-            }
-            const legacy = await loadPriceHistory(
-                key,
-                fetcher,
-                baseUrl,
-                historyKind,
-                options.asOfDate ?? new Date().toISOString().slice(0, 10)
-            ).catch(() => null);
-            if (
-                legacy?.backtestData?.some(
-                    (row) => !row.forecasted && Number(row.close) > 0
+                const projection = await loadProjection(
+                    key,
+                    projectionBase,
+                    fetcher,
+                    historyKind
+                ).catch(() => null);
+                if (projection) {
+                    if (!projection.tickerInfo?.marketCap) {
+                        const legacy = await loadPriceHistory(
+                            key,
+                            fetcher,
+                            baseUrl,
+                            historyKind,
+                            options.asOfDate ??
+                                new Date().toISOString().slice(0, 10)
+                        ).catch(() => null);
+                        projection.tickerInfo.marketCap =
+                            legacy?.tickerInfo?.marketCap ?? null;
+                    }
+                    return projection;
+                }
+                const legacy = await loadPriceHistory(
+                    key,
+                    fetcher,
+                    baseUrl,
+                    historyKind,
+                    options.asOfDate ?? new Date().toISOString().slice(0, 10)
+                ).catch(() => null);
+                if (
+                    legacy?.backtestData?.some(
+                        (row) => !row.forecasted && Number(row.close) > 0
+                    )
                 )
-            )
-                return { ...legacy, source: 'r2_projection' };
-            return loadYahooQuote(key, fetcher);
-        })(),
-    ]);
+                    return { ...legacy, source: 'r2_projection' };
+                return loadYahooQuote(key, fetcher);
+            })(),
+            (options.stockEvidenceLoader ?? loadStockEvidence)(
+                key,
+                origin,
+                fetcher
+            ),
+        ]);
+    const evidence =
+        evidenceResult.status === 'fulfilled' ? evidenceResult.value : null;
     const history =
-        historyResult.status === 'fulfilled' ? historyResult.value : [];
-    const priceHistory =
+        historyResult.status === 'fulfilled'
+            ? mergeStockReference(historyResult.value, evidence?.history)
+            : [];
+    let priceHistory =
         priceResult.status === 'fulfilled' ? priceResult.value : null;
     if (priceResult.status === 'rejected') priceError = priceResult.reason;
+    const stockPrice = evidence?.candles?.at(-1);
+    const existingPriceDate =
+        priceHistory?.priceDate ??
+        latestClose(priceHistory?.backtestData ?? [])?.date;
+    if (
+        stockPrice &&
+        (!existingPriceDate || stockPrice.date >= existingPriceDate)
+    ) {
+        const rows = new Map(
+            (priceHistory?.backtestData ?? []).map((row) => [row.date, row])
+        );
+        for (const row of evidence.candles)
+            rows.set(row.date, { ...row, close: Number(row.close) });
+        priceHistory = {
+            ...priceHistory,
+            backtestData: [...rows.values()].sort((a, b) =>
+                a.date.localeCompare(b.date)
+            ),
+            tickerInfo: {
+                ...priceHistory?.tickerInfo,
+                currency: evidence.currency,
+            },
+            price: Number(stockPrice.close),
+            priceDate: stockPrice.date,
+            source: 'stock_reference',
+            adjustmentBasis: 'upstream_unverified',
+        };
+    }
+
     const backtestData = priceHistory
         ? toPriceRows(priceHistory, history)
         : toBacktestData(history);
     const latest = latestClose(backtestData);
     const currentPrice = priceHistory?.price ?? latest?.close ?? null;
     const priceDate = priceHistory?.priceDate ?? latest?.date ?? null;
-    const reviewSplits = (priceHistory?.tickerInfo?.events?.splits ?? []).some(
+    const reviewSplits = [
+        ...(priceHistory?.tickerInfo?.events?.splits ?? []),
+        ...(evidence?.splits ?? []),
+    ].some(
         (event) =>
             event.date >= priceHistory?.backtestData?.[0]?.date &&
             event.date <=
@@ -355,14 +403,28 @@ async function fetchTicker(symbol, origin, options = {}) {
             price: currentPrice,
         },
         backtestData,
+        collectionCoverage: priceHistory?.collectionCoverage ?? null,
+        issuerAnnouncements: evidence?.announcements ?? [],
+        stockReferenceHistory: evidence?.history ?? null,
+        stockCollection: evidence?.result ?? null,
         sourceStatus: {
             dividends:
-                historyResult.status === 'rejected'
+                historyResult.status === 'rejected' ||
+                evidenceResult.status === 'rejected'
                     ? 'unavailable'
-                    : history.length
-                      ? 'official_projection'
+                    : evidence?.history?.length && !historyResult.value.length
+                      ? 'reference_observations'
+                      : history.length
+                        ? 'official_projection'
+                        : 'none',
+            dividendSourceUrl:
+                officialHistoryReference(key) ?? evidence?.sourceUrl,
+            stockEvidence:
+                evidenceResult.status === 'rejected'
+                    ? 'unavailable'
+                    : evidence
+                      ? 'collected'
                       : 'none',
-            dividendSourceUrl: officialHistoryReference(key),
             dividendReviewCount: backtestData.filter(
                 (row) => row.verificationStatus === 'needs_review'
             ).length,
@@ -375,7 +437,9 @@ async function fetchTicker(symbol, origin, options = {}) {
                 priceHistory?.adjustmentBasis ?? 'upstream_unverified',
             asOf: new Date().toISOString(),
             freshness: currentPrice
-                ? historyResult.status === 'rejected'
+                ? historyResult.status === 'rejected' ||
+                  evidenceResult.status === 'rejected' ||
+                  (evidence && evidence.result?.status !== 'success')
                     ? 'partial'
                     : priceFreshness(priceDate, options.asOfDate)
                 : 'partial',
@@ -440,6 +504,7 @@ async function tickerWithSnapshot(symbol, origin, options = {}) {
                         'r2_projection',
                         'thumbnail_projection',
                         'yahoo_quote',
+                        'stock_reference',
                     ].includes(snapshot.value.sourceStatus?.price))
             ) {
                 return {

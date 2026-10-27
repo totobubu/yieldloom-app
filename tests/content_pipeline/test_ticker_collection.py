@@ -128,7 +128,7 @@ class RoundhillIssuerCollectionTest(unittest.TestCase):
                 self.assertEqual(tuple(events[0]), ('TOPW', '2026-10-26', '0.155646'))
 
     def test_topw_publication_triggers_deployment_only_after_collection(self):
-        workflow = Path('.github/workflows/observe-roundhill-topw.yml').read_text()
-        self.assertIn("steps.observation.outputs.status == 'collected'", workflow)
+        workflow = Path('.github/workflows/observe-roundhill.yml').read_text()
+        self.assertIn("steps.observation.outputs.publish == 'true'", workflow)
         self.assertIn('REFRESH_SCOPE: ticker', workflow)
-        self.assertIn('REFRESH_REQUEST_ID: roundhill-topw-${{ github.run_id }}', workflow)
+        self.assertIn('REFRESH_REQUEST_ID: roundhill-${{ github.run_id }}', workflow)

@@ -168,6 +168,9 @@ npm run content:run
 npm run content:refresh -- --scope provider --provider yieldmax
 ```
 
+Roundhill은 [통합 공시 관측 워크플로우](docs/content-studio/roundhill-observation.md)에서
+요일별 티커 수집, DST 추가 확인, 휴장 전후 발표일 조회와 미확인 주기 이월을 관리한다.
+
 수집 파이프라인은 기본적으로 카드용 데이터 작업을 수행합니다. 기존 블로그 Bundle·편집 캘린더·주간 대본 생성은 `--include-editorial`을 명시한 경우에만 실행합니다. 호환 도구와 기존 저장 데이터는 보존합니다.
 
 ## 상장폐지 종목

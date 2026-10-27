@@ -16,6 +16,7 @@ from scripts.content_pipeline.export_admin_data import export_all
 from scripts.content_pipeline.export_dashboard import export_dashboard
 from scripts.content_pipeline.export_system_logs import export_system_logs
 from scripts.content_pipeline.providers import PROVIDERS
+from scripts.content_pipeline.roundhill_schedule import parse_dates
 from scripts.content_pipeline.record_collection_report import record_collection_report
 from scripts.content_pipeline.reconcile_public_data import export_snapshot as export_reconciliation
 from scripts.data_pipeline.register_history import register as register_history
@@ -23,7 +24,8 @@ from scripts.data_pipeline.register_history import register as register_history
 
 def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None,
                 ex_date: date | None = None, ticker: str | None = None,
-                declaration_date: date | None = None, tickers: list[str] | None = None) -> dict:
+                declaration_date: date | None = None, tickers: list[str] | None = None,
+                declaration_dates: list[date] | None = None) -> dict:
     command = [
         sys.executable,
         "scripts/content_pipeline/collect.py",
@@ -44,6 +46,8 @@ def run_collect(provider: str, db: Path, raw_dir: Path, url: str | None = None,
         command.extend(["--ex-date", ex_date.isoformat()])
     if declaration_date:
         command.extend(["--declaration-date", declaration_date.isoformat()])
+    if declaration_dates:
+        command.extend(["--declaration-dates", ",".join(day.isoformat() for day in declaration_dates)])
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     try:
         payload = json.loads(result.stdout)
@@ -107,7 +111,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--ticker")
     parser.add_argument("--tickers")
     parser.add_argument("--ex-date", type=date.fromisoformat)
-    parser.add_argument("--declaration-date", type=date.fromisoformat)
+    dated = parser.add_mutually_exclusive_group()
+    dated.add_argument("--declaration-date", type=date.fromisoformat)
+    dated.add_argument("--declaration-dates", type=parse_dates)
     parser.add_argument("--request-id")
     parser.add_argument("--week-ending", type=date.fromisoformat, default=date.today())
     parser.add_argument("--with-insights", action="store_true", help="ROC와 미국 주식·ETF 유용한 정보도 누적 수집")
@@ -123,9 +129,10 @@ def main() -> int:
     selected_url = None
     ticker = args.ticker.strip().upper() if args.ticker else None
     tickers = sorted({value.strip().upper() for value in (args.tickers or "").split(",") if value.strip()})
-    if args.tickers and (args.scope != "provider" or args.provider != "roundhill" or ticker or not args.declaration_date):
+    dated = bool(args.declaration_date or args.declaration_dates)
+    if args.tickers and (args.scope != "provider" or args.provider != "roundhill" or ticker or not dated):
         parser.error("--tickers requires --scope provider --provider roundhill --declaration-date, without --ticker")
-    if args.declaration_date and (
+    if dated and (
         args.provider != "roundhill" or args.ex_date
         or not ((args.scope == "ticker" and ticker in PROVIDERS["roundhill"].tracked_symbols)
                 or (args.scope == "provider" and tickers and all(value in PROVIDERS["roundhill"].tracked_symbols for value in tickers)))
@@ -149,7 +156,7 @@ def main() -> int:
     elif args.scope == "ticker":
         if not ticker:
             parser.error("--scope ticker requires --ticker")
-        if args.declaration_date:
+        if dated:
             # Scheduled announcements must discover today's notice, rather than
             # replaying the dated URL stored with a previous distribution.
             provider = args.provider
@@ -178,6 +185,7 @@ def main() -> int:
         "tickers": tickers,
         "exDate": args.ex_date.isoformat() if args.ex_date else None,
         "declarationDate": args.declaration_date.isoformat() if args.declaration_date else None,
+        "declarationDates": [day.isoformat() for day in args.declaration_dates or []],
         "recoveredInterruptedRuns": recovered,
         "providers": {},
     }
@@ -188,7 +196,7 @@ def main() -> int:
             try:
                 payload = run_collect(
                     provider, args.db, args.raw_dir, selected_url, args.ex_date, ticker,
-                    args.declaration_date, tickers or None,
+                    args.declaration_date, tickers or None, **({"declaration_dates": args.declaration_dates} if args.declaration_dates else {}),
                 )
                 step_status = "warning" if payload.get("status") == "partial" else "success"
                 warned = warned or step_status == "warning"
@@ -239,7 +247,7 @@ def main() -> int:
             args.public_dir / "reconciliation.json",
             # Announcement polling must not start unrelated ticker onboarding
             # (which can fetch other issuers while scanning the shared ledger).
-            onboard_missing=not bool(args.declaration_date),
+            onboard_missing=not dated,
         )
         has_differences = bool(
             reconciliation["summary"].get("missing_date", 0)

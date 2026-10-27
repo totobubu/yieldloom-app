@@ -149,5 +149,6 @@ export function useDocumentLedgerWindow(
         paddingBottom,
         rowAttributes,
         jump,
+        refresh: schedule,
     };
 }

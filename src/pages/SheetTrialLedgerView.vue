@@ -67,6 +67,7 @@
         listRegion = ref(null),
         tableElement = ref(null),
         listScrollRoot = ref(null),
+        ledgerLayoutVersion = ref(0),
         ledgerOpen = ref(false);
     const labels = {
         quantity: '수량(주)',
@@ -260,12 +261,17 @@
         paddingBottom,
         rowAttributes,
         jump,
+        refresh: refreshLedgerWindow,
     } = useDocumentLedgerWindow(
         sortedRows,
         listRegion,
         tableElement,
         listScrollRoot
     );
+    function ledgerShown() {
+        ledgerLayoutVersion.value++;
+        refreshLedgerWindow();
+    }
     watch(editing, (value) => {
         if (!value) {
             creating.value = false;
@@ -616,6 +622,7 @@
             block-scroll
             :draggable="false"
             header="거래 목록"
+            :pt="{ transition: { onAfterEnter: ledgerShown } }"
             :style="{
                 width: '100vw',
                 height: '100dvh',
@@ -1058,7 +1065,8 @@
             <DocumentLedgerHeader
                 :container="tableElement"
                 :region="listRegion"
-                :scroll-root="listScrollRoot" />
+                :scroll-root="listScrollRoot"
+                :layout-version="ledgerLayoutVersion" />
         </Dialog>
         <Dialog
             v-model:visible="approvalOpen"

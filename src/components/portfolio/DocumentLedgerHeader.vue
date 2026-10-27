@@ -4,11 +4,18 @@
         container: { type: Object, default: null },
         region: { type: Object, default: null },
         scrollRoot: { type: Object, default: null },
+        layoutVersion: { type: Number, default: 0 },
     });
     const host = ref(null);
     let dispose = () => {};
     watch(
-        () => [props.container, props.region, host.value, props.scrollRoot],
+        () => [
+            props.container,
+            props.region,
+            host.value,
+            props.scrollRoot,
+            props.layoutVersion,
+        ],
         ([container, region, overlay, scrollRoot]) => {
             dispose();
             if (!container || !region || !overlay) return;

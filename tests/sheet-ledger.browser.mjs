@@ -49,6 +49,7 @@ try {
             '/admin/sheet-ledger'
     );
     const ledger = page.locator('.ledger-list');
+    await page.getByRole('button', { name: '확인', exact: true }).click();
     await ledger.getByRole('cell', { name: 'TEST', exact: true }).waitFor();
     assert.equal(requests.length, 1);
     const search = page.getByRole('textbox', {
@@ -64,7 +65,7 @@ try {
     await page.getByRole('option', { name: '남편', exact: true }).click();
     assert.equal(requests.length, 1);
     await ledger.getByRole('button', { name: '수정', exact: true }).click();
-    const dialog = page.getByRole('dialog');
+    const dialog = page.getByRole('dialog', { name: '거래 수정', exact: true });
     await dialog.getByLabel('거래수수료($)', { exact: true }).fill('1.25');
     await dialog
         .getByRole('button', { name: '수정 저장', exact: true })

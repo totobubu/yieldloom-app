@@ -65,7 +65,10 @@
     const sortField = ref('date'),
         sortOrder = ref(-1),
         listRegion = ref(null),
-        tableElement = ref(null);
+        tableElement = ref(null),
+        listScrollRoot = ref(null),
+        ledgerLayoutVersion = ref(0),
+        ledgerOpen = ref(false);
     const labels = {
         quantity: '수량(주)',
         unitPriceUsd: '매수단가($)',
@@ -100,6 +103,7 @@
         Object.keys(extraFields).filter(
             (field) =>
                 !numericFields.includes(field) &&
+                field !== 'transactionAt' &&
                 (activeRows.value.some((r) => r[field] != null) ||
                     observations.value.some((o) => o.values[field] != null))
         )
@@ -257,7 +261,17 @@
         paddingBottom,
         rowAttributes,
         jump,
-    } = useDocumentLedgerWindow(sortedRows, listRegion, tableElement);
+        refresh: refreshLedgerWindow,
+    } = useDocumentLedgerWindow(
+        sortedRows,
+        listRegion,
+        tableElement,
+        listScrollRoot
+    );
+    function ledgerShown() {
+        ledgerLayoutVersion.value++;
+        refreshLedgerWindow();
+    }
     watch(editing, (value) => {
         if (!value) {
             creating.value = false;
@@ -439,6 +453,7 @@
             fieldDrafts.value = {};
             approvalRowId.value = null;
             approvalNote.value = '';
+            ledgerOpen.value = false;
             busy.value = false;
             progress.value = '';
             if (firebaseUser.value) load();
@@ -553,51 +568,12 @@
             @inspect="inspectObservation"
             @clear-preview="evidencePreview = null"
             @archive="downloadArchive" />
-        <section class="ledger-list" aria-label="거래 목록">
-            <div
-                v-if="pendingApprovals.length"
-                class="approval-toolbar"
-                aria-label="출처 값 승인 대기">
-                <div v-for="row in pendingApprovals" :key="row.id">
-                    <span
-                        >{{ rowLabel(row) }} ·
-                        {{ Object.keys(fieldDrafts[row.id].choices).length }}개
-                        선택</span
-                    >
-                    <strong v-if="draftStale(row.id)"
-                        >값 변경됨 · 다시 선택 필요</strong
-                    >
-                    <Button
-                        label="선택값 승인·저장"
-                        size="small"
-                        :disabled="busy || draftStale(row.id)"
-                        @click="openApproval(row)" />
-                    <Button
-                        label="선택 취소"
-                        text
-                        size="small"
-                        :disabled="busy"
-                        @click="discardChoices(row.id)" />
-                </div>
-            </div>
-            <div class="filters">
-                <Button
-                    label="처음 거래로 이동"
-                    severity="secondary"
-                    @click="jump(false)" />
-                <Button
-                    label="마지막 거래로 이동"
-                    severity="secondary"
-                    @click="jump(true)" />
-                <Button
-                    label="거래 행 추가"
-                    :disabled="busy"
-                    @click="addManual" />
-                <Button
-                    v-if="addedId"
-                    label="추가한 거래 보기"
-                    severity="secondary"
-                    @click="showAdded" />
+        <section
+            v-show="!ledgerOpen"
+            class="ledger-launcher"
+            aria-label="거래 목록 필터">
+            <h2>거래 목록 조회</h2>
+            <form class="filters" @submit.prevent="ledgerOpen = true">
                 <Select
                     v-model="account"
                     :options="accounts"
@@ -629,260 +605,469 @@
                     v-model="search"
                     placeholder="티커·원본 시트 검색"
                     aria-label="거래 검색" />
-                <span
-                    >검색/필터 {{ filtered.length }}건 · 전체
-                    {{ rows.length }}건 · {{ renderedRows.length }}건 표시</span
-                >
-            </div>
+                <Button
+                    type="submit"
+                    label="확인"
+                    icon="pi pi-check"
+                    :disabled="busy" />
+            </form>
             <p class="muted">
-                USD와 KRW는 같은 금액의 통화별 표기이며 합산하지 않습니다. 매도
-                행의 거래금액은 매도대금입니다.
-            </p>
-            <div ref="listRegion" class="document-list-region">
-                <div
-                    aria-hidden="true"
-                    :style="{ height: `${paddingTop}px` }" />
-                <div ref="tableElement">
-                    <DataTable
-                        :value="renderedRows"
-                        :pt="{
-                            table: { 'aria-rowcount': filtered.length + 1 },
-                            bodyRow: rowAttributes,
-                        }"
-                        lazy
-                        data-key="id"
-                        scrollable
-                        :sort-field="sortField"
-                        :sort-order="sortOrder"
-                        size="small"
-                        striped-rows
-                        :loading="busy"
-                        table-style="min-width: 3700px"
-                        @sort="sortList">
-                        <template #empty
-                            >조건에 맞는 거래가 없습니다. 필터를 확인하거나 수동
-                            거래를 추가해 주세요.</template
-                        >
-                        <Column
-                            field="accountId"
-                            header="계좌"
-                            :frozen="freezeIdentity"
-                            style="min-width: 80px"
-                            ><template #body="{ data }">{{
-                                accounts.find((a) => a.id === data.accountId)
-                                    ?.name
-                            }}</template></Column
-                        >
-                        <Column
-                            field="date"
-                            header="거래일"
-                            sortable
-                            :frozen="freezeIdentity"
-                            style="min-width: 180px">
-                            <template #body="{ data }">
-                                <SheetEvidenceCell
-                                    :comparison="
-                                        review.byRow
-                                            .get(data.id)
-                                            ?.fields.get('date')
-                                    "
-                                    :selected="
-                                        fieldDrafts[data.id]?.choices.date ||
-                                        null
-                                    "
-                                    label="거래일"
-                                    :row-label="rowLabel(data)"
-                                    :format="displayEvidence"
-                                    :disabled="busy"
-                                    @choose="
-                                        chooseField(data, 'date', $event)
-                                    " />
-                            </template>
-                        </Column>
-                        <Column
-                            field="type"
-                            header="유형"
-                            :frozen="freezeIdentity"
-                            style="min-width: 75px"
-                            ><template #body="{ data }">{{
-                                typeLabels[data.type]
-                            }}</template></Column
-                        >
-                        <Column
-                            field="symbol"
-                            header="티커"
-                            sortable
-                            :frozen="freezeIdentity"
-                            style="min-width: 90px" />
-                        <Column
-                            field="exDate"
-                            header="배당락일"
-                            style="min-width: 210px">
-                            <template #body="{ data }">
-                                <SheetEvidenceCell
-                                    :comparison="
-                                        review.byRow
-                                            .get(data.id)
-                                            ?.fields.get('exDate')
-                                    "
-                                    :selected="
-                                        fieldDrafts[data.id]?.choices.exDate ||
-                                        null
-                                    "
-                                    label="배당락일"
-                                    :row-label="rowLabel(data)"
-                                    :format="displayEvidence"
-                                    :disabled="busy"
-                                    @choose="
-                                        chooseField(data, 'exDate', $event)
-                                    " />
-                            </template>
-                        </Column>
-                        <Column
-                            field="paymentDate"
-                            header="배당지급일"
-                            style="min-width: 210px">
-                            <template #body="{ data }">
-                                <SheetEvidenceCell
-                                    :comparison="
-                                        review.byRow
-                                            .get(data.id)
-                                            ?.fields.get('paymentDate')
-                                    "
-                                    :selected="
-                                        fieldDrafts[data.id]?.choices
-                                            .paymentDate || null
-                                    "
-                                    label="배당지급일"
-                                    :row-label="rowLabel(data)"
-                                    :format="displayEvidence"
-                                    :disabled="busy"
-                                    @choose="
-                                        chooseField(data, 'paymentDate', $event)
-                                    " />
-                            </template>
-                        </Column>
-                        <Column
-                            v-for="field in valueColumns"
-                            :key="field"
-                            :field="field"
-                            :header="labels[field] || field"
-                            sortable
-                            style="min-width: 210px">
-                            <template #body="{ data }">
-                                <SheetEvidenceCell
-                                    :comparison="
-                                        review.byRow
-                                            .get(data.id)
-                                            ?.fields.get(field)
-                                    "
-                                    :selected="
-                                        fieldDrafts[data.id]?.choices[field] ||
-                                        null
-                                    "
-                                    :label="labels[field] || field"
-                                    :row-label="rowLabel(data)"
-                                    :format="displayEvidence"
-                                    :status="data.fieldStatus?.[field]"
-                                    :disabled="
-                                        busy ||
-                                        review.byRow.get(data.id)?.observations
-                                            .length > 100
-                                    "
-                                    @choose="
-                                        chooseField(data, field, $event)
-                                    " />
-                            </template>
-                        </Column>
-                        <Column
-                            field="fundingSource"
-                            header="원금출처"
-                            style="min-width: 120px" />
-                        <Column
-                            field="reinvested"
-                            header="재투자여부"
-                            style="min-width: 130px"
-                            ><template #body="{ data }"
-                                >{{
-                                    data.reinvested == null
-                                        ? '미확인'
-                                        : data.reinvested
-                                          ? '예'
-                                          : '아니오'
-                                }}{{
-                                    data.fieldStatus.reinvested === '추정'
-                                        ? ' (추정)'
-                                        : ''
-                                }}</template
-                            ></Column
-                        >
-                        <Column
-                            field="status"
-                            header="상태"
-                            style="min-width: 110px"
-                            ><template #body="{ data }"
-                                ><Tag
-                                    :value="
-                                        data.duplicate ? '중복' : data.status
-                                    "
-                                    :severity="
-                                        data.status === '확정'
-                                            ? 'success'
-                                            : 'warn'
-                                    " /></template
-                        ></Column>
-                        <Column header="원본·검토 근거" style="min-width: 250px"
-                            ><template #body="{ data }"
-                                ><a
-                                    v-if="data.source.spreadsheetId"
-                                    :href="`https://docs.google.com/spreadsheets/d/${data.source.spreadsheetId}/edit#gid=${data.source.sheetId}&range=A${data.source.row}`"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >{{ data.source.sheet }}
-                                    {{ data.source.row }}행</a
-                                ><span v-else
-                                    >{{ data.source.sheet }} · 검토 필요</span
-                                >
-                                <details v-if="data.evidence.length">
-                                    <summary>
-                                        근거 {{ data.evidence.length }}개
-                                    </summary>
-                                    <p v-for="(e, i) in data.evidence" :key="i">
-                                        {{ e }}
-                                    </p>
-                                </details></template
-                            ></Column
-                        >
-                        <Column header="수정" style="min-width: 90px"
-                            ><template #body="{ data }"
-                                ><Button
-                                    label="수정"
-                                    size="small"
-                                    severity="secondary"
-                                    :disabled="busy"
-                                    @click="
-                                        editing = JSON.parse(
-                                            JSON.stringify(data)
-                                        )
-                                    " /></template
-                        ></Column>
-                    </DataTable>
-                </div>
-                <div
-                    aria-hidden="true"
-                    :style="{ height: `${paddingBottom}px` }" />
-            </div>
-            <p class="list-progress" role="status" aria-live="polite">
-                전체 {{ filtered.length }}건 중
-                {{ filtered.length ? windowStart + 1 : 0 }}–{{
-                    windowStart + renderedRows.length
-                }}행 · 브라우저 스크롤/PageDown으로 전체 목록을 확인하세요.
-            </p>
-            <p v-if="windowStart + renderedRows.length >= filtered.length">
-                목록 끝
+                조건에 맞는 {{ filtered.length }}건 · 전체 {{ rows.length }}건.
+                확인을 누르면 거래 목록을 전체 화면으로 엽니다.
             </p>
         </section>
-        <DocumentLedgerHeader :container="tableElement" :region="listRegion" />
+        <Dialog
+            v-model:visible="ledgerOpen"
+            modal
+            block-scroll
+            :draggable="false"
+            header="거래 목록"
+            :pt="{ transition: { onAfterEnter: ledgerShown } }"
+            :style="{
+                width: '100vw',
+                height: '100dvh',
+                maxWidth: 'none',
+                maxHeight: '100dvh',
+                margin: 0,
+                borderRadius: 0,
+            }"
+            :content-style="{
+                padding: 0,
+                overflow: 'hidden',
+                minHeight: 0,
+                flex: '1 1 auto',
+            }">
+            <div ref="listScrollRoot" class="ledger-dialog-scroll">
+                <section class="ledger-list" aria-label="거래 목록">
+                    <div
+                        v-if="pendingApprovals.length"
+                        class="approval-toolbar"
+                        aria-label="출처 값 승인 대기">
+                        <div v-for="row in pendingApprovals" :key="row.id">
+                            <span
+                                >{{ rowLabel(row) }} ·
+                                {{
+                                    Object.keys(fieldDrafts[row.id].choices)
+                                        .length
+                                }}개 선택</span
+                            >
+                            <strong v-if="draftStale(row.id)"
+                                >값 변경됨 · 다시 선택 필요</strong
+                            >
+                            <Button
+                                label="선택값 승인·저장"
+                                size="small"
+                                :disabled="busy || draftStale(row.id)"
+                                @click="openApproval(row)" />
+                            <Button
+                                label="선택 취소"
+                                text
+                                size="small"
+                                :disabled="busy"
+                                @click="discardChoices(row.id)" />
+                        </div>
+                    </div>
+                    <div class="filters">
+                        <Button
+                            label="처음 거래로 이동"
+                            severity="secondary"
+                            @click="jump(false)" />
+                        <Button
+                            label="마지막 거래로 이동"
+                            severity="secondary"
+                            @click="jump(true)" />
+                        <Button
+                            label="거래 행 추가"
+                            :disabled="busy"
+                            @click="addManual" />
+                        <Button
+                            v-if="addedId"
+                            label="추가한 거래 보기"
+                            severity="secondary"
+                            @click="showAdded" />
+                        <Select
+                            v-model="account"
+                            :options="accounts"
+                            option-label="name"
+                            option-value="id"
+                            show-clear
+                            placeholder="전체 계좌"
+                            aria-label="계좌 필터" />
+                        <Select
+                            v-model="type"
+                            :options="
+                                types.map((value) => ({
+                                    value,
+                                    label: typeLabels[value],
+                                }))
+                            "
+                            option-label="label"
+                            option-value="value"
+                            show-clear
+                            placeholder="전체 유형"
+                            aria-label="거래유형 필터" />
+                        <Select
+                            v-model="status"
+                            :options="[...statuses, '출처 충돌']"
+                            show-clear
+                            placeholder="전체 상태"
+                            aria-label="상태 필터" />
+                        <InputText
+                            v-model="search"
+                            placeholder="티커·원본 시트 검색"
+                            aria-label="거래 검색" />
+                        <span
+                            >검색/필터 {{ filtered.length }}건 · 전체
+                            {{ rows.length }}건 · {{ renderedRows.length }}건
+                            표시</span
+                        >
+                    </div>
+                    <p class="muted" aria-label="재투자 추정 안내">
+                        ‘배당 재투자 추정’은 시트에 기록된 같은 계좌의 최근 7일
+                        배당금을 매수에 계산상 배분했을 때 90% 이상을 충당한다는
+                        뜻입니다. 실제 자금 출처가 확인됐거나 거래 자체가
+                        추정이라는 뜻은 아닙니다.
+                    </p>
+                    <p class="muted">
+                        USD와 KRW는 같은 금액의 통화별 표기이며 합산하지
+                        않습니다. 매도 행의 거래금액은 매도대금입니다.
+                    </p>
+                    <p class="muted" aria-label="토스 자료 보기 안내">
+                        토스 자료는 각 셀의 ‘토스 거래내역·토스 주문내역’ 값으로
+                        비교합니다. 등록된 대조 자료는 팝업을 닫은 뒤 본문의
+                        ‘대조 자료 목록 → 출처 비교’에서 확인하세요. 비공개 R2
+                        보고서의 수집 건수와 이 표에 연결된 자료 수는 다릅니다.
+                        거래시간은 원문의 거래 일시이며 주문·체결·결제 일시와
+                        구분합니다. 저장된 시각이 없으면 미제공으로 표시합니다.
+                    </p>
+                    <div ref="listRegion" class="document-list-region">
+                        <div
+                            aria-hidden="true"
+                            :style="{ height: `${paddingTop}px` }" />
+                        <div ref="tableElement">
+                            <DataTable
+                                :value="renderedRows"
+                                :pt="{
+                                    table: {
+                                        'aria-rowcount': filtered.length + 1,
+                                    },
+                                    bodyRow: rowAttributes,
+                                }"
+                                lazy
+                                data-key="id"
+                                scrollable
+                                :sort-field="sortField"
+                                :sort-order="sortOrder"
+                                size="small"
+                                striped-rows
+                                :loading="busy"
+                                table-style="min-width: 3700px"
+                                @sort="sortList">
+                                <template #empty
+                                    >조건에 맞는 거래가 없습니다. 필터를
+                                    확인하거나 수동 거래를 추가해
+                                    주세요.</template
+                                >
+                                <Column
+                                    field="accountId"
+                                    header="계좌"
+                                    :frozen="freezeIdentity"
+                                    style="min-width: 80px"
+                                    ><template #body="{ data }">{{
+                                        accounts.find(
+                                            (a) => a.id === data.accountId
+                                        )?.name
+                                    }}</template></Column
+                                >
+                                <Column
+                                    field="date"
+                                    header="거래일"
+                                    sortable
+                                    :frozen="freezeIdentity"
+                                    style="min-width: 180px">
+                                    <template #body="{ data }">
+                                        <SheetEvidenceCell
+                                            :comparison="
+                                                review.byRow
+                                                    .get(data.id)
+                                                    ?.fields.get('date')
+                                            "
+                                            :selected="
+                                                fieldDrafts[data.id]?.choices
+                                                    .date || null
+                                            "
+                                            label="거래일"
+                                            hide-matching-sources
+                                            :row-label="rowLabel(data)"
+                                            :format="displayEvidence"
+                                            :disabled="busy"
+                                            @choose="
+                                                chooseField(
+                                                    data,
+                                                    'date',
+                                                    $event
+                                                )
+                                            " />
+                                    </template>
+                                </Column>
+                                <Column
+                                    field="transactionAt"
+                                    header="거래시간"
+                                    sortable
+                                    :frozen="freezeIdentity"
+                                    style="min-width: 210px">
+                                    <template #body="{ data }">
+                                        <SheetEvidenceCell
+                                            :comparison="
+                                                review.byRow
+                                                    .get(data.id)
+                                                    ?.fields.get(
+                                                        'transactionAt'
+                                                    )
+                                            "
+                                            :selected="
+                                                fieldDrafts[data.id]?.choices
+                                                    .transactionAt || null
+                                            "
+                                            label="거래시간"
+                                            hide-matching-sources
+                                            :row-label="rowLabel(data)"
+                                            :format="displayEvidence"
+                                            :disabled="
+                                                busy ||
+                                                review.byRow.get(data.id)
+                                                    ?.observations.length > 100
+                                            "
+                                            @choose="
+                                                chooseField(
+                                                    data,
+                                                    'transactionAt',
+                                                    $event
+                                                )
+                                            " />
+                                    </template>
+                                </Column>
+                                <Column
+                                    field="type"
+                                    header="유형"
+                                    :frozen="freezeIdentity"
+                                    style="min-width: 75px"
+                                    ><template #body="{ data }">{{
+                                        typeLabels[data.type]
+                                    }}</template></Column
+                                >
+                                <Column
+                                    field="symbol"
+                                    header="티커"
+                                    sortable
+                                    :frozen="freezeIdentity"
+                                    style="min-width: 90px" />
+                                <Column
+                                    field="exDate"
+                                    header="배당락일"
+                                    style="min-width: 210px">
+                                    <template #body="{ data }">
+                                        <SheetEvidenceCell
+                                            :comparison="
+                                                review.byRow
+                                                    .get(data.id)
+                                                    ?.fields.get('exDate')
+                                            "
+                                            :selected="
+                                                fieldDrafts[data.id]?.choices
+                                                    .exDate || null
+                                            "
+                                            label="배당락일"
+                                            hide-matching-sources
+                                            :row-label="rowLabel(data)"
+                                            :format="displayEvidence"
+                                            :disabled="busy"
+                                            @choose="
+                                                chooseField(
+                                                    data,
+                                                    'exDate',
+                                                    $event
+                                                )
+                                            " />
+                                    </template>
+                                </Column>
+                                <Column
+                                    field="paymentDate"
+                                    header="배당지급일"
+                                    style="min-width: 210px">
+                                    <template #body="{ data }">
+                                        <SheetEvidenceCell
+                                            :comparison="
+                                                review.byRow
+                                                    .get(data.id)
+                                                    ?.fields.get('paymentDate')
+                                            "
+                                            :selected="
+                                                fieldDrafts[data.id]?.choices
+                                                    .paymentDate || null
+                                            "
+                                            label="배당지급일"
+                                            hide-matching-sources
+                                            :row-label="rowLabel(data)"
+                                            :format="displayEvidence"
+                                            :disabled="busy"
+                                            @choose="
+                                                chooseField(
+                                                    data,
+                                                    'paymentDate',
+                                                    $event
+                                                )
+                                            " />
+                                    </template>
+                                </Column>
+                                <Column
+                                    v-for="field in valueColumns"
+                                    :key="field"
+                                    :field="field"
+                                    :header="labels[field] || field"
+                                    sortable
+                                    style="min-width: 210px">
+                                    <template #body="{ data }">
+                                        <SheetEvidenceCell
+                                            :comparison="
+                                                review.byRow
+                                                    .get(data.id)
+                                                    ?.fields.get(field)
+                                            "
+                                            :selected="
+                                                fieldDrafts[data.id]?.choices[
+                                                    field
+                                                ] || null
+                                            "
+                                            :label="labels[field] || field"
+                                            :row-label="rowLabel(data)"
+                                            :format="displayEvidence"
+                                            :status="data.fieldStatus?.[field]"
+                                            :disabled="
+                                                busy ||
+                                                review.byRow.get(data.id)
+                                                    ?.observations.length > 100
+                                            "
+                                            @choose="
+                                                chooseField(data, field, $event)
+                                            " />
+                                    </template>
+                                </Column>
+                                <Column
+                                    field="fundingSource"
+                                    header="원금출처"
+                                    style="min-width: 120px" />
+                                <Column
+                                    field="reinvested"
+                                    header="재투자여부"
+                                    style="min-width: 130px"
+                                    ><template #body="{ data }"
+                                        >{{
+                                            data.reinvested == null
+                                                ? '미확인'
+                                                : data.reinvested
+                                                  ? '예'
+                                                  : '아니오'
+                                        }}{{
+                                            data.fieldStatus.reinvested ===
+                                            '추정'
+                                                ? ' · 배당 재투자 추정'
+                                                : ''
+                                        }}<small
+                                            v-if="
+                                                data.fieldStatus.reinvested ===
+                                                '추정'
+                                            ">
+                                            최근 7일 배당 배분 기준 · 실제 재원
+                                            미확인
+                                        </small></template
+                                    ></Column
+                                >
+                                <Column
+                                    field="status"
+                                    header="상태"
+                                    style="min-width: 110px"
+                                    ><template #body="{ data }"
+                                        ><Tag
+                                            :value="
+                                                data.duplicate
+                                                    ? '중복'
+                                                    : data.status
+                                            "
+                                            :severity="
+                                                data.status === '확정'
+                                                    ? 'success'
+                                                    : 'warn'
+                                            " /></template
+                                ></Column>
+                                <Column
+                                    header="원본·검토 근거"
+                                    style="min-width: 250px"
+                                    ><template #body="{ data }"
+                                        ><a
+                                            v-if="data.source.spreadsheetId"
+                                            :href="`https://docs.google.com/spreadsheets/d/${data.source.spreadsheetId}/edit#gid=${data.source.sheetId}&range=A${data.source.row}`"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            >{{ data.source.sheet }}
+                                            {{ data.source.row }}행</a
+                                        ><span v-else
+                                            >{{ data.source.sheet }} · 검토
+                                            필요</span
+                                        >
+                                        <details v-if="data.evidence.length">
+                                            <summary>
+                                                근거
+                                                {{ data.evidence.length }}개
+                                            </summary>
+                                            <p
+                                                v-for="(e, i) in data.evidence"
+                                                :key="i">
+                                                {{ e }}
+                                            </p>
+                                        </details></template
+                                    ></Column
+                                >
+                                <Column header="수정" style="min-width: 90px"
+                                    ><template #body="{ data }"
+                                        ><Button
+                                            label="수정"
+                                            size="small"
+                                            severity="secondary"
+                                            :disabled="busy"
+                                            @click="
+                                                editing = JSON.parse(
+                                                    JSON.stringify(data)
+                                                )
+                                            " /></template
+                                ></Column>
+                            </DataTable>
+                        </div>
+                        <div
+                            aria-hidden="true"
+                            :style="{ height: `${paddingBottom}px` }" />
+                    </div>
+                    <p class="list-progress" role="status" aria-live="polite">
+                        전체 {{ filtered.length }}건 중
+                        {{ filtered.length ? windowStart + 1 : 0 }}–{{
+                            windowStart + renderedRows.length
+                        }}행 · 브라우저 스크롤/PageDown으로 전체 목록을
+                        확인하세요.
+                    </p>
+                    <p
+                        v-if="
+                            windowStart + renderedRows.length >= filtered.length
+                        ">
+                        목록 끝
+                    </p>
+                </section>
+            </div>
+            <DocumentLedgerHeader
+                :container="tableElement"
+                :region="listRegion"
+                :scroll-root="listScrollRoot"
+                :layout-version="ledgerLayoutVersion" />
+        </Dialog>
         <Dialog
             v-model:visible="approvalOpen"
             modal
@@ -1198,6 +1383,23 @@
     .document-list-region {
         min-width: 0;
         max-width: 100%;
+    }
+    .ledger-dialog-scroll {
+        height: 100%;
+        min-height: 0;
+        overflow: auto;
+        overscroll-behavior: contain;
+    }
+    .ledger-dialog-scroll .ledger-list {
+        border: 0;
+        border-radius: 0;
+    }
+    .ledger-dialog-scroll .approval-toolbar {
+        top: 0;
+    }
+    .ledger-list td small {
+        display: block;
+        margin-top: 4px;
     }
     .filters > * {
         min-width: 0;

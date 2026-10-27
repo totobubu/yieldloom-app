@@ -8,12 +8,28 @@ import {
     watch,
 } from 'vue';
 
-// Bounded DOM window driven by the document scroll, never a nested vertical scroller.
-export function useDocumentLedgerWindow(rows, region, table) {
+// The document is the default scroll owner. Full-screen dialogs can supply
+// their content root without creating a second vertical scroller in the table.
+export function useDocumentLedgerWindow(
+    rows,
+    region,
+    table,
+    scrollRoot = null
+) {
     const start = ref(0),
         heights = shallowRef(new Map());
     let frame = 0,
-        observer;
+        observer,
+        activeScrollTarget,
+        stopWatching;
+    const scrollTarget = () => scrollRoot?.value || window;
+    const scrollPosition = () => scrollRoot?.value?.scrollTop ?? window.scrollY;
+    const viewportTop = () =>
+        scrollRoot?.value?.getBoundingClientRect().top || 0;
+    const regionTop = () =>
+        region.value.getBoundingClientRect().top -
+        viewportTop() +
+        scrollPosition();
     const offsets = computed(() => {
         const positions = [0];
         for (const row of rows.value)
@@ -56,8 +72,7 @@ export function useDocumentLedgerWindow(rows, region, table) {
             }
         }
         if (changed) heights.value = measured;
-        const top = region.value.getBoundingClientRect().top + window.scrollY;
-        const y = Math.max(0, window.scrollY - top);
+        const y = Math.max(0, scrollPosition() - regionTop());
         let left = 0,
             right = rows.value.length;
         while (left < right) {
@@ -87,11 +102,10 @@ export function useDocumentLedgerWindow(rows, region, table) {
         start.value = end ? Math.max(0, rows.value.length - 100) : 0;
         await nextTick();
         if (!region.value) return;
-        const top = region.value.getBoundingClientRect().top + window.scrollY;
-        window.scrollTo({
-            top: end
-                ? top + offsets.value.at(-1) - window.innerHeight + 100
-                : top,
+        const top = regionTop();
+        const height = scrollRoot?.value?.clientHeight || window.innerHeight;
+        scrollTarget().scrollTo({
+            top: end ? top + offsets.value.at(-1) - height + 100 : top,
             behavior: 'instant',
         });
         schedule();
@@ -102,16 +116,28 @@ export function useDocumentLedgerWindow(rows, region, table) {
         nextTick(schedule);
     });
     onMounted(() => {
-        window.addEventListener('scroll', schedule, { passive: true });
         window.addEventListener('resize', schedule, { passive: true });
-        if (typeof ResizeObserver !== 'undefined' && table.value) {
-            observer = new ResizeObserver(schedule);
-            observer.observe(table.value);
-        }
-        schedule();
+        stopWatching = watch(
+            [region, table, () => scrollRoot?.value],
+            () => {
+                activeScrollTarget?.removeEventListener('scroll', schedule);
+                observer?.disconnect();
+                activeScrollTarget = scrollTarget();
+                activeScrollTarget.addEventListener('scroll', schedule, {
+                    passive: true,
+                });
+                if (typeof ResizeObserver !== 'undefined' && table.value) {
+                    observer = new ResizeObserver(schedule);
+                    observer.observe(table.value);
+                }
+                nextTick(schedule);
+            },
+            { immediate: true, flush: 'post' }
+        );
     });
     onBeforeUnmount(() => {
-        window.removeEventListener('scroll', schedule);
+        stopWatching?.();
+        activeScrollTarget?.removeEventListener('scroll', schedule);
         window.removeEventListener('resize', schedule);
         observer?.disconnect();
         if (frame) cancelAnimationFrame(frame);
@@ -123,5 +149,6 @@ export function useDocumentLedgerWindow(rows, region, table) {
         paddingBottom,
         rowAttributes,
         jump,
+        refresh: schedule,
     };
 }

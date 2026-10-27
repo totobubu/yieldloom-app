@@ -88,7 +88,10 @@ commit 응답은 `partial:true`, `canonicalUnchanged:true`, `receipt`, `replayed
 관측·배치 커서는 완료 sequence의 watermark를 고정합니다. 조회 도중 들어온 새 배치는 다음
 최초 조회에서 보입니다. 기록한 마지막 완료 sequence 다음부터 `batches&after=N`으로 재개합니다.
 배치 목록에서 checkpoint/해시를 확인하고, 필요한 원문만 조회하여 매핑/검증합니다. 수집기는
-**응답 수신 또는 영수증 읽기 확인 후에만** 로컬 완료 체크포인트를 전진시킵니다. 두 계좌와
+**완료 영수증 검증 후에만** 로컬 완료 체크포인트를 전진시킵니다. 단순 HTTP 성공이나
+`canonicalUnchanged`만으로 완료를 판정하지 않습니다. `receipt.status=complete` 및
+배치 ID·계좌·fingerprint·checkpoint의 sourceHash/offset/count가 제출값과 일치하는지
+확인합니다. 누락·불일치·중단 시 완료 위치를 유지하고 같은 배치를 재개합니다. 두 계좌와
 파일별 체크포인트를 분리하고, 처리 완료 sequence는 검증 측에서도 별도로 기록합니다.
 
 canonical 조회는 version 고정이며 변경 시 전체 조회를 재시작합니다. 브라우저 클라이언트는

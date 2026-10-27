@@ -55,7 +55,7 @@ def parse_financials(body, parameters):
             try: number=Decimal(text)
             except InvalidOperation: raise ValueError('Invalid OpenDART amount') from None
             if not number.is_finite(): raise ValueError('Nonfinite OpenDART amount')
-            key=(row['sj_div'],row['account_id'],row.get('account_detail'),period)
+            key=(row['sj_div'],row['account_id'],row.get('account_nm'),row.get('account_detail'),period)
             if key in seen: raise ValueError('Duplicate OpenDART account/period')
             seen.add(key)
             rows.append(fact('financials','corporation:dart:'+parameters['corp_code'],row['account_id'],text,

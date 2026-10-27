@@ -35,3 +35,12 @@ class DartTests(unittest.TestCase):
             for row in store.db.execute('SELECT url FROM documents'):
                 self.assertNotIn('crtfc_key',row['url'])
             store.close()
+
+    def test_nonstandard_account_codes_keep_distinct_named_accounts(self):
+        first=json.loads(body(account_id='-표준계정코드 미사용-',account_nm='항목 A'))['list'][0]
+        second={**first,'account_nm':'항목 B','thstrm_amount':'2000'}
+        parsed=parse_financials(json.dumps({'status':'000','list':[first,second]}).encode(),PARAMS)
+        self.assertEqual(len(parsed),4)
+        self.assertEqual({r['qualifiers']['accountName'] for r in parsed},{'항목 A','항목 B'})
+        with self.assertRaises(ValueError):
+            parse_financials(json.dumps({'status':'000','list':[first,first]}).encode(),PARAMS)

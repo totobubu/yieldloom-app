@@ -1,5 +1,5 @@
 <script setup>
-    import { computed, ref, shallowRef } from 'vue';
+    import { computed, onBeforeUnmount, ref, shallowRef } from 'vue';
     import {
         buildTossTrialRows,
         filterTossTrialRows,
@@ -88,6 +88,7 @@
         reportHash.value = '';
         reportError.value = '';
     }
+    onBeforeUnmount(clearReport);
 </script>
 
 <template>

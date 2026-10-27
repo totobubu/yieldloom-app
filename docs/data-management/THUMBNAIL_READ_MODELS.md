@@ -175,3 +175,34 @@ read-model hashes, and exercise price/ledger failures and Yahoo symbol handling.
 The five real R2 samples were validated without publishing: AAPL's approximately
 3.29 MB source produces a 0.7 KB summary and 35.7 KB entry price model. Models are
 not saved in Git. Real production latency must be measured after activation.
+
+## Private candle accumulation (implementation, disabled by default)
+
+`/api/stock-prices` can retain normalized daily OHLCV and the received Yahoo
+JSON in the separate private data bucket. Enable only after provisioning the API
+host with `DATA_CANDLE_PERSISTENCE=true` and `DATA_PRIVATE_R2_ACCOUNT_ID`,
+`DATA_PRIVATE_R2_ACCESS_KEY_ID`, `DATA_PRIVATE_R2_SECRET_ACCESS_KEY`,
+`DATA_PRIVATE_R2_BUCKET`. No deployment or remote configuration is included in
+this implementation. It does not use the public thumbnail bucket credentials.
+
+Objects use `market/v1/observations/<sha256>.json` and
+`market/v1/candles/<symbol>.json`, outside the platform checkpoint namespace.
+Conditional create/update retries merge concurrent writers. Missing historical
+rows are retained; differing past OHLCV remains a revision candidate rather than
+silently replacing saved values. Source responses are archived before the ledger
+pointer changes. Empty/failed provider responses return saved history with
+`stale: true`. Failed writes report `persistence: write_failed`.
+
+Persistence currently requires a registered catalog instrument whose Yahoo
+symbol, currency and exchange match. Unverified identities are not registered.
+Each saved instrument retains one pending inception-backfill request and partial
+coverage; a successful two-year fetch is never claimed as complete history.
+The pending request is not yet dispatched to the Python collection queue.
+Unknown-symbol discovery, queue dispatch, inception backfill, publication and
+OpenDART are separate unfinished integrations. Raw source payloads and revision
+records are never included in the anonymous API response.
+
+Validation: `node --test tests/candle-ledger.test.mjs tests/stock-prices.test.mjs`.
+Tests use an in-memory conditional object store, including competing writers,
+process recreation, history shrinkage, corrections, empty responses, outages and
+identity mismatches. No production storage requests are made.

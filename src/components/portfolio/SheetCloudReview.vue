@@ -2,6 +2,7 @@
     import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
     import Select from 'primevue/select';
     import { createSheetReportClient } from '@/services/sheetReports.js';
+    import SheetEvidenceRequirements from './SheetEvidenceRequirements.vue';
 
     const props = defineProps({ user: { type: Object, default: null } });
     const client = createSheetReportClient();
@@ -190,15 +191,7 @@
                     아래 차이가 다른 거래의 검토를 막지는 않습니다. 서로 다른
                     행·주문·표본 건수를 합쳐 금융사건 수로 세지 않습니다.
                 </p>
-                <ul>
-                    <li v-for="hold in summary.holds" :key="hold.id">
-                        <strong
-                            >{{ hold.title }} · {{ hold.count
-                            }}{{ hold.unit }}</strong
-                        >
-                        — {{ hold.note }}
-                    </li>
-                </ul>
+                <SheetEvidenceRequirements :holds="summary.holds || []" />
             </section>
             <Message
                 v-for="evidence in summary.manualEvidence"

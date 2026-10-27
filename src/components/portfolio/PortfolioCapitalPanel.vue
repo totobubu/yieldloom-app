@@ -3,7 +3,6 @@
     import WithdrawalSplit from './WithdrawalSplit.vue';
     import {
         capitalSummary,
-        capitalRecovery,
         cashKinds,
         cashClassification,
         cashNeedsReview,
@@ -25,7 +24,19 @@
         capitalSummary(props.state.entries, props.state.classifications)
     );
     const recovery = computed(() =>
-        capitalRecovery(props.state.entries, props.state.classifications)
+        ['KRW', 'USD'].map((currency) => {
+            const item = summary.value[currency];
+            return {
+                currency,
+                principal: item.deposits,
+                recovered: item.principalWithdrawals,
+                remaining: item.capitalAfterRecovery,
+                rate:
+                    item.deposits > 0
+                        ? (item.principalWithdrawals / item.deposits) * 100
+                        : null,
+            };
+        })
     );
     const percent = (value) =>
         `${value.toLocaleString('ko-KR', { maximumFractionDigits: 1 })}%`;
@@ -189,9 +200,10 @@
             <div>
                 <h2>투자 원금 대비 얼마나 회수했나요?</h2>
                 <p>
-                    현금 회수율은 실제 외부 출금 기준입니다. 배당·수익의 출금도
-                    포함하며, 계좌 안의 재투자·환전은 새 원금이나 회수금으로
-                    더하지 않습니다. 아래 출금 원천별 분류와 구분합니다.
+                    원금 회수율은 원금으로 확정한 외부 출금 기준입니다.
+                    배당·수익 출금과 출처 미확인 출금은 대표 회수율에서
+                    제외하며, 계좌 안의 재투자·환전은 새 원금이나 회수금으로
+                    더하지 않습니다.
                 </p>
             </div>
             <button
@@ -213,7 +225,7 @@
                     v-for="item in recovery"
                     :key="item.currency"
                     class="recovery-card">
-                    <small>계좌 회수율 · {{ item.currency }}</small>
+                    <small>확정 원금 회수율 · {{ item.currency }}</small>
                     <strong class="recovery-rate">{{
                         item.rate === null
                             ? '원금 확인 필요'
@@ -230,11 +242,11 @@
                             <dd>{{ money(item.principal, item.currency) }}</dd>
                         </div>
                         <div>
-                            <dt>누적 회수금</dt>
+                            <dt>확정 원금 회수</dt>
                             <dd>{{ money(item.recovered, item.currency) }}</dd>
                         </div>
                         <div>
-                            <dt>원금까지 남은 금액</dt>
+                            <dt>순투입 원금</dt>
                             <dd>
                                 {{
                                     item.rate === null
@@ -251,8 +263,8 @@
             </div>
             <p class="help">
                 확정한 계좌 입출금 내역만 집계합니다. 종목별 거래 원장은 별도
-                합산하지 않습니다. 회수율 = 실제 외부 출금액 ÷ 확정한 외부 입금
-                × 100. 배당·매도대금의 재투자는 원금에 더하지 않습니다. 계좌
+                합산하지 않습니다. 회수율 = 확정 원금 출금 ÷ 확정 외부 입금 ×
+                100. 배당·매도대금의 재투자는 원금에 더하지 않습니다. 계좌
                 안에서 받은 배당·매도금은 현금 회수와 다릅니다. 미회수액은
                 손실이 아니며 추가 입금 시 회수율이 낮아질 수 있습니다.
             </p>
@@ -263,7 +275,7 @@
             <p class="help">순입금은 확정한 외부 입금 − 외부 출금입니다.</p>
             <div class="totals">
                 <article v-for="currency in ['KRW', 'USD']" :key="currency">
-                    <small>저장된 내역 기준 원금 · {{ currency }}</small>
+                    <small>순투입 원금 · {{ currency }}</small>
                     <strong>{{
                         !state.entries.length
                             ? '내역 필요'

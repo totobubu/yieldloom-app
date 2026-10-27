@@ -87,6 +87,10 @@ try {
         exact: true,
     });
     await panel.getByText('0%', { exact: true }).first().waitFor();
+    assert.ok((await panel.innerText()).includes('순투입 원금'));
+    assert.ok(
+        (await panel.innerText()).includes('보유 취득원가 · 투자 대기 현금')
+    );
     const accountTable = page.getByRole('region', {
         name: '계좌별 원금 회수율',
         exact: true,

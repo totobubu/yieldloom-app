@@ -1,6 +1,6 @@
 # YieldMax 전용 통합 타겟 스케줄러
 
-`.github/workflows/observe-yieldmax.yml` 하나에서 다음 58종목을 관측한다.
+`.github/workflows/observe-yieldmax.yml` 하나에서 다음 59종목을 관측한다.
 목록과 기준 시각은 `scripts/content_pipeline/yieldmax_schedule.json`에 둔다.
 사용자 확인에 따라 `CRAY`는 `DRAY`, `PYPTY`는 `PYPY`로 정정했다.
 
@@ -8,7 +8,10 @@
 | --- | --- | --- |
 | Group 3 | 월요일 20:00 | MSST, NVIT, TEST — 3종목 |
 | Group 1 | 화요일 20:00 | CHPY, GPTY, LFGY, MINY, QDTY, RDTY, SDTY, SLTY, ULTY, YMAG, YMAX, YRAM — 12종목 |
-| Group 2 | 수요일 20:00 | AIYY, AMDY, AMZY, APLY, BABO, BRKC, CONY, CRCO, CRSH, CVNY, DIPS, DRAY, FBY, FIAT, GDXY, GMEY, GOOY, HIYY, HOOY, INYY, JPO, MARO, MRNY, MSFO, MSTY, MUY, NFLY, NVDY, OARK, PLTY, PYPY, RBLY, RDYY, SMCY, SNOY, TSLY, TSMY, WNTR, XOMO, XYZY, YBIT, YQQQ, YSPC — 43종목 |
+| Group 2 | 수요일 20:00 | AIYY, AMDY, AMZY, APLY, BABO, BRKC, CONY, CRCO, CRSH, CVNY, DIPS, DRAY, FBY, FIAT, GDXY, GMEY, GOOY, HIYY, HOOY, INYY, JPO, MARO, MRNY, MSFO, MSTY, MUY, NFLY, NVDY, OARK, PLTY, PYPY, RBLY, RDYY, SMCY, SNOY, TSLY, TSMY, WNTR, XOMO, XYZY, YBIT, YQQQ, YSKH, YSPC — 44종목 |
+
+YSKH의 첫 분배금 발표 예정일은 공식 출시 발표 기준 2026-11-11이다. 발표 전 공식
+상품 페이지의 금액·날짜·ROC가 `-`인 행은 배당 이벤트로 만들지 않는다.
 
 ## 확인 시간과 기존 전체 수집
 
@@ -36,7 +39,7 @@
 금액 없는 예정 행과 대상 기간 밖 과거 공시를 새 공시로 인정하지 않는다.
 
 한 이력 페이지에 여러 날짜가 있으므로 발표일 후보마다 같은 페이지를 다시 받지 않는다.
-전 종목이 미확인인 정상 관측 1회는 월요일 3회, 화요일 12회, 수요일 43회의 펀드
+전 종목이 미확인인 정상 관측 1회는 월요일 3회, 화요일 12회, 수요일 44회의 펀드
 페이지 HTTP 요청이 필요하다. 그룹 전체를 한 번에 제공하는 공통 표 조회 1회를 뜻하지 않는다.
 원장과 공개 스냅샷이 일치한 종목은 HTTP 요청이 0회이며 다음에는 미확인 종목만 조회한다.
 오전 전체 수집으로 이미 반영된 자료도 같은 완료 검사로 건너뛴다.

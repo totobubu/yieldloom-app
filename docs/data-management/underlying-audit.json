@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "scope": "All catalog entries with an issuer or ETF in the name; not all are single-stock ETFs",
-  "generatedAt": "2026-10-26T15:16:16.185683+00:00",
+  "generatedAt": "2026-10-28T07:45:16.667970+00:00",
   "summary": {
-    "catalogInstruments": 2174,
-    "etfsAudited": 1602,
-    "newComparedWithLegacy": 114,
+    "catalogInstruments": 2175,
+    "etfsAudited": 1603,
+    "newComparedWithLegacy": 115,
     "no-single-underlying-detected": 1375,
-    "verified": 185,
+    "verified": 186,
     "legacy-unverified": 24,
     "needs-review": 18
   },
@@ -17542,6 +17542,16 @@
       "provider": "YieldMax",
       "status": "no-single-underlying-detected",
       "underlying": null,
+      "legacyUnderlyings": [],
+      "nameCandidates": [],
+      "collectorSupported": true
+    },
+    {
+      "symbol": "YSKH",
+      "name": "일드맥스 SK하이닉스 옵션 인컴 전략 ETF",
+      "provider": "YieldMax",
+      "status": "verified",
+      "underlying": "SKHY",
       "legacyUnderlyings": [],
       "nameCandidates": [],
       "collectorSupported": true

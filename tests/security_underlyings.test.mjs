@@ -21,6 +21,12 @@ test('all registered Apple single-stock ETFs expose AAPL across directory source
     }
 });
 
+test('YSKH exposes its officially named SKHY reference asset', () => {
+    assert.equal(verifiedUnderlying('YSKH')?.underlying, 'SKHY');
+    const entry = catalogEntry('YSKH');
+    assert.equal(entry.underlying, 'SKHY');
+});
+
 test('verified search links do not automatically expand curated rivals', () => {
     const entry = catalogEntry('AAPU');
     assert.equal(entry.comparisonEligible, false);

@@ -11,7 +11,7 @@ worktree에 읽어옵니다. 기존 작업 브랜치나 미커밋 변경을 전�
 목적지 폴더는 아직 존재하지 않는 경로를 지정합니다.
 
 ```powershell
-git fetch origin feat/kis-local-history-collector-20261028
+git fetch origin refs/heads/feat/kis-local-history-collector-20261028:refs/remotes/origin/feat/kis-local-history-collector-20261028
 git worktree add --detach ..\yieldloom-kis-collector origin/feat/kis-local-history-collector-20261028
 Set-Location ..\yieldloom-kis-collector\scripts\kis-history-export
 py -3 -m unittest discover -s tests -v

@@ -9,6 +9,6 @@
   "groups": {
     "group-3": {"weekday": 0, "hour": 20, "tickers": ["MSST", "NVIT", "TEST"]},
     "group-1": {"weekday": 1, "hour": 20, "tickers": ["CHPY", "GPTY", "LFGY", "MINY", "QDTY", "RDTY", "SDTY", "SLTY", "ULTY", "YMAG", "YMAX", "YRAM"]},
-    "group-2": {"weekday": 2, "hour": 20, "tickers": ["AIYY", "AMDY", "AMZY", "APLY", "BABO", "BRKC", "CONY", "CRCO", "CRSH", "CVNY", "DIPS", "DRAY", "FBY", "FIAT", "GDXY", "GMEY", "GOOY", "HIYY", "HOOY", "INYY", "JPO", "MARO", "MRNY", "MSFO", "MSTY", "MUY", "NFLY", "NVDY", "OARK", "PLTY", "PYPY", "RBLY", "RDYY", "SMCY", "SNOY", "TSLY", "TSMY", "WNTR", "XOMO", "XYZY", "YBIT", "YQQQ", "YSPC"]}
+    "group-2": {"weekday": 2, "hour": 20, "tickers": ["AIYY", "AMDY", "AMZY", "APLY", "BABO", "BRKC", "CONY", "CRCO", "CRSH", "CVNY", "DIPS", "DRAY", "FBY", "FIAT", "GDXY", "GMEY", "GOOY", "HIYY", "HOOY", "INYY", "JPO", "MARO", "MRNY", "MSFO", "MSTY", "MUY", "NFLY", "NVDY", "OARK", "PLTY", "PYPY", "RBLY", "RDYY", "SMCY", "SNOY", "TSLY", "TSMY", "WNTR", "XOMO", "XYZY", "YBIT", "YQQQ", "YSKH", "YSPC"]}
   }
 }

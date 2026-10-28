@@ -1,11 +1,7 @@
 {
   "schemaVersion": 1,
   "scope": "All catalog entries with an issuer or ETF in the name; not all are single-stock ETFs",
-<<<<<<< HEAD
-  "generatedAt": "2026-10-28T07:45:16.667970+00:00",
-=======
-  "generatedAt": "2026-10-27T14:35:56.866726+00:00",
->>>>>>> refs/remotes/origin/main
+  "generatedAt": "2026-10-28T08:03:40.952649+00:00",
   "summary": {
     "catalogInstruments": 2175,
     "etfsAudited": 1603,

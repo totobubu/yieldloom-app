@@ -34,7 +34,8 @@ py -3 export_history.py --env-file "기존로컬설정파일의절대경로"
 ## 전체 이력의 경계
 
 기본 목표는 계좌 최초 거래부터 현재까지지만, 시작일을 임의 연도로 설정하지 않습니다.
-기본 실행은 확인용 월만 조회합니다. `--full`에 `--start`가 없으면 인증 전에 멈춥니다.
+기본 실행은 확인용 월만 조회합니다. `--full`에 `--start`가 없거나 `--start-basis`가
+생략/빈 값/공백/`미확인`이면 로컬 설정 파일을 읽거나 인증하기 전에 멈춥니다.
 계좌 개설/최초 거래 증빙과 API가 제공하는 과거 하한은 별개로 확인해야 합니다.
 확인한 요청 시작 경계와 근거를 입력하며 그 날짜가 최초 거래일이라고 단정하지 않습니다.
 종료일은 기본적으로 실행일의 한국시간 날짜입니다.
@@ -43,7 +44,7 @@ py -3 export_history.py --env-file "기존로컬설정파일의절대경로"
 py -3 export_history.py --env-file "기존로컬설정파일의절대경로" --full --start YYYY-MM-DD --start-basis "확인한 공식 근거"
 ```
 
-명시적 기간 수집은 `--goal period --full --start YYYY-MM-DD --end YYYY-MM-DD`로
+명시적 기간 수집은 `--goal period --full --start YYYY-MM-DD --end YYYY-MM-DD --start-basis "근거"`로
 구분합니다. 재개는 `--resume "기존결과폴더"`, 연속키 만료 시 월 재시작은
 `--restart-window`를 추가합니다. 기존 원문과 중복/변경 관측을 삭제하지 않습니다.
 

@@ -383,7 +383,7 @@ def main():
     parser.add_argument("--goal", choices=["full-history", "period"], default="full-history", help="전체 이력 목표(기본) / 명시한 기간만 수집")
     parser.add_argument("--start", type=parse_date, help="공식 조회 하한 또는 계좌 증빙 등으로 확인한 요청 시작 경계. 최초 거래일로 단정하지 않음")
     parser.add_argument("--end", default=datetime.now(timezone(timedelta(hours=9))).date(), type=parse_date, help="종료일 (기본: 실행일 한국시간)")
-    parser.add_argument("--start-basis", default="미확인", help="시작 경계를 정한 근거 (키/개인정보를 적지 마세요)")
+    parser.add_argument("--start-basis", help="시작 경계를 정한 근거 (--full에서 필수, 키/개인정보를 적지 마세요)")
     parser.add_argument("--market", default="NASD", choices=["NASD", "NYSE", "AMEX", "SEHK", "SHAA", "SZAA", "TKSE", "HASE", "VNSE"])
     parser.add_argument("--full", action="store_true", help="지정기간 전체를 월 단위 조회")
     parser.add_argument("--output", type=Path, default=Path(__file__).resolve().parent / "results")
@@ -406,8 +406,11 @@ def main():
         parser.error("시작일이 종료일보다 늦습니다.")
     if (args.full or args.goal == "period") and args.start is None:
         parser.error("시작 경계가 미확인입니다. 기본 확인용 조회로 지원 범위를 조사한 뒤 --start를 지정하세요. 임의 연도는 넣지 않습니다.")
+    args.start_basis = (args.start_basis or "").strip()
+    if args.full and (not args.start_basis or args.start_basis.casefold() in {"미확인", "unknown", "unverified", "none", "null"}):
+        parser.error("전체 기간 조회에는 비어 있지 않은 --start-basis가 필요합니다. 시작 경계의 공식 근거를 적으세요. '미확인'은 근거가 아닙니다.")
     print("한국투자증권 해외주식 일별거래내역 / 실전 계좌 조회")
-    print("기본 시장 NASD=미국. 다른 시장은 --market으로 별도 실행하세요.")
+    print("기본 조회는 미국 대상 NASD입니다. 국내·기타 국가·미니스탁 전체 포함을 뜻하지 않습니다.")
     print("키와 토큰을 새로 저장하지 않습니다. 기존 로컬 설정/환경변수 또는 화면 비표시 입력을 사용합니다.")
     print("키는 한국투자증권 인증/조회 요청에만 사용합니다.")
     print("오래된 기록 및 미니스탁 지원은 미확정입니다. 빈 응답을 거래 없음으로 단정하지 마세요.")
@@ -496,6 +499,9 @@ def main():
     checks = reference_checks(rows, windows, args.reference, args.start, args.end)
     report_windows = [{k: v for k, v in w.items() if k != "checkpoint"} for w in windows]
     gaps = ["계좌 최초 거래일 미검증", "API 최대 과거 지원 범위/요청 구간 한도 미확인", "미니스탁 전체 거래 포함 여부 미확인"]
+    gaps.append("선택한 해외 시장 외 거래 및 국내주식은 이 실행의 수집 범위가 아님")
+    if args.market == "NASD":
+        gaps.append("CTOS4001R의 NASD는 구형 공식 예제에서 미국으로 설명되나 NYSE/AMEX 포함 범위의 최신 상세 명세는 미확인")
     if args.start is None:
         gaps.append("요청 시작 경계 미확인: 오래된 이력의 수집 공백을 평가할 근거 필요")
     if not args.full:

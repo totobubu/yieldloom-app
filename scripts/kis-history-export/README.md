@@ -62,7 +62,9 @@ UTF-8 및 UTF-8 BOM을 지원하고 실수로 `.txt`가 붙으면 알려줍니�
 API의 최대 과거 제공 범위를 별도로 확인해야 합니다. API가 최초로 반환한 거래와
 과거 빈 응답만으로 최초 거래일을 정하지 않습니다. 과거의 기록이 API 범위 밖이면
 그 공백은 공식 거래내역서로 보완해야 합니다. 현재 시작 경계가 없는 `--full`은
-실제 인증 전에 중지하며, 임의 연도로 대체하지 않습니다.
+실제 인증 전에 중지하며, 임의 연도로 대체하지 않습니다. `--start-basis`를 생략하거나
+빈 값·공백·`미확인` 등으로 지정한 `--full`도 설정 파일 읽기와 인증 전에 중지합니다.
+이 검사는 근거 설명의 존재를 확인할 뿐 증빙 내용의 진위를 자동 검증하지 않습니다.
 
 근거가 확인된 요청 경계가 있을 때 `--start YYYY-MM-DD --start-basis "근거 설명"`
 과 `--full`을 함께 사용합니다. 지정한 경계부터 한국시간 실행일까지 월 단위로
@@ -74,17 +76,21 @@ API의 최대 과거 제공 범위를 별도로 확인해야 합니다. API가 �
 기본 조회 시장은 **NASD(미국)**입니다. 미국 외 거래도 있다면 시장별로 실행하세요.
 시장 코드: NASD, NYSE, AMEX, SEHK, SHAA, SZAA, TKSE, HASE, VNSE.
 시장별 결과는 중복될 수 있으므로 자동으로 병합하거나 거래를 삭제하지 않습니다.
+공식 구형 CTOS4001R 예제는 NASD를 미국으로 설명하지만, 최신 상세 명세의
+NYSE/AMEX 포함 범위는 미확인입니다. 나스닥 전용 또는 미국 전체 확보로 단정하지 않습니다.
+국내주식은 이 도구의 대상이 아니며 미니스탁 과거 이력 포함 여부도 별도 검증해야 합니다.
+API별 코드 의미와 최소 확인 경로는 [공식 범위 조사](API_SCOPE.md)를 참조하세요.
 
 macOS/Linux 또는 터미널 실행:
 
 ```bash
 python3 export_history.py
 python3 export_history.py --full --start YYYY-MM-DD --start-basis "증권사 공식 증빙 또는 확인한 제공 하한"
-python3 export_history.py --goal period --full --start YYYY-MM-DD --end YYYY-MM-DD
+python3 export_history.py --goal period --full --start YYYY-MM-DD --end YYYY-MM-DD --start-basis "확인한 요청 경계의 근거"
 ```
 
 위의 `YYYY-MM-DD`는 확인한 실제 날짜로 바꿉니다. Windows 터미널에서는
-`python3` 대신 `py -3`를 사용하거나 `run_full_windows.cmd --start 실제날짜`로 실행합니다.
+`python3` 대신 `py -3`를 사용하거나 `run_full_windows.cmd --start 실제날짜 --start-basis "근거"`로 실행합니다.
 미국 외 시장은 `--market SEHK` 등으로 지정합니다.
 `--goal period`는 사용자가 명시한 기간만 수집하는 모드이며 전체 이력 확보를 뜻하지 않습니다.
 

@@ -50,6 +50,17 @@ def response(flag="D", rows=None, key=""):
 
 
 class PlanTests(unittest.TestCase):
+    def assert_before_auth_blocked(self, arguments):
+        with patch.object(sys, "argv", ["export_history.py", *arguments]), \
+             patch.object(e, "Client") as client, \
+             patch.object(e, "read_local_env") as read_env, \
+             contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as caught:
+                e.main()
+            self.assertEqual(caught.exception.code, 2)
+        read_env.assert_not_called()
+        client.assert_not_called()
+
     def test_unknown_start_is_not_invented_for_full_history(self):
         end = e.date(2026, 10, 28)
         self.assertEqual(e.window_plan(None, end, False)[-1], (e.date(2026, 10, 1), end))
@@ -57,12 +68,26 @@ class PlanTests(unittest.TestCase):
             e.window_plan(None, end, True)
 
     def test_full_without_start_stops_before_any_authentication(self):
-        with patch.object(sys, "argv", ["export_history.py", "--full"]), \
-             patch.object(e, "Client") as client, contextlib.redirect_stderr(io.StringIO()):
-            with self.assertRaises(SystemExit) as caught:
-                e.main()
-            self.assertEqual(caught.exception.code, 2)
-        client.assert_not_called()
+        self.assert_before_auth_blocked(["--full", "--start-basis", "합성 증빙"])
+
+    def test_full_with_start_but_no_basis_stops_before_credentials_and_auth(self):
+        self.assert_before_auth_blocked(["--full", "--start", "2024-12-01"])
+
+    def test_full_empty_or_unknown_basis_stops_before_credentials_and_auth(self):
+        for basis in ["", "   \t", "미확인", "unknown", " Unverified ", "none", "null"]:
+            with self.subTest(basis=basis):
+                self.assert_before_auth_blocked(["--full", "--start", "2024-12-01", "--start-basis", basis])
+
+    def test_full_period_mode_also_requires_basis_before_auth(self):
+        self.assert_before_auth_blocked(["--goal", "period", "--full", "--start", "2024-12-01"])
+
+    def test_resume_full_without_basis_stops_before_credentials_and_auth(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            state = {"schema": 2, "start": "2024-12-01", "end": "2024-12-01", "market": "NASD",
+                     "full": True, "goal": "full-history", "start_basis": "미확인"}
+            (folder / "state.json").write_text(json.dumps(state), encoding="utf-8")
+            self.assert_before_auth_blocked(["--resume", str(folder)])
 
     def test_full_six_year_plan_has_no_gaps_or_overlaps(self):
         start, end = e.parse_date("2020-01-01"), e.parse_date("2025-12-31")
@@ -308,6 +333,24 @@ class EndToEndOfflineTests(unittest.TestCase):
             e.save_result(root, [], [{"status": "응답종료", "rows": 0}], [], "fixture")
             report = json.loads((root / "report.json").read_text(encoding="utf-8"))
             self.assertIn("미확정", report["summary"][2]["내용"])
+
+    def test_full_valid_basis_authenticates_once_and_preserves_basis(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            conf = root / "local.env"
+            conf.write_text("KIS_APP_KEY=DEMO_KEY_ONLY\nKIS_APP_SECRET=DEMO_SECRET_ONLY\nKIS_CANO=12348888\nKIS_ACNT_PRDT_CD=09\n")
+            client = FakeClient([response("D")])
+            with patch.object(client, "authenticate", wraps=client.authenticate) as authenticated:
+                code = self.run_main(["--env-file", str(conf), "--output", str(root / "results"),
+                    "--full", "--start", "2024-12-01", "--end", "2024-12-01",
+                    "--start-basis", "  합성 증빙: 계좌 개설 확인  "], client)
+            self.assertEqual(code, 0)
+            authenticated.assert_called_once_with()
+            self.assertEqual(len(client.calls), 1)
+            folder = next((root / "results").iterdir())
+            report = json.loads((folder / "report.json").read_text(encoding="utf-8"))
+            self.assertEqual(report["coverage"]["start_basis"], "합성 증빙: 계좌 개설 확인")
+            self.assertFalse(report["coverage"]["account_first_trade_verified"])
 
     def test_restart_window_keeps_old_and_changed_observations(self):
         with tempfile.TemporaryDirectory() as tmp:

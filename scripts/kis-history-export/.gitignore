@@ -1,0 +1,18 @@
+# Local credentials, configuration and financial records must never enter Git.
+private/
+results/
+*.xls
+*.xlsx
+*.csv
+*.json
+*.jsonl
+*.log
+*.yaml
+*.yml
+.env
+.env.*
+*.pem
+*.key
+__pycache__/
+*.pyc
+.venv/

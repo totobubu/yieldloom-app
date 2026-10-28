@@ -54,3 +54,9 @@ test('basket/index titles are not registered as similarly named stocks', () => {
         assert.equal(verifiedUnderlying(symbol), null, symbol);
     }
 });
+
+test('YSKH links to the official SK Hynix reference asset', () => {
+    assert.equal(verifiedUnderlying('YSKH')?.underlying, 'SKHY');
+    const rows = applyVerifiedUnderlyings([{ symbol: 'YSKH' }]);
+    assert.deepEqual(rows, [{ symbol: 'YSKH', underlying: 'SKHY' }]);
+});

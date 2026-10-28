@@ -1,6 +1,6 @@
 # YieldMax 전용 통합 타겟 스케줄러
 
-`.github/workflows/observe-yieldmax.yml` 하나에서 다음 58종목을 관측한다.
+`.github/workflows/observe-yieldmax.yml` 하나에서 다음 59종목을 관측한다.
 목록과 기준 시각은 `scripts/content_pipeline/yieldmax_schedule.json`에 둔다.
 사용자 확인에 따라 `CRAY`는 `DRAY`, `PYPTY`는 `PYPY`로 정정했다.
 
@@ -8,7 +8,12 @@
 | --- | --- | --- |
 | Group 3 | 월요일 20:00 | MSST, NVIT, TEST — 3종목 |
 | Group 1 | 화요일 20:00 | CHPY, GPTY, LFGY, MINY, QDTY, RDTY, SDTY, SLTY, ULTY, YMAG, YMAX, YRAM — 12종목 |
-| Group 2 | 수요일 20:00 | AIYY, AMDY, AMZY, APLY, BABO, BRKC, CONY, CRCO, CRSH, CVNY, DIPS, DRAY, FBY, FIAT, GDXY, GMEY, GOOY, HIYY, HOOY, INYY, JPO, MARO, MRNY, MSFO, MSTY, MUY, NFLY, NVDY, OARK, PLTY, PYPY, RBLY, RDYY, SMCY, SNOY, TSLY, TSMY, WNTR, XOMO, XYZY, YBIT, YQQQ, YSPC — 43종목 |
+| Group 2 | 수요일 20:00 | AIYY, AMDY, AMZY, APLY, BABO, BRKC, CONY, CRCO, CRSH, CVNY, DIPS, DRAY, FBY, FIAT, GDXY, GMEY, GOOY, HIYY, HOOY, INYY, JPO, MARO, MRNY, MSFO, MSTY, MUY, NFLY, NVDY, OARK, PLTY, PYPY, RBLY, RDYY, SMCY, SNOY, TSLY, TSMY, WNTR, XOMO, XYZY, YBIT, YQQQ, YSKH, YSPC — 44종목 |
+
+YSKH was added to Group 2 after YieldMax announced the fund on 2026-10-27. Its
+first distribution announcement is expected on 2026-11-11. The official fund page
+currently has placeholder dashes in its distribution table; the collector records
+no distribution until the issuer publishes an amount and dates.
 
 ## 확인 시간과 기존 전체 수집
 
@@ -42,7 +47,7 @@
 오전 전체 수집으로 이미 반영된 자료도 같은 완료 검사로 건너뛴다.
 
 6종목 이하씩 처리해 부분 성공을 보존하고, 실행당 최대 8개 배치를 처리한다.
-수요일 43종목은 8개 배치로 확인할 수 있다. 배치별 180초 제한을 두고 실패 시
+수요일 44종목은 8개 배치로 확인할 수 있다. 배치별 180초 제한을 두고 실패 시
 해당 주기의 나머지는 다음 실행으로 이월한다. 전체 워크플로우 제한은 30분이다.
 대기열이 많아 처리 한도를 넘은 주기도 삭제하지 않고 이후 복구에서 순환한다.
 

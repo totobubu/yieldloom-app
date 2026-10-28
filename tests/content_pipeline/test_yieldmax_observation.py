@@ -26,13 +26,28 @@ class YieldMaxPolicyTest(unittest.TestCase):
     def test_approved_tickers_and_requested_weekdays(self):
         self.assertEqual((GROUPS['group-3']['weekday'], GROUPS['group-3']['tickers']), (0, ['MSST', 'NVIT', 'TEST']))
         self.assertEqual(GROUPS['group-1']['tickers'], 'CHPY GPTY LFGY MINY QDTY RDTY SDTY SLTY ULTY YMAG YMAX YRAM'.split())
-        self.assertEqual(GROUPS['group-2']['tickers'], 'AIYY AMDY AMZY APLY BABO BRKC CONY CRCO CRSH CVNY DIPS DRAY FBY FIAT GDXY GMEY GOOY HIYY HOOY INYY JPO MARO MRNY MSFO MSTY MUY NFLY NVDY OARK PLTY PYPY RBLY RDYY SMCY SNOY TSLY TSMY WNTR XOMO XYZY YBIT YQQQ YSPC'.split())
-        self.assertEqual([len(GROUPS[group]['tickers']) for group in ('group-3', 'group-1', 'group-2')], [3, 12, 43])
-        self.assertEqual(len(set(TRACKED_SYMBOLS)), 58)
+        self.assertEqual(GROUPS['group-2']['tickers'], 'AIYY AMDY AMZY APLY BABO BRKC CONY CRCO CRSH CVNY DIPS DRAY FBY FIAT GDXY GMEY GOOY HIYY HOOY INYY JPO MARO MRNY MSFO MSTY MUY NFLY NVDY OARK PLTY PYPY RBLY RDYY SMCY SNOY TSLY TSMY WNTR XOMO XYZY YBIT YQQQ YSKH YSPC'.split())
+        self.assertEqual([len(GROUPS[group]['tickers']) for group in ('group-3', 'group-1', 'group-2')], [3, 12, 44])
+        self.assertEqual(len(set(TRACKED_SYMBOLS)), 59)
         self.assertEqual([GROUPS[group]['weekday'] for group in ('group-3', 'group-1', 'group-2')], [0, 1, 2])
         for day, expected in ((26, 'group-3'), (27, 'group-1'), (28, 'group-2')):
             request = runner.request_for(cron=PRIMARY_CRONS[1], created_at=instant(f'2026-10-{day}T11:05:00'), now=instant('2026-10-30T00:00:00'))
             self.assertEqual((request['group'], request['anchor']), (expected, f'2026-10-{day}'))
+
+    def test_yskh_catalog_entry_contains_verified_listing_fields_only(self):
+        catalog = json.loads(Path('data-v2/catalog-seed.json').read_text())
+        matches = [row for row in catalog['instruments'] if row['symbol'] == 'YSKH']
+        self.assertEqual(len(matches), 1)
+        row = matches[0]
+        self.assertEqual((row['longName'], row['symbol'], row['market'], row['currency']),
+                         ('YieldMax SKHY Option Income Strategy ETF', 'YSKH', 'NASDAQ', 'USD'))
+        self.assertEqual((row['ipoDate'], row['officialProvider'], row['frequency'], row['underlying']),
+                         ('2026-10-27', 'YieldMax', '매주', 'SKHY'))
+        self.assertIsNone(row['isin'])
+        self.assertNotIn('distributionPerShare', row)
+        self.assertNotIn('price', row)
+        self.assertNotIn('rocPercent', row)
+        self.assertIn('YSKH', GROUPS['group-2']['tickers'])
 
     def test_delayed_run_and_dst_are_resolved_from_original_schedule(self):
         request = runner.request_for(cron=PRIMARY_CRONS[1], created_at=instant('2026-10-27T01:00:00'), now=instant('2026-11-11T00:00:00'))
@@ -238,7 +253,7 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
         second = {r.metadata['ticker'] for r in self.requests}
         self.assertEqual((len(first), len(second)), (6, 6))
         self.assertFalse(first & second)
-        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), 31)
+        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), 32)
 
     def test_process_failure_keeps_cycle_and_does_not_mark_missing_as_complete(self):
         now = instant('2026-10-28T11:05:00')
@@ -247,7 +262,7 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
             report, code = runner.run_observations(request, self.database, now=now, state_path=self.state, raw_dir=self.root/'raw', public_dir=self.public, legacy_data_dir=self.root/'legacy')
         self.assertEqual((report['status'], report['stateChanged'], code), ('failed', True, 1))
         self.assertEqual(len(report['cycles']), 1)
-        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), 43)
+        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), 44)
 
     def test_read_only_smoke_reads_existing_facts_without_collecting_or_saving(self):
         for symbol in GROUPS['group-3']['tickers']:

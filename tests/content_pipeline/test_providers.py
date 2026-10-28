@@ -235,13 +235,13 @@ class ProviderParserTest(unittest.TestCase):
         self.assertEqual(caught.exception.code, "not_found")
         self.assertFalse(caught.exception.retryable)
 
-    def test_yieldmax_empty_history_table_is_no_data(self):
+    def test_yieldmax_pre_distribution_placeholder_is_no_data(self):
         empty = SourceDocument(
             provider_slug="yieldmax",
-            source_url="https://yieldmaxetfs.com/our-etfs/pypy/",
-            source_type="fixture",
-            content=b'<table><tr><th>Distribution per Share</th><th>Declared Date</th><th>Ex Date</th><th>Record Date</th><th>Payable Date</th><th>ROC</th></tr></table>',
-            metadata={"ticker": "PYPY"},
+            source_url="https://yieldmaxetfs.com/our-etfs/yskh/",
+            source_type="official_fund_history",
+            content=b'<table><tr><th>Distribution per Share</th><th>Declared Date</th><th>Ex Date</th><th>Record Date</th><th>Payable Date</th><th>ROC</th></tr><tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr></table>',
+            metadata={"ticker": "YSKH"},
         )
         with self.assertRaisesRegex(NoDataError, "no distribution rows"):
             YieldMaxAdapter().parse(empty)

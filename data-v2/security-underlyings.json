@@ -3146,7 +3146,7 @@
         "text": "GraniteShares YieldBOOST™ SPY ETF (YSPY)"
       }
     },
-    {
+    "YSKH": {
       "symbol": "YSKH",
       "underlying": "SKHY",
       "provider": "yieldmax",

@@ -6530,6 +6530,10 @@
       "provider": "YieldMax",
       "underlying": null
     },
+    "YSKH": {
+      "provider": "YieldMax",
+      "underlying": "SKHY"
+    },
     "YSPY": {
       "provider": "GraniteShares",
       "underlying": "SPY"

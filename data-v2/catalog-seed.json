@@ -25960,6 +25960,19 @@
       "officialProvider": "YieldMax"
     },
     {
+      "ipoDate": "2026-10-27",
+      "frequency": "매주",
+      "symbol": "YSKH",
+      "isin": null,
+      "market": "NASDAQ",
+      "currency": "USD",
+      "koName": "일드맥스 SK하이닉스 옵션 인컴 전략 ETF",
+      "longName": "YieldMax SKHY Option Income Strategy ETF",
+      "active": true,
+      "officialProvider": "YieldMax",
+      "underlying": "SKHY"
+    },
+    {
       "ipoDate": "2025-04-03",
       "frequency": "매주",
       "symbol": "YSPY",

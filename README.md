@@ -170,6 +170,8 @@ npm run content:refresh -- --scope provider --provider yieldmax
 
 Roundhill은 [통합 공시 관측 워크플로우](docs/content-studio/roundhill-observation.md)에서
 요일별 티커 수집, DST 추가 확인, 휴장 전후 발표일 조회와 미확인 주기 이월을 관리한다.
+YieldMax는 [전용 통합 타겟 스케줄러](docs/content-studio/yieldmax-observation.md)에서
+월·화·수 58종목을 같은 복구 정책으로 관리하며 기존 오전 전체 수집도 유지한다.
 
 수집 파이프라인은 기본적으로 카드용 데이터 작업을 수행합니다. 기존 블로그 Bundle·편집 캘린더·주간 대본 생성은 `--include-editorial`을 명시한 경우에만 실행합니다. 호환 도구와 기존 저장 데이터는 보존합니다.
 

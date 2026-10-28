@@ -4,6 +4,8 @@
 TOPW·MAGY와 화·수·금 wrapper 및 reusable workflow를 이 파일로 통합했다.
 티커·요일·한국시간 기준 시각·조회 범위·복구 한도는
 `scripts/content_pipeline/roundhill_schedule.json`에 둔다.
+복구 실행기는 YieldMax와 `scheduled_observation.py`를 공유한다. 기존 Roundhill CLI와
+상태 파일 경로는 유지하고, 공급자 표식이 없던 기존 상태도 읽을 수 있다.
 
 | 그룹 | 기준 요일·시각 (KST) | 티커 |
 | --- | --- | --- |

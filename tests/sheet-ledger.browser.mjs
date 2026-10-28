@@ -46,7 +46,7 @@ try {
     });
     await page.goto(
         (process.env.SHEET_LEDGER_UI_BASE_URL || 'http://127.0.0.1:5181') +
-            '/admin/sheet-ledger'
+            '/admin/sheet-ledger?view=source-tools'
     );
     const ledger = page.locator('.ledger-list');
     await page.getByRole('button', { name: '확인', exact: true }).click();

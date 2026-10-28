@@ -142,7 +142,7 @@ try {
         await route.fulfill({ status: response.code, json: response.payload });
     });
     await page.goto(
-        `${process.env.SHEET_LEDGER_UI_BASE_URL || 'http://127.0.0.1:5181'}/admin/sheet-ledger`
+        `${process.env.SHEET_LEDGER_UI_BASE_URL || 'http://127.0.0.1:5181'}/admin/sheet-ledger?view=source-tools`
     );
     const panel = page.getByRole('region', { name: '출처 대조와 원금 검증' });
     await page

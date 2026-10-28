@@ -246,6 +246,14 @@ class ProviderParserTest(unittest.TestCase):
         with self.assertRaisesRegex(NoDataError, "no distribution rows"):
             YieldMaxAdapter().parse(empty)
 
+    def test_yieldmax_unannounced_yskh_distribution_is_not_created(self):
+        with self.assertRaisesRegex(NoDataError, "no distribution rows"):
+            YieldMaxAdapter().parse(document(
+                "yieldmax", "yieldmax_yskh_before_first_distribution.html",
+                "https://yieldmaxetfs.com/our-etfs/yskh/",
+                metadata={"ticker": "YSKH"},
+            ))
+
     def test_ishares_catalog_and_distribution_history(self):
         adapter = ISharesAdapter()
         catalog = adapter.parse_catalog(

@@ -3129,6 +3129,23 @@
         "text": "YieldMax XYZ Option Income Strategy ETF"
       }
     },
+    "YSKH": {
+      "symbol": "YSKH",
+      "underlying": "SKHY",
+      "provider": "yieldmax",
+      "providerName": "YieldMax",
+      "strategy": "income",
+      "direction": "long",
+      "leverage": null,
+      "verificationStatus": "official",
+      "evidence": {
+        "url": "https://yieldmaxetfs.com/our-etfs/yskh/",
+        "contentSha256": "76d817a9d85a94f672e5c52ba4796914e3484164c0695a748cc5064079546972",
+        "fetchedAt": "2026-10-28T07:37:55.310903+00:00",
+        "method": "official-product-title",
+        "text": "YieldMax SKHY Option Income Strategy ETF"
+      }
+    },
     "YSPY": {
       "symbol": "YSPY",
       "underlying": "SPY",

@@ -314,7 +314,10 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
         second = {r.metadata['ticker'] for r in self.requests}
         self.assertEqual((len(first), len(second)), (6, 6))
         self.assertFalse(first & second)
-        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), 32)
+        self.assertEqual(
+            len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']),
+            len(eligible_tickers('group-2', date(2026, 10, 28))) - 12,
+        )
 
     def test_process_failure_keeps_cycle_and_does_not_mark_missing_as_complete(self):
         now = instant('2026-10-28T11:05:00')

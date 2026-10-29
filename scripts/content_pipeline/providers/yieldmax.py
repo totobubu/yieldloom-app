@@ -15,7 +15,7 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
     slug = "yieldmax"
     display_name = "YieldMax"
     official_homepage = "https://yieldmaxetfs.com/"
-    parser_version = "3"
+    parser_version = "4"
     allowed_hosts = ("yieldmaxetfs.com",)
     catalog_url = "https://yieldmaxetfs.com/our-etfs/"
     # Fund history pages contain the official amount plus declaration, ex,

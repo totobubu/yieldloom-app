@@ -39,6 +39,7 @@ declare module 'vue' {
     DividendSummaryThumbnail: typeof import('./src/components/thumbnail/DividendSummaryThumbnail.vue')['default']
     DocumentLedgerHeader: typeof import('./src/components/portfolio/DocumentLedgerHeader.vue')['default']
     ErrorBoundary: typeof import('./src/components/ErrorBoundary.vue')['default']
+    FinalTossLedger: typeof import('./src/components/portfolio/FinalTossLedger.vue')['default']
     FullscreenDataLoading: typeof import('./src/components/FullscreenDataLoading.vue')['default']
     FundingTracePanel: typeof import('./src/components/portfolio/FundingTracePanel.vue')['default']
     HoldingDividendCapitalChart: typeof import('./src/components/portfolio/HoldingDividendCapitalChart.vue')['default']

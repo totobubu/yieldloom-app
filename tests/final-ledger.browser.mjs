@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { chromium } from 'playwright';
 import { projectFinalLedger } from '../lib/final-ledger-view.js';
 import {
@@ -76,7 +78,7 @@ try {
         .waitFor();
     await main.getByText('255건', { exact: true }).waitFor();
     await page.screenshot({
-        path: '/tmp/yieldloom-final-ledger-desktop.png',
+        path: join(tmpdir(), 'yieldloom-final-ledger-desktop.png'),
         fullPage: false,
     });
     assert.equal(requests.length, 1);
@@ -152,7 +154,7 @@ try {
     }));
     assert(dimensions.scroll <= dimensions.width);
     await page.screenshot({
-        path: '/tmp/yieldloom-final-ledger-mobile.png',
+        path: join(tmpdir(), 'yieldloom-final-ledger-mobile.png'),
         fullPage: true,
     });
     await page.setViewportSize({ width: 1440, height: 1000 });
@@ -182,7 +184,7 @@ try {
         );
     });
     await page.screenshot({
-        path: '/tmp/yieldloom-final-ledger-dark.png',
+        path: join(tmpdir(), 'yieldloom-final-ledger-dark.png'),
         fullPage: true,
     });
     await page.evaluate(() =>

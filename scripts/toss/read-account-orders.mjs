@@ -4,6 +4,11 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import {
+    prepareManualPublication,
+    publishExisting,
+    createExistingR2Transport,
+} from './publish-account-observations.mjs';
+import {
     collectOrders,
     issueCollectorToken,
     loadLocalCredentials,
@@ -20,6 +25,10 @@ Credentials come from the existing file or environment, never from command argum
 No scheduling, financial writes, browser control, uploads, or automatic reauthentication.
 Private observations: var/toss-orders/ (Git ignored). Exit 0: requested API scopes complete; 2: partial/authentication required; 1: invalid command.
 Browser dividend details are a separate skill step; API completion does not verify them.`;
+const PUBLICATION_HELP = `Optional authorized persistence: --prepare-publication --ledger-account wife [--browser-observation EXISTING_EGO_JSON], or --publish --ledger-account wife [--browser-observation EXISTING_EGO_JSON].
+--prepare-publication writes an offline verified local plan only. --publish requires existing R2 environment credentials and performs immutable uploads, GET/member verification and an append-only index commit. API success and publication success remain separate.
+To resume publication without recollecting: node scripts/toss/publish-account-observations.mjs --directory EXISTING_PUBLICATION --publish.
+If credentials are unavailable, use the existing authorized Cloudflare connector with the prepared immutable plan; do not create/copy credentials or report the plan as linked.`;
 
 function validDate(value) {
     return (
@@ -179,13 +188,45 @@ export async function readAccountOrders(
                     reason: scope.reason,
                 };
         }
-        return {
+        const completed = {
             ...result,
             apiStatus: 'complete',
             checkedAt: now(),
             scopeLimit:
                 'supported_orders_only_not_individual_fills_cash_or_dividend_deposits',
         };
+        if (options.preparePublication || options.publish) {
+            if (options.ledgerAccount !== 'wife')
+                return {
+                    ...completed,
+                    publication: {
+                        status: 'not_linked',
+                        reason: 'explicit_ledger_account_required',
+                    },
+                };
+            try {
+                const plan = await prepareManualPublication({
+                    root,
+                    accountSeq,
+                    accountSuffix: options.accountSuffix,
+                    scopes: result.scopes,
+                    browserFile: options.browserFile,
+                    checkedAt: completed.checkedAt,
+                });
+                completed.publication = options.publish
+                    ? await publishExisting({
+                          directory: plan.localDirectory,
+                          ...(await createExistingR2Transport()),
+                      })
+                    : plan;
+            } catch {
+                completed.publication = {
+                    status: 'not_linked',
+                    reason: 'publication_failed_local_evidence_preserved',
+                };
+            }
+        }
+        return completed;
     } catch (error) {
         const reason = signal?.aborted
             ? 'interrupted'
@@ -216,10 +257,15 @@ export async function main(args = process.argv.slice(2)) {
                 'all-history': { type: 'boolean' },
                 'env-file': { type: 'string' },
                 'issue-token': { type: 'boolean' },
+                'prepare-publication': { type: 'boolean' },
+                publish: { type: 'boolean' },
+                'ledger-account': { type: 'string' },
+                'browser-observation': { type: 'string' },
             },
         });
         if (values.help) {
             console.log(HELP);
+            console.log(PUBLICATION_HELP);
             return 0;
         }
         const options = {
@@ -229,8 +275,20 @@ export async function main(args = process.argv.slice(2)) {
             to: values.to,
             allHistory: values['all-history'] ?? false,
             issueToken: values['issue-token'] ?? false,
+            preparePublication: values['prepare-publication'] ?? false,
+            publish: values.publish ?? false,
+            ledgerAccount: values['ledger-account'],
+            browserFile: values['browser-observation'],
         };
-        if (!values.live || !validateManualOptions(options)) {
+        if (
+            !values.live ||
+            !validateManualOptions(options) ||
+            ((options.publish || options.preparePublication) &&
+                options.ledgerAccount !== 'wife') ||
+            (options.browserFile &&
+                !options.publish &&
+                !options.preparePublication)
+        ) {
             console.error(
                 'Specify --live, selected account suffix and an explicit supported scope. Use --help.'
             );
@@ -251,7 +309,12 @@ export async function main(args = process.argv.slice(2)) {
                 signal: controller.signal,
             });
             console.log(JSON.stringify(result));
-            return result.apiStatus === 'complete' ? 0 : 2;
+            return result.apiStatus === 'complete' &&
+                (!options.publish || result.publication?.status === 'linked') &&
+                (!options.preparePublication ||
+                    !['not_linked'].includes(result.publication?.status))
+                ? 0
+                : 2;
         } finally {
             process.removeListener('SIGINT', interrupt);
             process.removeListener('SIGTERM', interrupt);

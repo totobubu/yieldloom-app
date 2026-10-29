@@ -91,6 +91,7 @@ test('private snapshot storage coalesces reads per owner and never serves failed
         getStorage: () => ({
             send: async (command) => {
                 calls++;
+                if (command.input.Prefix) return { Contents: [], IsTruncated: false };
                 if (denied)
                     throw Object.assign(new Error('denied'), {
                         name: 'AccessDenied',
@@ -111,9 +112,9 @@ test('private snapshot storage coalesces reads per owner and never serves failed
         store.readFinalSnapshot('owner'),
     ]);
     assert.equal(a, b);
-    assert.equal(calls, 3);
+    assert.equal(calls, 4);
     await store.readFinalSnapshot('other-owner');
-    assert.equal(calls, 6);
+    assert.equal(calls, 8);
 });
 function handlerFixture({
     email = 'jomalkeun@gmail.com',

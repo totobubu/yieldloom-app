@@ -43,6 +43,8 @@
         tax: '세금',
         netDividendUsd: '세후 배당',
         grossDividendUsd: '세전 배당',
+        paidAt: '실제 입금 시각',
+        originalTransactionId: '원문 거래 ID',
         statementNativeTransactionAmount: '명세서 원통화 거래금액',
         statementSettlementAmountNative: '명세서 원통화 정산금액',
         statementSettlementAmountKrw: '명세서 원화 정산금액',
@@ -227,7 +229,10 @@
             <div>
                 <span class="eyebrow">관리자 · 거래 기록</span>
                 <h1>토스 거래내역</h1>
-                <p>채택한 최종 버전의 거래를 날짜와 통화별로 확인합니다.</p>
+                <p>
+                    채택한 기준 내역과 검증된 신규 관측을 날짜와 통화별로
+                    확인합니다.
+                </p>
             </div>
             <Button
                 label="새로고침"
@@ -244,9 +249,13 @@
         <p v-else-if="!firebaseUser">관리자 로그인 후 조회할 수 있습니다.</p>
         <template v-if="snapshot">
             <div class="version">
-                <Tag value="최종 채택" severity="success" /><span
+                <Tag value="기준 장부 채택" severity="success" /><span
                     >기준일 {{ snapshot.snapshotAt?.slice(0, 10) }}</span
                 ><span>버전 {{ snapshot.releaseId.slice(0, 12) }}</span>
+                <span v-if="snapshot.incrementEntryCount"
+                    >검증된 증분 {{ snapshot.incrementRowCount }}행 · 기존
+                    채택값 유지</span
+                >
             </div>
             <section class="filters" aria-label="거래 필터">
                 <label
@@ -300,8 +309,9 @@
                 표시합니다.
             </p>
             <p v-else class="scope-note">
-                매매는 토스 체결 기록, 배당은 채택된 시트 기록입니다. 금액은 각
-                행의 통화 기준입니다.
+                기존 채택 기록과 토스 신규 관측을 함께 표시합니다. 웹 배당은
+                실제 입금액이며, 중복 여부가 미확정인 관측은 합계에서
+                제외합니다. 금액은 각 행의 통화 기준입니다.
             </p>
             <section class="summary" aria-label="현재 목록 요약">
                 <article>
@@ -381,6 +391,9 @@
                                 </td>
                                 <td>
                                     <strong>{{ row.symbol || '—' }}</strong>
+                                    <small v-if="row.increment">{{
+                                        row.sourceLabel
+                                    }}</small>
                                 </td>
                                 <td>
                                     {{ labels[row.type]

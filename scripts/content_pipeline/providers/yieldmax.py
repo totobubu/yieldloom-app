@@ -19,8 +19,8 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
     # Release pages may be hosted by the issuer's linked GlobeNewswire distributor.
     allowed_hosts = ("yieldmaxetfs.com", "globenewswire.com")
     catalog_url = "https://yieldmaxetfs.com/our-etfs/"
-    # Fund history pages contain the official amount plus declaration, ex,
-    # record and payment dates.  GlobeNewswire is not a collection source.
+    # Fund history pages are primary; the issuer-linked news release is a
+    # fallback for weeks when those tables have not refreshed.
     default_max_sources = 100
     tracked_symbols = TRACKED_SYMBOLS
     http_requests = 0

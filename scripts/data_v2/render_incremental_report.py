@@ -15,6 +15,21 @@ def main() -> int:
     report = json.loads(args.input.read_text(encoding="utf-8"))
     summary = report["summary"]
     lines = ["# Incremental collection review", "", f"Run: `{report['runId']}`", "", "| Selected sources | Skipped sources | New | Changed | Deletion suspected | Unchanged sources | Failed sources |", "| ---: | ---: | ---: | ---: | ---: | ---: |", f"| {summary.get('selectedSources', 0)} | {summary.get('skippedSources', 0)} | {summary['new']} | {summary['changed']} | {summary['suspectedRemoved']} | {summary['unchangedSources']} | {summary['failedSources']} |", ""]
+    if report.get("publicationBlocked"):
+        lines += ["**Publication blocked: conflicting event values. No candidate or durable state was saved.**", ""]
+    elif "candidateEvents" in summary:
+        lines += [f"Candidate event identities after source deduplication: {summary['candidateEvents']}", ""]
+    for conflict in report.get("conflicts", []):
+        identity = conflict["identity"]
+        lines += [f"## Conflict: {identity['ticker']} {identity['declaredDate']} / {identity['exDate']}",
+                  "", "Different fields: " + ", ".join(conflict["differentFields"]), ""]
+        for item in conflict["observations"]:
+            row = item["event"]
+            lines += [f"- Source `{item['sourceKey']}`: {row['officialUrl']} (SHA-256 `{row['sourceSha256']}`)",
+                      "  - " + "; ".join(f"{field}: {json.dumps(row.get(field), ensure_ascii=False)}" for field in conflict["differentFields"])]
+        lines.append("")
+    if report.get("equivalentEvents"):
+        lines += [f"{len(report['equivalentEvents'])} duplicate event identities have equal economic/verification values; all source evidence was retained.", ""]
     for provider, details in report["providers"].items():
         lines += [f"## {provider} — {details['status']}", ""]
         if details["errors"]:

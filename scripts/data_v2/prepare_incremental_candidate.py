@@ -75,7 +75,12 @@ def to_candidate(event: Any, document: Any) -> dict[str, Any]:
 
 
 def comparable(event: dict[str, Any]) -> dict[str, Any]:
-    return {field: event.get(field) for field in ("amount", "recordDate", "payableDate", "frequency", "currency", "sourceSha256")}
+    # Document URLs/hashes identify evidence, not the economics of a dividend.
+    # Verification differences must still block automatic cross-source merging.
+    return {field: event.get(field) for field in (
+        "amount", "recordDate", "payableDate", "frequency", "currency",
+        "verificationStatus", "verificationNote",
+    )}
 
 
 def checked_source(previous: dict[str, Any] | None, slug: str, candidate: SourceCandidate,
@@ -131,14 +136,40 @@ def update_source(previous: dict[str, Any] | None, events: list[dict[str, Any]],
     return next_source, {"new": new, "changed": changed, "suspectedRemoved": suspected_removed}
 
 
-def all_events(state: dict[str, Any]) -> list[dict[str, Any]]:
-    result: dict[tuple[str, str, str, str], dict[str, Any]] = {}
-    for source in state["sources"].values():
+class EventConflict(ValueError):
+    def __init__(self, conflicts: list[dict[str, Any]]):
+        self.conflicts = conflicts
+        super().__init__(f"Conflicting state events for {tuple(conflicts[0]['identity'].values())}")
+
+
+def all_events(state: dict[str, Any], diagnostics: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    groups: dict[tuple[str, str, str, str], list[dict[str, Any]]] = {}
+    for key, source in sorted(state["sources"].items()):
         for event in source.get("events", []):
-            identity = event_key(event)
-            if identity in result and comparable(result[identity]) != comparable(event):
-                raise ValueError(f"Conflicting state events for {identity}")
-            result[identity] = event
+            groups.setdefault(event_key(event), []).append({"sourceKey": key, "event": event})
+    result: dict[tuple[str, str, str, str], dict[str, Any]] = {}
+    conflicts, equivalent = [], []
+    for identity, observations in sorted(groups.items()):
+        first = observations[0]["event"]
+        fields = [field for field, value in comparable(first).items()
+                  if any(comparable(item["event"])[field] != value for item in observations[1:])]
+        identity_fields = dict(zip(("provider", "ticker", "declaredDate", "exDate"), identity))
+        if fields:
+            conflicts.append({"identity": identity_fields, "differentFields": fields,
+                              "observations": observations})
+            continue
+        selected = dict(first)
+        if len(observations) > 1:
+            evidence = [{"sourceKey": item["sourceKey"], "url": item["event"]["officialUrl"],
+                         "sha256": item["event"]["sourceSha256"]} for item in observations]
+            # Keep every source in the candidate and audit; do not mutate source state.
+            selected["sourceEvidence"] = evidence
+            equivalent.append({"identity": identity_fields, "sources": evidence})
+        result[identity] = selected
+    if diagnostics is not None:
+        diagnostics.update(conflicts=conflicts, equivalentEvents=equivalent)
+    if conflicts:
+        raise EventConflict(conflicts)
     return [result[key] for key in sorted(result)]
 
 
@@ -151,15 +182,19 @@ def main() -> int:
     parser.add_argument("--candidate-output", type=Path, default=Path("data-v2/candidates/incremental-events.json"))
     parser.add_argument("--report-output", type=Path, default=Path("data-v2/review/incremental-report.json"))
     parser.add_argument("--state-output", type=Path, default=Path("data-v2/review/collection-state.json"))
+    parser.add_argument("--raw-output", type=Path,
+                        help="Local immutable official response evidence; defaults beside the report")
     parser.add_argument("--state-file", type=Path, help="Local state for offline validation; disables R2 reads/writes")
     parser.add_argument("--now", help="UTC ISO timestamp for deterministic scheduling tests")
     args = parser.parse_args()
+    raw_output = args.raw_output or args.report_output.parent / "incremental-raw"
     providers = args.provider or DEFAULT_PROVIDERS
     if any(provider not in providers for provider, _ in args.backfill):
         parser.error("backfill provider must be included in --provider selection")
     state = load_local(args.state_file) if args.state_file else load_r2()
     next_state = {"schemaVersion": 2, "generatedAt": None, "sources": dict(state["sources"]), "catalogs": dict(state.get("catalogs", {}))}
     report: dict[str, Any] = {"schemaVersion": 2, "runId": args.run_id, "providers": {}, "summary": {"new": 0, "changed": 0, "suspectedRemoved": 0, "unchangedSources": 0, "failedSources": 0, "selectedSources": 0, "skippedSources": 0}}
+    report["rawEvidence"] = []
     clock = datetime.fromisoformat(args.now.replace("Z", "+00:00")) if args.now else datetime.now(timezone.utc)
     clock = clock.astimezone(timezone.utc).replace(microsecond=0)
     now = clock.isoformat()
@@ -200,6 +235,16 @@ def main() -> int:
             document = None
             try:
                 document = adapter.fetch(candidate)
+                raw_path = raw_output / f"{document.content_sha256}.raw"
+                raw_path.parent.mkdir(parents=True, exist_ok=True)
+                if raw_path.exists():
+                    if raw_path.read_bytes() != document.content:
+                        raise ValueError("immutable raw evidence conflict")
+                else:
+                    raw_path.write_bytes(document.content)
+                report["rawEvidence"].append({"url": candidate.url, "sha256": document.content_sha256,
+                                              "bytes": len(document.content), "file": str(raw_path),
+                                              "fetchedAt": document.fetched_at})
                 if previous and previous.get("contentSha256") == document.content_sha256:
                     previous = dict(previous)
                     previous["lastCheckedAt"] = now
@@ -270,7 +315,22 @@ def main() -> int:
         if provider_report["errors"]:
             provider_report["status"] = "partial" if provider_report["sources"] else "failed"
         report["providers"][slug] = provider_report
-    candidate = all_events(next_state)
+    try:
+        candidate = all_events(next_state, report)
+    except EventConflict:
+        # Diagnose before exiting, without publishing a candidate, saving R2, or
+        # replacing the caller's last successful local state on a failed run.
+        report.update(status="conflict", publicationBlocked=True)
+        report["summary"]["conflictingEvents"] = len(report["conflicts"])
+        args.report_output.parent.mkdir(parents=True, exist_ok=True)
+        report["auditStateWritten"] = not args.state_file or args.state_output.resolve() != args.state_file.resolve()
+        if report["auditStateWritten"]:
+            args.state_output.parent.mkdir(parents=True, exist_ok=True)
+            args.state_output.write_text(json.dumps({**next_state, "auditOnly": True}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        args.report_output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(json.dumps({"status": "conflict", **report["summary"]}, ensure_ascii=False))
+        return 1
+    report["summary"]["candidateEvents"] = len(candidate)
     for path, payload in ((args.candidate_output, candidate), (args.report_output, report), (args.state_output, next_state)):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

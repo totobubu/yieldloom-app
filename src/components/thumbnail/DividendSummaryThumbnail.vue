@@ -5,7 +5,8 @@ import ThumbnailCardShell from './ThumbnailCardShell.vue';
 const props = defineProps({ data: { type: Object, required: true } });
 const usd = (value, digits = 4) => value != null && Number.isFinite(Number(value)) ? `$${Number(value).toFixed(digits).replace(/\.?(0+)$/, '')}` : '데이터 없음';
 const date = (value) => value ? String(value).replace(/-/g, '.') : '날짜 미정';
-const change = computed(() => Number(props.data.dividendDifference ?? 0));
+const hasComparison = computed(() => props.data.dividendDifference != null && props.data.dividendChangePercent != null && Number.isFinite(Number(props.data.dividendDifference)) && Number.isFinite(Number(props.data.dividendChangePercent)));
+const change = computed(() => Number(props.data.dividendDifference));
 const changePercent = computed(() => Number(props.data.dividendChangePercent));
 const tone = computed(() => change.value > 0 ? 'up' : change.value < 0 ? 'down' : 'flat');
 const chartRows = computed(() => props.data.monthlyTotals ?? []);
@@ -18,9 +19,10 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 		<template v-if="data.hasDividend">
 			<section class="hero">
 				<p>주당 지급 배당금 <small>세전</small></p><strong>{{ usd(data.currentDividendAmount, 6) }}</strong><span
+                    v-if="hasComparison"
 					:class="tone"><i>{{ change >= 0 ? '▲' : '▼' }}</i>{{ Number.isFinite(changePercent) ?
 						`${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%` : '변동 없음' }} <b>({{ change >= 0 ? '+'
-						: '' }}{{ usd(change, 6) }})</b></span>
+						: '' }}{{ usd(change, 6) }})</b></span><span v-else class="flat">비교 불가{{ data.comparisonUnavailableReason ? ` · ${data.comparisonUnavailableReason}` : '' }}</span>
 			</section>
 			<section class="metrics">
 				<div><small>예상 세후 실수령</small><b>{{ usd(data.afterTaxDividendAmount, 6) }}</b><em>15% 원천징수</em></div>

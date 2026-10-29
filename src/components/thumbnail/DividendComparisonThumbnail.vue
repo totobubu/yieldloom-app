@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import ThumbnailCardShell from './ThumbnailCardShell.vue';
 const props = defineProps({ data: { type: Object, required: true } });
 const hasPrevious = computed(
-	() => Number(props.data.previousDividendAmount) > 0
+	() => Number(props.data.previousDividendAmount) > 0 && props.data.dividendDifference != null && props.data.dividendChangePercent != null
 );
 const difference = computed(() =>
 	Number(props.data.dividendDifference ?? 0)
@@ -90,8 +90,7 @@ const rows = computed(() => [
 				</article>
 				<article>
 					<p>주당 배당 {{ directionLabel }}액</p>
-					<strong>{{ difference >= 0 ? '+' : '−'
-					}}{{ usd(Math.abs(difference)) }}</strong><small>{{ data.referenceData ? '직전 참고 회차 대비' : '직전 확정 회차 대비' }}</small><span class="kpi-icon"
+					<strong>{{ hasPrevious ? `${difference >= 0 ? '+' : '−'}${usd(Math.abs(difference))}` : '비교 불가' }}</strong><small>{{ data.referenceData ? '직전 참고 회차 대비' : '직전 확정 회차 대비' }}</small><span class="kpi-icon"
 						aria-hidden="true"><svg v-if="tone === 'down'" fill="none" stroke="currentColor"
 							stroke-width="2.8" viewBox="0 0 24 24">
 							<path d="M5 14l7 7m0 0 7-7m-7 7V3" stroke-linecap="round" stroke-linejoin="round" />

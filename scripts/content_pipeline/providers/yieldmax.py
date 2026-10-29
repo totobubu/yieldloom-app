@@ -39,6 +39,40 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
                 metadata={"ticker": symbol},
             )
 
+    def discover_announcements_for_tickers(self, tickers, limit=5):
+        """Find recent issuer-hosted release pages as a fallback for stale fund histories."""
+        symbols = {ticker.strip().upper() for ticker in tickers}
+        if not symbols or any(symbol not in self.tracked_symbols for symbol in symbols):
+            raise ValueError("unconfigured YieldMax target ticker")
+        groups = {
+            "group-3": {"MSST", "NVIT", "TEST"},
+            "group-1": set("CHPY GPTY LFGY MINY QDTY RDTY SDTY SLTY ULTY YMAG YMAX YRAM".split()),
+            "group-2": set("AIYY AMDY AMZY APLY BABO BRKC CONY CRCO CRSH CVNY DIPS DRAY FBY FIAT GDXY GMEY GOOY HIYY HOOY INYY JPO MARO MRNY MSFO MSTY MUY NFLY NVDY OARK PLTY PYPY RBLY RDYY SMCY SNOY TSLY TSMY WNTR XOMO XYZY YBIT YQQQ YSKH YSPC".split()),
+        }
+        target_group = next((name for name, members in groups.items() if symbols <= members), None)
+        if target_group is None:
+            raise ValueError("YieldMax announcement fallback requires tickers from one configured group")
+        news_url = f"{self.official_homepage}news/"
+        listing = parse_html(self.request_bytes(news_url), news_url)
+        accepted = 0
+        for url, title in listing.links:
+            normalized = title.lower()
+            is_group_3_release = target_group == "group-3" and all(symbol.lower() in normalized for symbol in groups[target_group])
+            is_group_release = target_group in {"group-1", "group-2"} and target_group.replace("-", " ") in normalized
+            if not (is_group_3_release or is_group_release):
+                continue
+            if not url.startswith(self.official_homepage):
+                continue
+            self.validate_url(url)
+            yield SourceCandidate(
+                url=url,
+                source_type="official_press_release",
+                metadata={"tickers": sorted(symbols), "group": target_group},
+            )
+            accepted += 1
+            if accepted >= limit:
+                break
+
     def discover(self):
         parsed = parse_html(self.request_bytes(self.catalog_url), self.catalog_url)
         seen: set[str] = set()

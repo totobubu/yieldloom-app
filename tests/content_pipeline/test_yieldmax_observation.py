@@ -65,6 +65,36 @@ class YieldMaxPolicyTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'future'):
             runner.request_for(group='group-3', declared=date(2030, 1, 1), now=instant('2026-10-27T00:00:00'))
 
+    def test_release_discovery_uses_only_yieldmax_news_links(self):
+        adapter = YieldMaxAdapter()
+        listing = (
+            '<a href="/news/group-3-release/">YieldMax announces distributions on MSST, NVIT, and TEST</a>'
+            '<a href="https://www.globenewswire.com/news-release/example/">'
+            'YieldMax announces distributions on MSST, NVIT, and TEST</a>'
+        ).encode()
+        with patch.object(adapter, 'request_bytes', return_value=listing) as request:
+            candidates = list(adapter.discover_announcements_for_tickers(['MSST', 'NVIT', 'TEST']))
+        request.assert_called_once_with('https://yieldmaxetfs.com/news/')
+        self.assertEqual(
+            [(candidate.url, candidate.source_type) for candidate in candidates],
+            [('https://yieldmaxetfs.com/news/group-3-release/', 'official_press_release')],
+        )
+
+    def test_release_parser_never_uses_fetch_time_as_declaration_date(self):
+        content = (
+            '<p>Group 3 Distribution Announcement: Ex. &amp; Record Date: October 27, 2026 '
+            'Payment Date: October 28, 2026</p>'
+            '<table><tr><th>ETF Ticker</th><th>ETF Name</th><th>Distribution Frequency</th>'
+            '<th>Distribution per Share</th></tr>'
+            '<tr><td>MSST</td><td>Fund</td><td>Weekly</td><td>$0.1419</td></tr></table>'
+        ).encode()
+        document = SourceDocument(
+            'yieldmax', 'https://yieldmaxetfs.com/news/group-3-release/',
+            'official_press_release', content, fetched_at='2026-10-26T15:00:00+00:00',
+        )
+        with self.assertRaisesRegex(ValueError, 'publication date'):
+            YieldMaxAdapter().parse(document)
+
     def test_targeted_fund_history_never_infers_declaration_from_fetch_time(self):
         content = Path('tests/content_pipeline/fixtures/yieldmax_release.html').read_bytes()
         document = SourceDocument('yieldmax', 'https://yieldmaxetfs.com/our-etfs/tsly/', 'official_fund_history', content, metadata={'ticker': 'TSLY'})

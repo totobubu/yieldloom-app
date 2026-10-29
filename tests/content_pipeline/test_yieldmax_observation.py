@@ -143,7 +143,32 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
             self.requests.append(candidate)
             if candidate.source_type == 'official_press_release':
                 rows = ''.join(
-                    '<tr><td>' + ticker + '</td><td>YieldMax fund</td><td>Weekly</td><td>
+                    '<tr><td>' + ticker + '</td><td>YieldMax fund</td><td>Weekly</td><td>' + amount +
+                    '</td><td>25.00%</td><td>0.00%</td></tr>'
+                    for ticker, amount in self.release_events.items()
+                )
+                content = (
+                    '<meta property="article:published_time" content="2026-10-26T10:55:00-04:00">'
+                    '<p>Group 3 Distribution Announcement: Ex. &amp; Record Date: October 27, 2026 '
+                    'Payment Date: October 28, 2026</p>'
+                    '<table><tr><th>ETF Ticker</th><th>ETF Name</th><th>Distribution Frequency</th>'
+                    '<th>Distribution per Share</th><th>Distribution Rate</th><th>30-Day SEC Yield</th></tr>'
+                    + rows + '</table>'
+                ).encode()
+                results.append(FetchOutcome(candidate, SourceDocument(
+                    'yieldmax', candidate.url, candidate.source_type, content, metadata=candidate.metadata)))
+                continue
+            ticker = candidate.metadata['ticker']
+            if ticker == getattr(self, 'failed_ticker', None):
+                results.append(FetchOutcome(candidate, error=CollectionError('fixture unavailable')))
+                continue
+            rows = ''
+            for declared, ex_date, payable in self.events.get(ticker, []):
+                rows += f'<tr><td>0.123456</td><td>{declared}</td><td>{ex_date}</td><td>{ex_date}</td><td>{payable}</td><td>0.00%</td></tr>'
+            content = f'<h1>{ticker}</h1><table><tr><th>Distribution per Share</th><th>Declared Date</th><th>Ex Date</th><th>Record Date</th><th>Payable Date</th><th>ROC</th></tr>{rows}</table>'.encode()
+            results.append(FetchOutcome(candidate, SourceDocument('yieldmax', candidate.url, candidate.source_type, content, metadata=candidate.metadata)))
+        return results
+
     def run_request(self, request, now):
         release_candidates = [SourceCandidate(
             'https://yieldmaxetfs.com/news/group-3-distribution-release/',

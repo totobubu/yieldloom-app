@@ -4,7 +4,10 @@ import { mkdtemp, writeFile, rm, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Readable } from 'node:stream';
-import { collectOpenOrders } from '../scripts/toss/collect-closed-orders.mjs';
+import {
+    collectOpenOrders,
+    collectClosedOrders,
+} from '../scripts/toss/collect-closed-orders.mjs';
 import {
     prepareManualPublication,
     loadPublication,
@@ -14,6 +17,7 @@ import {
 } from '../scripts/toss/publish-account-observations.mjs';
 import {
     verifyIncrement,
+    incrementHash,
     publishIncrement,
     readIncrements,
     overlayIncrements,
@@ -37,6 +41,8 @@ async function fixture(
         date = '2025-02-06',
         run = 'open-fixture',
         root,
+        receivedAt,
+        mutateRun,
     } = {}
 ) {
     root ??= await mkdtemp(join(tmpdir(), 'toss-increment-'));
@@ -50,6 +56,19 @@ async function fixture(
         }
     );
     scope.run = run;
+    const runDirectory = join(root, incrementHash('123456'), run);
+    if (mutateRun) await mutateRun(runDirectory);
+    if (receivedAt !== undefined) {
+        const receiptFile = join(
+            root,
+            incrementHash('123456'),
+            run,
+            'page-00000001.json'
+        );
+        const receipt = JSON.parse(await readFile(receiptFile));
+        receipt.receivedAt = receivedAt;
+        await writeFile(receiptFile, JSON.stringify(receipt));
+    }
     const ui = {
         checkedAt: observedAt,
         accountVerified: true,
@@ -159,6 +178,177 @@ test('ego evidence attaches after API preparation without any fresh provider req
         1
     );
 });
+test('late browser attachment keeps API receipt time and cannot roll back a newer API observation', async (t) => {
+    const first = '2025-02-06T01:00:00.000Z';
+    const second = '2025-02-06T02:00:00.000Z';
+    const attachedAt = '2099-02-06T03:00:00.000Z';
+    const firstOrder = order('synthetic-order-1', {
+        status: 'PARTIAL_FILLED',
+        execution: {
+            ...order().execution,
+            filledQuantity: '1',
+            filledAmount: '5',
+        },
+    });
+    const secondOrder = {
+        ...firstOrder,
+        status: 'FILLED',
+        execution: {
+            ...firstOrder.execution,
+            filledQuantity: '2',
+            filledAmount: '10',
+        },
+    };
+    const old = await fixture(t, {
+        orders: [firstOrder],
+        receivedAt: first,
+        observedAt: attachedAt,
+        run: 'open-old-api',
+    });
+    const apiOnly = await prepareManualPublication({
+        root: old.root,
+        accountSeq: '123456',
+        accountSuffix: '9999',
+        scopes: {
+            OPEN: { status: 'complete', run: 'open-old-api' },
+            CLOSED: { status: 'not_requested' },
+        },
+        checkedAt: first,
+    });
+    const attached = await attachBrowserObservation(
+        apiOnly.localDirectory,
+        old.browserFile
+    );
+    const oldPublication = await loadPublication(attached.localDirectory);
+    const newer = await fixture(t, {
+        orders: [secondOrder],
+        receivedAt: second,
+        observedAt: attachedAt,
+        run: 'open-new-api',
+    });
+    const verified = await Promise.all(
+        [oldPublication, newer].map((p) =>
+            verifyIncrement(async (key) => p.objects.get(key), p.marker.value)
+        )
+    );
+    assert.equal(verified[0].apiOrders[0].observedAt, first);
+    assert.equal(verified[1].apiOrders[0].observedAt, second);
+    assert.equal(verified[0].verifiedAt, verified[1].verifiedAt);
+    const base = await baseline();
+    for (const batches of [verified, [...verified].reverse()]) {
+        const result = overlayIncrements(base.p, {
+            verified: batches,
+            revision: 'time-test',
+            entryCount: 2,
+        });
+        const row = result.rows.find(
+            (r) => r.previousObservationId === fixtureId(1)
+        );
+        assert.equal(row.quantity, '2');
+        assert.equal(row.amount, '10');
+        assert.equal(row.state, 'FILLED');
+    }
+    // Even if no newer increment is present, an API page older than the baseline
+    // cannot acquire the later browser publication time and replace that baseline.
+    const result = overlayIncrements(
+        { ...base.p, snapshotAt: second },
+        {
+            verified: [verified[0]],
+            revision: 'stale',
+            entryCount: 1,
+        }
+    );
+    assert.deepEqual(
+        result.rows.filter((r) => !r.increment),
+        base.p.rows
+    );
+    assert(result.rows.some((r) => r.id === fixtureId(1)));
+});
+
+test('API receipt time is required even for an empty page; publication time is not a fallback', async (t) => {
+    for (const receivedAt of [null, 'not-a-date']) {
+        await assert.rejects(() => fixture(t, { receivedAt }), /무결성/);
+    }
+});
+
+test('complete coverage requires all API receipts, matching account, cursor termination and index counts', async (t) => {
+    const edit = (name, change) => async (dir) => {
+        const path = join(dir, name);
+        const value = JSON.parse(await readFile(path));
+        change(value);
+        await writeFile(path, JSON.stringify(value));
+    };
+    for (const mutateRun of [
+        (dir) => rm(join(dir, 'page-00000001.json')),
+        (dir) => rm(join(dir, 'checkpoint.json')),
+        edit('checkpoint.json', (value) => {
+            value.pages = 2;
+        }),
+        edit('checkpoint.json', (value) => {
+            value.uniqueOrders = 2;
+        }),
+        edit('checkpoint.json', (value) => {
+            value.status = 'partial';
+        }),
+        edit('page-00000001.json', (value) => {
+            value.accountHash = incrementHash('other-synthetic-account');
+        }),
+        edit('page-00000001.json', (value) => {
+            value.cursor = 'missing-earlier-page';
+        }),
+        edit('page-00000001.json', (value) => {
+            const body = Buffer.from(page([], 'missing-next-page'));
+            value.bodyBase64 = body.toString('base64');
+            value.sha256 = incrementHash(body);
+        }),
+        edit('orders-index.json', (value) => {
+            value.uniqueOrders = 2;
+        }),
+    ]) {
+        await assert.rejects(() => fixture(t, { mutateRun }), /무결성/);
+    }
+});
+
+test('complete CLOSED cursor chain preserves orders from every validated page', async (t) => {
+    const root = await mkdtemp(join(tmpdir(), 'toss-increment-pages-'));
+    t.after(() => rm(root, { recursive: true, force: true }));
+    let calls = 0;
+    const run = 'closed-pages';
+    const result = await collectClosedOrders(
+        { accountSeq: '123456', token: 'synthetic-token', run },
+        {
+            root,
+            sleep: async () => {},
+            fetchImpl: async () =>
+                new Response(
+                    ++calls === 1
+                        ? page([order('synthetic-first')], 'second-cursor')
+                        : page([order('synthetic-second')])
+                ),
+        }
+    );
+    assert.equal(result.status, 'complete');
+    const plan = await prepareManualPublication({
+        root,
+        accountSeq: '123456',
+        accountSuffix: '9999',
+        scopes: {
+            OPEN: { status: 'not_requested' },
+            CLOSED: { ...result, run },
+        },
+    });
+    const publication = await loadPublication(plan.localDirectory);
+    const verified = await verifyIncrement(
+        async (key) => publication.objects.get(key),
+        publication.marker.value
+    );
+    assert.equal(calls, 2);
+    assert.deepEqual(
+        verified.apiOrders.map((v) => v.order.orderId),
+        ['synthetic-first', 'synthetic-second']
+    );
+});
+
 test('structured amounts must match actually captured detail fields and credentials cannot enter browser archives', async (t) => {
     const f = await fixture(t);
     const api = await prepareManualPublication({

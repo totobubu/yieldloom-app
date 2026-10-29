@@ -1,6 +1,6 @@
 # 수동 수집 → private R2 → 장부 증분 연결 인계
 
-상태: WIP, 클라우드 인계를 위한 코드 checkpoint. work/main 병합·운영 배포 없음.
+상태: 클라우드에서 인계 코드 검증 및 무결성 보완. work/main 병합·운영 배포 없음.
 이 문서는 실제 금융 값·자격증명을 포함하지 않는다. 실제 증거 객체의 정확한 경로와
 검증 영수증은 통합 작업 대화로 전달한다. 로컬 금융 폴더를 클라우드/Git으로 복사하지 않는다.
 
@@ -76,3 +76,22 @@ node scripts/toss/publish-account-observations.mjs --help
    관리자/시트 소유권 로그인 후 화면에서 기존 행 불변과 신규 1회 표시를 확인해야 한다.
 4. index 무결성 실패를 0건으로 숨기지 않는다. 실제 승인 baseline 전체의 행 수/합계 검증은 미완료다.
 5. 사용자 별도 승인 전 work/main 병합·운영 배포하지 않는다. 이 로컬 작업은 인계 후 코드 수정 중지.
+
+## 클라우드 후속 확인
+
+- 인계 head `8d94360`의 application/portfolio-api/browser CI 모두 통과 및 Preview READY 확인.
+- API 관측 순서는 page receipt의 `receivedAt`만 사용하도록 보완했다. 오래된 API →
+  최신 API → 오래된 API에 브라우저 사후 첨부 순서와 입력 순서 역전을 회귀 검증했다.
+- API 완료 표지와 포함 파일을 대조한다. manifest/checkpoint/index/page 유실, 계좌 해시,
+  페이지 연속성·cursor 종료·주문 수·index 원문 참조 불일치는 연결 전 거절한다.
+- 보완 후 전체 Node 605개, 증분 17개, API 관련 Python 62개 통과. 타입 포함 빌드 통과,
+  full lint 오류 0개/기존 경고 72개, 변경 파일 lint/format/diff 검사 통과.
+- 합성 증분 브라우저에서 신규 행 1회·출처·세전/세금/실수령·분 정밀도·모바일·권한 거부 후
+  자료 폐기 통과. 로컬 Vite 의존성 사전 번들 캐시 오류를 격리한 뒤 재검증했다.
+- 기존 R2 index/manifest/receipt/part 4객체를 실제 GET해 index SHA 및 내부 10파일 검증.
+  기존 로컬 baseline은 pinned manifest/receipt/원문 해시를 검증해 재사용했다.
+  전체 투영에서 기존 거래 2,957행과 합계 불변, 신규 1행 포함 2,958행, 반복 행 증가 없음.
+  미체결 취소 580건 제외 및 계좌 미지정 PDF 200행 별도 유지. 이번 확인의 R2 쓰기 0건.
+- 인증 없는 Preview 요청은 Vercel SSO 302다. 기존 로그인 브라우저 확인을 요청했으며,
+  실제 관리자 → Preview API → R2 → 화면 검증은 아직 완료로 판정하지 않는다.
+- 후속 보완 커밋 exact-head CI/Preview는 같은 PR #187에서 확인한다. PR181과 원본/채택값은 보존한다.

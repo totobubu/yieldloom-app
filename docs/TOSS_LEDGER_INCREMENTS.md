@@ -8,6 +8,9 @@ baseline·채택값·보고서 pointer를 유지한다. 운영 반영이나 예�
 API 원문, ego의 실제 읽기 JSON, 정규화 관측을 기존 private raw-bundle 형식에 보존한다.
 manifest는 파일·압축 전후·part의 크기/SHA를 갖는다. API 성공과 저장 성공은 별개다.
 부분 API 결과나 실패를 0건으로 공개하지 않는다. 저장 재개에 기존 run을 사용한다.
+완료 표지만 신뢰하지 않는다. 두 API scope의 manifest·checkpoint·orders-index와 실제
+page receipt 집합, 연속 번호·계좌 해시·cursor 체인·마지막 hasNext=false·주문 수 및
+index의 원문 참조를 대조한다. 파일 유실·불일치는 연결 전에 오류로 중단한다.
 
 순서는 part → manifest → GET/복원/member 검증 → 완료 receipt → GET 검증 → index다.
 중간 실패는 증거를 보존하며 index를 전진시키지 않는다. SDK는 If-None-Match:\*를 사용하고
@@ -33,6 +36,9 @@ immutable baseline만 owner별 5분 메모리 캐시하며 동시 요청은 합�
 - 같은 원문 재실행은 중복 행을 만들지 않는다. 다른 관측은 날짜·종목·통화로 후보만
   표시하고 강제 병합하지 않는다. 후보가 있으면 신규 웹 행은 합계에서 제외한다.
 - API account+orderId별 최신 누적 상태를 표시하며 이전 baseline·원문을 보존한다.
+  API 관측 시각은 해시 검증된 page receipt의 `receivedAt`만 사용한다. 이 값이 없거나
+  유효하지 않으면 빈 페이지도 연결하지 않는다. 브라우저 사후 첨부·publication 완료
+  시각을 API 관측 시각으로 대체하지 않아 오래된 수집 결과의 최신값 역전을 막는다.
   같은 관측시각의 상충 값은 오류, baseline보다 오래된 관측은 최신값으로 쓰지 않는다.
   빈 결과는 삭제가 아니다. 개별 분할 체결 사건을 생성하지 않는다.
 - 통화·소수 문자열·세전·세금·실수령·분 정밀도를 보존한다. 없는 수수료·환율·초는 null이다.

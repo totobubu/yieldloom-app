@@ -5,7 +5,7 @@ from decimal import Decimal, InvalidOperation
 
 from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
-from ..yieldmax_schedule import TRACKED_SYMBOLS
+from ..yieldmax_schedule import GROUPS, TRACKED_SYMBOLS
 from .base import NoDataError, SourceCandidate
 from .http import OfficialHTTPAdapter
 from .parsing import date_from_timestamp, extract_labeled_date, extract_roc_percent, is_roc_column, parse_date
@@ -15,11 +15,12 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
     slug = "yieldmax"
     display_name = "YieldMax"
     official_homepage = "https://yieldmaxetfs.com/"
-    parser_version = "3"
-    allowed_hosts = ("yieldmaxetfs.com",)
+    parser_version = "4"
+    # Release pages may be hosted by the issuer's linked GlobeNewswire distributor.
+    allowed_hosts = ("yieldmaxetfs.com", "globenewswire.com")
     catalog_url = "https://yieldmaxetfs.com/our-etfs/"
-    # Fund history pages contain the official amount plus declaration, ex,
-    # record and payment dates.  GlobeNewswire is not a collection source.
+    # Fund history pages are primary; the issuer-linked news release is a
+    # fallback for weeks when those tables have not refreshed.
     default_max_sources = 100
     tracked_symbols = TRACKED_SYMBOLS
     http_requests = 0
@@ -38,6 +39,39 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
                 source_type="official_fund_history",
                 metadata={"ticker": symbol},
             )
+
+    def discover_announcements_for_tickers(self, tickers, limit=5):
+        """Find recent issuer-hosted release pages as a fallback for stale fund histories."""
+        symbols = {ticker.strip().upper() for ticker in tickers}
+        if not symbols or any(symbol not in self.tracked_symbols for symbol in symbols):
+            raise ValueError("unconfigured YieldMax target ticker")
+        groups = {name: set(row["tickers"]) for name, row in GROUPS.items()}
+        target_group = next((name for name, members in groups.items() if symbols <= members), None)
+        if target_group is None:
+            raise ValueError("YieldMax announcement fallback requires tickers from one configured group")
+        news_url = f"{self.official_homepage}news/"
+        listing = parse_html(self.request_bytes(news_url), news_url)
+        accepted = 0
+        seen_urls = set()
+        for url, title in listing.links:
+            normalized = title.lower()
+            is_group_3_release = target_group == "group-3" and all(symbol.lower() in normalized for symbol in groups[target_group])
+            is_group_release = target_group in {"group-1", "group-2"} and target_group.replace("-", " ") in normalized
+            if not (is_group_3_release or is_group_release) or url in seen_urls:
+                continue
+            try:
+                self.validate_url(url)
+            except ValueError:
+                continue
+            seen_urls.add(url)
+            yield SourceCandidate(
+                url=url,
+                source_type="official_press_release",
+                metadata={"tickers": sorted(symbols), "group": target_group},
+            )
+            accepted += 1
+            if accepted >= limit:
+                break
 
     def discover(self):
         parsed = parse_html(self.request_bytes(self.catalog_url), self.catalog_url)
@@ -85,8 +119,9 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
             date_from_timestamp(document.published_at)
             or date_from_timestamp(parsed.metadata.get("article:published_time"))
             or date_from_timestamp(parsed.metadata.get("date"))
-            or date_from_timestamp(document.fetched_at)
         )
+        if not declared_date:
+            raise ValueError("YieldMax release publication date was not found")
         ex_date = extract_labeled_date(parsed.text, ("Ex. & Record Date", "Ex & Record Date"))
         payable_date = extract_labeled_date(parsed.text, ("Payment Date", "Payable Date"))
         if not ex_date or not payable_date:

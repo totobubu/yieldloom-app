@@ -146,11 +146,15 @@ def main() -> int:
 
     def outcomes():
         yield from adapter.fetch_many(selected_candidates)
-        if selected_candidates and args.provider == "roundhill" and target_tickers and declared_dates:
+        if selected_candidates and target_tickers and declared_dates:
             collected = {key[1] for key in seen_events if key[2] in declared_values}
             missing = sorted(target_tickers - collected)
-            if missing:
+            if args.provider == "roundhill" and missing:
                 yield from adapter.fetch_many([adapter.issuer_candidate(ticker) for ticker in missing])
+            elif args.provider == "yieldmax" and missing:
+                # Fund history tables can lag the issuer's weekly release. Check
+                # YieldMax's own news archive only for symbols still unmatched.
+                yield from adapter.fetch_many(adapter.discover_announcements_for_tickers(missing))
 
     for outcome in outcomes():
         candidate = outcome.candidate

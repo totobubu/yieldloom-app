@@ -41,6 +41,7 @@ def build_observer(schedule, provider: str):
     RECOVERY_CRON = schedule.RECOVERY_CRON
     scheduled_slot, select_primary = schedule.scheduled_slot, schedule.select_primary
     candidate_dates = schedule.candidate_dates
+    eligible_tickers = getattr(schedule, "eligible_tickers", lambda group, today: GROUPS[group]["tickers"])
 
     def announcement_collected(database, declared, public_dir, ticker):
         return collected(database, declared, public_dir, ticker, provider=provider)
@@ -104,14 +105,14 @@ def build_observer(schedule, provider: str):
 
 
     def _facts(database: ContentDatabase, cycle: dict, today: date, public_dir: Path) -> set[tuple[str, str]]:
-        return {(ticker, day.isoformat()) for ticker in GROUPS[cycle["group"]]["tickers"]
+        return {(ticker, day.isoformat()) for ticker in eligible_tickers(cycle["group"], today)
                 for day in _dates(cycle, today) if announcement_collected(database, day, public_dir, ticker)}
 
 
     def _matches(database: ContentDatabase, cycle: dict, today: date, public_dir: Path) -> dict:
         facts = _facts(database, cycle, today, public_dir)
         return {ticker: next(day.isoformat() for day in _dates(cycle, today) if (ticker, day.isoformat()) in facts)
-                for ticker in GROUPS[cycle["group"]]["tickers"] if any(symbol == ticker for symbol, _ in facts)}
+                for ticker in eligible_tickers(cycle["group"], today) if any(symbol == ticker for symbol, _ in facts)}
 
 
     def _cycle_matches(database: ContentDatabase, cycle: dict, today: date, public_dir: Path,
@@ -127,7 +128,7 @@ def build_observer(schedule, provider: str):
                    for actual in other.get("declarationDates", [])}
         matched = {}
         ambiguous = {}
-        for ticker in GROUPS[cycle["group"]]["tickers"]:
+        for ticker in eligible_tickers(cycle["group"], today):
             for day in _dates(cycle, today):
                 actual = day.isoformat()
                 if (ticker, actual) not in facts or actual in claimed:
@@ -159,7 +160,7 @@ def build_observer(schedule, provider: str):
                 cycle["declarationDates"] = [request["declarationDate"]]
             facts = _facts(database, cycle, today, public_dir)
             checks.append({"group": group, "anchorDate": anchor.isoformat(),
-                           "targetCount": len(GROUPS[group]["tickers"]),
+                           "targetCount": len(eligible_tickers(group, today)),
                            "verifiedTickerCount": len({ticker for ticker, _ in facts})})
         return {"provider": provider, "request": request, "status": "checked", "dryRun": True,
                 "stateAccessible": True, "queuedCycles": len(state["cycles"]), "checks": checks,
@@ -203,7 +204,7 @@ def build_observer(schedule, provider: str):
             matched, ambiguous = _cycle_matches(database, cycle, today, public_dir, state, facts)
             cycle["matchedDeclarationDates"] = matched
             cycle["ambiguousTickers"] = ambiguous
-            cycle["missingTickers"] = [ticker for ticker in GROUPS[cycle["group"]]["tickers"] if ticker not in matched]
+            cycle["missingTickers"] = [ticker for ticker in eligible_tickers(cycle["group"], today) if ticker not in matched]
             if not cycle["missingTickers"]:
                 cycle["status"] = "collected"
                 if (today - date.fromisoformat(cycle["anchorDate"])).days > 28:
@@ -260,7 +261,7 @@ def build_observer(schedule, provider: str):
                 matched, ambiguous = _cycle_matches(database, cycle, today, public_dir, state, facts)
                 cycle["matchedDeclarationDates"] = matched
                 cycle["ambiguousTickers"] = ambiguous
-                cycle["missingTickers"] = [ticker for ticker in GROUPS[cycle["group"]]["tickers"] if ticker not in matched]
+                cycle["missingTickers"] = [ticker for ticker in eligible_tickers(cycle["group"], today) if ticker not in matched]
                 cycle["status"] = "needs_review" if ambiguous else "pending" if cycle["missingTickers"] else "collected"
                 report["publish"] |= bool(facts - initial)
                 report["cycles"].append({**attempt, "status": cycle["status"], "missingTickers": cycle["missingTickers"],

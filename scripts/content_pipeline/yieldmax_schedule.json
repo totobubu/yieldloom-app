@@ -6,6 +6,7 @@
   "maxCyclesPerRecovery": 5,
   "maxTickersPerBatch": 6,
   "maxBatchesPerRun": 8,
+  "tickerStartDates": {"YSKH": "2026-11-11"},
   "groups": {
     "group-3": {"weekday": 0, "hour": 20, "tickers": ["MSST", "NVIT", "TEST"]},
     "group-1": {"weekday": 1, "hour": 20, "tickers": ["CHPY", "GPTY", "LFGY", "MINY", "QDTY", "RDTY", "SDTY", "SLTY", "ULTY", "YMAG", "YMAX", "YRAM"]},

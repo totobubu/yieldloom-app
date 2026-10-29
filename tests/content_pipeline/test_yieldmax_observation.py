@@ -13,9 +13,9 @@ from scripts.content_pipeline import collect, refresh, schedule_yieldmax as runn
 from scripts.content_pipeline.database import ContentDatabase
 from scripts.content_pipeline.export_admin_data import export_all
 from scripts.content_pipeline.models import DistributionEvent, SourceDocument
-from scripts.content_pipeline.providers.base import CollectionError, FetchOutcome
+from scripts.content_pipeline.providers.base import CollectionError, FetchOutcome, SourceCandidate
 from scripts.content_pipeline.providers.yieldmax import YieldMaxAdapter
-from scripts.content_pipeline.yieldmax_schedule import GROUPS, POLICY, PRIMARY_CRONS, RECOVERY_CRON, TRACKED_SYMBOLS, select_primary
+from scripts.content_pipeline.yieldmax_schedule import GROUPS, POLICY, PRIMARY_CRONS, RECOVERY_CRON, TRACKED_SYMBOLS, eligible_tickers, select_primary
 
 
 def instant(value):
@@ -65,6 +65,39 @@ class YieldMaxPolicyTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'future'):
             runner.request_for(group='group-3', declared=date(2030, 1, 1), now=instant('2026-10-27T00:00:00'))
 
+    def test_release_discovery_uses_only_yieldmax_news_links(self):
+        adapter = YieldMaxAdapter()
+        listing = (
+            '<a href="/news/group-3-release/">YieldMax announces distributions on MSST, NVIT, and TEST</a>'
+            '<a href="https://www.globenewswire.com/news-release/example/">'
+            'YieldMax announces distributions on MSST, NVIT, and TEST</a>'
+            '<a href="https://untrusted.example/news/">'
+            'YieldMax announces distributions on MSST, NVIT, and TEST</a>'
+        ).encode()
+        with patch.object(adapter, 'request_bytes', return_value=listing) as request:
+            candidates = list(adapter.discover_announcements_for_tickers(['MSST', 'NVIT', 'TEST']))
+        request.assert_called_once_with('https://yieldmaxetfs.com/news/')
+        self.assertEqual(
+            [(candidate.url, candidate.source_type) for candidate in candidates],
+            [('https://yieldmaxetfs.com/news/group-3-release/', 'official_press_release'),
+             ('https://www.globenewswire.com/news-release/example/', 'official_press_release')],
+        )
+
+    def test_release_parser_never_uses_fetch_time_as_declaration_date(self):
+        content = (
+            '<p>Group 3 Distribution Announcement: Ex. &amp; Record Date: October 27, 2026 '
+            'Payment Date: October 28, 2026</p>'
+            '<table><tr><th>ETF Ticker</th><th>ETF Name</th><th>Distribution Frequency</th>'
+            '<th>Distribution per Share</th></tr>'
+            '<tr><td>MSST</td><td>Fund</td><td>Weekly</td><td>$0.1419</td></tr></table>'
+        ).encode()
+        document = SourceDocument(
+            'yieldmax', 'https://yieldmaxetfs.com/news/group-3-release/',
+            'official_press_release', content, fetched_at='2026-10-26T15:00:00+00:00',
+        )
+        with self.assertRaisesRegex(ValueError, 'publication date'):
+            YieldMaxAdapter().parse(document)
+
     def test_targeted_fund_history_never_infers_declaration_from_fetch_time(self):
         content = Path('tests/content_pipeline/fixtures/yieldmax_release.html').read_bytes()
         document = SourceDocument('yieldmax', 'https://yieldmaxetfs.com/our-etfs/tsly/', 'official_fund_history', content, metadata={'ticker': 'TSLY'})
@@ -92,6 +125,8 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
         self.public = self.root/'public'
         self.state = self.root/'generated/yieldmax-observations.json'
         self.events = {}
+        self.release_events = {}
+        self.release_fallback = False
         self.requests = []
         self.commands = []
 
@@ -106,19 +141,41 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
         results = []
         for candidate in candidates:
             self.requests.append(candidate)
+            if candidate.source_type == 'official_press_release':
+                rows = ''.join(
+                    '<tr><td>' + ticker + '</td><td>YieldMax fund</td><td>Weekly</td><td>' + amount +
+                    '</td><td>25.00%</td><td>0.00%</td></tr>'
+                    for ticker, amount in self.release_events.items()
+                )
+                content = (
+                    '<meta property="article:published_time" content="2026-10-26T10:55:00-04:00">'
+                    '<p>Group 3 Distribution Announcement: Ex. &amp; Record Date: October 27, 2026 '
+                    'Payment Date: October 28, 2026</p>'
+                    '<table><tr><th>ETF Ticker</th><th>ETF Name</th><th>Distribution Frequency</th>'
+                    '<th>Distribution per Share</th><th>Distribution Rate</th><th>30-Day SEC Yield</th></tr>'
+                    + rows + '</table>'
+                ).encode()
+                results.append(FetchOutcome(candidate, SourceDocument(
+                    'yieldmax', candidate.url, candidate.source_type, content, metadata=candidate.metadata)))
+                continue
             ticker = candidate.metadata['ticker']
             if ticker == getattr(self, 'failed_ticker', None):
                 results.append(FetchOutcome(candidate, error=CollectionError('fixture unavailable')))
                 continue
             rows = ''
             for declared, ex_date, payable in self.events.get(ticker, []):
-                rows += f'<tr><td>$0.123456</td><td>{declared}</td><td>{ex_date}</td><td>{ex_date}</td><td>{payable}</td><td>0.00%</td></tr>'
+                rows += f'<tr><td>0.123456</td><td>{declared}</td><td>{ex_date}</td><td>{ex_date}</td><td>{payable}</td><td>0.00%</td></tr>'
             content = f'<h1>{ticker}</h1><table><tr><th>Distribution per Share</th><th>Declared Date</th><th>Ex Date</th><th>Record Date</th><th>Payable Date</th><th>ROC</th></tr>{rows}</table>'.encode()
             results.append(FetchOutcome(candidate, SourceDocument('yieldmax', candidate.url, candidate.source_type, content, metadata=candidate.metadata)))
         return results
 
     def run_request(self, request, now):
-        with patch.object(runner, 'run_refresh', side_effect=self.bridge), patch.object(refresh.subprocess, 'run', side_effect=self.bridge), patch.object(YieldMaxAdapter, 'fetch_many', side_effect=self.fetch), patch.object(YieldMaxAdapter, 'discover') as discover, patch('scripts.content_pipeline.reconcile_public_data.run_new_ticker_workflow') as onboard:
+        release_candidates = [SourceCandidate(
+            'https://yieldmaxetfs.com/news/group-3-distribution-release/',
+            'official_press_release',
+            metadata={'tickers': sorted(self.release_events), 'group': 'group-3'},
+        )] if self.release_fallback else []
+        with patch.object(runner, 'run_refresh', side_effect=self.bridge), patch.object(refresh.subprocess, 'run', side_effect=self.bridge), patch.object(YieldMaxAdapter, 'fetch_many', side_effect=self.fetch), patch.object(YieldMaxAdapter, 'discover') as discover, patch.object(YieldMaxAdapter, 'discover_announcements_for_tickers', return_value=release_candidates), patch('scripts.content_pipeline.reconcile_public_data.run_new_ticker_workflow') as onboard:
             result = runner.run_observations(request, ContentDatabase(self.database.path), now=now, state_path=self.state, raw_dir=self.root/'raw', public_dir=self.public, legacy_data_dir=self.root/'legacy')
         discover.assert_not_called()
         onboard.assert_not_called()
@@ -143,6 +200,24 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
         self.database.upsert_distribution_event(DistributionEvent('yieldmax', ticker, '0.123456', declared, str(d+timedelta(days=1)), document.source_url, record_date=str(d+timedelta(days=1)), payable_date=str(d+timedelta(days=2)), verification_status='official'), source_id)
         export_all(self.database.path, self.root/'generated', self.public)
 
+    def test_official_news_release_fills_stale_group_three_fund_history(self):
+        self.release_fallback = True
+        self.release_events = {'MSST': '0.1419', 'NVIT': '0.2302', 'TEST': '0.1807'}
+        report, code = self.primary('group-3')
+        self.assertEqual((report['status'], report['publish'], code), ('collected', True, 0), report)
+        self.assertTrue(any(candidate.source_type == 'official_press_release' for candidate in self.requests))
+        with self.database.connect() as connection:
+            rows = connection.execute(
+                "SELECT ticker, distribution_per_share, declared_date, ex_date, payable_date "
+                "FROM distribution_events WHERE provider_slug='yieldmax' ORDER BY ticker"
+            ).fetchall()
+        self.assertEqual(
+            [(row['ticker'], row['distribution_per_share'], row['declared_date'], row['ex_date'], row['payable_date']) for row in rows],
+            [('MSST', '0.1419', '2026-10-26', '2026-10-27', '2026-10-28'),
+             ('NVIT', '0.2302', '2026-10-26', '2026-10-27', '2026-10-28'),
+             ('TEST', '0.1807', '2026-10-26', '2026-10-27', '2026-10-28')],
+        )
+
     def test_each_group_fetches_only_its_fund_pages_once_then_skips(self):
         for group, declared in (('group-3', '2026-10-26'), ('group-1', '2026-10-27'), ('group-2', '2026-10-28')):
             with self.subTest(group=group):
@@ -150,8 +225,9 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
                 self.requests.clear()
                 report, code = self.primary(group)
                 self.assertEqual((report['status'], report['publish'], code), ('collected', True, 0), report)
-                self.assertEqual(len(self.requests), len(GROUPS[group]['tickers']))
-                self.assertEqual({r.metadata['ticker'] for r in self.requests}, set(GROUPS[group]['tickers']))
+                expected_tickers = set(eligible_tickers(group, date.fromisoformat(declared)))
+                self.assertEqual(len(self.requests), len(expected_tickers))
+                self.assertEqual({r.metadata['ticker'] for r in self.requests}, expected_tickers)
                 self.assertTrue(all(len(row['tickers']) <= 6 for row in report['cycles']))
                 self.requests.clear()
                 again, code = self.primary(group)
@@ -238,7 +314,10 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
         second = {r.metadata['ticker'] for r in self.requests}
         self.assertEqual((len(first), len(second)), (6, 6))
         self.assertFalse(first & second)
-        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), 32)
+        self.assertEqual(
+            len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']),
+            len(eligible_tickers('group-2', date(2026, 10, 28))) - 12,
+        )
 
     def test_process_failure_keeps_cycle_and_does_not_mark_missing_as_complete(self):
         now = instant('2026-10-28T11:05:00')
@@ -247,7 +326,18 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
             report, code = runner.run_observations(request, self.database, now=now, state_path=self.state, raw_dir=self.root/'raw', public_dir=self.public, legacy_data_dir=self.root/'legacy')
         self.assertEqual((report['status'], report['stateChanged'], code), ('failed', True, 1))
         self.assertEqual(len(report['cycles']), 1)
-        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), 44)
+        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), len(eligible_tickers('group-2', date(2026, 10, 28))))
+
+    def test_yskh_is_not_overdue_before_its_first_official_announcement_date(self):
+        self.assertNotIn('YSKH', eligible_tickers('group-2', date(2026, 10, 29)))
+        self.assertIn('YSKH', eligible_tickers('group-2', date(2026, 11, 11)))
+        self.add_group('group-2', '2026-10-28')
+        now = instant('2026-10-29T00:37:00')
+        request = runner.request_for(group='group-2', now=now)
+        report, code = self.run_request(request, now)
+        cycle = runner.read_state(self.state)['cycles']['group-2:2026-10-28']
+        self.assertEqual((cycle['status'], cycle['missingTickers'], code), ('collected', [], 0), report)
+        self.assertNotIn('YSKH', cycle['matchedDeclarationDates'])
 
     def test_read_only_smoke_reads_existing_facts_without_collecting_or_saving(self):
         for symbol in GROUPS['group-3']['tickers']:

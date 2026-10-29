@@ -261,7 +261,7 @@ def build_observer(schedule, provider: str):
                 matched, ambiguous = _cycle_matches(database, cycle, today, public_dir, state, facts)
                 cycle["matchedDeclarationDates"] = matched
                 cycle["ambiguousTickers"] = ambiguous
-                cycle["missingTickers"] = [ticker for ticker in GROUPS[cycle["group"]]["tickers"] if ticker not in matched]
+                cycle["missingTickers"] = [ticker for ticker in eligible_tickers(cycle["group"], today) if ticker not in matched]
                 cycle["status"] = "needs_review" if ambiguous else "pending" if cycle["missingTickers"] else "collected"
                 report["publish"] |= bool(facts - initial)
                 report["cycles"].append({**attempt, "status": cycle["status"], "missingTickers": cycle["missingTickers"],

@@ -27,6 +27,32 @@ def candidate_tickers(candidate: SourceCandidate) -> list[str]:
     return sorted({value.strip().upper() for value in values if value.strip()})
 
 
+def is_seeded_blocked_catalog(candidate: SourceCandidate, error, seed_candidates: list[SourceCandidate]) -> bool:
+    """A reviewed seed can preserve catalog coverage when its official listing is blocked."""
+    return (
+        candidate.metadata.get("catalogOnly") is True
+        and getattr(error, "code", None) == "blocked"
+        and bool(seed_candidates)
+    )
+
+
+def collection_status(report: dict) -> str:
+    """Keep blocked seeded catalogs visible as partial outcomes, not hard failures."""
+    errors = report.get("errors", [])
+    conflicts = report.get("conflicts", [])
+    sources = report.get("sources", [])
+    warnings = report.get("warnings", [])
+    if (errors or conflicts) and sources:
+        return "partial"
+    if errors:
+        return "failed"
+    if warnings:
+        return "partial"
+    if sources:
+        return "success"
+    return "no_change"
+
+
 def stable_event_key(event) -> tuple[str, str, str, str]:
     """Return the issuer-event identity without relying on a SQLite row ID."""
     return (
@@ -133,6 +159,7 @@ def main() -> int:
         }),
         "noData": [],
         "errors": [],
+        "warnings": [],
         "duplicates": [],
         "conflicts": [],
     }
@@ -160,13 +187,21 @@ def main() -> int:
         candidate = outcome.candidate
         try:
             if outcome.error:
-                report["errors"].append({
+                item = {
                     "url": candidate.url,
                     "error": str(outcome.error),
                     "code": outcome.error.code,
                     "retryable": outcome.error.retryable,
                     "fetchMode": adapter.fetch_mode,
-                })
+                }
+                if is_seeded_blocked_catalog(candidate, outcome.error, seed_candidates):
+                    report["warnings"].append({
+                        **item,
+                        "fallback": "reviewed_catalog_seed",
+                        "catalogTickers": report["catalogTickers"],
+                    })
+                else:
+                    report["errors"].append(item)
                 continue
             assert outcome.document is not None
             document = outcome.document
@@ -267,14 +302,7 @@ def main() -> int:
         except Exception as exc:
             report["errors"].append({"url": candidate.url, "error": str(exc)})
 
-    if (report["errors"] or report["conflicts"]) and report["sources"]:
-        report["status"] = "partial"
-    elif report["errors"]:
-        report["status"] = "failed"
-    elif report["sources"]:
-        report["status"] = "success"
-    else:
-        report["status"] = "no_change"
+    report["status"] = collection_status(report)
     if hasattr(adapter, "http_requests"):
         report["httpRequests"] = adapter.http_requests
     print(json.dumps(report, ensure_ascii=False, indent=2))

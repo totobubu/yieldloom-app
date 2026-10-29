@@ -1,4 +1,5 @@
 <script setup>
+    import { corporateActionReviewForPeriod } from '../../lib/corporate-action-review.js';
     import { inferSecurityType } from '../../lib/security-filters.js';
     import { isDelisted } from '../../lib/security-status.js';
     import { computed, onScopeDispose, ref, watch } from 'vue';
@@ -150,9 +151,10 @@
                       kind: 'comparison',
                       label: '배당 비교',
                       disabled: Boolean(
-                          selectedData.value?.sourceStatus
-                              ?.corporateActionReview
+                          thumbnailData.value.comparisonUnavailableReason
                       ),
+                      disabledReason:
+                          thumbnailData.value.comparisonUnavailableReason,
                   },
                   ...(selectedInfo.value?.underlying
                       ? [
@@ -160,6 +162,9 @@
                                 kind: 'rival',
                                 label: '기초자산·종목 비교',
                                 disabled: !comparison.value,
+                                disabledReason:
+                                    comparisonReviewMessage.value ||
+                                    '비교 데이터 확인 필요',
                             },
                         ]
                       : []),
@@ -351,6 +356,17 @@
         const reviewBasis = Boolean(
             selectedData.value?.sourceStatus?.corporateActionReview
         );
+        const comparisonReview = corporateActionReviewForPeriod(
+            selectedData.value?.sourceStatus,
+            previous?.date,
+            current?.date,
+            { includeStart: false }
+        );
+        const comparisonUnavailableReason = comparisonReview
+            ? '분할·병합 보정 확인 필요'
+            : !previous
+              ? '직전 배당 데이터 확인 필요'
+              : '';
         const currentAmount = amount(current);
         const previousAmount = amount(previous);
         const referencePrice = dividendPrice(
@@ -380,12 +396,13 @@
             previousExDate: previous?.date ?? null,
             currentDividendAmount: currentAmount,
             previousDividendAmount: previous ? previousAmount : null,
+            comparisonUnavailableReason,
             dividendDifference:
-                previous && !reviewBasis
+                previous && !comparisonReview
                     ? currentAmount - previousAmount
                     : null,
             dividendChangePercent:
-                previousAmount > 0 && !reviewBasis
+                previousAmount > 0 && !comparisonReview
                     ? ((currentAmount - previousAmount) / previousAmount) * 100
                     : null,
             afterTaxDividendAmount: current ? currentAmount * 0.85 : null,
@@ -506,6 +523,7 @@
     };
 
     const comparison = ref(null);
+    const comparisonReviewMessage = ref('');
     const openRivalPicker = () => {
         draftRivals.value = [...rivals.value];
         rivalPickerOpen.value = true;
@@ -538,6 +556,7 @@
         schedule.value = null;
         error.value = '';
         comparison.value = null;
+        comparisonReviewMessage.value = '';
         try {
             const requested = normalize(route.params.ticker);
             const payload = await readPublicJson(
@@ -560,13 +579,7 @@
                 payload.ticker.sourceStatus?.freshness ??
                 'partial';
             trackAggregate('card_open', 'summary');
-            comparison.value =
-                !Object.values({
-                    ...payload.series,
-                    primary: payload.ticker,
-                }).some(
-                    (value) => value?.sourceStatus?.corporateActionReview
-                ) &&
+            const calculatedComparison =
                 payload.catalog.underlying &&
                 payload.rivals.length &&
                 payload.series[payload.catalog.underlying] &&
@@ -582,6 +595,13 @@
                           new Date().toISOString().slice(0, 10)
                       )
                     : null;
+            comparison.value = calculatedComparison?.available
+                ? calculatedComparison
+                : null;
+            comparisonReviewMessage.value =
+                calculatedComparison?.available === false
+                    ? '분할·병합 보정 또는 데이터 충돌 확인 필요'
+                    : '';
             const loadedSchedule = archived.value
                 ? null
                 : await loadDividendSchedule(
@@ -620,6 +640,7 @@
         };
         dataStatus.value = payload.dataStatus;
         comparison.value = null;
+        comparisonReviewMessage.value = '';
         candleState.value = null;
         schedule.value = null;
         loadDividendSchedule(selectedInfo.value.symbol, undefined, {
@@ -1509,9 +1530,10 @@
                                         :disabled="
                                             outputBusy || card.disabled
                                         " />{{ card.label
-                                    }}<small v-if="card.disabled"
-                                        >비교 데이터 확인 필요</small
-                                    ></label
+                                    }}<small v-if="card.disabled">{{
+                                        card.disabledReason ||
+                                        '비교 데이터 확인 필요'
+                                    }}</small></label
                                 >
                             </fieldset>
                             <p v-if="!selectedExportKinds.length" class="hint">

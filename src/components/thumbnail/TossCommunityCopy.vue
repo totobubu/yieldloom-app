@@ -32,10 +32,20 @@
                 `• 주가 대비 세전 배당률: ${pct(d.exDividendYield)}`,
                 `• 주가 대비 세후 배당률: ${pct(d.afterTaxDividendYield)}`
             );
-        if (d.previousDividendAmount > 0)
+        if (
+            d.dividendDifference != null &&
+            d.dividendChangePercent != null &&
+            Number.isFinite(Number(d.dividendDifference)) &&
+            Number.isFinite(Number(d.dividendChangePercent))
+        )
             lines.push(
                 '',
                 `직전 배당 대비 ${d.dividendDifference >= 0 ? '+' : ''}${usd(d.dividendDifference, 6)} (${d.dividendChangePercent >= 0 ? '+' : ''}${pct(d.dividendChangePercent)})`
+            );
+        else
+            lines.push(
+                '',
+                `직전 배당 대비 비교 불가${d.comparisonUnavailableReason ? ` · ${d.comparisonUnavailableReason}` : ''}`
             );
         lines.push(
             '',

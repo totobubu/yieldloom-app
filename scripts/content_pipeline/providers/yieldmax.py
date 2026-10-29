@@ -119,8 +119,9 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
             date_from_timestamp(document.published_at)
             or date_from_timestamp(parsed.metadata.get("article:published_time"))
             or date_from_timestamp(parsed.metadata.get("date"))
-            or date_from_timestamp(document.fetched_at)
         )
+        if not declared_date:
+            raise ValueError("YieldMax release publication date was not found")
         ex_date = extract_labeled_date(parsed.text, ("Ex. & Record Date", "Ex & Record Date"))
         payable_date = extract_labeled_date(parsed.text, ("Payment Date", "Payable Date"))
         if not ex_date or not payable_date:

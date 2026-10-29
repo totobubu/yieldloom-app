@@ -1,4 +1,5 @@
 import { loadStockEvidence } from '../lib/load-stock-evidence.js';
+import { corporateActionReviewForPeriod } from '../lib/corporate-action-review.js';
 import { mergeStockReference } from '../lib/stock-evidence.js';
 import {
     applySecurityStatus,
@@ -374,14 +375,18 @@ async function fetchTicker(symbol, origin, options = {}) {
     const latest = latestClose(backtestData);
     const currentPrice = priceHistory?.price ?? latest?.close ?? null;
     const priceDate = priceHistory?.priceDate ?? latest?.date ?? null;
-    const reviewSplits = [
-        ...(priceHistory?.tickerInfo?.events?.splits ?? []),
-        ...(evidence?.splits ?? []),
-    ].some(
-        (event) =>
-            event.date >= priceHistory?.backtestData?.[0]?.date &&
-            event.date <=
-                (options.asOfDate ?? new Date().toISOString().slice(0, 10))
+    const corporateActionDates = [
+        ...new Set(
+            [
+                ...(priceHistory?.tickerInfo?.events?.splits ?? []),
+                ...(evidence?.splits ?? []),
+            ].map((event) => event.date ?? null)
+        ),
+    ].sort();
+    const reviewSplits = corporateActionReviewForPeriod(
+        { corporateActionDates },
+        priceHistory?.backtestData?.[0]?.date ?? backtestData[0]?.date,
+        options.asOfDate ?? new Date().toISOString().slice(0, 10)
     );
     const value = {
         symbol: key,
@@ -433,6 +438,7 @@ async function fetchTicker(symbol, origin, options = {}) {
             quoteTime: priceHistory?.quoteTime ?? null,
             priceErrorCode: priceError?.statusCode ?? null,
             corporateActionReview: reviewSplits,
+            corporateActionDates,
             adjustmentBasis:
                 priceHistory?.adjustmentBasis ?? 'upstream_unverified',
             asOf: new Date().toISOString(),

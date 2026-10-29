@@ -1,3 +1,4 @@
+import { corporateActionReviewForPeriod } from '../../../lib/corporate-action-review.js';
 // Coverage is evidence for a requested interval, never inferred from first/last rows.
 export function calculationCoverage(ticker, start, end, datasets = ['market-prices', 'dividends']) {
     const coverage = ticker?.collectionCoverage ?? ticker?.sourceStatus?.collectionCoverage ?? {};
@@ -6,7 +7,7 @@ export function calculationCoverage(ticker, start, end, datasets = ['market-pric
         ...Object.values(coverage).flatMap(value => value?.conflictingDates ?? []),
     ]);
     const conflict = [...conflicts].some(date => date >= start && date <= end)
-        || Boolean(ticker?.sourceStatus?.corporateActionReview)
+        || corporateActionReviewForPeriod(ticker?.sourceStatus, start, end)
         || (ticker?.backtestData ?? []).some(row => row.date >= start && row.date <= end && row.verificationStatus === 'needs_review');
     const complete = !conflict && datasets.every(dataset => {
         const item = coverage[dataset];

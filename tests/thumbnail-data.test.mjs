@@ -214,3 +214,27 @@ test('fresh review dividends survive price snapshot fallback without duplicate s
     assert.equal(value.sourceStatus.dividendReviewCount,1);
     assert.equal(value.sourceStatus.freshness,'stale');
 });
+
+test('API preserves split dates independently of the broad history review flag', async () => {
+    const ticker = await loadTicker('MSTY', 'https://issuer-data.example', {
+        priceDataBaseUrl: 'https://prices.example',
+        projectionBaseUrl: '',
+        asOfDate: '2026-10-29',
+        stockEvidenceLoader: async () => ({ splits: [{ date: '2025-12-08', ratio: 0.2 }], history: [] }),
+        fetcher: async (url) => {
+            if (String(url).includes('distribution-ticker-msty.json'))
+                return { ok: true, json: async () => ({ history: [
+                    { ex_date: '2026-10-22', distribution_per_share: '0.1671', verification_status: 'official' },
+                    { ex_date: '2026-10-29', distribution_per_share: '0.1630', verification_status: 'official' },
+                ] }) };
+            assert.match(String(url), /data\/nyse\/msty\.json$/);
+            return { ok: true, json: async () => ({
+                tickerInfo: { events: { splits: [{ date: '2025-12-08', ratio: 0.2 }] } },
+                backtestData: [{ date: '2025-01-02', close: 20 }, { date: '2026-10-27', close: 14.08 }],
+            }) };
+        },
+    });
+    assert.equal(ticker.sourceStatus.corporateActionReview, true);
+    assert.deepEqual(ticker.sourceStatus.corporateActionDates, ['2025-12-08']);
+    assert.equal(ticker.backtestData.at(-1).amount, 0.163);
+});

@@ -55,15 +55,17 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
         news_url = f"{self.official_homepage}news/"
         listing = parse_html(self.request_bytes(news_url), news_url)
         accepted = 0
+        seen_urls = set()
         for url, title in listing.links:
             normalized = title.lower()
             is_group_3_release = target_group == "group-3" and all(symbol.lower() in normalized for symbol in groups[target_group])
             is_group_release = target_group in {"group-1", "group-2"} and target_group.replace("-", " ") in normalized
-            if not (is_group_3_release or is_group_release):
+            if not (is_group_3_release or is_group_release) or url in seen_urls:
                 continue
             if not url.startswith(self.official_homepage):
                 continue
             self.validate_url(url)
+            seen_urls.add(url)
             yield SourceCandidate(
                 url=url,
                 source_type="official_press_release",

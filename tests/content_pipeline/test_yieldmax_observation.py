@@ -225,8 +225,9 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
                 self.requests.clear()
                 report, code = self.primary(group)
                 self.assertEqual((report['status'], report['publish'], code), ('collected', True, 0), report)
-                self.assertEqual(len(self.requests), len(GROUPS[group]['tickers']))
-                self.assertEqual({r.metadata['ticker'] for r in self.requests}, set(GROUPS[group]['tickers']))
+                expected_tickers = set(eligible_tickers(group, date.fromisoformat(declared)))
+                self.assertEqual(len(self.requests), len(expected_tickers))
+                self.assertEqual({r.metadata['ticker'] for r in self.requests}, expected_tickers)
                 self.assertTrue(all(len(row['tickers']) <= 6 for row in report['cycles']))
                 self.requests.clear()
                 again, code = self.primary(group)
@@ -322,7 +323,7 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
             report, code = runner.run_observations(request, self.database, now=now, state_path=self.state, raw_dir=self.root/'raw', public_dir=self.public, legacy_data_dir=self.root/'legacy')
         self.assertEqual((report['status'], report['stateChanged'], code), ('failed', True, 1))
         self.assertEqual(len(report['cycles']), 1)
-        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), 44)
+        self.assertEqual(len(runner.read_state(self.state)['cycles']['group-2:2026-10-28']['missingTickers']), len(eligible_tickers('group-2', date(2026, 10, 28))))
 
     def test_yskh_is_not_overdue_before_its_first_official_announcement_date(self):
         self.assertNotIn('YSKH', eligible_tickers('group-2', date(2026, 10, 29)))

@@ -5,7 +5,7 @@ from decimal import Decimal, InvalidOperation
 
 from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
-from ..yieldmax_schedule import TRACKED_SYMBOLS
+from ..yieldmax_schedule import GROUPS, TRACKED_SYMBOLS
 from .base import NoDataError, SourceCandidate
 from .http import OfficialHTTPAdapter
 from .parsing import date_from_timestamp, extract_labeled_date, extract_roc_percent, is_roc_column, parse_date
@@ -45,11 +45,7 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
         symbols = {ticker.strip().upper() for ticker in tickers}
         if not symbols or any(symbol not in self.tracked_symbols for symbol in symbols):
             raise ValueError("unconfigured YieldMax target ticker")
-        groups = {
-            "group-3": {"MSST", "NVIT", "TEST"},
-            "group-1": set("CHPY GPTY LFGY MINY QDTY RDTY SDTY SLTY ULTY YMAG YMAX YRAM".split()),
-            "group-2": set("AIYY AMDY AMZY APLY BABO BRKC CONY CRCO CRSH CVNY DIPS DRAY FBY FIAT GDXY GMEY GOOY HIYY HOOY INYY JPO MARO MRNY MSFO MSTY MUY NFLY NVDY OARK PLTY PYPY RBLY RDYY SMCY SNOY TSLY TSMY WNTR XOMO XYZY YBIT YQQQ YSKH YSPC".split()),
-        }
+        groups = {name: set(row["tickers"]) for name, row in GROUPS.items()}
         target_group = next((name for name, members in groups.items() if symbols <= members), None)
         if target_group is None:
             raise ValueError("YieldMax announcement fallback requires tickers from one configured group")

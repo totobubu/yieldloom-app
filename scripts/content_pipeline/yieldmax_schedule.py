@@ -11,6 +11,19 @@ from . import roundhill_schedule as shared
 POLICY = json.loads(Path(__file__).with_suffix(".json").read_text(encoding="utf-8"))
 GROUPS = POLICY["groups"]
 TRACKED_SYMBOLS = tuple(ticker for group in GROUPS.values() for ticker in group["tickers"])
+TICKER_START_DATES = {
+    ticker: date.fromisoformat(value)
+    for ticker, value in POLICY.get("tickerStartDates", {}).items()
+}
+if set(TICKER_START_DATES) - set(TRACKED_SYMBOLS):
+    raise ValueError("YieldMax start dates reference unconfigured tickers")
+
+
+def eligible_tickers(group: str, today: date) -> list[str]:
+    return [
+        ticker for ticker in GROUPS[group]["tickers"]
+        if today >= TICKER_START_DATES.get(ticker, date.min)
+    ]
 if len(TRACKED_SYMBOLS) != len(set(TRACKED_SYMBOLS)):
     raise ValueError("YieldMax groups must have distinct ticker lists")
 if not (0 <= POLICY["earlyDays"] <= 3 and 0 <= POLICY["lateDays"] <= 3):

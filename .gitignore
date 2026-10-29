@@ -97,6 +97,9 @@ var/.data-platform*.lock
 # Private brokerage statements used only for local, in-browser review.
 /TossStatements/
 
+# Private manual brokerage observations and checkpoints.
+/var/toss-orders/
+
 .vercel
 .env*
 *.codex-remote-attachments

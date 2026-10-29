@@ -8,7 +8,12 @@ from unittest.mock import patch
 
 from scripts.content_pipeline.models import SourceDocument
 from scripts.content_pipeline.providers.base import CollectionError, NoDataError
-from scripts.content_pipeline.collect import event_snapshot, stable_event_key
+from scripts.content_pipeline.collect import (
+    collection_status,
+    event_snapshot,
+    is_seeded_blocked_catalog,
+    stable_event_key,
+)
 from scripts.content_pipeline.providers import (
     AmplifyAdapter,
     DefianceAdapter,
@@ -411,6 +416,34 @@ class ProviderParserTest(unittest.TestCase):
         seed = list(adapter.catalog_seed())
         self.assertEqual(len(seed), 34)
         self.assertIn("SCUS", {item.metadata["ticker"] for item in seed})
+
+    def test_blocked_schwab_catalog_uses_reviewed_seed_as_partial_warning(self):
+        adapter = SchwabAdapter()
+        candidate = next(iter(adapter.discover()))
+        seed = list(adapter.catalog_seed())
+        blocked = CollectionError(
+            "official source returned HTTP 403",
+            code="blocked",
+            retryable=False,
+        )
+
+        self.assertTrue(is_seeded_blocked_catalog(candidate, blocked, seed))
+        report = {
+            "sources": [],
+            "errors": [],
+            "warnings": [{"fallback": "reviewed_catalog_seed"}],
+            "conflicts": [],
+        }
+        self.assertEqual(collection_status(report), "partial")
+
+        unavailable_seed = []
+        self.assertFalse(is_seeded_blocked_catalog(candidate, blocked, unavailable_seed))
+        non_blocked = CollectionError("server error", code="http_error", retryable=True)
+        self.assertFalse(is_seeded_blocked_catalog(candidate, non_blocked, seed))
+        self.assertEqual(
+            collection_status({**report, "warnings": [], "errors": [{"code": "blocked"}]}),
+            "failed",
+        )
 
     def test_defiance_latest_card_requires_date_review(self):
         events = DefianceAdapter().parse(

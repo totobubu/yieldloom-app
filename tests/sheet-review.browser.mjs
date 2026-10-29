@@ -126,7 +126,7 @@ try {
         );
         await route.fulfill({ status: response.code, json: response.payload });
     });
-    await page.goto(`${base}/admin/sheet-ledger`);
+    await page.goto(`${base}/admin/sheet-ledger?view=source-tools`);
     await page.getByRole('button', { name: '확인', exact: true }).click();
     const ledger = page.getByRole('region', { name: '거래 목록', exact: true });
     await ledger

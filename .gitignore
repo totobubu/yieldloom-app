@@ -41,6 +41,8 @@ dist-ssr
 /data-v2/review/incremental-report.json
 /data-v2/review/incremental-report.md
 /data-v2/review/collection-state.json
+/data-v2/review/incremental-raw/
+/data-v2/review/collection-state.json
 /email-evidence-report.json
 /evidence-receipt-*.json
 *.local
@@ -96,6 +98,9 @@ var/.data-platform*.lock
 
 # Private brokerage statements used only for local, in-browser review.
 /TossStatements/
+
+# Private manual brokerage observations and checkpoints.
+/var/toss-orders/
 
 .vercel
 .env*

@@ -244,7 +244,7 @@
                     @click="router.push('/mypage')" />
                 <Button
                     v-if="isAdmin"
-                    label="구글시트 거래 목록"
+                    label="토스 거래내역"
                     icon="pi pi-table"
                     severity="secondary"
                     outlined

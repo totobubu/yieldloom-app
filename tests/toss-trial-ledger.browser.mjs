@@ -109,7 +109,7 @@ try {
     });
     await page.goto(
         (process.env.SHEET_LEDGER_UI_BASE_URL || 'http://127.0.0.1:5181') +
-            '/admin/sheet-ledger'
+            '/admin/sheet-ledger?view=source-tools'
     );
     const region = page.getByRole('region', {
         name: '토스 원본 중심 시험 장부',

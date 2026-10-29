@@ -27,6 +27,18 @@
 만들고, 발행에는 그 실행의 `incremental-data-v2-review-{run_id}` 아티팩트를 사용한다.
 기존 Python 수집·분석 명령과 과거 실행 결과는 보존한다.
 
+증분 후보는 `provider/ticker/declaredDate/exDate`가 같은 행의 금액·통화·기준일·지급일·
+주기·검증 상태/메모를 비교한다. URL이나 문서 전체 SHA만 다르면 경제값 충돌로 보지
+않고 후보 한 건에 `sourceEvidence`로 모든 출처를 보존한다. 보고서의 소스별 new 건수와
+중복 제거 후 `candidateEvents`는 다를 수 있다. 금액·날짜·검증 상태 등이 다르면 자동
+선택하지 않고 후보 생성과 R2 상태 저장을 차단한다.
+
+이때도 JSON/Markdown 진단에 두 관측·출처 키·SHA·차이 필드를 남긴다. 실행 아티팩트는
+`collection-state.json`의 진단 전용 상태(`auditOnly: true`)와 `incremental-raw/`의 원문도
+포함한다. 이전 성공 상태나 운영 포인터를 이 진단 상태로 교체하지 않는다. 보고서가
+생성되기 전 실패한 경우 요약 렌더는 원래 수집 오류를 안내하며 추가 파일 누락 오류를
+만들지 않는다. 이 규칙은 운영 발행·확정값 변경의 승인이 아니다.
+
 ## 필요할 때 실행하는 진단
 
 `diagnose-data-sources.yml`에서 `mode`를 선택한다.

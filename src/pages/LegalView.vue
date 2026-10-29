@@ -1,7 +1,7 @@
 <script setup>
     import { useHead } from '@vueuse/head';
 
-    useHead({ title: '이용 안내 · 토또부부 배당 스튜디오' });
+    useHead({ title: '이용 안내 · 모으멍 배당달력' });
 </script>
 
 <template>

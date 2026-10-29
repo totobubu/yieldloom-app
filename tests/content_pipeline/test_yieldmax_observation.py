@@ -71,6 +71,8 @@ class YieldMaxPolicyTest(unittest.TestCase):
             '<a href="/news/group-3-release/">YieldMax announces distributions on MSST, NVIT, and TEST</a>'
             '<a href="https://www.globenewswire.com/news-release/example/">'
             'YieldMax announces distributions on MSST, NVIT, and TEST</a>'
+            '<a href="https://untrusted.example/news/">'
+            'YieldMax announces distributions on MSST, NVIT, and TEST</a>'
         ).encode()
         with patch.object(adapter, 'request_bytes', return_value=listing) as request:
             candidates = list(adapter.discover_announcements_for_tickers(['MSST', 'NVIT', 'TEST']))

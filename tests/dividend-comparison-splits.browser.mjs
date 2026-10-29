@@ -1,13 +1,16 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
 const base = process.env.UI_BASE_URL || 'http://127.0.0.1:5173';
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium', args: ['--no-sandbox'] });
 try {
     for (const width of [1440, 390]) {
         for (const symbol of ['MSTY', 'TSLY']) {
-            const history = JSON.parse(await readFile(new URL(`../public/content-studio/distribution-ticker-${symbol.toLowerCase()}.json`, import.meta.url)));
-            const dividends = history.history.slice(0, 2).reverse().map(row => ({ date: row.ex_date, amount: Number(row.distribution_per_share) }));
+            // Freeze the 2026-10-29 issuer example; scheduled data refreshes
+            // must not change the expected comparison or the clock.
+            const dividends = [
+                { date: '2026-10-22', amount: symbol === 'MSTY' ? 0.1671 : 0.1909 },
+                { date: '2026-10-29', amount: symbol === 'MSTY' ? 0.163 : 0.2233 },
+            ];
             for (const scenario of ['historical', 'crossing', 'legacy', 'first', 'zero']) {
                 const page = await browser.newPage({ viewport: { width, height: 1000 } });
                 let reads = 0;

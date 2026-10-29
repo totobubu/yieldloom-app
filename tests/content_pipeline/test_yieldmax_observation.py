@@ -77,7 +77,8 @@ class YieldMaxPolicyTest(unittest.TestCase):
         request.assert_called_once_with('https://yieldmaxetfs.com/news/')
         self.assertEqual(
             [(candidate.url, candidate.source_type) for candidate in candidates],
-            [('https://yieldmaxetfs.com/news/group-3-release/', 'official_press_release')],
+            [('https://yieldmaxetfs.com/news/group-3-release/', 'official_press_release'),
+             ('https://www.globenewswire.com/news-release/example/', 'official_press_release')],
         )
 
     def test_release_parser_never_uses_fetch_time_as_declaration_date(self):

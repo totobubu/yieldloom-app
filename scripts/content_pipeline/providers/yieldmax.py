@@ -16,7 +16,8 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
     display_name = "YieldMax"
     official_homepage = "https://yieldmaxetfs.com/"
     parser_version = "4"
-    allowed_hosts = ("yieldmaxetfs.com",)
+    # Release pages may be hosted by the issuer's linked GlobeNewswire distributor.
+    allowed_hosts = ("yieldmaxetfs.com", "globenewswire.com")
     catalog_url = "https://yieldmaxetfs.com/our-etfs/"
     # Fund history pages contain the official amount plus declaration, ex,
     # record and payment dates.  GlobeNewswire is not a collection source.
@@ -62,9 +63,10 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
             is_group_release = target_group in {"group-1", "group-2"} and target_group.replace("-", " ") in normalized
             if not (is_group_3_release or is_group_release) or url in seen_urls:
                 continue
-            if not url.startswith(self.official_homepage):
+            try:
+                self.validate_url(url)
+            except ValueError:
                 continue
-            self.validate_url(url)
             seen_urls.add(url)
             yield SourceCandidate(
                 url=url,

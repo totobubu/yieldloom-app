@@ -146,6 +146,20 @@ test('source missing backtestData is rejected and retains the last approved obje
     assert.equal(storage.writes.length,writes);
 });
 
+test('transient source HTTP errors are retried before rejecting a symbol', async () => {
+    const storage=new Storage();
+    let attempts=0;
+    const result=await refresh({...config,storage,bucket:'derived',fetcher:async()=>{
+        attempts+=1;
+        if(attempts<3)return new Response(null,{status:503});
+        return new Response(JSON.stringify({backtestData:makeRows()}));
+    }});
+    assert.equal(attempts,3);
+    assert.deepEqual(result.changed,['TEST']);
+    assert.deepEqual(result.rejected,[]);
+    assert.ok(storage.objects.has('thumbnail/v1/current.json'));
+});
+
 test('R2 object keys for index and currency symbols contain no URL escapes', async () => {
     const {symbolKey}=await import('../lib/thumbnail-projection.js');
     for(const symbol of ['^GSPC','EURUSD=X','005930.KS','BRK.B']) assert.match(symbolKey(symbol),/^[A-Za-z0-9_-]+$/);

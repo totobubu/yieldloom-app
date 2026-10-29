@@ -132,6 +132,10 @@ jobs:
       - name: Render review summary
         if: always()
         run: |
+          if [ ! -f data-v2/review/incremental-report.json ]; then
+            echo 'Collection stopped before a review report was available; inspect the original collection step failure.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           python scripts/data_v2/render_incremental_report.py
           cat data-v2/review/incremental-report.md >> "$GITHUB_STEP_SUMMARY"
       - name: Upload review artifact
@@ -144,6 +148,8 @@ jobs:
             data-v2/catalog-seed.json
             data-v2/review/incremental-report.json
             data-v2/review/incremental-report.md
+            data-v2/review/collection-state.json
+            data-v2/review/incremental-raw/
             candidate-release/
           if-no-files-found: warn
           retention-days: 30
@@ -157,6 +163,9 @@ jobs:
           path = Path('data-v2/review/incremental-report.json')
           if path.exists():
               report = json.loads(path.read_text(encoding='utf-8'))
+              if report.get('publicationBlocked'):
+                  print('::error::Conflicting event values; candidate publication and state save were blocked. Inspect the conflict audit.')
+                  raise SystemExit(1)
               failures = report.get('summary', {}).get('failedSources', 0)
               if failures:
                   for provider, details in report.get('providers', {}).items():

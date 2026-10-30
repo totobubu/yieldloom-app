@@ -155,6 +155,7 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
                     '<th>Distribution per Share</th><th>Distribution Rate</th><th>30-Day SEC Yield</th></tr>'
                     + rows + '</table>'
                 ).encode()
+                content = getattr(self, 'release_content', None) or content
                 results.append(FetchOutcome(candidate, SourceDocument(
                     'yieldmax', candidate.url, candidate.source_type, content, metadata=candidate.metadata)))
                 continue
@@ -199,6 +200,20 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
         source_id = self.database.add_source_document(document)
         self.database.upsert_distribution_event(DistributionEvent('yieldmax', ticker, '0.123456', declared, str(d+timedelta(days=1)), document.source_url, record_date=str(d+timedelta(days=1)), payable_date=str(d+timedelta(days=2)), verification_status='official'), source_id)
         export_all(self.database.path, self.root/'generated', self.public)
+
+    def test_conflicting_release_publication_keeps_pending_and_old_history(self):
+        self.seed('MSST', '2026-10-19')
+        self.release_fallback = True
+        self.release_content = Path('tests/content_pipeline/fixtures/yieldmax_globenewswire_group-3.html').read_bytes().replace(
+            b'name="DC.date.issued" content="2026-10-26"', b'name="DC.date.issued" content="2026-10-25"')
+        report, code = self.primary('group-3')
+        self.assertEqual((code, report['publish']), (1, False), report)
+        cycle = runner.read_state(self.state)['cycles']['group-3:2026-10-26']
+        self.assertEqual(set(cycle['missingTickers']), {'MSST', 'NVIT', 'TEST'})
+        with self.database.connect() as connection:
+            rows = connection.execute("SELECT ticker, declared_date FROM distribution_events WHERE provider_slug='yieldmax'").fetchall()
+        self.assertEqual([(row['ticker'], row['declared_date']) for row in rows], [('MSST', '2026-10-19')])
+        self.assertIn('publication dates conflict', json.dumps(report))
 
     def test_official_news_release_fills_stale_group_three_fund_history(self):
         self.release_fallback = True

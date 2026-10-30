@@ -37,8 +37,9 @@ HTTP 403 등은 확인한 응답·헤더·본문·설정과 미확정 원인을 
 
 토스 개인계좌의 주문·체결 및 실제 배당 입금 상세를 읽기 전용으로 확인할 때는
 [toss-account-details 스킬](.agents/skills/toss-account-details/SKILL.md)을 사용한다.
-`$toss-account-details`로 호출하며 기존 API collector와 이미 열린 ego light 세션을
-사용한다. 이 스킬은 스케줄·예약 작업을 생성하지 않는다.
+`$toss-account-details`로 호출하며 기존 API collector와 ego light를 사용한다.
+기존 토스 탭을 재사용하고 없으면 ego light 작업 공간에서 공식 사이트를 연다.
+이 스킬은 스케줄·예약 작업을 생성하지 않는다.
 
 ### 커밋·푸시·병합·브랜치 정리
 

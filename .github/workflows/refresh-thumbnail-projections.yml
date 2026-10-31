@@ -35,17 +35,14 @@ jobs:
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
-          PROJECTION_SYMBOLS: ${{ inputs.symbols || vars.THUMBNAIL_PROJECTION_SYMBOLS || 'AMDY,TSLY,TOPW,AAPL,TSLA' }}
           INPUT_SYMBOLS: ${{ inputs.symbols }}
+          CONFIGURED_SYMBOLS: ${{ vars.THUMBNAIL_PROJECTION_SYMBOLS }}
+          EVENT_NAME: ${{ github.event_name }}
         shell: bash
         run: |
-          args=()
-          symbols="${PROJECTION_SYMBOLS//[[:space:]]/}"
-          if [[ "${symbols^^}" == "ALL" && -z "$INPUT_SYMBOLS" ]]; then
-            symbols='AMDY,TSLY,TOPW,AAPL,TSLA'
-            echo '::warning::Repository setting ALL is too broad for the scheduled refresh; using the reviewed default symbol set. Pass ALL explicitly through workflow_dispatch for a full refresh.'
-          fi
-          if [[ -n "$symbols" && "${symbols^^}" != "ALL" ]]; then args+=(--symbols "$symbols"); fi
+          symbols="$(node scripts/thumbnail_pipeline/resolve-symbols.mjs "$INPUT_SYMBOLS" "$CONFIGURED_SYMBOLS" "$EVENT_NAME")"
+          args=(--symbols "$symbols")
+          if [[ "$symbols" == "ALL" ]]; then args=(); fi
           node scripts/thumbnail_pipeline/refresh.mjs "${args[@]}" > thumbnail-projection-report.json
       - name: Summarize projection refresh
         if: always()

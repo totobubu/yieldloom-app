@@ -9,6 +9,7 @@ test('empty and whitespace values use the reviewed default', () => {
 
 test('repository ALL stays bounded for scheduled and blank manual runs', () => {
     assert.equal(resolveSymbols({ configuredSymbols: 'ALL', eventName: 'schedule' }), DEFAULT_SYMBOLS);
+    assert.equal(resolveSymbols({ configuredSymbols: 'all', eventName: 'schedule' }), DEFAULT_SYMBOLS);
     assert.equal(resolveSymbols({ inputSymbols: '   ', configuredSymbols: 'ALL', eventName: 'workflow_dispatch' }), DEFAULT_SYMBOLS);
 });
 

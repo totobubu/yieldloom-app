@@ -334,6 +334,7 @@ try {
     assert.equal(errors.length, 0, errors.join('\n'));
     console.log(
         JSON.stringify({
+            suite: 'fifo-report',
             result: 'passed',
             correctionWrites: writes,
             dbReads: reads,

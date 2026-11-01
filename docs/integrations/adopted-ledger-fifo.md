@@ -2,11 +2,30 @@
 
 ## 범위와 단계
 
-PR #203 head 17f25f7을 기반으로 별도 로컬 브랜치에서 구현한다. 원문·채택 장부를
+초기 구현은 PR #203 head 17f25f7을 기반으로 별도 로컬 브랜치에서 진행했다. 원문·채택 장부를
 다시 비교하거나 바꾸지 않고 기존 private report reader의 검증된 투영을 입력으로 쓴다.
 중단된 PDF replacement 파일은 이 checkout에 없으며 교체·이관 API를 호출하지 않는다.
 커밋은 (1) 정확한 계산과 정책 (2) 인증된 입력/보정 저장 (3) 화면과 회귀 검증으로 나눈다.
-실제 금융 API·R2 쓰기·운영 보정 저장·새 인증·push·게시·배포는 수행하지 않는다.
+초기 로컬 단계에는 push·PR 게시도 하지 않았으며, 이후 별도 승인을 받아 공개 Draft PR을
+게시했다. 실제 금융 API·R2 쓰기·운영 보정 저장·새 인증·운영 배포는 수행하지 않는다.
+
+## work 통합과 화면 CI
+
+PR #203은 work의 c8b24af에 병합되었지만 PR #204는 feat/family-account-profiles의
+9dc3fd1에만 병합되었다. 따라서 work에는 FIFO 구현이 없어 별도의 통합 PR이 필요하다.
+feat/fifo-work-integration은 최신 work에서 FIFO 원본 3개 커밋만 cherry-pick해 구성한다.
+이미 반영된 가족 프로필과 Global X 변경을 재적용하거나 되돌리지 않는다. main은 이번
+통합 대상이 아니며 이 단계는 새 Draft PR·CI·Preview 확인까지만 진행한다.
+
+app-quality.yml의 기존 browser job에서 서버 준비를 기다린 뒤 같은 CHROMIUM_PATH와
+SHEET_LEDGER_UI_BASE_URL로 tests/fifo-report.browser.mjs를 실행한다. 별도 금융 인증이나
+원격 API 없이 실제 handler와 메모리 DB/합성 snapshot을 연결한다. 예외는 Node의 비정상
+종료로 전파되며 기존 셸의 실패 처리로 job을 실패시킨다. 완료 로그의 suite=fifo-report와
+result=passed를 정확한 head의 원격 로그에서 확인해야 화면 CI 통과로 기록할 수 있다.
+
+과거 head의 CI 성공은 이 화면 테스트 실행 증거가 아니다. Sourcery는 #203 예산 제한과
+#204 크기 제한으로 리뷰를 생략했으므로 미해결 댓글 0개를 자동 리뷰 승인으로 해석하지
+않는다. 자체 독립 리뷰 결과와 실제 CI 실행/미실행을 별도로 보고한다.
 
 ## 확정 정책 (사용자 2026-11-01)
 

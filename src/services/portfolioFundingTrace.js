@@ -1,3 +1,4 @@
+import { executionInstant } from '../../lib/fifo-asset-report.js';
 import {
     finiteNumber,
     isWithdrawal,
@@ -170,12 +171,48 @@ export function tracePortfolioFunding({
             currency: currencyOf(trade),
             kind: trade.type,
         });
-    events.sort(
-        (a, b) =>
+    const securityDays = new Map();
+    for (const event of events.filter((e) =>
+        ['buy', 'sell'].includes(e.kind)
+    )) {
+        const key = `${event.accountId || ''}:${event.symbol}:${event.currency}:${day(event.date)}`;
+        const group = securityDays.get(key) || [];
+        group.push(event);
+        securityDays.set(key, group);
+    }
+    if (
+        [...securityDays.values()].some(
+            (group) =>
+                group.length > 1 &&
+                (group.some(
+                    (e) => executionInstant(e.executedAt || e.date) === null
+                ) ||
+                    new Set(
+                        group.map((e) =>
+                            String(executionInstant(e.executedAt || e.date))
+                        )
+                    ).size !== group.length)
+        )
+    )
+        return {
+            stocks: [],
+            timelines: { USD: [], KRW: [] },
+            currencies: [],
+            unavailable: true,
+            warnings: [
+                '같은 날 동일 종목의 실제 체결 순서가 미확정이어서 자금 추적을 보류합니다. 채택 장부 FIFO 리포트에서 근거를 확인해 주세요.',
+            ],
+        };
+    events.sort((a, b) => {
+        const x = executionInstant(a.executedAt || a.date),
+            y = executionInstant(b.executedAt || b.date);
+        if (x !== null && y !== null && x !== y) return x < y ? -1 : 1;
+        return (
             day(a.date).localeCompare(day(b.date)) ||
             (rank[a.kind] ?? 4) - (rank[b.kind] ?? 4) ||
             String(a.id).localeCompare(String(b.id))
-    );
+        );
+    });
     const seenDays = new Set();
     for (const event of events) {
         const { accountId = '', currency, symbol, kind, annotation } = event;
@@ -201,10 +238,10 @@ export function tracePortfolioFunding({
                 missing();
                 continue;
             }
-            buckets[currency].deposits += openingAmount;
+            // Opening basis proves acquisition cost, not a new external cash deposit.
             if (!symbol || symbol === 'CASH') {
                 cash.push({
-                    kind: 'principal',
+                    kind: 'unknown',
                     origin: '',
                     amount: openingAmount,
                 });
@@ -213,10 +250,9 @@ export function tracePortfolioFunding({
                 continue;
             } else {
                 const item = stock(accountId, symbol, currency);
-                item.direct += openingAmount;
-                item.sources.add(`기초 원금 → ${symbol}`);
+                item.sources.add(`기초 취득원가(자금 출처 미상) → ${symbol}`);
                 item.lots.push({
-                    kind: 'principal',
+                    kind: 'unknown',
                     origin: symbol,
                     amount: openingAmount,
                     quantity: openingQuantity,

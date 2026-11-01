@@ -233,6 +233,9 @@
                     확인합니다.
                 </p>
             </div>
+            <RouterLink to="/admin/sheet-ledger?view=assets"
+                >FIFO 자산 리포트</RouterLink
+            >
             <Button
                 label="새로고침"
                 class="refresh-button"

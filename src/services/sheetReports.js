@@ -33,11 +33,17 @@ export function createSheetReportClient({
             !user ||
             !(
                 ['wife', 'husband'].includes(accountId) ||
-                (accountId === 'family' && section === 'final')
+                (accountId === 'family' &&
+                    ['final', 'assets'].includes(section))
             ) ||
-            !['summary', 'details', 'times', 'followup', 'final'].includes(
-                section
-            ) ||
+            ![
+                'summary',
+                'details',
+                'times',
+                'followup',
+                'final',
+                'assets',
+            ].includes(section) ||
             (observationId !== null &&
                 (section !== 'final' || !/^[a-f0-9]{64}$/.test(observationId)))
         )
@@ -49,7 +55,7 @@ export function createSheetReportClient({
         const current = generation;
         const task = (async () => {
             const query = new URLSearchParams({
-                view: 'sheet-reports',
+                view: section === 'assets' ? 'fifo-report' : 'sheet-reports',
                 accountId,
                 section,
             });
@@ -135,10 +141,27 @@ export function createSheetReportClient({
                           )))
             )
                 throw new Error('최종 거래 자료의 형식을 확인해 주세요.');
+            if (
+                section === 'assets' &&
+                (value.schemaVersion !== 1 ||
+                    !Array.isArray(value.input?.events) ||
+                    !Array.isArray(value.input?.accounts) ||
+                    !/^[a-f0-9]{64}$/.test(value.input.ledgerRevision || '') ||
+                    !Number.isSafeInteger(value.adjustments?.revision) ||
+                    !Array.isArray(value.adjustments?.history) ||
+                    !Array.isArray(value.adjustments?.active))
+            )
+                throw new Error('자산 리포트와 보정 버전을 확인해 주세요.');
             if (cache.size >= 40) cache.delete(cache.keys().next().value);
             cache.set(key, {
                 value,
-                expires: now() + (section === 'times' ? 300_000 : 30_000),
+                expires:
+                    now() +
+                    (section === 'assets'
+                        ? 0
+                        : section === 'times'
+                          ? 300_000
+                          : 30_000),
             });
             return value;
         })()
@@ -155,5 +178,53 @@ export function createSheetReportClient({
         pending.set(key, task);
         return task;
     }
-    return { load, clear };
+    async function saveFifoCorrection(user, body) {
+        select(user);
+        if (!user) throw new Error('로그인이 필요합니다.');
+        generation++;
+        cache.clear();
+        pending.clear();
+        const current = generation;
+        try {
+            const response = await fetchImpl(
+                apiUrl('/api/portfolio-capital?view=fifo-report'),
+                {
+                    method: 'POST',
+                    cache: 'no-store',
+                    headers: {
+                        Authorization: `Bearer ${await user.getIdToken()}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body),
+                    signal: AbortSignal.timeout(60000),
+                }
+            );
+            const value = await response.json();
+            if (!response.ok) {
+                if (
+                    [401, 403].includes(response.status) &&
+                    current === generation
+                )
+                    clear();
+                throw Object.assign(
+                    new Error(value.error || '보정을 저장하지 못했습니다.'),
+                    { status: response.status }
+                );
+            }
+            if (current !== generation || owner !== user)
+                throw new Error(
+                    '로그인 상태가 바뀌었습니다. 저장 결과를 다시 조회해 주세요.'
+                );
+            return value;
+        } catch (error) {
+            if (String(error.code || '').startsWith('auth/')) {
+                if (current === generation) clear();
+                error.status = 401;
+            }
+            throw error;
+        } finally {
+            if (current === generation) cache.clear();
+        }
+    }
+    return { load, clear, saveFifoCorrection };
 }

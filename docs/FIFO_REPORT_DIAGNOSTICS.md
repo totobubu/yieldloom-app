@@ -83,3 +83,34 @@ code/stage에 한정해 별도 최소 읽기 권한을 제시한다. 아내 화�
 다음 조치는 이 진단 작업에 포함되지 않는다: index 삭제, receipt/hash 재작성,
 52-part 미연결 bundle의 강제 연결, 검증 완화, 금융 API 호출, R2/Firebase 장부 쓰기,
 PDF 교체·삭제, 공개 push/PR 또는 운영 배포.
+
+## 합성 자료로 확인한 별도 계약 결함
+
+정상 v2 bundle의 binding에서 JSON 객체 필드의 순서만 바꾸고 모든 키·타입·값 및
+연결 hash를 일치시켜도 기존 `JSON.stringify` 비교는 거절했다. index 읽기에서
+동일 binding을 다른 필드 순서로 전달해도 같은 문제가 재현됐다. 이 결함은 합성
+fixture에서 확인했으며 운영 게시물이 실제로 이 순서 차이를 갖는지는 모른다.
+운영 오류의 원인 확정이나 복구 완료를 뜻하지 않는다.
+
+별도 수정은 manifest↔marker 및 호출 binding↔index marker의 **객체 필드 순서만**
+동일성에서 제외한다. 양쪽에 기존 binding 유효성 검사를 적용하고 엄격한 깊은 비교로
+모든 own 필드(미지의 추가 필드와 JSON의 `__proto__` 필드 포함), 타입, 값,
+중첩 값과 배열 순서를 보존한다. 키 추가·삭제, 계좌·collector 변경, null·타입 변경,
+배열 순서 변경은 여전히 거절한다. 이는 객체 필드 순서 차이에 대해서만 수용 범위를
+바꾸는 계약 수정이다. marker/manifest/receipt/part/member의 실제 바이트 해시와
+collector 계좌 일치 및 통합 충돌 검증은 유지한다. 실제 hash나 receipt를 다시 쓰지 않는다.
+
+## 로컬 검증 증거
+
+main `9f36b879`를 기반으로 다음 검사를 최종 코드에서 수행했다.
+
+- `node --test tests/*.test.mjs`: 682개 통과.
+- `npm run build`: `vue-tsc --noEmit` 포함 성공.
+- `npm run lint:check`: 오류 0, 기존 경고 72개.
+- 합성 브라우저 `tests/final-ledger.browser.mjs`, `tests/toss-increments.browser.mjs`,
+  `tests/fifo-report.browser.mjs` 통과. 별도 로컬 Vite와 차단·대체한 API/Firebase만
+  사용했다. FIFO의 보정 쓰기 4회는 메모리 DB fixture이며 운영 저장이 아니다.
+- 독립 검토에서 진단 변경의 기존 78개 guard 조건 보존을 확인했다. 별도 바인딩
+  수정에서는 정확히 두 비교 조건만 변경됐고, 미해결 P1/P2는 발견되지 않았다.
+
+합성 검증은 실제 운영 장부·권한·R2 객체의 현재 상태를 증명하지 않는다.

@@ -1010,3 +1010,184 @@ test('legacy/v2 mixed verification remains compatible; individual pass cannot ov
         1
     );
 });
+
+test('binding JSON field order is immaterial while every own field, type and nested value remains verified', async (t) => {
+    const { rewriteIncrementFixture } = await import(
+        './support/increment-fixture-rewrite.mjs'
+    );
+    const f = (await collect(t, 'wife')).publication;
+    const original = f.marker.value.binding;
+    const reversed = Object.fromEntries(Object.entries(original).reverse());
+    const reordered = rewriteIncrementFixture(f, {
+        manifest: (m) => {
+            m.binding = reversed;
+        },
+    });
+    assert.equal(
+        (
+            await verifyIncrement(
+                async (key) => reordered.objects.get(key),
+                reordered.marker.value
+            )
+        ).apiOrders.length,
+        1
+    );
+    const io = memory(new Map([...f.objects, [f.marker.key, f.marker.bytes]]));
+    assert.equal(
+        (await readIncrements({ ...io, binding: reversed })).entryCount,
+        1
+    );
+    const mutate = (change) => {
+        const b = structuredClone(original);
+        change(b);
+        return b;
+    };
+    const different = [
+        mutate((b) => {
+            delete b.accountSeqSha256;
+        }),
+        mutate((b) => {
+            b.accountNoSha256 = hash('different-account');
+        }),
+        mutate((b) => {
+            b.accountSeqSha256 = hash('different-collector');
+        }),
+        mutate((b) => {
+            b.ownerId = 'husband';
+        }),
+        mutate((b) => {
+            b.profileId = 'husband-toss';
+        }),
+        mutate((b) => {
+            b.brokerId = 'other';
+        }),
+        mutate((b) => {
+            b.suffix = '9999';
+        }),
+        mutate((b) => {
+            b.suffix = Number(b.suffix);
+        }),
+        mutate((b) => {
+            b.extra = 'unknown';
+        }),
+        {
+            ...original,
+            ...JSON.parse('{"__proto__":{"own":"must-be-compared"}}'),
+        },
+        null,
+    ];
+    for (const binding of different) {
+        const changed = rewriteIncrementFixture(f, {
+            manifest: (m) => {
+                m.binding = binding;
+            },
+        });
+        await assert.rejects(
+            () =>
+                verifyIncrement(
+                    async (key) => changed.objects.get(key),
+                    changed.marker.value
+                ),
+            (e) => e.diagnosticCode === 'INC_BUNDLE_BINDING'
+        );
+    }
+    for (const binding of [
+        { ...original, accountSeqSha256: hash('different-collector') },
+        { ...original, suffix: '9999' },
+        { ...original, extra: 'unknown' },
+        {
+            ...original,
+            ...JSON.parse('{"__proto__":{"own":"must-be-compared"}}'),
+        },
+    ])
+        await assert.rejects(
+            () => readIncrements({ ...io, binding }),
+            (e) => e.diagnosticCode === 'INC_INDEX_SCOPE'
+        );
+    const binding = {
+        ...original,
+        extra: { a: 1, b: [1, 2] },
+        ...JSON.parse('{"__proto__":{"own":"compared"}}'),
+    };
+    const extraManifest = rewriteIncrementFixture(f, {
+        manifest: (m) => {
+            m.binding = binding;
+        },
+    });
+    const bound = {
+        ...extraManifest.marker.value,
+        binding: structuredClone(binding),
+    };
+    assert.equal(
+        (
+            await verifyIncrement(
+                async (key) => extraManifest.objects.get(key),
+                bound
+            )
+        ).apiOrders.length,
+        1
+    );
+    const nestedReorder = {
+        ...bound,
+        binding: { ...binding, extra: { b: [1, 2], a: 1 } },
+    };
+    assert.equal(
+        (
+            await verifyIncrement(
+                async (key) => extraManifest.objects.get(key),
+                nestedReorder
+            )
+        ).apiOrders.length,
+        1
+    );
+    for (const extra of [
+        { a: 1, b: [2, 1] },
+        { a: '1', b: [1, 2] },
+        { a: 1, b: [1, 2], c: null },
+    ]) {
+        await assert.rejects(
+            () =>
+                verifyIncrement(async (key) => extraManifest.objects.get(key), {
+                    ...bound,
+                    binding: { ...binding, extra },
+                }),
+            (e) => e.diagnosticCode === 'INC_BUNDLE_BINDING'
+        );
+    }
+    const ownProtoChanged = structuredClone(bound);
+    ownProtoChanged.binding['__proto__'].own = 'changed';
+    await assert.rejects(
+        () =>
+            verifyIncrement(
+                async (key) => extraManifest.objects.get(key),
+                ownProtoChanged
+            ),
+        (e) => e.diagnosticCode === 'INC_BUNDLE_BINDING'
+    );
+    const corrupted = new Map(reordered.objects);
+    corrupted.set(reordered.marker.value.manifest.key, Buffer.from('{}'));
+    await assert.rejects(
+        () =>
+            verifyIncrement(
+                async (key) => corrupted.get(key),
+                reordered.marker.value
+            ),
+        (e) => e.diagnosticCode === 'INC_MANIFEST_DIGEST'
+    );
+    const wrongSeq = mutate((b) => {
+        b.accountSeqSha256 = hash('different-collector');
+    });
+    const collectorMismatch = rewriteIncrementFixture(f, {
+        manifest: (m) => {
+            m.binding = wrongSeq;
+        },
+    });
+    await assert.rejects(
+        () =>
+            verifyIncrement(async (key) => collectorMismatch.objects.get(key), {
+                ...collectorMismatch.marker.value,
+                binding: wrongSeq,
+            }),
+        (e) => e.diagnosticCode === 'INC_COLLECTOR_BINDING'
+    );
+});

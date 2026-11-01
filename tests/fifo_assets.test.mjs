@@ -331,3 +331,49 @@ test('corrections reject unexpected fields, unrelated targets, invalid dates, in
         assert.throws(() => validateFifoCorrection(invalid, ctx));
     assert.equal(applyFifoCorrections([], [], accounts).events.length, 0);
 });
+
+test('conflicting IDs hold every cash and stock aggregate of that account', () => {
+    const b = event('same', 'BUY', '1', '100', 2, { funding: 'dividend' });
+    const r = run([
+        b,
+        { ...b, symbol: 'OTHER', amount: '200' },
+        cash('d', 'EXTERNAL_DEPOSIT', '100'),
+        event('div', 'DIVIDEND', null, null, 3, { net: '10' }),
+    ]);
+    assert.equal(r.currencies[0].externalDeposits, null);
+    assert.equal(r.currencies[0].netDividends, null);
+    assert.equal(r.rows[0].reinvestedBuys, null);
+    assert.equal(r.rows[0].realizedPnl, null);
+});
+
+test('transfer preserves original acquisition order uncertainty, not insertion order', () => {
+    const buys = [
+        event('one', 'BUY', '1', '10', 2, { at: '2025-01-01' }),
+        event('two', 'BUY', '1', '20', 2, { accountId: 'c', at: '2025-01-01' }),
+        event('sale', 'SELL', '1', '30', 6, { accountId: 'c' }),
+    ];
+    const move = correction('move', 'SECURITY_TRANSFER', {
+        symbol: 'TEST',
+        currency: 'USD',
+        at: at(5),
+        quantity: '1',
+        toAccountId: 'c',
+    });
+    const r = run(buys, { corrections: [move] }).rows.find(
+        (p) => p.accountId === 'c'
+    );
+    assert.equal(r.realizedPnl, null);
+    assert.equal(r.remainingCost, null);
+    assert.match(r.issues.join(' '), /原|원 취득 순서/);
+});
+
+test('currency totals sum exact rationals before a single final rounding', () => {
+    const events = ['AAA', 'BBB'].flatMap((symbol) => [
+        event(symbol + 'buy', 'BUY', '3', '1', 2, { symbol }),
+        event(symbol + 'sell', 'SELL', '1', '1', 3, { symbol }),
+    ]);
+    const r = run(events);
+    assert.equal(r.rows[0].remainingCost, '0.666666666666666667');
+    assert.equal(r.currencies[0].remainingCost, '1.333333333333333333');
+    assert.equal(r.currencies[0].realizedPnl, '1.333333333333333333');
+});

@@ -1,5 +1,6 @@
 import admin from 'firebase-admin';
 import { createApiHandler } from '../lib/api-handler.js';
+import { fifoReportHandler } from '../lib/fifo-report-handler.js';
 import { capitalHandler } from '../lib/portfolio-capital-handler.js';
 import { portfolioDashboardHandler } from '../lib/portfolio-dashboard-handler.js';
 import { sheetLedgerHandler } from '../lib/sheet-ledger-handler.js';
@@ -26,13 +27,20 @@ const sheetLedger = sheetLedgerHandler({
     verify: verifyFirebaseBearer,
     database: firebaseDatabase,
 });
+const reportStore = createPrivateReportStore();
+const fifoReport = fifoReportHandler({
+    verify,
+    database: firebaseDatabase,
+    store: reportStore,
+});
 const sheetReports = sheetReportHandler({
     verify,
     database: firebaseDatabase,
-    store: createPrivateReportStore(),
+    store: reportStore,
 });
 
 export default createApiHandler((req, res) => {
+    if (req.query?.view === 'fifo-report') return fifoReport(req, res);
     if (req.query?.view === 'sheet-reports') return sheetReports(req, res);
     if (req.query?.view === 'sheet-ledger') return sheetLedger(req, res);
     if (req.query?.view === 'dashboard') return dashboard(req, res);

@@ -205,7 +205,7 @@ export async function readAccountOrders(
                     },
                 };
             if (
-                !/^\\d{4}$/.test(credentials.TOSS_WIFE_ACCOUNT_SUFFIX ?? '') ||
+                !/^\d{4}$/.test(credentials.TOSS_WIFE_ACCOUNT_SUFFIX ?? '') ||
                 options.accountSuffix !== credentials.TOSS_WIFE_ACCOUNT_SUFFIX
             )
                 return {

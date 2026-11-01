@@ -196,7 +196,7 @@ test('confirmed principal withdrawal alone increases principal recovery', () => 
     near(metric.principalRate, 25);
 });
 
-test('opening lots seed confirmed principal and exclude earlier ledger events', () => {
+test('opening basis never creates external deposits or confirmed principal provenance', () => {
     const earlier = cash('OLD', '20250101', 500, 'external_deposit');
     const r = tracePortfolioFunding({
         entries: [earlier.entry],
@@ -213,8 +213,25 @@ test('opening lots seed confirmed principal and exclude earlier ledger events', 
             },
         ],
     });
-    near(r.currencies[0].deposits, 1000);
-    near(r.stocks[0].principalHeld, 1000);
+    near(r.currencies[0].deposits, 0);
+    near(r.stocks[0].unknownHeld, 1000);
+});
+
+test('legacy trace refuses ambiguous same-day FIFO and honors actual execution instants', () => {
+    const trades = [
+        trade('a', '20260102', 'sell', 'A', 120, 1),
+        trade('z', '20260102', 'buy', 'A', 100, 1),
+    ];
+    assert.equal(tracePortfolioFunding({ trades }).unavailable, true);
+    const ordered = tracePortfolioFunding({
+        trades: trades.map((t, i) => ({
+            ...t,
+            executedAt: i ? '2026-01-02T10:00:00Z' : '2026-01-02T11:00:00Z',
+        })),
+    });
+    assert.equal(ordered.unavailable, undefined);
+    near(ordered.stocks[0].quantity, 0);
+    near(ordered.currencies[0].realizedPnl, 20);
 });
 
 test('duplicate cash dividend is not added to security dividend and reversals suspend trace', () => {

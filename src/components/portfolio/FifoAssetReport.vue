@@ -19,11 +19,17 @@
         applyFifoCorrections,
     } from '../../../lib/fifo-asset-report.js';
     import { loadValuationQuotes } from '@/services/portfolioValuation.js';
+    import {
+        normalizeReportDiagnostic,
+        reportDiagnosticText,
+    } from '../../../lib/report-diagnostics.js';
     const client = createSheetReportClient();
     const payload = shallowRef(null),
         busy = ref(false),
         saving = ref(false),
         error = ref(''),
+        diagnostic = shallowRef(null),
+        copyNotice = ref(''),
         notice = ref(''),
         quotes = shallowRef({}),
         quoteBusy = ref(false),
@@ -173,6 +179,8 @@
         payload.value = null;
         quotes.value = {};
         error.value = '';
+        diagnostic.value = null;
+        copyNotice.value = '';
         busy.value = Boolean(user);
         quoteGeneration++;
         quoteBusy.value = false;
@@ -198,8 +206,9 @@
                     form.accountId = result.input.accounts[0]?.id || '';
             }
         } catch (e) {
-            if (current === generation) {
+            if (current === generation && user === firebaseUser.value) {
                 error.value = e.message;
+                diagnostic.value = normalizeReportDiagnostic(e.diagnostic);
                 if ([401, 403].includes(e.status)) {
                     pendingMutation.value = null;
                     Object.assign(form, emptyForm());
@@ -207,6 +216,30 @@
             }
         } finally {
             if (current === generation) busy.value = false;
+        }
+    }
+    async function copyDiagnostic() {
+        const selected = diagnostic.value,
+            current = generation,
+            user = firebaseUser.value,
+            text = reportDiagnosticText(selected);
+        if (!text || !user) return;
+        try {
+            await navigator.clipboard.writeText(text);
+            if (
+                current === generation &&
+                user === firebaseUser.value &&
+                selected === diagnostic.value
+            )
+                copyNotice.value = '진단 정보를 복사했습니다.';
+        } catch {
+            if (
+                current === generation &&
+                user === firebaseUser.value &&
+                selected === diagnostic.value
+            )
+                copyNotice.value =
+                    '복사하지 못했습니다. 표시된 코드·단계·요청 ID를 전달해 주세요.';
         }
     }
     async function prices() {
@@ -222,7 +255,11 @@
             if (current === quoteGeneration && user === firebaseUser.value)
                 quotes.value = result.quotes;
         } catch (e) {
-            if (current === quoteGeneration) error.value = e.message;
+            if (current === quoteGeneration) {
+                error.value = e.message;
+                diagnostic.value = null;
+                copyNotice.value = '';
+            }
         } finally {
             if (current === quoteGeneration) quoteBusy.value = false;
         }
@@ -274,12 +311,15 @@
     async function save(targetId = null) {
         if (saving.value || !payload.value) return;
         error.value = '';
+        diagnostic.value = null;
+        copyNotice.value = '';
         notice.value = '';
         let c;
         try {
             if (!targetId) c = correction();
         } catch (e) {
             error.value = e.message;
+            diagnostic.value = normalizeReportDiagnostic(e.diagnostic);
             return;
         }
         const user = firebaseUser.value,
@@ -320,6 +360,7 @@
             if (current !== mutationGeneration || user !== firebaseUser.value)
                 return;
             error.value = e.message;
+            diagnostic.value = normalizeReportDiagnostic(e.diagnostic);
             if (
                 e.status >= 400 &&
                 e.status < 500 &&
@@ -331,6 +372,7 @@
                     ' 저장 결과가 미확정입니다. 새로고침으로 확인하거나 같은 입력으로 재시도해 주세요.';
             if ([401, 403].includes(e.status)) {
                 payload.value = null;
+                diagnostic.value = null;
                 Object.assign(form, emptyForm());
                 client.clear();
             }
@@ -393,8 +435,17 @@
         </header>
         <Message v-if="error" severity="error" :closable="false">{{
             error
-        }}</Message
-        ><Message v-if="notice" severity="success" :closable="false">{{
+        }}</Message>
+        <section
+            v-if="diagnostic"
+            class="diagnostic"
+            aria-label="안전한 보고서 진단">
+            <p>코드: {{ diagnostic.code }} · 단계: {{ diagnostic.stage }}</p>
+            <p>요청 ID: {{ diagnostic.requestId }}</p>
+            <Button label="진단 정보 복사" @click="copyDiagnostic" />
+            <p v-if="copyNotice" role="status">{{ copyNotice }}</p>
+        </section>
+        <Message v-if="notice" severity="success" :closable="false">{{
             notice
         }}</Message>
         <p v-if="busy" role="status">
@@ -821,7 +872,8 @@
     li {
         margin: 1rem 0;
     }
-    details p {
+    details p,
+    .diagnostic p {
         overflow-wrap: anywhere;
     }
     @media (max-width: 600px) {

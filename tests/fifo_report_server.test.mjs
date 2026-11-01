@@ -10,6 +10,10 @@ import { fifoReportHandler } from '../lib/fifo-report-handler.js';
 import { readFinalLedger } from '../lib/final-ledger-snapshot.js';
 import { finalLedgerFixture } from './support/final-ledger-fixture.mjs';
 import { capitalHandler } from '../lib/portfolio-capital-handler.js';
+import {
+    reportDiagnosticError,
+    normalizeReportDiagnostic,
+} from '../lib/report-diagnostics.js';
 async function fixture() {
     const f = finalLedgerFixture();
     const snapshot = await readFinalLedger(
@@ -264,6 +268,8 @@ async function server() {
             },
         ],
     });
+    let snapshotFailure = null;
+    const diagnosticLogs = [];
     let reads = 0,
         claims = {
             uid: 'owner',
@@ -277,10 +283,12 @@ async function server() {
         store: {
             readFinalSnapshot: async () => {
                 reads++;
+                if (snapshotFailure) throw snapshotFailure;
                 return f.snapshot;
             },
         },
         now: () => '2026-01-31T00:00:00Z',
+        logDiagnostic: (record) => diagnosticLogs.push(record),
     });
     return {
         ...f,
@@ -288,6 +296,8 @@ async function server() {
         claims,
         calls: () => reads,
         setClaims: (v) => (claims = v),
+        setSnapshotFailure: (v) => (snapshotFailure = v),
+        diagnosticLogs,
         invoke: async (
             method = 'GET',
             body,
@@ -480,4 +490,145 @@ test('legacy capital API no longer strips cancellation flags and passes voided c
     assert.equal(res.body.trades.length, 1);
     assert.equal(res.body.trades[0].id, 'active');
     assert.equal(res.body.importedCash.length, 0);
+});
+
+test('authorized failures return stable allowlisted diagnostics with unique opaque IDs; upstream details never escape', async () => {
+    const s = await server();
+    const secret =
+        'SYNTHETIC_PRIVATE_SOURCE account=0042 token=private /private/object hash=' +
+        'b'.repeat(64);
+    const failures = [
+        [
+            reportDiagnosticError('INC_RECEIPT_DIGEST'),
+            'INC_RECEIPT_DIGEST',
+            'receipt',
+            409,
+        ],
+        [
+            Object.assign(Error(secret), {
+                code: 'INCREMENT_INTEGRITY_FAILED',
+                diagnosticCode: secret,
+                status: 418,
+                cause: secret,
+            }),
+            'INC_UNCLASSIFIED',
+            'increment',
+            409,
+        ],
+        [Error(secret), 'REPORT_SNAPSHOT_READ', 'snapshot', 503],
+    ];
+    const ids = new Set();
+    for (const [failure, code, stage, status] of failures) {
+        s.setSnapshotFailure(failure);
+        for (let i = 0; i < 2; i++) {
+            const r = await s.invoke();
+            assert.equal(r.statusCode, status);
+            assert.equal(r.body.diagnostic.code, code);
+            assert.equal(r.body.diagnostic.stage, stage);
+            assert.deepEqual(
+                normalizeReportDiagnostic(r.body.diagnostic),
+                r.body.diagnostic
+            );
+            assert.equal(
+                r.headers['X-Report-Request-ID'],
+                r.body.diagnostic.requestId
+            );
+            assert(!ids.has(r.body.diagnostic.requestId));
+            ids.add(r.body.diagnostic.requestId);
+            assert.deepEqual(s.diagnosticLogs.at(-1), {
+                requestId: r.body.diagnostic.requestId,
+                code,
+                stage,
+            });
+            assert(
+                !JSON.stringify([r.body, r.headers, s.diagnosticLogs]).includes(
+                    'SYNTHETIC_PRIVATE_SOURCE'
+                )
+            );
+            assert(!JSON.stringify(r.body).includes('b'.repeat(64)));
+            assert.equal(r.body.report, undefined);
+            assert.equal(r.body.input, undefined);
+        }
+    }
+    assert.equal(s.db.writes, 0);
+    s.setSnapshotFailure(null);
+    assert.equal((await s.invoke()).statusCode, 200);
+});
+test('denied admin and workbook paths reveal no diagnostic, object existence or storage failures', async () => {
+    const s = await server();
+    s.setSnapshotFailure(reportDiagnosticError('INC_INDEX_READ'));
+    s.setClaims({
+        uid: 'owner',
+        email: 'denied@example.invalid',
+        email_verified: true,
+    });
+    const denied = await s.invoke();
+    assert.equal(denied.statusCode, 403);
+    assert.equal(s.calls(), 0);
+    assert.equal(s.db.reads, 0);
+    s.setClaims(s.claims);
+    s.db.values.delete('sheetTrialLedgers/owner/pages/0');
+    const missing = await s.invoke();
+    assert.equal(missing.statusCode, 403);
+    assert.equal(s.calls(), 0);
+    const deniedDatabase = fifoReportHandler({
+        verify: async () => s.claims,
+        database: () => {
+            throw Error('SYNTHETIC_PRIVATE_SOURCE');
+        },
+        store: {
+            readFinalSnapshot: () => {
+                throw Error('must_not_read');
+            },
+        },
+        logDiagnostic: () => {
+            throw Error('must_not_log');
+        },
+    });
+    const inaccessible = response();
+    await deniedDatabase({ method: 'GET', query: {} }, inaccessible);
+    assert.equal(inaccessible.statusCode, 503);
+    for (const r of [denied, missing, inaccessible]) {
+        assert.equal(r.body.diagnostic, undefined);
+        assert.equal(r.headers['X-Report-Request-ID'], undefined);
+        assert(!JSON.stringify(r.body).includes('SYNTHETIC_PRIVATE_SOURCE'));
+    }
+    assert.deepEqual(s.diagnosticLogs, []);
+});
+test('uncertain transaction failure is a write diagnostic and never claims a successful save', async () => {
+    const s = await server();
+    s.db.runTransaction = async () => {
+        throw Error('SYNTHETIC_PRIVATE_SOURCE commit outcome');
+    };
+    const r = await s.invoke('POST', {});
+    assert.equal(r.statusCode, 503);
+    assert.equal(r.body.diagnostic.code, 'REPORT_ADJUSTMENTS_WRITE');
+    assert.equal(r.body.diagnostic.stage, 'adjustment_write');
+    assert.equal(r.body.revision, undefined);
+    assert(!JSON.stringify(r.body).includes('SYNTHETIC_PRIVATE_SOURCE'));
+    assert.equal(s.db.writes, 0);
+});
+
+test('verification exceptions and logging failures cannot disclose upstream messages or alter authorization', async () => {
+    const logged = [];
+    const handler = fifoReportHandler({
+        verify: async () => {
+            throw Object.assign(Error('SYNTHETIC_PRIVATE_SOURCE'), {
+                code: 'INCREMENT_INTEGRITY_FAILED',
+                status: 409,
+            });
+        },
+        database: () => {
+            throw Error('must_not_read');
+        },
+        store: {},
+        logDiagnostic: (record) => logged.push(record),
+    });
+    const r = response();
+    await handler({ method: 'GET', query: {} }, r);
+    assert.equal(r.statusCode, 401);
+    assert.equal(r.body.diagnostic, undefined);
+    assert.equal(r.headers['X-Report-Request-ID'], undefined);
+    assert.deepEqual(logged, []);
+    assert(!JSON.stringify(r).includes('SYNTHETIC_PRIVATE_SOURCE'));
 });

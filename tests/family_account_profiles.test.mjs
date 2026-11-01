@@ -947,3 +947,66 @@ test('v2 cannot overwrite an unbound baseline order or apply the baseline date c
     );
     assert.equal(JSON.stringify(baseline.rows), before);
 });
+
+test('legacy/v2 mixed verification remains compatible; individual pass cannot override combined account conflict', async (t) => {
+    const modern = await collect(t, 'wife');
+    const legacy = async (collector, seq) => {
+        const plan = await prepareManualPublication({
+            root: join(
+                collector.root,
+                'wife-toss',
+                refs.TOSS_WIFE_ACCOUNT_SHA256
+            ),
+            accountSeq: seq,
+            accountSuffix: '0042',
+            scopes: collector.result.scopes,
+            checkedAt: collector.result.checkedAt,
+        });
+        return loadPublication(plan.localDirectory);
+    };
+    const same = await legacy(modern, '42');
+    const changedCollector = await collect(t, 'wife', {
+        mutateAccount: (a) => [{ ...a, accountSeq: 84 }],
+    });
+    const different = await legacy(changedCollector, '84');
+    const verified = await Promise.all(
+        [modern.publication, same, different].map((p) =>
+            verifyIncrement(async (key) => p.objects.get(key), p.marker.value)
+        )
+    );
+    const base = { rows: [], details: new Map(), snapshotAt: '2000-01-01' };
+    assert.ok(
+        overlayIncrements(base, {
+            verified: verified.slice(0, 2),
+            revision: hash('compatible'),
+            entryCount: 2,
+        }).rows.length > 0
+    );
+    for (const mixed of [
+        [verified[0], verified[2]],
+        [verified[2], verified[0]],
+    ]) {
+        assert.throws(
+            () =>
+                overlayIncrements(base, {
+                    verified: mixed,
+                    revision: hash('conflict'),
+                    entryCount: 2,
+                }),
+            (e) => e.diagnosticCode === 'INC_INTEGRATION_SEQUENCE_CONFLICT'
+        );
+    }
+    assert.equal(base.rows.length, 0);
+    const io = memory(
+        new Map([...same.objects, [same.marker.key, same.marker.bytes]])
+    );
+    await assert.rejects(
+        () => readIncrements({ ...io, expectedLegacySuffix: '0000' }),
+        (e) => e.diagnosticCode === 'INC_LEGACY_BINDING'
+    );
+    assert.equal(
+        (await readIncrements({ ...io, expectedLegacySuffix: '0042' }))
+            .entryCount,
+        1
+    );
+});

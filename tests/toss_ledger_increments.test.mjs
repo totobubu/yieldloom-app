@@ -419,7 +419,12 @@ test('a mismapped Toss account cannot upload or link a wife increment', async (t
     const f = await fixture(t),
         s = memory();
     await assert.rejects(
-        () => publishExisting({ directory: f.dir, expectedAccountSuffix: '0000', ...s }),
+        () =>
+            publishExisting({
+                directory: f.dir,
+                expectedAccountSuffix: '0000',
+                ...s,
+            }),
         /wife_account_mapping_required/
     );
     assert.equal(s.writes.length, 0);
@@ -428,11 +433,19 @@ test('a mismapped Toss account cannot upload or link a wife increment', async (t
 test('verified remote publication writes immutable commit marker last and survives restart idempotently', async (t) => {
     const f = await fixture(t),
         s = memory();
-    const result = await publishExisting({ directory: f.dir, expectedAccountSuffix: '9999', ...s });
+    const result = await publishExisting({
+        directory: f.dir,
+        expectedAccountSuffix: '9999',
+        ...s,
+    });
     assert.equal(result.status, 'linked');
     assert.equal(s.writes.at(-1), f.marker.key);
     const count = s.writes.length;
-    await publishExisting({ directory: f.dir, expectedAccountSuffix: '9999', ...s });
+    await publishExisting({
+        directory: f.dir,
+        expectedAccountSuffix: '9999',
+        ...s,
+    });
     assert.equal(s.writes.length, count);
     const r = await readIncrements(s);
     assert.equal(r.entryCount, 1);
@@ -447,12 +460,22 @@ test('partial upload never publishes receipt or marker; unchanged local plan res
     const f = await fixture(t),
         s = memory();
     s.setFailKey(f.marker.value.manifest.key);
-    await assert.rejects(() => publishExisting({ directory: f.dir, expectedAccountSuffix: '9999', ...s }));
+    await assert.rejects(() =>
+        publishExisting({
+            directory: f.dir,
+            expectedAccountSuffix: '9999',
+            ...s,
+        })
+    );
     assert(!s.objects.has(f.marker.key));
     assert(!s.objects.has(f.marker.value.receipt.key));
     assert.equal((await readIncrements(s)).entryCount, 0);
     s.setFailKey(null);
-    await publishExisting({ directory: f.dir, expectedAccountSuffix: '9999', ...s });
+    await publishExisting({
+        directory: f.dir,
+        expectedAccountSuffix: '9999',
+        ...s,
+    });
     assert.equal((await readIncrements(s)).entryCount, 1);
 });
 test('corrupt GET or conflicting preexisting bytes stop linkage, never report zero complete', async (t) => {
@@ -687,4 +710,285 @@ test('reader sees appended index after baseline cache and enforces denied/integr
     denied = false;
     s.objects.set(a.marker.key, Buffer.from('changed'));
     await assert.rejects(() => store.readFinalSnapshot('owner'), /무결성/);
+});
+
+test('synthetic failures identify every verification layer without relaxing hash or evidence checks', async (t) => {
+    const { rewriteIncrementFixture } = await import(
+        './support/increment-fixture-rewrite.mjs'
+    );
+    const f = await fixture(t);
+    const checkFailure = async (
+        source,
+        expected,
+        readBytes = async (key) => source.objects.get(key)
+    ) => {
+        for (let attempt = 0; attempt < 2; attempt++)
+            await assert.rejects(
+                () => verifyIncrement(readBytes, source.marker.value),
+                (e) => {
+                    assert.equal(e.code, 'INCREMENT_INTEGRITY_FAILED');
+                    assert.equal(e.diagnosticCode, expected);
+                    assert(!e.message.includes('SYNTHETIC_PRIVATE_SOURCE'));
+                    return true;
+                }
+            );
+    };
+    const cases = [
+        [
+            {
+                manifest: (m) => {
+                    m.format = 'invalid';
+                },
+            },
+            'INC_MANIFEST_FORMAT',
+        ],
+        [
+            {
+                receipt: (r) => {
+                    r.allRawPartsGetVerified = false;
+                },
+            },
+            'INC_RECEIPT_FORMAT',
+        ],
+        [
+            {
+                manifest: (m) => {
+                    m.partCount = 52;
+                },
+            },
+            'INC_BUNDLE_LIMITS',
+        ],
+        [
+            { gzip: () => Buffer.from('SYNTHETIC_PRIVATE_SOURCE') },
+            'INC_GZIP_FORMAT',
+        ],
+        [
+            { archive: () => Buffer.from('SYNTHETIC_PRIVATE_SOURCE') },
+            'INC_ARCHIVE_FORMAT',
+        ],
+        [
+            {
+                bundle: (b) => {
+                    b.format = 'invalid';
+                },
+            },
+            'INC_BUNDLE_FORMAT',
+        ],
+        [
+            {
+                bundle: (b) => {
+                    b.files[0].name = '../SYNTHETIC_PRIVATE_SOURCE';
+                },
+            },
+            'INC_MEMBER_NAME',
+        ],
+        [
+            {
+                member: (name, value) => {
+                    if (name === 'api/OPEN/manifest.json')
+                        value.identity.accountHash = 'invalid';
+                },
+            },
+            'INC_COLLECTOR_IDENTITY',
+        ],
+        [
+            {
+                member: (name, value) => {
+                    if (name === 'api/OPEN/checkpoint.json')
+                        value.status = 'partial';
+                },
+            },
+            'INC_CHECKPOINT_FORMAT',
+        ],
+        [
+            {
+                member: (name, value) => {
+                    if (name === 'api/OPEN/page-00000001.json')
+                        value.receivedAt = 'invalid';
+                },
+            },
+            'INC_PAGE_TIME',
+        ],
+        [
+            {
+                member: (name, value) => {
+                    if (name === 'api/OPEN/orders-index.json')
+                        value.uniqueOrders = 99;
+                },
+            },
+            'INC_ORDER_INDEX_COUNTS',
+        ],
+        [
+            {
+                member: (name, value) => {
+                    if (name === 'dividend-observation.json')
+                        value.paymentStatus = 'EXPECTED';
+                },
+            },
+            'INC_DIVIDEND_OBSERVATION',
+        ],
+        [
+            {
+                member: (_name, value) => {
+                    value.access_token = 'SYNTHETIC_PRIVATE_SOURCE';
+                },
+            },
+            'INC_CREDENTIAL_FIELD',
+        ],
+    ];
+    for (const [edit, code] of cases)
+        await checkFailure(rewriteIncrementFixture(f, edit), code);
+    await checkFailure(
+        {
+            ...f,
+            marker: { value: { ...f.marker.value, accountId: 'husband' } },
+        },
+        'INC_MARKER_SCOPE'
+    );
+    const manifest = JSON.parse(f.objects.get(f.marker.value.manifest.key));
+    for (const [key, code] of [
+        [f.marker.value.manifest.key, 'INC_MANIFEST_READ'],
+        [f.marker.value.receipt.key, 'INC_RECEIPT_READ'],
+        [manifest.parts[0].key, 'INC_PART_READ'],
+    ]) {
+        await checkFailure(f, code, async (k) => {
+            if (k === key) throw Error('SYNTHETIC_PRIVATE_SOURCE');
+            return f.objects.get(k);
+        });
+    }
+    for (const [key, code] of [
+        [f.marker.value.manifest.key, 'INC_MANIFEST_DIGEST'],
+        [f.marker.value.receipt.key, 'INC_RECEIPT_DIGEST'],
+        [manifest.parts[0].key, 'INC_PART_DIGEST'],
+    ]) {
+        await checkFailure(f, code, async (k) =>
+            k === key
+                ? Buffer.from('SYNTHETIC_PRIVATE_SOURCE')
+                : f.objects.get(k)
+        );
+    }
+    assert.equal(
+        (await verifyIncrement(async (k) => f.objects.get(k), f.marker.value))
+            .observations.length,
+        1
+    );
+});
+test('index list, object and parse failures have stable safe diagnostics, including concurrent independent reads', async (t) => {
+    const f = await fixture(t);
+    const base = memory(
+        new Map([...f.objects, [f.marker.key, f.marker.bytes]])
+    );
+    const variants = [
+        [
+            {
+                ...base,
+                listEntries: async () => {
+                    throw Error('SYNTHETIC_PRIVATE_SOURCE');
+                },
+            },
+            'INC_INDEX_READ',
+        ],
+        [
+            {
+                ...base,
+                listEntries: async () => ({ keys: [], truncated: true }),
+            },
+            'INC_INDEX_LIST',
+        ],
+        [
+            {
+                ...base,
+                listEntries: async () => ({
+                    keys: ['outside-scope'],
+                    truncated: false,
+                }),
+            },
+            'INC_INDEX_KEY',
+        ],
+        [
+            { ...base, readBytes: async () => Buffer.from('{}') },
+            'INC_INDEX_DIGEST',
+        ],
+        [
+            {
+                ...base,
+                readBytes: async () => {
+                    throw Error('SYNTHETIC_PRIVATE_SOURCE');
+                },
+            },
+            'INC_INDEX_READ',
+        ],
+    ];
+    const bytes = Buffer.from('SYNTHETIC_PRIVATE_SOURCE');
+    const badJsonKey =
+        'reconciliation/increments/v1/wife/index/' +
+        incrementHash(bytes) +
+        '.json';
+    variants.push([
+        {
+            listEntries: async () => ({ keys: [badJsonKey], truncated: false }),
+            readBytes: async () => bytes,
+        },
+        'INC_INDEX_JSON',
+    ]);
+    await Promise.all(
+        variants.map(async ([io, code]) =>
+            assert.rejects(
+                () => readIncrements(io),
+                (e) =>
+                    e.diagnosticCode === code &&
+                    !e.message.includes('SYNTHETIC_PRIVATE_SOURCE')
+            )
+        )
+    );
+    assert.equal((await readIncrements(base)).entryCount, 1);
+});
+
+test('numeric order and collector index-reference diagnostics come from independently checked evidence', async (t) => {
+    const { rewriteIncrementFixture } = await import(
+        './support/increment-fixture-rewrite.mjs'
+    );
+    const f = await fixture(t, {
+        orders: [order('synthetic-invalid-numeric')],
+    });
+    const badOrder = order('synthetic-invalid-numeric', {
+        execution: { ...order().execution, commission: 'not-a-decimal' },
+    });
+    const raw = Buffer.from(page([badOrder]));
+    const changed = rewriteIncrementFixture(f, {
+        member: (name, value) => {
+            if (name === 'api/OPEN/page-00000001.json')
+                Object.assign(value, {
+                    bodyBase64: raw.toString('base64'),
+                    sha256: incrementHash(raw),
+                });
+            if (name === 'api/OPEN/orders-index.json')
+                value.orders[0].observations[0].sha256 = incrementHash(
+                    JSON.stringify(badOrder)
+                );
+        },
+    });
+    await assert.rejects(
+        () =>
+            verifyIncrement(
+                async (key) => changed.objects.get(key),
+                changed.marker.value
+            ),
+        (e) => e.diagnosticCode === 'INC_API_ORDER_NUMERIC'
+    );
+    await assert.rejects(
+        () =>
+            fixture(t, {
+                orders: [order('synthetic-reference')],
+                mutateRun: async (dir) => {
+                    const path = join(dir, 'orders-index.json');
+                    const index = JSON.parse(await readFile(path));
+                    index.orders[0].observations[0].sha256 = incrementHash(
+                        'different-synthetic-order'
+                    );
+                    await writeFile(path, JSON.stringify(index));
+                },
+            }),
+        (e) => e.diagnosticCode === 'INC_INDEX_REFERENCE_VALUES'
+    );
 });

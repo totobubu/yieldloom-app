@@ -1,6 +1,40 @@
 import { apiUrl } from './apiUrl.js';
 import { validSourceTimeItems } from '../../lib/sheet-source-times.js';
 import { validFinalRow } from '../../lib/final-ledger-view.js';
+import {
+    normalizeReportDiagnostic,
+    reportDiagnostics,
+} from '../../lib/report-diagnostics.js';
+
+const safeFifoErrors = new WeakSet();
+function fifoFailure(status, value) {
+    const diagnostic = [401, 403].includes(status)
+        ? null
+        : normalizeReportDiagnostic(value?.diagnostic);
+    const message = diagnostic
+        ? reportDiagnostics[diagnostic.code].message
+        : status === 401
+          ? '로그인을 확인해 주세요.'
+          : status === 403
+            ? '관리자 권한과 장부 접근 권한을 확인해 주세요.'
+            : status === 409
+              ? '장부 또는 보정 검증을 완료하지 못했습니다. 다시 조회해 주세요.'
+              : [400, 413].includes(status)
+                ? '보정 입력값·확인 근거와 요청 한도를 확인해 주세요.'
+                : '보고서 요청을 완료하지 못했습니다. 다시 조회해 주세요.';
+    const error = Object.assign(new Error(message), {
+        status,
+        ...(diagnostic ? { diagnostic } : {}),
+    });
+    safeFifoErrors.add(error);
+    return error;
+}
+function staleFifoFailure() {
+    const error = fifoFailure(401);
+    error.message =
+        '로그인 상태가 변경되어 응답을 폐기했습니다. 저장 결과는 다시 조회해 주세요.';
+    return error;
+}
 
 export function createSheetReportClient({
     fetchImpl = fetch,
@@ -73,12 +107,20 @@ export function createSheetReportClient({
                 }
             );
             const value = await response.json();
+            if (current !== generation || owner !== user) {
+                if (section === 'assets') throw staleFifoFailure();
+                throw new Error(
+                    '로그인 상태가 변경되어 보고서를 폐기했습니다.'
+                );
+            }
             if (!response.ok) {
                 if (
                     [401, 403].includes(response.status) &&
                     current === generation
                 )
                     clear();
+                if (section === 'assets')
+                    throw fifoFailure(response.status, value);
                 throw Object.assign(
                     new Error(
                         value.error || '비공개 대조 보고서 조회에 실패했습니다.'
@@ -86,10 +128,6 @@ export function createSheetReportClient({
                     { status: response.status, code: value.code }
                 );
             }
-            if (current !== generation || owner !== user)
-                throw new Error(
-                    '로그인 상태가 변경되어 보고서를 폐기했습니다.'
-                );
             if (
                 value.accountId !== accountId ||
                 value.section !== section ||
@@ -168,8 +206,11 @@ export function createSheetReportClient({
             .catch((error) => {
                 if (String(error.code || '').startsWith('auth/')) {
                     if (current === generation) clear();
+                    if (section === 'assets') throw fifoFailure(401);
                     error.status = 401;
                 }
+                if (section === 'assets' && !safeFifoErrors.has(error))
+                    throw fifoFailure(503);
                 throw error;
             })
             .finally(() => {
@@ -200,27 +241,23 @@ export function createSheetReportClient({
                 }
             );
             const value = await response.json();
+            if (current !== generation || owner !== user)
+                throw staleFifoFailure();
             if (!response.ok) {
                 if (
                     [401, 403].includes(response.status) &&
                     current === generation
                 )
                     clear();
-                throw Object.assign(
-                    new Error(value.error || '보정을 저장하지 못했습니다.'),
-                    { status: response.status }
-                );
+                throw fifoFailure(response.status, value);
             }
-            if (current !== generation || owner !== user)
-                throw new Error(
-                    '로그인 상태가 바뀌었습니다. 저장 결과를 다시 조회해 주세요.'
-                );
             return value;
         } catch (error) {
             if (String(error.code || '').startsWith('auth/')) {
                 if (current === generation) clear();
-                error.status = 401;
+                throw fifoFailure(401);
             }
+            if (!safeFifoErrors.has(error)) throw fifoFailure(503);
             throw error;
         } finally {
             if (current === generation) cache.clear();

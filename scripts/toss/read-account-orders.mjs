@@ -26,7 +26,7 @@ No scheduling, financial writes, browser control, uploads, or automatic reauthen
 Private observations: var/toss-orders/ (Git ignored). Exit 0: requested API scopes complete; 2: partial/authentication required; 1: invalid command.
 Browser dividend details are a separate skill step; API completion does not verify them.`;
 const PUBLICATION_HELP = `Optional authorized persistence: --prepare-publication --ledger-account wife [--browser-observation EXISTING_EGO_JSON], or --publish --ledger-account wife [--browser-observation EXISTING_EGO_JSON].
---prepare-publication writes an offline verified local plan only. --publish requires existing R2 environment credentials and performs immutable uploads, GET/member verification and an append-only index commit. API success and publication success remain separate.
+--prepare-publication writes an offline verified local plan only. --publish requires an existing TOSS_WIFE_ACCOUNT_SUFFIX mapping plus R2 environment credentials; it performs immutable uploads, GET/member verification and an append-only index commit. --no-external-storage blocks both publication flags. API success and publication success remain separate.
 To resume publication without recollecting: node scripts/toss/publish-account-observations.mjs --directory EXISTING_PUBLICATION --publish.
 If credentials are unavailable, use the existing authorized Cloudflare connector with the prepared immutable plan; do not create/copy credentials or report the plan as linked.`;
 
@@ -74,6 +74,8 @@ export async function readAccountOrders(
         scopes: {},
         requests: { token: 0, accounts: 0, orders: 0 },
     };
+    if (options.noExternalStorage && (options.preparePublication || options.publish))
+        return { ...result, reason: 'external_storage_prohibited' };
     if (!validateManualOptions(options))
         return { ...result, reason: 'invalid_scope_or_account_selection' };
     const selected = options.status ?? 'BOTH';
@@ -204,6 +206,17 @@ export async function readAccountOrders(
                         reason: 'explicit_ledger_account_required',
                     },
                 };
+            if (
+                !/^\d{4}$/.test(credentials.TOSS_WIFE_ACCOUNT_SUFFIX ?? '') ||
+                options.accountSuffix !== credentials.TOSS_WIFE_ACCOUNT_SUFFIX
+            )
+                return {
+                    ...completed,
+                    publication: {
+                        status: 'not_linked',
+                        reason: 'wife_account_mapping_required',
+                    },
+                };
             try {
                 const plan = await prepareManualPublication({
                     root,
@@ -216,6 +229,7 @@ export async function readAccountOrders(
                 completed.publication = options.publish
                     ? await publishExisting({
                           directory: plan.localDirectory,
+                          expectedAccountSuffix: credentials.TOSS_WIFE_ACCOUNT_SUFFIX,
                           ...(await createExistingR2Transport()),
                       })
                     : plan;
@@ -259,6 +273,7 @@ export async function main(args = process.argv.slice(2)) {
                 'issue-token': { type: 'boolean' },
                 'prepare-publication': { type: 'boolean' },
                 publish: { type: 'boolean' },
+                'no-external-storage': { type: 'boolean' },
                 'ledger-account': { type: 'string' },
                 'browser-observation': { type: 'string' },
             },
@@ -277,12 +292,14 @@ export async function main(args = process.argv.slice(2)) {
             issueToken: values['issue-token'] ?? false,
             preparePublication: values['prepare-publication'] ?? false,
             publish: values.publish ?? false,
+            noExternalStorage: values['no-external-storage'] ?? false,
             ledgerAccount: values['ledger-account'],
             browserFile: values['browser-observation'],
         };
         if (
             !values.live ||
             !validateManualOptions(options) ||
+            (options.noExternalStorage && (options.publish || options.preparePublication)) ||
             ((options.publish || options.preparePublication) &&
                 options.ledgerAccount !== 'wife') ||
             (options.browserFile &&

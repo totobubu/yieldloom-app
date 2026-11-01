@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { readFile, readdir, mkdir, writeFile } from 'node:fs/promises';
-import { resolve, join, basename } from 'node:path';
+import { resolve, join, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync, gunzipSync } from 'node:zlib';
 import { parseArgs } from 'node:util';
+import { loadLocalCredentials } from './collect-closed-orders.mjs';
 import {
     incrementHash as hash,
     incrementMarker,
@@ -60,6 +61,8 @@ export async function prepareManualPublication({
     if (browserFile) {
         const bytes = await readFile(browserFile),
             ui = JSON.parse(bytes);
+        if (ui.paymentStatus !== 'PAID' || ui.detail?.paymentStatus !== 'PAID')
+            throw Error('verified_paid_deposit_required');
         const identity = {
             provider: 'TOSS_PERSONAL_ACCOUNT_UI',
             account: 'wife',
@@ -285,8 +288,11 @@ export async function attachBrowserObservation(directory, browserFile) {
         existingFiles: bundle.files,
     });
 }
-export async function publishExisting({ directory, readBytes, putIfAbsent }) {
+export async function publishExisting({ directory, readBytes, putIfAbsent, expectedAccountSuffix }) {
     const { dir, marker, objects } = await loadPublication(directory);
+    const suffix = marker.value.prefix.match(/^brokerage\/toss\/wife-(\d{4})\//)?.[1];
+    if (!/^\d{4}$/.test(expectedAccountSuffix ?? '') || suffix !== expectedAccountSuffix)
+        throw Error('wife_account_mapping_required');
     const receiptKey = marker.value.receipt.key;
     for (const [key, bytes] of objects) {
         if (key === receiptKey) continue;
@@ -381,11 +387,12 @@ export async function main(args = process.argv.slice(2)) {
                 directory: { type: 'string' },
                 publish: { type: 'boolean' },
                 'attach-browser': { type: 'string' },
+                'env-file': { type: 'string' },
             },
         });
         if (values.help) {
             console.log(
-                'node scripts/toss/publish-account-observations.mjs --directory EXISTING_VERIFIED_PUBLICATION [--attach-browser EXISTING_EGO_JSON] [--publish]\nWithout --publish: offline verification/preparation only. --attach-browser combines one actual ego observation with existing API evidence without recollecting. With --publish: existing R2 environment credentials, private immutable writes, GET/member verification, append-only index commit. No new credentials, baseline writes or financial API calls.'
+                'node scripts/toss/publish-account-observations.mjs --directory EXISTING_VERIFIED_PUBLICATION [--attach-browser EXISTING_EGO_JSON] [--publish]\nWithout --publish: offline verification/preparation only. --attach-browser combines one actual ego observation with existing API evidence without recollecting. With --publish: require an existing TOSS_WIFE_ACCOUNT_SUFFIX mapping and R2 credentials, then private immutable writes, GET/member verification, append-only index commit. No new credentials, baseline writes or financial API calls.'
             );
             return 0;
         }
@@ -410,10 +417,15 @@ export async function main(args = process.argv.slice(2)) {
             );
             return 0;
         }
+        const envPath = values['env-file']
+            ? resolve(values['env-file'])
+            : resolve(dirname(fileURLToPath(import.meta.url)), '../../.env.toss-orders.local');
+        const credentials = await loadLocalCredentials(envPath);
         console.log(
             JSON.stringify(
                 await publishExisting({
                     directory: p.dir,
+                    expectedAccountSuffix: credentials.TOSS_WIFE_ACCOUNT_SUFFIX,
                     ...(await createExistingR2Transport()),
                 })
             )

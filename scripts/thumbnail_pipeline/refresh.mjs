@@ -20,6 +20,35 @@ import {
 
 const missing = (error) =>
     error?.name === 'NoSuchKey' || error?.$metadata?.httpStatusCode === 404;
+const retryableSourceStatuses = new Set([408, 429, 500, 502, 503, 504]);
+const sourceAttempts = 3;
+
+async function fetchSource(fetcher, url, options) {
+    for (let attempt = 1; attempt <= sourceAttempts; attempt += 1) {
+        let response;
+        try {
+            response = await fetcher(url, {
+                ...options,
+                signal: AbortSignal.timeout(15000),
+            });
+        } catch (error) {
+            if (attempt === sourceAttempts) throw error;
+        }
+        if (
+            response &&
+            (response.ok ||
+                response.status === 304 ||
+                !retryableSourceStatuses.has(response.status) ||
+                attempt === sourceAttempts)
+        )
+            return response;
+        await new Promise((resolve) =>
+            setTimeout(resolve, 250 * 2 ** (attempt - 1))
+        );
+    }
+    throw new Error('Source fetch exhausted retries');
+}
+
 export async function readJson(storage, bucket, key) {
     try {
         const object = await storage.send(
@@ -121,13 +150,13 @@ export async function refresh({
                         )
                             throw new Error('Invalid source path');
                         const old = entries[symbol];
-                        const response = await fetcher(
+                        const response = await fetchSource(
+                            fetcher,
                             new URL(
                                 sourceKey,
                                 `${sourceBase.replace(/\/$/, '')}/`
                             ),
                             {
-                                signal: AbortSignal.timeout(15000),
                                 headers: {
                                     ...(old?.etag &&
                                     old.generatorVersion === generatorVersion

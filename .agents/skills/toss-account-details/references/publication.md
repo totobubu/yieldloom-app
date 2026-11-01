@@ -27,7 +27,8 @@
   최소 권한·저장 위치·사용자 조치를 구체적으로 제시하되 새 자격증명 설정은 별도 명시 승인을 기다린다.
 - 중단·브라우저 후속 관측은 기존 API run을 재사용해 publication을 준비한다. R2 실패 때문에
   실제 API/ego를 다시 수집하지 않는다. `publish-account-observations.mjs --directory <기존publication> --publish`
-  로 저장만 재개한다. `--publish` 없이는 오프라인 검증만 한다.
+  로 저장만 재개한다. 게시 재개에도 기존 `TOSS_WIFE_ACCOUNT_SUFFIX` 계좌 매핑이 필요하다.
+  `--publish` 없이는 오프라인 검증만 한다.
 - API 먼저/ego 나중 순서에서는 helper의 `--prepare-publication --ledger-account wife`로 API 원문을
   준비하고 ego를 읽은 뒤 `node scripts/toss/publish-account-observations.mjs --directory <APIpublication> --attach-browser <실제egoJSON> --publish`
   로 이어간다. R2 환경 설정이 없으면 `--publish`를 빼서 준비한 뒤 기존 Cloudflare 연결을 사용한다.

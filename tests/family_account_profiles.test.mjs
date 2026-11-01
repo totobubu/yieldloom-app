@@ -25,6 +25,7 @@ import {
     prepareManualPublication,
 } from '../scripts/toss/publish-account-observations.mjs';
 import { createPrivateReportStore } from '../lib/private-report-store.js';
+import { sheetReportHandler } from '../lib/sheet-report-handler.js';
 import { createSheetReportClient } from '../src/services/sheetReports.js';
 import {
     familyFinalRows,
@@ -578,4 +579,371 @@ test('manual CLI explicit env file cannot inherit stale OS tokens, and absent fi
     const absent = run(join(root, 'absent.env'));
     assert.notEqual(absent.status, 0);
     assert.equal(absent.stdout, '');
+});
+
+test('family client → authenticated handler → real store reads both account indices with identical suffix/order IDs and never emits raw evidence', async (t) => {
+    const husbandNumber = '99999990042';
+    const sameSuffixRefs = {
+        ...refs,
+        TOSS_HUSBAND_ACCOUNT_SUFFIX: '0042',
+        TOSS_HUSBAND_ACCOUNT_SHA256: hash(husbandNumber),
+    };
+    const sourceOrder = (currency, amount) =>
+        order('identical-provider-order', {
+            currency,
+            execution: { ...order().execution, filledAmount: amount },
+            unknownProviderField: {
+                rawPrivate: 'RAW-FINANCIAL-FIXTURE-DO-NOT-EMIT',
+            },
+        });
+    const [wife, husband] = await Promise.all([
+        collect(t, 'wife', {
+            credentials: sameSuffixRefs,
+            apiOrders: [sourceOrder('USD', '1.2345')],
+        }),
+        collect(t, 'husband', {
+            credentials: sameSuffixRefs,
+            mutateAccount: (a) => [{ ...a, accountNo: husbandNumber }],
+            apiOrders: [sourceOrder('KRW', '1000')],
+        }),
+    ]);
+    assert.equal(wife.result.apiStatus, 'complete');
+    assert.equal(husband.result.apiStatus, 'complete');
+    const wrongAccount = await collect(t, 'husband', {
+        credentials: sameSuffixRefs,
+        mutateAccount: (a) => [{ ...a, accountNo: numbers.wife }],
+    });
+    assert.equal(wrongAccount.result.reason, 'profile_account_mismatch');
+    assert.equal(wrongAccount.calls.length, 1);
+    assert.equal(wrongAccount.result.publication, undefined);
+    assert.ok(wife.calls.every((c) => c.token === 'Bearer wife-token'));
+    assert.ok(husband.calls.every((c) => c.token === 'Bearer husband-token'));
+    assert.notEqual(
+        wife.publication.marker.key,
+        husband.publication.marker.key
+    );
+    const baseline = finalLedgerFixture();
+    const io = memory(baseline.objects);
+    // Matching last four digits cannot authorize a different profile's restart.
+    await assert.rejects(
+        () =>
+            publishExisting({
+                directory: husband.publication.dir,
+                profile: resolveAccountProfile('wife-toss', sameSuffixRefs),
+                ...io,
+            }),
+        /profile_account_mapping_required/
+    );
+    assert.equal(io.writes.length, 0);
+    await Promise.all(
+        [wife, husband].map((f) =>
+            publishExisting({
+                directory: f.publication.dir,
+                profile: resolveAccountProfile(
+                    f.result.profileId,
+                    sameSuffixRefs
+                ),
+                ...io,
+            })
+        )
+    );
+    const storageCalls = [];
+    const store = createPrivateReportStore({
+        environment: sameSuffixRefs,
+        finalCheckpoint: baseline.checkpoint,
+        getStorage: () => ({
+            send: async (command) => {
+                storageCalls.push(command.input);
+                if (command.input.Prefix)
+                    return {
+                        Contents: [...io.objects.keys()]
+                            .filter((key) =>
+                                key.startsWith(command.input.Prefix)
+                            )
+                            .map((Key) => ({ Key })),
+                        IsTruncated: false,
+                    };
+                const bytes = io.objects.get(command.input.Key);
+                assert.ok(bytes, 'fixture object must exist');
+                return {
+                    ContentLength: bytes.length,
+                    Body: Readable.from([bytes]),
+                };
+            },
+        }),
+    });
+    let documentReads = 0,
+        requests = 0;
+    const uid = 'synthetic-family-owner';
+    const database = () => ({
+        collection: (name) => {
+            assert.equal(name, 'sheetTrialLedgers');
+            return {
+                doc: (owner) => {
+                    assert.equal(owner, uid);
+                    return {
+                        get: async () => {
+                            documentReads++;
+                            return {
+                                exists: true,
+                                data: () => ({ pageCount: 1 }),
+                            };
+                        },
+                        collection: (name) => {
+                            assert.equal(name, 'pages');
+                            return {
+                                doc: (pageId) => {
+                                    assert.equal(pageId, '0');
+                                    return {
+                                        get: async () => {
+                                            documentReads++;
+                                            return {
+                                                data: () => ({
+                                                    rows: [
+                                                        {
+                                                            accountId: 'wife',
+                                                            source: {
+                                                                spreadsheetId:
+                                                                    'synthetic-workbook',
+                                                            },
+                                                        },
+                                                    ],
+                                                }),
+                                            };
+                                        },
+                                    };
+                                },
+                            };
+                        },
+                    };
+                },
+            };
+        },
+    });
+    const handler = sheetReportHandler({
+        verify: async (req) => {
+            assert.equal(
+                req.headers.Authorization,
+                'Bearer fixture-firebase-token'
+            );
+            return { uid, email: 'jomalkeun@gmail.com', email_verified: true };
+        },
+        database,
+        store,
+        finalCheckpoint: baseline.checkpoint,
+    });
+    const client = createSheetReportClient({
+        fetchImpl: async (url, request) => {
+            requests++;
+            const response = {
+                statusCode: 200,
+                setHeader() {},
+                status(code) {
+                    this.statusCode = code;
+                    return this;
+                },
+                json(body) {
+                    this.body = body;
+                    return this;
+                },
+            };
+            await handler(
+                {
+                    method: 'GET',
+                    query: Object.fromEntries(
+                        new URL(url, 'http://fixture.local').searchParams
+                    ),
+                    headers: request.headers,
+                },
+                response
+            );
+            return new Response(JSON.stringify(response.body), {
+                status: response.statusCode,
+            });
+        },
+    });
+    const user = { getIdToken: async () => 'fixture-firebase-token' };
+    const [family, concurrent] = await Promise.all([
+        client.load(user, 'family', 'final'),
+        client.load(user, 'family', 'final'),
+    ]);
+    assert.equal(family, concurrent);
+    assert.equal(requests, 1);
+    assert.equal(documentReads, 2);
+    const prefixes = storageCalls.filter((c) => c.Prefix).map((c) => c.Prefix);
+    for (const id of ['wife-toss', 'husband-toss'])
+        assert.ok(
+            prefixes.includes(
+                profileIndexPrefix(resolveAccountProfile(id, sameSuffixRefs))
+            )
+        );
+    assert.equal(
+        prefixes.filter((p) => p === 'reconciliation/increments/v1/wife/index/')
+            .length,
+        1
+    );
+    const incrementalRows = family.rows.filter((r) => r.increment);
+    assert.equal(incrementalRows.length, 2);
+    assert.equal(familyFinalRows(family, 'husband').length, 1);
+    assert.equal(
+        familyFinalRows(family, 'wife').filter((r) => r.increment).length,
+        1
+    );
+    assert.notEqual(incrementalRows[0].id, incrementalRows[1].id);
+    const totals = summarizeFinalRows(incrementalRows);
+    assert.equal(
+        totals.find((total) => total.currency === 'USD').amount,
+        '1.2345'
+    );
+    assert.equal(
+        totals.find((total) => total.currency === 'KRW').amount,
+        '1000'
+    );
+    assert.deepEqual(family.aggregation, {
+        currencyMode: 'native_currency_only',
+        fxRate: null,
+        transfersAreIncome: false,
+    });
+    const serialized = JSON.stringify(family);
+    for (const hidden of [
+        numbers.wife,
+        husbandNumber,
+        'wife-token',
+        'husband-token',
+        'stale-global-token',
+        'fixture-firebase-token',
+        'RAW-FINANCIAL-FIXTURE-DO-NOT-EMIT',
+        'bodyBase64',
+        'dataBase64',
+        'accountSeqSha256',
+    ])
+        assert.ok(
+            !serialized.includes(hidden),
+            'private transport fields must not reach the API response'
+        );
+    for (const row of incrementalRows) {
+        const own = await client.load(user, row.accountId, 'final', {
+            observationId: row.id,
+        });
+        assert.equal(own.detail.id, row.id);
+        const other = row.accountId === 'wife' ? 'husband' : 'wife';
+        await assert.rejects(
+            () => client.load(user, other, 'final', { observationId: row.id }),
+            (error) => error.status === 404
+        );
+    }
+    const [wifeOnly, husbandOnly] = await Promise.all([
+        client.load(user, 'wife', 'final'),
+        client.load(user, 'husband', 'final'),
+    ]);
+    assert.ok(wifeOnly.rows.every((r) => r.accountId === 'wife'));
+    assert.equal(husbandOnly.rows.length, 1);
+    assert.ok(husbandOnly.rows.every((r) => r.accountId === 'husband'));
+    assert.equal(husbandOnly.unassignedRows.length, 0);
+});
+
+test('legacy alias requires verified collector account hash: equal suffix/order IDs cannot collapse different accounts', async (t) => {
+    const owner = await collect(t, 'wife');
+    const anotherNumber = '99999990042';
+    const other = await collect(t, 'wife', {
+        credentials: { ...refs, TOSS_WIFE_ACCOUNT_SHA256: hash(anotherNumber) },
+        mutateAccount: (a) => [
+            { ...a, accountNo: anotherNumber, accountSeq: 84 },
+        ],
+        apiOrders: [
+            order('same-provider-id', {
+                execution: { ...order().execution, filledAmount: '20' },
+            }),
+        ],
+    });
+    const legacyFor = async (f, accountSeq) =>
+        loadPublication(
+            (
+                await prepareManualPublication({
+                    root: join(f.publication.dir, '..'),
+                    accountSeq,
+                    accountSuffix: '0042',
+                    scopes: f.result.scopes,
+                    checkedAt: f.result.checkedAt,
+                })
+            ).localDirectory
+        );
+    const [legacyOwner, legacyOther] = await Promise.all([
+        legacyFor(owner, '42'),
+        legacyFor(other, '84'),
+    ]);
+    const verified = await Promise.all(
+        [owner.publication, legacyOwner, legacyOther].map((p) =>
+            verifyIncrement(async (key) => p.objects.get(key), p.marker.value)
+        )
+    );
+    assert.equal(verified[1].apiAccountHash, hash('42'));
+    assert.equal(verified[2].apiAccountHash, hash('84'));
+    for (const batches of [
+        [verified[0], verified[2]],
+        [verified[1], verified[2]],
+    ]) {
+        assert.throws(
+            () =>
+                overlayIncrements(
+                    { rows: [], details: new Map(), snapshotAt: '2000-01-01' },
+                    {
+                        verified: batches,
+                        revision: hash('different-account'),
+                        entryCount: 2,
+                    }
+                ),
+            /무결성/
+        );
+    }
+});
+
+test('v2 cannot overwrite an unbound baseline order or apply the baseline date cutoff to another profile account', async (t) => {
+    const f = await collect(t, 'wife', {
+        apiOrders: [order('synthetic-order-1')],
+    });
+    const verified = await verifyIncrement(
+        async (key) => f.publication.objects.get(key),
+        f.publication.marker.value
+    );
+    const fixture = finalLedgerFixture();
+    const store = createPrivateReportStore({
+        finalCheckpoint: fixture.checkpoint,
+        environment: {},
+        getStorage: () => ({
+            send: async (command) => {
+                const bytes = fixture.objects.get(command.input.Key);
+                return {
+                    ContentLength: bytes.length,
+                    Body: Readable.from([bytes]),
+                };
+            },
+        }),
+    });
+    const baseline = await store.readFinalBaseline('fixture-owner');
+    // This new account observation predates the adopted snapshot; it must remain visible.
+    verified.apiOrders[0].observedAt = '2020-01-01T00:00:00Z';
+    const before = JSON.stringify(baseline.rows);
+    const result = overlayIncrements(baseline, {
+        verified: [verified],
+        revision: hash('unbound-baseline'),
+        entryCount: 1,
+    });
+    assert.equal(result.rows.length, baseline.rows.length + 1);
+    assert.equal(
+        JSON.stringify(result.rows.filter((row) => !row.increment)),
+        before
+    );
+    const added = result.rows.find((row) => row.increment);
+    assert.equal(added.countInTotals, false);
+    assert.match(added.state, /기준 계좌 연결 미확인/);
+    assert.equal(
+        result.details.get(added.id).duplicateStatus,
+        'baseline_account_binding_unverified'
+    );
+    assert.equal(
+        JSON.stringify(summarizeFinalRows(result.rows)),
+        JSON.stringify(summarizeFinalRows(baseline.rows))
+    );
+    assert.equal(JSON.stringify(baseline.rows), before);
 });

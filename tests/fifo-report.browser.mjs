@@ -11,6 +11,10 @@ import {
 } from '../lib/toss-ledger-increments.js';
 import { order } from './support/toss-orders-fixture.mjs';
 import { finalLedgerFixture } from './support/final-ledger-fixture.mjs';
+import {
+    reportDiagnosticError,
+    reportDiagnosticText,
+} from '../lib/report-diagnostics.js';
 const f = finalLedgerFixture();
 const baseline = await readFinalLedger(
     async (k) => f.objects.get(k),
@@ -52,7 +56,9 @@ let reads = 0,
     writes = 0,
     snapshots = 0,
     denied = false,
-    uncertain = false;
+    uncertain = false,
+    integrityFailure = false;
+const diagnosticLogs = [];
 const doc = (path) => ({
     path,
     get: async () => {
@@ -90,10 +96,13 @@ const handler = fifoReportHandler({
     store: {
         readFinalSnapshot: async () => {
             snapshots++;
+            if (integrityFailure)
+                throw reportDiagnosticError('INC_RECEIPT_DIGEST');
             return snapshot;
         },
     },
     now: () => '2026-01-31T00:00:00Z',
+    logDiagnostic: (record) => diagnosticLogs.push(record),
 });
 const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
@@ -106,6 +115,15 @@ try {
         errors = [],
         requests = [];
     page.on('pageerror', (e) => errors.push(e.message));
+    await page.addInitScript(() => {
+        Object.defineProperty(navigator, 'clipboard', {
+            value: {
+                writeText: async (text) => {
+                    window.syntheticCopiedDiagnostic = text;
+                },
+            },
+        });
+    });
     await page.route('**/src/services/firebaseClient*', (r) =>
         r.fulfill({
             contentType: 'application/javascript',
@@ -164,7 +182,20 @@ try {
                 json: { error: '합성 gateway 응답 유실' },
             });
         }
-        return r.fulfill({ status: res.statusCode, json: res.body });
+        return r.fulfill({
+            status: res.statusCode,
+            json: res.body.diagnostic
+                ? {
+                      ...res.body,
+                      error: 'SYNTHETIC_PRIVATE_SOURCE',
+                      diagnostic: {
+                          ...res.body.diagnostic,
+                          rawKey: 'SYNTHETIC_PRIVATE_SOURCE',
+                          expectedHash: 'b'.repeat(64),
+                      },
+                  }
+                : res.body,
+        });
     });
     const base =
         process.env.SHEET_LEDGER_UI_BASE_URL || 'http://127.0.0.1:5185';
@@ -322,15 +353,61 @@ try {
     await main.getByRole('heading', { name: '보정 이력 · 버전 4' }).waitFor();
     assert.equal(await manual.count(), 0);
     assert.equal(writes, 4);
+    integrityFailure = true;
+    await main.getByRole('button', { name: '리포트 새로고침' }).click();
+    const diagnosticRegion = main.getByRole('region', {
+        name: '안전한 보고서 진단',
+    });
+    await diagnosticRegion.getByText(/INC_RECEIPT_DIGEST/).waitFor();
+    assert.equal(await table.count(), 0);
+    assert.equal(await main.locator('.metrics').count(), 0);
+    assert(!(await main.innerText()).includes('SYNTHETIC_PRIVATE_SOURCE'));
+    assert(!(await main.innerText()).includes('b'.repeat(64)));
+    const firstId = diagnosticLogs.at(-1).requestId;
+    await main.getByRole('button', { name: '진단 정보 복사' }).click();
+    await main
+        .getByText('진단 정보를 복사했습니다.', { exact: true })
+        .waitFor();
+    assert.equal(
+        await page.evaluate(() => window.syntheticCopiedDiagnostic),
+        reportDiagnosticText({ version: 1, ...diagnosticLogs.at(-1) })
+    );
+    assert.equal(
+        await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth
+        ),
+        true
+    );
+    await main.getByRole('button', { name: '리포트 새로고침' }).click();
+    await diagnosticRegion.getByText(/INC_RECEIPT_DIGEST/).waitFor();
+    assert.notEqual(diagnosticLogs.at(-1).requestId, firstId);
+    assert.equal(
+        await main
+            .getByText('진단 정보를 복사했습니다.', { exact: true })
+            .count(),
+        0
+    );
+    assert(!(await diagnosticRegion.innerText()).includes(firstId));
+    integrityFailure = false;
+    await main.getByRole('button', { name: '리포트 새로고침' }).click();
+    await main.getByRole('heading', { name: '보정 이력 · 버전 4' }).waitFor();
+    assert.equal(await diagnosticRegion.count(), 0);
+    await table.waitFor();
+    const beforeDeniedLogs = diagnosticLogs.length;
     denied = true;
+    integrityFailure = true;
     await main.getByRole('button', { name: '리포트 새로고침' }).click();
     await main
-        .getByText('관리자 권한이 필요합니다.', { exact: true })
+        .getByText('관리자 권한과 장부 접근 권한을 확인해 주세요.', {
+            exact: true,
+        })
         .waitFor();
     assert.equal(
         await main.getByRole('region', { name: '계좌별 FIFO lot' }).count(),
         0
     );
+    assert.equal(await diagnosticRegion.count(), 0);
+    assert.equal(diagnosticLogs.length, beforeDeniedLogs);
     assert.equal(errors.length, 0, errors.join('\n'));
     console.log(
         JSON.stringify({
@@ -344,6 +421,7 @@ try {
             ).length,
             reportPosts: requests.filter((r) => r.method === 'POST').length,
             pageErrors: errors.length,
+            safeDiagnosticRetries: diagnosticLogs.length,
         })
     );
 } finally {

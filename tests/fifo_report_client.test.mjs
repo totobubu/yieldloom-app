@@ -103,3 +103,137 @@ test('logout or identity changes discard late reads and saves; SDK revocation is
     resolve();
     await discard;
 });
+
+const diagnostic = {
+    version: 1,
+    code: 'INC_RECEIPT_DIGEST',
+    stage: 'receipt',
+    requestId: '12345678-1234-4234-8234-123456789abc',
+};
+const privateResponse = () => ({
+    error: 'SYNTHETIC_PRIVATE_SOURCE',
+    diagnostic: {
+        ...diagnostic,
+        key: 'SYNTHETIC_PRIVATE_SOURCE',
+        expectedHash: 'b'.repeat(64),
+    },
+});
+const failed = (status, value = privateResponse()) => ({
+    ok: false,
+    status,
+    json: async () => value,
+});
+test('assets errors expose only validated diagnostics and static messages; failures are not cached and retry recovers', async () => {
+    let calls = 0;
+    const c = createSheetReportClient({
+        fetchImpl: async () => (++calls <= 2 ? failed(409) : ok(payload())),
+    });
+    const u = user();
+    for (let i = 0; i < 2; i++)
+        await assert.rejects(c.load(u, 'family', 'assets'), (e) => {
+            assert.deepEqual(e.diagnostic, diagnostic);
+            assert(!e.message.includes('SYNTHETIC_PRIVATE_SOURCE'));
+            assert(!JSON.stringify(e).includes('SYNTHETIC_PRIVATE_SOURCE'));
+            return true;
+        });
+    assert.deepEqual(await c.load(u, 'family', 'assets'), payload());
+    assert.equal(calls, 3);
+    for (const status of [401, 403]) {
+        const denied = createSheetReportClient({
+            fetchImpl: async () => failed(status),
+        });
+        await assert.rejects(
+            denied.load(u, 'family', 'assets'),
+            (e) =>
+                e.status === status &&
+                !e.diagnostic &&
+                !e.message.includes('SYNTHETIC_PRIVATE_SOURCE')
+        );
+    }
+});
+test('untrusted response diagnostics and transport errors never become displayed error text', async () => {
+    for (const fetchImpl of [
+        async () =>
+            failed(409, {
+                ...privateResponse(),
+                diagnostic: {
+                    ...diagnostic,
+                    stage: 'SYNTHETIC_PRIVATE_SOURCE',
+                },
+            }),
+        async () => {
+            throw Error('SYNTHETIC_PRIVATE_SOURCE');
+        },
+        async () => ({
+            ok: false,
+            status: 502,
+            json: async () => {
+                throw Error('SYNTHETIC_PRIVATE_SOURCE');
+            },
+        }),
+    ]) {
+        const c = createSheetReportClient({ fetchImpl });
+        await assert.rejects(
+            c.load(user(), 'family', 'assets'),
+            (e) =>
+                !e.diagnostic && !e.message.includes('SYNTHETIC_PRIVATE_SOURCE')
+        );
+        await assert.rejects(
+            c.saveFifoCorrection(user(), {}),
+            (e) =>
+                !e.diagnostic && !e.message.includes('SYNTHETIC_PRIVATE_SOURCE')
+        );
+    }
+});
+test('late failed response after account/session change cannot disclose prior diagnostics or clear the new request', async () => {
+    for (const method of ['load', 'saveFifoCorrection']) {
+        let finish;
+        const c = createSheetReportClient({
+            fetchImpl: async () =>
+                new Promise((r) => {
+                    finish = () => r(failed(409));
+                }),
+        });
+        const old =
+            method === 'load'
+                ? c.load(user(), 'family', 'assets')
+                : c.saveFifoCorrection(user(), {});
+        const rejected = assert.rejects(
+            old,
+            (e) => !e.diagnostic && /폐기/.test(e.message)
+        );
+        await Promise.resolve();
+        c.clear();
+        finish();
+        await rejected;
+    }
+});
+
+test('legacy detail requests keep stale-response status semantics so another session is not purged', async () => {
+    for (const status of [200, 401, 409]) {
+        let finish;
+        const c = createSheetReportClient({
+            fetchImpl: async () =>
+                new Promise((r) => {
+                    finish = () =>
+                        r({
+                            ok: status === 200,
+                            status,
+                            json: async () => privateResponse(),
+                        });
+                }),
+        });
+        const old = c.load(user(), 'wife', 'details');
+        const discarded = assert.rejects(
+            old,
+            (e) =>
+                /폐기/.test(e.message) &&
+                e.status === undefined &&
+                e.diagnostic === undefined
+        );
+        await Promise.resolve();
+        c.clear();
+        finish();
+        await discarded;
+    }
+});

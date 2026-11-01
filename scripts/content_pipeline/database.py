@@ -170,7 +170,33 @@ class ContentDatabase:
     def upsert_distribution_event(
         self, event: DistributionEvent, source_document_id: int,
         *, source_class: str | None = None,
-    ) -> int:
+    ) -> int | None:
+        # Global X's current table is display-only. Keep its source observation
+        # outside the canonical table, including direct calls and refresh.py.
+        if (event.provider_slug == "globalx" and event.verification_status == "needs_review"
+                and event.verification_note == "globalx_display_precision_unverified"):
+            with self.connect() as connection:
+                source = connection.execute(
+                    "SELECT content_sha256 FROM source_documents WHERE id = ?",
+                    (source_document_id,),
+                ).fetchone()
+            self.add_distribution_observation({
+                "ticker": event.ticker, "ex_date": event.ex_date,
+                "amount_raw": event.distribution_per_share, "currency": event.currency,
+                "declared_date": event.declared_date, "record_date": event.record_date,
+                "payable_date": event.payable_date, "source_class": "issuer_official",
+                "source_provider": "globalx_display", "source_url": event.official_url,
+                "content_sha256": source["content_sha256"] if source else None,
+                "verification_status": "needs_review", "observed_at": event.collected_at,
+                "raw": {"precisionKind": "official_display", "exactAmountVerified": False,
+                        "verificationNote": event.verification_note,
+                        "sourceEvidence": [{"sourceDocumentId": source_document_id,
+                            "sha256": source["content_sha256"] if source else None,
+                            "amount": event.distribution_per_share, "currency": event.currency,
+                            "declaredDate": event.declared_date, "recordDate": event.record_date,
+                            "payableDate": event.payable_date}]},
+            })
+            return None
         self.upsert_provider_fund(
             event.provider_slug,
             event.ticker,
@@ -270,6 +296,20 @@ class ContentDatabase:
         """Store a non-canonical source observation without publishing it."""
         raw_amount = str(observation["amount_raw"])
         with self.connect() as connection:
+            raw = observation.get("raw", {})
+            if observation["source_provider"] == "globalx_display":
+                prior = connection.execute(
+                    """SELECT raw_json FROM distribution_observations
+                       WHERE source_provider=? AND ticker=? AND ex_date=?
+                         AND amount_raw=? AND source_url=?""",
+                    ("globalx_display", observation["ticker"].upper(), observation["ex_date"],
+                     raw_amount, observation["source_url"]),
+                ).fetchone()
+                evidence = list(json.loads(prior["raw_json"]).get("sourceEvidence", [])) if prior else []
+                for item in raw.get("sourceEvidence", []):
+                    if item not in evidence:
+                        evidence.append(item)
+                raw = {**raw, "sourceEvidence": evidence}
             connection.execute(
                 """
                 INSERT INTO distribution_observations (
@@ -291,7 +331,7 @@ class ContentDatabase:
                     observation["source_url"], observation.get("content_sha256"),
                     len(raw_amount.partition(".")[2]),
                     observation.get("verification_status", "third_party_only"),
-                    json.dumps(observation.get("raw", {}), ensure_ascii=False, sort_keys=True),
+                    json.dumps(raw, ensure_ascii=False, sort_keys=True),
                     observation.get("observed_at", utc_now_iso()),
                 ),
             )

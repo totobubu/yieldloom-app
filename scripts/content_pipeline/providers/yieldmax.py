@@ -1,25 +1,29 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from decimal import Decimal, InvalidOperation
+from urllib.parse import urlparse
+from zoneinfo import ZoneInfo
 
 from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
-from ..yieldmax_schedule import TRACKED_SYMBOLS
+from ..yieldmax_schedule import GROUPS, TRACKED_SYMBOLS
 from .base import NoDataError, SourceCandidate
 from .http import OfficialHTTPAdapter
-from .parsing import date_from_timestamp, extract_labeled_date, extract_roc_percent, is_roc_column, parse_date
+from .parsing import extract_labeled_date, extract_roc_percent, is_roc_column, parse_date
 
 
 class YieldMaxAdapter(OfficialHTTPAdapter):
     slug = "yieldmax"
     display_name = "YieldMax"
     official_homepage = "https://yieldmaxetfs.com/"
-    parser_version = "3"
-    allowed_hosts = ("yieldmaxetfs.com",)
+    parser_version = "5"
+    # Release pages may be hosted by the issuer's linked GlobeNewswire distributor.
+    allowed_hosts = ("yieldmaxetfs.com", "globenewswire.com")
     catalog_url = "https://yieldmaxetfs.com/our-etfs/"
-    # Fund history pages contain the official amount plus declaration, ex,
-    # record and payment dates.  GlobeNewswire is not a collection source.
+    # Fund history pages are primary; the issuer-linked news release is a
+    # fallback for weeks when those tables have not refreshed.
     default_max_sources = 100
     tracked_symbols = TRACKED_SYMBOLS
     http_requests = 0
@@ -38,6 +42,39 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
                 source_type="official_fund_history",
                 metadata={"ticker": symbol},
             )
+
+    def discover_announcements_for_tickers(self, tickers, limit=5):
+        """Find recent issuer-hosted release pages as a fallback for stale fund histories."""
+        symbols = {ticker.strip().upper() for ticker in tickers}
+        if not symbols or any(symbol not in self.tracked_symbols for symbol in symbols):
+            raise ValueError("unconfigured YieldMax target ticker")
+        groups = {name: set(row["tickers"]) for name, row in GROUPS.items()}
+        target_group = next((name for name, members in groups.items() if symbols <= members), None)
+        if target_group is None:
+            raise ValueError("YieldMax announcement fallback requires tickers from one configured group")
+        news_url = f"{self.official_homepage}news/"
+        listing = parse_html(self.request_bytes(news_url), news_url)
+        accepted = 0
+        seen_urls = set()
+        for url, title in listing.links:
+            normalized = title.lower()
+            is_group_3_release = target_group == "group-3" and all(symbol.lower() in normalized for symbol in groups[target_group])
+            is_group_release = target_group in {"group-1", "group-2"} and target_group.replace("-", " ") in normalized
+            if not (is_group_3_release or is_group_release) or url in seen_urls:
+                continue
+            try:
+                self.validate_url(url)
+            except ValueError:
+                continue
+            seen_urls.add(url)
+            yield SourceCandidate(
+                url=url,
+                source_type="official_press_release",
+                metadata={"tickers": sorted(symbols), "group": target_group},
+            )
+            accepted += 1
+            if accepted >= limit:
+                break
 
     def discover(self):
         parsed = parse_html(self.request_bytes(self.catalog_url), self.catalog_url)
@@ -63,17 +100,40 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
             # A release table elsewhere on the page must not use fetched_at as
             # evidence that this is a newly declared distribution.
             return self._parse_fund_history(document, parsed)
-        try:
+        if document.source_type == "official_press_release":
             return self._parse_press_release(document, parsed)
-        except ValueError as press_release_error:
+        try:
+            find_table(parsed, ("ticker", "distribution per share"))
+        except ValueError:
+            return self._parse_fund_history(document, parsed)
+        # A recognized release with missing/conflicting dates is a release error,
+        # not an invitation to hide it behind an unrelated history-table error.
+        return self._parse_press_release(document, parsed)
+
+    def _release_publication_date(self, document, parsed) -> str:
+        candidates = [("source published_at", document.published_at)]
+        candidates.extend((key, parsed.metadata.get(key)) for key in (
+            "article:published_time", "og:article:published_time", "dc.date.issued", "date",
+        ))
+        dates = {}
+        host = (urlparse(document.source_url).hostname or "").lower()
+        for key, raw in candidates:
+            if raw is None or raw == "":
+                continue
             try:
-                return self._parse_fund_history(document, parsed)
-            except NoDataError:
-                raise
-            except ValueError as fund_history_error:
-                raise ValueError(
-                    f"unsupported YieldMax page: {press_release_error}; {fund_history_error}"
-                ) from fund_history_error
+                published = datetime.fromisoformat(raw.strip().replace("Z", "+00:00"))
+            except (AttributeError, TypeError, ValueError) as error:
+                raise ValueError(f"YieldMax release publication date is invalid: {key}") from error
+            # GlobeNewswire displays its release timestamp in ET. Keep that
+            # publication calendar date when a UTC timestamp crosses midnight.
+            if published.tzinfo and (host == "globenewswire.com" or host.endswith(".globenewswire.com")):
+                published = published.astimezone(ZoneInfo("America/New_York"))
+            dates[key] = published.date().isoformat()
+        if not dates:
+            raise ValueError("YieldMax release publication date was not found")
+        if len(set(dates.values())) != 1:
+            raise ValueError(f"YieldMax release publication dates conflict: {dates}")
+        return next(iter(dates.values()))
 
     def _parse_press_release(self, document, parsed) -> list[DistributionEvent]:
         headers, rows = find_table(parsed, ("ticker", "distribution per share"))
@@ -81,16 +141,13 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
         amount_index = column_index(headers, "distribution per share")
         frequency_index = column_index(headers, "distribution frequency", "frequency")
 
-        declared_date = (
-            date_from_timestamp(document.published_at)
-            or date_from_timestamp(parsed.metadata.get("article:published_time"))
-            or date_from_timestamp(parsed.metadata.get("date"))
-            or date_from_timestamp(document.fetched_at)
-        )
+        declared_date = self._release_publication_date(document, parsed)
         ex_date = extract_labeled_date(parsed.text, ("Ex. & Record Date", "Ex & Record Date"))
         payable_date = extract_labeled_date(parsed.text, ("Payment Date", "Payable Date"))
         if not ex_date or not payable_date:
             raise ValueError("YieldMax release dates were not found")
+        if not declared_date <= ex_date <= payable_date:
+            raise ValueError("YieldMax release publication/distribution dates are inconsistent")
 
         events: list[DistributionEvent] = []
         for row in rows:

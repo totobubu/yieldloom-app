@@ -27,6 +27,32 @@ def candidate_tickers(candidate: SourceCandidate) -> list[str]:
     return sorted({value.strip().upper() for value in values if value.strip()})
 
 
+def is_seeded_blocked_catalog(candidate: SourceCandidate, error, seed_candidates: list[SourceCandidate]) -> bool:
+    """A reviewed seed can preserve catalog coverage when its official listing is blocked."""
+    return (
+        candidate.metadata.get("catalogOnly") is True
+        and getattr(error, "code", None) == "blocked"
+        and bool(seed_candidates)
+    )
+
+
+def collection_status(report: dict) -> str:
+    """Keep blocked seeded catalogs visible as partial outcomes, not hard failures."""
+    errors = report.get("errors", [])
+    conflicts = report.get("conflicts", [])
+    sources = report.get("sources", [])
+    warnings = report.get("warnings", [])
+    if (errors or conflicts) and sources:
+        return "partial"
+    if errors:
+        return "failed"
+    if warnings:
+        return "partial"
+    if sources:
+        return "success"
+    return "no_change"
+
+
 def stable_event_key(event) -> tuple[str, str, str, str]:
     """Return the issuer-event identity without relying on a SQLite row ID."""
     return (
@@ -133,8 +159,10 @@ def main() -> int:
         }),
         "noData": [],
         "errors": [],
+        "warnings": [],
         "duplicates": [],
         "conflicts": [],
+        "reviewObservations": 0,
     }
     # Two official tables can repeat a row.  Keep the first immutable source
     # as the canonical event and surface exact duplicates or disagreements in
@@ -146,23 +174,35 @@ def main() -> int:
 
     def outcomes():
         yield from adapter.fetch_many(selected_candidates)
-        if selected_candidates and args.provider == "roundhill" and target_tickers and declared_dates:
+        if selected_candidates and target_tickers and declared_dates:
             collected = {key[1] for key in seen_events if key[2] in declared_values}
             missing = sorted(target_tickers - collected)
-            if missing:
+            if args.provider == "roundhill" and missing:
                 yield from adapter.fetch_many([adapter.issuer_candidate(ticker) for ticker in missing])
+            elif args.provider == "yieldmax" and missing:
+                # Fund history tables can lag the issuer's weekly release. Check
+                # YieldMax's own news archive only for symbols still unmatched.
+                yield from adapter.fetch_many(adapter.discover_announcements_for_tickers(missing))
 
     for outcome in outcomes():
         candidate = outcome.candidate
         try:
             if outcome.error:
-                report["errors"].append({
+                item = {
                     "url": candidate.url,
                     "error": str(outcome.error),
                     "code": outcome.error.code,
                     "retryable": outcome.error.retryable,
                     "fetchMode": adapter.fetch_mode,
-                })
+                }
+                if is_seeded_blocked_catalog(candidate, outcome.error, seed_candidates):
+                    report["warnings"].append({
+                        **item,
+                        "fallback": "reviewed_catalog_seed",
+                        "catalogTickers": report["catalogTickers"],
+                    })
+                else:
+                    report["errors"].append(item)
                 continue
             assert outcome.document is not None
             document = outcome.document
@@ -246,6 +286,14 @@ def main() -> int:
                     continue
                 seen_events[key] = (snapshot, document.source_url)
                 accepted_events.append(event)
+            review_only = [event for event in accepted_events if (
+                event.provider_slug == "globalx" and event.verification_status == "needs_review"
+                and event.verification_note == "globalx_display_precision_unverified"
+            )]
+            report["reviewObservations"] += len(review_only)
+            if review_only:
+                report["warnings"].append({"url": candidate.url,
+                    "message": "Global X display amounts retained as non-canonical observations; exact payment amounts unverified"})
             if not args.dry_run:
                 for event in accepted_events:
                     database.upsert_distribution_event(event, source_id)
@@ -253,24 +301,18 @@ def main() -> int:
                 {
                     "url": candidate.url,
                     "sha256": document.content_sha256,
-                    "events": len(accepted_events),
+                    "events": len(accepted_events) - len(review_only),
+                    "reviewObservations": len(review_only),
                     "fetchMode": document.metadata.get("fetchMode", adapter.fetch_mode),
                 }
             )
-            report["events"] += len(accepted_events)
+            report["events"] += len(accepted_events) - len(review_only)
         except NoDataError as exc:
             report["noData"].append({"url": candidate.url, "message": str(exc)})
         except Exception as exc:
             report["errors"].append({"url": candidate.url, "error": str(exc)})
 
-    if (report["errors"] or report["conflicts"]) and report["sources"]:
-        report["status"] = "partial"
-    elif report["errors"]:
-        report["status"] = "failed"
-    elif report["sources"]:
-        report["status"] = "success"
-    else:
-        report["status"] = "no_change"
+    report["status"] = collection_status(report)
     if hasattr(adapter, "http_requests"):
         report["httpRequests"] = adapter.http_requests
     print(json.dumps(report, ensure_ascii=False, indent=2))

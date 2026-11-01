@@ -135,6 +135,31 @@ test('source timeout retains last approved objects and pointer', async () => {
     assert.equal(storage.objects.get('thumbnail/v1/current.json'),pointer);
 });
 
+test('source missing backtestData is rejected and retains the last approved objects and pointer', async () => {
+    const storage=new Storage();
+    await refresh({...config,storage,bucket:'derived',fetcher:source({backtestData:makeRows()})});
+    const pointer=storage.objects.get('thumbnail/v1/current.json');
+    const writes=storage.writes.length;
+    const result=await refresh({...config,storage,bucket:'derived',fetcher:source({tickerInfo:{symbol:'TEST'}})});
+    assert.deepEqual(result.rejected,[{symbol:'TEST',reason:'Source requires backtestData',retainedPrevious:true}]);
+    assert.equal(storage.objects.get('thumbnail/v1/current.json'),pointer);
+    assert.equal(storage.writes.length,writes);
+});
+
+test('transient source HTTP errors are retried before rejecting a symbol', async () => {
+    const storage=new Storage();
+    let attempts=0;
+    const result=await refresh({...config,storage,bucket:'derived',fetcher:async()=>{
+        attempts+=1;
+        if(attempts<3)return new Response(null,{status:503});
+        return new Response(JSON.stringify({backtestData:makeRows()}));
+    }});
+    assert.equal(attempts,3);
+    assert.deepEqual(result.changed,['TEST']);
+    assert.deepEqual(result.rejected,[]);
+    assert.ok(storage.objects.has('thumbnail/v1/current.json'));
+});
+
 test('R2 object keys for index and currency symbols contain no URL escapes', async () => {
     const {symbolKey}=await import('../lib/thumbnail-projection.js');
     for(const symbol of ['^GSPC','EURUSD=X','005930.KS','BRK.B']) assert.match(symbolKey(symbol),/^[A-Za-z0-9_-]+$/);

@@ -15,12 +15,18 @@
         v != null && Number.isFinite(Number(v))
             ? `${Number(v).toFixed(2)}%`
             : null;
+    const title = computed(() => {
+        const d = props.data;
+        return d.hasDividend
+            ? `${d.symbol} | ${d.exDate} 주당 ${usd(d.currentDividendAmount, 6)} 배당 정보`
+            : `${d.symbol} 최근 배당 정보`;
+    });
     const text = computed(() => {
         const d = props.data;
         if (!d.hasDividend)
             return `${d.symbol} 최근 배당 정보\n\n표시할 배당 이력을 확인하지 못했습니다.`;
         const lines = [
-            `${d.symbol} | ${d.exDate} 주당 ${usd(d.currentDividendAmount, 6)} 배당 정보`,
+            title.value,
             '',
             `• 배당락일: ${d.exDate}`,
             `• ${d.referencePriceLabel || '배당락일 종가'}: ${usd(d.exDividendClose, 2)}${d.usesLatestPrice ? ` (${d.referencePriceDate} 기준)` : ''}`,
@@ -55,6 +61,7 @@
         );
         return lines.join('\n');
     });
+    const body = computed(() => text.value.split('\n').slice(2).join('\n'));
     const copy = async () => {
         if (!props.data.hasDividend) return;
         copyError.value = '';
@@ -71,8 +78,8 @@
 <template>
     <aside class="toss-copy">
         <p>TOSS COMMUNITY</p>
-        <h2>{{ data.symbol }} 게시 문구</h2>
-        <pre>{{ text }}</pre>
+        <h2>{{ title }}</h2>
+        <pre>{{ body }}</pre>
         <Message v-if="copyError" severity="warn" :closable="false">{{
             copyError
         }}</Message

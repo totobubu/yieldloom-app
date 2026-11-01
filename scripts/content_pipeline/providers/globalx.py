@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from decimal import Decimal, InvalidOperation
 
 from ..html_tables import column_index, find_table, parse_html
 from ..models import DistributionEvent, SourceDocument
@@ -15,7 +16,7 @@ class GlobalXAdapter(OfficialHTTPAdapter):
     slug = "globalx"
     display_name = "Global X ETFs"
     official_homepage = "https://www.globalxetfs.com/"
-    parser_version = "2"
+    parser_version = "3"
     allowed_hosts = ("globalxetfs.com",)
     fetch_mode = "browser"
     browser_ready_selector = '[aria-label="Distributions table"] table, table[aria-label="Distributions table"]'
@@ -50,9 +51,9 @@ class GlobalXAdapter(OfficialHTTPAdapter):
             if not amount or not ex_date:
                 continue
             try:
-                if float(amount) <= 0:
+                if not Decimal(amount).is_finite() or Decimal(amount) <= 0:
                     continue
-            except ValueError:
+            except InvalidOperation:
                 continue
             events.append(DistributionEvent(
                 provider_slug=self.slug,
@@ -65,7 +66,8 @@ class GlobalXAdapter(OfficialHTTPAdapter):
                 payable_date=parse_date(row[payable_index]),
                 frequency="monthly",
                 official_url=document.source_url,
-                verification_status="official",
+                verification_status="needs_review",
+                verification_note="globalx_display_precision_unverified",
             ))
         if not events:
             raise NoDataError("Global X rendered history table contained no distribution rows")

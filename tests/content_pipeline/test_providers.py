@@ -184,7 +184,7 @@ class ProviderParserTest(unittest.TestCase):
         payload = json.loads(run.call_args.kwargs["input"])
         self.assertEqual(
             payload["sources"][0]["readySelector"],
-            'table[aria-label="Distributions table"]',
+            '[aria-label="Distributions table"] table, table[aria-label="Distributions table"]',
         )
 
     def test_global_x_empty_rendered_table_is_no_data_not_parse_failure(self):
@@ -192,7 +192,7 @@ class ProviderParserTest(unittest.TestCase):
             provider_slug="globalx",
             source_url="https://www.globalxetfs.com/funds/qyld",
             source_type="fixture",
-            content=b'<table aria-label="Distributions table"><thead><tr><th>Ex-Date</th><th>Record Date</th><th>Payable Date</th><th>Amount</th></tr></thead><tbody></tbody></table>',
+            content=b'<div aria-label="Distributions table"><table><thead><tr><th>Ex-Date</th><th>Record Date</th><th>Payable Date</th><th>Amount</th></tr></thead><tbody></tbody></table></div>',
             metadata={"ticker": "QYLD"},
         )
         with self.assertRaisesRegex(NoDataError, "no distribution rows"):
@@ -205,6 +205,22 @@ class ProviderParserTest(unittest.TestCase):
                 "https://www.globalxetfs.com/funds/qyld",
                 metadata={"ticker": "QYLD"},
             ))
+
+    def test_global_x_browser_timeout_is_retryable_and_has_no_document(self):
+        adapter = GlobalXAdapter()
+        candidate = next(iter(adapter.discover()))
+        completed = subprocess.CompletedProcess(
+            args=[], returncode=0,
+            stdout=json.dumps([{
+                "ok": False, "code": "browser_timeout", "retryable": True,
+                "message": "timed out waiting for the rendered distribution table",
+            }]), stderr="",
+        )
+        with patch("scripts.content_pipeline.providers.http.subprocess.run", return_value=completed):
+            outcome = adapter.fetch_many([candidate])[0]
+        self.assertIsNone(outcome.document)
+        self.assertEqual(outcome.error.code, "browser_timeout")
+        self.assertTrue(outcome.error.retryable)
 
     def test_yieldmax_invalid_roc_is_withheld_for_review_without_dropping_rows(self):
         events = YieldMaxAdapter().parse(document(

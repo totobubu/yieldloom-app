@@ -56,6 +56,19 @@ test('adapter reads adopted rows only; cancelled quantities and unbound PDFs are
         )
     );
     assert.equal(snapshot.rows.length, input.events.length);
+    const partial = snapshot.rows.find(
+        (row) => row.state === '부분 체결 후 취소'
+    );
+    const partialEvent = input.events.find(
+        (e) => e.observationId === partial.id
+    );
+    assert.equal(partialEvent.quantity, '0.5');
+    assert.equal(partialEvent.excluded, false);
+    const unfilled = snapshot.rows.find((row) => row.isTransaction === false);
+    assert.equal(
+        input.events.find((e) => e.observationId === unfilled.id).excluded,
+        true
+    );
     const same = {
         ...snapshot,
         rows: [
@@ -124,6 +137,66 @@ test('manual lot revisions append auditable entries; replay idempotent, conflict
     assert.equal(activeFifoCorrections(reverted).length, 0);
     assert.equal(reverted.history.length, 2);
     assert.equal(changed.state.history.length, 1);
+});
+
+test('future confirmations are rejected and the history cap reserves enough room to undo additions', async () => {
+    const { input } = await fixture();
+    for (const c of [
+        { ...opening(input), at: '2027-01-01' },
+        {
+            kind: 'CASH_COVERAGE',
+            accountId: input.accounts[0].id,
+            currency: 'USD',
+            from: '2020-01-01',
+            to: '2027-01-01',
+            note: '확인 범위 합성 증빙',
+        },
+    ])
+        assert.throws(
+            () =>
+                changeFifoState(emptyFifoState(), request(input, c), input, {
+                    now: () => '2026-01-01T00:00:00Z',
+                }),
+            /미래/
+        );
+    let state = emptyFifoState();
+    for (let i = 0; i < 300; i++)
+        state = changeFifoState(
+            state,
+            request(
+                input,
+                opening(input),
+                i,
+                'fixture-limit-' + String(i).padStart(6, '0')
+            ),
+            input,
+            { uid: 'fixture' }
+        ).state;
+    assert.throws(
+        () =>
+            changeFifoState(
+                state,
+                request(input, opening(input), 300, 'fixture-over-limit'),
+                input
+            ),
+        /한도/
+    );
+    const ids = activeFifoCorrections(state).map((c) => c.id);
+    for (const [i, id] of ids.entries())
+        state = changeFifoState(
+            state,
+            {
+                action: 'revert',
+                targetId: id,
+                expectedRevision: 300 + i,
+                requestId: 'fixture-revert-' + String(i).padStart(6, '0'),
+                ledgerRevision: input.ledgerRevision,
+            },
+            input,
+            { uid: 'fixture' }
+        ).state;
+    assert.equal(state.history.length, 600);
+    assert.equal(activeFifoCorrections(state).length, 0);
 });
 function memoryDatabase() {
     const values = new Map();

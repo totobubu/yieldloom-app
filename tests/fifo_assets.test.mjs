@@ -242,7 +242,10 @@ test('only confirmed family cash pairs are excluded in whole-family flows; accou
     );
 });
 test('same-owner brokerage transfer carries original acquisition date and cost; family gifts are rejected', () => {
-    const b = event('b', 'BUY', '2', '100');
+    const b = event('b', 'BUY', '2', '100', 2, {
+        fxRate: '1300',
+        fxBasis: '기록된 원화 환율',
+    });
     const transfer = correction('move', 'SECURITY_TRANSFER', {
         symbol: 'TEST',
         currency: 'USD',
@@ -254,11 +257,35 @@ test('same-owner brokerage transfer carries original acquisition date and cost; 
     const to = r.rows.find((p) => p.accountId === 'c');
     assert.equal(to.remainingCost, '50');
     assert.equal(to.lots[0].acquiredAt, at(2));
+    assert.equal(to.remainingKrwCost, '65000');
+    assert.ok(to.fxBasis.includes('기록된 원화 환율'));
     assert.equal(r.currencies[0].remainingCost, '100');
     assert.equal(r.currencies[0].cumulativeBuys, '100');
     assert.throws(
         () => run([b], { corrections: [{ ...transfer, toAccountId: 'b' }] }),
         /증여/
+    );
+});
+
+test('internal transfer confirmation refuses ambiguous provider IDs across accounts', () => {
+    assert.throws(
+        () =>
+            run(
+                [
+                    cash('out', 'EXTERNAL_WITHDRAWAL', '50'),
+                    cash('same', 'EXTERNAL_DEPOSIT', '50', 'b'),
+                    cash('same', 'EXTERNAL_DEPOSIT', '50', 'c'),
+                ],
+                {
+                    corrections: [
+                        correction('pair', 'CONFIRM_INTERNAL_TRANSFER', {
+                            targetId: 'out',
+                            peerId: 'same',
+                        }),
+                    ],
+                }
+            ),
+        /모호/
     );
 });
 test('verified split/reverse split preserve cost; separate cash-in-lieu is a real disposal', () => {
@@ -376,4 +403,34 @@ test('currency totals sum exact rationals before a single final rounding', () =>
     assert.equal(r.rows[0].remainingCost, '0.666666666666666667');
     assert.equal(r.currencies[0].remainingCost, '1.333333333333333333');
     assert.equal(r.currencies[0].realizedPnl, '1.333333333333333333');
+});
+
+test('valuation withholds stale, future, currency-mismatched and unapplied split quotes', () => {
+    const b = event('b', 'BUY', '1', '100');
+    const good = { price: '150', currency: 'USD', date: '2026-01-31' };
+    for (const invalid of [
+        { ...good, date: '2026-01-10' },
+        { ...good, date: '2026-02-01' },
+        { ...good, currency: 'KRW' },
+        { ...good, splits: [{ date: '2026-01-20' }] },
+    ]) {
+        const r = run([b], { quotes: { TEST: invalid } }).rows[0];
+        assert.equal(r.marketValue, null);
+        assert.equal(r.unrealizedPnl, null);
+        assert.equal(r.remainingCost, '100');
+    }
+    const r = run([b], {
+        corrections: [
+            correction('s', 'SPLIT', {
+                symbol: 'TEST',
+                currency: 'USD',
+                at: at(20),
+                numerator: '2',
+                denominator: '1',
+            }),
+        ],
+        quotes: { TEST: { ...good, splits: [{ date: '2026-01-20' }] } },
+    }).rows[0];
+    assert.equal(r.marketValue, '300');
+    assert.equal(r.remainingCost, '100');
 });

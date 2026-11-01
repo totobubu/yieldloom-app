@@ -53,7 +53,7 @@ try {
             json: {
                 schemaVersion: 1,
                 section: 'final',
-                accountId: 'wife',
+                accountId: 'family',
                 readOnly: true,
                 adopted: true,
                 comparisonRequired: false,
@@ -74,7 +74,7 @@ try {
     );
     const main = page.locator('main.final-ledger');
     await main
-        .getByRole('heading', { name: '토스 거래내역', exact: true })
+        .getByRole('heading', { name: '가족 토스 거래내역', exact: true })
         .waitFor();
     await main.getByText('255건', { exact: true }).waitFor();
     await page.screenshot({
@@ -191,7 +191,7 @@ try {
         document.documentElement.classList.remove('p-dark')
     );
     await main.getByRole('combobox', { name: '계좌', exact: true }).click();
-    await page.getByRole('option', { name: '아내', exact: true }).click();
+    await page.getByRole('option', { name: '아내 · 토스', exact: true }).click();
     denied = true;
     await main.getByRole('button', { name: '새로고침', exact: true }).click();
     await main.getByText('합성 접근 거부').waitFor();

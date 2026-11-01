@@ -6,6 +6,7 @@
     import { useDocumentLedgerWindow } from '@/composables/useDocumentLedgerWindow.js';
     import {
         filterFinalRows,
+        familyFinalRows,
         summarizeFinalRows,
     } from '../../../lib/final-ledger-view.js';
 
@@ -53,7 +54,7 @@
     const snapshot = shallowRef(null),
         busy = ref(false),
         error = ref('');
-    const scope = ref('wife'),
+    const scope = ref('family'),
         type = ref(''),
         currency = ref(''),
         search = ref(''),
@@ -77,7 +78,9 @@
         CANCELED: '미체결 취소',
     };
     const scopes = [
-        { label: '아내', value: 'wife' },
+        { label: '가족 전체', value: 'family' },
+        { label: '아내 · 토스', value: 'wife' },
+        { label: '남편 · 토스', value: 'husband' },
         { label: '계좌 미지정 명세서', value: 'unassigned' },
     ];
     const types = [
@@ -100,11 +103,7 @@
         { key: 'tax', label: '세금' },
     ];
     const sourceRows = computed(() =>
-        snapshot.value
-            ? scope.value === 'wife'
-                ? snapshot.value.rows
-                : snapshot.value.unassignedRows
-            : []
+        familyFinalRows(snapshot.value, scope.value)
     );
     const filtered = computed(() =>
         filterFinalRows(sourceRows.value, {
@@ -156,7 +155,7 @@
         detailGeneration++;
         if (!user) return;
         try {
-            const result = await client.load(user, 'wife', 'final', {
+            const result = await client.load(user, 'family', 'final', {
                 refresh,
             });
             if (current === generation && user === firebaseUser.value)
@@ -175,7 +174,7 @@
         detailError.value = '';
         detailBusy.value = true;
         try {
-            const result = await client.load(user, 'wife', 'final', {
+            const result = await client.load(user, 'family', 'final', {
                 observationId: row.id,
             });
             if (current === detailGeneration && user === firebaseUser.value)
@@ -200,7 +199,7 @@
         ],
         () => {
             client.clear();
-            scope.value = 'wife';
+            scope.value = 'family';
             type.value = '';
             currency.value = '';
             search.value = '';
@@ -228,7 +227,7 @@
         <header class="page-header">
             <div>
                 <span class="eyebrow">관리자 · 거래 기록</span>
-                <h1>토스 거래내역</h1>
+                <h1>가족 토스 거래내역</h1>
                 <p>
                     채택한 기준 내역과 검증된 신규 관측을 날짜와 통화별로
                     확인합니다.
@@ -257,6 +256,25 @@
                     채택값 유지</span
                 >
             </div>
+            <p class="scope-note">
+                통화별 합계 · 환산 없음(합산 환율 미적용). 가족 간 이체는 수입에
+                포함하지 않습니다. 분류 근거가 없는 이체는 확정하지 않습니다.
+            </p>
+            <p
+                v-for="profile in snapshot.profileStates || []"
+                :key="profile.id"
+                class="scope-note">
+                {{
+                    profile.ownerId === 'wife' ? '아내 · 토스' : '남편 · 토스'
+                }}:
+                {{
+                    profile.status === 'not_connected'
+                        ? '연결 전 · 수집 내역 미확인'
+                        : profile.status === 'legacy_only'
+                          ? '기존 장부 · 프로필 연결 전'
+                          : '계좌 매핑 설정됨 · 전체 이력 완전성 미확인'
+                }}
+            </p>
             <section class="filters" aria-label="거래 필터">
                 <label
                     >계좌<Select
@@ -367,6 +385,7 @@
                                         }}</span>
                                     </button>
                                 </th>
+                                <th>계좌</th>
                                 <th>통화</th>
                                 <th>출처</th>
                             </tr>
@@ -374,7 +393,7 @@
                         <tbody>
                             <tr v-if="paddingTop" aria-hidden="true">
                                 <td
-                                    colspan="10"
+                                    colspan="11"
                                     :style="{
                                         height: `${paddingTop}px`,
                                         padding: 0,
@@ -414,6 +433,15 @@
                                         >계산값</small
                                     >
                                 </td>
+                                <td>
+                                    {{
+                                        row.accountId === 'wife'
+                                            ? '아내 · 토스'
+                                            : row.accountId === 'husband'
+                                              ? '남편 · 토스'
+                                              : '미지정'
+                                    }}
+                                </td>
                                 <td>{{ row.currency }}</td>
                                 <td>
                                     <Button
@@ -426,7 +454,7 @@
                             </tr>
                             <tr v-if="paddingBottom" aria-hidden="true">
                                 <td
-                                    colspan="10"
+                                    colspan="11"
                                     :style="{
                                         height: `${paddingBottom}px`,
                                         padding: 0,

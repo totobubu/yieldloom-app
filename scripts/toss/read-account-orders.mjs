@@ -1,4 +1,11 @@
 #!/usr/bin/env node
+import { readFile } from 'node:fs/promises';
+import {
+    resolveAccountProfile,
+    profileCredentials,
+    profileBinding,
+} from '../../lib/toss-account-profiles.js';
+import { incrementHash } from '../../lib/toss-ledger-increments.js';
 import { randomUUID } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,13 +27,15 @@ const HELP = `Manual read only: node scripts/toss/read-account-orders.mjs --live
 OPEN reads all current supported orders, without date filters.
 CLOSED/BOTH require a date range or explicit --all-history.
 Each invocation creates fresh unique runs; completed archives are never reused.
-Existing TOSS_ACCESS_TOKEN is preferred. --issue-token permits one token issuance only if no token exists; issuance invalidates the previous token for this client.
+Legacy suffix-only mode prefers an existing TOSS_ACCESS_TOKEN. Profile mode uses only the selected owner references. --issue-token permits one token issuance only if no token exists; issuance invalidates the previous token for this client.
 Credentials come from the existing file or environment, never from command arguments.
 No scheduling, financial writes, browser control, uploads, or automatic reauthentication.
 Private observations: var/toss-orders/ (Git ignored). Exit 0: requested API scopes complete; 2: partial/authentication required; 1: invalid command.
-Browser dividend details are a separate skill step; API completion does not verify them.`;
-const PUBLICATION_HELP = `Optional authorized persistence: --prepare-publication --ledger-account wife [--browser-observation EXISTING_EGO_JSON], or --publish --ledger-account wife [--browser-observation EXISTING_EGO_JSON].
---prepare-publication writes an offline verified local plan only. --publish requires an existing TOSS_WIFE_ACCOUNT_SUFFIX mapping plus R2 environment credentials; it performs immutable uploads, GET/member verification and an append-only index commit. --no-external-storage blocks both publication flags. API success and publication success remain separate.
+Browser dividend details are a separate skill step; API completion does not verify them.
+Family profiles: --profile wife-toss|husband-toss selects scoped credential references and registered account hash/suffix. No generic token fallback. --env-file is exclusive (no OS credential merging). --account-suffix is optional for profiles and must match if given.`;
+const PUBLICATION_HELP = `Optional authorized persistence: --profile wife-toss|husband-toss --prepare-publication [--browser-observation EXISTING_EGO_JSON], or --profile wife-toss|husband-toss --publish.
+Legacy wife-only persistence: --prepare-publication --ledger-account wife [--browser-observation EXISTING_EGO_JSON], or --publish --ledger-account wife [--browser-observation EXISTING_EGO_JSON].
+--prepare-publication writes an offline verified local plan only. --publish requires the selected profile mapping (legacy: TOSS_WIFE_ACCOUNT_SUFFIX) plus existing R2 environment credentials; it performs immutable uploads, GET/member verification and an append-only index commit. --no-external-storage blocks both publication flags. API success and publication success remain separate.
 To resume publication without recollecting: node scripts/toss/publish-account-observations.mjs --directory EXISTING_PUBLICATION --publish.
 If credentials are unavailable, use the existing authorized Cloudflare connector with the prepared immutable plan; do not create/copy credentials or report the plan as linked.`;
 
@@ -67,14 +76,44 @@ export async function readAccountOrders(
         signal,
     } = {}
 ) {
+    let profile;
+    if (options.profileId) {
+        try {
+            profile = resolveAccountProfile(options.profileId, credentials);
+            if (
+                (options.accountSuffix &&
+                    options.accountSuffix !== profile.suffix) ||
+                (options.ledgerAccount &&
+                    options.ledgerAccount !== profile.ownerId)
+            )
+                throw Error('profile_account_mismatch');
+            options = {
+                ...options,
+                accountSuffix: profile.suffix,
+                ledgerAccount: profile.ownerId,
+            };
+            credentials = profileCredentials(profile, credentials);
+            root = resolve(root, profile.id, profile.accountNoSha256);
+        } catch (error) {
+            return {
+                apiStatus: 'not_attempted',
+                browserStatus: 'not_run',
+                reason: error.message,
+            };
+        }
+    }
     const result = {
         schema: 'toss-manual-orders/v1',
+        ...(profile ? { profileId: profile.id } : {}),
         apiStatus: 'not_attempted',
         browserStatus: 'not_run',
         scopes: {},
         requests: { token: 0, accounts: 0, orders: 0 },
     };
-    if (options.noExternalStorage && (options.preparePublication || options.publish))
+    if (
+        options.noExternalStorage &&
+        (options.preparePublication || options.publish)
+    )
         return { ...result, reason: 'external_storage_prohibited' };
     if (!validateManualOptions(options))
         return { ...result, reason: 'invalid_scope_or_account_selection' };
@@ -159,7 +198,19 @@ export async function readAccountOrders(
                 reason: 'account_selection_not_unique',
                 matchingAccounts: matches.length,
             };
+        if (
+            profile &&
+            incrementHash(matches[0].accountNo) !== profile.accountNoSha256
+        )
+            return {
+                ...result,
+                apiStatus: 'partial',
+                reason: 'profile_account_mismatch',
+            };
         const accountSeq = String(matches[0].accountSeq);
+        const binding = profile
+            ? profileBinding(profile, incrementHash(accountSeq))
+            : undefined;
         result.accountMasked = `****${options.accountSuffix}`;
         result.invocationId = `manual-${now().replace(/[-:.]/g, '')}-${uniqueId().slice(0, 8)}`;
         for (const status of ['OPEN', 'CLOSED']) {
@@ -198,7 +249,7 @@ export async function readAccountOrders(
                 'supported_orders_only_not_individual_fills_cash_or_dividend_deposits',
         };
         if (options.preparePublication || options.publish) {
-            if (options.ledgerAccount !== 'wife')
+            if (!profile && options.ledgerAccount !== 'wife')
                 return {
                     ...completed,
                     publication: {
@@ -207,8 +258,10 @@ export async function readAccountOrders(
                     },
                 };
             if (
-                !/^\d{4}$/.test(credentials.TOSS_WIFE_ACCOUNT_SUFFIX ?? '') ||
-                options.accountSuffix !== credentials.TOSS_WIFE_ACCOUNT_SUFFIX
+                !profile &&
+                (!/^\d{4}$/.test(credentials.TOSS_WIFE_ACCOUNT_SUFFIX ?? '') ||
+                    options.accountSuffix !==
+                        credentials.TOSS_WIFE_ACCOUNT_SUFFIX)
             )
                 return {
                     ...completed,
@@ -220,6 +273,7 @@ export async function readAccountOrders(
             try {
                 const plan = await prepareManualPublication({
                     root,
+                    binding,
                     accountSeq,
                     accountSuffix: options.accountSuffix,
                     scopes: result.scopes,
@@ -229,7 +283,9 @@ export async function readAccountOrders(
                 completed.publication = options.publish
                     ? await publishExisting({
                           directory: plan.localDirectory,
-                          expectedAccountSuffix: credentials.TOSS_WIFE_ACCOUNT_SUFFIX,
+                          expectedAccountSuffix:
+                              credentials.TOSS_WIFE_ACCOUNT_SUFFIX,
+                          profile,
                           ...(await createExistingR2Transport()),
                       })
                     : plan;
@@ -265,6 +321,7 @@ export async function main(args = process.argv.slice(2)) {
                 help: { type: 'boolean' },
                 live: { type: 'boolean' },
                 'account-suffix': { type: 'string' },
+                profile: { type: 'string' },
                 status: { type: 'string' },
                 from: { type: 'string' },
                 to: { type: 'string' },
@@ -285,6 +342,7 @@ export async function main(args = process.argv.slice(2)) {
         }
         const options = {
             accountSuffix: values['account-suffix'],
+            profileId: values.profile,
             status: values.status ?? 'BOTH',
             from: values.from,
             to: values.to,
@@ -298,9 +356,16 @@ export async function main(args = process.argv.slice(2)) {
         };
         if (
             !values.live ||
-            !validateManualOptions(options) ||
-            (options.noExternalStorage && (options.publish || options.preparePublication)) ||
+            !validateManualOptions({
+                ...options,
+                accountSuffix: options.profileId
+                    ? '0000'
+                    : options.accountSuffix,
+            }) ||
+            (options.noExternalStorage &&
+                (options.publish || options.preparePublication)) ||
             ((options.publish || options.preparePublication) &&
+                !options.profileId &&
                 options.ledgerAccount !== 'wife') ||
             (options.browserFile &&
                 !options.publish &&
@@ -311,10 +376,13 @@ export async function main(args = process.argv.slice(2)) {
             );
             return 1;
         }
+        const envPath = values['env-file']
+            ? resolve(values['env-file'])
+            : resolve(repoRoot, '.env.toss-orders.local');
+        if (values['env-file']) await readFile(envPath);
         const credentials = await loadLocalCredentials(
-            values['env-file']
-                ? resolve(values['env-file'])
-                : resolve(repoRoot, '.env.toss-orders.local')
+            envPath,
+            values['env-file'] ? {} : process.env
         );
         const controller = new AbortController();
         const interrupt = () => controller.abort();

@@ -74,6 +74,8 @@ async function fixture(
     const ui = {
         checkedAt: observedAt,
         accountVerified: true,
+        accountId: 'wife',
+        accountSuffix: '9999',
         paymentStatus,
         currency,
         symbol,

@@ -162,6 +162,7 @@ def main() -> int:
         "warnings": [],
         "duplicates": [],
         "conflicts": [],
+        "reviewObservations": 0,
     }
     # Two official tables can repeat a row.  Keep the first immutable source
     # as the canonical event and surface exact duplicates or disagreements in
@@ -285,6 +286,14 @@ def main() -> int:
                     continue
                 seen_events[key] = (snapshot, document.source_url)
                 accepted_events.append(event)
+            review_only = [event for event in accepted_events if (
+                event.provider_slug == "globalx" and event.verification_status == "needs_review"
+                and event.verification_note == "globalx_display_precision_unverified"
+            )]
+            report["reviewObservations"] += len(review_only)
+            if review_only:
+                report["warnings"].append({"url": candidate.url,
+                    "message": "Global X display amounts retained as non-canonical observations; exact payment amounts unverified"})
             if not args.dry_run:
                 for event in accepted_events:
                     database.upsert_distribution_event(event, source_id)
@@ -292,11 +301,12 @@ def main() -> int:
                 {
                     "url": candidate.url,
                     "sha256": document.content_sha256,
-                    "events": len(accepted_events),
+                    "events": len(accepted_events) - len(review_only),
+                    "reviewObservations": len(review_only),
                     "fetchMode": document.metadata.get("fetchMode", adapter.fetch_mode),
                 }
             )
-            report["events"] += len(accepted_events)
+            report["events"] += len(accepted_events) - len(review_only)
         except NoDataError as exc:
             report["noData"].append({"url": candidate.url, "message": str(exc)})
         except Exception as exc:

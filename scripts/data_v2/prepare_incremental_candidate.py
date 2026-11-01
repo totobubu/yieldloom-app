@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import sys
+from decimal import Decimal
 from dataclasses import replace
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -16,6 +17,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.content_pipeline.providers import CollectionError, NoDataError, PROVIDERS, SourceCandidate
+from scripts.data_v2.globalx_precision import reconcile_observations
 from scripts.data_v2.collection_schedule import due_reason, retry_at, schedule_for, source_key
 from scripts.data_v2.collection_state import load_local, load_r2, save_r2
 
@@ -56,7 +58,7 @@ def event_key(event: dict[str, Any]) -> tuple[str, str, str, str]:
 
 
 def to_candidate(event: Any, document: Any) -> dict[str, Any]:
-    return {
+    row = {
         "provider": event.provider_slug,
         "ticker": event.ticker,
         "amount": event.distribution_per_share,
@@ -73,14 +75,24 @@ def to_candidate(event: Any, document: Any) -> dict[str, Any]:
         "collectionMethod": "official_fetch",
     }
 
+    if event.provider_slug == "globalx":
+        row["amountPrecision"] = {
+            "kind": "official_display", "exactAmountVerified": False,
+            "decimalPlaces": max(0, -Decimal(row["amount"]).as_tuple().exponent),
+        }
+    return row
+
 
 def comparable(event: dict[str, Any]) -> dict[str, Any]:
     # Document URLs/hashes identify evidence, not the economics of a dividend.
     # Verification differences must still block automatic cross-source merging.
-    return {field: event.get(field) for field in (
+    values = {field: event.get(field) for field in (
         "amount", "recordDate", "payableDate", "frequency", "currency",
         "verificationStatus", "verificationNote",
     )}
+    if event.get("provider") == "globalx":
+        values["amount"] = Decimal(str(values["amount"]))
+    return values
 
 
 def checked_source(previous: dict[str, Any] | None, slug: str, candidate: SourceCandidate,
@@ -102,10 +114,17 @@ def checked_source(previous: dict[str, Any] | None, slug: str, candidate: Source
 
 def update_source(previous: dict[str, Any] | None, events: list[dict[str, Any]], content_sha256: str, now: str, candidate: SourceCandidate | None = None, official_published_at: str | None = None) -> tuple[dict[str, Any], dict[str, list[dict[str, Any]]]]:
     previous_events = {event_key(row): row for row in (previous or {}).get("events", [])}
+    observed_events = {event_key(row): row for row in events}
+    provider = events[0]["provider"] if events else (previous or {}).get("provider")
+    source_events = list(events)
+    is_globalx = (previous or {}).get("provider") == "globalx" or any(row["provider"] == "globalx" for row in events)
+    reviews = []
+    if is_globalx:
+        events, reviews = reconcile_observations(previous_events, events, event_key)
     incoming = {event_key(row): row for row in events}
     new = [row for key, row in incoming.items() if key not in previous_events]
     changed = [{"before": previous_events[key], "after": row} for key, row in incoming.items() if key in previous_events and comparable(previous_events[key]) != comparable(row)]
-    suspected_removed = [row for key, row in previous_events.items() if key not in incoming]
+    suspected_removed = [row for key, row in previous_events.items() if key not in observed_events]
     # Missing historical rows can be transient provider-page changes. Preserve them until a reviewer acts.
     merged = dict(previous_events)
     merged.update(incoming)
@@ -114,13 +133,13 @@ def update_source(previous: dict[str, Any] | None, events: list[dict[str, Any]],
     if not previous or previous.get("contentSha256") != content_sha256:
         history.append({"observedAt": observed, "officialPublishedAt": official_published_at} if official_published_at else {"observedAt": observed})
     history = history[-12:]
-    candidate = candidate or candidate_from_source(previous or {"url": events[0]["officialUrl"] if events else ""})
-    ticker = candidate_ticker(candidate, events)
+    candidate = candidate or candidate_from_source(previous or {"url": source_events[0]["officialUrl"] if source_events else ""})
+    ticker = candidate_ticker(candidate, source_events)
     next_source = {
-        "provider": events[0]["provider"] if events else (previous or {}).get("provider"),
+        "provider": provider,
         "ticker": ticker,
         "url": candidate.url,
-        "sourceKey": source_key(str(events[0]["provider"] if events else (previous or {}).get("provider") or ""), ticker, candidate.url),
+        "sourceKey": source_key(str(provider or ""), ticker, candidate.url),
         "candidate": {"url": candidate.url, "sourceType": candidate.source_type, "publishedAt": candidate.published_at, "metadata": candidate.metadata},
         "contentSha256": content_sha256,
         "lastSuccessAt": now,
@@ -133,7 +152,15 @@ def update_source(previous: dict[str, Any] | None, events: list[dict[str, Any]],
         "parserVersion": "incremental-v1",
         "events": [merged[key] for key in sorted(merged)],
     }
-    return next_source, {"new": new, "changed": changed, "suspectedRemoved": suspected_removed}
+    diff = {"new": new, "changed": changed, "suspectedRemoved": suspected_removed}
+    if is_globalx:
+        retained_reviews = list((previous or {}).get("reviewEvents", []))
+        for row in reviews:
+            if row not in retained_reviews:
+                retained_reviews.append(row)
+        next_source["reviewEvents"] = retained_reviews
+        diff["needsReview"] = retained_reviews
+    return next_source, diff
 
 
 class EventConflict(ValueError):
@@ -158,6 +185,11 @@ def all_events(state: dict[str, Any], diagnostics: dict[str, Any] | None = None)
             conflicts.append({"identity": identity_fields, "differentFields": fields,
                               "observations": observations})
             continue
+        if first.get("provider") == "globalx":
+            # Equal numeric amounts may have different textual scale. This is
+            # representation preservation, not a preference among different values.
+            first = min((item["event"] for item in observations),
+                        key=lambda row: Decimal(row["amount"]).as_tuple().exponent)
         selected = dict(first)
         if len(observations) > 1:
             evidence = [{"sourceKey": item["sourceKey"], "url": item["event"]["officialUrl"],
@@ -245,7 +277,8 @@ def main() -> int:
                 report["rawEvidence"].append({"url": candidate.url, "sha256": document.content_sha256,
                                               "bytes": len(document.content), "file": str(raw_path),
                                               "fetchedAt": document.fetched_at})
-                if previous and previous.get("contentSha256") == document.content_sha256:
+                if (previous and previous.get("contentSha256") == document.content_sha256
+                        and (slug != "globalx" or previous.get("providerParserVersion") == adapter.parser_version)):
                     previous = dict(previous)
                     previous["lastCheckedAt"] = now
                     previous["failureCount"] = 0
@@ -269,24 +302,30 @@ def main() -> int:
                     provider_report["sources"].append({"url": candidate.url, "status": "catalog", "funds": len(catalog_candidates)})
                     continue
                 parsed_events = adapter.parse(document)
-                review_events = [to_candidate(event, document) for event in parsed_events if event.verification_status == "needs_review"]
-                provider_report["needsReview"].extend(review_events)
-                events = [to_candidate(event, document) for event in parsed_events if event.verification_status in {"official", "cross_checked"}]
-                if not events:
-                    checked = checked_source(previous, slug, candidate, now, document.content_sha256)
-                    checked["reviewEvents"] = review_events
-                    next_state["sources"][key] = checked
-                    provider_report["sources"].append({"url": candidate.url, "ticker": ticker, "reason": reason, "status": "needs_review" if review_events else "no_change", "events": len(review_events)})
-                    continue
-                updated, diff = update_source(previous, events, document.content_sha256, now, candidate, document.published_at)
-                updated["reviewEvents"] = review_events
+                observations = [to_candidate(event, document) for event in parsed_events]
+                if slug == "globalx":
+                    updated, diff = update_source(previous, observations, document.content_sha256, now, candidate, document.published_at)
+                    updated["providerParserVersion"] = adapter.parser_version
+                    events = observations
+                else:
+                    review_events = [row for row in observations if row["verificationStatus"] == "needs_review"]
+                    provider_report["needsReview"].extend(review_events)
+                    events = [row for row in observations if row["verificationStatus"] in {"official", "cross_checked"}]
+                    if not events:
+                        checked = checked_source(previous, slug, candidate, now, document.content_sha256)
+                        checked["reviewEvents"] = review_events
+                        next_state["sources"][key] = checked
+                        provider_report["sources"].append({"url": candidate.url, "ticker": ticker, "reason": reason, "status": "needs_review" if review_events else "no_change", "events": len(review_events)})
+                        continue
+                    updated, diff = update_source(previous, events, document.content_sha256, now, candidate, document.published_at)
+                    updated["reviewEvents"] = review_events
                 next_state["sources"][updated["sourceKey"]] = updated
                 if key != updated["sourceKey"]:
                     next_state["sources"].pop(key, None)
                 provider_report["sources"].append({"url": candidate.url, "ticker": updated["ticker"], "reason": reason, "status": "parsed", "sha256": document.content_sha256, "events": len(events)})
                 for name, values in diff.items():
                     provider_report[name].extend(values)
-                    report["summary"][name] += len(values)
+                    report["summary"][name] = report["summary"].get(name, 0) + len(values)
             except NoDataError as error:
                 next_state["sources"][key] = checked_source(previous, slug, candidate, now, document.content_sha256 if document else None)
                 provider_report["sources"].append({"url": candidate.url, "ticker": ticker, "reason": reason, "status": "no_change", "detail": str(error)})

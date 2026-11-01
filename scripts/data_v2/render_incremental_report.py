@@ -37,7 +37,12 @@ def main() -> int:
         if details.get("warnings"):
             lines += ["Warnings:", *[f"- {item}" for item in details["warnings"]], ""]
         if details.get("needsReview"):
-            lines += [f"{len(details['needsReview'])} distribution rows require review and were excluded from the publishable candidate.", ""]
+            lines += [f"{len(details['needsReview'])} distribution observations require review; proposed values are excluded and previously adopted events remain unchanged.", ""]
+            for row in details["needsReview"]:
+                if row.get("provider") == "globalx":
+                    retained = row.get("retainedEvent", {})
+                    lines += [f"- `{row['ticker']}` {row['exDate']}: observed `{row['amount']}`, retained `{retained.get('amount', 'none')}`; {row.get('reviewReason', 'exact_amount_unverified')}; source `{row['sourceSha256']}`"]
+            lines.append("")
         if details["changed"]:
             lines += ["Corrections requiring review:", *[f"- `{item['after']['ticker']}` {item['after']['declaredDate']} / {item['after']['exDate']}: `{item['before']['amount']}` → `{item['after']['amount']}`" for item in details["changed"]], ""]
         if details["suspectedRemoved"]:

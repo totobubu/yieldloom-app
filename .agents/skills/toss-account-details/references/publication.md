@@ -17,7 +17,11 @@
   `var/toss-orders/`에만 둔다. 저장이 승인된 경우 기존 R2 환경 설정이 있으면
   `--prepare-publication` 대신 `--publish`로 수집→저장→검증→연결한다.
 - R2 설정은 기존 `R2_ACCOUNT_ID` / `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` 환경변수만
-  사용한다. 없으면 키를 발급/복사하지 않고 기존 승인 Cloudflare 연결로 아래 계약을 수행한다.
+  사용한다. 게시에는 기존 로컬 설정의 `TOSS_WIFE_ACCOUNT_SUFFIX`가 요청 계좌 접미사와
+  일치해야 한다. 이 매핑이 없거나 다르면 wife 장부 게시를 중단하고 다른 계좌를 wife로
+  귀속하지 않는다. 값을 추측하거나 새 설정 파일에 복사하지 않는다.
+  외부 저장 금지 시 `--no-external-storage`를 사용하고 `--publish`/`--prepare-publication`은
+  함께 지정하지 않는다. 없으면 키를 발급/복사하지 않고 기존 승인 Cloudflare 연결로 아래 계약을 수행한다.
   그 연결에 로컬 파일 입력이 없으면 금융 원문을 도구 stdout/로그에 출력해 운반하지 않는다.
   지원되는 안전한 전송 경로가 없으면 로컬 자료를 보존하고 `blocked`로 남긴다. 필요한 PC·버킷·
   최소 권한·저장 위치·사용자 조치를 구체적으로 제시하되 새 자격증명 설정은 별도 명시 승인을 기다린다.

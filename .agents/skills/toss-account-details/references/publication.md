@@ -82,3 +82,13 @@ run 경로·원문 해시·이미 검증한 원격 객체·마지막 checkpoint�
 합성 점검: 일부 업로드 실패/GET 해시 불일치에서는 index를 쓰지 않음; index 실패는 원문을
 재수집하지 않고 재개; 동일 source hash 재실행은 기존 index 재사용; 서버 반영 실패는 저장 성공과
 분리; 인증 화면 미확인은 실제 화면 성공으로 보고하지 않음; 데이터 미확보는 가짜 빈 거래를 만들지 않음.
+
+## 가족 프로필 증분
+
+새 가족 수집에는 `--profile wife-toss|husband-toss`를 명시한다. 위의 wife 전용 실행
+양식과 경로는 기존 v1 호환용이다. v2는 선택 프로필의 suffix/계좌 해시/collector 계좌
+해시를 manifest와 marker에 고정하며 계좌별 index를 사용한다. 재개에도 같은 프로필과
+현재 검증된 매핑이 필요하다. [설계·명령·호환 계약](../../../../docs/integrations/family-account-profiles.md)을 따른다.
+브라우저 입력에는 독립 확인한 profileId/accountNoSha256/accountSuffix가 필요하다.
+API 성공이나 `accountVerified:true`만으로 다른 계좌의 브라우저 관측을 귀속하지 않는다.
+기존 v1 원문 읽기는 유지한다. 새 v1 브라우저 첨부도 accountId=wife와 해당 suffix를 요구한다.

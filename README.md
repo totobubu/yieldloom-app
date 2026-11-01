@@ -454,3 +454,6 @@ node --test tests/investment_planning.test.mjs tests/portfolio_insights.test.mjs
 # Vite 5173. 실제 계좌 대신 합성 인증·원장·원금 API로 검증합니다.
 node tests/portfolio-insights.browser.mjs
 ```
+
+가족 토스 계좌의 프로필·기존 wife 호환·합산 기준·수동 CLI는
+[가족 계좌 계약](docs/integrations/family-account-profiles.md)을 참고하세요.

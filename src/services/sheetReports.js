@@ -31,7 +31,10 @@ export function createSheetReportClient({
         select(user);
         if (
             !user ||
-            !['wife', 'husband'].includes(accountId) ||
+            !(
+                ['wife', 'husband'].includes(accountId) ||
+                (accountId === 'family' && section === 'final')
+            ) ||
             !['summary', 'details', 'times', 'followup', 'final'].includes(
                 section
             ) ||
@@ -118,8 +121,12 @@ export function createSheetReportClient({
                         ? value.detail?.id !== observationId
                         : !Array.isArray(value.rows) ||
                           value.rows.length > 10000 ||
-                          value.rows.some(
-                              (r) => !validFinalRow(r, accountId)
+                          value.rows.some((r) =>
+                              accountId === 'family'
+                                  ? !['wife', 'husband'].includes(
+                                        r.accountId
+                                    ) || !validFinalRow(r, r.accountId)
+                                  : !validFinalRow(r, accountId)
                           ) ||
                           !Array.isArray(value.unassignedRows) ||
                           value.unassignedRows.length > 1000 ||

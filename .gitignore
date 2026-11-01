@@ -106,3 +106,6 @@ var/.data-platform*.lock
 .env*
 *.codex-remote-attachments
 .cache
+
+# Version only the reference template, never local credentials.
+!.env.example

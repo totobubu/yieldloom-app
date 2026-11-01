@@ -629,7 +629,15 @@ export async function loadLocalCredentials(path, environment = process.env) {
         'TOSS_ACCOUNT_SEQ',
         'TOSS_CLIENT_ID',
         'TOSS_CLIENT_SECRET',
-        'TOSS_WIFE_ACCOUNT_SUFFIX',
+        ...['WIFE', 'HUSBAND'].flatMap((owner) =>
+            [
+                'ACCESS_TOKEN',
+                'CLIENT_ID',
+                'CLIENT_SECRET',
+                'ACCOUNT_SUFFIX',
+                'ACCOUNT_SHA256',
+            ].map((key) => `TOSS_${owner}_${key}`)
+        ),
     ];
     const result = Object.fromEntries(
         names.map((name) => [name, environment[name]])
@@ -643,7 +651,7 @@ export async function loadLocalCredentials(path, environment = process.env) {
     }
     for (const line of text.replace(/^\uFEFF/, '').split(/\r?\n/)) {
         if (!line.trim() || line.trimStart().startsWith('#')) continue;
-        const match = /^([A-Z_]+)\s*=\s*(.*)$/.exec(line);
+        const match = /^([A-Z0-9_]+)\s*=\s*(.*)$/.exec(line);
         if (!match || !names.includes(match[1])) stop('invalid_options');
         let value = match[2].trim();
         if (value.startsWith('"') || value.startsWith("'")) {

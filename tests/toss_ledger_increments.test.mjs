@@ -38,6 +38,7 @@ async function fixture(
         symbol = 'TESTDIV',
         currency = 'USD',
         observedAt = '2025-02-06T07:00:00.000Z',
+        paymentStatus = 'PAID',
         date = '2025-02-06',
         run = 'open-fixture',
         root,
@@ -72,6 +73,7 @@ async function fixture(
     const ui = {
         checkedAt: observedAt,
         accountVerified: true,
+        paymentStatus,
         currency,
         symbol,
         depositAtDisplayed: date + ' 13:23',
@@ -81,6 +83,7 @@ async function fixture(
         coverage:
             'synthetic today-only evidence; stable provider ID unavailable',
         detail: {
+            paymentStatus,
             url:
                 'https://www.tossinvest.com/account/transactions/' +
                 (currency === 'USD' ? 'us' : 'kr') +
@@ -377,14 +380,35 @@ test('structured amounts must match actually captured detail fields and credenti
     );
 });
 
+test('scheduled or unverified dividend evidence cannot become a paid ledger increment', async (t) => {
+    await assert.rejects(
+        () => fixture(t, { paymentStatus: 'EXPECTED' }),
+        /verified_paid_deposit_required/
+    );
+    await assert.rejects(
+        () => fixture(t, { paymentStatus: 'PENDING' }),
+        /verified_paid_deposit_required/
+    );
+});
+
+test('a mismapped Toss account cannot upload or link a wife increment', async (t) => {
+    const f = await fixture(t),
+        s = memory();
+    await assert.rejects(
+        () => publishExisting({ directory: f.dir, expectedAccountSuffix: '0000', ...s }),
+        /wife_account_mapping_required/
+    );
+    assert.equal(s.writes.length, 0);
+});
+
 test('verified remote publication writes immutable commit marker last and survives restart idempotently', async (t) => {
     const f = await fixture(t),
         s = memory();
-    const result = await publishExisting({ directory: f.dir, ...s });
+    const result = await publishExisting({ directory: f.dir, expectedAccountSuffix: '9999', ...s });
     assert.equal(result.status, 'linked');
     assert.equal(s.writes.at(-1), f.marker.key);
     const count = s.writes.length;
-    await publishExisting({ directory: f.dir, ...s });
+    await publishExisting({ directory: f.dir, expectedAccountSuffix: '9999', ...s });
     assert.equal(s.writes.length, count);
     const r = await readIncrements(s);
     assert.equal(r.entryCount, 1);
@@ -399,12 +423,12 @@ test('partial upload never publishes receipt or marker; unchanged local plan res
     const f = await fixture(t),
         s = memory();
     s.setFailKey(f.marker.value.manifest.key);
-    await assert.rejects(() => publishExisting({ directory: f.dir, ...s }));
+    await assert.rejects(() => publishExisting({ directory: f.dir, expectedAccountSuffix: '9999', ...s }));
     assert(!s.objects.has(f.marker.key));
     assert(!s.objects.has(f.marker.value.receipt.key));
     assert.equal((await readIncrements(s)).entryCount, 0);
     s.setFailKey(null);
-    await publishExisting({ directory: f.dir, ...s });
+    await publishExisting({ directory: f.dir, expectedAccountSuffix: '9999', ...s });
     assert.equal((await readIncrements(s)).entryCount, 1);
 });
 test('corrupt GET or conflicting preexisting bytes stop linkage, never report zero complete', async (t) => {

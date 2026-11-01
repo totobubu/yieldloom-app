@@ -629,6 +629,7 @@ export async function loadLocalCredentials(path, environment = process.env) {
         'TOSS_ACCOUNT_SEQ',
         'TOSS_CLIENT_ID',
         'TOSS_CLIENT_SECRET',
+        'TOSS_WIFE_ACCOUNT_SUFFIX',
     ];
     const result = Object.fromEntries(
         names.map((name) => [name, environment[name]])

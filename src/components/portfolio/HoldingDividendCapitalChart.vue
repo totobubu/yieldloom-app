@@ -3,6 +3,7 @@
     import Button from 'primevue/button';
     import Message from 'primevue/message';
     import { firebaseUser } from '@/services/firebaseClient';
+    import { isPortfolioAdmin } from '../../../lib/portfolio-admin.js';
     import { portfolioCapitalRequest } from '@/services/portfolioCapital.js';
     import { holdingDividendCapital } from '@/services/holdingDividendCapital.js';
 
@@ -71,11 +72,13 @@
         Math.max(1, ...report.value.rows.map((row) => row.totalCost))
     );
     const money = (value) =>
-        new Intl.NumberFormat('ko-KR', {
-            style: 'currency',
-            currency: props.currency,
-            maximumFractionDigits: props.currency === 'KRW' ? 0 : 2,
-        }).format(value);
+        value == null
+            ? '미상'
+            : new Intl.NumberFormat('ko-KR', {
+                  style: 'currency',
+                  currency: props.currency,
+                  maximumFractionDigits: props.currency === 'KRW' ? 0 : 2,
+              }).format(value);
     const percent = (value) =>
         value == null
             ? '확인 필요'
@@ -90,8 +93,9 @@
             <div>
                 <h3 id="capital-chart-title">보유 종목 원금·배당 재투자</h3>
                 <p>
-                    현재 보유분 취득원가의 출처와 최초 원금 대비 누적 세후
-                    배당을 비교합니다.
+                    기존 투자계좌의 보유분 원가 출처와 해당 종목 배당을
+                    참고합니다. 채택 장부의 자산·손익은 FIFO 리포트에서
+                    확인합니다.
                 </p>
             </div>
             <Button
@@ -111,13 +115,16 @@
             {{ error }}
         </Message>
         <template v-else-if="states.length">
-            <div class="capital-summary">
+            <Message v-if="report.unavailable" severity="warn" :closable="false"
+                >계산 보류: {{ report.warnings.join(' · ') }}</Message
+            >
+            <div v-if="!report.unavailable" class="capital-summary">
                 <article>
-                    <small>최초 투입 원금</small>
-                    <strong>{{ money(report.initialPrincipal) }}</strong>
+                    <small>분류된 외부 입금</small>
+                    <strong>{{ money(report.externalDeposits) }}</strong>
                 </article>
                 <article>
-                    <small>보유분 누적 투자금</small>
+                    <small>보유분 취득원가</small>
                     <strong>{{ money(report.investedCost) }}</strong>
                 </article>
                 <article>
@@ -125,7 +132,7 @@
                     <strong>{{ money(report.dividends) }}</strong>
                 </article>
                 <article>
-                    <small>원금 대비 누적 배당</small>
+                    <small>누적 배당 회수율 · 미확정</small>
                     <strong>{{ percent(report.dividendRate) }}</strong>
                 </article>
             </div>
@@ -136,7 +143,10 @@
                 세후 정산액이나 자금 출처가 누락된 종목은 배당률을 확정하지
                 않았습니다. 확인된 금액만 표시합니다.
             </Message>
-            <div v-if="report.rows.length" class="bars" role="list">
+            <div
+                v-if="!report.unavailable && report.rows.length"
+                class="bars"
+                role="list">
                 <article
                     v-for="row in report.rows"
                     :key="row.symbol"
@@ -149,7 +159,11 @@
                             {{ percent(row.dividendRate) }}</span
                         >
                     </div>
+                    <p v-if="row.totalCost === null">
+                        보유 취득원가 미상 · 기초 lot 근거 확인 필요
+                    </p>
                     <div
+                        v-else
                         class="bar-track"
                         role="img"
                         :aria-label="`${row.symbol}: 보유분 원금 ${money(row.principalHeld)}, 배당·수익 재투자 ${money(row.reinvestedHeld)}, 출처 미확인 ${money(row.unknownHeld)}`">
@@ -189,13 +203,20 @@
                     </small>
                 </article>
             </div>
-            <p v-else>선택한 통화에 현재 보유 중인 종목이 없습니다.</p>
-            <ul class="legend" aria-label="원금 구성 범례">
+            <p v-else-if="!report.unavailable">
+                선택한 통화에 현재 보유 중인 종목이 없습니다.
+            </p>
+            <ul
+                v-if="!report.unavailable"
+                class="legend"
+                aria-label="원금 구성 범례">
                 <li><span class="principal" />직접 투입 원금</li>
                 <li><span class="reinvested" />배당·수익 재투자</li>
                 <li><span class="unknown" />출처 미확인</li>
             </ul>
-            <div v-if="report.rows.length" class="table-scroll">
+            <div
+                v-if="!report.unavailable && report.rows.length"
+                class="table-scroll">
                 <table aria-label="보유 종목 원금과 누적 배당">
                     <thead>
                         <tr>
@@ -225,8 +246,12 @@
             </div>
             <p class="note">
                 재투자 비율은 출처가 확인된 현재 보유분 취득원가 기준입니다.
-                원금 대비 배당은 누적 세후 배당 ÷ 최초 투입 원금이며 통화 환산과
-                현재 평가손익은 포함하지 않습니다.
+                {{ report.recoveryReason }}
+                <RouterLink
+                    v-if="isPortfolioAdmin(firebaseUser)"
+                    to="/admin/sheet-ledger?view=assets"
+                    >FIFO 자산 리포트</RouterLink
+                >
             </p>
         </template>
         <p v-else-if="!accounts.length">분석할 계좌가 없습니다.</p>

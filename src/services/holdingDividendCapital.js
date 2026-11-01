@@ -30,7 +30,13 @@ export function holdingDividendCapital(
     { currency, today = new Date().toISOString().slice(0, 10) } = {}
 ) {
     const combined = Object.fromEntries(
-        ['entries', 'classifications', 'trades', 'allocations'].map((key) => [
+        [
+            'entries',
+            'classifications',
+            'trades',
+            'allocations',
+            'openingLots',
+        ].map((key) => [
             key,
             states.flatMap(({ accountId, state }) =>
                 (state?.[key] || []).map((row) => ({
@@ -114,33 +120,44 @@ export function holdingDividendCapital(
 
     const rows = [...grouped.values()]
         .map((row) => {
-            const knownCost = row.principalHeld + row.reinvestedHeld;
+            const knownCost =
+                row.fundingUnknown || trace.unavailable
+                    ? null
+                    : row.principalHeld + row.reinvestedHeld;
             return {
                 ...row,
+                ...(knownCost === null
+                    ? {
+                          principalHeld: null,
+                          reinvestedHeld: null,
+                          unknownHeld: null,
+                          initialPrincipal: null,
+                      }
+                    : {}),
                 knownCost,
-                totalCost: knownCost + row.unknownHeld,
+                totalCost:
+                    knownCost === null ? null : knownCost + row.unknownHeld,
                 reinvestmentRate:
                     knownCost > 0
                         ? (row.reinvestedHeld / knownCost) * 100
                         : null,
-                dividendRate:
-                    !row.fundingUnknown &&
-                    row.dividendUnknown === 0 &&
-                    row.initialPrincipal > 0
-                        ? (row.dividends / row.initialPrincipal) * 100
-                        : null,
+                // Legacy investmentAccounts do not certify lifetime external-cash coverage.
+                // The adopted-ledger report owns the cumulative recovery calculation.
+                dividendRate: null,
             };
         })
         .sort(
             (a, b) =>
                 b.totalCost - a.totalCost || a.symbol.localeCompare(b.symbol)
         );
-    const initialPrincipal = rows.reduce(
-        (sum, row) => sum + row.initialPrincipal,
-        0
-    );
+    const initialPrincipal = rows.some((row) => row.initialPrincipal === null)
+        ? null
+        : rows.reduce((sum, row) => sum + row.initialPrincipal, 0);
     const dividendAmount = rows.reduce((sum, row) => sum + row.dividends, 0);
-    const investedCost = rows.reduce((sum, row) => sum + row.totalCost, 0);
+    const investedCost =
+        trace.unavailable || rows.some((row) => row.totalCost === null)
+            ? null
+            : rows.reduce((sum, row) => sum + row.totalCost, 0);
     const complete = rows.every(
         (row) => !row.fundingUnknown && row.dividendUnknown === 0
     );
@@ -149,10 +166,12 @@ export function holdingDividendCapital(
         initialPrincipal,
         investedCost,
         dividends: dividendAmount,
-        dividendRate:
-            complete && initialPrincipal > 0
-                ? (dividendAmount / initialPrincipal) * 100
-                : null,
+        externalDeposits:
+            trace.currencies.find((row) => row.currency === currency)
+                ?.deposits ?? null,
+        dividendRate: null,
+        recoveryReason:
+            '전체 외부 입출금 범위 미확인: 채택 장부 FIFO 리포트에서 확인해 주세요.',
         complete,
         unavailable: trace.unavailable === true,
         warnings: trace.warnings || [],

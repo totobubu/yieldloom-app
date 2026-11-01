@@ -290,8 +290,8 @@ export async function attachBrowserObservation(directory, browserFile) {
 }
 export async function publishExisting({ directory, readBytes, putIfAbsent, expectedAccountSuffix }) {
     const { dir, marker, objects } = await loadPublication(directory);
-    const suffix = marker.value.prefix.match(/^brokerage\\/toss\\/wife-(\\d{4})\\//)?.[1];
-    if (!/^\\d{4}$/.test(expectedAccountSuffix ?? '') || suffix !== expectedAccountSuffix)
+    const suffix = marker.value.prefix.match(/^brokerage\/toss\/wife-(\d{4})\//)?.[1];
+    if (!/^\d{4}$/.test(expectedAccountSuffix ?? '') || suffix !== expectedAccountSuffix)
         throw Error('wife_account_mapping_required');
     const receiptKey = marker.value.receipt.key;
     for (const [key, bytes] of objects) {

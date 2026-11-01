@@ -496,18 +496,21 @@
         }
         .studio-footer {
             margin: 16px 16px 0;
-            padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+            padding-bottom: calc(136px + env(safe-area-inset-bottom, 0px));
         }
         .mobile-nav {
             position: fixed;
             bottom: 0;
-            inset-inline: 0;
+            left: 0;
+            width: 100%;
+            max-width: 100vw;
+            box-sizing: border-box;
             z-index: 30;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             background: var(--app-surface);
             border-top: 1px solid var(--app-border);
-            padding: 6px 16px calc(6px + env(safe-area-inset-bottom, 0px));
+            padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
         }
         .mobile-nav a {
             display: flex;
@@ -515,12 +518,14 @@
             align-items: center;
             justify-content: center;
             gap: 4px;
-            min-height: 52px;
+            min-width: 0;
+            min-height: 56px;
             font-size: 12px;
             font-weight: 600;
             text-decoration: none;
             color: var(--app-muted);
             border-radius: 10px;
+            text-align: center;
         }
         .mobile-nav a.active {
             color: var(--app-accent);

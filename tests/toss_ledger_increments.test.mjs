@@ -8,6 +8,7 @@ import {
     collectOpenOrders,
     collectClosedOrders,
 } from '../scripts/toss/collect-closed-orders.mjs';
+import { readAccountOrders } from '../scripts/toss/read-account-orders.mjs';
 import {
     prepareManualPublication,
     loadPublication,
@@ -378,6 +379,27 @@ test('structured amounts must match actually captured detail fields and credenti
         () => attachBrowserObservation(api.localDirectory, f.browserFile),
         /무결성/
     );
+});
+
+test('explicit external storage prohibition blocks publication before any provider request', async () => {
+    const result = await readAccountOrders(
+        {
+            accountSuffix: '9999',
+            status: 'OPEN',
+            publish: true,
+            noExternalStorage: true,
+        },
+        {
+            credentials: {},
+            fetchImpl: async () => {
+                throw new Error('network_must_not_run');
+            },
+        }
+    );
+    assert.equal(result.reason, 'external_storage_prohibited');
+    assert.equal(result.requests.token, 0);
+    assert.equal(result.requests.accounts, 0);
+    assert.equal(result.requests.orders, 0);
 });
 
 test('scheduled or unverified dividend evidence cannot become a paid ledger increment', async (t) => {

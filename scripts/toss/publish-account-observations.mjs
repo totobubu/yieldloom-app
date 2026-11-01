@@ -4,6 +4,10 @@ import { resolve, join, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync, gunzipSync } from 'node:zlib';
 import { parseArgs } from 'node:util';
+import {
+    accountProfile,
+    resolveAccountProfile,
+} from '../../lib/toss-account-profiles.js';
 import { loadLocalCredentials } from './collect-closed-orders.mjs';
 import {
     incrementHash as hash,
@@ -29,7 +33,9 @@ export async function prepareManualPublication({
     browserFile,
     checkedAt,
     existingFiles,
+    binding,
 }) {
+    const accountId = binding?.ownerId ?? 'wife';
     if (
         !/^\d{4}$/.test(accountSuffix) ||
         !['OPEN', 'CLOSED'].some((k) => scopes[k]?.status === 'complete')
@@ -63,9 +69,19 @@ export async function prepareManualPublication({
             ui = JSON.parse(bytes);
         if (ui.paymentStatus !== 'PAID' || ui.detail?.paymentStatus !== 'PAID')
             throw Error('verified_paid_deposit_required');
+        if (
+            ui.accountVerified !== true ||
+            (ui.accountId !== undefined && ui.accountId !== accountId) ||
+            (binding
+                ? ui.profileId !== binding.profileId ||
+                  ui.accountNoSha256 !== binding.accountNoSha256 ||
+                  ui.accountSuffix !== binding.suffix
+                : ui.accountId !== 'wife' || ui.accountSuffix !== accountSuffix)
+        )
+            throw Error('browser_account_mismatch');
         const identity = {
             provider: 'TOSS_PERSONAL_ACCOUNT_UI',
-            account: 'wife',
+            account: accountId,
             document: ui.detail?.url,
             observedAt: ui.checkedAt,
             sourceSha256: hash(bytes),
@@ -74,7 +90,7 @@ export async function prepareManualPublication({
         add(sourceFile, bytes);
         const observation = {
             kind: 'TOSS_TRANSACTION',
-            accountId: 'wife',
+            accountId,
             sourceIdentity: identity,
             observationId: hash(JSON.stringify(identity)),
             originalTransactionId: null,
@@ -103,7 +119,9 @@ export async function prepareManualPublication({
             sha256,
         })),
         sourceSetHash = hash(JSON.stringify(sourceFiles));
-    const prefix = `brokerage/toss/wife-${accountSuffix}/${sourceSetHash}/`;
+    const prefix = binding
+        ? `brokerage/toss/${accountId}-${accountSuffix}/accounts/${binding.accountNoSha256}/${sourceSetHash}/`
+        : `brokerage/toss/wife-${accountSuffix}/${sourceSetHash}/`;
     const archive = Buffer.from(
         JSON.stringify({
             format: 'yieldloom-private-toss-raw-bundle-v1',
@@ -159,6 +177,7 @@ export async function prepareManualPublication({
     );
     const manifest = {
         format: 'yieldloom-private-toss-r2-transfer-v1',
+        ...(binding ? { binding } : {}),
         bucket: 'yieldloom-data-private',
         prefix,
         sourceFiles,
@@ -202,12 +221,20 @@ export async function prepareManualPublication({
         };
     objects.set(receiptDescriptor.key, rb);
     const marker = incrementMarker({
+        ...(binding ? { binding } : {}),
         prefix,
         manifest: manifestDescriptor,
         receipt: receiptDescriptor,
     });
     await verifyIncrement(async (key) => objects.get(key), marker.value);
-    const dir = join(root, 'publication-' + sourceSetHash);
+    const dir = join(
+        root,
+        'publication-' +
+            (binding
+                ? binding.profileId + '-' + binding.accountNoSha256 + '-'
+                : '') +
+            sourceSetHash
+    );
     await mkdir(dir, { recursive: true });
     for (const [key, bytes] of objects)
         await preserve(join(dir, basename(key)), bytes);
@@ -233,6 +260,7 @@ export async function loadPublication(directory) {
         rb = await readFile(join(dir, 'r2-upload-receipt.json'));
     const m = JSON.parse(mb);
     const marker = incrementMarker({
+        ...(m.binding ? { binding: m.binding } : {}),
         prefix: m.prefix,
         manifest: {
             key: m.prefix + 'collection.manifest.json',
@@ -279,19 +307,44 @@ export async function attachBrowserObservation(directory, browserFile) {
     const ui = JSON.parse(await readFile(browserFile));
     return prepareManualPublication({
         root: resolve(p.dir, '..'),
-        accountSuffix: manifest.prefix.match(
-            /^brokerage\/toss\/wife-(\d{4})\//
-        )?.[1],
+        binding: manifest.binding,
+        accountSuffix:
+            manifest.binding?.suffix ??
+            manifest.prefix.match(/^brokerage\/toss\/wife-(\d{4})\//)?.[1],
         scopes: manifest.coverage.api,
         browserFile,
         checkedAt: ui.checkedAt,
         existingFiles: bundle.files,
     });
 }
-export async function publishExisting({ directory, readBytes, putIfAbsent, expectedAccountSuffix }) {
+export async function publishExisting({
+    directory,
+    readBytes,
+    putIfAbsent,
+    expectedAccountSuffix,
+    profile,
+}) {
     const { dir, marker, objects } = await loadPublication(directory);
-    const suffix = marker.value.prefix.match(/^brokerage\/toss\/wife-(\d{4})\//)?.[1];
-    if (!/^\d{4}$/.test(expectedAccountSuffix ?? '') || suffix !== expectedAccountSuffix)
+    if (marker.value.binding) {
+        const binding = marker.value.binding;
+        if (
+            !profile ||
+            binding.profileId !== profile.id ||
+            binding.ownerId !== profile.ownerId ||
+            binding.brokerId !== profile.brokerId ||
+            binding.accountNoSha256 !== profile.accountNoSha256 ||
+            binding.suffix !== profile.suffix
+        )
+            throw Error('profile_account_mapping_required');
+    } else if (profile && profile.id !== 'wife-toss')
+        throw Error('profile_account_mismatch');
+    const suffix =
+        marker.value.binding?.suffix ??
+        marker.value.prefix.match(/^brokerage\/toss\/wife-(\d{4})\//)?.[1];
+    if (
+        !/^\d{4}$/.test(profile?.suffix ?? expectedAccountSuffix ?? '') ||
+        suffix !== (profile?.suffix ?? expectedAccountSuffix)
+    )
         throw Error('wife_account_mapping_required');
     const receiptKey = marker.value.receipt.key;
     for (const [key, bytes] of objects) {
@@ -388,24 +441,36 @@ export async function main(args = process.argv.slice(2)) {
                 publish: { type: 'boolean' },
                 'attach-browser': { type: 'string' },
                 'env-file': { type: 'string' },
+                profile: { type: 'string' },
             },
         });
         if (values.help) {
             console.log(
-                'node scripts/toss/publish-account-observations.mjs --directory EXISTING_VERIFIED_PUBLICATION [--attach-browser EXISTING_EGO_JSON] [--publish]\nWithout --publish: offline verification/preparation only. --attach-browser combines one actual ego observation with existing API evidence without recollecting. With --publish: require an existing TOSS_WIFE_ACCOUNT_SUFFIX mapping and R2 credentials, then private immutable writes, GET/member verification, append-only index commit. No new credentials, baseline writes or financial API calls.'
+                'node scripts/toss/publish-account-observations.mjs --directory EXISTING_VERIFIED_PUBLICATION [--attach-browser EXISTING_EGO_JSON] [--profile wife-toss|husband-toss] [--publish]\nWithout --publish: offline verification/preparation only. --attach-browser combines one actual ego observation with existing API evidence without recollecting. With --publish: require an existing TOSS_WIFE_ACCOUNT_SUFFIX mapping and R2 credentials, then private immutable writes, GET/member verification, append-only index commit. v2 publication requires --profile and registered scoped suffix/account hash. --env-file is exclusive. No new credentials, baseline writes or financial API calls.'
             );
             return 0;
         }
         if (!values.directory) throw Error('directory_required');
+        if (values.profile) accountProfile(values.profile);
+        const original = await loadPublication(values.directory);
+        const originalProfile =
+            original.marker.value.binding?.profileId ?? 'wife-toss';
+        if (
+            (values.profile && values.profile !== originalProfile) ||
+            (original.marker.value.binding &&
+                values['attach-browser'] &&
+                !values.profile)
+        )
+            throw Error('profile_account_mismatch');
         const prepared = values['attach-browser']
             ? await attachBrowserObservation(
                   values.directory,
                   values['attach-browser']
               )
             : null;
-        const p = await loadPublication(
-            prepared?.localDirectory ?? values.directory
-        );
+        const p = prepared
+            ? await loadPublication(prepared.localDirectory)
+            : original;
         if (!values.publish) {
             console.log(
                 JSON.stringify({
@@ -419,13 +484,26 @@ export async function main(args = process.argv.slice(2)) {
         }
         const envPath = values['env-file']
             ? resolve(values['env-file'])
-            : resolve(dirname(fileURLToPath(import.meta.url)), '../../.env.toss-orders.local');
-        const credentials = await loadLocalCredentials(envPath);
+            : resolve(
+                  dirname(fileURLToPath(import.meta.url)),
+                  '../../.env.toss-orders.local'
+              );
+        if (values['env-file']) await readFile(envPath);
+        const credentials = await loadLocalCredentials(
+            envPath,
+            values['env-file'] ? {} : process.env
+        );
+        const profile = values.profile
+            ? resolveAccountProfile(values.profile, credentials)
+            : undefined;
+        if (p.marker.value.binding && !profile)
+            throw Error('explicit_profile_required');
         console.log(
             JSON.stringify(
                 await publishExisting({
                     directory: p.dir,
                     expectedAccountSuffix: credentials.TOSS_WIFE_ACCOUNT_SUFFIX,
+                    profile,
                     ...(await createExistingR2Transport()),
                 })
             )

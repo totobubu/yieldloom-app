@@ -32,6 +32,7 @@ jobs:
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_providers.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_yieldmax_publication_date.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_ticker_collection.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_providers.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_*observation.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_publish_public_snapshots.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_validate_refresh_outputs.py'
@@ -95,6 +96,7 @@ jobs:
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/toss-trial-ledger.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/final-ledger.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/toss-increments.browser.mjs
+                  SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/fifo-report.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-reconciliation.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-review.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-dividend-status.browser.mjs
@@ -123,4 +125,5 @@ jobs:
                       /tmp/family-api.log
                       /tmp/vite.log
                       /tmp/yieldloom-enhancements-*.png
+                      /tmp/yieldloom-fifo-*.png
                   retention-days: 5

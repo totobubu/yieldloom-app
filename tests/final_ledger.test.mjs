@@ -91,7 +91,8 @@ test('private snapshot storage coalesces reads per owner and never serves failed
         getStorage: () => ({
             send: async (command) => {
                 calls++;
-                if (command.input.Prefix) return { Contents: [], IsTruncated: false };
+                if (command.input.Prefix)
+                    return { Contents: [], IsTruncated: false };
                 if (denied)
                     throw Object.assign(new Error('denied'), {
                         name: 'AccessDenied',
@@ -207,7 +208,7 @@ test('final handler uses existing admin and workbook ownership, reads twice and 
         fixtureId(1)
     );
 });
-test('final handler denies nonadmin, different workbook, other account, arbitrary paths and writes', async () => {
+test('final handler denies nonadmin, different workbook, cross-account details, arbitrary paths and writes', async () => {
     const no = handlerFixture({ email: 'nobody@example.invalid' });
     assert.equal((await no.invoke()).statusCode, 403);
     assert.equal(no.reads().storeReads, 0);
@@ -215,7 +216,14 @@ test('final handler denies nonadmin, different workbook, other account, arbitrar
     assert.equal((await wrong.invoke()).statusCode, 403);
     assert.equal(wrong.reads().storeReads, 0);
     const f = handlerFixture();
-    assert.equal((await f.invoke({ accountId: 'husband' })).statusCode, 404);
+    const husband = await f.invoke({ accountId: 'husband' });
+    assert.equal(husband.statusCode, 200);
+    assert.deepEqual(husband.body.rows, []);
+    assert.equal(
+        (await f.invoke({ accountId: 'husband', observationId: fixtureId(1) }))
+            .statusCode,
+        404
+    );
     assert.equal((await f.invoke({ objectKey: 'arbitrary' })).statusCode, 400);
     assert.equal(
         (await f.invoke({ observationId: '../other' })).statusCode,

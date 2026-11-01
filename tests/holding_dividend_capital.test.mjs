@@ -37,7 +37,7 @@ const position = (accountId, symbol, quantity = 1) => ({
 const near = (actual, expected) =>
     assert.ok(Math.abs(actual - expected) < 1e-7, `${actual} != ${expected}`);
 
-test('current holding cost follows FIFO lots while dividends use initial principal', () => {
+test('legacy holding cost keeps FIFO but recovery awaits verified lifetime cash coverage', () => {
     const deposit = cash('cash', '20260101', 1000, 'external_deposit');
     const report = holdingDividendCapital(
         [
@@ -61,9 +61,10 @@ test('current holding cost follows FIFO lots while dividends use initial princip
     near(row.initialPrincipal, 1000);
     near(row.dividends, 100);
     near(row.reinvestmentRate, (100 / 550) * 100);
-    near(row.dividendRate, 10);
+    assert.equal(row.dividendRate, null);
     near(report.investedCost, 550);
-    near(report.dividendRate, 10);
+    assert.equal(report.dividendRate, null);
+    assert.equal(report.externalDeposits, 1000);
 });
 
 test('same symbol is combined across held accounts and sold positions are excluded', () => {
@@ -139,4 +140,52 @@ test('manual holdings without funding history stay visible but are not treated a
     assert.equal(report.rows[0].fundingUnknown, true);
     assert.equal(report.rows[0].dividendRate, null);
     assert.equal(report.complete, false);
+});
+
+test('legacy opening lots reach cost attribution without becoming external deposits', () => {
+    const report = holdingDividendCapital(
+        [
+            {
+                accountId: 'a',
+                state: {
+                    openingLots: [
+                        {
+                            date: '20260101',
+                            symbol: 'AAA',
+                            currency: 'USD',
+                            quantity: 2,
+                            amount: 100,
+                        },
+                    ],
+                },
+            },
+        ],
+        [position('a', 'AAA', 2)],
+        { currency: 'USD' }
+    );
+    assert.equal(report.investedCost, 100);
+    assert.equal(report.rows[0].unknownHeld, 100);
+    assert.equal(report.externalDeposits, 0);
+    assert.equal(report.dividendRate, null);
+});
+
+test('held quantity with unavailable FIFO never becomes zero acquisition cost', () => {
+    const r = holdingDividendCapital(
+        [
+            state(
+                'a',
+                [],
+                [
+                    trade('b', '20260102', 'buy', 'AAA', 100, 2),
+                    trade('s', '20260102', 'sell', 'AAA', 60, 1),
+                ]
+            ),
+        ],
+        [position('a', 'AAA')],
+        { currency: 'USD' }
+    );
+    assert.equal(r.unavailable, true);
+    assert.equal(r.investedCost, null);
+    assert.equal(r.rows[0].totalCost, null);
+    assert.equal(r.rows[0].principalHeld, null);
 });

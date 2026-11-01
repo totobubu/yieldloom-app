@@ -42,7 +42,10 @@ node scripts/toss/read-account-orders.mjs --live --account-suffix <선택한계�
 설정 이름은 `TOSS_ACCESS_TOKEN`, `TOSS_CLIENT_ID`, `TOSS_CLIENT_SECRET`,
 `TOSS_ACCOUNT_SEQ`다. helper는 accounts 응답에서 지정된 끝자리와 일치하는 종합매매
 계좌가 정확히 하나인지 검증하므로 accountSeq를 추측하거나 설정 파일에 써 넣지 않는다.
-OS 환경의 기존 값이 파일보다 우선한다. 파일을 새 checkout으로 복사하지 않는다.
+명시적 `--env-file`은 OS 인증과 합치지 않는 독립 소스이며 파일 누락 시 중단한다.
+가족 계좌는 `--profile wife-toss|husband-toss`를 선택하고 소유자별 참조만 읽는다. 일반
+`TOSS_ACCESS_TOKEN`으로 fallback하지 않는다. 전체 계좌번호 해시와 suffix를 모두 검증한다.
+명시 파일 없는 기존 저수준 collector는 환경 우선 동작을 유지한다. 파일을 새 checkout으로 복사하지 않는다.
 
 기존 유효 토큰이 없고 같은 키의 인증이 허용됐을 때만 위 양식에 `--issue-token`을
 추가한다. 동일 client의 이전 토큰이 무효화되므로 다른 작업과 동시 발급하지 않는다.

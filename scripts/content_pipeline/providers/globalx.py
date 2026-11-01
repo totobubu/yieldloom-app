@@ -18,7 +18,7 @@ class GlobalXAdapter(OfficialHTTPAdapter):
     parser_version = "2"
     allowed_hosts = ("globalxetfs.com",)
     fetch_mode = "browser"
-    browser_ready_selector = 'table[aria-label="Distributions table"]'
+    browser_ready_selector = '[aria-label="Distributions table"] table, table[aria-label="Distributions table"]'
     tickers = ("QYLD", "XYLD", "RYLD", "QYLG", "XYLG", "RYLG")
 
     def discover(self):

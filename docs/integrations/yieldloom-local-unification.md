@@ -2,7 +2,7 @@
 
 ## 단일 개발 작업본
 
-- 경로: `C:\Users\stead\Documents\Codex\2026-10-28\task\yieldloom-unified-20261102`
+- 경로: 별도 로컬 작업 폴더 `yieldloom-unified-20261102`
 - 브랜치: `feat/fifo-unified-local-20261102`
 - 기준: `origin/work`의 `900294aef8e8a8e49244be510aca83273440635e`
 - 실행: 해당 폴더에서 `npm run dev`. 검사: `npm run type-check`, `npm run build`, `npm run lint:check`, 관련 `node --test`.

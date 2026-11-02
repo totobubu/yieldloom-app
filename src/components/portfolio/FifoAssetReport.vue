@@ -160,6 +160,22 @@
             return null;
         }
     });
+    const portfolioEvents = computed(() =>
+        applied.value.events
+            .filter((event) => {
+                const account = accounts.value.find((a) => a.id === event.accountId);
+                return !event.excluded &&
+                    (scope.value === 'family' || account?.ownerId === scope.value) &&
+                    ['BUY', 'SELL', 'DIVIDEND', 'TAX_REFUND'].includes(event.type);
+            })
+            .sort((a, b) => String(b.at).localeCompare(String(a.at)))
+    );
+    const dividends = computed(() =>
+        portfolioEvents.value.filter((event) => event.type === 'DIVIDEND')
+    );
+    const eventLabel = (type) => ({
+        BUY: '매수', SELL: '매도', DIVIDEND: '배당', TAX_REFUND: '세금 환급',
+    })[type] || type;
     const number = (v) => {
         if (v == null) return '미상';
         const [whole, fraction] = String(v).split('.');
@@ -420,14 +436,13 @@
     <main class="fifo-report">
         <header>
             <div>
-                <h1>FIFO 자산 리포트</h1>
+                <h1>주식 포트폴리오</h1>
                 <p>
                     채택한 장부와 수기 보정에 기록된 범위로 계좌별 원가와 손익을
                     계산합니다. 누락 이력을 전체 이력으로 추정하지 않습니다.
                 </p>
             </div>
-            <RouterLink to="/admin/sheet-ledger">거래 목록</RouterLink
-            ><Button
+            <Button
                 label="리포트 새로고침"
                 :loading="busy"
                 :disabled="saving"
@@ -588,6 +603,37 @@
                     누적 체결은 실제 단일 체결 근거를 확인하기 전까지 순서를
                     확정하지 않습니다.
                 </p>
+                <section aria-label="주식 거래 내역">
+                    <h2>거래 내역</h2>
+                    <p v-if="!portfolioEvents.length">확인된 거래가 없습니다.</p>
+                    <div v-else class="table-scroll">
+                        <table>
+                            <thead><tr><th>일시</th><th>계좌</th><th>종목</th><th>구분</th><th>수량</th><th>금액</th><th>상태</th></tr></thead>
+                            <tbody><tr v-for="event in portfolioEvents" :key="event.id">
+                                <td>{{ event.at }}</td><td>{{ name(event.accountId) }}</td>
+                                <td>{{ event.symbol || '—' }}</td><td>{{ eventLabel(event.type) }}</td>
+                                <td>{{ number(event.quantity) }}</td>
+                                <td>{{ number(event.amount) }} {{ event.currency }}</td>
+                                <td>{{ event.timing === 'order_aggregate' ? '주문 누적 · 체결 시각 미확정' : '채택 장부' }}</td>
+                            </tr></tbody>
+                        </table>
+                    </div>
+                </section>
+                <section aria-label="배당 내역">
+                    <h2>배당 내역</h2>
+                    <p v-if="!dividends.length">확인된 배당이 없습니다.</p>
+                    <div v-else class="table-scroll">
+                        <table>
+                            <thead><tr><th>일시</th><th>계좌</th><th>종목</th><th>기록 금액</th><th>세후 입금</th></tr></thead>
+                            <tbody><tr v-for="event in dividends" :key="event.id">
+                                <td>{{ event.at }}</td><td>{{ name(event.accountId) }}</td>
+                                <td>{{ event.symbol || '—' }}</td>
+                                <td>{{ number(event.amount) }} {{ event.currency }}</td>
+                                <td>{{ number(event.net) }} {{ event.currency }}</td>
+                            </tr></tbody>
+                        </table>
+                    </div>
+                </section>
             </template>
             <section aria-labelledby="fifo-correction-title">
                 <h2 id="fifo-correction-title">수기 보정</h2>

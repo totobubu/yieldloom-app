@@ -51,6 +51,10 @@ test('reference quantity uses canonical cumulative totals with exact decimals, w
     );
     const r = run(input).rows[0];
     assert.equal(r.recordedTradeQuantity.status, 'reference');
+    assert.equal(
+        r.recordedTradeQuantity.quantityBasis,
+        'as_recorded_unadjusted'
+    );
     assert.equal(r.recordedTradeQuantity.buys, '0.123456789123456789');
     assert.equal(r.recordedTradeQuantity.sells, '0.023456789123456789');
     assert.equal(r.recordedTradeQuantity.net, '0.1');
@@ -128,10 +132,17 @@ test('existing latest-order projection supplies a single current identity and pr
     };
     const source = (q) => ({
         order: order('same-cumulative-order', {
+            quantity: '2',
+            status:
+                q === '2'
+                    ? 'FILLED'
+                    : q === '0.5'
+                      ? 'CANCELED'
+                      : 'PARTIAL_FILLED',
             execution: {
                 ...order().execution,
                 filledQuantity: q,
-                filledAmount: q === '1' ? '100' : '200',
+                filledAmount: { 1: '100', 2: '200', 0.5: '50' }[q],
                 commission: '0',
                 tax: '0',
             },
@@ -158,6 +169,31 @@ test('existing latest-order projection supplies a single current identity and pr
     assert.equal(r.recordedTradeQuantity.net, '2');
     assert.equal(r.recordedTradeQuantity.includedOrders, 1);
     assert.equal(r.quantity, null);
+    for (const correctedQuantity of ['1', '0.5']) {
+        const corrected = overlayIncrements(baseline, {
+            verified: [
+                {
+                    marker: { accountId: 'wife' },
+                    apiAccountHash: hash('account'),
+                    observations: [],
+                    apiOrders: [
+                        { ...source('2'), observedAt: '2026-01-04T00:00:00Z' },
+                        {
+                            ...source(correctedQuantity),
+                            observedAt: '2026-01-06T00:00:00Z',
+                        },
+                    ],
+                },
+            ],
+            revision: hash('corrected-revision'),
+            entryCount: 1,
+        });
+        assert.equal(corrected.rows.length, 1);
+        assert.equal(
+            run(adoptedFifoInput(corrected)).rows[0].recordedTradeQuantity.net,
+            correctedQuantity
+        );
+    }
     // Passing an older extra observation without a final-version reference is unsafe.
     const stale = makeRow('stale', {
         quantity: '1',

@@ -57,7 +57,9 @@ let reads = 0,
     snapshots = 0,
     denied = false,
     uncertain = false,
-    integrityFailure = false;
+    integrityFailure = false,
+    missingQuantityEvidence = false,
+    emptySnapshot = false;
 const diagnosticLogs = [];
 const doc = (path) => ({
     path,
@@ -98,7 +100,17 @@ const handler = fifoReportHandler({
             snapshots++;
             if (integrityFailure)
                 throw reportDiagnosticError('INC_RECEIPT_DIGEST');
-            return snapshot;
+            return emptySnapshot
+                ? {
+                      ...snapshot,
+                      rows: [],
+                      unassignedRows: [],
+                      details: new Map(),
+                      orderReferences: new Map(),
+                  }
+                : missingQuantityEvidence
+                  ? { ...snapshot, orderReferences: new Map() }
+                  : snapshot;
         },
     },
     now: () => '2026-01-31T00:00:00Z',
@@ -215,6 +227,29 @@ try {
         .getByText(/남편 · 토스/)
         .first()
         .waitFor();
+    await table
+        .getByRole('heading', { name: '계좌별 기록 항목 · 계산 상태' })
+        .waitFor();
+    const recordedRow = table.getByRole('row').filter({ hasText: 'HUSBAND' });
+    assert.equal(
+        await recordedRow
+            .locator('[aria-label="장부 순매수 참고 수량"]')
+            .innerText(),
+        order().execution.filledQuantity
+    );
+    assert.equal(
+        await recordedRow.locator('[aria-label="현재 보유 수량"]').innerText(),
+        '미확인'
+    );
+    await main
+        .getByText(/현재 보유 수량과 보유 종목 수는 확인되지 않았습니다/)
+        .waitFor();
+    await recordedRow.getByText('입력 범위 계산 근거', { exact: true }).focus();
+    await page.keyboard.press('Enter');
+    assert.equal(
+        await recordedRow.locator('details').evaluate((el) => el.open),
+        true
+    );
     const choose = async (label, option) => {
         await main.getByRole('combobox', { name: label, exact: true }).click();
         await page.getByRole('option', { name: option, exact: true }).click();
@@ -267,6 +302,7 @@ try {
     );
     let manual = table.getByRole('row').filter({ hasText: 'MANUAL' });
     await manual.waitFor();
+    await manual.getByText('입력 범위 계산 근거', { exact: true }).click();
     assert.match(await manual.innerText(), /1\.123456789123456789/);
     assert.match(await manual.innerText(), /100/);
     assert.match(await manual.innerText(), /미상 KRW/);
@@ -353,6 +389,43 @@ try {
     await main.getByRole('heading', { name: '보정 이력 · 버전 4' }).waitFor();
     assert.equal(await manual.count(), 0);
     assert.equal(writes, 4);
+    const beforeReferenceRefresh = requests.length,
+        beforeReferenceReads = reads,
+        beforeReferenceSnapshots = snapshots;
+    missingQuantityEvidence = true;
+    await main.getByRole('button', { name: '리포트 새로고침' }).click();
+    await recordedRow
+        .getByText('최종 누적 주문 버전의 연결 근거를 확인하지 못했습니다.', {
+            exact: true,
+        })
+        .waitFor();
+    assert.equal(
+        await recordedRow
+            .locator('[aria-label="장부 순매수 참고 수량"]')
+            .innerText(),
+        '미상'
+    );
+    assert.equal(
+        await recordedRow.locator('[aria-label="현재 보유 수량"]').innerText(),
+        '미확인'
+    );
+    assert.equal(requests.length, beforeReferenceRefresh + 1);
+    emptySnapshot = true;
+    await main.getByRole('button', { name: '리포트 새로고침' }).click();
+    await main.getByText(/실제 보유가 0이라는 뜻은 아닙니다/).waitFor();
+    assert.equal(await table.getByRole('row').count(), 1);
+    assert.equal(await main.locator('.metrics:visible').count(), 0);
+    emptySnapshot = false;
+    missingQuantityEvidence = false;
+    await main.getByRole('button', { name: '리포트 새로고침' }).click();
+    await recordedRow
+        .locator('[aria-label="장부 순매수 참고 수량"]')
+        .getByText(order().execution.filledQuantity, { exact: true })
+        .waitFor();
+    assert.equal(requests.length, beforeReferenceRefresh + 3);
+    assert.equal(reads, beforeReferenceReads + 9);
+    assert.equal(snapshots, beforeReferenceSnapshots + 3);
+    assert.equal(writes, 4);
     integrityFailure = true;
     await main.getByRole('button', { name: '리포트 새로고침' }).click();
     const diagnosticRegion = main.getByRole('region', {
@@ -397,8 +470,8 @@ try {
     await main.getByRole('heading', { name: '주식 포트폴리오' }).waitFor();
     await main.getByRole('region', { name: '주식 거래 내역' }).waitFor();
     await main.getByRole('region', { name: '배당 내역' }).waitFor();
-    assert.equal(await table.getByText(/아내 · 토스/).count() > 0, true);
-    assert.equal(await table.getByText(/남편 · 토스/).count() > 0, true);
+    assert.equal((await table.getByText(/아내 · 토스/).count()) > 0, true);
+    assert.equal((await table.getByText(/남편 · 토스/).count()) > 0, true);
     const beforeDeniedLogs = diagnosticLogs.length;
     denied = true;
     integrityFailure = true;
@@ -428,6 +501,7 @@ try {
             reportPosts: requests.filter((r) => r.method === 'POST').length,
             pageErrors: errors.length,
             safeDiagnosticRetries: diagnosticLogs.length,
+            recordedQuantityStates: ['reference', 'unknown', 'empty'],
         })
     );
 } finally {

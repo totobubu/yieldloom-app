@@ -65,12 +65,12 @@
                 <router-link
                     class="studio-brand"
                     to="/"
-                    aria-label="토또부부 배당 스튜디오 홈"
+                    aria-label="모으멍 배당달력 홈"
                     ><span class="brand-mark"
                         ><i class="pi pi-chart-bar" aria-hidden="true" /></span
                     ><span
-                        >토또부부
-                        <span class="brand-secondary">배당 스튜디오</span></span
+                        >모으멍
+                        <span class="brand-secondary">배당달력</span></span
                     ></router-link
                 >
                 <nav class="desktop-nav" aria-label="주요 메뉴">
@@ -149,7 +149,7 @@
             <router-view />
         </main>
         <footer class="studio-footer">
-            <span>토또부부 배당 스튜디오</span
+            <span>모으멍 배당달력</span
             ><router-link to="/legal">데이터 출처 · 이용 안내</router-link>
             <p>
                 공개된 자료를 정리한 정보입니다. 기준일과 원문을 확인해 주세요.

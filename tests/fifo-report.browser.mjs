@@ -393,6 +393,12 @@ try {
     await main.getByRole('heading', { name: '보정 이력 · 버전 4' }).waitFor();
     assert.equal(await diagnosticRegion.count(), 0);
     await table.waitFor();
+    await page.goto(base + '/admin/fifo-portfolio');
+    await main.getByRole('heading', { name: '주식 포트폴리오' }).waitFor();
+    await main.getByRole('region', { name: '주식 거래 내역' }).waitFor();
+    await main.getByRole('region', { name: '배당 내역' }).waitFor();
+    assert.equal(await table.getByText(/아내 · 토스/).count() > 0, true);
+    assert.equal(await table.getByText(/남편 · 토스/).count() > 0, true);
     const beforeDeniedLogs = diagnosticLogs.length;
     denied = true;
     integrityFailure = true;

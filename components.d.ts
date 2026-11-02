@@ -40,6 +40,7 @@ declare module 'vue' {
     DocumentLedgerHeader: typeof import('./src/components/portfolio/DocumentLedgerHeader.vue')['default']
     ErrorBoundary: typeof import('./src/components/ErrorBoundary.vue')['default']
     FifoAssetReport: typeof import('./src/components/portfolio/FifoAssetReport.vue')['default']
+    FifoReviewCalendar: typeof import('./src/components/portfolio/FifoReviewCalendar.vue')['default']
     FinalTossLedger: typeof import('./src/components/portfolio/FinalTossLedger.vue')['default']
     FullscreenDataLoading: typeof import('./src/components/FullscreenDataLoading.vue')['default']
     FundingTracePanel: typeof import('./src/components/portfolio/FundingTracePanel.vue')['default']

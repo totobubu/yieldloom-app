@@ -11,6 +11,7 @@
     import InputText from 'primevue/inputtext';
     import Button from 'primevue/button';
     import Message from 'primevue/message';
+    import FifoReviewCalendar from './FifoReviewCalendar.vue';
     import { firebaseUser } from '@/services/firebaseClient.js';
     import { createSheetReportClient } from '@/services/sheetReports.js';
     import {
@@ -192,9 +193,6 @@
                 );
             })
             .sort((a, b) => String(b.at).localeCompare(String(a.at)))
-    );
-    const dividends = computed(() =>
-        portfolioEvents.value.filter((event) => event.type === 'DIVIDEND')
     );
     const eventLabel = (type) =>
         ({
@@ -726,81 +724,108 @@
                     누적 체결은 실제 단일 체결 근거를 확인하기 전까지 순서를
                     확정하지 않습니다.
                 </p>
-                <section aria-label="주식 거래 내역">
-                    <h2>거래 내역</h2>
-                    <p v-if="!portfolioEvents.length">
-                        확인된 거래가 없습니다.
-                    </p>
-                    <div v-else class="table-scroll">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>일시</th>
-                                    <th>계좌</th>
-                                    <th>종목</th>
-                                    <th>구분</th>
-                                    <th>수량</th>
-                                    <th>금액</th>
-                                    <th>상태</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="event in portfolioEvents"
-                                    :key="event.id">
-                                    <td>{{ event.at }}</td>
-                                    <td>{{ name(event.accountId) }}</td>
-                                    <td>{{ event.symbol || '—' }}</td>
-                                    <td>{{ eventLabel(event.type) }}</td>
-                                    <td>{{ number(event.quantity) }}</td>
-                                    <td>
-                                        {{ number(event.amount) }}
-                                        {{ event.currency }}
-                                    </td>
-                                    <td>
-                                        {{
-                                            event.timing === 'order_aggregate'
-                                                ? '주문 누적 · 체결 시각 미확정'
-                                                : '채택 장부'
-                                        }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-                <section aria-label="배당 내역">
-                    <h2>배당 내역</h2>
-                    <p v-if="!dividends.length">확인된 배당이 없습니다.</p>
-                    <div v-else class="table-scroll">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>일시</th>
-                                    <th>계좌</th>
-                                    <th>종목</th>
-                                    <th>기록 금액</th>
-                                    <th>세후 입금</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="event in dividends" :key="event.id">
-                                    <td>{{ event.at }}</td>
-                                    <td>{{ name(event.accountId) }}</td>
-                                    <td>{{ event.symbol || '—' }}</td>
-                                    <td>
-                                        {{ number(event.amount) }}
-                                        {{ event.currency }}
-                                    </td>
-                                    <td>
-                                        {{ number(event.net) }}
-                                        {{ event.currency }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+                <FifoReviewCalendar
+                    :key="firebaseUser?.uid"
+                    :events="portfolioEvents">
+                    <template #default="{ events: reviewEvents }">
+                        <section aria-label="주식 거래 내역">
+                            <h2>거래 내역</h2>
+                            <p v-if="!reviewEvents.length">
+                                확인된 거래가 없습니다.
+                            </p>
+                            <div v-else class="table-scroll">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>일시</th>
+                                            <th>계좌</th>
+                                            <th>종목</th>
+                                            <th>구분</th>
+                                            <th>수량</th>
+                                            <th>금액</th>
+                                            <th>상태</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            v-for="event in reviewEvents"
+                                            :key="`${event.accountId}:${event.id}`">
+                                            <td>
+                                                {{ event.at || '날짜 미상' }}
+                                            </td>
+                                            <td>{{ name(event.accountId) }}</td>
+                                            <td>{{ event.symbol || '—' }}</td>
+                                            <td>
+                                                {{ eventLabel(event.type) }}
+                                            </td>
+                                            <td>
+                                                {{ number(event.quantity) }}
+                                            </td>
+                                            <td>
+                                                {{ number(event.amount) }}
+                                                {{ event.currency }}
+                                            </td>
+                                            <td>
+                                                {{
+                                                    event.timing ===
+                                                    'order_aggregate'
+                                                        ? '주문 누적 · 체결 시각 미확정'
+                                                        : '채택 장부'
+                                                }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <section aria-label="배당 내역">
+                            <h2>배당 내역</h2>
+                            <p
+                                v-if="
+                                    !reviewEvents.some(
+                                        (event) => event.type === 'DIVIDEND'
+                                    )
+                                ">
+                                확인된 배당이 없습니다.
+                            </p>
+                            <div v-else class="table-scroll">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>일시</th>
+                                            <th>계좌</th>
+                                            <th>종목</th>
+                                            <th>기록 금액</th>
+                                            <th>세후 입금</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr
+                                            v-for="event in reviewEvents.filter(
+                                                (event) =>
+                                                    event.type === 'DIVIDEND'
+                                            )"
+                                            :key="`${event.accountId}:${event.id}`">
+                                            <td>
+                                                {{ event.at || '날짜 미상' }}
+                                            </td>
+                                            <td>{{ name(event.accountId) }}</td>
+                                            <td>{{ event.symbol || '—' }}</td>
+                                            <td>
+                                                {{ number(event.amount) }}
+                                                {{ event.currency }}
+                                            </td>
+                                            <td>
+                                                {{ number(event.net) }}
+                                                {{ event.currency }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </template>
+                </FifoReviewCalendar>
             </template>
             <section aria-labelledby="fifo-correction-title">
                 <h2 id="fifo-correction-title">수기 보정</h2>

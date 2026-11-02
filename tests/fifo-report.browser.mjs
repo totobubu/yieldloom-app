@@ -11,6 +11,7 @@ import {
 } from '../lib/toss-ledger-increments.js';
 import { order } from './support/toss-orders-fixture.mjs';
 import { finalLedgerFixture } from './support/final-ledger-fixture.mjs';
+import { checkReviewCalendar } from './support/fifo-calendar-browser.mjs';
 import {
     reportDiagnosticError,
     reportDiagnosticText,
@@ -261,6 +262,45 @@ try {
     assert.equal(await table.getByText(/HUSBAND/).count(), 0);
     await choose('조회 범위', '가족 전체');
     assert.equal(requests.length, 1);
+    const summaries = main.locator('section[aria-label$="자산 요약"]');
+    const wholeHistorySummary = await summaries.allTextContents();
+    const wholeHistoryLots = await table.innerText();
+    const review = main.getByRole('region', { name: '일별 장부 검토' });
+    const history = review.getByRole('region', { name: '주식 거래 내역' });
+    await review
+        .getByRole('button', { name: '2026-01-02, 1건', exact: true })
+        .click();
+    assert.equal(await history.locator('tbody tr').count(), 1);
+    await choose('조회 범위', '아내');
+    await review
+        .getByText('2026-01-02에 해당하는 내역이 없습니다.', { exact: true })
+        .waitFor();
+    await choose('조회 범위', '가족 전체');
+    await review.getByRole('button', { name: '이전 달', exact: true }).click();
+    await review.getByRole('heading', { name: '2025년 12월' }).waitFor();
+    assert.equal(await history.locator('tbody tr').count(), 1);
+    await review
+        .getByRole('button', { name: '2025-12-31, 0건', exact: true })
+        .click();
+    assert.equal(await history.locator('tbody tr').count(), 0);
+    await review.getByRole('button', { name: '전체 날짜 보기' }).click();
+    await review.getByRole('textbox', { name: '내역 검색' }).fill('HUSBAND');
+    assert.equal(await history.locator('tbody tr').count(), 1);
+    await choose('검토 종목', 'HUSBAND');
+    await choose('조회 범위', '아내');
+    assert.equal(await history.locator('tbody tr').count(), 0);
+    await choose('조회 범위', '가족 전체');
+    assert.equal(await history.locator('tbody tr').count(), 1);
+    await review.getByRole('textbox', { name: '내역 검색' }).fill('no-match');
+    assert.equal(await history.locator('tbody tr').count(), 0);
+    await review.getByRole('textbox', { name: '내역 검색' }).fill('');
+    await choose('검토 종목', '전체 종목');
+    assert.deepEqual(await summaries.allTextContents(), wholeHistorySummary);
+    assert.equal(await table.innerText(), wholeHistoryLots);
+    assert.equal(requests.length, 1, 'review filters reuse loaded data');
+    assert.equal(reads, 3);
+    assert.equal(snapshots, 1);
+    assert.equal(writes, 0);
     await main
         .getByRole('textbox', { name: '종목', exact: true })
         .fill('MANUAL');
@@ -488,6 +528,7 @@ try {
     assert.equal(await diagnosticRegion.count(), 0);
     assert.equal(diagnosticLogs.length, beforeDeniedLogs);
     assert.equal(errors.length, 0, errors.join('\n'));
+    await checkReviewCalendar(browser, base);
     console.log(
         JSON.stringify({
             suite: 'fifo-report',
@@ -502,6 +543,7 @@ try {
             pageErrors: errors.length,
             safeDiagnosticRetries: diagnosticLogs.length,
             recordedQuantityStates: ['reference', 'unknown', 'empty'],
+            calendarReview: 'passed; no additional API/DB reads or writes',
         })
     );
 } finally {

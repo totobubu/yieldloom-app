@@ -1,4 +1,4 @@
-# 토또부부 배당 썸네일 스튜디오
+# 모으멍 배당달력
 
 종목별 배당 콘텐츠 카드 제작에 집중한 Vue 앱입니다.
 
@@ -24,6 +24,12 @@ GitHub Actions의 수집·발행·진단 역할과 실행 방법은
 [워크플로 운영 안내](docs/data-management/WORKFLOWS.md)를 참조하세요.
 
 ## 개발 및 검증
+
+2026-11-02 기준 로컬 통합 작업본은
+`C:\Users\stead\Documents\Codex\2026-10-28\task\yieldloom-unified-20261102`의
+`feat/fifo-unified-local-20261102` 브랜치다. 이 폴더에서 아래 명령을 실행한다.
+기존 `yieldloom-app`의 토스 수집기 미커밋 작업은 별도로 보존되어 있다.
+[기능 출처와 전환 조건](docs/integrations/yieldloom-local-unification.md)을 확인한다.
 
 ```sh
 npm ci

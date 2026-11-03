@@ -6,7 +6,7 @@
         userId: { type: String, default: '' },
         busy: Boolean,
     });
-    defineEmits(['select', 'upload']);
+    defineEmits(['select', 'upload', 'connect-toss']);
 </script>
 <template>
     <p v-if="!accounts.length">
@@ -22,6 +22,14 @@
                 :aria-pressed="selected === account.id"
                 @click="$emit('select', account.id)" />
             <small>자료 기준일 {{ account.asOf || '미확인' }}</small>
+            <Button
+                v-if="/토스|toss/i.test(account.institution || '')"
+                label="토스 API 설정"
+                icon="pi pi-link"
+                severity="secondary"
+                :disabled="busy"
+                :aria-label="`${account.alias} 토스 API 설정`"
+                @click="$emit('connect-toss', account.id)" />
             <Button
                 v-if="
                     ['owner', 'editor'].includes(account.permissions?.[userId])

@@ -109,3 +109,9 @@ var/.data-platform*.lock
 
 # Version only the reference template, never local credentials.
 !.env.example
+
+# Encrypted local brokerage credentials are private even when encrypted.
+**/.yieldloom-toss/
+**/vault.json
+**/.vault-*.tmp
+**/.archive-*.tmp

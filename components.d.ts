@@ -11,8 +11,11 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AccountEvidencePanel: typeof import('./src/components/portfolio/AccountEvidencePanel.vue')['default']
     AccountRecoveryOverview: typeof import('./src/components/portfolio/AccountRecoveryOverview.vue')['default']
     AccountTossConnection: typeof import('./src/components/portfolio/AccountTossConnection.vue')['default']
+    AccountTossLocalSettings: typeof import('./src/components/portfolio/AccountTossLocalSettings.vue')['default']
+    AccountTossLocalUpdate: typeof import('./src/components/portfolio/AccountTossLocalUpdate.vue')['default']
     AdminStockCollection: typeof import('./src/components/stock/AdminStockCollection.vue')['default']
     AdSlot: typeof import('./src/components/ads/AdSlot.vue')['default']
     AdvancedPortfolioInsights: typeof import('./src/components/portfolio/AdvancedPortfolioInsights.vue')['default']

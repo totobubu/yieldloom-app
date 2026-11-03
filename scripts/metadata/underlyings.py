@@ -53,7 +53,7 @@ ALIASES = {
     'Rocket Lab': 'RKLB', 'AppLovin': 'APP', 'SoFi': 'SOFI', 'Marvell': 'MRVL',
     'AeroVironment': 'AVAV', 'Figma': 'FIG', 'Vistra': 'VST', 'Vertiv': 'VRT',
     'Spotify': 'SPOT', 'Palo Alto': 'PANW', 'IonQ': 'IONQ', 'Oklo': 'OKLO', 'Sandisk': 'SNDK',
-    'Marathon Digital': 'MARA', 'Block': 'XYZ',
+    'Marathon Digital': 'MARA', 'Block': 'XYZ', 'SKHY': 'SKHY',
 }
 # Ordinary English words which also happen to be stock symbols cannot prove identity.
 AMBIGUOUS = {'A', 'I', 'IT', 'ON', 'ALL', 'FOR', 'IN', 'OF', 'TO', 'BY', 'OR', 'BE', 'ARE', 'CAN', 'NEW', 'ONE', 'TWO', 'LONG', 'SHORT', 'ETF', 'ETFS', 'USD', 'NAV', 'US', 'UK', 'INC', 'LP', 'LLC', 'CORP', 'DAILY', 'WEEKLY', 'MONTHLY', 'STRATEGY', 'PREMIUM', 'INCOME', 'BULL', 'BEAR', 'GOLD', 'SILVER', 'BITCOIN', 'ETHEREUM', 'CASH', 'AI'}

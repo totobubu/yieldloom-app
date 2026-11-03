@@ -195,6 +195,7 @@ export function createLocalTossClient({
                             collectionPending:
                                 collection.collectionPending === true,
                             stopReason: collection.stopReason || null,
+                            failureStage: collection.failureStage || null,
                         };
                     if (batch.accountId !== accountId)
                         throw Error('STALE_BINDING');
@@ -246,6 +247,7 @@ export function createLocalTossClient({
                     stopReason: tail.batch
                         ? 'BATCH_BUDGET'
                         : collection.stopReason || null,
+                    failureStage: collection.failureStage || null,
                 };
             } finally {
                 if (updates.get(accountId) === version)

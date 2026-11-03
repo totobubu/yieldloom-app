@@ -49,6 +49,21 @@ try {
         })
         .waitFor();
     await page.getByText('전체 수집 미완료입니다.', { exact: false }).waitFor();
+    await page.getByLabel('모의 계좌').selectOption('demo-account-timeout');
+    await page.getByLabel('주문 조회 시작일').fill('2026-01-01');
+    await page.getByLabel('주문 조회 종료일').fill('2026-01-02');
+    await button.click();
+    await page
+        .getByText('계좌 목록 조회 단계에서 중단됐습니다.', { exact: false })
+        .waitFor();
+    assert.equal(
+        await page
+            .getByText('날짜를 좁혀도 OPEN 응답 크기는 줄지 않습니다.', {
+                exact: false,
+            })
+            .count(),
+        0
+    );
     for (const width of [390, 1440]) {
         await page.setViewportSize({ width, height: 900 });
         for (const dark of [false, true]) {

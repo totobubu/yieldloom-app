@@ -25,6 +25,17 @@ if (import.meta.env.DEV) {
                     collectionPending: true,
                     stopReason: 'OPEN_RESPONSE_LIMIT',
                 };
+            if (accountId === 'demo-account-timeout')
+                return {
+                    accountId,
+                    status: 'observations_saved',
+                    canonicalUnchanged: true,
+                    cloudSaved: true,
+                    saved: 0,
+                    collectionPending: true,
+                    stopReason: 'ACCOUNT_LOOKUP_TIMEOUT',
+                    failureStage: 'ACCOUNTS',
+                };
             return {
                 accountId,
                 status: 'collected_locally',
@@ -46,9 +57,13 @@ if (import.meta.env.DEV) {
                             selected.value = e.target.value;
                         },
                     },
-                    ['demo-1', 'demo-2', 'demo-error', 'demo-limit'].map(
-                        (value) => h('option', { value }, value)
-                    )
+                    [
+                        'demo-1',
+                        'demo-2',
+                        'demo-error',
+                        'demo-limit',
+                        'demo-account-timeout',
+                    ].map((value) => h('option', { value }, value))
                 ),
                 h(AccountTossLocalUpdate, {
                     accountId: selected.value,

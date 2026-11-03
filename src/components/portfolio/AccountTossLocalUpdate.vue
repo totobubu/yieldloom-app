@@ -76,9 +76,11 @@
                         : note.value;
             if (result.collectionPending)
                 note.value +=
-                    result.stopReason === 'OPEN_RESPONSE_LIMIT'
-                        ? ' OPEN은 기간 필터 없는 단일 응답으로, 응답의 30초 통신 제한·60초 허가·20MB 제한에 걸렸습니다. 날짜를 좁혀도 OPEN 응답 크기는 줄지 않습니다. 전체 수집 완료가 아닙니다.'
-                        : ' 수집이 일부 남았습니다. 같은 기간으로 다시 클릭하면 보존된 원문·커서에서 권한을 다시 확인해 이어갑니다. 자동 재시도하지 않습니다.';
+                    result.failureStage === 'ACCOUNTS'
+                        ? ' 계좌 목록 조회 단계에서 중단됐습니다. 이번 요청에서는 주문을 조회하지 않았습니다. 기존 원문·커서는 보존하며 연결과 네트워크를 확인한 뒤 같은 기간으로 다시 실행하세요.'
+                        : result.stopReason === 'OPEN_RESPONSE_LIMIT'
+                          ? ' OPEN은 기간 필터 없는 단일 응답으로, 응답의 30초 통신 제한·60초 허가·20MB 제한에 걸렸습니다. 날짜를 좁혀도 OPEN 응답 크기는 줄지 않습니다. 전체 수집 완료가 아닙니다.'
+                          : ' 수집이 일부 남았습니다. 같은 기간으로 다시 클릭하면 보존된 원문·커서에서 권한을 다시 확인해 이어갑니다. 자동 재시도하지 않습니다.';
         } catch {
             if (version === generation)
                 error.value =

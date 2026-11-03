@@ -558,6 +558,82 @@ test('OPEN transport timeout and response size limit remain explicit unsupported
     }
 });
 
+test('accounts timeout/expiry is identified before OPEN and during CLOSED resume without misreporting an OPEN limit', async (t) => {
+    for (const scenario of [
+        { phase: 'OPEN', name: 'TimeoutError' },
+        { phase: 'CLOSED', name: 'TimeoutError' },
+        { phase: 'OPEN', name: 'AbortError' },
+        { phase: 'OPEN', name: 'TimeoutError', expire: true },
+    ]) {
+        let clock = 0;
+        const paths = [];
+        const f = await setup(t, {
+            now: () => clock,
+            fetchBroker: async (url) => {
+                paths.push(new URL(url).pathname);
+                assert.equal(new URL(url).pathname, '/api/v1/accounts');
+                if (scenario.expire) clock += 61000;
+                throw new DOMException(
+                    'synthetic account lookup timeout',
+                    scenario.name
+                );
+            },
+        });
+        await f.configure();
+        await f.client.issueToken(accountId, true);
+        if (scenario.phase === 'CLOSED')
+            await f.vault.transaction(async (state) => {
+                const id = 'synthetic-resume';
+                state.activeCollections = { [accountId]: id };
+                state.collections = {
+                    [id]: {
+                        id,
+                        accountId,
+                        subjectUid: actor.uid,
+                        accountNoSha256:
+                            state.bindings[accountId].accountNoSha256,
+                        from: '2026-01-01',
+                        to: '2026-01-02',
+                        scope: 'CLOSED',
+                        cursor: 'preserved-cursor',
+                        pages: [],
+                        seen: [],
+                        done: false,
+                        notBefore: 0,
+                    },
+                };
+            });
+        const result = await f.client.update({
+            accountId,
+            from: '2026-01-01',
+            to: '2026-01-02',
+        });
+        assert.equal(
+            result.stopReason,
+            scenario.expire ? 'ACCOUNT_LOOKUP_WINDOW' : 'ACCOUNT_LOOKUP_TIMEOUT'
+        );
+        assert.equal(result.failureStage, 'ACCOUNTS');
+        assert.equal(result.collectionPending, true);
+        assert.equal(result.saved, 0);
+        assert.deepEqual(paths, ['/api/v1/accounts']);
+        const state = await f.vault.read(),
+            active = state.collections[state.activeCollections[accountId]];
+        assert.equal(active.scope, scenario.phase);
+        assert.equal(
+            active.cursor,
+            scenario.phase === 'CLOSED' ? 'preserved-cursor' : null
+        );
+        assert.equal(active.pages.length, 0);
+        await assert.rejects(stat(join(f.root, 'archives')), {
+            code: 'ENOENT',
+        });
+        assert.equal(
+            [...f.db.data.keys()].some((key) => key.includes('tossApiBatches')),
+            false
+        );
+    }
+});
+
 test('permissions revoked during archive materialization prevent raw response/cloud publication and retain progress', async (t) => {
     const f = await setup(t);
     await f.configure();

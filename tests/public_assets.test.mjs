@@ -20,7 +20,7 @@ test('compact index preserves active core catalog entries and thumbnail relation
     });
 });
 
-test('build excludes legacy assets and keeps thumbnail and dividend schedule assets', async () => {
+test('build excludes legacy assets and keeps dividend schedule assets', async () => {
     for (const directory of excludedPublicDirectories) {
         await assert.rejects(fs.access(`dist/${directory}`), { code: 'ENOENT' });
     }
@@ -32,7 +32,9 @@ test('build excludes legacy assets and keeps thumbnail and dividend schedule ass
         const expected = source.instruments.find(row => row.active !== false && row[field] != null);
         assert.equal(index.nav.find(row => row.symbol === expected.symbol)[field], expected[field]);
     }
-    for (const color of ['red', 'blue', 'gray']) await fs.access(`dist/thumbnail/${color}.png`);
+    for (const asset of ['thumbnail/red.png', 'thumbnail/blue.png', 'thumbnail/gray.png', 'vite.svg']) {
+        await assert.rejects(fs.access(`dist/${asset}`), { code: 'ENOENT' });
+    }
     const schedule = JSON.parse(await fs.readFile('dist/content-studio/distribution-index.json', 'utf8'));
     for (const ticker of schedule.tickers) {
         if (ticker.historyUrl) await fs.access(`dist/${ticker.historyUrl.replace(/^\//, '')}`);

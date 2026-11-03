@@ -114,3 +114,4 @@ var/.data-platform*.lock
 **/.yieldloom-toss/
 **/vault.json
 **/.vault-*.tmp
+**/.archive-*.tmp

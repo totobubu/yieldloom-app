@@ -8,6 +8,8 @@ export function createLocalTossClient({
     const origin = 'http://127.0.0.1:43129';
     let pairing = '',
         session;
+    let serial = 0;
+    const updates = new Map();
     const check = (user) => {
         if (!user || getUser() !== user) throw Error('LOCAL_SESSION_CHANGED');
     };
@@ -63,6 +65,10 @@ export function createLocalTossClient({
         clear() {
             pairing = '';
             session = undefined;
+            updates.clear();
+        },
+        cancel(accountId) {
+            updates.delete(accountId);
         },
         setPairing(value) {
             const active = getUser();
@@ -151,17 +157,76 @@ export function createLocalTossClient({
         },
         async update({ accountId, from, to }) {
             const active = user();
-            await authorized(
-                '/collect',
-                'read',
-                accountId,
-                { from, to },
-                {},
-                active
-            );
-            let saved = 0;
-            for (let i = 0; i < 100; i++) {
-                const { batch } = await authorized(
+            const version = ++serial;
+            updates.set(accountId, version);
+            const current = () => {
+                check(active);
+                if (updates.get(accountId) !== version)
+                    throw Error('LOCAL_SESSION_CHANGED');
+            };
+            try {
+                const collection = await authorized(
+                    '/collect',
+                    'read',
+                    accountId,
+                    { from, to },
+                    {},
+                    active
+                );
+                current();
+                let saved = 0;
+                for (let i = 0; i < 100; i++) {
+                    const { batch } = await authorized(
+                        '/batch',
+                        'batch',
+                        accountId,
+                        {},
+                        {},
+                        active
+                    );
+                    current();
+                    if (!batch)
+                        return {
+                            accountId,
+                            status: 'observations_saved',
+                            canonicalUnchanged: true,
+                            cloudSaved: true,
+                            saved,
+                            collectionPending:
+                                collection.collectionPending === true,
+                            stopReason: collection.stopReason || null,
+                        };
+                    if (batch.accountId !== accountId)
+                        throw Error('STALE_BINDING');
+                    const result = await cloudClient.act(accountId, {
+                        action: 'local-save',
+                        batch,
+                    });
+                    current();
+                    const r = result.receipt;
+                    if (
+                        r?.status !== 'complete' ||
+                        r.batchId !== batch.batchId ||
+                        r.accountId !== accountId ||
+                        r.accountNoSha256 !== batch.accountNoSha256 ||
+                        r.bindingRevision !== batch.bindingRevision ||
+                        r.count !== batch.records.length ||
+                        r.canonicalUnchanged !== true ||
+                        result.canonicalUnchanged !== true
+                    )
+                        throw Error('RECEIPT_REQUIRED');
+                    await authorized(
+                        '/ack',
+                        'ack',
+                        accountId,
+                        {},
+                        { batchId: batch.batchId },
+                        active
+                    );
+                    current();
+                    saved += r.count;
+                }
+                const tail = await authorized(
                     '/batch',
                     'batch',
                     accountId,
@@ -169,43 +234,23 @@ export function createLocalTossClient({
                     {},
                     active
                 );
-                if (!batch)
-                    return {
-                        accountId,
-                        status: 'observations_saved',
-                        canonicalUnchanged: true,
-                        cloudSaved: true,
-                        saved,
-                    };
-                if (batch.accountId !== accountId) throw Error('STALE_BINDING');
-                const result = await cloudClient.act(accountId, {
-                    action: 'local-save',
-                    batch,
-                });
-                check(active);
-                const r = result.receipt;
-                if (
-                    r?.status !== 'complete' ||
-                    r.batchId !== batch.batchId ||
-                    r.accountId !== accountId ||
-                    r.accountNoSha256 !== batch.accountNoSha256 ||
-                    r.bindingRevision !== batch.bindingRevision ||
-                    r.count !== batch.records.length ||
-                    r.canonicalUnchanged !== true ||
-                    result.canonicalUnchanged !== true
-                )
-                    throw Error('RECEIPT_REQUIRED');
-                await authorized(
-                    '/ack',
-                    'ack',
+                current();
+                return {
                     accountId,
-                    {},
-                    { batchId: batch.batchId },
-                    active
-                );
-                saved += r.count;
+                    status: 'observations_saved',
+                    canonicalUnchanged: true,
+                    cloudSaved: true,
+                    saved,
+                    collectionPending:
+                        !!tail.batch || collection.collectionPending === true,
+                    stopReason: tail.batch
+                        ? 'BATCH_BUDGET'
+                        : collection.stopReason || null,
+                };
+            } finally {
+                if (updates.get(accountId) === version)
+                    updates.delete(accountId);
             }
-            throw Error('LOCAL_BATCH_LIMIT');
         },
     };
 }

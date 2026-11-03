@@ -39,6 +39,16 @@ try {
         .getByText('로컬 업데이트를 완료하지 못했습니다.', { exact: false })
         .waitFor();
     assert.equal(await page.getByText('synthetic-private-details').count(), 0);
+    await page.getByLabel('모의 계좌').selectOption('demo-limit');
+    await page.getByLabel('주문 조회 시작일').fill('2026-01-01');
+    await page.getByLabel('주문 조회 종료일').fill('2026-01-02');
+    await button.click();
+    await page
+        .getByText('날짜를 좁혀도 OPEN 응답 크기는 줄지 않습니다.', {
+            exact: false,
+        })
+        .waitFor();
+    await page.getByText('전체 수집 미완료입니다.', { exact: false }).waitFor();
     for (const width of [390, 1440]) {
         await page.setViewportSize({ width, height: 900 });
         for (const dark of [false, true]) {

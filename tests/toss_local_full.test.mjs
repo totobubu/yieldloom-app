@@ -1,7 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { generateKeyPairSync } from 'node:crypto';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import {
+    mkdtemp,
+    readFile,
+    rm,
+    stat,
+    readdir,
+    writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import {
@@ -121,7 +128,11 @@ async function setup(t, overrides = {}) {
     await vault.unlock(passphrase);
     const db = memoryDb(),
         repository = createFirestoreLocalRepository(db),
-        service = createTossLocalCloud({ repository, signer });
+        service = createTossLocalCloud({
+            repository,
+            signer,
+            ...(overrides.now ? { now: overrides.now } : {}),
+        });
     const requests = [];
     const fetchBroker = async (url, request) => {
         const u = new URL(url);
@@ -152,6 +163,7 @@ async function setup(t, overrides = {}) {
     const credentials = createLocalCredentials({
         vault,
         fetchImpl: fetchBroker,
+        ...(overrides.now ? { now: overrides.now } : {}),
     });
     const companion = createLocalCompanion({
         vault,
@@ -213,6 +225,7 @@ async function setup(t, overrides = {}) {
         requests,
         browserRequests,
         cloudClient,
+        baseFetchBroker: fetchBroker,
     };
 }
 
@@ -245,6 +258,33 @@ test('end to end: local enrollment → cloud binding → explicit token → coll
             .length,
         1
     ); // OPEN/CLOSED duplicate raw order is not counted twice.
+    const archives = await readdir(join(f.root, 'archives'));
+    assert.equal(archives.length, 2);
+    await assert.rejects(stat(join(f.root, 'orders')), { code: 'ENOENT' });
+    for (const file of archives) {
+        const ciphertext = await readFile(
+            join(f.root, 'archives', file),
+            'utf8'
+        );
+        assert.doesNotMatch(
+            ciphertext,
+            /SYNTHETIC|orderId|filledQuantity|00000000042/
+        );
+        assert.equal(
+            (await stat(join(f.root, 'archives', file))).mode & 0o077,
+            0
+        );
+        assert.equal(
+            (await f.vault.readArchive(file.slice(0, -5))).toString(),
+            page([order('SYNTHETIC-order1')])
+        );
+    }
+    assert.equal(
+        [...f.db.data.entries()].find(([key]) =>
+            key.includes('tossApiObservations')
+        )[1].sourceVerification,
+        'unverified_local_observation'
+    );
     assert.equal(
         [...f.db.data.keys()].some((k) => /\/entries\//.test(k)),
         false
@@ -261,6 +301,284 @@ test('end to end: local enrollment → cloud binding → explicit token → coll
     await assert.rejects(f.vault.unlock('wrong-synthetic-passphrase'));
     await f.vault.unlock(passphrase);
     assert.equal(Object.keys((await f.vault.read()).bindings).length, 1);
+});
+
+function resumedClient(companion, cloudClient) {
+    const client = createLocalTossClient({
+        getUser: () => actor,
+        cloudClient,
+        fetcher: async (url, request) => {
+            assert.ok(companion.paired(request.headers['X-Yieldloom-Pairing']));
+            try {
+                const body = await companion.act(
+                    new URL(url).pathname,
+                    JSON.parse(request.body)
+                );
+                return { ok: true, json: async () => body };
+            } catch {
+                return { ok: false };
+            }
+        },
+    });
+    client.setPairing(companion.pairing);
+    return client;
+}
+
+test('expired read grant preserves encrypted large OPEN and CLOSED cursor; restart resumes offsets without recollecting OPEN', async (t) => {
+    let clock = 0,
+        f;
+    const broker = async (url, request) => {
+        const u = new URL(url);
+        if (u.pathname !== '/api/v1/orders')
+            return f.baseFetchBroker(url, request);
+        const scope = u.searchParams.get('status'),
+            cursor = u.searchParams.get('cursor');
+        f.requests.push({ path: u.pathname, scope, cursor });
+        if (scope === 'OPEN')
+            return new Response(
+                page(
+                    Array.from({ length: 120 }, (_, i) =>
+                        order('SYNTHETIC-open-' + i)
+                    )
+                )
+            );
+        return new Response(
+            cursor
+                ? page([order('SYNTHETIC-closed-final')])
+                : page([order('SYNTHETIC-closed-first')], 'opaque-next')
+        );
+    };
+    f = await setup(t, {
+        now: () => clock,
+        sleep: async (ms) => {
+            clock += ms;
+        },
+        fetchBroker: broker,
+    });
+    await f.configure();
+    await f.client.issueToken(accountId, true);
+    const write = f.vault.writeArchive.bind(f.vault);
+    f.vault.writeArchive = async (...args) => {
+        await write(...args);
+        clock += 61000;
+    };
+    const act = f.cloudClient.act;
+    let lost = true;
+    f.cloudClient.act = async (id, input) => {
+        const result = await act(id, input);
+        if (input.action === 'local-save' && lost) {
+            lost = false;
+            throw Error('synthetic lost response');
+        }
+        return result;
+    };
+    const scope = { accountId, from: '2026-01-01', to: '2026-01-03' };
+    await assert.rejects(f.client.update(scope));
+    let state = await f.vault.read(),
+        runId = state.activeCollections[accountId];
+    assert.equal(state.collections[runId].scope, 'CLOSED');
+    assert.equal(state.collections[runId].pages[0].count, 120);
+    assert.equal(state.collections[runId].pages[0].ackOffset, 0);
+    f.companion.close();
+    const vault = createLocalVault(f.root);
+    await vault.unlock(passphrase);
+    const credentials = createLocalCredentials({
+        vault,
+        now: () => clock,
+        fetchImpl: f.baseFetchBroker,
+    });
+    const restarted = createLocalCompanion({
+        vault,
+        credentials,
+        now: () => clock,
+        sleep: async (ms) => {
+            clock += ms;
+        },
+        fetchBroker: broker,
+        cloud: {
+            key: async () => signer.publicKey,
+            check: (g) => f.service.check(g),
+        },
+    });
+    const client = resumedClient(restarted, f.cloudClient),
+        requests = f.requests.length;
+    const drained = await client.update(scope);
+    assert.equal(drained.collectionPending, true);
+    assert.equal(drained.saved, 120);
+    assert.equal(f.requests.length, requests);
+    state = await vault.read();
+    assert.equal(state.collections[runId].pages[0].ackOffset, 120);
+    const nextWrite = vault.writeArchive.bind(vault);
+    vault.writeArchive = async (id, bytes) => {
+        await nextWrite(id, bytes);
+        if (JSON.parse(bytes).result.hasNext) clock += 61000;
+    };
+    const partial = await client.update(scope);
+    assert.equal(partial.collectionPending, true);
+    state = await vault.read();
+    assert.equal(state.collections[runId].cursor, 'opaque-next');
+    const before = f.requests.length;
+    await assert.rejects(client.update({ ...scope, from: '2026-01-02' }));
+    assert.equal(f.requests.length, before);
+    f.db.data.get('familySpaces/family1').participantUids = [];
+    await assert.rejects(client.update(scope));
+    assert.equal(f.requests.length, before);
+    f.db.data.get('familySpaces/family1').participantUids = [actor.uid];
+    const finished = await client.update(scope);
+    assert.equal(finished.collectionPending, false);
+    assert.deepEqual(
+        f.requests.filter((r) => r.scope).map((r) => [r.scope, r.cursor]),
+        [
+            ['OPEN', null],
+            ['CLOSED', null],
+            ['CLOSED', 'opaque-next'],
+        ]
+    );
+    state = await vault.read();
+    assert.equal(state.collections[runId].done, true);
+    assert.equal(
+        state.collections[runId].pages.every((p) => p.ackOffset === p.count),
+        true
+    );
+});
+
+test('OPEN response exceeding a grant is explicitly partial, never a date-filtered workaround or a saved empty result', async (t) => {
+    let clock = 0,
+        f;
+    const broker = async (url, request) => {
+        const u = new URL(url);
+        if (u.pathname !== '/api/v1/orders')
+            return f.baseFetchBroker(url, request);
+        assert.equal(u.searchParams.get('status'), 'OPEN');
+        assert.equal(u.searchParams.has('from'), false);
+        f.requests.push({ path: u.pathname, scope: 'OPEN' });
+        let part = 0;
+        return new Response(
+            new ReadableStream({
+                pull(controller) {
+                    clock += 35000;
+                    if (part++ < 2)
+                        controller.enqueue(
+                            new TextEncoder().encode(
+                                'incomplete-synthetic-json'
+                            )
+                        );
+                    else controller.close();
+                },
+            })
+        );
+    };
+    f = await setup(t, {
+        now: () => clock,
+        sleep: async (ms) => {
+            clock += ms;
+        },
+        fetchBroker: broker,
+    });
+    await f.configure();
+    await f.client.issueToken(accountId, true);
+    const response = await f.client.update({
+        accountId,
+        from: '2026-01-01',
+        to: '2026-01-02',
+    });
+    assert.equal(response.collectionPending, true);
+    assert.equal(response.stopReason, 'OPEN_RESPONSE_LIMIT');
+    assert.equal(response.saved, 0);
+    const state = await f.vault.read(),
+        session = state.collections[state.activeCollections[accountId]];
+    assert.equal(session.pages.length, 0);
+    assert.equal(session.scope, 'OPEN');
+    await assert.rejects(stat(join(f.root, 'archives')), { code: 'ENOENT' });
+    assert.equal(
+        [...f.db.data.keys()].some((key) => key.includes('tossApiBatches')),
+        false
+    );
+});
+
+test('archive tampering fails closed after unlock; no plaintext fallback, checkpoint advance or provider recollection', async (t) => {
+    const f = await setup(t);
+    await f.configure();
+    await f.client.issueToken(accountId, true);
+    const challenge = await f.companion.act('/challenge');
+    const signed = await f.service.act(actor, {
+        action: 'local-grant',
+        accountId,
+        operation: 'read',
+        nonce: challenge.nonce,
+    });
+    await f.companion.act('/collect', {
+        grant: signed.grant,
+        from: '2026-01-01',
+        to: '2026-01-03',
+    });
+    const state = await f.vault.read(),
+        run = state.collections[state.activeCollections[accountId]],
+        id = run.pages[0].archiveId;
+    const path = join(f.root, 'archives', id + '.json'),
+        record = JSON.parse(await readFile(path, 'utf8'));
+    record.tag = Buffer.alloc(16).toString('base64');
+    await writeFile(path, JSON.stringify(record), { mode: 0o600 });
+    f.vault.lock();
+    await f.vault.unlock(passphrase);
+    const count = f.requests.length;
+    await assert.rejects(
+        f.client.update({ accountId, from: '2026-01-01', to: '2026-01-03' })
+    );
+    assert.equal(f.requests.length, count);
+    const after = await f.vault.read();
+    assert.equal(after.collections[run.id].pages[0].ackOffset, 0);
+    assert.equal(after.queue.length, 0);
+});
+
+test('OPEN transport timeout and response size limit remain explicit unsupported single-response boundaries', async (t) => {
+    for (const reason of ['timeout', 'size']) {
+        let f;
+        const broker = async (url, request) => {
+            if (new URL(url).pathname !== '/api/v1/orders')
+                return f.baseFetchBroker(url, request);
+            if (reason === 'timeout')
+                throw new DOMException('synthetic timeout', 'TimeoutError');
+            return new Response(new Uint8Array(20000001));
+        };
+        f = await setup(t, { fetchBroker: broker });
+        await f.configure();
+        await f.client.issueToken(accountId, true);
+        const result = await f.client.update({
+            accountId,
+            from: '2026-01-01',
+            to: '2026-01-02',
+        });
+        assert.equal(result.collectionPending, true);
+        assert.equal(result.stopReason, 'OPEN_RESPONSE_LIMIT');
+        assert.equal(result.saved, 0);
+        await assert.rejects(stat(join(f.root, 'archives')), {
+            code: 'ENOENT',
+        });
+    }
+});
+
+test('permissions revoked during archive materialization prevent raw response/cloud publication and retain progress', async (t) => {
+    const f = await setup(t);
+    await f.configure();
+    await f.client.issueToken(accountId, true);
+    const read = f.vault.readArchive.bind(f.vault);
+    f.vault.readArchive = async (id) => {
+        const bytes = await read(id);
+        f.db.data.get('familySpaces/family1').participantUids = [];
+        return bytes;
+    };
+    await assert.rejects(
+        f.client.update({ accountId, from: '2026-01-01', to: '2026-01-03' })
+    );
+    assert.equal(
+        [...f.db.data.keys()].some((key) => key.includes('tossApiBatches')),
+        false
+    );
+    const state = await f.vault.read(),
+        run = state.collections[state.activeCollections[accountId]];
+    assert.equal(state.queue.length, 1);
+    assert.equal(run.pages[0].ackOffset, 0);
 });
 
 test('unknown issuance is durable, no automatic reissue; another process cannot overlap vault work', async (t) => {
@@ -334,7 +652,7 @@ test('lost cloud save response resumes the same durable queue and receipt withou
     assert.equal(
         [...f.db.data.keys()].filter((k) => k.includes('tossApiBatches'))
             .length,
-        1
+        2
     );
 });
 
@@ -378,6 +696,34 @@ test('explicit key rotation clears only the client token and keeps original queu
         ),
         { code: 'CLIENT_ALREADY_REGISTERED' }
     );
+});
+
+test('account-view cancellation after a cloud commit stops acknowledgement and safely resumes the preserved source', async (t) => {
+    const f = await setup(t);
+    await f.configure();
+    await f.client.issueToken(accountId, true);
+    const original = f.cloudClient.act;
+    let cancel = true;
+    f.cloudClient.act = async (id, input) => {
+        const result = await original(id, input);
+        if (cancel && input.action === 'local-save') {
+            cancel = false;
+            f.client.cancel(accountId);
+        }
+        return result;
+    };
+    const input = { accountId, from: '2026-01-01', to: '2026-01-03' };
+    await assert.rejects(f.client.update(input));
+    let state = await f.vault.read(),
+        run = state.collections[state.activeCollections[accountId]];
+    assert.equal(state.queue.length, 1);
+    assert.equal(run.pages[0].ackOffset, 0);
+    const calls = f.requests.length;
+    const resumed = await f.client.update(input);
+    assert.equal(resumed.cloudSaved, true);
+    assert.equal(f.requests.length, calls);
+    state = await f.vault.read();
+    assert.equal(state.queue.length, 0);
 });
 
 test('cloud writes revalidate family/owner/binding and preserve replay plus order revisions', async (t) => {

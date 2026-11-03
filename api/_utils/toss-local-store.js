@@ -135,6 +135,7 @@ export function createFirestoreLocalRepository(db) {
                             ...[...documents.values()][i],
                             source: 'toss-openapi-orders',
                             approval: 'unreviewed',
+                            sourceVerification: 'unverified_local_observation',
                         });
                     }
                 });

@@ -8,7 +8,7 @@
 | 선택 계좌 원금·자금 | `portfolioCapitalRequest` → `/api/portfolio-capital` → `entries`, `cashEntries`, `cashClassifications`, `fundingAllocations`, `cashFxLinks` | PDF/수동 장부와 별도 검토값. 현재 기본 회수 합계는 현금 분류 합계이며 매매 손익까지 반영한 최종 원금 아님 |
 | PDF 원본 import | `/api/family-portfolio` review/commit → `entries` 및 보존 snapshot | 현금/종목 원장으로 투영. API 관측을 자동 덮어쓰지 않음 |
 | 기존 시험/채택 FIFO 보고서 | `/api/portfolio-capital?view=fifo-report` → 별도 채택 장부·보정·비공개 보고서 | 다른 입력·검토 상태. 일반 계좌 snapshot과 같은 정본이라고 가정할 수 없음 |
-| 이번 계좌별 API 수집 | 로컬 프로그램 → 공식 accounts/orders → 로컬 원문 + `tossApiObservations`/`tossApiBatches` | 해당 accountId의 미검토 관측. 주문은 개별 fill·현금 정산·배당 입금과 같지 않음 |
+| 이번 계좌별 API 수집 | 로컬 프로그램 → accounts/orders → 암호화 로컬 원문 + `tossApiObservations`/`tossApiBatches` | 해당 accountId의 미검증 로컬 관측. 자체 해시는 토스 출처의 독립 증명이 아니며 주문은 개별 fill·현금 정산·배당 입금과 같지 않음 |
 
 이번 변경은 새 API 관측을 기존 원금에 임의 합산하지 않는다. `AccountEvidencePanel`이
 계좌의 최근 가져오기 출처, 보유 snapshot 출처/기준일, 기존 장부의 행별 출처와

@@ -22,8 +22,17 @@
         from.value = '';
         to.value = '';
     }
-    watch(() => [props.accountId, props.connector], reset);
-    onScopeDispose(reset);
+    watch(
+        () => [props.accountId, props.connector],
+        (_, previous) => {
+            if (busy.value) previous?.[1]?.cancel?.(previous[0]);
+            reset();
+        }
+    );
+    onScopeDispose(() => {
+        if (busy.value) props.connector?.cancel?.(props.accountId);
+        reset();
+    });
     async function update() {
         if (!props.connector || busy.value) return;
         const version = ++generation,
@@ -60,6 +69,16 @@
             note.value = result.cloudSaved
                 ? `API 주문 관측 ${result.saved}건의 계좌별 저장을 확인했습니다. 기존 장부·원금 계산은 변경하지 않았습니다. PDF 자료와 대조해 검토하세요.`
                 : '선택 기간의 주문 원문을 이 PC에 보존했습니다. 계좌 장부 저장과 거래 확정은 별도 검토가 필요합니다.';
+            if (result.collectionPending)
+                note.value =
+                    result.saved === 0
+                        ? '이번 요청에서 저장한 새 관측이 없습니다. 전체 수집 미완료입니다.'
+                        : note.value;
+            if (result.collectionPending)
+                note.value +=
+                    result.stopReason === 'OPEN_RESPONSE_LIMIT'
+                        ? ' OPEN은 기간 필터 없는 단일 응답으로, 응답의 30초 통신 제한·60초 허가·20MB 제한에 걸렸습니다. 날짜를 좁혀도 OPEN 응답 크기는 줄지 않습니다. 전체 수집 완료가 아닙니다.'
+                        : ' 수집이 일부 남았습니다. 같은 기간으로 다시 클릭하면 보존된 원문·커서에서 권한을 다시 확인해 이어갑니다. 자동 재시도하지 않습니다.';
         } catch {
             if (version === generation)
                 error.value =

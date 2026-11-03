@@ -171,6 +171,11 @@
                 </p>
             </template>
             <h3>API 주문 관측 원문</h3>
+            <p>
+                로컬에서 제출한 미검증 관측입니다. 페이지·배치 해시는 저장
+                내용의 무결성을 확인하며, 토스가 발급한 자료임을 독립적으로
+                증명하지 않습니다.
+            </p>
             <p v-if="state.fxLinkViews?.length">
                 환전 쌍은 기존 계좌·날짜·환율·방향·금액의 유일한 1대1 판정을
                 재사용합니다. 아래 ID는 앱 내부 연결 ID이며 토스 거래 ID가
@@ -208,7 +213,7 @@
                     <details>
                         <summary>
                             {{ r.original.symbol }} · {{ r.original.side }} ·
-                            {{ r.original.orderedAt }} · 미검토 API 관측
+                            {{ r.original.orderedAt }} · 미검증 로컬 관측
                         </summary>
                         <pre>{{ JSON.stringify(r.original, null, 2) }}</pre>
                     </details>

@@ -15,6 +15,16 @@ if (import.meta.env.DEV) {
             await new Promise((r) => setTimeout(r, 100));
             if (accountId === 'demo-error')
                 throw Error('synthetic-private-details');
+            if (accountId === 'demo-limit')
+                return {
+                    accountId,
+                    status: 'observations_saved',
+                    canonicalUnchanged: true,
+                    cloudSaved: true,
+                    saved: 0,
+                    collectionPending: true,
+                    stopReason: 'OPEN_RESPONSE_LIMIT',
+                };
             return {
                 accountId,
                 status: 'collected_locally',
@@ -36,8 +46,8 @@ if (import.meta.env.DEV) {
                             selected.value = e.target.value;
                         },
                     },
-                    ['demo-1', 'demo-2', 'demo-error'].map((value) =>
-                        h('option', { value }, value)
+                    ['demo-1', 'demo-2', 'demo-error', 'demo-limit'].map(
+                        (value) => h('option', { value }, value)
                     )
                 ),
                 h(AccountTossLocalUpdate, {

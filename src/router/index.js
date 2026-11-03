@@ -6,6 +6,7 @@ import {
 import { watch } from 'vue';
 import { authLoading, firebaseUser } from '@/services/firebaseClient.js';
 import { isPortfolioAdmin } from '../../lib/portfolio-admin.js';
+const fifoPortfolioReady = import.meta.env.VITE_FIFO_PORTFOLIO_READY === 'true';
 
 async function requirePortfolioAdmin() {
     if (authLoading.value)
@@ -31,6 +32,13 @@ const router = createRouter({
             path: '/admin/sheet-ledger',
             name: 'sheet-trial-ledger',
             component: () => import('../pages/SheetTrialLedgerView.vue'),
+            beforeEnter: requirePortfolioAdmin,
+            redirect: fifoPortfolioReady ? '/mypage' : undefined,
+        },
+        {
+            path: '/admin/fifo-portfolio',
+            name: 'fifo-portfolio-preview',
+            component: () => import('../components/portfolio/FifoAssetReport.vue'),
             beforeEnter: requirePortfolioAdmin,
         },
         {
@@ -78,7 +86,9 @@ const router = createRouter({
         {
             path: '/mypage',
             name: 'mypage',
-            component: () => import('../pages/FamilyPortfolioView.vue'),
+            component: fifoPortfolioReady
+                ? () => import('../components/portfolio/FifoAssetReport.vue')
+                : () => import('../pages/FamilyPortfolioView.vue'),
             beforeEnter: requirePortfolioAdmin,
         },
         {
@@ -86,6 +96,7 @@ const router = createRouter({
             name: 'legacy-mypage',
             component: () => import('../pages/MyPageView.vue'),
             beforeEnter: requirePortfolioAdmin,
+            redirect: fifoPortfolioReady ? '/mypage' : undefined,
         },
         {
             path: '/admin/portfolio-mappings',

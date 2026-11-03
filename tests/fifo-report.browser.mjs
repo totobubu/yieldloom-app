@@ -11,6 +11,7 @@ import {
 } from '../lib/toss-ledger-increments.js';
 import { order } from './support/toss-orders-fixture.mjs';
 import { finalLedgerFixture } from './support/final-ledger-fixture.mjs';
+import { checkReviewCalendar } from './support/fifo-calendar-browser.mjs';
 import {
     reportDiagnosticError,
     reportDiagnosticText,
@@ -57,7 +58,9 @@ let reads = 0,
     snapshots = 0,
     denied = false,
     uncertain = false,
-    integrityFailure = false;
+    integrityFailure = false,
+    missingQuantityEvidence = false,
+    emptySnapshot = false;
 const diagnosticLogs = [];
 const doc = (path) => ({
     path,
@@ -98,7 +101,17 @@ const handler = fifoReportHandler({
             snapshots++;
             if (integrityFailure)
                 throw reportDiagnosticError('INC_RECEIPT_DIGEST');
-            return snapshot;
+            return emptySnapshot
+                ? {
+                      ...snapshot,
+                      rows: [],
+                      unassignedRows: [],
+                      details: new Map(),
+                      orderReferences: new Map(),
+                  }
+                : missingQuantityEvidence
+                  ? { ...snapshot, orderReferences: new Map() }
+                  : snapshot;
         },
     },
     now: () => '2026-01-31T00:00:00Z',
@@ -215,6 +228,29 @@ try {
         .getByText(/남편 · 토스/)
         .first()
         .waitFor();
+    await table
+        .getByRole('heading', { name: '계좌별 기록 항목 · 계산 상태' })
+        .waitFor();
+    const recordedRow = table.getByRole('row').filter({ hasText: 'HUSBAND' });
+    assert.equal(
+        await recordedRow
+            .locator('[aria-label="장부 순매수 참고 수량"]')
+            .innerText(),
+        order().execution.filledQuantity
+    );
+    assert.equal(
+        await recordedRow.locator('[aria-label="현재 보유 수량"]').innerText(),
+        '미확인'
+    );
+    await main
+        .getByText(/현재 보유 수량과 보유 종목 수는 확인되지 않았습니다/)
+        .waitFor();
+    await recordedRow.getByText('입력 범위 계산 근거', { exact: true }).focus();
+    await page.keyboard.press('Enter');
+    assert.equal(
+        await recordedRow.locator('details').evaluate((el) => el.open),
+        true
+    );
     const choose = async (label, option) => {
         await main.getByRole('combobox', { name: label, exact: true }).click();
         await page.getByRole('option', { name: option, exact: true }).click();
@@ -226,6 +262,45 @@ try {
     assert.equal(await table.getByText(/HUSBAND/).count(), 0);
     await choose('조회 범위', '가족 전체');
     assert.equal(requests.length, 1);
+    const summaries = main.locator('section[aria-label$="자산 요약"]');
+    const wholeHistorySummary = await summaries.allTextContents();
+    const wholeHistoryLots = await table.innerText();
+    const review = main.getByRole('region', { name: '일별 장부 검토' });
+    const history = review.getByRole('region', { name: '주식 거래 내역' });
+    await review
+        .getByRole('button', { name: '2026-01-02, 1건', exact: true })
+        .click();
+    assert.equal(await history.locator('tbody tr').count(), 1);
+    await choose('조회 범위', '아내');
+    await review
+        .getByText('2026-01-02에 해당하는 내역이 없습니다.', { exact: true })
+        .waitFor();
+    await choose('조회 범위', '가족 전체');
+    await review.getByRole('button', { name: '이전 달', exact: true }).click();
+    await review.getByRole('heading', { name: '2025년 12월' }).waitFor();
+    assert.equal(await history.locator('tbody tr').count(), 1);
+    await review
+        .getByRole('button', { name: '2025-12-31, 0건', exact: true })
+        .click();
+    assert.equal(await history.locator('tbody tr').count(), 0);
+    await review.getByRole('button', { name: '전체 날짜 보기' }).click();
+    await review.getByRole('textbox', { name: '내역 검색' }).fill('HUSBAND');
+    assert.equal(await history.locator('tbody tr').count(), 1);
+    await choose('검토 종목', 'HUSBAND');
+    await choose('조회 범위', '아내');
+    assert.equal(await history.locator('tbody tr').count(), 0);
+    await choose('조회 범위', '가족 전체');
+    assert.equal(await history.locator('tbody tr').count(), 1);
+    await review.getByRole('textbox', { name: '내역 검색' }).fill('no-match');
+    assert.equal(await history.locator('tbody tr').count(), 0);
+    await review.getByRole('textbox', { name: '내역 검색' }).fill('');
+    await choose('검토 종목', '전체 종목');
+    assert.deepEqual(await summaries.allTextContents(), wholeHistorySummary);
+    assert.equal(await table.innerText(), wholeHistoryLots);
+    assert.equal(requests.length, 1, 'review filters reuse loaded data');
+    assert.equal(reads, 3);
+    assert.equal(snapshots, 1);
+    assert.equal(writes, 0);
     await main
         .getByRole('textbox', { name: '종목', exact: true })
         .fill('MANUAL');
@@ -267,6 +342,7 @@ try {
     );
     let manual = table.getByRole('row').filter({ hasText: 'MANUAL' });
     await manual.waitFor();
+    await manual.getByText('입력 범위 계산 근거', { exact: true }).click();
     assert.match(await manual.innerText(), /1\.123456789123456789/);
     assert.match(await manual.innerText(), /100/);
     assert.match(await manual.innerText(), /미상 KRW/);
@@ -353,6 +429,43 @@ try {
     await main.getByRole('heading', { name: '보정 이력 · 버전 4' }).waitFor();
     assert.equal(await manual.count(), 0);
     assert.equal(writes, 4);
+    const beforeReferenceRefresh = requests.length,
+        beforeReferenceReads = reads,
+        beforeReferenceSnapshots = snapshots;
+    missingQuantityEvidence = true;
+    await main.getByRole('button', { name: '리포트 새로고침' }).click();
+    await recordedRow
+        .getByText('최종 누적 주문 버전의 연결 근거를 확인하지 못했습니다.', {
+            exact: true,
+        })
+        .waitFor();
+    assert.equal(
+        await recordedRow
+            .locator('[aria-label="장부 순매수 참고 수량"]')
+            .innerText(),
+        '미상'
+    );
+    assert.equal(
+        await recordedRow.locator('[aria-label="현재 보유 수량"]').innerText(),
+        '미확인'
+    );
+    assert.equal(requests.length, beforeReferenceRefresh + 1);
+    emptySnapshot = true;
+    await main.getByRole('button', { name: '리포트 새로고침' }).click();
+    await main.getByText(/실제 보유가 0이라는 뜻은 아닙니다/).waitFor();
+    assert.equal(await table.getByRole('row').count(), 1);
+    assert.equal(await main.locator('.metrics:visible').count(), 0);
+    emptySnapshot = false;
+    missingQuantityEvidence = false;
+    await main.getByRole('button', { name: '리포트 새로고침' }).click();
+    await recordedRow
+        .locator('[aria-label="장부 순매수 참고 수량"]')
+        .getByText(order().execution.filledQuantity, { exact: true })
+        .waitFor();
+    assert.equal(requests.length, beforeReferenceRefresh + 3);
+    assert.equal(reads, beforeReferenceReads + 9);
+    assert.equal(snapshots, beforeReferenceSnapshots + 3);
+    assert.equal(writes, 4);
     integrityFailure = true;
     await main.getByRole('button', { name: '리포트 새로고침' }).click();
     const diagnosticRegion = main.getByRole('region', {
@@ -393,6 +506,12 @@ try {
     await main.getByRole('heading', { name: '보정 이력 · 버전 4' }).waitFor();
     assert.equal(await diagnosticRegion.count(), 0);
     await table.waitFor();
+    await page.goto(base + '/admin/fifo-portfolio');
+    await main.getByRole('heading', { name: '주식 포트폴리오' }).waitFor();
+    await main.getByRole('region', { name: '주식 거래 내역' }).waitFor();
+    await main.getByRole('region', { name: '배당 내역' }).waitFor();
+    assert.equal((await table.getByText(/아내 · 토스/).count()) > 0, true);
+    assert.equal((await table.getByText(/남편 · 토스/).count()) > 0, true);
     const beforeDeniedLogs = diagnosticLogs.length;
     denied = true;
     integrityFailure = true;
@@ -409,6 +528,7 @@ try {
     assert.equal(await diagnosticRegion.count(), 0);
     assert.equal(diagnosticLogs.length, beforeDeniedLogs);
     assert.equal(errors.length, 0, errors.join('\n'));
+    await checkReviewCalendar(browser, base);
     console.log(
         JSON.stringify({
             suite: 'fifo-report',
@@ -422,6 +542,8 @@ try {
             reportPosts: requests.filter((r) => r.method === 'POST').length,
             pageErrors: errors.length,
             safeDiagnosticRetries: diagnosticLogs.length,
+            recordedQuantityStates: ['reference', 'unknown', 'empty'],
+            calendarReview: 'passed; no additional API/DB reads or writes',
         })
     );
 } finally {

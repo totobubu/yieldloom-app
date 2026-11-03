@@ -118,6 +118,13 @@ jobs:
                   export CHROMIUM_PATH="$(node --input-type=module -e "import { chromium } from 'playwright'; process.stdout.write(chromium.executablePath());")"
                   node tests/official-fund-data.browser.mjs
                   node tests/public-release-cache.browser.mjs
+            - name: Account-scoped Toss connection with a local mock only
+              run: |
+                  env -u GITHUB_ACTIONS YIELDLOOM_TOSS_MOCK=1 npm run dev -- --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-toss-mock.log 2>&1 &
+                  trap 'kill $(jobs -pr) 2>/dev/null || true' EXIT
+                  export CHROMIUM_PATH="$(node --input-type=module -e "import { chromium } from 'playwright'; process.stdout.write(chromium.executablePath());")"
+                  node --input-type=module -e 'for (let i=0;i<60;i++) { try { const r=await fetch("http://127.0.0.1:5173/tests/toss-connection-demo.html"); if(r.ok) process.exit(0); } catch {} await new Promise(resolve=>setTimeout(resolve,1000)); } process.exit(1);'
+                  node tests/account-toss.browser.mjs
             - uses: actions/upload-artifact@v4
               if: failure()
               with:
@@ -125,6 +132,7 @@ jobs:
                   path: |
                       /tmp/family-api.log
                       /tmp/vite.log
+                      /tmp/vite-toss-mock.log
                       /tmp/yieldloom-enhancements-*.png
                       /tmp/yieldloom-fifo-*.png
                   retention-days: 5

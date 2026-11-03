@@ -261,8 +261,8 @@ try {
     await page
         .getByRole('button', { name: '저장된 배당 거래', exact: true })
         .click();
-    await calendar.getByText('16 USD', { exact: true }).waitFor();
-    assert.equal(await page.locator('.month-events .event-row').count(), 4);
+    await calendar.getByText('24 USD', { exact: true }).waitFor();
+    assert.equal(await page.locator('.month-events .event-row').count(), 6);
     assert.equal(
         requests.filter((q) => q.includes('accountId=')).length,
         initialLedgerReads,
@@ -284,9 +284,8 @@ try {
         .getByRole('combobox', { name: '배당 계좌 필터', exact: true })
         .click();
     await page.getByRole('option', { name: '모든 계좌', exact: true }).click();
-    await page
-        .getByRole('button', { name: '가족 포트폴리오', exact: true })
-        .click();
+    await page.getByRole('tab', { name: '한눈에 보기', exact: true }).click();
+    await page.getByRole('tab', { name: '배당 캘린더', exact: true }).click();
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
     assert.equal(
         requests.filter((q) =>
@@ -353,6 +352,9 @@ try {
     await page
         .getByRole('button', { name: '저장된 배당 거래', exact: true })
         .click();
+    await page
+        .getByRole('button', { name: '일정·거래 새로고침', exact: true })
+        .click();
     await calendar
         .getByText('계좌 조회 권한이 변경되었습니다.', { exact: false })
         .waitFor();
@@ -368,6 +370,9 @@ try {
     slow = true;
     await page
         .getByRole('button', { name: '저장된 배당 거래', exact: true })
+        .click();
+    await page
+        .getByRole('button', { name: '일정·거래 새로고침', exact: true })
         .click();
     await page.waitForFunction(() =>
         document.body.textContent.includes('배당 자료를 확인하고 있습니다.')

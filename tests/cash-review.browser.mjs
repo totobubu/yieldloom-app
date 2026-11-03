@@ -83,6 +83,24 @@ try {
                 suggestedKind: 'interest',
             },
             {
+                id: 'fx-krw',
+                date: '20261017',
+                currency: 'KRW',
+                amount: 140000,
+                source: 'toss-pdf',
+                rawType: '환전원화입금',
+                exchangeRate: 1400,
+            },
+            {
+                id: 'fx-usd',
+                date: '20261017',
+                currency: 'USD',
+                amount: 100,
+                source: 'toss-pdf',
+                rawType: '환전외화출금',
+                exchangeRate: 1400,
+            },
+            {
                 id: 'foreign-interest',
                 date: '20260930',
                 currency: 'USD',
@@ -368,6 +386,15 @@ try {
             .getByLabel('시작일', { exact: true })
             .click({ trial: true });
         await row('reward').getByText('자동 분류', { exact: true }).waitFor();
+        for (const id of ['fx-krw', 'fx-usd']) {
+            await row(id).getByText('자동 분류', { exact: true }).waitFor();
+            assert.match(
+                await row(id).innerText(),
+                /기록 환율.*유일한 환전 쌍.*시각 미확인/
+            );
+            assert.match(await row(id).innerText(), /수수료 미확인/);
+            assert(!writes.some((x) => x.id === id));
+        }
         assert.equal(writes.filter((x) => x.id === 'reward').length, 0);
         await row('reward')
             .getByRole('button', { name: '확인 필요로 되돌리기' })

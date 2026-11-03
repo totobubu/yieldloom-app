@@ -533,9 +533,20 @@
                                     annotations.get(entry.id).reason ===
                                     'verified_one_to_one_fx'
                                         ? '검증된 시각·금액의 일대일 환전 쌍'
-                                        : '명확한 토스 거래명'
+                                        : annotations.get(entry.id).reason ===
+                                            'recorded_rate_one_to_one_fx'
+                                          ? '동일 계좌·날짜·기록 환율·금액의 유일한 환전 쌍 · 시각 미확인'
+                                          : '명확한 토스 거래명'
                                 }}
-                                · 자동 규칙 v1</small
+                                <template
+                                    v-if="
+                                        annotations.get(entry.id)
+                                            .classification === 'exchange' &&
+                                        annotations.get(entry.id).evidence
+                                            ?.fee === 'not_verified'
+                                    ">
+                                    · 수수료 미확인</template
+                                ></small
                             >
                             <details class="entry-evidence">
                                 <summary>

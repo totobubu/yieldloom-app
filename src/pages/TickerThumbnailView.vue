@@ -42,7 +42,6 @@
     import OfficialFundData from '@/components/stock/OfficialFundData.vue';
     import { isOfficialFundConfigured } from '@/services/officialFundData.js';
     import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
-    import { getAssetUrl } from '@/utils/dataUrl';
     import { seedStockReference } from '@/services/dividendLedger.js';
     import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
     import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
@@ -381,12 +380,6 @@
         const prevClose = Number(previous?.close);
         const validClose = Number.isFinite(exClose) && exClose > 0;
         const validPreviousClose = Number.isFinite(prevClose) && prevClose > 0;
-        const company = String(selectedInfo.value?.company ?? '').toLowerCase();
-        const background = company.includes('roundhill')
-            ? 'blue.png'
-            : company.includes('yieldmax')
-              ? 'red.png'
-              : 'gray.png';
         return {
             symbol:
                 selectedInfo.value?.symbol ?? normalize(route.params.ticker),
@@ -439,7 +432,6 @@
                     partial: row.partial,
                 })
             ),
-            backgroundImageUrl: getAssetUrl(`thumbnail/${background}`),
         };
     });
     const stockShareText = computed(

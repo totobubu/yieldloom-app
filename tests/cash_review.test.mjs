@@ -90,3 +90,74 @@ test('primary classification buttons use the existing meanings; withdrawal ambig
         'transfer',
     ]);
 });
+
+test('raw transaction kind groups bank suffixes and composes with pending/date/currency filters without changing state', async () => {
+    const { cashReviewType } = await import('../src/services/cashReview.js');
+    const rows = [
+        {
+            id: 'bank-a',
+            date: '20261001',
+            currency: 'KRW',
+            rawType: '이체출금(합성은행A)',
+        },
+        {
+            id: 'bank-b',
+            date: '20261002',
+            currency: 'KRW',
+            rawType: '이체출금(합성은행B)',
+        },
+        {
+            id: 'fx',
+            date: '20261002',
+            currency: 'USD',
+            rawType: '환전외화출금',
+        },
+        {
+            id: 'interest',
+            date: '20261002',
+            currency: 'KRW',
+            rawType: '이자입금',
+        },
+    ];
+    const confirmed = [
+            { id: 'bank-a', classification: 'transfer', revision: 1 },
+        ],
+        before = structuredClone(rows);
+    assert.equal(cashReviewType(rows[0]), '이체출금');
+    assert.deepEqual(
+        cashReviewEntries(rows, confirmed, {
+            type: '이체출금',
+            status: 'pending',
+        }).map((r) => r.id),
+        ['bank-b']
+    );
+    assert.deepEqual(
+        cashReviewEntries(rows, confirmed, {
+            type: '이체출금',
+            status: 'confirmed',
+        }).map((r) => r.id),
+        ['bank-a']
+    );
+    assert.equal(
+        cashReviewEntries(rows, confirmed, { type: '이체출금', status: 'all' })
+            .length,
+        2
+    );
+    assert.equal(
+        cashReviewEntries(rows, confirmed, {
+            type: '이체출금',
+            currency: 'USD',
+            status: 'all',
+        }).length,
+        0
+    );
+    assert.equal(
+        cashReviewEntries(rows, confirmed, {
+            type: '이체출금',
+            start: new Date(2026, 9, 2),
+            status: 'all',
+        }).length,
+        1
+    );
+    assert.deepEqual(rows, before);
+});

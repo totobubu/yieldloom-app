@@ -199,8 +199,9 @@ export async function readAccountOrders(
                 matchingAccounts: matches.length,
             };
         if (
-            profile &&
-            incrementHash(matches[0].accountNo) !== profile.accountNoSha256
+            (profile || options.expectedAccountNoSha256) &&
+            incrementHash(matches[0].accountNo) !==
+                (profile?.accountNoSha256 ?? options.expectedAccountNoSha256)
         )
             return {
                 ...result,

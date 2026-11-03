@@ -1,12 +1,16 @@
 <script setup>
-    import { onScopeDispose, ref, watch } from 'vue';
+    import { nextTick, onScopeDispose, ref, watch } from 'vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
     import Message from 'primevue/message';
+    import AccountTossLocalUpdate from './AccountTossLocalUpdate.vue';
     const props = defineProps({
         accountId: { type: String, required: true },
         client: { type: Object, required: true },
+        accountLabel: { type: String, default: '' },
+        openRequest: { type: Number, default: 0 },
     });
+    const details = ref(null);
     const opened = ref(false),
         busy = ref(false),
         error = ref(''),
@@ -75,15 +79,28 @@
         reset();
         if (opened.value) run();
     });
+    watch(
+        () => props.openRequest,
+        async (request) => {
+            await nextTick();
+            if (request && details.value) {
+                details.value.open = true;
+                details.value.scrollIntoView({ block: 'nearest' });
+                details.value.querySelector('summary')?.focus();
+            }
+        },
+        { immediate: true }
+    );
     onScopeDispose(reset);
 </script>
 <template>
-    <details class="toss-connection" @toggle="toggle">
+    <details ref="details" class="toss-connection" @toggle="toggle">
         <summary>토스 API 연결</summary>
         <div v-if="opened" class="connection-content" :aria-busy="busy">
             <p>
-                선택 계좌의 연결을 등록하고 확인합니다. 원본 키와 토큰 입력은
-                아직 제공하지 않습니다.
+                {{ accountLabel || '선택 계좌' }}의 연결을 등록하고 확인합니다.
+                계좌마다 연결을 따로 확인하며, API 비밀키와 토큰은 로컬
+                프로그램에서 관리합니다.
             </p>
             <p role="status" aria-live="polite">
                 {{
@@ -176,6 +193,7 @@
                     {{ holding.symbol }} · {{ holding.quantity }}주
                 </li>
             </ul>
+            <AccountTossLocalUpdate :account-id="accountId" />
         </div>
     </details>
 </template>

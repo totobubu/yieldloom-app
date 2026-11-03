@@ -131,6 +131,7 @@
                   timeZoneName: 'short',
               }).format(accountCooldown.retryAt.value)
     );
+    const tossOpenRequest = ref(0);
     const selectedAccount = ref(''),
         kind = ref('transactions'),
         asOf = ref(''),
@@ -1764,6 +1765,10 @@
                             :user-id="ownUid"
                             :busy="busy"
                             @select="selectedAccount = $event"
+                            @connect-toss="
+                                selectedAccount = $event;
+                                tossOpenRequest++;
+                            "
                             @upload="openUpload" />
                     </section>
                     <template v-if="space">
@@ -1786,7 +1791,14 @@
                                     placeholder="선택"
                             /></label>
                             <AccountTossConnection
+                                v-if="
+                                    /토스|toss/i.test(
+                                        activeAccount.institution || ''
+                                    )
+                                "
                                 :account-id="selectedAccount"
+                                :account-label="`${activeAccount.alias} · ${activeAccount.maskedNumber}`"
+                                :open-request="tossOpenRequest"
                                 :client="accountToss" />
                             <template v-if="canConfigure">
                                 <form

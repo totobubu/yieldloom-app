@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { Readable } from 'node:stream';
 import { spawnSync } from 'node:child_process';
 import {
@@ -555,7 +556,7 @@ test('manual CLI explicit env file cannot inherit stale OS tokens, and absent fi
             process.execPath,
             [
                 '--import',
-                preload,
+                pathToFileURL(preload).href,
                 'scripts/toss/read-account-orders.mjs',
                 '--live',
                 '--profile',

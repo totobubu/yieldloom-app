@@ -135,17 +135,33 @@
         { id: 'husband', label: '남편' },
     ];
     const fields = [
-        ['remainingCost', '잔여 FIFO 취득원가'],
+        ['remainingCost', '입력 범위 잔여 FIFO 취득원가'],
         ['cumulativeBuys', '기록된 누적 매수금액(비용 포함)'],
-        ['realizedPnl', '실현손익'],
-        ['unrealizedPnl', '평가손익'],
-        ['marketValue', '보유 주식 평가액'],
+        ['realizedPnl', '입력 범위 실현손익'],
+        ['unrealizedPnl', '입력 범위 평가손익'],
+        ['marketValue', '입력 범위 주식 평가액'],
         ['netDividends', '누적 세후 배당'],
         ['externalDeposits', '누적 외부 투입금'],
         ['externalWithdrawals', '외부 인출'],
         ['netExternal', '외부 순투입금'],
         ['reinvestedBuys', '확인된 배당 재투자 매수'],
     ];
+    const positionMetrics = new Set([
+        'remainingCost',
+        'cumulativeBuys',
+        'realizedPnl',
+        'unrealizedPnl',
+        'marketValue',
+        'reinvestedBuys',
+    ]);
+    const evidenceLabels = {
+        order: '순서·시각',
+        coverage: '기초·주식 이력',
+        movement: '기업행사·이전',
+        cost: '원통화 원가',
+        fx: '원화 환산',
+        conflict: '기록 충돌',
+    };
     const report = computed(() => {
         if (!payload.value || payload.value.calculationError) return null;
         try {
@@ -160,6 +176,33 @@
             return null;
         }
     });
+    const portfolioEvents = computed(() =>
+        applied.value.events
+            .filter((event) => {
+                const account = accounts.value.find(
+                    (a) => a.id === event.accountId
+                );
+                return (
+                    !event.excluded &&
+                    (scope.value === 'family' ||
+                        account?.ownerId === scope.value) &&
+                    ['BUY', 'SELL', 'DIVIDEND', 'TAX_REFUND'].includes(
+                        event.type
+                    )
+                );
+            })
+            .sort((a, b) => String(b.at).localeCompare(String(a.at)))
+    );
+    const dividends = computed(() =>
+        portfolioEvents.value.filter((event) => event.type === 'DIVIDEND')
+    );
+    const eventLabel = (type) =>
+        ({
+            BUY: '매수',
+            SELL: '매도',
+            DIVIDEND: '배당',
+            TAX_REFUND: '세금 환급',
+        })[type] || type;
     const number = (v) => {
         if (v == null) return '미상';
         const [whole, fraction] = String(v).split('.');
@@ -168,6 +211,14 @@
             (fraction === undefined ? '' : '.' + fraction)
         );
     };
+    function metricNumber(currency, key) {
+        return number(
+            positionMetrics.has(key) &&
+                !report.value.rows.some((r) => r.currency === currency.currency)
+                ? null
+                : currency[key]
+        );
+    }
     function name(id) {
         return (
             accounts.value.find((a) => a.id === id)?.label || '계좌 확인 필요'
@@ -420,14 +471,13 @@
     <main class="fifo-report">
         <header>
             <div>
-                <h1>FIFO 자산 리포트</h1>
+                <h1>주식 포트폴리오</h1>
                 <p>
                     채택한 장부와 수기 보정에 기록된 범위로 계좌별 원가와 손익을
                     계산합니다. 누락 이력을 전체 이력으로 추정하지 않습니다.
                 </p>
             </div>
-            <RouterLink to="/admin/sheet-ledger">거래 목록</RouterLink
-            ><Button
+            <Button
                 label="리포트 새로고침"
                 :loading="busy"
                 :disabled="saving"
@@ -488,15 +538,23 @@
                     @click="prices" />
             </div>
             <template v-if="report">
+                <Message severity="warn" :closable="false">
+                    현재 보유 수량과 보유 종목 수는 확인되지 않았습니다. 장부
+                    순매수는 기록된 매수 체결 수량에서 매도 체결 수량을 뺀
+                    참고값이며, 초기 보유·누락 거래·주식 이전을 반영한 현재
+                    잔고가 아닙니다. 원가와 손익은 입력 범위의 계산이며 주식
+                    이력 전체의 완전성을 뜻하지 않습니다.
+                </Message>
                 <section
                     v-for="c in report.currencies"
+                    v-show="report.rows.length || portfolioEvents.length"
                     :key="c.currency"
                     :aria-label="`${c.currency} 자산 요약`">
                     <h2>{{ c.currency }}</h2>
                     <div class="metrics">
                         <article v-for="[key, label] in fields" :key="key">
                             <span>{{ label }}</span
-                            ><strong>{{ number(c[key]) }}</strong>
+                            ><strong>{{ metricNumber(c, key) }}</strong>
                         </article>
                         <article>
                             <span>누적 배당 회수율</span
@@ -518,16 +576,26 @@
                     않습니다. 미분류 현금은 가족 내부이체로 추정하지 않습니다.
                 </p>
                 <section aria-label="계좌별 FIFO lot">
-                    <h2>계좌별 보유·손익</h2>
+                    <h2>계좌별 기록 항목 · 계산 상태</h2>
+                    <p aria-label="검토 항목 안내">
+                        검토 항목 {{ report.rows.length }}개. 연결된 자료 범위의
+                        항목 수이며 현재 보유 종목 수나 가족 전체 자료의
+                        완전성을 확인한 수가 아닙니다.
+                    </p>
+                    <p v-if="!report.rows.length" role="status">
+                        해당 범위에 계산할 매매·기초 lot 기록이 없습니다. 실제
+                        보유가 0이라는 뜻은 아닙니다.
+                    </p>
                     <div class="table-scroll">
                         <table>
                             <thead>
                                 <tr>
                                     <th>계좌 · 종목</th>
-                                    <th>수량</th>
-                                    <th>잔여 원가</th>
-                                    <th>실현손익</th>
-                                    <th>평가손익</th>
+                                    <th>장부 순매수 수량 · 참고</th>
+                                    <th>현재 보유 수량</th>
+                                    <th>잔여 FIFO 원가 · 입력 범위</th>
+                                    <th>실현손익 · 입력 범위</th>
+                                    <th>평가손익 · 입력 범위</th>
                                     <th>원화 환산 기준</th>
                                     <th>확인 상태</th>
                                 </tr>
@@ -540,7 +608,57 @@
                                         {{ name(r.accountId) }} · {{ r.symbol
                                         }}<small>{{ r.currency }}</small>
                                     </th>
-                                    <td>{{ number(r.quantity) }}</td>
+                                    <td>
+                                        <span
+                                            aria-label="장부 순매수 참고 수량"
+                                            >{{
+                                                number(
+                                                    r.recordedTradeQuantity.net
+                                                )
+                                            }}</span
+                                        >
+                                        <small
+                                            >매수
+                                            {{
+                                                number(
+                                                    r.recordedTradeQuantity.buys
+                                                )
+                                            }}
+                                            · 매도
+                                            {{
+                                                number(
+                                                    r.recordedTradeQuantity
+                                                        .sells
+                                                )
+                                            }}</small
+                                        >
+                                        <small
+                                            >기록 당시 수량 기준 ·
+                                            기업행사·입출고 조정 없음</small
+                                        >
+                                        <small
+                                            v-if="r.recordedTradeQuantity.from"
+                                            >기록일
+                                            {{ r.recordedTradeQuantity.from }} ~
+                                            {{ r.recordedTradeQuantity.to }} ·
+                                            전체 기간 확인 아님</small
+                                        >
+                                        <p
+                                            v-for="reason in r
+                                                .recordedTradeQuantity.reasons"
+                                            :key="reason.code">
+                                            {{ reason.message }}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <span aria-label="현재 보유 수량">{{
+                                            r.currentHoldingQuantity === null
+                                                ? '미확인'
+                                                : number(
+                                                      r.currentHoldingQuantity
+                                                  )
+                                        }}</span>
+                                    </td>
                                     <td>{{ number(r.remainingCost) }}</td>
                                     <td>{{ number(r.realizedPnl) }}</td>
                                     <td>{{ number(r.unrealizedPnl) }}</td>
@@ -554,12 +672,32 @@
                                         }}</small>
                                     </td>
                                     <td>
-                                        {{
-                                            r.issues.join(' · ') ||
-                                            '입력 범위 계산 완료'
-                                        }}
-                                        <details v-if="r.lots.length">
-                                            <summary>잔여 lot 근거</summary>
+                                        <ul aria-label="근거별 확인 상태">
+                                            <li
+                                                v-for="status in r.evidenceStatus"
+                                                :key="status.category">
+                                                {{
+                                                    evidenceLabels[
+                                                        status.category
+                                                    ]
+                                                }}: {{ status.message }}
+                                            </li>
+                                        </ul>
+                                        <details>
+                                            <summary>
+                                                입력 범위 계산 근거
+                                            </summary>
+                                            <p>
+                                                입력 범위 FIFO 수량:
+                                                {{ number(r.quantity) }} · 현재
+                                                보유 수량과 구분합니다.
+                                            </p>
+                                            <p>
+                                                {{
+                                                    r.issues.join(' · ') ||
+                                                    '입력 범위 계산 완료 · 전체 이력 확인 아님'
+                                                }}
+                                            </p>
                                             <p
                                                 v-for="(lot, i) in r.lots"
                                                 :key="i">
@@ -588,6 +726,81 @@
                     누적 체결은 실제 단일 체결 근거를 확인하기 전까지 순서를
                     확정하지 않습니다.
                 </p>
+                <section aria-label="주식 거래 내역">
+                    <h2>거래 내역</h2>
+                    <p v-if="!portfolioEvents.length">
+                        확인된 거래가 없습니다.
+                    </p>
+                    <div v-else class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>일시</th>
+                                    <th>계좌</th>
+                                    <th>종목</th>
+                                    <th>구분</th>
+                                    <th>수량</th>
+                                    <th>금액</th>
+                                    <th>상태</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="event in portfolioEvents"
+                                    :key="event.id">
+                                    <td>{{ event.at }}</td>
+                                    <td>{{ name(event.accountId) }}</td>
+                                    <td>{{ event.symbol || '—' }}</td>
+                                    <td>{{ eventLabel(event.type) }}</td>
+                                    <td>{{ number(event.quantity) }}</td>
+                                    <td>
+                                        {{ number(event.amount) }}
+                                        {{ event.currency }}
+                                    </td>
+                                    <td>
+                                        {{
+                                            event.timing === 'order_aggregate'
+                                                ? '주문 누적 · 체결 시각 미확정'
+                                                : '채택 장부'
+                                        }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                <section aria-label="배당 내역">
+                    <h2>배당 내역</h2>
+                    <p v-if="!dividends.length">확인된 배당이 없습니다.</p>
+                    <div v-else class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>일시</th>
+                                    <th>계좌</th>
+                                    <th>종목</th>
+                                    <th>기록 금액</th>
+                                    <th>세후 입금</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="event in dividends" :key="event.id">
+                                    <td>{{ event.at }}</td>
+                                    <td>{{ name(event.accountId) }}</td>
+                                    <td>{{ event.symbol || '—' }}</td>
+                                    <td>
+                                        {{ number(event.amount) }}
+                                        {{ event.currency }}
+                                    </td>
+                                    <td>
+                                        {{ number(event.net) }}
+                                        {{ event.currency }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
             </template>
             <section aria-labelledby="fifo-correction-title">
                 <h2 id="fifo-correction-title">수기 보정</h2>

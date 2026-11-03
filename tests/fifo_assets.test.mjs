@@ -136,6 +136,45 @@ test('date-only same-day or equal instants hold lot calculations rather than inv
         assert.match(r.issues.join(' '), /순서/);
     }
 });
+test('many distinct acquisition instants retain FIFO results without quadratic pair scans per sale', () => {
+    const events = [];
+    for (let i = 0; i < 300; i++)
+        events.push(
+            event(`b${i}`, 'BUY', '1', '1', 2, {
+                at: new Date(Date.UTC(2026, 0, 2, 0, 0, i)).toISOString(),
+            })
+        );
+    for (let i = 0; i < 30; i++)
+        events.push(
+            event(`s${i}`, 'SELL', '1', '1', 3, {
+                at: new Date(Date.UTC(2026, 0, 3, 0, 0, i)).toISOString(),
+            })
+        );
+    const start = performance.now();
+    const position = run(events).rows[0];
+    assert.equal(position.quantity, '270');
+    assert.equal(position.remainingCost, '270');
+    assert.equal(position.realizedPnl, '0');
+    assert.ok(performance.now() - start < 10_000);
+});
+test('overlapping acquisition intervals from distinct sources remain uncertain', () => {
+    const position = run([
+        event('b1', 'BUY', '1', '1', 2, { at: at(2) }),
+        event('b2', 'BUY', '1', '1', 2, { at: at(2) }),
+        event('s1', 'SELL', '1', '1', 3),
+    ]).rows[0];
+    assert.equal(position.realizedPnl, null);
+    assert.match(position.issues.join(' '), /순서/);
+});
+test('separate date-only acquisition days retain their previous ordering exception', () => {
+    const position = run([
+        event('b1', 'BUY', '1', '1', 2, { at: '2026-01-02' }),
+        event('b2', 'BUY', '1', '2', 3, { at: '2026-01-03' }),
+        event('s1', 'SELL', '1', '3', 5, { at: '2026-01-05' }),
+    ]).rows[0];
+    assert.equal(position.realizedPnl, '2');
+    assert.equal(position.remainingCost, '2');
+});
 test('order aggregate requires separate single-execution evidence; unfilled/candidate observations never affect totals', () => {
     const b = event('b', 'BUY', '1', '100', 2, { timing: 'order_aggregate' });
     assert.equal(run([b]).rows[0].remainingCost, null);

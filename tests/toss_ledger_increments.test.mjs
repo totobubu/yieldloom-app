@@ -415,6 +415,88 @@ test('scheduled or unverified dividend evidence cannot become a paid ledger incr
     );
 });
 
+test('legacy statusless paid detail remains readable but explicit pending or incomplete detail fails', async (t) => {
+    const { rewriteIncrementFixture } = await import(
+        './support/increment-fixture-rewrite.mjs'
+    );
+    const f = await fixture(t);
+    const rewriteBrowser = (source, edit) => {
+        let sourceSha256, observedAt;
+        return rewriteIncrementFixture(source, {
+            member: (name, value) => {
+                if (name.includes('browser')) {
+                    edit(value);
+                    sourceSha256 = incrementHash(JSON.stringify(value));
+                    observedAt = value.checkedAt;
+                }
+                if (name === 'dividend-observation.json') {
+                    value.sourceIdentity.sourceSha256 = sourceSha256;
+                    value.sourceIdentity.observedAt = observedAt;
+                    value.observationId = incrementHash(
+                        JSON.stringify(value.sourceIdentity)
+                    );
+                }
+            },
+        });
+    };
+    const withoutStatuses = rewriteBrowser(f, (value) => {
+        delete value.paymentStatus;
+        delete value.detail.paymentStatus;
+    });
+    const verified = await verifyIncrement(
+        async (key) => withoutStatuses.objects.get(key),
+        withoutStatuses.marker.value
+    );
+    assert.equal(verified.observations.length, 1);
+    assert.deepEqual(verified.paidEvidence, {
+        contract: 'toss-paid-detail-v1',
+        legacyStatuslessCount: 1,
+    });
+    for (const [edit, code] of [
+        [
+            (value) => {
+                value.paymentStatus = 'PENDING';
+            },
+            'INC_PAID_EVIDENCE',
+        ],
+        [
+            (value) => {
+                value.detail.paymentStatus = 'PAID';
+            },
+            'INC_PAID_EVIDENCE',
+        ],
+        [
+            (value) => {
+                value.detail.detailFields = [];
+            },
+            'INC_DIVIDEND_DETAIL_FIELDS',
+        ],
+    ]) {
+        const changed = rewriteBrowser(withoutStatuses, edit);
+        await assert.rejects(
+            () =>
+                verifyIncrement(
+                    async (key) => changed.objects.get(key),
+                    changed.marker.value
+                ),
+            (error) => error.diagnosticCode === code
+        );
+    }
+    const newerWithoutStatuses = rewriteBrowser(f, (value) => {
+        delete value.paymentStatus;
+        delete value.detail.paymentStatus;
+        value.checkedAt = '2026-11-02T00:00:00.000Z';
+    });
+    await assert.rejects(
+        () =>
+            verifyIncrement(
+                async (key) => newerWithoutStatuses.objects.get(key),
+                newerWithoutStatuses.marker.value
+            ),
+        (error) => error.diagnosticCode === 'INC_PAID_EVIDENCE'
+    );
+});
+
 test('a mismapped Toss account cannot upload or link a wife increment', async (t) => {
     const f = await fixture(t),
         s = memory();

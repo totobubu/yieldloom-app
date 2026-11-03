@@ -66,6 +66,13 @@
             ['saving', 'awaiting'].includes(row.phase)
         )
     );
+    const saveMessage = computed(() =>
+        saving.value
+            ? '계좌 내역을 저장하고 있습니다…'
+            : Object.values(results.value).some((row) => row.phase === 'failed')
+              ? '저장하지 못했습니다. 해당 내역의 재시도를 확인해 주세요.'
+              : notice.value || '분류 선택 시 즉시 저장'
+    );
     const disabled = computed(
         () => props.readOnly || props.loading || props.busy || saving.value
     );
@@ -109,11 +116,21 @@
                     (row) => row.id === entry.id
                 );
                 const previous = drafts.value[entry.id];
+                const effectiveKey = JSON.stringify([
+                    confirmed?.origin,
+                    confirmed?.classification,
+                    confirmed?.revision || 0,
+                    entry.date,
+                    entry.currency,
+                    entry.amount,
+                ]);
                 if (
                     !previous ||
+                    previous.effectiveKey !== effectiveKey ||
                     previous.revision !== (confirmed?.revision || 0)
                 ) {
                     drafts.value[entry.id] = {
+                        effectiveKey,
                         classification:
                             confirmed?.classification ||
                             entry.suggestedKind ||
@@ -289,6 +306,8 @@
     function phaseLabel(entry) {
         if (entry.purchaseExchange) return '현금 집계 제외';
         const phase = results.value[entry.id]?.phase;
+        if (!phase && annotations.value.get(entry.id)?.automatic)
+            return '자동 분류';
         return phase === 'saving'
             ? '저장 중…'
             : phase === 'awaiting'
@@ -392,9 +411,14 @@
                 <i class="pi pi-table" aria-hidden="true" /> 거래 내역 검토 및
                 분류
             </h3>
-            <span>분류 선택 시 즉시 저장</span>
+            <span
+                class="review-save-status"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+                >{{ saveMessage }}</span
+            >
         </div>
-        <p v-if="notice" class="review-notice" role="status">{{ notice }}</p>
         <div class="review-table-wrap">
             <table class="review-table">
                 <thead>
@@ -501,6 +525,17 @@
                                             ?.classification
                                     ] || '현금 등록 제외'
                                 }}</span
+                            >
+                            <small
+                                v-if="annotations.get(entry.id)?.automatic"
+                                class="automatic-cash-reason"
+                                >{{
+                                    annotations.get(entry.id).reason ===
+                                    'verified_one_to_one_fx'
+                                        ? '검증된 시각·금액의 일대일 환전 쌍'
+                                        : '명확한 토스 거래명'
+                                }}
+                                · 자동 규칙 v1</small
                             >
                             <details class="entry-evidence">
                                 <summary>
@@ -728,6 +763,7 @@
     }
     .list-heading {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
@@ -740,6 +776,9 @@
     .list-heading span {
         font-size: 0.78rem;
         color: var(--app-muted);
+        margin-left: auto;
+        text-align: right;
+        overflow-wrap: anywhere;
     }
     .review-table-wrap {
         border: 1px solid var(--app-border);
@@ -938,10 +977,6 @@
         color: var(--app-muted);
         opacity: 0.5;
         cursor: default;
-    }
-    .review-notice {
-        font-size: 0.82rem;
-        color: var(--app-accent);
     }
     .empty-review {
         padding: 28px !important;

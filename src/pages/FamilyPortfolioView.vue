@@ -1,5 +1,6 @@
 <script setup>
     import { computed, nextTick, onScopeDispose, ref, watch } from 'vue';
+    import { capitalAccountLabel } from '@/services/accountDisplay.js';
     import { useAssetManagement } from '@/composables/useAssetManagement.js';
     import AssetMemberSelector from '@/components/portfolio/AssetMemberSelector.vue';
     import AssetAccountList from '@/components/portfolio/AssetAccountList.vue';
@@ -1448,7 +1449,12 @@
                                                 :options="
                                                     visibleAccounts.map(
                                                         (a) => ({
-                                                            label: `${ownerName(a.ownerId)} / ${a.alias}`,
+                                                            label: capitalAccountLabel(
+                                                                a,
+                                                                ownerName(
+                                                                    a.ownerId
+                                                                )
+                                                            ),
                                                             value: a.id,
                                                         })
                                                     )

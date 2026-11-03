@@ -890,7 +890,7 @@ test('automatic label projection reads existing authorized entries without datab
     );
     assert.deepEqual([...f.records], before);
     assert.deepEqual(read.data.storedClassifications, []);
-    assert(read.data.version.startsWith('v3:'));
+    assert(read.data.version.startsWith('v4:'));
     assert.equal(
         (
             await accountFixture('admin').call(undefined, 'GET', {
@@ -940,8 +940,13 @@ test('imported date-only FX is projected without writes; invalid supplied fee pr
             });
         }
         const original = structuredClone([...f.records]);
-        const r = await f.call(undefined, 'GET', { accountId: 'AC' });
+        const r = await f.call(undefined, 'GET', {
+            accountId: 'AC',
+            ledgerVersion: 'v3:0',
+        });
         assert.equal(r.status, 200);
+        assert.equal(r.data.ledgerUnchanged, false);
+        assert(r.data.ledgerVersion.startsWith('v4:'));
         const auto = r.data.automaticClassifications.filter((x) =>
             ['FXK', 'FXU'].includes(x.id)
         );

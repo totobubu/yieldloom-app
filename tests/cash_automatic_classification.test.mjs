@@ -104,9 +104,8 @@ test('both FX directions require source-bound same actual time and exact integer
         );
     }
 });
-test('no fabricated time: missing, unverified, wrong role, binding, timezone, precision or near-only times stay pending', () => {
+test('conflicting or invalid supplied source times stay pending without falling back to dates', () => {
     const changes = [
-        undefined,
         { verification: 'candidate' },
         { role: 'ordered' },
         { entryId: 'other' },
@@ -144,7 +143,6 @@ test('rate, amount, currency, direction, ownership, fee, settlement FX and cance
         { accountId: 'other' },
         { source: 'manual' },
         { purchaseExchange: true },
-        { exchangeFee: undefined },
         { rawType: '환전외화출금취소' },
         { rawType: '외화출금' },
     ]) {
@@ -254,4 +252,61 @@ test('proof projection whitelists source-bound fields', () => {
     e.exchangeFee.secret = 'must not expose';
     assert.equal(verifiedCashTime(e).secret, undefined);
     assert.equal(verifiedExchangeFee(e).secret, undefined);
+});
+
+test('date-only exact types, rate and rounded amount classify a unique pair without fabricating time or fees', () => {
+    for (const reverse of [true, false]) {
+        const rows = pair(reverse).map((e) => {
+            const result = { ...e };
+            delete result.cashTime;
+            delete result.exchangeFee;
+            return result;
+        });
+        const original = structuredClone(rows),
+            out = project(state(rows), scope);
+        assert.equal(out.automaticClassifications.length, 2);
+        for (const a of out.automaticClassifications) {
+            assert.equal(a.reason, 'recorded_rate_one_to_one_fx');
+            assert.equal(a.evidence.timeBasis, 'not_verified');
+            assert.equal(a.evidence.fee, 'not_verified');
+            assert.equal(a.evidence.time, undefined);
+        }
+        assert.deepEqual(rows, original);
+        assert.equal(
+            capitalSummary(out.entries, out.classifications).pending,
+            0
+        );
+        assert.deepEqual(
+            capitalSummary(rows, []).KRW,
+            capitalSummary(out.entries, out.classifications).KRW
+        );
+        for (const patch of [
+            { amount: '68.15' },
+            { exchangeRate: '1334.14' },
+            { cashTimeUnverified: true },
+            { exchangeFeeUnverified: true },
+            { nativeCommission: 1 },
+        ]) {
+            const altered = structuredClone(rows);
+            Object.assign(altered[1], patch);
+            assert.equal(
+                project(state(altered), scope).automaticClassifications.length,
+                0
+            );
+        }
+        const duplicate = structuredClone(rows[1]);
+        duplicate.id = 'another';
+        assert.equal(
+            project(state([...rows, duplicate]), scope).automaticClassifications
+                .length,
+            0
+        );
+        const annotated = state(rows, [
+            { id: 'krw', classification: 'unknown', revision: 1, note: 'keep' },
+        ]);
+        assert.equal(
+            project(annotated, scope).automaticClassifications.length,
+            0
+        );
+    }
 });

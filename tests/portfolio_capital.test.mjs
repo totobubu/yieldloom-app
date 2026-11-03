@@ -890,7 +890,7 @@ test('automatic label projection reads existing authorized entries without datab
     );
     assert.deepEqual([...f.records], before);
     assert.deepEqual(read.data.storedClassifications, []);
-    assert(read.data.version.startsWith('v3:'));
+    assert(read.data.version.startsWith('v4:'));
     assert.equal(
         (
             await accountFixture('admin').call(undefined, 'GET', {
@@ -914,4 +914,58 @@ test('automatic label projection reads existing authorized entries without datab
         next.data.classifications.find((x) => x.id === 'R').note,
         'synthetic deliberate review'
     );
+});
+
+test('imported date-only FX is projected without writes; invalid supplied fee proof cannot disappear into missing evidence', async () => {
+    for (const malformedFee of [false, true]) {
+        const f = accountFixture();
+        for (const [id, currency, type, rawType, amount] of [
+            ['FXK', 'KRW', 'cash_in', '환전원화입금', 140000],
+            ['FXU', 'USD', 'cash_out', '환전외화출금', 100],
+        ]) {
+            f.records.set(`investmentAccounts/AC/entries/${id}`, {
+                source: 'toss-pdf',
+                row: {
+                    symbol: 'CASH',
+                    date: '2026-10-17',
+                    currency,
+                    type,
+                    rawType,
+                    amount,
+                    exchangeRate: 1400,
+                    ...(malformedFee && id === 'FXU'
+                        ? { exchangeFee: { amount: 1 } }
+                        : {}),
+                },
+            });
+        }
+        const original = structuredClone([...f.records]);
+        const r = await f.call(undefined, 'GET', {
+            accountId: 'AC',
+            ledgerVersion: 'v3:0',
+        });
+        assert.equal(r.status, 200);
+        assert.equal(r.data.ledgerUnchanged, false);
+        assert(r.data.ledgerVersion.startsWith('v4:'));
+        const auto = r.data.automaticClassifications.filter((x) =>
+            ['FXK', 'FXU'].includes(x.id)
+        );
+        assert.equal(auto.length, malformedFee ? 0 : 2);
+        if (!malformedFee)
+            assert(
+                auto.every(
+                    (x) =>
+                        x.classification === 'exchange' &&
+                        x.evidence.fee === 'not_verified' &&
+                        x.evidence.timeBasis === 'not_verified'
+                )
+            );
+        else
+            assert.equal(
+                r.data.importedCash.find((x) => x.id === 'FXU')
+                    .exchangeFeeUnverified,
+                true
+            );
+        assert.deepEqual([...f.records], original);
+    }
 });

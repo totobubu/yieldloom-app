@@ -16,7 +16,7 @@ on:
         description: Group to recover; auto checks pending and upcoming cycles
         type: choice
         default: auto
-        options: [auto, group-3, group-1, group-2]
+        options: [auto, group-3, group-1, group-2, monthly]
       declarationDate:
         description: Optional actual official declaration date (YYYY-MM-DD); requires a specific group
         type: string

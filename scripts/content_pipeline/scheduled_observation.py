@@ -43,6 +43,15 @@ def build_observer(schedule, provider: str):
     candidate_dates = schedule.candidate_dates
     eligible_tickers = getattr(schedule, "eligible_tickers", lambda group, today: GROUPS[group]["tickers"])
 
+    def cycle_anchors(group, today):
+        if hasattr(schedule, "cycle_anchors"):
+            return schedule.cycle_anchors(group, today)
+        anchor = today - timedelta(days=(today.weekday() - GROUPS[group]["weekday"]) % 7)
+        return anchor, anchor + timedelta(days=7)
+
+    def previous_anchor(group, anchor):
+        return cycle_anchors(group, anchor - timedelta(days=1))[0]
+
     def announcement_collected(database, declared, public_dir, ticker):
         return collected(database, declared, public_dir, ticker, provider=provider)
 
@@ -66,8 +75,8 @@ def build_observer(schedule, provider: str):
             raise ValueError("cycle date requires an explicit actual declaration date")
         if any(day and day > now.astimezone(SEOUL).date() for day in (declared, cycle)):
             raise ValueError("manual declaration/cycle dates cannot be in the future")
-        if cycle and cycle.weekday() != GROUPS[group]["weekday"]:
-            raise ValueError("cycle date must be the group's nominal weekly date")
+        if cycle and cycle_anchors(group, cycle)[0] != cycle:
+            raise ValueError("cycle date must be the group's nominal cycle date")
         return {"enabled": True, "mode": "manual" if declared else "recovery", "group": group,
                 "anchor": (cycle or declared).isoformat() if declared else None,
                 "declarationDate": declared.isoformat() if declared else None}
@@ -118,7 +127,7 @@ def build_observer(schedule, provider: str):
     def _cycle_matches(database: ContentDatabase, cycle: dict, today: date, public_dir: Path,
                        state: dict, facts: set[tuple[str, str]]) -> tuple[dict, dict]:
         anchor = date.fromisoformat(cycle["anchorDate"])
-        previous = {"group": cycle["group"], "anchorDate": str(anchor - timedelta(days=7))}
+        previous = {"group": cycle["group"], "anchorDate": str(previous_anchor(cycle["group"], anchor))}
         previous = state["cycles"].get(f"{cycle['group']}:{previous['anchorDate']}", previous)
         prior_matches = None
         # Explicit manual mappings own their actual date, including when that date
@@ -154,7 +163,7 @@ def build_observer(schedule, provider: str):
         groups = list(GROUPS) if request["group"] == "auto" else [request["group"]]
         checks = []
         for group in groups:
-            anchor = date.fromisoformat(request["anchor"]) if request.get("anchor") else today - timedelta(days=(today.weekday() - GROUPS[group]["weekday"]) % 7)
+            anchor = date.fromisoformat(request["anchor"]) if request.get("anchor") else cycle_anchors(group, today)[0]
             cycle = {"group": group, "anchorDate": anchor.isoformat()}
             if request.get("declarationDate"):
                 cycle["declarationDates"] = [request["declarationDate"]]
@@ -187,10 +196,8 @@ def build_observer(schedule, provider: str):
             for group in groups:
                 # Bootstrap the most recent cycle and start checking upcoming cycles
                 # before their nominal date. Persisted older pending cycles remain.
-                weekday = GROUPS[group]["weekday"]
-                anchor = today - timedelta(days=(today.weekday() - weekday) % 7)
+                anchor, upcoming = cycle_anchors(group, today)
                 _add_cycle(state, group, anchor)
-                upcoming = anchor + timedelta(days=7)
                 if (upcoming - today).days <= POLICY["earlyDays"]:
                     _add_cycle(state, group, upcoming)
 

@@ -51,7 +51,7 @@ def select_primary(cron: str, created_at: datetime) -> tuple[str, date] | None:
     slot = scheduled_slot(cron, created_at).astimezone(SEOUL)
     if cron == RECOVERY_CRON:
         return None
-    group = next(name for name, row in GROUPS.items() if row["weekday"] == slot.weekday())
+    group = next(name for name, row in GROUPS.items() if row["weekday"] == slot.weekday() and row.get("frequency") != "monthly")
     row = GROUPS[group]
     anchor = slot.date() - timedelta(days=(slot.weekday() - row["weekday"]) % 7)
     minutes = slot.hour * 60 + slot.minute - row["hour"] * 60
@@ -59,3 +59,22 @@ def select_primary(cron: str, created_at: datetime) -> tuple[str, date] | None:
     if -15 <= minutes <= 30 or minutes == 60 or (winter and (45 <= minutes <= 90 or minutes == 120)):
         return group, anchor
     return None
+
+
+def cycle_anchors(group: str, today: date) -> tuple[date, date]:
+    """Nominal dates guide polling; official dates remain source facts."""
+    row = GROUPS[group]
+    if row.get("frequency") != "monthly":
+        anchor = today - timedelta(days=(today.weekday() - row["weekday"]) % 7)
+        return anchor, anchor + timedelta(days=7)
+    first = today.replace(day=1)
+    anchor = first + timedelta(days=(row["weekday"] - first.weekday()) % 7)
+    if anchor > today:
+        first = (first - timedelta(days=1)).replace(day=1)
+        anchor = first + timedelta(days=(row["weekday"] - first.weekday()) % 7)
+    next_first = (anchor.replace(day=28) + timedelta(days=4)).replace(day=1)
+    return anchor, next_first + timedelta(days=(row["weekday"] - next_first.weekday()) % 7)
+
+
+def previous_anchor(group: str, anchor: date) -> date:
+    return cycle_anchors(group, anchor - timedelta(days=1))[0]

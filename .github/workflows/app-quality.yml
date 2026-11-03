@@ -32,6 +32,7 @@ jobs:
             - run: python -m unittest discover -s tests/metadata -p 'test_underlyings.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_providers.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_yieldmax_publication_date.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_yieldmax_monthly.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_globalx_precision.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_ticker_collection.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_providers.py'

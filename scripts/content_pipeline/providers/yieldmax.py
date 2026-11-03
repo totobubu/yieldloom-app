@@ -18,7 +18,7 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
     slug = "yieldmax"
     display_name = "YieldMax"
     official_homepage = "https://yieldmaxetfs.com/"
-    parser_version = "5"
+    parser_version = "6"
     # Release pages may be hosted by the issuer's linked GlobeNewswire distributor.
     allowed_hosts = ("yieldmaxetfs.com", "globenewswire.com")
     catalog_url = "https://yieldmaxetfs.com/our-etfs/"
@@ -58,9 +58,9 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
         seen_urls = set()
         for url, title in listing.links:
             normalized = title.lower()
-            is_group_3_release = target_group == "group-3" and all(symbol.lower() in normalized for symbol in groups[target_group])
+            is_named_release = target_group in {"group-3", "monthly"} and all(symbol.lower() in normalized for symbol in groups[target_group])
             is_group_release = target_group in {"group-1", "group-2"} and target_group.replace("-", " ") in normalized
-            if not (is_group_3_release or is_group_release) or url in seen_urls:
+            if not (is_named_release or is_group_release) or url in seen_urls:
                 continue
             try:
                 self.validate_url(url)
@@ -144,10 +144,12 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
         declared_date = self._release_publication_date(document, parsed)
         ex_date = extract_labeled_date(parsed.text, ("Ex. & Record Date", "Ex & Record Date"))
         payable_date = extract_labeled_date(parsed.text, ("Payment Date", "Payable Date"))
-        if not ex_date or not payable_date:
+        ex_index = next((i for i, h in enumerate(headers) if h == "ex date record date"), None)
+        pay_index = next((i for i, h in enumerate(headers) if h.lower() == "payment date"), None)
+        if (ex_index is None) != (pay_index is None):
+            raise ValueError("YieldMax release date columns are incomplete")
+        if ex_index is None and (not ex_date or not payable_date):
             raise ValueError("YieldMax release dates were not found")
-        if not declared_date <= ex_date <= payable_date:
-            raise ValueError("YieldMax release publication/distribution dates are inconsistent")
 
         events: list[DistributionEvent] = []
         for row in rows:
@@ -157,6 +159,14 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
             amount_match = re.search(r"\$?([0-9]+(?:\.[0-9]+)?)", row[amount_index])
             if not ticker_match or not amount_match:
                 continue
+            if ex_index is not None and max(ex_index, pay_index) >= len(row):
+                raise ValueError("YieldMax release row dates are incomplete")
+            row_ex = parse_date(row[ex_index]) if ex_index is not None else ex_date
+            row_pay = parse_date(row[pay_index]) if pay_index is not None else payable_date
+            if not declared_date <= row_ex <= row_pay:
+                raise ValueError("YieldMax release publication/distribution dates are inconsistent")
+            if (ex_date and row_ex != ex_date) or (payable_date and row_pay != payable_date):
+                raise ValueError("YieldMax release row and announcement dates conflict")
             events.append(
                 DistributionEvent(
                     provider_slug=self.slug,
@@ -164,9 +174,9 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
                     fund_name=row[ticker_index + 1] if ticker_index + 1 < len(row) else None,
                     distribution_per_share=amount_match.group(1),
                     declared_date=declared_date,
-                    ex_date=ex_date,
-                    record_date=ex_date,
-                    payable_date=payable_date,
+                    ex_date=row_ex,
+                    record_date=row_ex,
+                    payable_date=row_pay,
                     frequency=row[frequency_index].lower(),
                     official_url=document.source_url,
                     verification_status="official",
@@ -234,7 +244,7 @@ class YieldMaxAdapter(OfficialHTTPAdapter):
                 ex_date=parse_date(row[ex_index]),
                 record_date=parse_date(row[record_index]),
                 payable_date=parse_date(row[payable_index]),
-                frequency="weekly",
+                frequency=next((g.get("frequency", "weekly") for g in GROUPS.values() if ticker in g["tickers"]), "weekly"),
                 roc_percent=roc,
                 verification_status=verification_status,
                 verification_note=review_note,

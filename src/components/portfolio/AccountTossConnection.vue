@@ -4,11 +4,13 @@
     import Select from 'primevue/select';
     import Message from 'primevue/message';
     import AccountTossLocalUpdate from './AccountTossLocalUpdate.vue';
+    import AccountTossLocalSettings from './AccountTossLocalSettings.vue';
     const props = defineProps({
         accountId: { type: String, required: true },
         client: { type: Object, required: true },
         accountLabel: { type: String, default: '' },
         openRequest: { type: Number, default: 0 },
+        localClient: { type: Object, default: null },
     });
     const details = ref(null);
     const opened = ref(false),
@@ -73,11 +75,11 @@
     function toggle(event) {
         opened.value = event.target.open;
         reset();
-        if (opened.value) run();
+        if (opened.value && !props.localClient) run();
     }
     watch([() => props.accountId, () => props.client.user()], () => {
         reset();
-        if (opened.value) run();
+        if (opened.value && !props.localClient) run();
     });
     watch(
         () => props.openRequest,
@@ -96,7 +98,13 @@
 <template>
     <details ref="details" class="toss-connection" @toggle="toggle">
         <summary>토스 API 연결</summary>
-        <div v-if="opened" class="connection-content" :aria-busy="busy">
+        <AccountTossLocalSettings
+            v-if="opened && localClient"
+            :key="`${accountId}:${client.user()?.uid}`"
+            :account-id="accountId"
+            :account-label="accountLabel"
+            :client="localClient" />
+        <div v-else-if="opened" class="connection-content" :aria-busy="busy">
             <p>
                 {{ accountLabel || '선택 계좌' }}의 연결을 등록하고 확인합니다.
                 계좌마다 연결을 따로 확인하며, API 비밀키와 토큰은 로컬

@@ -48,13 +48,18 @@
             if (version !== generation) return;
             if (
                 result.accountId !== accountId ||
-                result.status !== 'collected_locally' ||
                 result.canonicalUnchanged !== true ||
-                result.cloudSaved !== false
+                !(
+                    (result.status === 'collected_locally' &&
+                        result.cloudSaved === false) ||
+                    (result.status === 'observations_saved' &&
+                        result.cloudSaved === true)
+                )
             )
                 throw Error();
-            note.value =
-                '선택 기간의 주문 원문을 이 PC에 보존했습니다. 계좌 장부 저장과 거래 확정은 별도 검토가 필요합니다.';
+            note.value = result.cloudSaved
+                ? `API 주문 관측 ${result.saved}건의 계좌별 저장을 확인했습니다. 기존 장부·원금 계산은 변경하지 않았습니다. PDF 자료와 대조해 검토하세요.`
+                : '선택 기간의 주문 원문을 이 PC에 보존했습니다. 계좌 장부 저장과 거래 확정은 별도 검토가 필요합니다.';
         } catch {
             if (version === generation)
                 error.value =

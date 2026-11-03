@@ -1,96 +1,168 @@
-# 계좌별 로컬 API 업데이트 준비
+# 계좌별 로컬 토스 API 연결
 
-2026-11-03, main `1fa7e9d`에서 분리한 변경이다. **화면·로컬 실행 계약과 합성
-검증까지이며 실제 계좌 등록/키 보관/운영 동기화 완료가 아니다.** 운영 API는 계속
-`execution_not_configured`이며, 실제 로컬 connector도 기본 null이다.
+2026-11-03. 운영 기준 main `1fa7e9d`에서 분리했다. 실제 자격증명 생성·설정,
+토스 IP 등록, 실제 금융 조회, Firebase/R2 쓰기, 병합·운영 배포는 실행하지 않았다.
+아래 구현은 합성 데이터로 검증했으며 실제 사용에는 끝의 활성화 확인이 필요하다.
 
-## 화면과 실행 경로
+## 실행 구조
 
-자산관리의 각 토스 계좌에 `토스 API 설정` 버튼을 두고 해당 accountId를 선택해
-연결 패널을 연다. 기존 등록된 본인 연결 선택 흐름을 유지하고 별칭·마스킹 번호로
-대상을 표시한다. 로컬 업데이트 영역에서 기간을 선택해 사용자 클릭으로 실행한다.
-현재는 승인된 로컬 프로그램이 연결되지 않아 날짜 입력과 실행 버튼이 비활성이다.
-실제 client_id/client_secret/token 입력·웹 저장은 제공하지 않는다.
+자산관리의 각 토스 계좌에서 `토스 API 설정`을 연다. 웹앱의 로그인 세션으로
+명의자·가족 참여·계좌 ACL을 검증하고, 선택 accountId에 한정된 서명 허가를 발급한다.
+로컬 프로그램에는 Firebase 토큰을 보내지 않는다. 토스 client ID/secret/token은
+호스팅 웹사이트에 입력하거나 보내지 않으며 로컬 등록 페이지에서만 다룬다.
 
-`lib/account-toss-local-runner.js`는 네트워크 리스너나 자동 실행 CLI가 아닌
-로컬 전용 실행 모듈이다. 기본 어댑터가 없으며 다음 의존성을 명시적으로 주입해야 한다.
+로컬 프로그램은 `127.0.0.1:43129`에만 바인딩한다. 정확한 Host/Origin, 매 실행의
+메모리 pairing 코드, 작업별 단회 nonce, 서버 서명과 만료 시각을 함께 검증한다.
+Origin은 정식 Vercel/Pages 두 곳만 허용하고, 저장소 열기·키 입력은 로컬 origin만
+허용한다. DNS rebinding, 무 pairing 요청, 교차 사이트 키 입력, nonce 재사용을 차단한다.
+키·토큰·오류 본문·pairing 코드는 로그에 출력하지 않는다. 로컬 UI는 CSP로 스크립트와
+통신을 self에 제한하고 외부 리소스를 로드하지 않는다. URL에는 키나 pairing을 넣지 않는다.
 
-- `authorize(accountId)`: 신뢰하는 앱 실행 경계에서 세션, 가족 참여, 계좌 ACL,
-  명의자 본인, 승인된 계좌 전체번호 해시와 binding revision을 독립 검증한다.
-  브라우저가 주장한 UID/해시를 그대로 신뢰하면 안 된다. Firebase 토큰을 수집기에
-  넘기는 구현은 이 계약을 충족하지 않는다.
-- `registry.list()`: 승인된 로컬 계좌 등록 목록. 동적 앱 accountId와 subjectUid,
-  credentialRef, 전체 계좌번호 해시, suffix, revision, enabled를 보관한다.
-  credentialRef는 프로그램이 관리하는 논리 참조이며 경로나 URL 입력이 아니다.
-  신규 등록·영속 저장·키체인 구현은 아직 없고 연결된 계좌가 하나여야 실행한다.
-- `credentials.withExistingToken(ref, work)`: 기존 토큰을 로컬 비밀 저장소에서 읽고
-  실제 client 단위로 다른 CLI까지 포함하는 배타 실행을 보장한다. 새 토큰 발급이나
-  재발급을 하지 않는다. 이 저장소·프로세스 간 잠금 어댑터도 아직 미연결이다.
-- `root`: Git에서 제외된 개인 전용 로컬 보관 위치. 실제 승인 후 프로그램이 결정한다.
-  accountId/전체번호 해시 아래 기존 수집기의 새 run에 원문을 보존한다.
+서명 공개키는 고정 HTTPS 운영 API에서 TLS 검증·redirect 금지로 읽는다. 별도
+`TOSS_LOCAL_SIGNING_KEY`로 서명하며 Firebase 서비스 계정 키를 서명 용도로 재사용하지
+않는다. configure 허가는 10분, 나머지 허가는 60초다. 로컬 프로그램은 실제 금융
+요청 전후와 최종 결과 게시 전에 클라우드에서 현재 가족/계좌/명의자 권한과 binding을
+재검증한다. 오래 걸리는 수집이 허가 시간을 넘으면 중단하고 로컬 원문을 보존한다.
+기간을 좁혀 다시 실행하며, 만료를 무시하거나 자동 권한 갱신하지 않는다.
 
-프로그램은 계좌 검증 → 기존 토큰 읽기 → 권한/등록 재확인 → 공식 accounts 조회와
-전체번호 해시 대조 → OPEN 및 지정 기간 CLOSED 주문 수집 → 권한/등록 재확인 순으로
-진행한다. 기존 `readAccountOrders`를 재사용하며 동적 계좌 실행에 전체번호 해시
-검증을 추가했다. 고정 wife/husband 프로필로 자동 변환하지 않는다. 같은 끝 4자리만
-일치하는 다른 계좌, 중복 등록, viewer/보호자/다른 명의자, 변경된 revision은 거부한다.
+브라우저는 연결 코드와 개인 응답을 메모리에만 보관하고 사용자 변경·로그아웃 시
+폐기한다. 패널을 여는 것만으로 로컬 포트 탐색·토큰 발급·동기화를 하지 않는다.
+사용자가 연결/등록/발급/수집 버튼을 누를 때만 실행하며 자동 폴링은 없다.
 
-조회 중 권한이 바뀌면 화면에 결과를 게시하지 않는다. 이미 보존된 로컬 원문은 지우지
-않는다. 성공 응답은 `collected_locally`, `cloudSaved:false`,
-`canonicalUnchanged:true`만 알리며 금융 원문·계좌번호·로컬 경로·인증정보는 반환하지
-않는다. 계좌 장부 저장 완료로 표시하지 않는다. 재발급·자동 재시도·주문 실행·업로드는
-없다. 기존 PDF, R2, Firestore 장부와 관리자 승인값을 변경하지 않는다.
+## 등록·암호화·동시성·재연결
 
-## 공식 API와 네트워크 조사
+1. 승인된 PC에서 프로그램을 실행하고 로컬 페이지를 연다.
+2. 로컬 페이지의 임시 연결 코드를 웹앱의 선택 계좌 설정에 입력한다.
+3. `로컬 등록 페이지 준비` 후 링크를 연다. 서명된 계좌 별칭·끝 4자리·앱 ID가 표시된다.
+4. 로컬 페이지에서 저장소 암호를 입력해 열고, 해당 계좌의 API 정보·전체 계좌번호를
+   입력한다. 등록 자체는 토큰 발급이나 금융 조회를 하지 않는다.
+5. 웹앱에서 등록 완료 확인을 명시적으로 누르면 전체 계좌번호 해시와 연결 revision만
+   계좌에 저장한다. 클라우드 전역 claim으로 같은 실계좌의 다른 앱 계좌 등록을 차단한다.
+6. 같은 client의 이전 토큰 무효화 영향을 확인한 뒤 발급 버튼을 누른다. 발급은 별도
+   확인 동작이며 수집·401/403·만료를 이유로 자동 발급하지 않는다.
+7. 기간을 정해 업데이트한다. 매번 공식 accounts의 전체 계좌번호 해시와 suffix를
+   대조하고 해당 accountSeq로만 주문을 조회한다. accountSeq는 웹사이트에서 입력하지 않는다.
 
-공식 [OpenAPI 명세](https://openapi.tossinvest.com/openapi-docs/latest/openapi.json)
-v1.2.28과 [FAQ](https://openapi.tossinvest.com/openapi-docs/faq.md)를 확인했다.
-계좌 목록, 보유 주식, 주문 목록·상세를 제공한다. 현재 명세에는 현금 입출금·실제
-환전 거래·배당 입금 원장 조회 경로가 없어 기존 PDF/웹 원문 경로를 대체하지 않는다.
-환율 조회는 실제 환전 이력이 아니다. 토큰은 client당 하나이며 재발급이 기존 토큰을
-무효화한다.
+저장소는 AES-256-GCM과 랜덤 salt/IV, scrypt 파생키를 사용한다. 암호/복호화키는
+메모리에만 있고 파일은 암호화되어 있다. Unix 디렉터리 0700·파일 0600을 검사하고
+임시 파일+fsync+rename으로 저장한다. Windows에서는 사용자가 개인 전용 ACL을
+확인해야 하며 암호 분실 시 복구 기능은 없다. 프로그램 종료/잠금 시 메모리 키를 지운다.
+실제 키체인 서비스에 업로드하거나 백그라운드 자동 잠금 해제를 설정하지 않았다.
+CLI는 소스 checkout 안의 저장 경로를 거부하며 기본 위치는 사용자 홈의
+`.yieldloom-toss`다. 불변 HTTP 원문은 별도 `orders/`에 개인 파일 권한으로 보존하며
+vault와 달리 원문 전체를 암호화하는 기능은 아니다. pairing은 프로그램 종료 또는
+8시간 후 만료된다.
 
-FAQ는 실제 송신 공인 IP가 허용 목록과 일치해야 한다고 설명한다. 로컬 PC라도 집
-공인 IP가 바뀌면 재확인이 필요하며 웹 서버의 IP와 PC의 IP는 다르다. 웹 페이지에서
-직접 호출하면 비밀키가 브라우저 코드·개발자 도구에 노출된다.
+실제 client ID의 해시로 토큰을 공유하며 동일 client가 다른 명의자로 등록되는 것을
+거부한다. 한 client가 같은 명의자의 여러 계좌를 지원하는 경우 토큰을 공유한다.
+같은 암호화 저장소를 사용하는 프로세스는 배타 writer lock을 공유한다. 잠금 중
+두 번째 요청은 대기·재발급하지 않고 중단한다. 기존 CLI에 별도로 같은 키를 복사해
+쓰는 실행자까지 강제로 제어할 수는 없으므로 실제 활성화 전에 그 client의 단일
+토큰 관리자를 정해야 한다. 임의의 외부 CLI까지 전역 동기화했다고 주장하지 않는다.
 
-무인증 OPTIONS `/oauth2/token` 요청(Origin은 정식 웹앱)에 HTTP 200을 관측했으나
-`Access-Control-Allow-Origin/Methods/Headers`는 없었다. 이는 해당 경로의 해당 응답
-관측이며 전체 API의 CORS 지원 여부를 단정하지 않는다. 실제 토큰 요청은 하지 않았다.
+발급 의도를 암호화 저장소에 먼저 저장한다. 발급 응답 또는 저장 결과가 불확실하면
+`TOKEN_ISSUANCE_UNCERTAIN`으로 중단하고 같은 키로 자동 재발급하지 않는다. 실제
+토스에서 키를 교체한 뒤 로컬 등록에서 교체 영향을 확인하면 연결 계좌를 보존하고
+client의 기존 토큰을 비운다. 중단 프로세스의 lock을 자동 탈취하지 않는다. 남은 lock은
+다른 실행자가 완전히 종료됐는지 확인한 뒤 수동 복구해야 한다.
 
-## 연결 활성화 전에 필요한 승인과 구현
+연결 해제는 cloud binding revision을 변경해 새 허가·저장·진행 중 조회를 막는다.
+기존 PDF/원문/장부/토스 키를 삭제하거나 공급자 토큰을 폐기하지 않는다. 재등록 후
+원문 큐는 새 binding revision으로 다시 대조하며 원문 객체 자체를 바꾸지 않는다.
 
-실제 키 발급·입력·파일/키체인 저장, 허용 IP 등록, 장기 접근 설정은 이번 작업에서
-수행하지 않았다. 다음 실행 전 사용자가 대상 PC/계좌/키 보관 방식과 영향에 대해
-시점별로 확인해야 한다. 본인 명의·제3자 보관/자료 이용 조건도 확인해야 한다.
+## 원문 저장과 계좌별 조회
 
-권장 후속 경계는 로컬 프로그램의 신뢰하는 앱 창 또는 확장 native messaging이다.
-공개 웹사이트에서 임의 localhost URL로 POST하는 기능은 추가하지 않았다.
-별도 localhost 서버를 채택한다면 loopback bind, 정확한 Host/Origin, DNS rebinding
-차단, 짧은 세션 pairing capability, 재사용/CSRF 차단과 로컬 네트워크 브라우저 권한을
-구현·검증해야 한다. CORS만으로 로컬 접근을 인증하면 안 된다.
+수집은 기존 `readAccountOrders`/`collectOrders`를 재사용한다. 로컬에 불변 HTTP 원문
+페이지·해시·출처를 보존한다. 호스팅 웹앱에는 인증정보를 제외한 주문 원문 객체와
+페이지 해시·페이지 내 위치·OPEN/CLOSED 출처를 계좌별 batch로 전달한다.
 
-웹앱 로그인과 로컬 프로그램 사이의 권한 검증 bridge, OS 비밀 저장소, 영속 registry,
-client 공용 잠금은 **실제 미구현**이다. connector prop만 주입해 운영 연결 완료라고
-판정할 수 없다. 운영 활성화 전에 이 경계들을 구현·검증하고, 최초 실제 조회 범위와
-그 뒤 클라우드 저장을 각각 확인해야 한다. 동적 investmentAccounts accountId와
-기존 wife/husband 시험 원장의 자동 매핑도 하지 않는다. 원문 클라우드 저장을 추가할
-때는 기존 관측 배치 preview/commit·완료 영수증·중복/개정 보존을 별도 적용한다.
+`investmentAccounts/{accountId}` 아래 `tossLocal/binding`, `tossApiObservations`,
+`tossApiBatches`를 사용한다. 기존 `entries`, `cashEntries`, snapshot, 분류·승인값은
+수정하지 않는다. 한 batch는 최대 50건·350KB다. 원문과 완료 영수증은 같은 Firestore
+트랜잭션으로 저장하고 매 쓰기에서 최신 명의자/가족/계좌/binding을 재검증한다.
+동일 계좌+orderId+원문 해시는 중복 관측을 만들지 않고, 같은 주문의 변경 원문은
+별도 개정으로 보존한다. 신규 batch의 출처 원문도 영수증과 함께 남긴다.
 
-## 재현 가능한 검증
+로컬 미확인 큐는 암호화해 보존한다. 네트워크 중단 후 같은 batchId/내용으로 재개하고
+저장된 영수증을 재사용한다. 로컬 큐 제거는 서버가 실제 완료 영수증을 확인해 발급한
+서명된 ack 허가로만 한다. 브라우저가 임의로 만든 성공값으로 큐를 전진시키지 않는다.
+미확인 큐가 있으면 새 금융 수집보다 먼저 저장을 재개한다. 기존 자료를 삭제하거나
+원금/매수·매도 원장에 자동 반영하지 않는다.
+
+원금 화면의 `선택 계좌 자료 출처·원금 계산 근거`가 기존 PDF 장부와 새 API 관측을
+동일 accountId에서 보여준다. API 관측은 명시적으로 읽을 때만 최대 10건/350KB씩
+조회하고 cursor로 이어 읽는다. 전체 API 관측을 미리 읽거나 기존 장부에 더하지 않는다.
+[현재 자료 흐름과 원금 규칙](account-principal-sources.md)을 함께 참고한다.
+
+## 공식 API·IP·브라우저 범위
+
+공식 [명세 v1.2.28](https://openapi.tossinvest.com/openapi-docs/latest/openapi.json)와
+[FAQ](https://openapi.tossinvest.com/openapi-docs/faq.md)를 확인했다. 계좌·보유 주식·주문
+목록/상세가 있으며 환전·현금 입출금·배당 입금 원장 경로는 확인되지 않았다. 환율
+조회는 실제 환전 이력이 아니다. 이 범위는 기존 PDF/웹 근거로 보완하며 보존한다.
+API accounts 대조는 해당 credential의 계좌에 접근함을 확인하며 Firebase 사용자와
+실제 법적 명의자의 동일성을 외부 KYC로 증명하는 기능은 아니다. 등록 동의와 계좌
+소유 근거·제3자 보관/자료 이용 조건을 실제 연결 전에 확인해야 한다.
+
+실제 송신 공인 IP가 허용 목록과 같아야 한다. 집 PC의 공인 IP가 바뀌면 재확인이
+필요하다. 토큰 POST에 대한 무인증 OPTIONS에서는 HTTP 200과 CORS 허용 헤더 부재를
+관측했으며 전체 API에 대한 결론으로 확대하지 않는다. 직접 브라우저 호출은 키 노출
+문제도 있어 사용하지 않는다.
+
+[Chrome LNA 안내](https://developer.chrome.com/blog/local-network-access)에 따라 공개
+웹사이트→loopback 접근에는 브라우저의 로컬 네트워크 허가가 필요할 수 있다.
+기존 PNA preflight 응답도 지원하지만 이것을 사용자 허가나 인증의 대체로 보지 않는다.
+브라우저 보안 플래그를 끄는 우회는 제공하지 않는다. 실제 운영 origin/사용자의
+브라우저에서 이 권한 흐름은 아직 확인하지 않았으며 Safari 등 모든 환경의 호환성을
+보증하지 않는다.
+
+## 실제 활성화 전 정확히 필요한 확인
+
+- 별도 서명 전용 개인키를 만들고 Vercel 서버 전용 `TOSS_LOCAL_SIGNING_KEY`에 보관하는
+  작업과 `TOSS_LOCAL_ENABLED=1` 활성화에 대한 사용자 확인. 이번 작업에서는 키 생성,
+  업로드, 환경 설정을 하지 않았다. 두 설정이 없으면 API는 503으로 차단한다.
+- 사용할 PC/운영체제, 개인 전용 보관 위치, 저장소 암호 관리, 계좌 명의 및 API 정보
+  등록·지속 접근 보관에 대한 해당 시점의 확인. 실제 값은 채팅에 전달하지 않는다.
+- 실제 송신 IP와 토스 허용 IP 등록, 해당 client를 다른 CLI가 사용 중인지 확인.
+- 첫 실제 기간별 조회와 계좌별 원문 저장의 영향(새 관측·영수증만 추가, 기존 장부
+  불변)을 확인한 뒤 실행. 실제 동기화 성공은 별도 검증한다.
+- main 병합·운영 배포에 대한 별도 확인. 초안 PR 성공을 운영 활성화로 보고하지 않는다.
+
+허용 범위에서 실행할 명령은 아래와 같다. 이번 작업에서는 `--help`와 합성 테스트만
+실행했고 실제 사용자의 키를 등록한 서버를 실행하지 않았다.
 
 ```sh
-node --test tests/account_toss_local_runner.test.mjs tests/account_toss_connection.test.mjs tests/toss_account_details.test.mjs
-npm run type-check
-npm run build
-YIELDLOOM_TOSS_MOCK=1 npm run dev -- --host 127.0.0.1
-node tests/account-toss-local.browser.mjs
-node tests/account-toss.browser.mjs
+node scripts/toss/local-companion.mjs --help
+# 별도 확인 완료 후 해당 PC에서만 실행:
+node scripts/toss/local-companion.mjs --serve --directory PRIVATE_DIRECTORY
 ```
 
-합성 단위 테스트는 계좌 혼선/중복/권한/기간/오류/중복 클릭/조회 중 변경을 검증한다.
-브라우저는 390px/1440px, 라이트/다크, 키보드 제출, 성공/실패 표시를 검증하며 외부
-요청·브라우저 저장소 쓰기는 0회다. 로컬 UI의 status/update는 클릭당 각각 1회이고
-날짜 입력만으로 조회하지 않는다. node 수집기 대조 테스트는 모의 accounts 1회,
-해시 불일치 후 orders 0회다. 실제 금융 API, Firebase/R2 읽기·쓰기 및 청구량은
-측정하지 않았다. 실제 계좌·분산 잠금·키체인·운영 배포는 검증하지 않았다.
+## 검증·요청량
+
+합성 통합 테스트는 실제 수집기·암호화 파일·서명·로컬 서비스·브라우저 제어 클라이언트·
+Firestore adapter(메모리 트랜잭션 대역)를 통과한다. 외부 HTTP는 가짜 금융 응답이다.
+실제 loopback HTTP 검사에서 Host/Origin/pairing/키 등록 경계를 확인했다.
+
+상태 POST는 선택 계좌/가족/binding 3문서 읽기, grant 발급도 같은 3문서 읽기가
+필요하다(코드 경로 예상). 금융 요청 전후의 live 권한 확인은 생략하지 않는다.
+그 사이의 로컬 스냅샷 검사는 중복 Firebase 조회를 만들지 않는다. 페이지네이션·
+영수증·쓰기 트랜잭션에는 별도의 필수 읽기가 있다. 실제 Firebase/R2/금융 API
+읽기·쓰기·청구량은 미측정이다. 클릭 없는 패널 열기·날짜 입력은 로컬/금융 요청 0회다.
+
+```sh
+node --test tests/toss_local_full.test.mjs tests/account_toss_local_runner.test.mjs tests/principal_funding_policy.test.mjs
+node tests/toss-local-registration.browser.mjs
+YIELDLOOM_TOSS_MOCK=1 npm run dev -- --host 127.0.0.1
+node tests/account-evidence.browser.mjs
+node tests/account-toss-local.browser.mjs
+node tests/account-toss.browser.mjs
+npm run type-check
+npm run build
+```
+
+최종 검증: 전체 Node 테스트 769개 통과, 새 정책 경계 테스트 재검증 통과,
+타입 검사·빌드 통과, lint 오류 0개/기존 경고 72개. 큰 청크 빌드 경고는 기존 상태다.
+로컬 등록 UI와 계좌 설정/근거/부분 수동 선택, 기존 연결 UI를 브라우저에서 확인했다.
+390px/1440px·라이트/다크·키보드 동작과 외부 요청/브라우저 저장 0회를 확인했다.
+미확인 나머지 선택까지 저장 요청 0회, 명시적 배분 확정 후 가짜 API 요청 1회를
+검증했다. 실제 개인 금융/Firebase/R2 쓰기는 없으며 실제 OS·권한·운영 배포 검증은 남아 있다.

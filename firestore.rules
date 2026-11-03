@@ -7,6 +7,7 @@ service cloud.firestore {
     match /familySpaces/{document=**} { allow read, write: if false; }
     match /familyInvitations/{document=**} { allow read, write: if false; }
     match /investmentAccounts/{document=**} { allow read, write: if false; }
+    match /tossLocalAccountClaims/{document=**} { allow read, write: if false; }
     match /sheetTrialLedgers/{document=**} { allow read, write: if false; }
 
 

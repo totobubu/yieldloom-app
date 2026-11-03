@@ -7,7 +7,8 @@
     import AssetMemberDialog from '@/components/portfolio/AssetMemberDialog.vue';
     import AssetAccountRegistration from '@/components/portfolio/AssetAccountRegistration.vue';
     import AccountTossConnection from '@/components/portfolio/AccountTossConnection.vue';
-    import { accountToss } from '@/services/accountToss.js';
+    import AccountEvidencePanel from '@/components/portfolio/AccountEvidencePanel.vue';
+    import { accountToss, localToss } from '@/services/accountToss.js';
     import AssetUploadDialog from '@/components/portfolio/AssetUploadDialog.vue';
     import { createScopedRefresh } from '@/services/scopedRefresh.js';
     import AccountRecoveryOverview from '@/components/portfolio/AccountRecoveryOverview.vue';
@@ -256,6 +257,7 @@
         }
         return { saved, failed, inferred };
     }
+    const capitalPanel = ref(null);
     const capital = ref({ entries: [], classifications: [], allocations: [] });
     const capitalLoading = ref(false),
         capitalError = ref(''),
@@ -1473,6 +1475,7 @@
                                     <PortfolioCapitalPanel
                                         v-if="activeAccount"
                                         :key="`${ownUid}-${selectedAccount}`"
+                                        ref="capitalPanel"
                                         :user="firebaseUser"
                                         :account-id="selectedAccount"
                                         :state="capital"
@@ -1484,6 +1487,20 @@
                                             )
                                         "
                                         @refresh="loadCapital" />
+                                    <AccountEvidencePanel
+                                        v-if="activeAccount"
+                                        :key="`${ownUid}:${selectedAccount}`"
+                                        :account="activeAccount"
+                                        :state="capital"
+                                        :loading="capitalLoading"
+                                        :ledger-error="capitalError"
+                                        :client="accountToss"
+                                        @review-cash="
+                                            capitalPanel?.openEntry(
+                                                $event.id,
+                                                $event.parts
+                                            )
+                                        " />
                                     <details
                                         class="all-account-recovery"
                                         @toggle="
@@ -1799,6 +1816,7 @@
                                 :account-id="selectedAccount"
                                 :account-label="`${activeAccount.alias} · ${activeAccount.maskedNumber}`"
                                 :open-request="tossOpenRequest"
+                                :local-client="localToss"
                                 :client="accountToss" />
                             <template v-if="canConfigure">
                                 <form

@@ -5,6 +5,7 @@
     import Select from 'primevue/select';
     import CashFxPairControl from './CashFxPairControl.vue';
     import WithdrawalSplit from './WithdrawalSplit.vue';
+    import { exact } from '../../../lib/exact-amount.js';
     import {
         cashClassification,
         cashKinds,
@@ -350,7 +351,19 @@
                   ? '확인 필요'
                   : '확정 완료';
     }
-    async function openEntry(id) {
+    function chooseRemainingPrincipal(entry) {
+        const parts = drafts.value[entry.id]?.withdrawalParts;
+        if (disabled.value || !(Number(parts?.unknown) > 0)) return;
+        parts.principal = Number(
+            exact(String(parts.principal || 0))
+                .add(String(parts.unknown))
+                .text()
+        );
+        parts.unknown = 0;
+        notice.value =
+            '미확인 나머지만 원금으로 선택했습니다. 배분 확정을 눌러야 저장됩니다.';
+    }
+    async function openEntry(id, proposedParts) {
         start.value = end.value = null;
         status.value = 'all';
         transactionType.value = 'all';
@@ -358,6 +371,44 @@
         await nextTick();
         const index = rows.value.findIndex((row) => row.id === id);
         if (index < 0) return;
+        const entry = rows.value[index],
+            draft = drafts.value[id],
+            annotation = annotations.value.get(id);
+        if (
+            proposedParts &&
+            draft &&
+            !draft.editing &&
+            ['unknown', 'external_withdrawal'].includes(draft.classification) &&
+            !disabled.value &&
+            ['unknown', 'external_withdrawal', undefined].includes(
+                annotation?.classification
+            )
+        ) {
+            const input = {
+                classification: 'mixed_withdrawal',
+                withdrawalParts: {
+                    dividend: proposedParts.dividend,
+                    principal: proposedParts.principal,
+                    profit: 0,
+                    unknown: proposedParts.unknown,
+                },
+            };
+            try {
+                cashClassification(input, entry);
+                draft.classification = draft.selection = 'mixed_withdrawal';
+                draft.withdrawalParts = Object.fromEntries(
+                    Object.entries(input.withdrawalParts).map(
+                        ([key, value]) => [key, Number(value)]
+                    )
+                );
+                draft.editing = draft.expanded = true;
+                notice.value =
+                    '추적한 배당·원금 후보와 미확인 나머지를 검토용으로 채웠습니다. 아직 저장하지 않았습니다. 나머지를 선택한 뒤 배분 확정을 누르세요.';
+            } catch {
+                notice.value =
+                    '후보 배분의 금액·통화를 확인하고 직접 검토하세요. 기존 분류는 변경하지 않았습니다.';
+            }
+        }
         page.value = Math.floor(index / 10) + 1;
         await nextTick();
         const row = [...root.value.querySelectorAll('[data-cash-id]')].find(
@@ -544,6 +595,20 @@
                                         :amount="entry.amount"
                                         :currency="entry.currency"
                                         :disabled="disabled" />
+                                    <button
+                                        v-if="
+                                            Number(
+                                                drafts[entry.id].withdrawalParts
+                                                    .unknown
+                                            ) > 0
+                                        "
+                                        type="button"
+                                        :disabled="disabled"
+                                        @click="
+                                            chooseRemainingPrincipal(entry)
+                                        ">
+                                        미확인 나머지만 원금으로 선택
+                                    </button>
                                     <p
                                         v-if="validation(entry)"
                                         class="row-validation"

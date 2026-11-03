@@ -238,11 +238,10 @@ try {
     await page
         .getByRole('checkbox', { name: '과거 매수 시점별 배당률', exact: true })
         .check();
-    await page
-        .getByText(
-            '확인 가능한 4개 월별 표본만 표시합니다. 실제 보유 기간과는 별개입니다.'
-        )
-        .waitFor();
+    // This older fixture starts before TOPW's verified launch and has no
+    // complete inception coverage; it must not become a short-fund estimate.
+    await page.locator('.entry-efficiency-card .unavailable').waitFor();
+    assert.match(await page.locator('.entry-efficiency-card .unavailable').innerText(), /공식 최초 거래일 2025-09-04/);
     for (const name of ['summary', 'comparison']) {
         const card = page.locator(`[data-thumbnail-kind="${name}"]`).first();
         await card.screenshot({ path: `/tmp/${name}-larger-type.png` });

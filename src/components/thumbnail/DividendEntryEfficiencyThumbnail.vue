@@ -3,6 +3,13 @@
     import ThumbnailCardShell from './ThumbnailCardShell.vue';
 
     const props = defineProps({ data: { type: Object, required: true } });
+    const cumulative = computed(() => props.data.basis === 'since_launch');
+    const basisLabel = computed(() =>
+        cumulative.value ? '출시 이후 누적' : '직전 12개월'
+    );
+    const dividend = (row) =>
+        row?.afterTaxDividend ?? row?.afterTaxAnnualDividend;
+    const period = (row) => `${date(row?.periodStart)}~${date(row?.periodEnd)}`;
     const number = (value, digits = 2) =>
         value != null && Number.isFinite(Number(value))
             ? Number(value).toFixed(digits)
@@ -51,24 +58,43 @@
 <template>
     <ThumbnailCardShell
         class="entry-efficiency-card"
+        :class="{ 'cumulative-mode': cumulative }"
         :title="data.symbol"
         context-label="과거 진입 시점 비교"
-        badge="과거 매수 시점별 배당률"
+        :badge="
+            cumulative
+                ? '과거 매수 시점별 출시 이후 누적 배당률'
+                : '과거 매수 시점별 배당률'
+        "
         date-label="분석 기준일"
         :date-value="date(data.asOfDate)"
         data-thumbnail-kind="entry-efficiency">
-        <p v-if="data.quality?.message && data.available" role="status">{{ data.quality.message }}</p>
+        <p
+            v-if="data.quality?.message && data.available"
+            class="quality-note"
+            role="status">
+            {{ data.quality.message }}
+        </p>
         <template v-if="data.available">
             <section class="intro">
                 <h2>과거 매수 시점별 배당률은 어땠을까?</h2>
                 <p>
-                    각 가상 매수일 직전 12개월 배당금과 당시 종가로 비교합니다.
+                    각 가상 매수일 {{ basisLabel }} 배당금과 당시 종가로
+                    비교합니다.
+                </p>
+                <p v-if="cumulative">
+                    출시 후 첫해의 검증된 이력만 사용합니다. 연환산하지 않으며
+                    표본별 기간 길이가 다릅니다.
                 </p>
             </section>
             <section class="comparison" aria-label="최고 시점과 최근 표본 비교">
                 <article class="best">
                     <header>
-                        <span>표본 중 최고 배당률</span
+                        <span>{{
+                            cumulative
+                                ? '표시 구간 최대 누적 배당률'
+                                : '표본 중 최고 배당률'
+                        }}</span
                         ><b>{{ date(data.best.date) }}</b>
                     </header>
                     <strong>{{ pct(data.best.afterTaxYield) }}</strong>
@@ -76,8 +102,8 @@
                         당시 매수가 <b>{{ usd(data.best.price) }}</b>
                     </p>
                     <small
-                        >직전 12개월 세후 배당
-                        {{ usd(data.best.afterTaxAnnualDividend) }}</small
+                        >{{ basisLabel }} 세후 배당 {{ usd(dividend(data.best))
+                        }}<br />{{ period(data.best) }}</small
                     >
                 </article>
                 <article class="latest">
@@ -90,8 +116,10 @@
                         당시 매수가 <b>{{ usd(data.latest.price) }}</b>
                     </p>
                     <small
-                        >직전 12개월 세후 배당
-                        {{ usd(data.latest.afterTaxAnnualDividend) }}</small
+                        >{{ basisLabel }} 세후 배당
+                        {{ usd(dividend(data.latest)) }}<br />{{
+                            period(data.latest)
+                        }}</small
                     >
                 </article>
             </section>
@@ -103,21 +131,31 @@
                           number(difference) +
                           '%p 높았습니다.'
                 }}</b
-                ><span>세후 배당률 비교</span>
+                ><span>{{
+                    cumulative
+                        ? '기간 길이가 다른 누적 배당률 · 12개월 지표와 비교 제외'
+                        : '세후 배당률 비교'
+                }}</span>
             </p>
-            <p v-if="data.limitedHistory" class="history-note">
+            <p v-if="data.limitedHistory && !cumulative" class="history-note">
                 확인 가능한 {{ samples.length }}개 월별 표본만 표시합니다. 실제
                 보유 기간과는 별개입니다.
             </p>
             <section class="chart">
                 <header>
-                    <h3>매수 시점별 배당률 흐름</h3>
+                    <h3>
+                        {{
+                            cumulative
+                                ? '출시 이후 누적 배당률 흐름'
+                                : '매수 시점별 배당률 흐름'
+                        }}
+                    </h3>
                     <span>{{ samples.length }}개 월별 표본 · 세후</span>
                 </header>
                 <svg
                     viewBox="0 0 620 194"
                     role="img"
-                    aria-label="매수 시점별 직전 12개월 세후 배당률 차트">
+                    :aria-label="`매수 시점별 ${basisLabel} 세후 배당률 차트`">
                     <g v-for="tick in ticks" :key="tick.y">
                         <line
                             x1="46"
@@ -185,7 +223,14 @@
             </section>
             <section class="definition">
                 <b>매수 시점별 배당률을 어떻게 비교하나요?</b>
-                <p>매수일 직전 12개월 배당금 × 0.85 ÷ 당시 종가 × 100</p>
+                <p>
+                    {{
+                        cumulative
+                            ? '출시일부터 매수일 전일까지 확인된 배당금'
+                            : '매수일 직전 12개월 배당금'
+                    }}
+                    × 0.85 ÷ 당시 종가 × 100
+                </p>
                 <span
                     >매수 이후 실제 받은 배당이나 주가 수익률을 비교하는 지표는
                     아닙니다.</span
@@ -215,14 +260,20 @@
         color: #64748b;
         font-size: 11px;
     }
+    .quality-note {
+        margin: 0;
+        color: #64748b;
+        font-size: 12px;
+        line-height: 1.4;
+    }
     .intro h2 {
         margin: 0;
-        font-size: 24px;
+        font-size: 22px;
         line-height: 1.35;
         letter-spacing: -0.04em;
     }
     .intro p {
-        margin: 7px 0 0;
+        margin: 4px 0 0;
         color: #64748b;
         font-size: 13px;
     }
@@ -232,7 +283,7 @@
         gap: 12px;
     }
     .comparison article {
-        padding: 9px 18px;
+        padding: 8px 14px;
         border: 1px solid #dbe3ec;
         border-radius: 16px;
         background: #f8fafc;
@@ -260,8 +311,8 @@
     }
     .comparison strong {
         display: block;
-        margin: 8px 0;
-        font-size: 40px;
+        margin: 6px 0;
+        font-size: 36px;
         line-height: 1;
         letter-spacing: -0.04em;
         color: #2563eb;
@@ -314,8 +365,11 @@
     .chart svg {
         display: block;
         width: 100%;
-        height: 135px;
+        height: 105px;
         margin-top: 4px;
+    }
+    .cumulative-mode .chart svg {
+        height: 105px;
     }
     .grid-line {
         stroke: #e2e8f0;

@@ -109,6 +109,7 @@ jobs:
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/share-monthly-history.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/dividend-comparison-splits.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stock-price-calendar.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/entry-income-efficiency.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/admin-stock-collection.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/general-stock-collection.browser.mjs
                   LISTING_STATUS_BASE_URL=http://127.0.0.1:5175 node tests/security-status.browser.mjs

@@ -129,6 +129,13 @@ test('no fabricated time: missing, unverified, wrong role, binding, timezone, pr
     }
 });
 test('rate, amount, currency, direction, ownership, fee, settlement FX and cancellation checks fail closed', () => {
+    const purchase = state(pair(false));
+    purchase.trades = [
+        { accountId: scope, date: '2026-10-17', currency: 'USD', type: 'buy' },
+    ];
+    assert.equal(project(purchase, scope).automaticClassifications.length, 0);
+    purchase.trades[0].accountId = 'other';
+    assert.equal(project(purchase, scope).automaticClassifications.length, 2);
     for (const patch of [
         { exchangeRate: '1334.14' },
         { amount: '68.15' },

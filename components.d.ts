@@ -33,7 +33,6 @@ declare module 'vue' {
     Column: typeof import('primevue/column')['default']
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']
-    DividendAlerts: typeof import('./src/components/portfolio/DividendAlerts.vue')['default']
     DividendCalendarExport: typeof import('./src/components/portfolio/DividendCalendarExport.vue')['default']
     DividendCalendarThumbnail: typeof import('./src/components/thumbnail/DividendCalendarThumbnail.vue')['default']
     DividendComparisonThumbnail: typeof import('./src/components/thumbnail/DividendComparisonThumbnail.vue')['default']

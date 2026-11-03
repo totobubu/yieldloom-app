@@ -4,7 +4,7 @@ import { chromium } from 'playwright';
 const out = '/tmp/yieldloom-expansion-calendar';
 await fs.mkdir(out, { recursive: true });
 const browser = await chromium.launch({
-    executablePath: '/usr/bin/chromium',
+    executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
     args: ['--no-sandbox'],
 });
 try {
@@ -21,6 +21,12 @@ try {
             errors.push(msg.text());
         }
     });
+    await page.route('**/lib/portfolio-admin.js', (route) =>
+        route.fulfill({
+            contentType: 'application/javascript',
+            body: 'export function isPortfolioAdmin(user) { return !!user; }',
+        })
+    );
     await page.route('**/src/services/firebaseClient*', (r) =>
         r.fulfill({
             contentType: 'application/javascript',
@@ -75,8 +81,6 @@ try {
             valueComplete: true,
         },
     });
-    let alertPrefs = { enabled: false, leadDays: 7, browser: false },
-        prefRevision = 0;
     let failIndex = false,
         denyLedger = false;
     let slow = false,
@@ -85,17 +89,6 @@ try {
         const url = new URL(r.request().url()),
             id = url.searchParams.get('accountId');
         requests.push(url.search);
-        if (url.searchParams.get('view') === 'preferences')
-            return r.fulfill({
-                json: { preferences: alertPrefs, revision: prefRevision },
-            });
-        if (url.searchParams.get('action') === 'savePreferences') {
-            alertPrefs = r.request().postDataJSON().preferences;
-            prefRevision++;
-            return r.fulfill({
-                json: { preferences: alertPrefs, revision: prefRevision },
-            });
-        }
         if (id) {
             if (denyLedger)
                 return r.fulfill({
@@ -181,7 +174,35 @@ try {
             },
         })
     );
-    await page.goto('http://127.0.0.1:5173/mypage?tab=calendar');
+    let browserAlerts = 0,
+        permissionRequests = 0;
+    await page.exposeFunction('__unexpectedAlert', () => browserAlerts++);
+    await page.exposeFunction(
+        '__unexpectedPermission',
+        () => permissionRequests++
+    );
+    await page.addInitScript(() => {
+        window.Notification = class {
+            static permission = 'granted';
+            static requestPermission() {
+                window.__unexpectedPermission();
+                return Promise.resolve('granted');
+            }
+            constructor() {
+                window.__unexpectedAlert();
+            }
+        };
+    });
+    const base = process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5173';
+    await page.goto(`${base}/mypage?tab=settings&view=capital`);
+    await page.waitForURL('**/mypage?tab=overview&view=capital');
+    await page.getByRole('tab', { name: '한눈에 보기', exact: true }).waitFor();
+    assert.equal(
+        await page.getByRole('tab', { name: '설정', exact: true }).count(),
+        0
+    );
+    await page.reload();
+    await page.getByRole('tab', { name: '배당 캘린더', exact: true }).click();
     const calendar = page.getByRole('region', { name: '개인 배당 캘린더' });
     await calendar.waitFor();
     await page
@@ -193,29 +214,6 @@ try {
         .waitFor();
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
     await calendar.getByText('2 USD', { exact: true }).first().waitFor();
-    const initialPreferenceReads = requests.filter((q) =>
-        q.includes('view=preferences')
-    ).length;
-    await page.getByRole('tab', { name: '설정', exact: true }).click();
-    const alertPanel = page.getByRole('region', {
-        name: '자동 배당 알림',
-        exact: true,
-    });
-    await alertPanel.waitFor();
-    await alertPanel
-        .getByLabel('앱 내 자동 알림 사용', { exact: true })
-        .check();
-    await alertPanel
-        .getByRole('button', { name: '알림 설정 저장', exact: true })
-        .click();
-    await alertPanel
-        .getByText('알림 설정을 계정에 저장했습니다.', { exact: true })
-        .waitFor();
-    assert.equal(prefRevision, 1);
-    await page.getByRole('tab', { name: '배당 캘린더', exact: true }).click();
-    await calendar
-        .getByRole('status', { name: '다가오는 배당 알림', exact: true })
-        .waitFor();
     const initialLedgerReads = requests.filter((q) =>
         q.includes('accountId=')
     ).length;
@@ -226,16 +224,32 @@ try {
     );
     assert.equal(
         await calendar.getByText('캘린더 일정·알림 내보내기').count(),
-        0
+        1
     );
+    const calendarExport = calendar.getByRole('region', {
+        name: '캘린더 일정·알림 내보내기',
+    });
+    await calendarExport.getByRole('checkbox').check();
+    const downloaded = page.waitForEvent('download');
+    await calendarExport
+        .getByRole('button', { name: '배당 일정 ICS 다운로드' })
+        .click();
+    const download = await downloaded;
+    const file = await fs.readFile(await download.path(), 'utf8');
+    assert.match(file, /BEGIN:VCALENDAR/);
+    assert.match(file, /BEGIN:VALARM/);
+    assert.ok(!file.includes('계좌 a'));
     await page
         .getByRole('button', {
-            name: `${prefix}-28 배당 일정 1건`,
+            name: `${prefix}-28 배당 일정 2건`,
             exact: true,
         })
         .click();
     const dialog = page.getByRole('dialog');
-    await dialog.getByText('공시 원문 확인', { exact: false }).waitFor();
+    await dialog
+        .getByText('공시 원문 확인', { exact: false })
+        .first()
+        .waitFor();
     await page.keyboard.press('Escape');
     await dialog.waitFor({ state: 'hidden' });
     await page.getByRole('button', { name: '연간', exact: true }).click();
@@ -275,10 +289,25 @@ try {
         .click();
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
     assert.equal(
-        requests.filter((q) => q.includes('view=preferences')).length,
-        initialPreferenceReads + 1,
-        'calendar remount shares session preference cache'
+        requests.filter((q) =>
+            /view=preferences|action=savePreferences/.test(q)
+        ).length,
+        0
     );
+    assert.equal(
+        await page
+            .getByRole('region', { name: '자동 배당 알림', exact: true })
+            .count(),
+        0
+    );
+    assert.equal(
+        await page
+            .getByRole('status', { name: '다가오는 배당 알림', exact: true })
+            .count(),
+        0
+    );
+    assert.equal(browserAlerts, 0);
+    assert.equal(permissionRequests, 0);
     // Wait for the closed Select overlay to leave before resizing the viewport.
     await page.waitForFunction(
         () => !document.querySelector('.p-select-overlay')
@@ -345,7 +374,7 @@ try {
     );
     await page.evaluate(() => (window.__calendarUser.value = null));
     if (release) release();
-    await page.waitForURL(/\/login/);
+    await page.waitForURL(/\/admin\/login/);
     assert.equal(await page.locator('.event-row').count(), 0);
     assert.deepEqual(errors, []);
     console.log(

@@ -1,4 +1,4 @@
-"""Private, user-reviewed monthly snapshots and alert preferences; never an accounting source."""
+"""Private, user-reviewed monthly snapshots; never an accounting source."""
 import re
 from api.family_portfolio_service import can_access, digest, identifier, iso_date, require
 
@@ -108,32 +108,4 @@ def change_monthly_report(db, uid, body, *, load, read_snapshot, now, transactio
         data['reports'] = reports
         tx.set(ref, data)
         return _public(data, revisions) | {'unchanged': False}
-    return apply(db.transaction())
-
-
-DEFAULT_PREFERENCES = {'enabled': False, 'leadDays': 3, 'browser': False}
-
-
-def alert_preferences(db, uid, *, read_snapshot):
-    ref = db.collection('portfolioPrivateUsers').document(digest(uid))
-    snap = read_snapshot(ref)
-    data = snap.to_dict() if snap.exists else {}
-    return {'preferences': data.get('preferences', DEFAULT_PREFERENCES), 'revision': data.get('revision', 0)}
-
-
-def save_alert_preferences(db, uid, body, *, read_snapshot, transactional):
-    prefs = body.get('preferences')
-    require(isinstance(prefs, dict) and set(prefs) == set(DEFAULT_PREFERENCES) and type(prefs['enabled']) is bool and type(prefs['browser']) is bool and type(prefs['leadDays']) is int and prefs['leadDays'] in {1, 3, 7}, '알림 설정을 확인하세요.')
-    require(type(body.get('expectedRevision')) is int and body['expectedRevision'] >= 0, '알림 변경 번호를 확인하세요.')
-    ref = db.collection('portfolioPrivateUsers').document(digest(uid))
-    @transactional
-    def apply(tx):
-        snap = read_snapshot(ref, tx)
-        old = snap.to_dict() if snap.exists else {}
-        revision = old.get('revision', 0)
-        if old.get('preferences', DEFAULT_PREFERENCES) == prefs:
-            return {'preferences': prefs, 'revision': revision}
-        require(revision == body['expectedRevision'], '다른 작업에서 알림 설정이 변경되었습니다. 다시 조회하세요.', 409)
-        tx.set(ref, {'ownerUid': uid, 'preferences': prefs, 'revision': revision + 1})
-        return {'preferences': prefs, 'revision': revision + 1}
     return apply(db.transaction())

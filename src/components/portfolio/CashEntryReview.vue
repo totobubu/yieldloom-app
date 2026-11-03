@@ -2,6 +2,8 @@
     import { computed, nextTick, onScopeDispose, ref, watch } from 'vue';
     import DatePicker from 'primevue/datepicker';
     import SelectButton from 'primevue/selectbutton';
+    import Select from 'primevue/select';
+    import CashFxPairControl from './CashFxPairControl.vue';
     import WithdrawalSplit from './WithdrawalSplit.vue';
     import {
         cashClassification,
@@ -9,6 +11,7 @@
         cashNeedsReview,
     } from '../../../lib/portfolio-capital.js';
     import {
+        cashReviewType,
         cashReviewDateKey,
         cashReviewEntries,
         primaryCashKinds,
@@ -32,11 +35,24 @@
         start = ref(null),
         end = ref(null),
         status = ref('pending'),
+        transactionType = ref('all'),
+        fxSaving = ref(false),
         currency = ref('all'),
         page = ref(1);
     const drafts = ref({}),
         results = ref({}),
         notice = ref('');
+    const typeOptions = computed(() => [
+        { label: '전체 거래 종류', value: 'all' },
+        ...[...new Set(props.state.entries.map(cashReviewType))]
+            .sort((a, b) => a.localeCompare(b, 'ko'))
+            .map((value) => ({ label: value, value })),
+    ]);
+    const selectedStatusLabel = computed(
+        () =>
+            statusOptions.find((x) => x.value === status.value)?.label ||
+            '확인 필요'
+    );
     const statusOptions = [
         { label: '확인 필요', value: 'pending' },
         { label: '전체', value: 'all' },
@@ -53,6 +69,7 @@
     const rows = computed(() =>
         cashReviewEntries(props.state.entries, props.state.classifications, {
             status: status.value,
+            type: transactionType.value,
             currency: currency.value,
             start: start.value,
             end: end.value,
@@ -61,10 +78,12 @@
     const visible = computed(() =>
         rows.value.slice((page.value - 1) * 10, page.value * 10)
     );
-    const saving = computed(() =>
-        Object.values(results.value).some((row) =>
-            ['saving', 'awaiting'].includes(row.phase)
-        )
+    const saving = computed(
+        () =>
+            fxSaving.value ||
+            Object.values(results.value).some((row) =>
+                ['saving', 'awaiting'].includes(row.phase)
+            )
     );
     const saveMessage = computed(() =>
         saving.value
@@ -92,6 +111,8 @@
             notice.value = '';
             start.value = end.value = null;
             status.value = 'pending';
+            transactionType.value = 'all';
+            fxSaving.value = false;
             currency.value = 'all';
         },
         { immediate: true }
@@ -101,7 +122,7 @@
         emit('saving', false);
     });
     watch(saving, (value) => emit('saving', value), { immediate: true });
-    watch([status, currency, start, end], () => {
+    watch([status, transactionType, currency, start, end], () => {
         page.value = 1;
     });
     watch(rows, (value) => {
@@ -201,7 +222,16 @@
         (drafts.value[entry.id]?.expanded
             ? Object.keys(cashKinds)
             : primaryCashKinds(entry)
-        ).map((value) => ({ label: cashKinds[value], value }));
+        )
+            .filter(
+                (value) =>
+                    value !== 'exchange' ||
+                    !needsReview(entry) ||
+                    !(props.state.fxPairCandidates || []).some(
+                        (c) => c.entryId === entry.id
+                    )
+            )
+            .map((value) => ({ label: cashKinds[value], value }));
     function validation(entry) {
         try {
             cashClassification(drafts.value[entry.id], entry);
@@ -213,6 +243,7 @@
     function resetFilters() {
         start.value = end.value = null;
         status.value = 'pending';
+        transactionType.value = 'all';
         currency.value = 'all';
     }
     async function choose(entry, value) {
@@ -226,7 +257,7 @@
         }
         await persist(entry);
     }
-    async function persist(entry) {
+    async function persist(entry, noteOnly = false) {
         if (disabled.value || entry.purchaseExchange || validation(entry))
             return;
         const current = generation,
@@ -236,6 +267,7 @@
         draft.selection = draft.classification;
         const input = {
             action: 'classifyCash',
+            noteOnly,
             id: entry.id,
             classification: draft.classification,
             note: draft.note,
@@ -301,7 +333,7 @@
         Object.assign(drafts.value[entry.id], result.input, {
             withdrawalParts: { ...result.input.withdrawalParts },
         });
-        await persist(entry);
+        await persist(entry, result.input.noteOnly === true);
     }
     function phaseLabel(entry) {
         if (entry.purchaseExchange) return '현금 집계 제외';
@@ -321,6 +353,7 @@
     async function openEntry(id) {
         start.value = end.value = null;
         status.value = 'all';
+        transactionType.value = 'all';
         currency.value = 'all';
         await nextTick();
         const index = rows.value.findIndex((row) => row.id === id);
@@ -401,9 +434,22 @@
                     :disabled="saving"
                     aria-labelledby="cash-review-currency-label" />
             </div>
+            <div class="choice-filter type-filter">
+                <label id="cash-review-type-label" for="cash-review-type"
+                    >거래 종류</label
+                ><Select
+                    v-model="transactionType"
+                    input-id="cash-review-type"
+                    aria-labelledby="cash-review-type-label"
+                    :options="typeOptions"
+                    option-label="label"
+                    option-value="value"
+                    :disabled="saving" />
+            </div>
             <span class="review-count"
                 >검토 필요 <strong>{{ pending }}</strong
-                >건 · 표시 {{ rows.length }}건</span
+                >건 · 표시 {{ rows.length }}건 · 상태:
+                {{ selectedStatusLabel }}</span
             >
         </div>
         <div class="list-heading">
@@ -548,6 +594,16 @@
                                     · 수수료 미확인</template
                                 ></small
                             >
+                            <CashFxPairControl
+                                :user="user"
+                                :state="state"
+                                :entry="entry"
+                                :account-id="accountId"
+                                :read-only="readOnly"
+                                :disabled="disabled"
+                                @refresh="emit('refresh')"
+                                @saving="fxSaving = $event"
+                                @notice="notice = $event" />
                             <details class="entry-evidence">
                                 <summary>
                                     {{
@@ -591,7 +647,7 @@
                                     :disabled="
                                         disabled || entry.purchaseExchange
                                     "
-                                    @click="persist(entry)">
+                                    @click="persist(entry, true)">
                                     메모 저장
                                 </button>
                             </details>
@@ -650,6 +706,10 @@
                                     ">
                                     분류 변경</button
                                 ><button
+                                    v-if="
+                                        !annotations.get(entry.id)
+                                            ?.internalFxLinkId
+                                    "
                                     type="button"
                                     class="text-button undo"
                                     :disabled="disabled"
@@ -661,8 +721,8 @@
                     </tr>
                     <tr v-if="!visible.length">
                         <td colspan="4" class="empty-review">
-                            표시할 계좌 내역이 없습니다. 날짜와 검토 상태를
-                            확인해 주세요.
+                            표시할 계좌 내역이 없습니다. 날짜·검토
+                            상태·통화·거래 종류 필터를 확인해 주세요.
                         </td>
                     </tr>
                 </tbody>
@@ -764,13 +824,20 @@
         background: var(--app-accent);
         color: #fff;
     }
+    .type-filter :deep(.p-select) {
+        width: 100%;
+        min-width: 0;
+    }
+    .type-filter {
+        min-width: 0;
+    }
     .review-count {
         padding: 10px;
         border-radius: 10px;
         background: var(--review-soft);
         color: var(--app-accent);
         font-size: 0.8rem;
-        white-space: nowrap;
+        white-space: normal;
     }
     .list-heading {
         display: flex;

@@ -26,7 +26,13 @@ export function cashReviewDateKey(value) {
 export function cashReviewEntries(
     entries,
     classifications,
-    { status = 'pending', currency = 'all', start = null, end = null } = {}
+    {
+        status = 'pending',
+        currency = 'all',
+        type = 'all',
+        start = null,
+        end = null,
+    } = {}
 ) {
     const annotations = new Map(classifications.map((row) => [row.id, row]));
     const from = cashReviewDateKey(start),
@@ -41,6 +47,7 @@ export function cashReviewEntries(
                         ? pending
                         : !entry.purchaseExchange && !pending)) &&
                 (currency === 'all' || entry.currency === currency) &&
+                (!type || type === 'all' || cashReviewType(entry) === type) &&
                 (!from || (day && day >= from)) &&
                 (!through || (day && day <= through))
             );
@@ -51,6 +58,15 @@ export function cashReviewEntries(
                     cashReviewDateKey(a.date)
                 ) || String(a.id).localeCompare(String(b.id))
         );
+}
+
+export function cashReviewType(entry) {
+    const raw = String(entry.rawType || '').trim();
+    return (
+        raw.replace(/\s*\([^)]*\)\s*$/, '').trim() ||
+        { cash_in: '입금', cash_out: '출금' }[entry.type] ||
+        '거래 종류 미등록'
+    );
 }
 
 export function primaryCashKinds(entry) {

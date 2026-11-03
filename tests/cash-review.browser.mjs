@@ -9,7 +9,7 @@ await writeFile(
     harness,
     `<!doctype html><html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><div id="app"></div><script type="module">
 import {createApp,h,ref,watch} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import ko from '/src/config/locale/ko.js';import Panel from '/src/components/portfolio/PortfolioCapitalPanel.vue';import {portfolioCapitalRequest} from '/src/services/portfolioCapital.js';import '/src/styles/style.scss';import '/src/styles/studio.scss';
-createApp({setup(){const user={uid:'synthetic-stitch-owner',getIdToken:async()=>'synthetic-only'};const account=ref('A'),state=ref({entries:[],classifications:[]}),readOnly=ref(false),error=ref('');let generation=0;async function load(){const request=++generation,id=account.value;error.value='';try{const result=await portfolioCapitalRequest(user,undefined,id,{force:true});if(request===generation)state.value=result;}catch(e){if(request===generation)error.value=e.message;}}watch(account,()=>{state.value={entries:[],classifications:[]};load();},{immediate:true});return()=>h('main',{class:'thumbnail-app',style:'max-width:1280px;margin:auto;padding:16px;'},[h('header',{style:'margin:12px 0 24px'},[h('h1','원금 회수 · 자금 상세'),h('button',{onClick:()=>account.value=account.value==='A'?'B':'A'},'계좌 전환'),h('button',{onClick:()=>readOnly.value=!readOnly.value},'조회 권한 전환')]),h(Panel,{key:account.value,user,accountId:account.value,state:state.value,readOnly:readOnly.value,error:error.value,onRefresh:load})]);}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script></html>`
+createApp({setup(){const user={uid:'synthetic-stitch-owner',getIdToken:async()=>'synthetic-only'};const account=ref('A'),state=ref({entries:[],classifications:[]}),readOnly=ref(false),loading=ref(false),error=ref('');let generation=0;async function load(){const request=++generation,id=account.value;error.value='';loading.value=true;try{const result=await portfolioCapitalRequest(user,undefined,id,{force:true});if(request===generation)state.value=result;}catch(e){if(request===generation)error.value=e.message;}finally{if(request===generation)loading.value=false;}}watch(account,()=>{state.value={entries:[],classifications:[]};load();},{immediate:true});return()=>h('main',{class:'thumbnail-app','aria-busy':String(loading.value),style:'max-width:1280px;margin:auto;padding:16px;'},[h('header',{style:'margin:12px 0 24px'},[h('h1','원금 회수 · 자금 상세'),h('button',{onClick:()=>account.value=account.value==='A'?'B':'A'},'계좌 전환'),h('button',{onClick:()=>readOnly.value=!readOnly.value},'조회 권한 전환')]),h(Panel,{key:account.value,user,accountId:account.value,state:state.value,readOnly:readOnly.value,loading:loading.value,error:error.value,onRefresh:load})]);}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script></html>`
 );
 const browser = await chromium.launch({
     headless: true,
@@ -83,6 +83,24 @@ try {
                 suggestedKind: 'interest',
             },
             {
+                id: 'fx-krw',
+                date: '20261017',
+                currency: 'KRW',
+                amount: 140000,
+                source: 'toss-pdf',
+                rawType: '환전원화입금',
+                exchangeRate: 1400,
+            },
+            {
+                id: 'fx-usd',
+                date: '20261017',
+                currency: 'USD',
+                amount: 100,
+                source: 'toss-pdf',
+                rawType: '환전외화출금',
+                exchangeRate: 1400,
+            },
+            {
                 id: 'foreign-interest',
                 date: '20260930',
                 currency: 'USD',
@@ -99,7 +117,8 @@ try {
             writes = [];
         let failure = 0,
             releaseWrite = null,
-            holdWrite = false;
+            holdWrite = false,
+            delayNextRead = false;
         await page.route('**/api/portfolio-capital*', async (route) => {
             const req = route.request(),
                 id = new URL(req.url()).searchParams.get('accountId') || 'A';
@@ -139,6 +158,10 @@ try {
                 return route.fulfill({ json: { id: input.id } });
             }
             reads.push(id);
+            if (delayNextRead) {
+                delayNextRead = false;
+                await new Promise((resolve) => setTimeout(resolve, 150));
+            }
             return route.fulfill({
                 json: {
                     entries:
@@ -303,10 +326,15 @@ try {
             .getByRole('button', { name: '외부 입금 (원금)', exact: true })
             .click();
         const beforeConflictRetry = writes.length;
+        const beforeConflictRead = reads.length;
+        delayNextRead = true;
         await row('deposit')
             .getByRole('button', { name: '최신 내역 다시 조회' })
             .click();
         assert.equal(writes.length, beforeConflictRetry);
+        // Match the real page's loading gate before starting a separate late-write scenario.
+        await page.locator('main[aria-busy="false"]').waitFor();
+        assert.equal(reads.length, beforeConflictRead + 1);
         // Keyboard selection and in-flight duplicate protection; switching accounts
         // must not apply A's late response or emit a refresh for B.
         holdWrite = true;
@@ -368,6 +396,15 @@ try {
             .getByLabel('시작일', { exact: true })
             .click({ trial: true });
         await row('reward').getByText('자동 분류', { exact: true }).waitFor();
+        for (const id of ['fx-krw', 'fx-usd']) {
+            await row(id).getByText('자동 분류', { exact: true }).waitFor();
+            assert.match(
+                await row(id).innerText(),
+                /기록 환율.*유일한 환전 쌍.*시각 미확인/
+            );
+            assert.match(await row(id).innerText(), /수수료 미확인/);
+            assert(!writes.some((x) => x.id === id));
+        }
         assert.equal(writes.filter((x) => x.id === 'reward').length, 0);
         await row('reward')
             .getByRole('button', { name: '확인 필요로 되돌리기' })

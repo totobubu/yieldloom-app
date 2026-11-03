@@ -1,4 +1,4 @@
-import { projectAutomaticCashClassifications } from '../../lib/cash-automatic-classification.js';
+import { projectCashFxLinks } from '../../lib/cash-fx-links.js';
 import { markPurchaseExchangeCash } from './tossImportReview.js';
 import { apiUrl } from './apiUrl.js';
 
@@ -111,7 +111,7 @@ export function createPortfolioCapitalClient({
             }
             if (payload.unchanged && !cached.data)
                 throw new Error('계좌 내역을 다시 조회해 주세요.');
-            const enriched = projectAutomaticCashClassifications(
+            const enriched = await projectCashFxLinks(
                 markPurchaseExchangeCash(data),
                 accountId
             );

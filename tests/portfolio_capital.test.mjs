@@ -1,3 +1,4 @@
+import { createCapitalFixture } from './support/capital-api-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
@@ -154,94 +155,14 @@ test('same-day cash is a candidate, with known other accounts excluded', () => {
     );
 });
 
-function fixture(uid = 'owner') {
-    const records = new Map([
+const fixture = (uid = 'owner') =>
+    createCapitalFixture(uid, [
         ['portfolios/owner/assets/A/transactions/T', trade],
         [
             'portfolios/owner/cashEntries/E',
             { amount: 42140, currency: 'KRW', date: trade.date },
         ],
     ]);
-    const reads = [],
-        usage = [];
-    const ref = (path) => ({
-        path,
-        get: async () => {
-            reads.push(path);
-            return snapshot(path);
-        },
-    });
-    const snapshot = (path) => ({
-        id: path.split('/').at(-1),
-        exists: records.has(path),
-        data: () => records.get(path),
-    });
-    const db = {
-        doc: ref,
-        collection: (path) => {
-            const get = async (field, value) => {
-                reads.push(path);
-                return {
-                    docs: [...records.keys()]
-                        .filter(
-                            (k) =>
-                                k.startsWith(path + '/') &&
-                                !k.slice(path.length + 1).includes('/') &&
-                                (!field ||
-                                    field
-                                        .split('.')
-                                        .reduce(
-                                            (v, key) => v?.[key],
-                                            records.get(k)
-                                        ) === value)
-                        )
-                        .map(snapshot),
-                };
-            };
-            return {
-                get: () => get(),
-                where: (field, op, value) => ({ get: () => get(field, value) }),
-            };
-        },
-        runTransaction: async (fn) => {
-            const writes = [];
-            const result = await fn({
-                get: async (r) => snapshot(r.path),
-                set: (r, d) => writes.push([r.path, d]),
-            });
-            for (const [p, d] of writes) records.set(p, d);
-            return result;
-        },
-    };
-    const handler = capitalHandler({
-        verify: async () => {
-            if (!uid) throw Object.assign(new Error('login'), { status: 401 });
-            return { uid };
-        },
-        database: () => db,
-        timestamp: () => 'now',
-        onReadUsage: (row) => usage.push(row),
-    });
-    const call = async (body, method = 'POST', query = {}) => {
-        let status, data;
-        await handler(
-            { method, body, query },
-            {
-                setHeader() {},
-                status(s) {
-                    status = s;
-                    return this;
-                },
-                json(d) {
-                    data = d;
-                    return this;
-                },
-            }
-        );
-        return { status, data };
-    };
-    return { call, records, reads, usage };
-}
 test('owner can save, reload and reset funding without modifying the financial ledger', async () => {
     const f = fixture();
     const input = {
@@ -824,8 +745,8 @@ test('fresh clients reuse a large ledger while annotations stay fresh and import
             .length,
         1
     );
-    assert.equal(f.usage[0].documentReadEstimate, 6007);
-    assert.equal(f.usage[1].documentReadEstimate, 5);
+    assert.equal(f.usage[0].documentReadEstimate, 6008);
+    assert.equal(f.usage[1].documentReadEstimate, 6);
     assert.equal(f.usage[1].ledgerCache, 'hit');
 
     const saved = await f.call({
@@ -890,7 +811,7 @@ test('automatic label projection reads existing authorized entries without datab
     );
     assert.deepEqual([...f.records], before);
     assert.deepEqual(read.data.storedClassifications, []);
-    assert(read.data.version.startsWith('v4:'));
+    assert(read.data.version.startsWith('v5:'));
     assert.equal(
         (
             await accountFixture('admin').call(undefined, 'GET', {
@@ -946,7 +867,7 @@ test('imported date-only FX is projected without writes; invalid supplied fee pr
         });
         assert.equal(r.status, 200);
         assert.equal(r.data.ledgerUnchanged, false);
-        assert(r.data.ledgerVersion.startsWith('v4:'));
+        assert(r.data.ledgerVersion.startsWith('v5:'));
         const auto = r.data.automaticClassifications.filter((x) =>
             ['FXK', 'FXU'].includes(x.id)
         );

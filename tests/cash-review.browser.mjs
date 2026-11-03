@@ -63,6 +63,36 @@ try {
                 suggestedKind: 'exchange',
             },
         ];
+        entries.push(
+            {
+                id: 'reward',
+                date: '20261008',
+                currency: 'KRW',
+                amount: 50,
+                source: 'toss-pdf',
+                rawType: '이벤트입금',
+                suggestedKind: 'reward',
+            },
+            {
+                id: 'interest',
+                date: '20260930',
+                currency: 'KRW',
+                amount: 20,
+                source: 'toss-pdf',
+                rawType: '이자입금',
+                suggestedKind: 'interest',
+            },
+            {
+                id: 'foreign-interest',
+                date: '20260930',
+                currency: 'USD',
+                amount: 0.1,
+                source: 'toss-pdf',
+                rawType: '외화이자입금',
+                suggestedKind: 'interest',
+            }
+        );
+        entries.forEach((e) => (e.accountId = 'A'));
         const ledger = structuredClone(entries),
             annotations = { A: [], B: [] },
             reads = [],
@@ -179,9 +209,10 @@ try {
             .getByRole('button', { name: '외부 입금 (원금)', exact: true })
             .click();
         await review
-            .getByRole('status')
+            .locator('.list-heading [role="status"]')
             .filter({ hasText: '계좌 내역을 저장했습니다' })
             .waitFor();
+        assert.equal(await review.locator('.review-notice').count(), 0);
         await row('deposit').waitFor({ state: 'hidden' });
         assert.equal(writes.length, 1);
         assert.equal(writes[0].note, '');
@@ -215,6 +246,10 @@ try {
             .getByRole('button', { name: '외부 입금 (원금)', exact: true })
             .click();
         await row('usd').getByRole('alert').waitFor();
+        assert.match(
+            await review.locator('.review-save-status').innerText(),
+            /저장하지 못했습니다/
+        );
         await page.screenshot({
             path: '/tmp/stitch-capital-' + width + '-error.png',
             fullPage: true,
@@ -284,6 +319,10 @@ try {
         assert(await target.evaluate((el) => el === document.activeElement));
         await page.keyboard.press('Space');
         await row('deposit').getByText('저장 중…', { exact: true }).waitFor();
+        assert.match(
+            await review.locator('.review-save-status').innerText(),
+            /저장하고 있습니다/
+        );
         assert(await target.isDisabled());
         await page.screenshot({
             path: '/tmp/stitch-capital-' + width + '-saving.png',
@@ -328,6 +367,23 @@ try {
         await review
             .getByLabel('시작일', { exact: true })
             .click({ trial: true });
+        await row('reward').getByText('자동 분류', { exact: true }).waitFor();
+        assert.equal(writes.filter((x) => x.id === 'reward').length, 0);
+        await row('reward')
+            .getByRole('button', { name: '확인 필요로 되돌리기' })
+            .click();
+        await row('reward')
+            .getByRole('button', { name: '이벤트 지급', exact: true })
+            .waitFor();
+        assert.equal(
+            annotations.A.find((x) => x.id === 'reward').classification,
+            'unknown'
+        );
+        await row('reward')
+            .getByRole('button', { name: '이벤트 지급', exact: true })
+            .click();
+        await row('reward').getByText('확정 완료', { exact: true }).waitFor();
+        assert.equal(annotations.A.find((x) => x.id === 'reward').revision, 2);
         await page.screenshot({
             path: '/tmp/stitch-capital-' + width + '-light.png',
             fullPage: true,

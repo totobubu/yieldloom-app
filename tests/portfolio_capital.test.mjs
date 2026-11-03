@@ -865,3 +865,53 @@ test('fresh clients reuse a large ledger while annotations stay fresh and import
         2
     );
 });
+
+test('automatic label projection reads existing authorized entries without database writes; manual unknown suppresses it', async () => {
+    const f = accountFixture();
+    f.records.set('investmentAccounts/AC/entries/R', {
+        source: 'toss-pdf',
+        row: {
+            symbol: 'CASH',
+            date: '2026-10-17',
+            type: 'cash_in',
+            rawType: '이벤트입금',
+            cashKind: 'reward',
+            currency: 'KRW',
+            amount: 100,
+        },
+    });
+    const before = structuredClone([...f.records]);
+    const read = await f.call(undefined, 'GET', { accountId: 'AC' });
+    assert.equal(read.status, 200);
+    assert.equal(
+        read.data.automaticClassifications.find((x) => x.id === 'R')
+            .classification,
+        'reward'
+    );
+    assert.deepEqual([...f.records], before);
+    assert.deepEqual(read.data.storedClassifications, []);
+    assert(read.data.version.startsWith('v3:'));
+    assert.equal(
+        (
+            await accountFixture('admin').call(undefined, 'GET', {
+                accountId: 'AC',
+            })
+        ).status,
+        403
+    );
+    const saved = await f.call({
+        action: 'classifyCash',
+        accountId: 'AC',
+        id: 'R',
+        classification: 'unknown',
+        revision: 0,
+        note: 'synthetic deliberate review',
+    });
+    assert.equal(saved.status, 200);
+    const next = await f.call(undefined, 'GET', { accountId: 'AC' });
+    assert(!next.data.automaticClassifications.some((x) => x.id === 'R'));
+    assert.equal(
+        next.data.classifications.find((x) => x.id === 'R').note,
+        'synthetic deliberate review'
+    );
+});

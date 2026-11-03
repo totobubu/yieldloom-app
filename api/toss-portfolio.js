@@ -1,22 +1,41 @@
 import { createApiHandler } from '../lib/api-handler.js';
-import { verifyFirebaseBearer, requireAllowedTossUser } from './_utils/firebase-auth.js';
-import { fetchHoldings, listAccounts, TossPortfolioError } from './_utils/toss-portfolio.js';
+import {
+    firebaseDatabase,
+    verifyFirebaseBearer,
+} from './_utils/firebase-auth.js';
+import {
+    createAccountTossHandler,
+    createUnavailableTossService,
+    createRetiredTossHandler,
+} from '../lib/account-toss-handler.js';
 
-async function handler(req, res) {
-    if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
-    const claims = await verifyFirebaseBearer(req);
-    requireAllowedTossUser(claims);
-    const action = String(req.query.action ?? 'accounts');
-    if (action === 'accounts') return res.status(200).json(await listAccounts());
-    if (action === 'holdings') return res.status(200).json(await fetchHoldings(Number(req.query.accountSeq)));
-    return res.status(400).json({ error: 'Unsupported action' });
-}
-
-export default createApiHandler(async (req, res) => {
-    try {
-        await handler(req, res);
-    } catch (error) {
-        const status = error?.status ?? (error instanceof TossPortfolioError ? error.status : 500);
-        res.status(status).json({ error: error instanceof Error ? error.message : 'Toss portfolio request failed' });
-    }
+const authenticate = (req) => verifyFirebaseBearer(req, true);
+const retired = createRetiredTossHandler(authenticate);
+// No production issuer, credentials, shared lock or connection store is wired.
+const scoped = createAccountTossHandler({
+    authenticate,
+    service: createUnavailableTossService({
+        loadAccount: async (id) =>
+            (
+                await firebaseDatabase()
+                    .collection('investmentAccounts')
+                    .doc(id)
+                    .get()
+            ).data(),
+        loadFamily: async (id) =>
+            (
+                await firebaseDatabase()
+                    .collection('familySpaces')
+                    .doc(id)
+                    .get()
+            ).data(),
+    }),
 });
+// Reuse the existing function slot (Vercel's twelve-function budget).
+// Global credentials + caller-supplied accountSeq cannot establish account ACL.
+export default createApiHandler((req, res) =>
+    req.method === 'GET' &&
+    (req.query.action !== undefined || req.query.accountSeq !== undefined)
+        ? retired(req, res)
+        : scoped(req, res)
+);

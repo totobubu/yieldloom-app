@@ -172,7 +172,10 @@ try {
         .waitFor();
     const fx = panel.locator('tr').filter({ hasText: '환전원화출금' });
     await fx.getByRole('button', { name: '계좌 내 환전', exact: true }).click();
-    await panel.getByText('분류 확인 필요 0건', { exact: false }).waitFor();
+    await panel
+        .locator('.review-count')
+        .filter({ hasText: /검토 필요\s*0건/ })
+        .waitFor();
     assert.equal(
         (await panel.getByText('₩1,000,000', { exact: true }).count()) > 0,
         true
@@ -469,6 +472,7 @@ try {
         ...account,
         id: 'BB',
         alias: '조회 전용 계좌',
+        maskedNumber: '****5678',
         permissions: { owner: 'viewer' },
     };
     records.set('familySpaces/FA', family);
@@ -618,7 +622,10 @@ try {
         .getByRole('combobox', { name: '계좌', exact: true })
         .click();
     await page
-        .getByRole('option', { name: '본인 / 조회 전용 계좌', exact: true })
+        .getByRole('option', {
+            name: '본인 / 검증 증권 / ****5678',
+            exact: true,
+        })
         .click();
     await familyPanel
         .getByText('조회 권한으로 열었습니다.', { exact: false })

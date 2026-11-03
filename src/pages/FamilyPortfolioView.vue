@@ -80,6 +80,7 @@
         { immediate: true }
     );
     const overviewViews = ['summary', 'holdings', 'capital'];
+    const recoveryOverviewOpen = ref(false);
     const overviewView = computed({
         get: () =>
             overviewViews.includes(route.query.view)
@@ -1415,18 +1416,27 @@
                                     "
                                     class="capital-details"
                                     aria-labelledby="capital-details-heading">
-                                    <h2 id="capital-details-heading">
-                                        원금 회수 · 자금 상세
-                                    </h2>
-                                    <AccountRecoveryOverview
-                                        :user="firebaseUser"
-                                        :accounts="visibleAccounts"
-                                        :refresh-account-id="
-                                            capitalLoading || capitalError
-                                                ? ''
-                                                : selectedAccount
-                                        "
-                                        :refresh-state="capital" />
+                                    <header class="capital-page-heading">
+                                        <div>
+                                            <p class="capital-eyebrow">
+                                                내 포트폴리오 · 정산 상세
+                                            </p>
+                                            <h2 id="capital-details-heading">
+                                                원금 회수 · 자금 상세
+                                            </h2>
+                                            <p>
+                                                실제 계좌 입출금과 배당 회수
+                                                흐름을 검토합니다.
+                                            </p>
+                                        </div>
+                                        <span class="capital-currency-note"
+                                            ><i
+                                                class="pi pi-wallet"
+                                                aria-hidden="true" />
+                                            KRW / USD 분리 집계</span
+                                        >
+                                    </header>
+
                                     <section
                                         v-if="activeAccount"
                                         aria-label="회수 현황 계좌 선택">
@@ -1467,6 +1477,26 @@
                                             )
                                         "
                                         @refresh="loadCapital" />
+                                    <details
+                                        class="all-account-recovery"
+                                        @toggle="
+                                            recoveryOverviewOpen =
+                                                $event.target.open
+                                        ">
+                                        <summary>
+                                            전체 계좌 회수 현황 · 자금 계보 상세
+                                        </summary>
+                                        <AccountRecoveryOverview
+                                            v-if="recoveryOverviewOpen"
+                                            :user="firebaseUser"
+                                            :accounts="visibleAccounts"
+                                            :refresh-account-id="
+                                                capitalLoading || capitalError
+                                                    ? ''
+                                                    : selectedAccount
+                                            "
+                                            :refresh-state="capital" />
+                                    </details>
                                 </section>
                             </TabPanel>
                             <TabPanel value="holdings">
@@ -2328,6 +2358,73 @@
 </template>
 
 <style scoped>
+    .all-account-recovery {
+        margin-top: 24px;
+    }
+    .all-account-recovery > summary {
+        cursor: pointer;
+        padding: 16px;
+        border-radius: 12px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 6%,
+            var(--app-surface)
+        );
+        color: var(--app-accent);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .capital-page-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin: 12px 0 24px;
+    }
+    .capital-page-heading h2 {
+        margin: 6px 0 9px;
+        font-size: 1.6rem;
+        letter-spacing: -0.025em;
+    }
+    .capital-page-heading p {
+        margin: 0;
+        color: var(--app-muted);
+        font-size: 0.85rem;
+    }
+    .capital-page-heading .capital-eyebrow {
+        font-size: 0.76rem;
+        color: var(--app-accent);
+    }
+    .capital-currency-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 7%,
+            var(--app-surface)
+        );
+        color: var(--app-muted);
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+    @media (max-width: 700px) {
+        .capital-page-heading {
+            align-items: start;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .capital-page-heading h2 {
+            font-size: 1.35rem;
+        }
+        .capital-currency-note {
+            font-size: 0.75rem;
+        }
+    }
+
     .asset-list-heading {
         display: flex;
         justify-content: space-between;

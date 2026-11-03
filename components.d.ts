@@ -24,6 +24,7 @@ declare module 'vue' {
     BrokerSpreadsheetForm: typeof import('./src/components/portfolio/BrokerSpreadsheetForm.vue')['default']
     Button: typeof import('primevue/button')['default']
     CardShareActions: typeof import('./src/components/thumbnail/CardShareActions.vue')['default']
+    CashEntryReview: typeof import('./src/components/portfolio/CashEntryReview.vue')['default']
     CollectionHealth: typeof import('./src/components/stock/CollectionHealth.vue')['default']
     Column: typeof import('primevue/column')['default']
     DataTable: typeof import('primevue/datatable')['default']

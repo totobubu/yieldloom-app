@@ -412,7 +412,7 @@
         padding: 24px;
         margin: 20px 0;
         border: 1px solid var(--app-border);
-        border-radius: 16px;
+        border-radius: 20px;
         background: var(--app-surface);
     }
     h2 {
@@ -450,8 +450,12 @@
     article {
         padding: 20px;
         min-width: 0;
-        background: var(--app-surface-muted);
-        border-radius: 12px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 5%,
+            var(--app-surface)
+        );
+        border-radius: 16px;
     }
     strong {
         display: block;

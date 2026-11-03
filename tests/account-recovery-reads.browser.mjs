@@ -59,29 +59,39 @@ try {
                 json: {
                     version: `v1:1:${id === 'A' ? revision : 0}`,
                     ledgerVersion: 'v1:1',
-                    entries: [
-                        {
-                            id: 'cash',
-                            date: '20261015',
-                            currency: 'KRW',
-                            amount: id === 'A' ? 100 : 20,
-                        },
-                    ],
-                    classifications: [
-                        {
-                            id: 'cash',
-                            classification:
-                                id === 'A'
-                                    ? 'external_deposit'
-                                    : 'external_withdrawal',
-                            withdrawalParts: {
-                                principal: 20,
-                                dividend: 0,
-                                profit: 0,
-                                unknown: 0,
-                            },
-                        },
-                    ],
+                    // A has an observed principal deposit before its confirmed
+                    // principal withdrawal. B's empty ledger still needs one
+                    // authorization-scoped read; A edits must not reread B.
+                    entries:
+                        id === 'A'
+                            ? [
+                                  {
+                                      id: 'cash',
+                                      date: '20261001',
+                                      currency: 'KRW',
+                                      amount: 100,
+                                  },
+                                  {
+                                      id: 'withdrawal',
+                                      date: '20261015',
+                                      currency: 'KRW',
+                                      amount: 20,
+                                  },
+                              ]
+                            : [],
+                    classifications:
+                        id === 'A'
+                            ? [
+                                  {
+                                      id: 'cash',
+                                      classification: 'external_deposit',
+                                  },
+                                  {
+                                      id: 'withdrawal',
+                                      classification: 'principal_withdrawal',
+                                  },
+                              ]
+                            : [],
                     allocations: [],
                     trades: [],
                     importedCash: [],

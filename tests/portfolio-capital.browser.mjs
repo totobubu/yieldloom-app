@@ -14,10 +14,10 @@ const layoutStyles = layoutSource
     .split('</style>')[0];
 await writeFile(
     harness,
-    `<!doctype html><html><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${layoutStyles}</style><div id="app" class="thumbnail-app"></div><script type="module">
-import {createApp,h} from 'vue'; import PrimeVue from 'primevue/config'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import MyPage from '/src/pages/MyPageView.vue'; import FamilyPage from '/src/pages/FamilyPortfolioView.vue';
+    `<!doctype html><html><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${layoutStyles}</style><div id="portfolio-header-actions"></div><div id="app" class="thumbnail-app"></div><script type="module">
+import {createApp,h} from 'vue'; import PrimeVue from 'primevue/config'; import {MyPreset} from '/src/config/theme.js'; import ko from '/src/config/locale/ko.js'; import '/src/styles/style.scss'; import '/src/styles/studio.scss'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import MyPage from '/src/pages/MyPageView.vue'; import FamilyPage from '/src/pages/FamilyPortfolioView.vue';
 const router=createRouter({history:createMemoryHistory(),routes:[{path:'/',component:new URLSearchParams(location.search).has('family')?FamilyPage:MyPage},{path:'/login',component:{template:'<p>login</p>'}}]});
-createApp({render:()=>h(RouterView)}).use(PrimeVue).use(router).mount('#app');</script></html>`
+createApp({render:()=>h(RouterView)}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).use(router).mount('#app');</script></html>`
 );
 const trade = {
     id: 'T',
@@ -102,7 +102,7 @@ const handler = capitalHandler({
     timestamp: () => null,
 });
 const browser = await chromium.launch({
-    executablePath: '/usr/bin/chromium',
+    executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
     args: ['--no-sandbox'],
 });
 try {
@@ -111,7 +111,7 @@ try {
     });
     await page.clock.install();
     const errors = [];
-    page.on('pageerror', (e) => errors.push(e.message));
+    page.on('pageerror', (e) => errors.push(e.stack || e.message));
     await page.route('**/src/services/firebaseClient.js*', (route) =>
         route.fulfill({
             contentType: 'text/javascript',
@@ -155,21 +155,23 @@ try {
     const panel = page.getByRole('region', {
         name: '투자 원금 대비 회수 현황',
     });
+    await panel.locator('.calculation-guide > summary').click();
     await panel
         .getByText('분류 확인 필요 2건', { exact: false })
         .first()
         .waitFor();
     assert.ok(await panel.getByText('₩0', { exact: true }).count());
-    await panel.locator('summary').click();
     const deposit = panel.locator('tr').filter({ hasText: '원화입금' });
-    await deposit.getByRole('button', { name: '분류 확정' }).click();
+    await deposit
+        .getByRole('button', { name: '외부 입금 (원금)', exact: true })
+        .click();
     await panel.getByText('₩1,000,000', { exact: true }).first().waitFor();
     await panel
         .getByText('분류 확인 필요 1건', { exact: false })
         .first()
         .waitFor();
     const fx = panel.locator('tr').filter({ hasText: '환전원화출금' });
-    await fx.getByRole('button', { name: '분류 확정' }).click();
+    await fx.getByRole('button', { name: '계좌 내 환전', exact: true }).click();
     await panel.getByText('분류 확인 필요 0건', { exact: false }).waitFor();
     assert.equal(
         (await panel.getByText('₩1,000,000', { exact: true }).count()) > 0,
@@ -371,7 +373,13 @@ try {
     );
     const withdrawalId = withdrawalPath.split('/').at(-1);
     const withdrawalRow = panel.locator(`[data-cash-id="${withdrawalId}"]`);
-    await withdrawalRow.locator('select').selectOption('mixed_withdrawal');
+    await withdrawalRow
+        .getByRole('button', { name: '분류 변경', exact: true })
+        .click();
+    await withdrawalRow.getByRole('button', { name: '다른 분류' }).click();
+    await withdrawalRow
+        .getByRole('button', { name: '출금 · 금액 나눔', exact: true })
+        .click();
     await withdrawalRow
         .getByLabel('출금 원금 회수', { exact: true })
         .fill('10000');
@@ -380,14 +388,14 @@ try {
         .fill('20001');
     assert.equal(
         await withdrawalRow
-            .getByRole('button', { name: '수정 저장' })
+            .getByRole('button', { name: '배분 확정' })
             .isDisabled(),
         true
     );
     await withdrawalRow
         .getByLabel('출금 배당 사용', { exact: true })
         .fill('20000');
-    await withdrawalRow.getByRole('button', { name: '수정 저장' }).click();
+    await withdrawalRow.getByRole('button', { name: '배분 확정' }).click();
     await panel.getByText('배당 사용 ₩20,000', { exact: false }).waitFor();
     assert.equal(
         await panel
@@ -417,8 +425,13 @@ try {
     await panel.screenshot({ path: '/tmp/yieldloom-withdrawal-mobile.png' });
     await page.setViewportSize({ width: 1280, height: 900 });
     await panel.screenshot({ path: '/tmp/yieldloom-withdrawal-desktop.png' });
-    await withdrawalRow.locator('select').selectOption('external_withdrawal');
-    await withdrawalRow.getByRole('button', { name: '수정 저장' }).click();
+    await withdrawalRow
+        .getByRole('button', { name: '분류 변경', exact: true })
+        .click();
+    await withdrawalRow.getByRole('button', { name: '다른 분류' }).click();
+    await withdrawalRow
+        .getByRole('button', { name: '출금 · 출처 미확인', exact: true })
+        .click();
     await panel
         .getByText('출금 출처 미확인 ₩30,000', { exact: false })
         .waitFor();
@@ -529,10 +542,12 @@ try {
         (process.env.CAPITAL_TEST_URL || 'http://127.0.0.1:5173') +
             '/.tmp-capital-test.html?family'
     );
+    await page.clock.runFor(1000);
     await page
         .locator('.portfolio-loading-overlay')
         .waitFor({ state: 'hidden' });
     await page.getByRole('tab', { name: '원금·자금', exact: true }).click();
+    await page.locator('.all-account-recovery > summary').click();
     const overview = page.getByRole('region', {
         name: '전체 계좌 원금 회수 현황',
         exact: true,
@@ -546,6 +561,7 @@ try {
     const familyPanel = page.getByRole('region', {
         name: '투자 원금 대비 회수 현황',
     });
+    await familyPanel.locator('.calculation-guide > summary').click();
     await familyPanel
         .getByText('분류 확인 필요 1건', { exact: false })
         .first()
@@ -623,6 +639,7 @@ try {
     assert.equal(
         await page
             .getByText('등록된 계좌가 없습니다.', { exact: false })
+            .filter({ visible: true })
             .count(),
         0
     );
@@ -654,6 +671,7 @@ try {
     assert.equal(
         await page
             .getByText('등록된 계좌가 없습니다.', { exact: false })
+            .filter({ visible: true })
             .count(),
         0
     );

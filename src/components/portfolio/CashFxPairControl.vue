@@ -8,6 +8,7 @@
         accountId: { type: String, default: '' },
         entry: { type: Object, default: () => ({}) },
         state: { type: Object, default: () => ({ entries: [] }) },
+        draftNotes: { type: Object, default: () => ({}) },
         disabled: Boolean,
         readOnly: Boolean,
     });
@@ -82,6 +83,11 @@
                 ? linked.value?.entryIds
                 : [props.entry.id, selection.value];
         if (!ids?.[1]) return;
+        const notes = Object.fromEntries(
+            ids
+                .filter((id) => typeof props.draftNotes[id]?.note === 'string')
+                .map((id) => [id, props.draftNotes[id].note])
+        );
         phase.value = 'saving';
         error.value = '';
         emit('notice', '');
@@ -98,6 +104,7 @@
                     action,
                     linkId,
                     entryIds: ids,
+                    notes,
                     revision: doc?.revision || 0,
                     annotationRevisions: Object.fromEntries(
                         ids.map((id) => [id, stored.get(id)?.revision || 0])
@@ -132,6 +139,7 @@
 </script>
 <template>
     <div v-if="visible" class="fx-pair-control" aria-label="환전 연결">
+        <small>양쪽 내역에 입력한 메모도 함께 저장됩니다.</small>
         <template v-if="linked">
             <p class="fx-link-label">
                 {{

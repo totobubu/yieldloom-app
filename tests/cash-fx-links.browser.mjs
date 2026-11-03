@@ -150,6 +150,10 @@ try {
                 .getByRole('option', { name: new RegExp('원장 ' + peer + '$') })
                 .click();
         };
+        await row('K').locator('.entry-evidence > summary').click();
+        await row('K')
+            .getByLabel('확인 근거·메모 (선택)')
+            .fill('승인 전 입력 메모');
         await choose('K', 'U');
         const approve = row('K').getByRole('button', {
             name: '양쪽 연결 승인',
@@ -162,6 +166,10 @@ try {
         const first = state.fxLinkViews.find((l) => l.entryIds.includes('K'));
         assert.equal(first.mode, 'approved');
         assert.equal(first.status, 'active');
+        assert.equal(
+            state.classifications.find((a) => a.id === 'K').note,
+            '승인 전 입력 메모'
+        );
         assert.equal(
             state.classifications.filter((a) => a.internalFxLinkId === first.id)
                 .length,

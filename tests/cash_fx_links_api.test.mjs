@@ -231,3 +231,33 @@ test('automatic detach is paired and reversible without creating financial annot
     assert.equal(current.fxLinkViews[0].id, id);
     assert.equal(current.fxLinkViews[0].status, 'active');
 });
+
+test('typed notes are committed with both link bindings, unchanged notes cause no writes, invalid notes roll back all changes', async () => {
+    const f = fxLinkFixture('owner', true),
+        s = await f.read(),
+        b = await input(s);
+    b.notes = { K: 'typed K', U: 'typed U' };
+    assert.equal((await f.call(b)).status, 200);
+    const after = await f.read();
+    assert.equal(after.fxLinkViews[0].status, 'active');
+    assert.equal(
+        after.classifications.find((a) => a.id === 'K').note,
+        'typed K'
+    );
+    assert.equal(
+        after.classifications.find((a) => a.id === 'U').note,
+        'typed U'
+    );
+    assert.equal(
+        f.records.get('investmentAccounts/AC/cashClassifications/K').noteOnly,
+        true
+    );
+    for (const invalid of ['x'.repeat(501), {}]) {
+        const g = fxLinkFixture(),
+            req = await input(await g.read());
+        req.notes = { K: invalid };
+        const original = structuredClone([...g.records]);
+        assert.equal((await g.call(req)).status, 400);
+        assert.deepEqual([...g.records], original);
+    }
+});

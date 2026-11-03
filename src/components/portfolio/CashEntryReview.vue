@@ -597,6 +597,7 @@
                             <CashFxPairControl
                                 :user="user"
                                 :state="state"
+                                :draft-notes="drafts"
                                 :entry="entry"
                                 :account-id="accountId"
                                 :read-only="readOnly"

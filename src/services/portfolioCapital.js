@@ -1,3 +1,4 @@
+import { projectAutomaticCashClassifications } from '../../lib/cash-automatic-classification.js';
 import { markPurchaseExchangeCash } from './tossImportReview.js';
 import { apiUrl } from './apiUrl.js';
 
@@ -110,7 +111,10 @@ export function createPortfolioCapitalClient({
             }
             if (payload.unchanged && !cached.data)
                 throw new Error('계좌 내역을 다시 조회해 주세요.');
-            const enriched = markPurchaseExchangeCash(data);
+            const enriched = projectAutomaticCashClassifications(
+                markPurchaseExchangeCash(data),
+                accountId
+            );
             cached.data = enriched;
             cached.expiresAt = now() + 5000;
             return enriched;

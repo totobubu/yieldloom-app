@@ -44,6 +44,17 @@ class UnderlyingTests(unittest.TestCase):
         source = {**EVIDENCE, 'url': 'https://www.defianceetfs.com/mstx/'}
         self.assertEqual(parse_product(pipe_title, 'MSTX', 'defiance', SYMBOLS | {'MSTR'}, source)['underlying'], 'MSTR')
 
+    def test_yskh_official_title_resolves_skhy_without_catalog_registration(self):
+        symbols = SYMBOLS | {'YSKH'}
+        self.assertNotIn('SKHY', symbols)
+        title = 'YieldMax SKHY Option Income Strategy ETF'
+        self.assertEqual(title_underlyings(title, 'YSKH', symbols), {'SKHY'})
+        doc = html.fromstring(f'<html><title>YSKH - YieldMax</title><h1>YSKH</h1><h2>{title}</h2></html>')
+        evidence = {**EVIDENCE, 'url': 'https://yieldmaxetfs.com/our-etfs/yskh/'}
+        result = parse_product(doc, 'YSKH', 'yieldmax', symbols, evidence)
+        self.assertEqual(result['underlying'], 'SKHY')
+        self.assertEqual(result['evidence']['url'], evidence['url'])
+
     def test_direxion_rowspans_and_inverse_exposure(self):
         doc = html.fromstring('''<table><tbody>
         <tr><td></td><td>AAPU</td><td>Direxion Daily AAPL Bull 2X ETF</td><td rowspan="2">AAPL</td><td>200%</td></tr>

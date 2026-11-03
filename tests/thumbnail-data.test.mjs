@@ -41,6 +41,14 @@ test('official events retain exact ex-date and distribution amount without a pri
     ]), [{ date: '2026-01-02', amount: 0.2, amountFixed: 0.2 }]);
 });
 
+test('thumbnail dividends preserve declaration dates for historical entry calculations', () => {
+    const [row] = toBacktestData([{ex_date:'2026-10-02',declared_date:'2026-10-05',distribution_per_share:'0.2',verification_status:'official'}]);
+    assert.equal(row.date,'2026-10-02');
+    assert.equal(row.declaredDate,'2026-10-05');
+    assert.equal(row.dividendVerified,true);
+    assert.equal(toBacktestData([{ex_date:'2026-10-02',distribution_per_share:'0.2'}])[0].dividendVerified,undefined);
+});
+
 test('an approved catalog ticker can render when it has no published dividend history yet', async () => {
     const payload = await buildThumbnailPayload('AMDY', [], async (symbol) => ({ symbol, tickerInfo: {}, backtestData: [] }));
     assert.equal(payload.ticker.symbol, 'AMDY');

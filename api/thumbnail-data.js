@@ -140,6 +140,8 @@ export function toBacktestData(events) {
                 date,
                 amount,
                 amountFixed: amount,
+                ...(declared ? { declaredDate: declared } : {}),
+                ...(['official', 'cross_checked'].includes(status) ? { dividendVerified: true } : {}),
                 ...(status === 'needs_review'
                     ? {
                           verificationStatus: 'needs_review',

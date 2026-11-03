@@ -5,6 +5,7 @@ import Components from 'unplugin-vue-components/vite';
 import { PrimeVueResolver } from 'unplugin-vue-components/resolvers';
 import { publicAssetsPlugin } from './scripts/publicAssets.mjs';
 import { HttpsProxyAgent } from 'https-proxy-agent';
+import { tossConnectionMockPlugin } from './scripts/toss/mock-connection-plugin.mjs';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
@@ -19,6 +20,11 @@ export default defineConfig(({ mode, command }) => {
     // development remain at the domain root.
     base: process.env.GITHUB_ACTIONS ? '/yieldloom-app/' : '/',
     plugins: [
+        tossConnectionMockPlugin(
+            command === 'serve' &&
+                mode === 'development' &&
+                process.env.YIELDLOOM_TOSS_MOCK === '1'
+        ),
         publicAssetsPlugin(),
         vue(),
         // AutoImport 플러그인은 잠시 제거하고, Components 플러그인만 사용합니다.

@@ -5,6 +5,8 @@
     import AssetAccountList from '@/components/portfolio/AssetAccountList.vue';
     import AssetMemberDialog from '@/components/portfolio/AssetMemberDialog.vue';
     import AssetAccountRegistration from '@/components/portfolio/AssetAccountRegistration.vue';
+    import AccountTossConnection from '@/components/portfolio/AccountTossConnection.vue';
+    import { accountToss } from '@/services/accountToss.js';
     import AssetUploadDialog from '@/components/portfolio/AssetUploadDialog.vue';
     import { createScopedRefresh } from '@/services/scopedRefresh.js';
     import AccountRecoveryOverview from '@/components/portfolio/AccountRecoveryOverview.vue';
@@ -1747,6 +1749,9 @@
                                     aria-label="계좌"
                                     placeholder="선택"
                             /></label>
+                            <AccountTossConnection
+                                :account-id="selectedAccount"
+                                :client="accountToss" />
                             <template v-if="canConfigure">
                                 <form
                                     @submit.prevent="

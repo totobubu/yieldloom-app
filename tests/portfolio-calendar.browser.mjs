@@ -367,10 +367,12 @@ try {
     await page.reload();
     await calendar.waitFor();
     assert.match(page.url(), /tab=calendar/);
+    await page.waitForFunction(
+        () =>
+            !document.querySelector('button[aria-label="일정·거래 새로고침"]')
+                ?.disabled
+    );
     slow = true;
-    await page
-        .getByRole('button', { name: '저장된 배당 거래', exact: true })
-        .click();
     await page
         .getByRole('button', { name: '일정·거래 새로고침', exact: true })
         .click();

@@ -483,6 +483,7 @@ test('legacy capital API no longer strips cancellation flags and passes voided c
     const h = capitalHandler({
         verify: async () => ({ uid: 'owner' }),
         database: () => db,
+        durableReadModels: false, // Explicitly exercise the legacy rollback path.
     });
     const res = response();
     await h({ method: 'GET', query: { accountId: 'a' } }, res);

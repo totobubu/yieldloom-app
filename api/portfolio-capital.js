@@ -21,6 +21,7 @@ const capital = capitalHandler({
     verify,
     database: () => admin.firestore(),
     timestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+    durableReadModels: process.env.CAPITAL_DURABLE_READ_MODELS !== 'false',
     onReadUsage: (usage) => console.info(JSON.stringify(usage)),
 });
 const sheetLedger = sheetLedgerHandler({

@@ -29,7 +29,7 @@ def _client():
     )
 
 
-def restore(root: Path, key: str) -> bool:
+def restore(root: Path, key: str, *, require_existing: bool = False) -> bool:
     bucket = os.environ["R2_BUCKET_NAME"]
     with tempfile.NamedTemporaryFile(suffix=".tar.gz", delete=False) as handle:
         archive = Path(handle.name)
@@ -38,6 +38,8 @@ def restore(root: Path, key: str) -> bool:
             _client().download_file(bucket, key, str(archive))
         except ClientError as exc:
             if exc.response.get("Error", {}).get("Code") in {"404", "NoSuchKey"}:
+                if require_existing:
+                    raise FileNotFoundError(f"required Content Studio state archive not found: {key}") from exc
                 return False
             raise
         with tarfile.open(archive, "r:gz") as tar:
@@ -72,9 +74,13 @@ def main() -> int:
     parser.add_argument("command", choices=("restore", "save"))
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--key", default=DEFAULT_KEY)
+    parser.add_argument(
+        "--require-existing", action="store_true",
+        help="fail when the durable state archive is missing instead of bootstrapping an empty state",
+    )
     args = parser.parse_args()
     if args.command == "restore":
-        print("restored" if restore(args.root, args.key) else "state-not-found")
+        print("restored" if restore(args.root, args.key, require_existing=args.require_existing) else "state-not-found")
     else:
         save(args.root, args.key)
         print("saved")

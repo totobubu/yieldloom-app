@@ -660,6 +660,18 @@
     .search-pagination {
         margin-block: 36px 28px;
     }
+    .search-pagination :deep(.p-paginator-page),
+    .search-pagination :deep(.p-paginator-prev),
+    .search-pagination :deep(.p-paginator-next) {
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        border-radius: 8px;
+    }
+    .search-pagination :deep(.p-paginator-content),
+    .search-pagination :deep(.p-paginator-pages) {
+        gap: 8px;
+    }
     .row-note {
         display: block;
         font-size: 12px;
@@ -729,16 +741,35 @@
         outline-offset: 2px;
     }
     .stock-card-heading {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 12px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 8px;
         min-width: 0;
     }
     .stock-card-heading > div {
-        display: grid;
-        gap: 4px;
+        display: contents;
+    }
+    .stock-card-heading .stock-title-actions {
+        grid-column: 1;
+        grid-row: 1;
         min-width: 0;
+    }
+    .stock-card-heading > div > span {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        min-height: 0;
+        overflow: visible;
+        display: block;
+        color: var(--app-text);
+        font-size: 15px;
+        line-height: 1.35;
+        font-weight: 600;
+        -webkit-line-clamp: unset;
+    }
+    .stock-card-heading > .stock-detail-action {
+        grid-column: 2;
+        grid-row: 1;
     }
     .stock-title-actions {
         display: flex;

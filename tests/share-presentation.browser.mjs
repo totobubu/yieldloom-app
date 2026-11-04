@@ -104,7 +104,7 @@ try {
     await page.goto(base + '/stock/TSLY?tab=share&rivals=CRSH');
     try {
         await page
-            .getByRole('button', { name: '요약 PNG 다운로드', exact: true })
+            .getByRole('button', { name: '배당 요약 PNG 다운로드', exact: true })
             .waitFor();
     } catch (error) {
         console.log((await page.locator('body').innerText()).slice(-2500));
@@ -233,7 +233,7 @@ try {
             await fs.writeFile(`${output}/${card.filename}`, png);
         }
         const single = await download(
-            page.getByRole('button', { name: '요약 PNG 다운로드', exact: true })
+            page.getByRole('button', { name: '배당 요약 PNG 다운로드', exact: true })
         );
         assert.equal(single.bytes.readUInt32BE(16), width);
         assert.equal(single.bytes.readUInt32BE(20), height);
@@ -318,7 +318,7 @@ try {
     );
     await page.evaluate(() => document.documentElement.classList.add('p-dark'));
     const darkApp = await download(
-        page.getByRole('button', { name: '요약 PNG 다운로드', exact: true })
+        page.getByRole('button', { name: '배당 요약 PNG 다운로드', exact: true })
     );
     assert.equal(darkApp.name, 'tsly_summary.png');
     const corner = await page.evaluate(async (base64) => {

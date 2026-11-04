@@ -7,7 +7,6 @@
     import Tag from 'primevue/tag';
     import Dialog from 'primevue/dialog';
     import DividendCalendarExport from './DividendCalendarExport.vue';
-    import DividendAlerts from './DividendAlerts.vue';
     import DividendReconciliation from './DividendReconciliation.vue';
     import { firebaseUser } from '@/services/firebaseClient';
     import { loadFamilyLedger } from '@/services/familyPortfolio';
@@ -448,16 +447,6 @@
             배당 대조 자료를 확인하고 있습니다.
         </p>
         <template v-if="mode !== 'reconcile'">
-            <DividendAlerts
-                v-if="
-                    mode === 'schedule' &&
-                    !busy &&
-                    !error &&
-                    selectedAccounts.length
-                "
-                :key="`alerts:${firebaseUser?.uid}:${familyId}`"
-                :rows="rows"
-                :basis="basis" />
             <DividendCalendarExport
                 v-if="
                     mode === 'schedule' &&

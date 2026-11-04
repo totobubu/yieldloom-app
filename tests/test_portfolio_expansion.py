@@ -152,19 +152,23 @@ class PortfolioExpansionTest(unittest.TestCase):
         self.assertEqual(self.post('saveMonthlyStatement', body).status_code, 400)
         self.assertEqual(self.sheet(xlsx([['symbol', 'quantity'], [1234567890123456, 1]])).status_code, 400)
 
-    def test_preferences_private_and_revision_checked_without_duplicate_writes(self):
-        first = self.get('view=preferences').json
-        self.assertFalse(first['preferences']['enabled'])
-        body = {'preferences': {'enabled': True, 'leadDays': 7, 'browser': False}, 'expectedRevision': 0}
-        self.assertEqual(self.post('savePreferences', body).json['revision'], 1)
+    def test_retired_alert_preferences_preserve_saved_data_without_document_access(self):
+        private_path = 'portfolioPrivateUsers/' + api.digest('alice')
+        self.db.data[private_path] = {'ownerUid': 'alice', 'preferences': {
+            'enabled': True, 'leadDays': 7, 'browser': True}, 'revision': 3}
         before = copy.deepcopy(self.db.data)
-        self.assertEqual(self.post('savePreferences', body).json['revision'], 1)
-        self.assertEqual(before, self.db.data)
-        self.assertFalse(self.get('view=preferences', 'bob').json['preferences']['enabled'])
-        body['preferences']['leadDays'] = 1
-        self.assertEqual(self.post('savePreferences', body).status_code, 409)
-        body['expectedRevision'] = 1
-        self.assertEqual(self.post('savePreferences', body).json['revision'], 2)
+        for uid in ('alice', 'bob'):
+            for response in (self.get('view=preferences', uid), self.post('savePreferences', {
+                'preferences': {'enabled': False, 'leadDays': 1, 'browser': False},
+                'expectedRevision': 3}, uid)):
+                self.assertEqual(response.status_code, 410, response.json)
+                self.assertEqual(response.headers['X-Portfolio-Document-Reads'], '0')
+                self.assertNotIn('preferences', response.json)
+                self.assertEqual(self.db.data, before)
+        # Monthly statements still work while the obsolete parent settings stay intact.
+        self.assertEqual(self.post('saveMonthlyStatement', self.report()).status_code, 200)
+        self.assertEqual(self.db.data[private_path], before[private_path])
+        self.assertEqual(len(self.shelf().json['reports']), 1)
 
 
 if __name__ == '__main__':

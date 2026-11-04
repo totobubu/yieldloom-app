@@ -81,6 +81,20 @@ try {
                     /\$0\.2314/
                 );
             }
+            if (symbol === 'JEPQ') {
+                assert.match(
+                    await summary.locator('.history-cells').innerText(),
+                    /\$0\.6825/
+                );
+                assert.match(
+                    await summary.locator('.history-cells').innerText(),
+                    /\$0\.5669/
+                );
+                assert.match(
+                    await summary.locator('.history-cells').innerText(),
+                    /\$0\.5392/
+                );
+            }
             await page
                 .getByRole('checkbox', { name: '배당 요약', exact: true })
                 .uncheck();

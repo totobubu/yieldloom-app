@@ -31,11 +31,6 @@ export function shareMonthlyDividends(rows, asOf, months = 3) {
         if (
             !validDate(row.date) ||
             row.forecasted ||
-            row.isReference ||
-            (row.verificationStatus &&
-                !['official', 'cross_checked'].includes(
-                    row.verificationStatus
-                )) ||
             !Number.isFinite(amount) ||
             amount <= 0
         )
@@ -48,6 +43,11 @@ export function shareMonthlyDividends(rows, asOf, months = 3) {
         if (
             row.date > asOf &&
             (row.date.slice(0, 7) !== asOf.slice(0, 7) ||
+                row.isReference ||
+                (row.verificationStatus &&
+                    !['official', 'cross_checked'].includes(
+                        row.verificationStatus
+                    )) ||
                 row.dividendVerified !== true ||
                 !validDate(row.declaredDate))
         )

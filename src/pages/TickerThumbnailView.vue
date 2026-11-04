@@ -16,7 +16,7 @@
     import TabPanel from 'primevue/tabpanel';
     import Dialog from 'primevue/dialog';
     import InputText from 'primevue/inputtext';
-    import Select from 'primevue/select';
+    import SelectButton from 'primevue/selectbutton';
     import Checkbox from 'primevue/checkbox';
     import Tag from 'primevue/tag';
     import Message from 'primevue/message';
@@ -44,7 +44,6 @@
     import SecurityInsights from '@/components/thumbnail/SecurityInsights.vue';
     import OfficialFundData from '@/components/stock/OfficialFundData.vue';
     import { isOfficialFundConfigured } from '@/services/officialFundData.js';
-    import CardShareActions from '@/components/thumbnail/CardShareActions.vue';
     import { seedStockReference } from '@/services/dividendLedger.js';
     import { calculateRivalComparison } from '@/services/thumbnail/rivalComparison';
     import { loadDividendSchedule } from '@/services/thumbnail/dividendSchedule';
@@ -70,9 +69,7 @@
     import {
         artworkFilename,
         artworkSuffix,
-        cardAspectRatios,
         cardDimensions,
-        cardTemplates,
         normalizeCardPresentation,
     } from '@/services/thumbnail/cardPresentation';
 
@@ -118,14 +115,8 @@
     const exporting = ref('');
     const exportError = ref('');
     const schedule = ref(null);
-    const selectedAspectRatio = ref('square'),
-        selectedTemplate = ref('classic');
-    const selectedPresentation = computed(() =>
-        normalizeCardPresentation({
-            aspectRatio: selectedAspectRatio.value,
-            template: selectedTemplate.value,
-        })
-    );
+    // Legacy preset dimensions remain stored, while this screen always exports square cards.
+    const selectedPresentation = computed(() => normalizeCardPresentation());
     const outputDimensions = computed(() =>
         cardDimensions(selectedPresentation.value)
     );
@@ -330,12 +321,6 @@
                   maximumFractionDigits: digits,
               })
             : '미확인';
-    const publicUrl = computed(() =>
-        typeof window === 'undefined'
-            ? ''
-            : `${window.location.origin}${route.fullPath}`
-    );
-
     const normalize = (value) =>
         String(value ?? '')
             .trim()
@@ -834,9 +819,6 @@
         if (archived.value || !shareDividendReady.value || outputBusy.value)
             return;
         selectedTone.value = preset.tone || 'informative';
-        const presentation = normalizeCardPresentation(preset.presentation);
-        selectedAspectRatio.value = presentation.aspectRatio;
-        selectedTemplate.value = presentation.template;
         selectedCardKinds.value = preset.cardKinds || ['summary'];
         await router.push({
             path: `/stock/${preset.ticker}`,
@@ -1422,154 +1404,162 @@
                                     outlined
                                     @click="copyShareText" />
                             </article>
-                            <div
-                                v-if="shareDividendReady"
-                                class="share-controls">
-                                <div class="studio-field">
-                                    <label
-                                        id="share-ratio-label"
-                                        for="share-ratio"
-                                        >출력 비율</label
-                                    >
-                                    <Select
-                                        input-id="share-ratio"
-                                        aria-labelledby="share-ratio-label"
-                                        v-model="selectedAspectRatio"
-                                        :options="cardAspectRatios"
-                                        option-label="label"
-                                        option-value="value"
-                                        :disabled="outputBusy" />
-                                </div>
-                                <div class="studio-field">
-                                    <label
-                                        id="share-template-label"
-                                        for="share-template"
-                                        >카드 디자인</label
-                                    >
-                                    <Select
-                                        input-id="share-template"
-                                        aria-labelledby="share-template-label"
-                                        v-model="selectedTemplate"
-                                        :options="cardTemplates"
-                                        option-label="label"
-                                        option-value="value"
-                                        :disabled="outputBusy" />
-                                </div>
-                                <div class="studio-field">
-                                    <label for="share-tone">게시 문구 톤</label
-                                    ><Select
-                                        input-id="share-tone"
-                                        v-model="selectedTone"
-                                        :disabled="outputBusy"
-                                        :options="toneOptions"
-                                        option-label="label"
-                                        option-value="value" />
-                                </div>
-                                <Button
-                                    label="프리셋 저장"
-                                    icon="pi pi-bookmark"
-                                    severity="secondary"
-                                    outlined
-                                    :disabled="outputBusy"
-                                    @click="openPresetDialog" /><Button
-                                    v-if="
-                                        selectedInfo.underlying &&
-                                        rivalOptions.length
-                                    "
-                                    label="비교 종목 선택"
-                                    :disabled="outputBusy"
-                                    icon="pi pi-sliders-h"
-                                    severity="secondary"
-                                    outlined
-                                    @click="openRivalPicker" />
-                            </div>
-                            <p class="hint">
-                                출력 크기 {{ outputDimensions.width }} ×
-                                {{ outputDimensions.height }}px · 선택한
-                                디자인은 앱 테마와 별도로 이미지에 적용됩니다.
-                            </p>
-                            <div v-if="rivals.length" class="selected-rivals">
-                                <span>비교 종목</span
-                                ><Tag
-                                    v-for="rival in rivals"
-                                    :key="rival"
-                                    :value="rival"
-                                    severity="secondary" />
-                            </div>
-                            <div
-                                v-if="presets.length"
-                                class="preset-row"
-                                aria-label="저장된 콘텐츠 프리셋">
-                                <span>저장한 조합</span>
-                                <div
-                                    v-for="preset in presets"
-                                    :key="preset.id"
-                                    class="preset-item">
-                                    <Button
-                                        :label="preset.name"
-                                        :disabled="outputBusy"
-                                        severity="secondary"
-                                        outlined
-                                        size="small"
-                                        @click="openPreset(preset)" /><Button
-                                        icon="pi pi-times"
-                                        severity="secondary"
-                                        text
-                                        :aria-label="`${preset.name} 삭제`"
-                                        :disabled="outputBusy"
-                                        @click="deletePreset(preset)" />
-                                </div>
-                            </div>
-                        </section>
-                        <section
-                            v-if="activeTab === 'share' && shareDividendReady"
-                            class="share-selector stock-section">
-                            <h2>공유 카드 선택</h2>
-                            <p class="hint">
-                                필요한 카드만 선택해 미리 보고 PNG 또는 ZIP으로
-                                저장하세요. 다운로드 아이콘은 선택 여부와
-                                관계없이 사용할 수 있습니다. 개인 보유 정보는
-                                공유 카드에 포함하지 않습니다.
-                            </p>
-                            <fieldset>
-                                <legend>포함할 카드</legend>
-                                <div
-                                    v-for="card in availableCards"
-                                    :key="card.kind"
-                                    class="card-choice"
-                                    :class="{ unavailable: card.disabled }">
-                                    <label :for="`share-card-${card.kind}`">
-                                        <Checkbox
-                                            v-model="selectedCardKinds"
-                                            :input-id="`share-card-${card.kind}`"
-                                            :value="card.kind"
-                                            :disabled="
-                                                outputBusy || card.disabled
-                                            " />
-                                        {{ card.label }}
-                                        <small v-if="card.disabled">{{
-                                            card.disabledReason ||
-                                            '비교 데이터 확인 필요'
-                                        }}</small>
-                                    </label>
-                                    <Button
-                                        v-tooltip.top="
-                                            `${card.label} PNG 다운로드`
+                            <div class="share-editor">
+                                <div class="share-editor-settings">
+                                    <div
+                                        v-if="shareDividendReady"
+                                        class="share-controls">
+                                        <div class="studio-field">
+                                            <span id="share-tone-label"
+                                                >게시 문구 톤</span
+                                            ><SelectButton
+                                                v-model="selectedTone"
+                                                aria-labelledby="share-tone-label"
+                                                :allow-empty="false"
+                                                :disabled="outputBusy"
+                                                :options="toneOptions"
+                                                option-label="label"
+                                                option-value="value" />
+                                        </div>
+                                        <Button
+                                            label="프리셋 저장"
+                                            icon="pi pi-bookmark"
+                                            severity="secondary"
+                                            outlined
+                                            :disabled="outputBusy"
+                                            @click="openPresetDialog" /><Button
+                                            v-if="
+                                                selectedInfo.underlying &&
+                                                rivalOptions.length
+                                            "
+                                            label="비교 종목 선택"
+                                            :disabled="outputBusy"
+                                            icon="pi pi-sliders-h"
+                                            severity="secondary"
+                                            outlined
+                                            @click="openRivalPicker" />
+                                    </div>
+                                    <p class="hint">
+                                        출력 크기 {{ outputDimensions.width }} ×
+                                        {{ outputDimensions.height }}px ·
+                                        정사각형 카드로 저장됩니다.
+                                    </p>
+                                    <div
+                                        v-if="rivals.length"
+                                        class="selected-rivals">
+                                        <span>비교 종목</span
+                                        ><Tag
+                                            v-for="rival in rivals"
+                                            :key="rival"
+                                            :value="rival"
+                                            severity="secondary" />
+                                    </div>
+                                    <div
+                                        v-if="presets.length"
+                                        class="preset-row"
+                                        aria-label="저장된 콘텐츠 프리셋">
+                                        <span>저장한 조합</span>
+                                        <div
+                                            v-for="preset in presets"
+                                            :key="preset.id"
+                                            class="preset-item">
+                                            <Button
+                                                :label="preset.name"
+                                                :disabled="outputBusy"
+                                                severity="secondary"
+                                                outlined
+                                                size="small"
+                                                @click="
+                                                    openPreset(preset)
+                                                " /><Button
+                                                icon="pi pi-times"
+                                                severity="secondary"
+                                                text
+                                                :aria-label="`${preset.name} 삭제`"
+                                                :disabled="outputBusy"
+                                                @click="deletePreset(preset)" />
+                                        </div>
+                                    </div>
+                                    <section
+                                        v-if="
+                                            activeTab === 'share' &&
+                                            shareDividendReady
                                         "
-                                        :aria-label="`${card.label} PNG 다운로드`"
-                                        :title="`${card.label} PNG 다운로드`"
-                                        icon="pi pi-download"
-                                        class="card-download"
-                                        severity="secondary"
-                                        text
-                                        :loading="exporting === card.kind"
-                                        :disabled="outputBusy || card.disabled"
-                                        @click="downloadArtwork(card.kind)" />
+                                        class="share-selector">
+                                        <h2>공유 카드 선택</h2>
+                                        <p class="hint">
+                                            필요한 카드만 선택해 미리 보고 PNG
+                                            또는 ZIP으로 저장하세요. 다운로드
+                                            아이콘은 선택 여부와 관계없이 사용할
+                                            수 있습니다. 개인 보유 정보는 공유
+                                            카드에 포함하지 않습니다.
+                                        </p>
+                                        <fieldset>
+                                            <legend>포함할 카드</legend>
+                                            <div
+                                                v-for="card in availableCards"
+                                                :key="card.kind"
+                                                class="card-choice"
+                                                :class="{
+                                                    unavailable: card.disabled,
+                                                }">
+                                                <label
+                                                    :for="`share-card-${card.kind}`">
+                                                    <Checkbox
+                                                        v-model="
+                                                            selectedCardKinds
+                                                        "
+                                                        :input-id="`share-card-${card.kind}`"
+                                                        :value="card.kind"
+                                                        :disabled="
+                                                            outputBusy ||
+                                                            card.disabled
+                                                        " />
+                                                    {{ card.label }}
+                                                    <small
+                                                        v-if="card.disabled"
+                                                        >{{
+                                                            card.disabledReason ||
+                                                            '비교 데이터 확인 필요'
+                                                        }}</small
+                                                    >
+                                                </label>
+                                                <Button
+                                                    v-tooltip.top="
+                                                        `${card.label} PNG 다운로드`
+                                                    "
+                                                    :aria-label="`${card.label} PNG 다운로드`"
+                                                    :title="`${card.label} PNG 다운로드`"
+                                                    icon="pi pi-download"
+                                                    class="card-download"
+                                                    severity="secondary"
+                                                    text
+                                                    :loading="
+                                                        exporting === card.kind
+                                                    "
+                                                    :disabled="
+                                                        outputBusy ||
+                                                        card.disabled
+                                                    "
+                                                    @click="
+                                                        downloadArtwork(
+                                                            card.kind
+                                                        )
+                                                    " />
+                                            </div>
+                                        </fieldset>
+                                        <p
+                                            v-if="!selectedExportKinds.length"
+                                            class="hint">
+                                            미리 볼 카드를 선택하세요.
+                                        </p>
+                                    </section>
                                 </div>
-                            </fieldset>
-                            <p v-if="!selectedExportKinds.length" class="hint">
-                                미리 볼 카드를 선택하세요.
-                            </p>
+                                <TossCommunityCopy
+                                    v-if="shareDividendReady"
+                                    :data="thumbnailData"
+                                    :tone="selectedTone" />
+                            </div>
                         </section>
                         <section
                             v-if="shareDividendReady"
@@ -1577,7 +1567,6 @@
                             class="artwork-grid"
                             :class="{
                                 'dividend-view': activeTab === 'dividends',
-                                'wide-artwork': selectedAspectRatio === 'wide',
                             }">
                             <article
                                 v-show="showCard('summary')"
@@ -1617,11 +1606,8 @@
                                                   }
                                                 : null
                                         "
-                                        data-thumbnail-kind="rival" /></ThumbnailPreview
-                                ><CardShareActions
-                                    title="라이벌 카드"
-                                    :text="cardShareText('rival')"
-                                    :url="publicUrl" />
+                                        data-thumbnail-kind="rival"
+                                /></ThumbnailPreview>
                             </article>
                             <article
                                 v-show="showCard('calendar')"
@@ -1646,11 +1632,8 @@
                                             ...entryEfficiency,
                                             symbol: selectedInfo.symbol,
                                         }"
-                                        data-thumbnail-kind="entry-efficiency" /></ThumbnailPreview
-                                ><CardShareActions
-                                    title="과거 매수 시점별 배당률 카드"
-                                    :text="cardShareText('entry-efficiency')"
-                                    :url="publicUrl" />
+                                        data-thumbnail-kind="entry-efficiency"
+                                /></ThumbnailPreview>
                             </article>
                         </section>
                         <p v-if="exportError" class="export-error" role="alert">
@@ -1669,7 +1652,6 @@
                         <section
                             v-if="activeTab === 'share' && shareDividendReady"
                             class="content-grid">
-                            <TossCommunityCopy :data="thumbnailData" />
                             <section
                                 v-if="selectedInfo.underlying"
                                 class="rivals">
@@ -1717,19 +1699,7 @@
                         >
                     </div>
                     <p class="studio-muted">
-                        {{ selectedInfo.symbol }} ·
-                        {{
-                            cardAspectRatios.find(
-                                (item) => item.value === selectedAspectRatio
-                            )?.label
-                        }}
-                        ·
-                        {{
-                            cardTemplates.find(
-                                (item) => item.value === selectedTemplate
-                            )?.label
-                        }}
-                        · {{ rivals.join(', ') || '비교 종목 없음' }} ·
+                        {{ selectedInfo.symbol }} · 정사각형 · 720 × 720px ·
                         {{
                             toneOptions.find(
                                 (tone) => tone.value === selectedTone
@@ -1801,6 +1771,21 @@
 </template>
 
 <style scoped>
+    .share-editor {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 24px;
+        align-items: start;
+    }
+    .share-editor-settings {
+        min-width: 0;
+    }
+    @media (max-width: 900px) {
+        .share-editor {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
     .card-choice {
         display: flex;
         align-items: center;

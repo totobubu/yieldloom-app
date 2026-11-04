@@ -138,3 +138,20 @@ test('market dates handle UTC, Korean viewers, DST and year boundaries', () => {
     assert.equal(series[2].total, 0.2);
     assert.equal(series[2].partial, true);
 });
+
+test('existing JEPQ history retains its review status and historical monthly amounts', () => {
+    const { history } = JSON.parse(
+        fs.readFileSync(
+            new URL(
+                '../public/content-studio/distribution-ticker-jepq.json',
+                import.meta.url
+            )
+        )
+    );
+    const rows = toBacktestData(history);
+    assert.deepEqual(
+        shareMonthlyDividends(rows, '2026-11-03'),
+        monthlyDividendSeries(rows, '2026-11-03', 3)
+    );
+    assert.equal(rows.at(-1).verificationStatus, 'needs_review');
+});

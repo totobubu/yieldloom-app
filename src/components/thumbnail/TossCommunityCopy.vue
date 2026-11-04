@@ -2,7 +2,10 @@
     import { computed, ref } from 'vue';
     import Button from 'primevue/button';
     import Message from 'primevue/message';
-    const props = defineProps({ data: { type: Object, required: true } });
+    const props = defineProps({
+        data: { type: Object, required: true },
+        tone: { type: String, default: 'informative' },
+    });
     const copied = ref(false);
     const copyError = ref('');
     const usd = (v, n = 4) =>
@@ -18,7 +21,9 @@
     const title = computed(() => {
         const d = props.data;
         return d.hasDividend
-            ? `${d.symbol} | ${d.exDate} 주당 ${usd(d.currentDividendAmount, 6)} 배당 정보`
+            ? props.tone === 'concise'
+                ? `${d.symbol} · ${d.exDate} · ${usd(d.currentDividendAmount, 6)}`
+                : `${props.tone === 'friendly' ? '배당 체크 · ' : ''}${d.symbol} | ${d.exDate} 주당 ${usd(d.currentDividendAmount, 6)} 배당 정보`
             : `${d.symbol} 최근 배당 정보`;
     });
     const text = computed(() => {
@@ -55,6 +60,9 @@
             );
         lines.push(
             '',
+            ...(props.tone === 'friendly'
+                ? ['배당 정보를 함께 확인해 보세요.']
+                : []),
             '배당금은 운용사의 향후 공시에 따라 달라질 수 있습니다.',
             '* 주가 대비 배당률은 연환산 수익률이 아닌 해당 1회 배당금의 기준 주가 대비 비율입니다.',
             '* 투자 판단은 본인의 확인과 책임하에 진행해 주세요.'

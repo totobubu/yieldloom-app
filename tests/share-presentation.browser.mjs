@@ -33,6 +33,10 @@ try {
                         ticker: 'TSLY',
                         rivals: ['CRSH'],
                         tone: 'friendly',
+                        presentation: {
+                            aspectRatio: 'story',
+                            template: 'navy',
+                        },
                     },
                 ])
             )
@@ -104,16 +108,27 @@ try {
     await page.goto(base + '/stock/TSLY?tab=share&rivals=CRSH');
     try {
         await page
-            .getByRole('button', { name: '배당 요약 PNG 다운로드', exact: true })
+            .getByRole('button', {
+                name: '배당 요약 PNG 다운로드',
+                exact: true,
+            })
             .waitFor();
     } catch (error) {
         console.log((await page.locator('body').innerText()).slice(-2500));
         throw error;
     }
-    const select = async (label, option) => {
-        await page.getByRole('combobox', { name: label, exact: true }).click();
-        await page.getByRole('option', { name: option, exact: true }).click();
-    };
+    assert.equal(
+        await page
+            .getByRole('combobox', { name: '출력 비율', exact: true })
+            .count(),
+        0
+    );
+    assert.equal(
+        await page
+            .getByRole('combobox', { name: '카드 디자인', exact: true })
+            .count(),
+        0
+    );
     const labels = [
         '배당 비교',
         '기초자산·종목 비교',
@@ -129,25 +144,15 @@ try {
         'calendar',
         'entry-efficiency',
     ];
-    const ratios = [
-        ['square', '정사각형 · 1:1', 720, 720],
-        ['wide', '와이드 · 16:9', 1280, 720],
-        ['story', '스토리 · 9:16', 720, 1280],
-    ];
-    const templates = [
-        ['classic', '기본'],
-        ['paper', '페이퍼'],
-        ['navy', '네이비'],
-    ];
+    const ratios = [['square', '정사각형 · 1:1', 720, 720]];
+    const templates = [['classic', '기본']];
     const summaryAmount = await page
         .locator('.summary-card .hero strong')
         .innerText();
     const geometry = [],
         violations = [];
-    for (const [ratio, label, width, height] of ratios) {
-        await select('출력 비율', label);
-        for (const [template, name] of templates) {
-            await select('카드 디자인', name);
+    for (const [ratio, , width, height] of ratios) {
+        for (const [template] of templates) {
             for (const kind of kinds) {
                 const card = page.locator(`[data-thumbnail-kind="${kind}"]`);
                 const measured = await card.evaluate((element) => {
@@ -208,10 +213,8 @@ try {
         };
     }
     const exports = [];
-    for (const [index, [ratio, label, width, height]] of ratios.entries()) {
-        const [template, templateLabel] = templates[index];
-        await select('출력 비율', label);
-        await select('카드 디자인', templateLabel);
+    for (const [index, [ratio, , width, height]] of ratios.entries()) {
+        const [template] = templates[index];
         const zip = await download(
             page.getByRole('button', { name: '선택 카드 ZIP (5)', exact: true })
         );
@@ -233,7 +236,10 @@ try {
             await fs.writeFile(`${output}/${card.filename}`, png);
         }
         const single = await download(
-            page.getByRole('button', { name: '배당 요약 PNG 다운로드', exact: true })
+            page.getByRole('button', {
+                name: '배당 요약 PNG 다운로드',
+                exact: true,
+            })
         );
         assert.equal(single.bytes.readUInt32BE(16), width);
         assert.equal(single.bytes.readUInt32BE(20), height);
@@ -247,8 +253,6 @@ try {
             png: single.name,
         });
     }
-    await select('출력 비율', '스토리 · 9:16');
-    await select('카드 디자인', '네이비');
     await page
         .getByRole('button', { name: '프리셋 저장', exact: true })
         .click();
@@ -256,27 +260,24 @@ try {
         name: '프리셋 저장',
         exact: true,
     });
-    await dialog
-        .getByLabel('프리셋 이름', { exact: true })
-        .fill('스토리 네이비');
+    await dialog.getByLabel('프리셋 이름', { exact: true }).fill('새 정사각형');
     await dialog
         .getByRole('button', { name: '프리셋 저장', exact: true })
         .click();
     await dialog.waitFor({ state: 'hidden' });
-    await select('출력 비율', '정사각형 · 1:1');
     await page
         .getByRole('checkbox', { name: '배당 일정', exact: true })
         .uncheck();
     await page
-        .getByRole('button', { name: '스토리 네이비', exact: true })
+        .getByRole('button', { name: '새 정사각형', exact: true })
         .click();
     assert.equal(
         await page.locator('.summary-card').getAttribute('data-aspect-ratio'),
-        'story'
+        'square'
     );
     assert.equal(
         await page.locator('.summary-card').getAttribute('data-card-template'),
-        'navy'
+        'classic'
     );
     assert.ok(
         await page
@@ -285,16 +286,15 @@ try {
     );
     await page.reload();
     await page
-        .getByRole('button', { name: '스토리 네이비', exact: true })
+        .getByRole('button', { name: '새 정사각형', exact: true })
         .click();
     assert.equal(
         await page.locator('.summary-card').getAttribute('data-card-template'),
-        'navy'
+        'classic'
     );
     for (const width of [1440, 768, 390, 360]) {
         await page.setViewportSize({ width, height: 1000 });
-        for (const [ratio, label] of ratios) {
-            await select('출력 비율', label);
+        for (const [ratio] of ratios) {
             assert.ok(
                 await page.evaluate(
                     () => document.documentElement.scrollWidth <= innerWidth + 1
@@ -316,9 +316,29 @@ try {
         await page.locator('.summary-card').getAttribute('data-card-template'),
         'classic'
     );
+    const legacy = await page.evaluate(() =>
+        JSON.parse(localStorage.getItem('yieldloom.thumbnail-presets.v1')).find(
+            (p) => p.id === 'legacy'
+        )
+    );
+    assert.deepEqual(legacy.presentation, {
+        aspectRatio: 'story',
+        template: 'navy',
+    });
+    assert.equal(await page.locator('.share-editor .toss-copy').count(), 1);
+    const textBefore = await page.locator('.toss-copy').innerText();
+    await page.getByRole('button', { name: '간결형', exact: true }).click();
+    assert.notEqual(await page.locator('.toss-copy').innerText(), textBefore);
+    const friendly = page.getByRole('button', { name: '친근형', exact: true });
+    await friendly.focus();
+    await page.keyboard.press('Space');
+    assert.match(await page.locator('.toss-copy').innerText(), /배당 체크/);
     await page.evaluate(() => document.documentElement.classList.add('p-dark'));
     const darkApp = await download(
-        page.getByRole('button', { name: '배당 요약 PNG 다운로드', exact: true })
+        page.getByRole('button', {
+            name: '배당 요약 PNG 다운로드',
+            exact: true,
+        })
     );
     assert.equal(darkApp.name, 'tsly_summary.png');
     const corner = await page.evaluate(async (base64) => {
@@ -339,7 +359,7 @@ try {
         JSON.stringify({ geometry, exports, errors }, null, 2)
     );
     console.log(
-        'PASS: 45 card variants, 15 ZIP images + 3 PNGs, dimensions/manifest/copy, preset migration/restore, 12 viewport layouts and app-dark independence'
+        'PASS: 5 square cards, 5 ZIP images + PNG, dimensions/manifest/copy, tone keyboard changes, legacy preset preservation, 4 viewport layouts and app-dark independence'
     );
 } finally {
     await browser.close();

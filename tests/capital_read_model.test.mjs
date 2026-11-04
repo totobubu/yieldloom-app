@@ -206,6 +206,29 @@ test('corrupted cache fails closed without re-scanning or changing source record
     assert.ok(!cold.reads.includes(`${root}/entries`));
 });
 
+test('voided cash and trades remain excluded, and explicitly empty provenance remains unchanged after restart', async () => {
+    const f = fixture();
+    f.records.get(`${root}/entries/E0`).voidedAt = '20261016';
+    f.records.get(`${root}/entries/E1`).voidedAt = '20261016';
+    f.records.get(`${root}/entries/E3`).source = '';
+    const baseline = fixture(0, {
+        records: f.records,
+        handlerOptions: { durableReadModels: false },
+    });
+    const expected = await get(baseline);
+    assert.deepEqual((await get(f)).data, expected.data);
+    assert.deepEqual(
+        (await get(fixture(0, { records: f.records }))).data,
+        expected.data
+    );
+    assert.equal(
+        expected.data.importedCash.find((row) => row.id === 'E3').source,
+        ''
+    );
+    assert.ok(!expected.data.entries.some((row) => row.id === 'E0'));
+    assert.ok(!expected.data.trades.some((row) => row.id === 'E1'));
+});
+
 test('quota failure is not cached as success and another instance cannot immediately repeat the scan', async () => {
     const f = fixture(10, {
         onCollectionRead: async (path) => {

@@ -171,9 +171,20 @@ jobs:
         run: node scripts/content_pipeline/render_public_event.mjs '${{ inputs.eventId }}'
 
       - name: Enrich and verify rotating dividend evidence
-        if: ${{ always() && steps.restore.outcome == 'success' && steps.target.outputs.scope != 'render' && steps.target.outputs.scope != 'ticker' }}
+        if: ${{ always() && steps.restore.outcome == 'success' && steps.target.outputs.scope != 'render' }}
         continue-on-error: true
-        run: python scripts/content_pipeline/enrich_dividends.py --limit 50 --search-limit 5
+        env:
+          EVIDENCE_SCOPE: ${{ steps.target.outputs.scope }}
+          EVIDENCE_TICKER: ${{ inputs.ticker }}
+          EVIDENCE_PROVIDER: ${{ steps.target.outputs.provider }}
+          OFFICIAL_REFRESH_OUTCOME: ${{ steps.refresh.outcome }}
+        shell: bash
+        run: |
+          args=(--limit 50 --search-limit 5)
+          args+=(--official-refresh-outcome "$OFFICIAL_REFRESH_OUTCOME")
+          if [[ "$EVIDENCE_SCOPE" == 'ticker' ]]; then args+=(--ticker "$EVIDENCE_TICKER"); fi
+          if [[ "$EVIDENCE_SCOPE" == 'provider' ]]; then args+=(--provider "$EVIDENCE_PROVIDER"); fi
+          python scripts/content_pipeline/enrich_dividends.py "${args[@]}"
 
       - name: Upload dividend evidence audit
         if: ${{ always() && steps.target.outputs.scope != 'render' }}

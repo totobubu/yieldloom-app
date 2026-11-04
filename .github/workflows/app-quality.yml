@@ -39,6 +39,7 @@ jobs:
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_publish_public_snapshots.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_validate_refresh_outputs.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_stock_collection.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_dividend_enrichment.py'
             - run: npm run lint:check
             # build includes the Vue/TypeScript check and prerender validation.
             # Asset contract tests below read the generated dist/ticker-index.json.

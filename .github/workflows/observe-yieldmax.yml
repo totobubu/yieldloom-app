@@ -106,7 +106,7 @@ jobs:
           echo "CONTENT_STATE_KEY=$state_key" >> "$GITHUB_ENV"
       - name: Restore durable Content Studio state
         id: restore
-        run: python scripts/content_pipeline/content_state_store.py restore --key "$CONTENT_STATE_KEY"
+        run: python scripts/content_pipeline/content_state_store.py restore --key "$CONTENT_STATE_KEY" --require-existing
       - name: Observe selected and pending YieldMax cycles
         id: observation
         continue-on-error: true

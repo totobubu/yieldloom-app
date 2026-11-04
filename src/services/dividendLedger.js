@@ -1,5 +1,4 @@
-import { getAssetUrl } from '@/utils/dataUrl';
-import { readPublicJson } from './publicJson.js';
+import { readContentJson, isPublicContentConfigured } from './publicContent.js';
 import {
     validateStockEvidence,
     mergeStockReference,
@@ -36,35 +35,29 @@ export function seedStockReference(ticker) {
 let stockEvidenceEntries = [];
 const stockEntries = () => [
     ...new Map(
-        [...stockEvidenceEntries, ...receivedStocks.values()].map((row) => [
-            row.ticker,
-            row,
-        ])
+        [
+            ...stockEvidenceEntries,
+            ...(isPublicContentConfigured() ? [] : receivedStocks.values()),
+        ].map((row) => [row.ticker, row])
     ).values(),
 ];
 
 // Keep official failures visible. Supplemental observations never replace a failing ledger.
 export async function loadDividendIndex(options = {}) {
     const [officialResult, stockResult] = await Promise.allSettled([
-        isDataReleaseConfigured()
+        isDataReleaseConfigured() && !isPublicContentConfigured()
             ? loadDataReleaseIndex(options)
-            : readPublicJson(
-                  getAssetUrl('content-studio/distribution-index.json'),
-                  {
-                      ...options,
-                      ttlMs: 180_000,
-                      validate: (value) => Array.isArray(value?.tickers),
-                  }
-              ),
-        readPublicJson(
-            getAssetUrl('content-studio/stock-evidence-index.json'),
-            {
-                ...options,
-                ttlMs: 180_000,
-                validate: (value) =>
-                    value?.schemaVersion === 1 && Array.isArray(value.tickers),
-            }
-        ),
+            : readContentJson('content-studio/distribution-index.json', {
+                  ...options,
+                  ttlMs: 180_000,
+                  validate: (value) => Array.isArray(value?.tickers),
+              }),
+        readContentJson('content-studio/stock-evidence-index.json', {
+            ...options,
+            ttlMs: 180_000,
+            validate: (value) =>
+                value?.schemaVersion === 1 && Array.isArray(value.tickers),
+        }),
     ]);
     if (officialResult.status === 'rejected') throw officialResult.reason;
     if (options.signal?.aborted) throw options.signal.reason;
@@ -93,21 +86,25 @@ export async function loadDividendIndex(options = {}) {
 }
 
 async function readStock(row, options) {
-    if (receivedStocks.has(row.ticker)) return receivedStocks.get(row.ticker);
+    if (!isPublicContentConfigured() && receivedStocks.has(row.ticker))
+        return receivedStocks.get(row.ticker);
     if (
         !/^\/content-studio\/stock-evidence-[a-z0-9.-]+\.json$/.test(
-            row.historyUrl
+            row.historyUrl.split('?')[0]
         )
     )
         throw Error('Invalid stock evidence path');
     const version = row.updatedAt
         ? `?version=${encodeURIComponent(row.updatedAt)}`
         : '';
-    return readPublicJson(getAssetUrl(row.historyUrl.slice(1)) + version, {
-        ...options,
-        ttlMs: 180_000,
-        validate: (value) => validateStockEvidence(value, row.ticker),
-    });
+    return readContentJson(
+        row.historyUrl.slice(1) + (row.historyUrl.includes('?') ? '' : version),
+        {
+            ...options,
+            ttlMs: 180_000,
+            validate: (value) => validateStockEvidence(value, row.ticker),
+        }
+    );
 }
 export async function loadDividendHistory(url, options = {}) {
     const reference = stockEntries().find((row) => row.historyUrl === url);
@@ -119,16 +116,16 @@ export async function loadDividendHistory(url, options = {}) {
         };
     }
     let value;
-    if (isDataReleaseConfigured())
+    if (isDataReleaseConfigured() && !isPublicContentConfigured())
         value = await loadDataReleaseHistory(url, options);
     else {
         if (
             !/^\/content-studio\/distribution-ticker-[a-z0-9.-]+\.json$/i.test(
-                url
+                url.split('?')[0]
             )
         )
             throw Error('Invalid dividend history path');
-        value = await readPublicJson(getAssetUrl(url.slice(1)), {
+        value = await readContentJson(url.slice(1), {
             ...options,
             ttlMs: 180_000,
             validate: (value) => Array.isArray(value?.history),

@@ -75,6 +75,8 @@ jobs:
       group: content-studio-state-write
       cancel-in-progress: false
     env:
+      PUBLIC_CONTENT_PUBLISH_MODE: ${{ vars.PUBLIC_CONTENT_PUBLISH_MODE || 'legacy' }}
+      PUBLIC_CONTENT_RUNTIME_VERIFIED: ${{ vars.PUBLIC_CONTENT_RUNTIME_VERIFIED }}
       R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -104,6 +106,12 @@ jobs:
             state_key="content-studio/state/branches/${safe_ref}.tar.gz"
           fi
           echo "CONTENT_STATE_KEY=$state_key" >> "$GITHUB_ENV"
+      - name: Restore verified public projections for R2-only collection
+        if: env.PUBLIC_CONTENT_PUBLISH_MODE == 'r2'
+        shell: bash
+        run: |
+          test "$PUBLIC_CONTENT_RUNTIME_VERIFIED" = true
+          python scripts/content_pipeline/public_content_release.py --branch "$GITHUB_REF_NAME" --restore
       - name: Restore durable Content Studio state
         id: restore
         run: python scripts/content_pipeline/content_state_store.py restore --key "$CONTENT_STATE_KEY"

@@ -27,28 +27,13 @@ const escapeHtml = (value) =>
                 "'": '&#39;',
             })[character]
     );
-const amount = (value) => {
-    const number = Number(value);
-    return Number.isFinite(number) && number > 0
-        ? `$${number.toFixed(6).replace(/\.?0+$/, '')}`
-        : '확정 배당 정보 없음';
-};
-const exDate = (value) =>
-    /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ''))
-        ? `${Number(value.slice(5, 7))}/${Number(value.slice(8, 10))}`
-        : '날짜 미정';
-
 for (const row of index.tickers ?? []) {
     const ticker = String(row.ticker ?? '').toUpperCase();
     if (!/^[A-Z0-9.-]{1,15}$/.test(ticker)) continue;
-    const latest = ['official', 'cross_checked'].includes(
-        row.latest?.verification_status
-    )
-        ? row.latest
-        : {};
+    // Market values change independently of this application build.
     const description = isDelisted(ticker)
         ? `${ticker} 상장폐지 · 과거 시세와 배당 이력 열람`
-        : `${ticker} 최신 배당 ${amount(latest.distribution_per_share)} · 배당락일 ${exDate(latest.ex_date)} · Yieldloom에서 확인`;
+        : `${ticker} 시세·공식 배당 이력과 최신 공시를 Yieldloom에서 확인`;
     const canonical = `${siteUrl}/stock/${encodeURIComponent(ticker)}`;
     const head = [
         `<title>${escapeHtml(ticker)} 주식 상세정보 · 시세와 배당 | Yieldloom</title>`,

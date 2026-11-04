@@ -50,13 +50,15 @@ class PublicSnapshotPublisherTest(unittest.TestCase):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
 
-    def run_publisher(self, race_git_push=False):
+    def run_publisher(self, race_git_push=False, mode="legacy"):
         env = os.environ.copy()
         env.update(
             GITHUB_REF_NAME="work",
             REFRESH_SCOPE="provider",
             REFRESH_REQUEST_ID="test-run",
             CONTENT_STUDIO_PUBLISH_MAX_ATTEMPTS="3",
+            PUBLIC_CONTENT_PUBLISH_MODE=mode,
+            PUBLIC_CONTENT_RUNTIME_VERIFIED="",
         )
         if race_git_push:
             real_git = shutil.which("git")
@@ -102,6 +104,25 @@ class PublicSnapshotPublisherTest(unittest.TestCase):
 
     def remote_file(self, path):
         return self.git("show", f"origin/work:{path}", cwd=self.publisher).stdout
+
+    def test_shadow_failure_keeps_legacy_publication(self):
+        self.write(self.publisher, "public/content-studio/provider-rex.json", "rex snapshot\n")
+        # Synthetic checkout intentionally has no Python publisher. Shadow must
+        # still commit/push the legacy snapshot when the new path is unavailable.
+        result = self.run_publisher(mode="shadow")
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("Shadow R2 publication failed", result.stdout)
+        self.git("fetch", "origin", "work", cwd=self.publisher)
+        self.assertEqual(self.remote_file("public/content-studio/provider-rex.json"), "rex snapshot\n")
+
+    def test_r2_only_requires_verified_runtime_before_git_changes(self):
+        self.write(self.publisher, "public/content-studio/provider-rex.json", "rex snapshot\n")
+        before = self.git("rev-parse", "HEAD", cwd=self.publisher).stdout
+        result = self.run_publisher(mode="r2")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("requires verified runtime", result.stdout)
+        self.assertEqual(self.git("rev-parse", "HEAD", cwd=self.publisher).stdout, before)
+        self.assertEqual(self.git("diff", "--cached", "--name-only", cwd=self.publisher).stdout, "")
 
     def test_rebases_when_remote_branch_advanced_and_preserves_both_changes(self):
         self.write(self.publisher, "public/content-studio/provider-rex.json", "rex snapshot\n")

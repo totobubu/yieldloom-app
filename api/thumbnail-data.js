@@ -1,3 +1,7 @@
+import {
+    readServerContent,
+    serverContentRoot,
+} from '../lib/server-public-content.js';
 import { loadStockEvidence } from '../lib/load-stock-evidence.js';
 import { corporateActionReviewForPeriod } from '../lib/corporate-action-review.js';
 import { mergeStockReference } from '../lib/stock-evidence.js';
@@ -33,7 +37,7 @@ import {
     actualPrices,
 } from '../lib/thumbnail-projection.js';
 
-const CACHE_TTL_MS = 5 * 60 * 1000;
+const CACHE_TTL_MS = 60 * 1000;
 const cache = new Map();
 const inFlight = new Map();
 const sourceCache = createTransportCache({ ttlMs: 60_000 });
@@ -141,7 +145,9 @@ export function toBacktestData(events) {
                 amount,
                 amountFixed: amount,
                 ...(declared ? { declaredDate: declared } : {}),
-                ...(['official', 'cross_checked'].includes(status) ? { dividendVerified: true } : {}),
+                ...(['official', 'cross_checked'].includes(status)
+                    ? { dividendVerified: true }
+                    : {}),
                 ...(status === 'needs_review'
                     ? {
                           verificationStatus: 'needs_review',
@@ -202,7 +208,10 @@ function toPriceRows(history, events) {
 }
 
 async function loadPriceHistory(symbol, fetcher, baseUrl, historyKind, asOf) {
-    const price = prices.get(symbol);
+    const snapshot = await readServerContent('price-index.json', fetcher);
+    const price = snapshot
+        ? snapshot.value.prices?.[symbol]
+        : prices.get(symbol);
     const dataPath = price?.dataPath ?? pricePaths.get(symbol)?.dataPath;
     if (
         !baseUrl ||
@@ -265,7 +274,7 @@ async function fetchTicker(symbol, origin, options = {}) {
         process.env.THUMBNAIL_PROJECTION_BASE_URL ??
         '';
     const historyKind = options.historyKind ?? 'entry-efficiency';
-    const cacheKey = `${key}|${origin}|${baseUrl}|${projectionBase}|${historyKind}|${officialReleaseBase()}`;
+    const cacheKey = `${key}|${origin}|${baseUrl}|${projectionBase}|${historyKind}|${officialReleaseBase()}|${serverContentRoot()}`;
     const cached = fetcher === fetch && cache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now()) return cached.value;
     const instrument = instruments.get(key) ?? pricePaths.get(key);
@@ -470,6 +479,7 @@ export function loadTicker(symbol, origin, options = {}) {
         options.projectionBaseUrl,
         options.historyKind,
         officialReleaseBase(),
+        serverContentRoot(),
     ]);
     if (!inFlight.has(key)) {
         const pending = fetchTicker(symbol, origin, options).finally(() =>

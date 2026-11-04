@@ -40,6 +40,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - name: Build application
         env:
+          VITE_PUBLIC_CONTENT_BASE_URL: ${{ vars.VITE_PUBLIC_CONTENT_BASE_URL }}
+          VITE_PUBLIC_CONTENT_CHANNEL: ${{ vars.VITE_PUBLIC_CONTENT_CHANNEL }}
           VITE_DATA_RELEASE_BASE_URL: ${{ vars.VITE_DATA_RELEASE_BASE_URL }}
           VITE_R2_PUBLIC_URL: ${{ vars.VITE_R2_PUBLIC_URL }}
           VITE_USE_R2: ${{ vars.VITE_USE_R2 }}

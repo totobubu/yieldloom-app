@@ -37,6 +37,7 @@ jobs:
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_providers.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_*observation.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_publish_public_snapshots.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_public_content_release.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_validate_refresh_outputs.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_stock_collection.py'
             - run: npm run lint:check
@@ -143,3 +144,17 @@ jobs:
                       /tmp/yieldloom-enhancements-*.png
                       /tmp/yieldloom-fifo-*.png
                   retention-days: 5
+
+            - name: Public dividend refresh without rebuilding the app
+              env:
+                  VITE_PUBLIC_CONTENT_BASE_URL: https://snapshot.invalid
+                  VITE_PUBLIC_CONTENT_CHANNEL: preview-aaaaaaaaaaaaaaaa
+              run: |
+                  env -u GITHUB_ACTIONS npm run dev -- --host 127.0.0.1 --port 5178 --strictPort > /tmp/public-content-vite.log 2>&1 &
+                  server_pid=$!
+                  trap 'kill "$server_pid"' EXIT
+                  for attempt in {1..30}; do
+                    if curl -fsS http://127.0.0.1:5178/ > /dev/null; then break; fi
+                    sleep 1
+                  done
+                  node tests/public-content.browser.mjs

@@ -31,9 +31,9 @@ export function createPublicJsonClient({
             retryUrls.delete(retryUrls.values().next().value);
     };
     let chars = 0;
-    const checked = (value, validate, key, entry) => {
+    const checked = async (value, validate, key, entry) => {
         try {
-            if (!validate(value))
+            if (!(await validate(value)))
                 throw new Error('공개 데이터 형식이 잘못되었습니다.');
             return value;
         } catch (error) {
@@ -56,10 +56,11 @@ export function createPublicJsonClient({
             cachePolicy = 'memory',
             timeoutMs = 15_000,
             validate = () => true,
+            responseType = 'json',
         } = {}
     ) {
         if (signal?.aborted) throw signal.reason;
-        const key = String(url);
+        const key = responseType === 'text' ? `${url}|text` : String(url);
         let entry = entries.get(key);
         if (!force && entry?.expires > now()) {
             counters.cacheHits++;
@@ -79,8 +80,8 @@ export function createPublicJsonClient({
             const current = entry;
             current.task = createSharedRequest(async (transportSignal) => {
                 counters.networkRequests++;
-                const response = await fetcher(key, {
-                    credentials: publicRequestCredentials(key, origin),
+                const response = await fetcher(String(url), {
+                    credentials: publicRequestCredentials(String(url), origin),
                     referrerPolicy: 'no-referrer',
                     cache:
                         force || (current.immutable && retryUrls.has(key))
@@ -113,8 +114,11 @@ export function createPublicJsonClient({
                         { status: response.status }
                     );
                 }
-                const value = await response.json();
-                if (!validate(value))
+                const value =
+                    responseType === 'text'
+                        ? await response.text()
+                        : await response.json();
+                if (!(await validate(value)))
                     throw new Error('공개 데이터 형식이 잘못되었습니다.');
                 if (transportSignal.aborted) throw transportSignal.reason;
                 if (entries.get(key) === current) {

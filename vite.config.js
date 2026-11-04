@@ -10,6 +10,8 @@ import { tossConnectionMockPlugin } from './scripts/toss/mock-connection-plugin.
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
     const env = loadEnv(mode, process.cwd(), '');
+    if (process.env.VERCEL_ENV === 'preview' && env.VITE_PUBLIC_CONTENT_BASE_URL && env.VITE_PUBLIC_CONTENT_CHANNEL === 'production')
+        throw Error('Preview must select its isolated public content channel');
     const apiProxyTarget =
         env.VITE_API_PROXY_TARGET || 'https://totobubu-github-io.vercel.app';
     const outboundProxy = process.env.HTTPS_PROXY || process.env.https_proxy;

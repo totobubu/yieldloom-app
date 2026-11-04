@@ -13,6 +13,25 @@ if ! [[ "$max_attempts" =~ ^[1-9][0-9]*$ ]]; then
   exit 2
 fi
 
+# Legacy remains the default until consumers and durable restore are verified.
+mode="${PUBLIC_CONTENT_PUBLISH_MODE:-legacy}"
+if [[ "$mode" != legacy && "$mode" != shadow && "$mode" != r2 ]]; then
+  echo 'Invalid PUBLIC_CONTENT_PUBLISH_MODE' >&2; exit 2
+fi
+# Explicit render jobs publish application assets through their existing path.
+if [[ "${REFRESH_SCOPE:-}" == render ]]; then mode=legacy; fi
+if [[ "$mode" == r2 && "${PUBLIC_CONTENT_RUNTIME_VERIFIED:-}" != true ]]; then
+  echo 'R2-only publication requires verified runtime cutover' >&2; exit 2
+fi
+if [[ "$mode" == r2 ]]; then
+  python scripts/content_pipeline/public_content_release.py --branch "$branch"
+  exit 0
+elif [[ "$mode" == shadow ]]; then
+  if ! python scripts/content_pipeline/public_content_release.py --branch "$branch"; then
+    echo '::warning::Shadow R2 publication failed; preserving legacy Git publication.' >&2
+  fi
+fi
+
 git add -- public/content-studio/
 if git diff --cached --quiet; then
   echo "[content-studio-publish] No public Content Studio changes to publish."

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONTENT / Account Registration</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .frame-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .control-btn, .control-select, .control-input {
+    min-height: 44px;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .control-input:focus, .control-select:focus {
+    outline: none;
+    border-color: #0d7a6e;
+    box-shadow: 0 0 0 2px rgba(13, 122, 110, 0.15);
+  }
+  .control-btn-primary {
+    background: #0d7a6e;
+    color: #ffffff;
+    border-color: #0d7a6e;
+  }
+  .control-btn-primary:hover:not(:disabled) { background: #0a655b; }
+  .control-btn-primary:disabled {
+    background: #94a3b8;
+    border-color: #94a3b8;
+    cursor: not-allowed;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .badge-demo { background: #e6fffa; color: #0d7a6e; border: 1px solid #99f6e4; }
+  .badge-warn { background: #fefce8; color: #854d0e; border: 1px solid #fef08a; }
+  .badge-alert { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+  /* Header Bar */
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  /* Two Registration Methods Tabs */
+  .method-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 12px;
+    overflow-x: auto;
+  }
+  .method-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .method-btn.active {
+    background: #0d7a6e;
+    color: #ffffff;
+    border-color: #0d7a6e;
+  }
+
+  /* Grid Forms */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-group.full-width {
+    grid-column: span 2;
+  }
+  .form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+  }
+  .required-star { color: #dc2626; margin-left: 2px; }
+  .helper-text { font-size: 12px; color: #64748b; }
+
+  /* Document Upload Area */
+  .upload-box {
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .upload-box:hover { border-color: #0d7a6e; }
+
+  /* Extracted Info Card */
+  .extracted-card {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  @media (max-width: 1024px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-group.full-width { grid-column: span 1; }
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 14px; }
+    .header-bar { flex-direction: column; align-items: flex-start; }
+    .method-nav { flex-direction: column; }
+    .method-btn { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div class="frame-container">
+
+  <!-- Header -->
+  <div class="card header-bar">
+    <div class="title-group">
+      <h1 class="page-title">계좌 등록</h1>
+      <span class="badge badge-demo">예시 데이터</span>
+    </div>
+    <div style="font-size: 13px; color: #64748b; display: flex; align-items: center; gap: 8px;">
+      <span>선택 가족/소유자:</span>
+      <strong style="color: #0f172a;">김모음 (선택됨)</strong>
+    </div>
+  </div>
+
+  <!-- Registration Methods Selection (Exact 2 methods: 직접 입력 / 문서로 등록) -->
+  <div class="card">
+    <div style="margin-bottom: 12px; font-weight: 700; font-size: 15px; color: #0f172a;">등록 방식 선택</div>
+    <div class="method-nav">
+      <button class="method-btn active">1. 직접 입력</button>
+      <button class="method-btn">2. 문서로 등록 (토스 PDF)</button>
+    </div>
+
+    <!-- Section 1: 직접 입력 Fieldset -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="font-size: 16px; font-weight: 700; color: #0f172a;">방식 1: 직접 입력 양식</h2>
+        <span class="badge badge-neutral">수기 등록 모드</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">금융기관<span class="required-star">*</span></label>
+          <input type="text" class="control-input" placeholder="예: 미래에셋증권, 토스증권" maxlength="100" value="미래에셋증권">
+          <span class="helper-text">최대 100자</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">계좌 유형 (정확한 4종 분류)<span class="required-star">*</span></label>
+          <select class="control-select">
+            <option value="일반">일반</option>
+            <option value="ISA">ISA</option>
+            <option value="연금">연금</option>
+            <option value="기타">기타</option>
+          </select>
+          <span class="helper-text">* 통화(USD/KRW)를 계좌 유형으로 지정하지 않습니다.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">계좌 별칭<span class="required-star">*</span></label>
+          <input type="text" class="control-input" placeholder="구분하기 쉬운 이름을 입력하세요" maxlength="100" value="김모음 미래에셋 ISA">
+          <span class="helper-text">최대 100자</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">계좌 끝 4자리 (선택)</label>
+          <input type="text" class="control-input" placeholder="숫자 4자리 (입력 시 정확히 4자리)" maxlength="4" value="0492">
+          <span class="helper-text">마스킹 표시 및 중복 식별용 (입력 시 반드시 4자리)</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+        <button class="control-btn control-btn-primary" style="min-width: 160px;">
+          직접 입력으로 계좌 등록
+        </button>
+      </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;">
+
+    <!-- Section 2: 문서로 등록 Fieldset (토스 거래내역 PDF, Max 2MB, PDF 암호) -->
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 6px;">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 700; color: #0f172a;">방식 2: 문서로 등록 (토스 거래내역 PDF)</h2>
+          <div style="font-size: 12px; color: #64748b;">최대 용량 2MB 이하 토스증권 거래내역 PDF 원본만 지원합니다.</div>
+        </div>
+        <span class="badge badge-demo">PDF 자동 추출</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label class="form-label">거래내역 PDF 파일 업로드<span class="required-star">*</span></label>
+          <div class="upload-box">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0d7a6e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            <div style="font-size: 14px; font-weight: 600; color: #0f172a;">toss_statement_202611.pdf (1.2MB 선택됨)</div>
+            <div style="font-size: 12px; color: #64748b;">파일 변경 시 신원 확인이 초기화됩니다.</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">PDF 암호<span class="required-star">* (추출 필수)</span></label>
+          <input type="password" class="control-input" placeholder="생년월일 6자리 또는 보안 암호" value="••••••">
+          <span class="helper-text">암호 미입력 시 정보 추출 버튼이 비활성화됩니다.</span>
+        </div>
+
+        <div class="form-group" style="justify-content: flex-end;">
+          <button class="control-btn control-btn-primary" style="width: 100%;">
+            계좌 정보 추출 실행
+          </button>
+        </div>
+      </div>
+
+      <!-- Extraction Output & Confirmation Area -->
+      <div class="extracted-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+          <div style="font-weight: 700; color: #166534; font-size: 14px;">추출 성공: 토스증권 계좌 내역 식별됨</div>
+          <span class="badge badge-demo">신원 대조 대기</span>
+        </div>
+
+        <div class="form-grid" style="gap: 12px;">
+          <div class="form-group">
+            <label class="form-label">추출 고객명 (문서 원본)</label>
+            <input type="text" class="control-input" value="김모음" readonly style="background: #f8fafc; font-weight: 600;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">추출 계좌번호 (마스킹)</label>
+            <input type="text" class="control-input" value="토스증권 ****0115" readonly style="background: #f8fafc; font-weight: 600;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">등록 금융기관 (수정 가능)</label>
+            <input type="text" class="control-input" value="토스증권">
+          </div>
+          <div class="form-group">
+            <label class="form-label">유형 (수정 가능)</label>
+            <select class="control-select">
+              <option value="일반" selected>일반</option>
+              <option value="ISA">ISA</option>
+              <option value="연금">연금</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">등록 별칭 (수정 가능)</label>
+            <input type="text" class="control-input" value="김모음 토스 주계좌">
+          </div>
+          <div class="form-group">
+            <label class="form-label">끝 4자리 (수정 가능)</label>
+            <input type="text" class="control-input" value="0115" maxlength="4">
+          </div>
+        </div>
+
+        <!-- Duplicate Warning Section -->
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px; font-size: 13px; color: #92400e; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <strong>중복 주의:</strong> 동일 금융기관(토스증권)과 끝자리(0115)를 가진 기존 계좌가 발견되었습니다.
+          </div>
+          <button class="control-btn" style="height: 34px; min-height: 34px; font-size: 12px; background: #ffffff; color: #92400e; border-color: #fcd34d;">
+            기존 '김모음 · 토스증권 ****0115'에 자료 업로드
+          </button>
+        </div>
+
+        <!-- Identity & Family Confirmation Checkbox (Required) -->
+        <div style="margin-top: 6px; padding: 10px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px;">
+          <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 14px; font-weight: 600; color: #0f172a;">
+            <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #0d7a6e; margin-top: 2px;">
+            <span>원본의 명의·계좌와 선택 가족을 확인했습니다.</span>
+          </label>
+          <div style="font-size: 12px; color: #64748b; margin-left: 28px; margin-top: 2px;">
+            * 파일 또는 암호, 방식을 변경할 경우 본 신원 확인 체크가 자동으로 초기화됩니다.
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+          <button class="control-btn control-btn-primary" style="min-width: 180px;">
+            확인 후 계좌 등록 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compact Business Rule Footer -->
+  <div style="font-size: 12px; color: #64748b; line-height: 1.5; padding: 4px 8px;">
+    자료 안내: 비밀번호 오류·미지원 PDF 형식·추출 오류는 명확히 분리 안내되며, 계좌 등록 완료 전에는 임의로 연동 완료 처리되지 않습니다.
+  </div>
+
+</div>
+</body>
+</html>

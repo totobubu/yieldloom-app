@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>V2 SHELL / PC / Drawer Open</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/primeicons@6.0.1/primeicons.css" rel="stylesheet"/>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", sans-serif; }
+</style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex flex-col relative antialiased overflow-hidden">
+<!-- Background Dim Overlay -->
+<div class="fixed inset-0 bg-slate-900/35 z-40 transition-opacity"></div>
+<!-- Global Header (PC 1280px) Under Overlay -->
+<header class="h-16 bg-white border-b border-slate-200 z-10">
+<div class="w-full max-w-[1280px] mx-auto px-6 h-full flex items-center justify-between">
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-2.5" href="#">
+<img alt="모으멍 심볼" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBdkQ-4-Et7gTsS5YP6MZVYW-dZ3JxotVnfIsbdpBrZxb_5B_tvz7gJnfzCu7Mw0P4mIKrTYFEJ-P7AT_9bTGv9qQaqnqAe7DU4lVYzlDmQTBdEYO_dFYL3DUCyXQHkCAFej9TUbAKDoU9PeCHiyK-zHWepFM-ic1o1imuaj0z-TeeaPlDNymXM2gFr8bU1V52zsKT0pc-csHg0Ut0aHytmWiBxZRjHLH7SxyNNZXzCt_wi6y1jeIe"/>
+<span class="font-bold text-lg tracking-tight text-slate-900">모으멍 <span class="text-[#0d7a6e]">배당달력</span></span>
+</a>
+<nav class="flex items-center gap-1 text-sm font-medium text-slate-600">
+<a class="px-3.5 py-2 rounded-lg" href="#">종목 검색</a>
+<a class="px-3.5 py-2 rounded-lg" href="#">종목 비교</a>
+<a class="px-3.5 py-2 rounded-lg" href="#">신규 상장</a>
+<a class="px-3.5 py-2 rounded-lg" href="#">이용 안내</a>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<button class="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500" type="button">
+<i class="pi pi-sun text-sm"></i>
+</button>
+<!-- Account Trigger (Triggered State) -->
+<button class="flex items-center gap-2.5 pl-3 pr-2.5 py-1.5 rounded-lg border border-[#0d7a6e] bg-emerald-50 text-[#0d7a6e] font-semibold text-xs" type="button">
+<span class="w-2 h-2 rounded-full bg-[#0d7a6e]"></span>
+<span>계정 메뉴</span>
+<i class="pi pi-times text-xs"></i>
+</button>
+</div>
+</div>
+</header>
+<!-- Empty Main Slot (Max 1120px) Under Dim -->
+<div class="flex-1 w-full max-w-[1280px] mx-auto px-6 py-6 flex">
+<main class="w-full max-w-[1120px] mx-auto">
+<div class="w-full min-h-[580px] border-2 border-dashed border-slate-300 rounded-2xl bg-white/60 p-12 flex flex-col items-center justify-center text-center"><div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#0d7a6e] mb-3"><i class="pi pi-box text-2xl"></i></div><h2 class="text-base font-bold text-slate-700 mb-1">콘텐츠 영역</h2><p class="text-xs text-slate-400">우측 관리자 메뉴가 활성화되어 있습니다.</p></div>
+</main>
+</div>
+<!-- Global Footer -->
+<footer class="mt-auto bg-white border-t border-slate-200 py-6 text-xs text-slate-500 z-10">
+<div class="w-full max-w-[1280px] mx-auto px-6 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="font-semibold text-slate-700">모으멍 배당달력</span>
+<span class="text-slate-300">|</span>
+<a href="#">데이터 출처 · 이용 안내</a>
+</div>
+<p class="text-slate-400">공개된 자료를 정리한 정보입니다. 기준일과 원문을 확인해 주세요.</p>
+</div>
+</footer>
+<!-- Right Account & Admin Drawer (Width 360px, z-50) -->
+<aside class="fixed top-0 right-0 w-[360px] h-full bg-white shadow-2xl z-50 flex flex-col border-l border-slate-200">
+<!-- Drawer Header -->
+<div class="h-16 px-6 border-b border-slate-200 flex items-center justify-between shrink-0">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-[#0d7a6e]">
+<i class="pi pi-user text-sm"></i>
+</div>
+<div>
+<h2 class="text-sm font-bold text-slate-900">계정 및 관리</h2>
+<span class="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded">관리자 허용목록 인가됨</span>
+</div>
+</div>
+<!-- Close Button (44px target) -->
+<button aria-label="드로어 닫기" class="w-11 h-11 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition focus:outline-hidden focus:ring-2 focus:ring-[#0d7a6e]" type="button">
+<i class="pi pi-times text-base"></i>
+</button>
+</div>
+<!-- Scrollable Drawer Body -->
+<div class="flex-1 overflow-y-auto p-5 space-y-6">
+<!-- 1. 포트폴리오 작업 공간 (Expanded Group) -->
+<div class="space-y-1.5">
+<div class="flex items-center justify-between text-xs font-bold text-slate-900 pb-1 border-b border-slate-100">
+<span class="flex items-center gap-2">
+<i class="pi pi-chart-pie text-[#0d7a6e]"></i>
+            포트폴리오
+          </span>
+<i class="pi pi-chevron-down text-xs text-slate-400"></i>
+</div>
+<div class="pl-3 space-y-1 border-l-2 border-emerald-100 ml-2 pt-1">
+<div class="text-[11px] font-semibold text-slate-400 px-2 py-0.5">개요</div>
+<a class="block px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md" href="#">요약</a>
+<a class="block px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md" href="#">보유 종목</a>
+<!-- SELECTED: 원금 -->
+<a aria-current="page" class="flex items-center justify-between px-3 py-1.5 text-xs font-bold rounded-md bg-[#0d7a6e] text-white shadow-2xs" href="#">
+<span>원금 (선택됨)</span>
+<i class="pi pi-check text-[10px]"></i>
+</a>
+<a class="block px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md" href="#">캘린더</a>
+<a class="block px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md" href="#">분석</a>
+<a class="block px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md" href="#">자산 관리</a>
+</div>
+</div>
+<!-- 2. 시뮬레이터 & 도구 -->
+<div class="space-y-1">
+<span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">설계 도구</span>
+<a class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg" href="#">
+<i class="pi pi-calculator text-slate-400"></i>
+          배당 시뮬레이터
+        </a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg" href="#">
+<i class="pi pi-palette text-slate-400"></i>
+          테마 설정 (라이트 / 다크)
+        </a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg" href="#">
+<i class="pi pi-info-circle text-slate-400"></i>
+          이용 안내 및 가이드
+        </a>
+</div>
+<!-- 3. 관리자 전용 섹션 (Admin Ops) -->
+<div class="space-y-1 pt-2 border-t border-slate-100">
+<span class="text-[11px] font-bold uppercase tracking-wider text-[#0d7a6e]">관리자 섹션</span>
+<a class="flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg" href="#">
+<span class="flex items-center gap-2.5">
+<i class="pi pi-inbox text-slate-400"></i>
+            종목 의견함
+          </span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg" href="#">
+<i class="pi pi-file-edit text-slate-400"></i>
+          ETF 데이터 검토
+        </a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg" href="#">
+<i class="pi pi-tags text-slate-400"></i>
+          종목 식별 관리
+        </a>
+<a class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg" href="#">
+<i class="pi pi-sliders-h text-slate-400"></i>
+          원금 기준안 설정
+        </a>
+</div>
+</div>
+<!-- Drawer Footer (Logout Action) -->
+<div class="p-4 border-t border-slate-200 bg-slate-50 shrink-0">
+<button class="w-full h-11 rounded-lg border border-slate-300 bg-white hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-700 font-semibold text-xs flex items-center justify-center gap-2 transition focus:outline-hidden focus:ring-2 focus:ring-rose-500" type="button">
+<i class="pi pi-sign-out"></i>
+<span>로그아웃 (인가 세션 종료)</span>
+</button>
+</div>
+</aside>
+</body>
+</html>

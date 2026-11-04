@@ -146,9 +146,13 @@ try {
                 exact: true,
             });
             await combo.click();
-            await page
+            const list = page.getByRole('listbox').last();
+            await list
                 .getByRole('option', { name: new RegExp('원장 ' + peer + '$') })
                 .click();
+            // PrimeVue Select.hide() restores focus in a timer; wait before
+            // focusing the approval button and testing keyboard activation.
+            await list.waitFor({ state: 'hidden' });
         };
         await row('K').locator('.entry-evidence > summary').click();
         await row('K')
@@ -158,7 +162,12 @@ try {
         const approve = row('K').getByRole('button', {
             name: '양쪽 연결 승인',
         });
+        assert.equal(await approve.isEnabled(), true);
         await approve.focus();
+        assert.equal(
+            await approve.evaluate((el) => document.activeElement === el),
+            true
+        );
         await page.keyboard.press('Space');
         await row('K').waitFor({ state: 'hidden' });
         await row('U').waitFor({ state: 'hidden' });

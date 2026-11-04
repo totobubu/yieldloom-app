@@ -1,13 +1,18 @@
 :root {
-    --app-bg: #f6f8fb;
+    --app-bg: #f8fafc;
     --app-surface: #ffffff;
-    --app-surface-muted: #f1f5f9;
-    --app-text: #172033;
-    --app-muted: #526174;
-    --app-border: #dce3ec;
+    --app-surface-muted: #f2f4f6;
+    --app-text: #1e293b;
+    --app-muted: #64748b;
+    --app-border: #e2e8f0;
     --app-border-subtle: #e5eaf1;
-    --app-accent: #1d4ed8;
+    --app-accent: #0d7a6e;
     --app-accent-contrast: #ffffff;
+    --app-accent-light: #ecfdf5;
+    --app-warning: #eab308;
+    --app-warning-light: #fef3c7;
+    --app-warning-text: #785a00;
+    --app-brand-brown: #2d1e18;
     --app-overlay: #0b122080;
     --app-up: #dc2626;
     --app-down: #2563eb;
@@ -21,7 +26,11 @@
     --app-muted: #b3c0d1;
     --app-border: #35445b;
     --app-border-subtle: #2a3a51;
-    --app-accent: #8ab4ff;
+    --app-accent: #7dd6c8;
+    --app-accent-light: #103c36;
+    --app-warning: #fdc425;
+    --app-warning-light: #47390f;
+    --app-warning-text: #ffdf9a;
     --app-accent-contrast: #0b1220;
     --app-overlay: #030712b3;
     --app-up: #fca5a5;
@@ -161,4 +170,47 @@ textarea {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+// Source content intentionally uses different typography from the common shell.
+.search-page,
+.ticker-thumbnail-page[data-stitch-view='details'],
+.ticker-thumbnail-page[data-stitch-view='prices'],
+.family-page[data-stitch-view='calendar'],
+.family-page[data-stitch-view='insights'],
+.family-page[data-stitch-view='account-registration'] {
+    font-family:
+        -apple-system, BlinkMacSystemFont, 'Pretendard Variable', Pretendard,
+        'Segoe UI', Roboto, sans-serif;
+}
+.underlying-explorer,
+.ticker-thumbnail-page[data-stitch-view='dividends'],
+.ticker-thumbnail-page[data-stitch-view='share'],
+.family-page[data-stitch-view='summary'],
+.family-page[data-stitch-view='holdings'],
+.family-page[data-stitch-view='assets'] {
+    font-family:
+        'Hanken Grotesk',
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        Roboto,
+        'Apple SD Gothic Neo',
+        'Malgun Gothic',
+        sans-serif;
+}
+.studio-header,
+.portfolio-navigation,
+.account-drawer {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+.studio-main :is(input, button, select, textarea) {
+    font-family: inherit;
+}
+
+#asset-concentration,
+#dividend-growth,
+#manual-balance,
+#capital-details-heading {
+    scroll-margin-top: 88px;
 }

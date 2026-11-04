@@ -1,11 +1,9 @@
 import assert from 'node:assert/strict';
-import { writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
 // Served only by local Vite; all rows are synthetic. No auth, DB or financial API.
 export async function checkReviewCalendar(browser, base) {
-    const harness = new URL('../../.tmp-fifo-calendar.html', import.meta.url);
     const page = await browser.newPage({
         viewport: { width: 1100, height: 1000 },
     });
@@ -16,12 +14,32 @@ export async function checkReviewCalendar(browser, base) {
         network.push(route.request().url());
         return route.abort();
     });
-    await writeFile(
-        harness,
-        `<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+    const compiled = await (
+        await page.request.get(
+            base + '/src/components/portfolio/FifoReviewCalendar.vue'
+        )
+    ).text();
+    const appEntry = await (
+        await page.request.get(base + '/src/main.js')
+    ).text();
+    const primeVueModule = appEntry.match(
+        /from "([^"]*primevue_config\.js[^"]*)"/
+    )?.[1];
+    assert.ok(primeVueModule, 'Use the installed optimized PrimeVue entry');
+    const vueModule = compiled.match(/from "([^"]*vue\.js[^"]*)"/)?.[1];
+    assert.ok(
+        vueModule,
+        'Use the same Vue runtime as the Vite-compiled component'
+    );
+    // Browser-local route: deleting a transformed inline-module HTML entry can broadcast full-reload
+    // to sibling app tabs and destroys their local selected view.
+    await page.route('**/.tmp-fifo-calendar.html', (route) =>
+        route.fulfill({
+            contentType: 'text/html',
+            body: `<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
         :root{--app-text:#172033;--app-text-muted:#505968;--app-surface:#fff;--app-surface-muted:#f3f5fa;--app-border:#d6d9df}body{font-family:sans-serif;margin:16px;color:var(--app-text);background:var(--app-surface)}.p-dark{--app-text:#eee;--app-text-muted:#b7c0d0;--app-surface:#1f2937;--app-surface-muted:#253347;--app-border:#6b7280}
         </style><div id="app"></div><script type="module">
-        import {createApp,h,ref} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import Calendar from '/src/components/portfolio/FifoReviewCalendar.vue';
+        import {createApp,h,ref} from '${vueModule}';import PrimeVue from '${primeVueModule}';import {MyPreset} from '/src/config/theme.js';import Calendar from '/src/components/portfolio/FifoReviewCalendar.vue';
         const events=ref([
             {id:'shared',accountId:'wife',type:'BUY',symbol:'ALPHA',currency:'USD',at:'2024-02-29T00:01:00+14:00'},
             {id:'shared',accountId:'husband',type:'SELL',symbol:'ALPHA',currency:'USD',at:'2024-02-29T23:59:00-12:00'},
@@ -31,7 +49,8 @@ export async function checkReviewCalendar(browser, base) {
             {id:'next',accountId:'wife',type:'BUY',symbol:'BETA',currency:'KRW',at:'2024-03-01'}
         ]);
         createApp({render:()=>h(Calendar,{events:events.value},{default:({events})=>h('ul',{'aria-label':'합성 검토 내역'},events.map(e=>h('li',{key:e.accountId+e.id},e.type+' '+e.symbol+' '+(e.at||'날짜 미상'))))})}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}}}).mount('#app');
-        </script></html>`
+        </script></html>`,
+        })
     );
     try {
         await page.goto(base + '/.tmp-fifo-calendar.html');
@@ -149,8 +168,10 @@ export async function checkReviewCalendar(browser, base) {
         }
         assert.deepEqual(errors, []);
         assert.deepEqual(network, []);
+    } catch (error) {
+        error.message += '; fixture errors: ' + JSON.stringify(errors);
+        throw error;
     } finally {
         await page.close();
-        await rm(harness, { force: true });
     }
 }

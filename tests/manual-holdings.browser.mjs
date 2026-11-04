@@ -1,3 +1,4 @@
+import { waitForPortfolioPage } from './portfolio-navigation.mjs';
 // Local Vite + in-memory Flask only. No production identities or data.
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
@@ -37,14 +38,9 @@ try {
         (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') +
             '/mypage?tab=assets'
     );
-    await page.waitForFunction(() =>
-        [...document.querySelectorAll('[role="tab"]')].some(
-            (tab) =>
-                tab.textContent?.includes('자산관리') &&
-                tab.getAttribute('aria-selected') === 'true'
-        )
-    );
+    await waitForPortfolioPage(page, '자산관리');
     await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
+    await page.getByRole('button', { name: '직접 입력', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).fill('테스트증권');
     await page.getByLabel('별칭', { exact: true }).fill('수동입력');
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();

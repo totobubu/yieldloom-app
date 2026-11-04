@@ -1,3 +1,4 @@
+import { openPortfolioPage } from './portfolio-navigation.mjs';
 // Real Vue pages -> local Flask -> transactional in-memory store. No real users/data.
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
@@ -348,7 +349,7 @@ try {
         .waitFor();
 
     await page.locator('.p-dialog-close-button').click();
-    await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
+    await openPortfolioPage(page, '배당 분석');
     const insights = page.getByRole('region', {
         name: '원장 품질·청산 수익 분석',
         exact: true,
@@ -365,12 +366,15 @@ try {
         beforeXirr,
         'XIRR uses already loaded ledger'
     );
-    await page.getByLabel('분석 월', { exact: true }).fill('2025-06');
+    await page
+        .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
+        .fill('2025년 06월');
+    await page.keyboard.press('Tab');
     assert.equal(
         await insights.getByLabel(/계좌 개설 시점의 기초 자산은 0/).isChecked(),
         false
     );
-    await page.getByRole('tab', { name: '배당 캘린더', exact: true }).click();
+    await openPortfolioPage(page, '배당 캘린더');
     const calendar = page.getByRole('region', {
         name: '개인 배당 캘린더',
         exact: true,
@@ -385,7 +389,10 @@ try {
     await calendar
         .getByRole('button', { name: '예상·기록 대조', exact: true })
         .click();
-    await calendar.getByLabel('배당 조회 월', { exact: true }).fill('2025-06');
+    await calendar
+        .getByLabel('배당 조회 월', { exact: true })
+        .fill('2025년 06월');
+    await page.keyboard.press('Tab');
     const comparison = calendar.getByRole('region', {
         name: '예상 배당과 기록 대조',
         exact: true,

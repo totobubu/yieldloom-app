@@ -1,3 +1,4 @@
+import { openPortfolioPage } from './portfolio-navigation.mjs';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
@@ -24,6 +25,13 @@ try {
         route.fulfill({
             contentType: 'application/javascript',
             body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js';export const firebaseUser=ref({uid:'insights-user',email:'fixture@example.test',getIdToken:async()=>'fixture-token'}),authLoading=ref(false),signedIn=computed(()=>!!firebaseUser.value),auth={},googleProvider={},firebaseReady=true,db=null;window.__insightsUser=firebaseUser;`,
+        })
+    );
+    // Synthetic admin identity only; production RBAC is unchanged.
+    await page.route('**/lib/portfolio-admin.js*', (route) =>
+        route.fulfill({
+            contentType: 'application/javascript',
+            body: 'export const PORTFOLIO_ADMIN_EMAILS=[];export const isPortfolioAdmin=user=>user?.uid === "insights-user";',
         })
     );
     const now = new Date();
@@ -74,6 +82,9 @@ try {
         b: [entry('1', 'TSLY', 40), entry('2', 'TSLY', 20, previous)],
         c: [entry('1', 'CRSH', 50)],
     };
+    // The current app uses all authorized accounts. Start with two authorized
+    // accounts, then expose the third through an explicit overview refresh.
+    let includeFamilyAccount = false;
     let storedReports = [];
     let shelfCalls = 0;
     let failLedger = false,
@@ -137,15 +148,18 @@ try {
                 .catch(() => {});
         }
         overviewCount++;
+        const authorizedAccounts = includeFamilyAccount
+            ? accounts
+            : accounts.filter((a) => a.ownerId === 'p');
         return route.fulfill({
             json: {
                 families: [family],
-                accounts: accounts.map((a) => ({
+                accounts: authorizedAccounts.map((a) => ({
                     ...a,
                     entriesRevision: mutate ? overviewCount : 1,
                 })),
                 summary: {
-                    positions: accounts.flatMap((a) =>
+                    positions: authorizedAccounts.flatMap((a) =>
                         a.snapshot.rows.map((row) => ({
                             ...row,
                             accountId: a.id,
@@ -154,7 +168,9 @@ try {
                         }))
                     ),
                     notice: '합성 잔고',
-                    knownValueByCurrency: { USD: 300 },
+                    knownValueByCurrency: {
+                        USD: authorizedAccounts.length * 100,
+                    },
                     missingSnapshotAccounts: [],
                     valueComplete: true,
                 },
@@ -243,9 +259,15 @@ try {
                   }
         )
     );
-    await page.goto('http://127.0.0.1:5173/mypage?tab=insights');
+    await page.goto(
+        (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5173') +
+            '/mypage?tab=insights'
+    );
     const section = page.getByRole('region', { name: '배당 성과·집중도 분석' });
-    await section.getByLabel('분석 월', { exact: true }).fill(month);
+    await section
+        .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
+        .fill(`${month.slice(0, 4)}년 ${month.slice(5, 7)}월`);
+    await page.keyboard.press('Tab');
     const summary = section.locator('.insights-summary');
     await summary.getByText('65 USD', { exact: true }).first().waitFor();
     await summary.getByText('62.5%', { exact: true }).waitFor();
@@ -257,7 +279,10 @@ try {
         exact: true,
     });
     const reportCalls = requests.length;
-    await section.getByLabel('분석 월', { exact: true }).fill(previous);
+    await section
+        .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
+        .fill(`${previous.slice(0, 4)}년 ${previous.slice(5, 7)}월`);
+    await page.keyboard.press('Tab');
     await statement.getByText(/확인된 저장 배당 40 USD/).waitFor();
     const saveStatement = statement.getByRole('button', {
         name: '월간 결산 JSON 저장',
@@ -277,7 +302,10 @@ try {
     assert.equal(savedReport.month, previous);
     assert.ok(!('accountIds' in savedReport));
     assert.ok(!savedContent.includes(Buffer.from('TSLY')));
-    await section.getByLabel('분석 월', { exact: true }).fill(month);
+    await section
+        .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
+        .fill(`${month.slice(0, 4)}년 ${month.slice(5, 7)}월`);
+    await page.keyboard.press('Tab');
     await statement.getByText(/확인된 저장 배당 65 USD/).waitFor();
     assert.equal(
         await statement.getByLabel(/배당 금액·통화/).isChecked(),
@@ -397,9 +425,21 @@ try {
     const initialValidationCalls = requests.filter((url) =>
         url.includes('view=ledger')
     ).length;
-    await page.getByRole('tab', { name: '배당 캘린더', exact: true }).click();
-    await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
-    await section.getByLabel('분석 월', { exact: true }).fill(month);
+    await openPortfolioPage(page, '배당 캘린더');
+    await page
+        .getByRole('region', { name: '개인 배당 캘린더', exact: true })
+        .locator('.calendar-totals')
+        .waitFor();
+    assert.equal(
+        requests.filter((url) => url.includes('view=ledger')).length,
+        initialValidationCalls + 2,
+        'Calendar reconstruction rechecks the two authorized ledgers without refetching pages'
+    );
+    await openPortfolioPage(page, '배당 분석');
+    await section
+        .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
+        .fill(`${month.slice(0, 4)}년 ${month.slice(5, 7)}월`);
+    await page.keyboard.press('Tab');
     await summary.getByText('65 USD', { exact: true }).first().waitFor();
     assert.equal(
         entryCalls(),
@@ -408,8 +448,8 @@ try {
     );
     assert.equal(
         requests.filter((url) => url.includes('view=ledger')).length,
-        initialValidationCalls + 2,
-        'tab return still rechecks access and revision'
+        initialValidationCalls + 4,
+        'calendar and analysis re-entry each recheck access and revision'
     );
     const lab = page.getByRole('region', {
         name: '배당 투자 설계실',
@@ -541,8 +581,42 @@ try {
     const download = await zipPromise;
     assert.ok(download.suggestedFilename().endsWith('.zip'));
     await download.saveAs('/tmp/investment-blog-test.zip');
+    await page.locator('.p-select-overlay').waitFor({ state: 'hidden' });
     for (const width of [1440, 768, 390, 360]) {
         await page.setViewportSize({ width, height: 1000 });
+        if (
+            await page.evaluate(
+                () => document.documentElement.scrollWidth > innerWidth + 1
+            )
+        ) {
+            console.log(
+                'Overflow diagnostic',
+                width,
+                await page.evaluate(() =>
+                    [...document.querySelectorAll('body *')]
+                        .map((el) => ({
+                            tag: el.tagName,
+                            class:
+                                typeof el.className === 'string'
+                                    ? el.className
+                                    : 'SVG',
+                            box: el.getBoundingClientRect(),
+                        }))
+                        .filter(
+                            (row) =>
+                                row.box.width > 0 &&
+                                row.box.right > innerWidth + 1
+                        )
+                        .slice(-30)
+                        .map((row) => ({
+                            tag: row.tag,
+                            class: row.class,
+                            width: row.box.width,
+                            right: row.box.right,
+                        }))
+                )
+            );
+        }
         assert.ok(
             await page.evaluate(
                 () => document.documentElement.scrollWidth <= innerWidth + 1
@@ -572,7 +646,7 @@ try {
     await assetTable.getByText('TSLA', { exact: true }).waitFor();
     await section.getByRole('button', { name: '운용사', exact: true }).click();
     await assetTable.getByText('YieldMax', { exact: true }).waitFor();
-    await section.getByLabel('계좌', { exact: true }).click();
+    await section.getByLabel('분석 대상 계좌', { exact: true }).click();
     await page.getByRole('option', { name: '계좌 a', exact: true }).click();
     await summary.getByText('25 USD', { exact: true }).first().waitFor();
     await lab.getByRole('button', { name: 'FIRE 전망', exact: true }).click();
@@ -584,10 +658,12 @@ try {
         await section.getByLabel('USD 목표 금액', { exact: true }).inputValue(),
         ''
     );
-    await page
-        .getByRole('button', { name: '가족 포트폴리오', exact: true })
-        .click();
-    await section.getByLabel('분석 월', { exact: true }).fill(month);
+    includeFamilyAccount = true;
+    await page.getByRole('button', { name: '새로고침', exact: true }).click();
+    await section
+        .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
+        .fill(`${month.slice(0, 4)}년 ${month.slice(5, 7)}월`);
+    await page.keyboard.press('Tab');
     await summary.getByText('115 USD', { exact: true }).first().waitFor();
     await section
         .getByRole('button', { name: '연결 기초자산', exact: true })
@@ -645,11 +721,11 @@ try {
         window.__insightsUser.value = null;
     });
     release?.();
-    await page.waitForURL(/\/login/);
+    await page.waitForURL((url) => url.pathname === '/admin/login');
     assert.equal(await page.locator('.insights').count(), 0);
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: tab return adds zero entry requests and two fresh access checks; pagination, reversals, monthly/yearly records, goals/scenario, account/family isolation, metadata fallback, revision change, error/retry, 4 widths, dark/light, logout race'
+        'PASS: tab return adds zero entry-page requests and two fresh access checks per context; pagination, reversals, monthly/yearly records, goals/scenario, account/family isolation, metadata fallback, revision change, error/retry, 4 widths, dark/light, logout race'
     );
 } finally {
     await browser.close();

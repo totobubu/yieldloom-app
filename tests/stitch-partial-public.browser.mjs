@@ -47,6 +47,9 @@ try {
         await page.goto(`${base}/?q=DEMO&sort=symbol`);
         const card = page.locator('.stock-result-card').first();
         await card.waitFor();
+        await page
+            .locator('.fullscreen-data-loading-mask')
+            .waitFor({ state: 'hidden' });
         const metrics = await card.locator('.stock-card-metrics').innerText();
         for (const mode of ['light', 'dark']) {
             if (mode === 'dark')
@@ -125,7 +128,7 @@ try {
                 fullPage: true,
             });
             results.push({
-                width,
+                viewportWidth: width,
                 mode,
                 ...sizes,
                 buttons: buttons.length,

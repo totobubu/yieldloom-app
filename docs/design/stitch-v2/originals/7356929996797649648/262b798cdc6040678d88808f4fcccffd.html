@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONTENT / Portfolio Analysis</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .frame-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .control-btn, .control-select, .control-input {
+    min-height: 44px;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .control-btn-primary {
+    background: #0d7a6e;
+    color: #ffffff;
+    border-color: #0d7a6e;
+  }
+  .control-btn-primary:hover { background: #0a655b; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .badge-demo { background: #e6fffa; color: #0d7a6e; border: 1px solid #99f6e4; }
+  .badge-warn { background: #fefce8; color: #854d0e; border: 1px solid #fef08a; }
+  .badge-neutral { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+  .badge-alert { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+  /* Header Bar */
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  /* Filters */
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) auto;
+    gap: 12px;
+    align-items: end;
+  }
+  .filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  /* KPI Grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .kpi-title { font-size: 13px; color: #64748b; font-weight: 500; }
+  .kpi-value { font-size: 22px; font-weight: 700; color: #0f172a; }
+  .kpi-sub { font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 4px; }
+
+  /* 2-Col Layout */
+  .two-col-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+  }
+  .data-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .num-cell { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Tabs inside card */
+  .sub-tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .sub-tab-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .sub-tab-btn.active {
+    background: #e6fffa;
+    color: #0d7a6e;
+    border-color: #99f6e4;
+  }
+
+  /* Deep Module Cards */
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  .module-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    transition: all 0.15s ease;
+  }
+  .module-card:hover {
+    border-color: #0d7a6e;
+    transform: translateY(-1px);
+  }
+  .module-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .module-card-desc {
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.4;
+  }
+
+  /* Mobile cards fallback */
+  .mobile-card-list { display: none; }
+
+  /* Responsive Rules */
+  @media (max-width: 1024px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .two-col-layout { grid-template-columns: 1fr; }
+    .module-grid { grid-template-columns: repeat(2, 1fr); }
+    .table-desktop-view { display: none; }
+    .mobile-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .record-card-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .record-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .record-card-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #64748b;
+    }
+    .record-card-val {
+      font-weight: 600;
+      color: #0f172a;
+    }
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 14px; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .module-grid { grid-template-columns: 1fr; }
+    .filter-grid { grid-template-columns: 1fr; }
+    .header-bar { flex-direction: column; align-items: flex-start; }
+    .control-btn, .control-select, .control-input { width: 100%; }
+    .filter-btn-wrap { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="frame-container">
+
+  <!-- Header -->
+  <div class="card header-bar">
+    <div class="title-group">
+      <h1 class="page-title">배당 성과·집중도 분석</h1>
+      <span class="badge badge-demo">예시 데이터</span>
+    </div>
+    <div style="font-size: 13px; color: #64748b;">
+      기준일시: 2026.11.04 · 분석 대상: 취소 차감 완료 저장 기록
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="card">
+    <div class="filter-grid">
+      <div class="filter-item">
+        <label class="filter-label">분석 대상 계좌</label>
+        <select class="control-select">
+          <option value="ALL">전체 가상 계좌 (통화별 독립 집계)</option>
+          <option value="115">김모음 · 토스증권 ****0115 (USD)</option>
+          <option value="492">김모음 · 미래에셋 ****0492 (KRW)</option>
+          <option value="884">이모음 · 미래에셋 ****0884 (USD 추정)</option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">기준 통화 (환산·합산 없음)</label>
+        <select class="control-select">
+          <option value="USD" selected>USD ($)</option>
+          <option value="KRW">KRW (₩)</option>
+        </select>
+      </div>
+
+      <div class="filter-item">
+        <label class="filter-label">분석 월 선택 (현재월 이하)</label>
+        <select class="control-select">
+          <option value="2026-10" selected>2026년 10월</option>
+          <option value="2026-09">2026년 09월</option>
+          <option value="2026-08">2026년 08월</option>
+          <option value="2026-07">2026년 07월</option>
+          <option value="2026-06">2026년 06월</option>
+        </select>
+      </div>
+
+      <div class="filter-btn-wrap">
+        <button class="control-btn control-btn-primary" style="width: auto; min-width: 130px;">
+          분석 다시 조회
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status / Integrity Notice -->
+  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #166534; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+    <div>
+      <strong>자료 안내:</strong> 저장된 배당 기록은 취소 내역이 차감 반영되었으며, 고정 세율을 적용한 확정 세후 수령액이 아닙니다. 미확인 기록은 0원이 아니며 통화별로 독립 집계됩니다.
+    </div>
+    <span class="badge badge-neutral" style="background:#ffffff;">조회 쿨다운: 정상</span>
+  </div>
+
+  <!-- KPI Overview (Selected Month 2026.10 / USD) -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-title">선택월(2026.10) 저장 배당액</div>
+      <div class="kpi-value">$10.00</div>
+      <div class="kpi-sub">
+        <span class="badge badge-demo">확인 1건</span>
+        <span>취소 차감 반영</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">선택월 기록 건수 / 상태</div>
+      <div class="kpi-value">1건 <span style="font-size: 15px; font-weight: normal; color: #64748b;">(확인 1 · 미확인 0)</span></div>
+      <div class="kpi-sub">
+        <span>현재월 부분 집계 아님</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">2026년 누적 확인 배당액</div>
+      <div class="kpi-value">$10.00</div>
+      <div class="kpi-sub">
+        <span>미확인 제외된 확정 기여분</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">전년 동월(2025.10) 대비 증감</div>
+      <div class="kpi-value" style="color: #64748b; font-size: 18px;">비교 불가</div>
+      <div class="kpi-sub">
+        <span class="badge badge-warn">전년 동월 자료 부재 / 누락</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Section: 2 Cols -->
+  <div class="two-col-layout">
+
+    <!-- Left Column: 12-Month Records & Dividend Stress Tool -->
+    <div class="card" style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 16px; font-weight: 700; color: #0f172a;">2026년 월별 저장 기록 (12개월)</h2>
+        <span style="font-size: 12px; color: #64748b;">* '기록 없음'은 0원이 아닙니다</span>
+      </div>
+
+      <!-- Desktop Table -->
+      <div class="table-desktop-view">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>월</th>
+              <th class="num-cell">저장 배당액</th>
+              <th class="num-cell">확인 건수</th>
+              <th class="num-cell">미확인 건수</th>
+              <th>상태 구분</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026년 10월</td>
+              <td class="num-cell" style="font-weight: 700; color: #0d7a6e;">$10.00</td>
+              <td class="num-cell">1건</td>
+              <td class="num-cell">0건</td>
+              <td><span class="badge badge-demo">저장 확인</span></td>
+            </tr>
+            <tr>
+              <td>2026년 11월</td>
+              <td class="num-cell" style="color: #64748b;">-</td>
+              <td class="num-cell">0건</td>
+              <td class="num-cell">1건</td>
+              <td><span class="badge badge-warn">현재월 진행중(미확인)</span></td>
+            </tr>
+            <tr>
+              <td>2026년 01~09월</td>
+              <td class="num-cell" style="color: #64748b;">-</td>
+              <td class="num-cell">0건</td>
+              <td class="num-cell">0건</td>
+              <td><span class="badge badge-neutral">저장 기록 없음</span></td>
+            </tr>
+            <tr>
+              <td>2026년 12월</td>
+              <td class="num-cell" style="color: #94a3b8;">-</td>
+              <td class="num-cell">-</td>
+              <td class="num-cell">-</td>
+              <td><span style="color: #94a3b8; font-size: 12px;">분석 범위 외(미래)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile Card List -->
+      <div class="mobile-card-list">
+        <div class="record-card-item">
+          <div class="record-card-header">
+            <span>2026년 10월</span>
+            <span class="badge badge-demo">저장 확인</span>
+          </div>
+          <div class="record-card-row">
+            <span>저장 배당액</span>
+            <span class="record-card-val" style="color: #0d7a6e;">$10.00</span>
+          </div>
+          <div class="record-card-row">
+            <span>확인 / 미확인</span>
+            <span class="record-card-val">1건 / 0건</span>
+          </div>
+        </div>
+        <div class="record-card-item">
+          <div class="record-card-header">
+            <span>2026년 11월</span>
+            <span class="badge badge-warn">현재월 진행중</span>
+          </div>
+          <div class="record-card-row">
+            <span>저장 배당액</span>
+            <span class="record-card-val">-</span>
+          </div>
+          <div class="record-card-row">
+            <span>확인 / 미확인</span>
+            <span class="record-card-val">0건 / 1건</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Temporary Stress Tool (No made-up results, calculation pending state) -->
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-top: 8px;">
+        <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; color: #0f172a;">임시 배당 삭감 스트레스 테스트 (가정 계산)</div>
+        <div style="font-size: 12px; color: #64748b; margin-bottom: 12px;">
+          선택월 양수 확인 기록(DEMO-A $10.00) 기준 가정치입니다. 결과 금액을 지어내지 않고 입력값에 의해 계산 대기 상태를 유지합니다.
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12px; color: #475569; font-weight: 600;">대상 종목</label>
+            <input type="text" class="control-input" value="DEMO-A ($10.00)" readonly style="background: #ffffff;">
+          </div>
+          <div>
+            <label style="font-size: 12px; color: #475569; font-weight: 600;">가정 삭감율 (%)</label>
+            <input type="number" class="control-input" placeholder="0 ~ 100 입력" min="0" max="100">
+          </div>
+        </div>
+        <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 12px; color: #64748b;">가정 결과: <strong>계산 전 대기 상태</strong></span>
+          <button class="control-btn" style="height: 36px; min-height: 36px; padding: 0 12px; font-size: 13px;">가정 실행</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Asset Concentration (Basis SAVED reported positive asset value EXCLUDING cash) -->
+    <div class="card" style="display: flex; flex-direction: column; gap: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+        <div>
+          <h2 style="font-size: 16px; font-weight: 700; color: #0f172a;">자산 집중도 분석</h2>
+          <div style="font-size: 12px; color: #64748b;">기준: 저장된 유효 평가액 (현금 제외, USD $1,430.00 기준)</div>
+        </div>
+        <span class="badge badge-neutral">Top 3 비중: 100.0%</span>
+      </div>
+
+      <!-- Exact 5 Dimensions Tab -->
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active">종목</button>
+        <button class="sub-tab-btn">운용사</button>
+        <button class="sub-tab-btn">연결 기초자산</button>
+        <button class="sub-tab-btn">업종</button>
+        <button class="sub-tab-btn">국가</button>
+      </div>
+
+      <div style="font-size: 12px; color: #475569; background: #fefce8; border: 1px solid #fef08a; padding: 8px 10px; border-radius: 6px;">
+        * 배당 기여도와 자산 집중도는 엄격히 구분됩니다. 연결 기초자산 분류는 방향성/레버리지 조정 익스포저가 아니며, 가공된 HHI 점수를 산출하지 않습니다.
+      </div>
+
+      <!-- Desktop Table for Dimensions -->
+      <div class="table-desktop-view">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>구분 (종목)</th>
+              <th class="num-cell">자료 평가액</th>
+              <th class="num-cell">비중</th>
+              <th>자료 기준일 / 출처</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>DEMO-A</strong> (김모음 토스***115)</td>
+              <td class="num-cell" style="font-weight: 700;">$980.00</td>
+              <td class="num-cell">68.5%</td>
+              <td>2026.11.03 (저장 스냅샷)</td>
+            </tr>
+            <tr>
+              <td><strong>DEMO-M</strong> (이모음 미래***884)</td>
+              <td class="num-cell" style="font-weight: 700;">$450.00</td>
+              <td class="num-cell">31.5%</td>
+              <td>2026.10.28 (추정 스냅샷)</td>
+            </tr>
+            <tr style="background: #f8fafc;">
+              <td><strong>미분류 / 현금 제외</strong></td>
+              <td class="num-cell" style="color: #64748b;">$0.00</td>
+              <td class="num-cell">0.0%</td>
+              <td>집중도 모수 제외</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile View for Dimensions -->
+      <div class="mobile-card-list">
+        <div class="record-card-item">
+          <div class="record-card-header">
+            <span>DEMO-A</span>
+            <span class="badge badge-demo">68.5%</span>
+          </div>
+          <div class="record-card-row">
+            <span>자료 평가액</span>
+            <span class="record-card-val">$980.00</span>
+          </div>
+          <div class="record-card-row">
+            <span>계좌 / 기준일</span>
+            <span>토스***115 · 2026.11.03</span>
+          </div>
+        </div>
+        <div class="record-card-item">
+          <div class="record-card-header">
+            <span>DEMO-M</span>
+            <span class="badge badge-warn">31.5% (추정)</span>
+          </div>
+          <div class="record-card-row">
+            <span>자료 평가액</span>
+            <span class="record-card-val">$450.00</span>
+          </div>
+          <div class="record-card-row">
+            <span>계좌 / 기준일</span>
+            <span>미래***884 · 2026.10.28</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cumulative Contribution Summary -->
+      <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; font-size: 13px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <span style="color: #64748b;">양수 확인 배당 기여 합계</span>
+          <strong>$10.00 (100.0%)</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #64748b;">
+          <span>취소 차감 그룹 상태</span>
+          <span>차감 그룹 0건 (모수 왜곡 방지 적용됨)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deep Module Entry Cards (Exact 5 Modules Accessible at all widths) -->
+  <div class="card" style="display: flex; flex-direction: column; gap: 14px;">
+    <div style="font-size: 15px; font-weight: 700; color: #0f172a;">상세 분석 및 관리 연계 모듈</div>
+    <div class="module-grid">
+      <div class="module-card">
+        <div>
+          <div class="module-card-title">원장 품질·청산 손익</div>
+          <div class="module-card-desc">취소 원장 정합성 및 실현 손익 내역 점검</div>
+        </div>
+        <button class="control-btn" style="height: 38px; min-height: 38px; font-size: 13px;">원장 바로가기</button>
+      </div>
+
+      <div class="module-card">
+        <div>
+          <div class="module-card-title">보유 종목 자금·배당</div>
+          <div class="module-card-desc">종목별 매수 자금 출처 및 배당 수령 이력</div>
+        </div>
+        <button class="control-btn" style="height: 38px; min-height: 38px; font-size: 13px;">자금 조회</button>
+      </div>
+
+      <div class="module-card">
+        <div>
+          <div class="module-card-title">월간 배당 기록</div>
+          <div class="module-card-desc">월별 실제 입금 및 배당락 원장 내역</div>
+        </div>
+        <button class="control-btn" style="height: 38px; min-height: 38px; font-size: 13px;">월간 기록</button>
+      </div>
+
+      <div class="module-card">
+        <div>
+          <div class="module-card-title">보유 종목 시나리오</div>
+          <div class="module-card-desc">배당 변동 및 보유 비중 변화 시뮬레이션</div>
+        </div>
+        <button class="control-btn" style="height: 38px; min-height: 38px; font-size: 13px;">시나리오</button>
+      </div>
+
+      <div class="module-card">
+        <div>
+          <div class="module-card-title">투자 설계</div>
+          <div class="module-card-desc">목표 현금흐름 및 자산 재배분 플랜</div>
+        </div>
+        <button class="control-btn" style="height: 38px; min-height: 38px; font-size: 13px;">설계 진입</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

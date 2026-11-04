@@ -167,6 +167,7 @@ try {
     });
     await page.goto(base + '/mypage?tab=assets');
     await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
+    await page.getByRole('button', { name: '직접 입력', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).fill('토스증권');
     await page.getByLabel('별칭', { exact: true }).fill('검토 테스트');
     await page.getByRole('button', { name: '계좌 등록', exact: true }).click();

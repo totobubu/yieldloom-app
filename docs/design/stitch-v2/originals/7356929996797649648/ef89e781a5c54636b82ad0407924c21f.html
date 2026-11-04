@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONTENT / Compare Similar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0d7a6e;
+    --primary-hover: #0a6258;
+    --primary-light: #e6f4f2;
+    --primary-border: #b2ded8;
+    --accent: #eab308;
+    --accent-light: #fef9c3;
+    --accent-dark: #854d0e;
+    --text-main: #231913;
+    --text-muted: #64748b;
+    --text-sub: #475569;
+    --bg-page: #f7f9fb;
+    --bg-card: #ffffff;
+    --border-color: #e2e8f0;
+    --border-light: #f1f5f9;
+    --badge-bg: #f1f5f9;
+    --badge-text: #475569;
+    --radius-card: 12px;
+    --radius-sm: 6px;
+    --radius-pill: 9999px;
+    --control-height: 44px;
+    --font-base: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-base);
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.5;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  .content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Header Bar */
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0 16px;
+    height: var(--control-height);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-sub);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+  .btn-back:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+  .demo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: var(--accent-light);
+    color: var(--accent-dark);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    border: 1px solid #fde047;
+  }
+
+  /* Main Title & Notice */
+  .header-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-subtext {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* Tab Navigation */
+  .tab-nav {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 2px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab-item {
+    display: inline-flex;
+    align-items: center;
+    height: var(--control-height);
+    padding: 0 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-item.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+  .tab-item:hover:not(.active) {
+    color: var(--text-main);
+  }
+
+  /* Context Selection Card */
+  .card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+
+  .context-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .context-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .context-tag {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    background-color: var(--primary-light);
+    color: var(--primary);
+  }
+  .context-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+  .context-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .search-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    min-width: 280px;
+  }
+  .input-control {
+    height: var(--control-height);
+    padding: 0 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--text-main);
+    background: #ffffff;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .input-control:focus {
+    border-color: var(--primary);
+  }
+  .btn-search {
+    height: var(--control-height);
+    padding: 0 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-sub);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .btn-search:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  /* Warning / Policy Banner */
+  .notice-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background-color: #fffbeb;
+    border: 1px solid #fef3c7;
+    border-radius: var(--radius-sm);
+    color: #92400e;
+    font-size: 13px;
+  }
+
+  /* Filter Pipeline Card */
+  .filter-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .filter-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .filter-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .btn-reset {
+    font-size: 13px;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 4px 8px;
+  }
+  .btn-reset:hover {
+    color: var(--text-main);
+  }
+
+  .pipeline-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  .step-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .step-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-sub);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .step-num {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: var(--border-color);
+    color: var(--text-sub);
+    font-size: 11px;
+    text-align: center;
+    line-height: 18px;
+  }
+  .select-control {
+    height: var(--control-height);
+    padding: 0 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--text-main);
+    background-color: #ffffff;
+    outline: none;
+    cursor: pointer;
+    width: 100%;
+  }
+  .select-control:focus {
+    border-color: var(--primary);
+  }
+
+  /* Active Filter Chips */
+  .active-chips {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 4px;
+  }
+  .chips-label {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary-border);
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .chip-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary);
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Global Action Button */
+  .action-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background-color: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    align-items: flex-start;
+  }
+  .btn-execute {
+    height: var(--control-height);
+    background-color: var(--primary);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0 24px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.15s;
+  }
+  .btn-execute:hover {
+    background-color: var(--primary-hover);
+  }
+  .action-disclaimer {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Comparison Table Container */
+  .table-responsive {
+    overflow-x: auto;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--border-color);
+    background: #ffffff;
+  }
+  table.compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 960px;
+  }
+  table.compare-table th {
+    background-color: #f8fafc;
+    color: var(--text-sub);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+  }
+  table.compare-table td {
+    padding: 16px;
+    font-size: 14px;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+  }
+  table.compare-table tr:last-child td {
+    border-bottom: none;
+  }
+  table.compare-table tr:hover {
+    background-color: #fcfdfd;
+  }
+
+  .stock-ticker {
+    font-weight: 700;
+    color: var(--primary);
+    font-size: 15px;
+  }
+  .stock-name {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .tag-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    background-color: var(--badge-bg);
+    color: var(--badge-text);
+  }
+  .tag-income { background-color: #e0f2fe; color: #0369a1; }
+  .tag-diff { background-color: #fef3c7; color: #92400e; }
+
+  .status-before {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: #f1f5f9;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .meta-info {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+  .link-detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    padding: 6px 12px;
+    border: 1px solid var(--primary-border);
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .link-detail:hover {
+    background-color: var(--primary-light);
+  }
+
+  /* Mobile Card View (Hidden on Desktop) */
+  .mobile-cards {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .m-card {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-card);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .m-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .m-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    background-color: #f8fafc;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+  }
+  .m-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .m-label {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .m-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+  .m-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 10px;
+  }
+  .m-metric-item {
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 8px 4px;
+    border-radius: 6px;
+  }
+  .m-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border-light);
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Responsive Rules */
+  @media (max-width: 1024px) {
+    .pipeline-steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .table-responsive {
+      display: none;
+    }
+    .mobile-cards {
+      display: flex;
+    }
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 16px; }
+    .pipeline-steps {
+      grid-template-columns: 1fr;
+    }
+    .context-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .search-input-group {
+      min-width: 100%;
+    }
+    .m-field-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 390px) {
+    body { padding: 12px; }
+    .tab-item {
+      padding: 0 14px;
+      font-size: 14px;
+    }
+    .page-title {
+      font-size: 20px;
+    }
+    .btn-execute {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="content-container">
+
+  <!-- Top Navigation & Badges -->
+  <div class="top-nav">
+    <a href="#" class="btn-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      검색으로 돌아가기
+    </a>
+    <div class="demo-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      가상 DEMO 예시 (실제 연결 없음)
+    </div>
+  </div>
+
+  <!-- Header Title -->
+  <div class="header-block">
+    <h1 class="page-title">종목 비교</h1>
+    <p class="page-subtext">기준 ETF와 유사한 투자 전략·자산을 보유한 피어(Peer) 상품의 구조 및 운용 특성을 비교합니다.</p>
+  </div>
+
+  <!-- 3 Local Tabs -->
+  <div class="tab-nav">
+    <a href="#" class="tab-item">기초자산별 ETF 비교</a>
+    <a href="#" class="tab-item active">유사 ETF 비교</a>
+    <a href="#" class="tab-item">테마 비교</a>
+  </div>
+
+  <!-- Selection / Context Card: Similar Peer ETF Reference -->
+  <div class="card">
+    <div class="context-header">
+      <div class="context-info">
+        <span class="context-tag">비교 기준 ETF</span>
+        <span class="context-name">DEMO-INCOME (가상 커버드콜 인컴 ETF)</span>
+        <span class="context-desc">기준 종목과 전략·인컴 구조가 유사한 피어군 탐색</span>
+      </div>
+      <div class="search-input-group">
+        <input type="text" class="input-control" placeholder="기준 종목 변경 (예: DEMO-A)">
+        <button class="btn-search">변경</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Non-Guarantee Notice Banner -->
+  <div class="notice-banner">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span>유사 ETF 분류는 운용 전략 및 기초자산 특성 대조용이며, 동일한 투자 위험이나 수익률을 보장하지 않습니다.</span>
+  </div>
+
+  <!-- Stepwise Filter Pipeline -->
+  <div class="card filter-panel">
+    <div class="filter-header">
+      <div>
+        <div class="filter-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          단계적 비교 필터
+        </div>
+        <div class="filter-hint">전략 변경 시 하위 단계(방향, 배당 상태, 배당 주기)가 순차적으로 초기화됩니다.</div>
+      </div>
+      <button class="btn-reset">필터 전체 초기화</button>
+    </div>
+
+    <div class="pipeline-steps">
+      <!-- 1. 전략 -->
+      <div class="step-box">
+        <div class="step-label"><span class="step-num">1</span> 전략</div>
+        <select class="select-control">
+          <option value="ALL" selected>전체 전략</option>
+          <option value="BASE">본주(기초자산)</option>
+          <option value="INCOME">인컴·옵션</option>
+          <option value="LEV">레버리지</option>
+          <option value="SINGLE">단일종목</option>
+          <option value="UNCONFIRMED">미확인</option>
+        </select>
+      </div>
+
+      <!-- 2. 방향 -->
+      <div class="step-box">
+        <div class="step-label"><span class="step-num">2</span> 방향</div>
+        <select class="select-control">
+          <option value="ALL" selected>전체 방향</option>
+          <option value="LONG">롱</option>
+          <option value="INVERSE">인버스</option>
+          <option value="UNCONFIRMED">미확인</option>
+        </select>
+      </div>
+
+      <!-- 3. 배당 상태 -->
+      <div class="step-box">
+        <div class="step-label"><span class="step-num">3</span> 배당 상태</div>
+        <select class="select-control">
+          <option value="ALL" selected>전체 상태</option>
+          <option value="DIVIDEND">이력 있음</option>
+          <option value="NO_DIVIDEND">무배당</option>
+          <option value="UNCONFIRMED">미확인</option>
+        </select>
+      </div>
+
+      <!-- 4. 배당 주기 -->
+      <div class="step-box">
+        <div class="step-label"><span class="step-num">4</span> 배당 주기</div>
+        <select class="select-control">
+          <option value="ALL" selected>전체 주기</option>
+          <option value="MONTHLY">월</option>
+          <option value="QUARTERLY">분기</option>
+          <option value="SEMI">반기</option>
+          <option value="ANNUAL">연</option>
+          <option value="IRREGULAR">불규칙</option>
+          <option value="UNCONFIRMED">미확인</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Active Filter Chips -->
+    <div class="active-chips">
+      <span class="chips-label">적용된 조건:</span>
+      <span class="chip">
+        전략: 전체
+        <button class="chip-remove" title="해제">&times;</button>
+      </span>
+      <span class="chip">
+        방향: 전체
+        <button class="chip-remove" title="해제">&times;</button>
+      </span>
+      <span class="chip">
+        비교 기준: DEMO-INCOME 피어군
+      </span>
+    </div>
+
+    <!-- Global Execution Button -->
+    <div class="action-banner">
+      <button class="btn-execute">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        수익률·수수료·가격 하락 조회
+      </button>
+      <div class="action-disclaimer">
+        ※ 본 화면은 정적 시안으로 실제 연동 조회를 실행하지 않으며, 가격 하락은 배당 재투자 총수익률과 다른 가격 기준 지표입니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Results Desktop Table -->
+  <div class="table-responsive">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>티커 · 종목명</th>
+          <th>기초자산 (차이점)</th>
+          <th>전략 · 방향</th>
+          <th>배당 상태 · 주기</th>
+          <th>수익률</th>
+          <th>수수료</th>
+          <th>가격 하락</th>
+          <th>자료 출처 · 기준일</th>
+          <th>상세</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Row 1: DEMO-S1 -->
+        <tr>
+          <td>
+            <div class="stock-ticker">DEMO-S1</div>
+            <div class="stock-name">유사 프리미엄 인컴 ETF</div>
+          </td>
+          <td>
+            <span class="tag-badge">DEMO-BASE-A</span>
+            <div class="meta-info" style="margin-top:4px; color:#0369a1;">동일 지수 콜옵션 50% 매도형</div>
+          </td>
+          <td>
+            <span class="tag-badge tag-income">인컴·옵션</span>
+            <span class="tag-badge">롱</span>
+          </td>
+          <td>
+            <span class="tag-badge" style="background:#dcfce7; color:#166534;">이력 있음</span>
+            <span style="font-size:13px; color:var(--text-sub); margin-left:4px;">월배당</span>
+          </td>
+          <td>
+            <span class="status-before">조회 전</span>
+          </td>
+          <td>
+            <span class="status-before">조회 전</span>
+          </td>
+          <td>
+            <span class="status-before">조회 전</span>
+          </td>
+          <td>
+            <div class="meta-info">가상 예시 스냅샷</div>
+            <div class="meta-info">2026.11.03 기준</div>
+          </td>
+          <td>
+            <a href="#" class="link-detail">종목 상세 &rarr;</a>
+          </td>
+        </tr>
+
+        <!-- Row 2: DEMO-S2 -->
+        <tr>
+          <td>
+            <div class="stock-ticker">DEMO-S2</div>
+            <div class="stock-name">유사 타깃 커버드콜 ETF</div>
+          </td>
+          <td>
+            <span class="tag-badge">DEMO-BASE-B</span>
+            <div class="meta-info" style="margin-top:4px; color:#92400e;">유사 대형지수 일일 옵션 매도형</div>
+          </td>
+          <td>
+            <span class="tag-badge tag-income">인컴·옵션</span>
+            <span class="tag-badge">롱</span>
+          </td>
+          <td>
+            <span class="tag-badge" style="background:#dcfce7; color:#166534;">이력 있음</span>
+            <span style="font-size:13px; color:var(--text-sub); margin-left:4px;">주배당·월배당</span>
+          </td>
+          <td>
+            <span class="status-before">조회 전</span>
+          </td>
+          <td>
+            <span class="status-before">조회 전</span>
+          </td>
+          <td>
+            <span class="status-before">조회 전</span>
+          </td>
+          <td>
+            <div class="meta-info">가상 예시 스냅샷</div>
+            <div class="meta-info">2026.11.03 기준</div>
+          </td>
+          <td>
+            <a href="#" class="link-detail">종목 상세 &rarr;</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile / Tablet Responsive Cards (Shown at <= 1024px) -->
+  <div class="mobile-cards">
+    <!-- Card 1 -->
+    <div class="m-card">
+      <div class="m-card-header">
+        <div>
+          <div class="stock-ticker">DEMO-S1</div>
+          <div class="stock-name">유사 프리미엄 인컴 ETF</div>
+        </div>
+        <a href="#" class="link-detail">종목 상세</a>
+      </div>
+      <div class="m-field-grid">
+        <div class="m-field">
+          <span class="m-label">기초자산 (차이점)</span>
+          <span class="m-val">DEMO-BASE-A (콜옵션 50%)</span>
+        </div>
+        <div class="m-field">
+          <span class="m-label">전략 · 방향</span>
+          <span class="m-val">인컴·옵션 / 롱</span>
+        </div>
+        <div class="m-field">
+          <span class="m-label">배당 상태</span>
+          <span class="m-val" style="color:#166534;">이력 있음</span>
+        </div>
+        <div class="m-field">
+          <span class="m-label">배당 주기</span>
+          <span class="m-val">월배당</span>
+        </div>
+      </div>
+      <div class="m-metrics">
+        <div class="m-metric-item">
+          <div class="m-label">수익률</div>
+          <span class="status-before" style="margin-top:2px;">조회 전</span>
+        </div>
+        <div class="m-metric-item">
+          <div class="m-label">수수료</div>
+          <span class="status-before" style="margin-top:2px;">조회 전</span>
+        </div>
+        <div class="m-metric-item">
+          <div class="m-label">가격 하락</div>
+          <span class="status-before" style="margin-top:2px;">조회 전</span>
+        </div>
+      </div>
+      <div class="m-meta">
+        <span>출처: 가상 예시 스냅샷</span>
+        <span>기준일: 2026.11.03</span>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="m-card">
+      <div class="m-card-header">
+        <div>
+          <div class="stock-ticker">DEMO-S2</div>
+          <div class="stock-name">유사 타깃 커버드콜 ETF</div>
+        </div>
+        <a href="#" class="link-detail">종목 상세</a>
+      </div>
+      <div class="m-field-grid">
+        <div class="m-field">
+          <span class="m-label">기초자산 (차이점)</span>
+          <span class="m-val">DEMO-BASE-B (일일 옵션)</span>
+        </div>
+        <div class="m-field">
+          <span class="m-label">전략 · 방향</span>
+          <span class="m-val">인컴·옵션 / 롱</span>
+        </div>
+        <div class="m-field">
+          <span class="m-label">배당 상태</span>
+          <span class="m-val" style="color:#166534;">이력 있음</span>
+        </div>
+        <div class="m-field">
+          <span class="m-label">배당 주기</span>
+          <span class="m-val">주배당·월배당</span>
+        </div>
+      </div>
+      <div class="m-metrics">
+        <div class="m-metric-item">
+          <div class="m-label">수익률</div>
+          <span class="status-before" style="margin-top:2px;">조회 전</span>
+        </div>
+        <div class="m-metric-item">
+          <div class="m-label">수수료</div>
+          <span class="status-before" style="margin-top:2px;">조회 전</span>
+        </div>
+        <div class="m-metric-item">
+          <div class="m-label">가격 하락</div>
+          <span class="status-before" style="margin-top:2px;">조회 전</span>
+        </div>
+      </div>
+      <div class="m-meta">
+        <span>출처: 가상 예시 스냅샷</span>
+        <span>기준일: 2026.11.03</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -51,8 +51,7 @@
         aria-labelledby="stock-feedback-heading"
         tabindex="-1">
         <div>
-            <span class="studio-eyebrow">PRIVATE FEEDBACK</span>
-            <h2 id="stock-feedback-heading">요청·한마디 남기기</h2>
+            <h2 id="stock-feedback-heading">익명 요청 및 한마디</h2>
             <p>
                 {{ symbol }} 정보의 오류나 추가 요청을 익명으로 남겨 주세요.
                 작성 내용은 관리자만 확인합니다.
@@ -82,6 +81,9 @@
                 required
                 fluid
                 aria-describedby="feedback-help" />
+            <output class="feedback-character-count" for="feedback-message"
+                >{{ form.message.length }} / 1,000자</output
+            >
             <small id="feedback-help"
                 >10~1,000자 · 개인정보는 남기지 마세요.</small
             >
@@ -95,7 +97,7 @@
             </label>
             <Button
                 type="submit"
-                label="익명 의견 보내기"
+                label="요청 전송하기"
                 icon="pi pi-send"
                 :loading="busy"
                 :disabled="form.message.trim().length < 10" />
@@ -106,16 +108,17 @@
 <style scoped>
     .stock-feedback {
         display: grid;
-        grid-template-columns: minmax(0, 0.8fr) minmax(280px, 1.2fr);
-        gap: 24px;
-        margin-top: 32px;
-        padding: 28px;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        margin-top: 0;
+        padding: 20px;
         border: 1px solid var(--app-border);
-        border-radius: 18px;
+        border-radius: 12px;
         background: var(--app-surface);
     }
     h2 {
-        margin: 8px 0;
+        margin: 0 0 10px;
+        font-size: 18px;
     }
     p,
     small {
@@ -128,6 +131,11 @@
     label {
         font-size: 14px;
         font-weight: 650;
+    }
+    .feedback-character-count {
+        text-align: right;
+        color: var(--app-muted);
+        font-size: 12px;
     }
     .feedback-trap {
         position: absolute;

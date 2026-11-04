@@ -8,12 +8,13 @@
     import { familyRequest } from '@/services/familyPortfolio';
     const props = defineProps({
         memberName: { type: String, required: true },
+        showMemberName: { type: Boolean, default: true },
         accounts: { type: Array, required: true },
         busy: Boolean,
         error: { type: String, default: '' },
     });
     const emit = defineEmits(['submit', 'existing']);
-    const method = ref('manual');
+    const method = ref('document');
     const form = ref({
         institution: '',
         type: 'general',
@@ -28,8 +29,8 @@
         inspectionError = ref('');
     let generation = 0;
     const options = [
-        { label: '직접 입력', value: 'manual' },
         { label: '문서로 등록', value: 'document' },
+        { label: '직접 입력', value: 'manual' },
     ];
     const types = [
         { label: '일반', value: 'general' },
@@ -101,110 +102,131 @@
     }
 </script>
 <template>
-    <p>
-        명의자: <strong>{{ memberName }}</strong>
-    </p>
-    <SelectButton
-        v-model="method"
-        :options="options"
-        option-label="label"
-        option-value="value"
-        :allow-empty="false"
-        :disabled="busy || inspecting"
-        aria-label="계좌 등록 방법" />
-    <div v-if="method === 'document'" class="document">
-        <p>토스 거래내역 PDF에서 계좌 정보를 확인합니다.</p>
-        <label for="registration-pdf">토스 거래내역 PDF</label>
-        <input
-            id="registration-pdf"
-            type="file"
-            accept=".pdf,application/pdf"
-            :disabled="busy || inspecting"
-            @change="file = $event.target.files?.[0] || null" />
-        <label for="registration-password">PDF 비밀번호</label>
-        <InputText
-            id="registration-password"
-            v-model="password"
-            type="password"
-            autocomplete="off"
-            :disabled="busy || inspecting" />
-        <Button
-            label="계좌 정보 추출"
-            :loading="inspecting"
-            :disabled="busy || inspecting || !file || !password"
-            @click="inspect" />
-        <Message v-if="inspectionError" severity="error" :closable="false">{{
-            inspectionError
-        }}</Message>
-        <p v-if="identity">
-            추출된 명의: {{ identity.customerName || '확인할 수 없음' }} ·
-            {{ identity.maskedNumber || '끝 4자리 확인 필요' }}
+    <section class="account-registration" aria-label="계좌 등록">
+        <p v-if="showMemberName">
+            명의자: <strong>{{ memberName }}</strong>
         </p>
-    </div>
-    <form class="account-form" @submit.prevent="submit">
-        <label for="registration-institution">금융기관</label>
-        <InputText
-            id="registration-institution"
-            v-model="form.institution"
-            required
-            maxlength="100"
-            :disabled="busy || inspecting" />
-        <label for="registration-type">유형</label>
-        <Select
-            v-model="form.type"
-            input-id="registration-type"
-            :options="types"
+        <SelectButton
+            v-model="method"
+            :options="options"
             option-label="label"
             option-value="value"
-            :disabled="busy || inspecting" />
-        <label for="registration-alias">별칭</label>
-        <InputText
-            id="registration-alias"
-            v-model="form.alias"
-            required
-            maxlength="100"
-            :disabled="busy || inspecting" />
-        <label for="registration-last4">계좌 끝 4자리 (선택)</label>
-        <InputText
-            id="registration-last4"
-            v-model="form.last4"
-            maxlength="4"
-            pattern="[0-9]{4}"
-            inputmode="numeric"
-            autocomplete="off"
-            :disabled="busy || inspecting" />
-        <template v-if="method === 'document' && identity">
-            <label
-                ><input
-                    v-model="confirmed"
-                    type="checkbox"
-                    :disabled="busy"
-                    required />원본의 명의·계좌와 선택 가족을
-                확인했습니다.</label
+            :allow-empty="false"
+            :disabled="busy || inspecting"
+            aria-label="계좌 등록 방법" />
+        <div v-if="method === 'document'" class="document">
+            <div class="document-upload">
+                <p>토스 거래내역 PDF에서 계좌 정보를 확인합니다.</p>
+                <label for="registration-pdf">토스 거래내역 PDF</label>
+                <input
+                    id="registration-pdf"
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    :disabled="busy || inspecting"
+                    @change="file = $event.target.files?.[0] || null" />
+            </div>
+            <div class="document-extract">
+                <div class="registration-field">
+                    <label for="registration-password">PDF 비밀번호</label>
+                    <InputText
+                        id="registration-password"
+                        v-model="password"
+                        type="password"
+                        autocomplete="off"
+                        :disabled="busy || inspecting" />
+                </div>
+                <Button
+                    label="계좌 정보 추출"
+                    :loading="inspecting"
+                    :disabled="busy || inspecting || !file || !password"
+                    @click="inspect" />
+            </div>
+            <Message
+                v-if="inspectionError"
+                severity="error"
+                :closable="false"
+                >{{ inspectionError }}</Message
             >
-        </template>
-        <Message v-if="duplicates.length" severity="warn" :closable="false">
-            같은 기관·끝 4자리의 계좌가 있습니다. 같은 계좌인지 확인하세요.
+            <p v-if="identity" class="identified-summary">
+                추출된 명의: {{ identity.customerName || '확인할 수 없음' }} ·
+                {{ identity.maskedNumber || '끝 4자리 확인 필요' }}
+            </p>
+        </div>
+        <form class="account-form" @submit.prevent="submit">
+            <div class="registration-field">
+                <label for="registration-institution">금융기관</label>
+                <InputText
+                    id="registration-institution"
+                    v-model="form.institution"
+                    required
+                    maxlength="100"
+                    :disabled="busy || inspecting" />
+            </div>
+            <div class="registration-field">
+                <label for="registration-type">유형</label>
+                <Select
+                    v-model="form.type"
+                    input-id="registration-type"
+                    :options="types"
+                    option-label="label"
+                    option-value="value"
+                    :disabled="busy || inspecting" />
+            </div>
+            <div class="registration-field">
+                <label for="registration-alias">별칭</label>
+                <InputText
+                    id="registration-alias"
+                    v-model="form.alias"
+                    required
+                    maxlength="100"
+                    :disabled="busy || inspecting" />
+            </div>
+            <div class="registration-field">
+                <label for="registration-last4">계좌 끝 4자리 (선택)</label>
+                <InputText
+                    id="registration-last4"
+                    v-model="form.last4"
+                    maxlength="4"
+                    pattern="[0-9]{4}"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    :disabled="busy || inspecting" />
+            </div>
+            <template v-if="method === 'document' && identity">
+                <label class="identity-confirmation"
+                    ><input
+                        v-model="confirmed"
+                        type="checkbox"
+                        :disabled="busy"
+                        required />원본의 명의·계좌와 선택 가족을
+                    확인했습니다.</label
+                >
+            </template>
+            <Message v-if="duplicates.length" severity="warn" :closable="false">
+                같은 기관·끝 4자리의 계좌가 있습니다. 같은 계좌인지 확인하세요.
+                <Button
+                    v-for="account in duplicates"
+                    :key="account.id"
+                    :label="`${account.alias}에 자료 업로드`"
+                    :disabled="
+                        busy || !['owner', 'editor'].includes(account._role)
+                    "
+                    @click="$emit('existing', account.id)" />
+            </Message>
+            <Message v-if="error" severity="error" :closable="false">{{
+                error
+            }}</Message>
             <Button
-                v-for="account in duplicates"
-                :key="account.id"
-                :label="`${account.alias}에 자료 업로드`"
-                :disabled="busy || !['owner', 'editor'].includes(account._role)"
-                @click="$emit('existing', account.id)" />
-        </Message>
-        <Message v-if="error" severity="error" :closable="false">{{
-            error
-        }}</Message>
-        <Button
-            type="submit"
-            label="계좌 등록"
-            :loading="busy"
-            :disabled="
-                busy ||
-                inspecting ||
-                (method === 'document' && (!identity || !confirmed))
-            " />
-    </form>
+                type="submit"
+                label="계좌 등록"
+                :loading="busy"
+                :disabled="
+                    busy ||
+                    inspecting ||
+                    (method === 'document' && (!identity || !confirmed))
+                " />
+        </form>
+    </section>
 </template>
 <style scoped>
     .account-form,
@@ -217,5 +239,156 @@
         display: flex;
         align-items: flex-start;
         gap: 0.5rem;
+    }
+
+    .account-registration {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 960px;
+        margin: auto;
+        min-width: 0;
+        width: 100%;
+        padding: 24px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+    }
+    .account-registration > p {
+        font-size: 14px;
+        margin: 0;
+        color: var(--app-muted);
+    }
+    .account-registration :deep(.p-selectbutton) {
+        display: flex;
+        gap: 8px;
+    }
+    .account-registration :deep(.p-togglebutton) {
+        min-height: 44px;
+        padding: 0 20px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .account-registration :deep(.p-togglebutton-checked),
+    .account-registration
+        :deep(.p-togglebutton-checked .p-togglebutton-content) {
+        background: var(--app-accent);
+        color: var(--app-accent-contrast);
+    }
+    .document {
+        gap: 16px;
+        margin: 0;
+    }
+    .document-upload {
+        display: grid;
+        gap: 8px;
+        padding: 24px;
+        border: 2px dashed var(--app-border);
+        border-radius: 10px;
+        background: var(--app-bg);
+        text-align: center;
+    }
+    .document-upload p {
+        margin: 0;
+        color: var(--app-muted);
+        font-size: 13px;
+    }
+    .document-extract {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: end;
+        gap: 16px;
+    }
+    .document-extract :deep(.p-button) {
+        min-height: 44px;
+    }
+    .identified-summary {
+        padding: 14px 18px;
+        border: 1px solid var(--app-accent);
+        border-radius: 8px;
+        background: var(--app-accent-light);
+    }
+    .identity-confirmation {
+        padding: 14px 16px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-bg);
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .identity-confirmation input {
+        accent-color: var(--app-accent);
+        width: 18px;
+        height: 18px;
+    }
+    .document > p {
+        margin: 0;
+        color: var(--app-muted);
+        font-size: 13px;
+    }
+    .document input[type='file'] {
+        width: 100%;
+        min-height: 44px;
+        padding: 12px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-surface);
+    }
+    .account-form {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+    .registration-field {
+        display: grid;
+        gap: 6px;
+        min-width: 0;
+    }
+    .registration-field label {
+        font-size: 13px;
+        font-weight: 600;
+    }
+    .registration-field :deep(.p-inputtext),
+    .registration-field :deep(.p-select) {
+        width: 100%;
+        min-height: 44px;
+        border-radius: 8px;
+    }
+    .account-form > :not(.registration-field) {
+        grid-column: 1 / -1;
+    }
+    .account-form > .p-button {
+        justify-self: end;
+        min-height: 44px;
+    }
+    @media (max-width: 768px) {
+        .account-form,
+        .document-extract {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 640px) {
+        .account-registration {
+            padding: 16px;
+        }
+        .account-form {
+            padding: 0;
+        }
+        .account-registration :deep(.p-selectbutton) {
+            flex-direction: column;
+        }
+        .account-registration :deep(.p-togglebutton) {
+            width: 100%;
+        }
+        .document {
+            padding: 16px;
+        }
+        .account-form > .p-button {
+            justify-self: stretch;
+        }
     }
 </style>

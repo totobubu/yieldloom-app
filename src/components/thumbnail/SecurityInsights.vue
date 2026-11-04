@@ -148,6 +148,11 @@
 
 <template>
     <slot
+        name="summary"
+        :metrics="metrics"
+        :loading="loading"
+        :failed="failed" />
+    <slot
         name="history"
         :observations="data?.rocObservations ?? []"
         :loading="loading"
@@ -195,7 +200,7 @@
                 주세요.
             </p>
             <section
-                v-for="group in metricGroups"
+                v-for="group in $slots.summary ? [] : metricGroups"
                 :key="group.key"
                 class="metric-section"
                 :aria-label="group.title">

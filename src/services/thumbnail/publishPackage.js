@@ -22,13 +22,16 @@ export function createPublishPackage({
             ...normalizeCardPresentation(presentation),
             ...cardDimensions(presentation),
         },
-        cards: cards.map(({ kind, filename, text, sourceUrl, asOfDate }) => ({
-            kind,
-            filename,
-            text,
-            sourceUrl,
-            asOfDate,
-        })),
+        cards: cards.map(
+            ({ kind, filename, text, sourceUrl, asOfDate, measurement }) => ({
+                kind,
+                filename,
+                text,
+                sourceUrl,
+                asOfDate,
+                ...(measurement ? { measurement } : {}),
+            })
+        ),
     };
     const sources = cards
         .map(

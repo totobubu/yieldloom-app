@@ -19,6 +19,7 @@
               )
     );
     const expanded = ref(false);
+    const shortcutsOpen = ref(false);
     const providerQuery = ref('');
     const orderedCompanies = computed(() => {
         const available = new Set(props.companies ?? []);
@@ -52,7 +53,7 @@
         <div class="filter-group product-type-group">
             <div class="filter-label-row">
                 <span :id="`${idPrefix}-types`" class="filter-label"
-                    >상품 유형</span
+                    >공개 종목 유형 (단일 선택)</span
                 ><button
                     v-tooltip.bottom="{
                         value: '배당 이력·주기와 상품 정보를 기준으로 분류하며, 성장주·배당성장주·고배당주는 관련 목록과 ETF 편입 정보를 참고합니다. 유형은 서로 중복될 수 있습니다.',
@@ -64,6 +65,10 @@
                     :aria-describedby="`${idPrefix}-type-help`">
                     <i class="pi pi-question-circle" aria-hidden="true" />
                 </button>
+                <span v-if="!showHoldingHistory" class="public-type-note"
+                    >※ 보유 이력 등 개인 데이터와 무관한 공개 카탈로그
+                    분류입니다.</span
+                >
                 <span :id="`${idPrefix}-type-help`" class="studio-sr-only"
                     >배당 이력과 상품 정보를 기준으로 분류하며 유형은 서로
                     중복될 수 있습니다.</span
@@ -79,7 +84,6 @@
                     :label="option.label"
                     :severity="type === option.value ? undefined : 'secondary'"
                     :outlined="type !== option.value"
-                    rounded
                     :aria-pressed="type === option.value"
                     @click="$emit('update:type', option.value)" />
             </div>
@@ -88,56 +92,70 @@
             <div class="provider-heading">
                 <div class="provider-title">
                     <span :id="`${idPrefix}-providers`" class="filter-label"
-                        >운용사
-                        <span class="desktop-label">바로가기</span></span
+                        >운용사 필터:</span
                     >
-                    <span class="provider-count">{{
-                        company
-                            ? '1개 선택'
-                            : `전체 ${companies?.length ?? 0}개사`
-                    }}</span>
+                    <Button
+                        label="전체 운용사"
+                        :outlined="Boolean(company)"
+                        :severity="company ? 'secondary' : undefined"
+                        :aria-pressed="!company"
+                        @click="$emit('update:company', '')" />
+                    <Button
+                        label="주요 운용사 바로가기"
+                        severity="secondary"
+                        outlined
+                        :aria-expanded="shortcutsOpen"
+                        :aria-controls="`${idPrefix}-provider-list`"
+                        @click="shortcutsOpen = !shortcutsOpen" />
+                    <Button
+                        class="provider-expand"
+                        :label="expanded ? '접기' : '펼치기'"
+                        :icon="
+                            expanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'
+                        "
+                        icon-pos="right"
+                        severity="secondary"
+                        outlined
+                        :aria-expanded="expanded"
+                        :aria-controls="`${idPrefix}-provider-list`"
+                        @click="toggleExpanded" />
                 </div>
-                <Button
-                    label="선택 초기화"
-                    icon="pi pi-refresh"
-                    size="small"
-                    text
-                    severity="secondary"
-                    :disabled="!company"
-                    @click="$emit('update:company', '')" />
-            </div>
-            <div v-if="expanded" class="provider-search">
-                <label
-                    :for="`${idPrefix}-provider-search`"
-                    class="studio-sr-only"
-                    >운용사명 검색</label
-                >
-                <InputText
-                    :id="`${idPrefix}-provider-search`"
-                    v-model="providerQuery"
-                    placeholder="운용사명 빠른 검색"
-                    type="search"
-                    fluid />
+                <div class="provider-search-actions">
+                    <label
+                        :for="`${idPrefix}-provider-search`"
+                        class="studio-sr-only"
+                        >운용사명 검색</label
+                    >
+                    <InputText
+                        :id="`${idPrefix}-provider-search`"
+                        v-model="providerQuery"
+                        placeholder="운용사명 검색..."
+                        type="search"
+                        @update:model-value="expanded = true" />
+                    <Button
+                        label="선택 초기화"
+                        severity="secondary"
+                        outlined
+                        :disabled="!company"
+                        @click="$emit('update:company', '')" />
+                </div>
             </div>
             <div
+                v-if="expanded || shortcutsOpen"
                 :id="`${idPrefix}-provider-list`"
                 class="provider-chips"
                 :class="{ 'is-expanded': expanded }"
                 role="group"
                 :aria-labelledby="`${idPrefix}-providers`">
                 <Button
-                    label="전체 운용사"
-                    :severity="company ? 'secondary' : undefined"
-                    :aria-pressed="!company"
-                    size="small"
-                    @click="$emit('update:company', '')" />
-                <Button
-                    v-for="provider in matchingCompanies"
+                    v-for="provider in expanded
+                        ? matchingCompanies
+                        : matchingCompanies.slice(0, 15)"
                     :key="provider"
                     :label="provider"
                     :icon="company === provider ? 'pi pi-check' : undefined"
                     :severity="company === provider ? undefined : 'secondary'"
-                    size="small"
+                    :outlined="company !== provider"
                     :aria-pressed="company === provider"
                     @click="
                         $emit(
@@ -152,118 +170,125 @@
                 role="status">
                 일치하는 운용사가 없습니다.
             </p>
-            <Button
-                v-if="orderedCompanies.length > 8 || expanded"
-                class="provider-expand"
-                :label="
-                    expanded
-                        ? '운용사 접기'
-                        : `운용사 전체보기 (${orderedCompanies.length})`
-                "
-                :icon="expanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-                icon-pos="right"
-                severity="secondary"
-                size="small"
-                :aria-expanded="expanded"
-                :aria-controls="`${idPrefix}-provider-list`"
-                @click="toggleExpanded" />
         </div>
     </div>
 </template>
 <style scoped>
     .stock-filters {
         display: grid;
-        gap: 24px;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        min-width: 0;
     }
-    .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 24px;
-    }
-    .filter-label-row {
-        flex-shrink: 0;
-    }
-    .company-select {
-        width: min(100%, 420px);
-    }
-    .filter-label {
-        font-size: 14px;
-        font-weight: 650;
+    .product-type-group {
+        min-width: 0;
     }
     .filter-label-row {
         display: flex;
         align-items: center;
         gap: 6px;
+        margin-bottom: 8px;
+    }
+    .filter-label {
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .public-type-note {
+        margin-left: auto;
+        color: var(--app-muted);
+        font-size: 12px;
     }
     .filter-help-button {
-        display: inline-grid;
+        display: grid;
         place-items: center;
-        width: 28px;
-        height: 28px;
+        width: 20px;
+        height: 20px;
         padding: 0;
-        color: var(--app-muted);
         border: 0;
-        border-radius: 50%;
         background: transparent;
+        color: var(--app-muted);
         cursor: help;
     }
-    .filter-help-button:hover,
     .filter-help-button:focus-visible {
-        color: var(--app-accent);
-        background: var(--app-surface-muted);
-        outline: none;
+        outline: 2px solid var(--app-accent);
+        border-radius: 4px;
     }
     .filter-chips {
         display: flex;
-        flex-wrap: wrap;
         gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: thin;
     }
     .filter-chips :deep(.p-button) {
-        font-size: 13px;
-        padding: 8px 14px;
+        height: 44px;
         min-height: 44px;
+        flex-shrink: 0;
+        border-radius: 8px;
+        padding: 0 16px;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    .filter-chips :deep(.p-button[aria-pressed='true']) {
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgb(13 122 110 / 20%);
     }
     .provider-panel {
-        background: color-mix(
-            in srgb,
-            var(--app-accent) 5%,
-            var(--app-surface)
-        );
-        border-radius: 12px;
-        padding: 18px;
+        display: grid;
+        gap: 10px;
+        background: var(--app-bg);
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        padding: 12px 14px;
     }
-    .provider-heading,
-    .provider-title {
+    .provider-heading {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 10px;
         flex-wrap: wrap;
     }
-    .provider-heading {
-        justify-content: space-between;
-        margin-bottom: 12px;
+    .provider-title,
+    .provider-search-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
     }
-    .provider-heading > .p-button {
-        min-height: 44px;
+    .provider-title .filter-label {
+        font-size: 13px;
     }
-    .provider-count {
-        font-size: 11px;
+    .provider-panel :deep(.p-button) {
+        height: 36px;
+        min-height: 36px;
+        border-radius: 8px;
+        padding: 0 14px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    .provider-title :deep(.p-button[aria-pressed='true']) {
         color: var(--app-accent);
         background: color-mix(
             in srgb,
-            var(--app-accent) 9%,
+            var(--app-accent) 10%,
             var(--app-surface)
         );
-        padding: 3px 8px;
-        border-radius: 999px;
+        border-color: var(--app-accent);
+        font-weight: 600;
     }
-    .provider-search {
-        margin-bottom: 12px;
+    .provider-search-actions :deep(.p-inputtext) {
+        width: 220px;
+        height: 36px;
+        min-height: 36px;
+        padding: 0 10px;
+        font-size: 13px;
+        border-radius: 8px;
     }
     .provider-chips {
         display: flex;
-        flex-wrap: wrap;
         gap: 8px;
+        flex-wrap: wrap;
     }
     .provider-chips.is-expanded {
         max-height: 360px;
@@ -271,101 +296,32 @@
         padding: 3px;
         scrollbar-gutter: stable;
     }
-    .provider-chips > .p-button {
-        min-height: 44px;
-        border-radius: 12px;
-        font-size: 13px;
-        font-weight: 500;
-        padding: 8px 14px;
-        max-width: 100%;
-        overflow-wrap: anywhere;
-    }
-    .provider-chips > .p-button[aria-pressed='false'] {
-        background: var(--app-surface);
-        border-color: transparent;
-        color: var(--app-text);
-    }
-    .provider-chips > .p-button[aria-pressed='false']:hover {
-        border-color: var(--app-accent);
-        color: var(--app-accent);
-    }
-    .provider-chips:not(.is-expanded) > :nth-child(n + 17) {
-        display: none;
-    }
-    .provider-expand {
-        display: flex;
-        margin: 12px 0 0 auto;
-        min-height: 44px;
-        color: var(--app-accent);
-        background: color-mix(
-            in srgb,
-            var(--app-accent) 9%,
-            var(--app-surface)
-        );
-        border-color: transparent;
-    }
     .provider-empty {
+        margin: 0;
         color: var(--app-muted);
         font-size: 13px;
     }
-    @media (max-width: 767px) {
-        .stock-filters {
-            gap: 16px;
+    @media (max-width: 768px) {
+        .filter-chips :deep(.p-button) {
+            font-size: 13px;
+            padding-inline: 14px;
         }
-        .product-type-group {
-            display: block;
-            min-width: 0;
+        .filter-label-row {
+            flex-wrap: wrap;
         }
-        .product-type-group .filter-label-row {
-            display: none;
-        }
-        .filter-chips {
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            padding: 2px 2px 6px;
-        }
-        .filter-chips > .p-button {
-            flex-shrink: 0;
-        }
-        .provider-panel {
-            padding: 16px;
-            background: var(--app-surface);
-            border: 1px solid var(--app-border-subtle);
-            border-radius: 16px;
-        }
-        .provider-heading {
-            gap: 4px;
-        }
-        .provider-title {
-            gap: 6px;
-        }
-        .provider-title .filter-label {
-            font-size: 18px;
-        }
-        .desktop-label {
-            display: none;
-        }
-        .provider-heading > .p-button {
-            padding-inline: 4px;
-            font-size: 12px;
-        }
-        .provider-chips > .p-button {
-            border-radius: 16px;
-            padding: 10px 12px;
-        }
-        .provider-chips > .p-button[aria-pressed='false'] {
-            background: color-mix(
-                in srgb,
-                var(--app-accent) 6%,
-                var(--app-surface)
-            );
-        }
-        .provider-chips:not(.is-expanded) > :nth-child(n + 10) {
-            display: none;
-        }
-        .provider-expand {
+        .public-type-note {
             width: 100%;
-            justify-content: center;
+            margin-left: 0;
+            font-size: 11px;
+        }
+        .provider-title,
+        .provider-search-actions {
+            width: 100%;
+        }
+        .provider-search-actions :deep(.p-inputtext) {
+            width: 0;
+            min-width: 0;
+            flex: 1;
         }
     }
 </style>

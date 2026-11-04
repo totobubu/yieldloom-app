@@ -86,17 +86,6 @@ try {
     await page.route('**/api/family-portfolio?*', async (route) => {
         const url = new URL(route.request().url());
         requests.push(url.search);
-        if (url.searchParams.get('view') === 'preferences')
-            return route.fulfill({
-                json: {
-                    preferences: {
-                        enabled: false,
-                        browser: false,
-                        leadDays: 3,
-                    },
-                    revision: 0,
-                },
-            });
         if (url.searchParams.get('view') === 'statements') {
             shelfCalls++;
             return route.fulfill({ json: { reports: storedReports } });

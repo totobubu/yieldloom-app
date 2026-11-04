@@ -83,7 +83,7 @@ export function createFamilyPortfolioClient({
         });
         params.sort();
         const mutation = body !== undefined;
-        // Inspection, preferences and private reports do not change the account ledger.
+        // Inspection and private reports do not change the account ledger.
         const invalidatesLedger =
             mutation &&
             ![
@@ -91,7 +91,6 @@ export function createFamilyPortfolioClient({
                 'inspectAccountDocument',
                 'saveMonthlyStatement',
                 'deleteMonthlyStatement',
-                'savePreferences',
             ].includes(action);
         if (invalidatesLedger) invalidate('write');
         const generation = scope.generation;

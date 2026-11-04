@@ -48,12 +48,13 @@ ESLint 9 설정은 `eslint.config.js`에서 관리하며, 스타일 포맷은 Pr
 
 관리자 로그인·재설정 화면은 Stitch 인증 시안의 웹·모바일 배치를 반영합니다. Firebase 재설정 링크(`/admin/login?mode=resetPassword&oobCode=…`)의 검증·만료·재시도·변경 완료를 처리하며 작업 코드는 URL에서 제거하고 메모리에만 보관합니다. 메일에서 이 화면을 열려면 Firebase Console → Authentication → Templates의 비밀번호 재설정 작업 URL을 `https://yieldloom-app.vercel.app/admin/login`으로 설정해야 합니다. 이메일 템플릿 설정을 바꾸지 않으면 기존 Firebase 호스팅 재설정 화면을 이용합니다.
 
-공유정보 탭에서 1:1(720×720), 16:9(1280×720), 9:16(720×1280)과 기본·페이퍼·네이비 디자인을 선택합니다. 선택은 카드 5종의 미리보기·PNG·ZIP manifest·로컬 프리셋에 함께 반영됩니다. 기존 프리셋과 기본 PNG 파일명은 유지하며 앱 다크 모드와 출력 디자인은 독립적입니다. 디자인 원본 63개의 기능별 반영 현황은 [시안 대조표](docs/design/stitch-screen-mapping.json)와 [분석 문서](docs/design/STITCH_FEATURE_GAPS_KO.txt)에 기록합니다.
+공유정보 탭은 기본 정사각형(720×720) 카드로 표시·출력합니다. 상단 패널에서 카드 선택·개별 PNG 다운로드·선택 카드 ZIP·게시 문구 톤 변경과 실시간 미리보기를 함께 사용합니다. 다운로드 아이콘은 카드 선택과 독립적이며 기존 PNG 파일명을 유지합니다. 기존 프리셋의 비율·디자인 값은 저장소에서 삭제하지 않지만 이 화면에서는 정사각형 기본 디자인을 사용합니다. 요약 카드 당월 합계에는 공시일이 확인된 공식 확정 배당을 배당락일 전에도 포함하고 집계 중 표시를 유지합니다. 과거 시점 분석의 배당락일 기준은 유지합니다. 디자인 원본 63개의 기능별 반영 현황은 [시안 대조표](docs/design/stitch-screen-mapping.json)와 [분석 문서](docs/design/STITCH_FEATURE_GAPS_KO.txt)에 기록합니다.
 
 ```sh
 # 개발 서버(5173)에서 실행. 인증은 테스트 응답으로 대체하며 실제 메일·계정을 만들지 않습니다.
 node tests/auth-flows.browser.mjs
 node tests/share-presentation.browser.mjs
+node tests/share-card-actions.browser.mjs
 ```
 
 ## 공용 개발 스킬

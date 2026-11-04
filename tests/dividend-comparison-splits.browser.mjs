@@ -44,7 +44,7 @@ try {
                     await page.locator('.comparison-card').waitFor({ state: 'visible' });
                     if (width === 1440 && symbol === 'MSTY' && scenario === 'historical') {
                         const download = page.waitForEvent('download');
-                        await page.getByRole('button', { name: '비교 PNG 다운로드', exact: true }).click();
+                        await page.getByRole('button', { name: '배당 비교 PNG 다운로드', exact: true }).click();
                         await (await download).saveAs('/tmp/dividend-comparison-msty.png');
                     }
                 } else {

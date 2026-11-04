@@ -216,7 +216,7 @@ try {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.getByRole('tab', { name: '공유정보', exact: true }).click();
     await page
-        .getByRole('button', { name: '요약 PNG 다운로드', exact: true })
+        .getByRole('button', { name: '배당 요약 PNG 다운로드', exact: true })
         .waitFor({ state: 'visible' });
     await page
         .getByRole('checkbox', { name: '배당 일정', exact: true })

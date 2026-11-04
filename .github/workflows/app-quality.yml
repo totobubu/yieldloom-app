@@ -38,6 +38,7 @@ jobs:
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_*observation.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_publish_public_snapshots.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_public_content_release.py'
+            - run: python -m unittest discover -s tests -p 'test_extract_amount_fixed.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_validate_refresh_outputs.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_stock_collection.py'
             - run: npm run lint:check

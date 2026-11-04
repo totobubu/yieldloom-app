@@ -49,6 +49,65 @@
   기록하고 기존 파일·행 자체를 보존한다. 기존 amountFixed 전체가 새 공개 export에
   포함됐다는 대조는 아직 수행하지 않았으며, 런타임 전환이 그 자료 삭제의 근거가 아니다.
 
+## 확정 배당의 별도 추출과 식별자 검토
+
+`scripts/data_pipeline/extract_amount_fixed.py`는 승인된 시장 JSON 사본만 입력으로 받아
+원본을 읽기 전용으로 보존한다. 네트워크/R2 업로드/삭제 명령은 없다.
+
+```sh
+python scripts/data_pipeline/extract_amount_fixed.py extract \
+  --input-dir /approved/market-originals \
+  --output-dir var/data-management/amount-fixed/review-001 \
+  --catalog data-v2/catalog-seed.json
+python scripts/data_pipeline/extract_amount_fixed.py verify \
+  --input-dir /approved/market-originals \
+  --output-dir var/data-management/amount-fixed/review-001
+```
+
+새 출력 디렉터리만 허용한다. 입력 경로 안/상위나 public/dist에는 저장하지 않는다.
+보존 디렉터리는 권한 0700으로 생성하며 Git에서 제외된 `var/data-management`에 둘 수 있다.
+`originals/{sha256}.json`에 amountFixed 보유 원본 전체 바이트를 보관하고,
+`dividends.json`에 행 위치·원본 해시·원래 행·파일 metadata·출처 및 amountFixed의
+문자/숫자 구분과 원래 숫자 token을 저장한다. 날짜를 배당락일로 임의 해석하지 않는다.
+0·음수·중복·잘못된 값도 버리지 않고 필요 시 검토 표시한다. 다른 파일의 같은 행도
+별도 관측으로 유지하며 원본 보관 바이트만 동일 해시로 공유할 수 있다.
+
+R2 사본이면 `--source-manifest /approved/source-objects.json`을 추가한다. 이 파일은 입력
+디렉터리 밖에 두며 `{ "us/example.json": { "bucket": "원본버킷", "key": "data/us/example.json", "sha256": "사본의 SHA256" } }`
+형태다. 입력 파일 목록과 일치하고 각 SHA가 사본 바이트와 일치해야 한다. bucket/key·해시를
+행과 manifest에 보관하며, 제공된 원격 위치의 진위 자체를 이 로컬 도구가 검증한 것으로
+표현하지 않는다. 생략하면 원본 원격 위치는 null인 로컬 사본으로 남긴다.
+`amountFixed=0`도 필드 존재로 추출하고 `amountOriginal`, `amountSplitAdjustments`,
+`close`를 포함한 원래 행과 source metadata를 함께 보존한다. 출처가 없으면
+`sourceReferenceStatus=missing`이며 공식 URL을 생성하지 않는다.
+
+manifest에는 입력 파일 전체 목록/해시/바이트수, 파일별 대상 행 수, catalog 사본 해시와
+식별 검토 결과를 남긴다. verify는 원래 입력이 변하지 않았는지, 별도 원본 바이트가
+동일한지, 전체 추출 행·값·출처·식별 주장과 건수가 다시 추출한 결과와 같은지 대조한다.
+누락/변조/지원하지 않는 원본 구조는 실패하며, 원본이 없거나 대상 행이 0개인 상황을
+추출 완료로 포장하지 않는다. `deletionAuthorized=false`를 항상 유지한다.
+
+ISIN은 증권/금융상품 식별에 적합하지만 이 자료의 ISIN 진위가 검증됐다는 뜻은 아니다.
+[ISO 식별 범위](https://www.iso.org/news/ref2616.html)와
+[ANNA 식별자 안내](https://anna-web.org/identifiers/)에 따라 ISIN을 상품 식별 후보로
+사용하되, listing의 티커·마켓(가능하면 검증된 MIC)·통화·validFrom/validTo와 출처를
+별도 보관하는 설계를 권한다. 체크섬 통과도 공식 배정·해당 종목 일치의 증거는 아니다.
+현재 catalog는 자동 보정 값이 아닌 후보 목록이다. 별도 읽기 전용 점검에서
+2,175개 중 ISIN 누락 18개와 서로 다른 종목의 ISIN 중복이 보고됐으나 이 도구는 그
+진위를 재검증하지 않았다. 원본/행의 식별자 주장과 catalog 후보를 분리하고, 값이
+없거나 충돌하거나 마켓/통화가 다르면 `mappingStatus=unresolved`, `mergeAllowed=false`로
+남긴다. 한 ISIN의 여러 listing도 정당한지 검토 전에는 합치지 않는다. 유효 기간이
+없는 과거 관측에 현재 catalog의 listing 유효성을 소급 적용하지 않는다.
+
+로컬 검증: 추출/원본 보존, 소수 token, 출처·metadata, ISIN 누락/충돌/잘못된 마켓,
+행 단위 식별 충돌, 중복 관측, 변조 감지와 입력/출력 경계 및 R2 원본/분할 맥락 테스트 8개 통과.
+합성 실행 보존본은 `var/data-management/amount-fixed/synthetic-20261104-v2`이며 실제 자료가
+아니다. 실제 `public/data` 원본은 이 체크아웃에 없어 실제 추출 명령은 원본 누락으로
+실패했고 출력 보존본도 만들지 않았다. 실제 원본의 승인된 읽기 전용 사본 확보가 필요하다.
+R2 반영은 이 도구의 범위가 아니며, 대상 버킷의 실제 비공개 접근 권한·대상 prefix와
+검증 결과를 확인한 별도 승인 전에는 업로드하지 않는다. 공개 URL의 기존 403을 우회하거나
+private라는 경로명만으로 비공개를 보장한다고 보지 않는다.
+
 ## 소비자와 최신성
 
 `VITE_PUBLIC_CONTENT_BASE_URL` + `VITE_PUBLIC_CONTENT_CHANNEL`이 설정된 앱은

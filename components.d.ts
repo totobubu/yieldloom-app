@@ -11,8 +11,11 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AccountEvidencePanel: typeof import('./src/components/portfolio/AccountEvidencePanel.vue')['default']
     AccountRecoveryOverview: typeof import('./src/components/portfolio/AccountRecoveryOverview.vue')['default']
     AccountTossConnection: typeof import('./src/components/portfolio/AccountTossConnection.vue')['default']
+    AccountTossLocalSettings: typeof import('./src/components/portfolio/AccountTossLocalSettings.vue')['default']
+    AccountTossLocalUpdate: typeof import('./src/components/portfolio/AccountTossLocalUpdate.vue')['default']
     AdminStockCollection: typeof import('./src/components/stock/AdminStockCollection.vue')['default']
     AdSlot: typeof import('./src/components/ads/AdSlot.vue')['default']
     AdvancedPortfolioInsights: typeof import('./src/components/portfolio/AdvancedPortfolioInsights.vue')['default']
@@ -30,7 +33,6 @@ declare module 'vue' {
     Column: typeof import('primevue/column')['default']
     DataTable: typeof import('primevue/datatable')['default']
     Dialog: typeof import('primevue/dialog')['default']
-    DividendAlerts: typeof import('./src/components/portfolio/DividendAlerts.vue')['default']
     DividendCalendarExport: typeof import('./src/components/portfolio/DividendCalendarExport.vue')['default']
     DividendCalendarThumbnail: typeof import('./src/components/thumbnail/DividendCalendarThumbnail.vue')['default']
     DividendComparisonThumbnail: typeof import('./src/components/thumbnail/DividendComparisonThumbnail.vue')['default']

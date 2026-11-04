@@ -1,0 +1,50 @@
+:root {
+    color-scheme: light dark;
+    font-family: system-ui, sans-serif;
+}
+body {
+    margin: 0;
+}
+main {
+    max-width: 44rem;
+    padding: 1.2rem;
+    margin: auto;
+}
+section,
+form {
+    border: 1px solid #888;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-block: 1rem;
+}
+form {
+    display: grid;
+    gap: 0.7rem;
+}
+form[hidden] {
+    display: none;
+}
+input,
+button {
+    font: inherit;
+    padding: 0.6rem;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+output {
+    display: block;
+    overflow-wrap: anywhere;
+    padding: 1rem;
+    background: #8882;
+}
+label:has([type='checkbox']) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+button {
+    cursor: pointer;
+}
+#status {
+    overflow-wrap: anywhere;
+}

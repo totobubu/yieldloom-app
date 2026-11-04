@@ -1,6 +1,8 @@
 import { createCapitalFixture } from './capital-api-fixture.mjs';
 export function fxLinkFixture(uid = 'owner', ambiguous = false) {
-    const f = createCapitalFixture(uid);
+    const f = createCapitalFixture(uid, [], {
+        handlerOptions: { durableReadModels: true },
+    });
     f.records.set('investmentAccounts/AC', {
         familyId: 'F',
         permissions: { owner: 'owner', editor: 'editor', viewer: 'viewer' },

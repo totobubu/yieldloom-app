@@ -7,7 +7,8 @@
     import AssetMemberDialog from '@/components/portfolio/AssetMemberDialog.vue';
     import AssetAccountRegistration from '@/components/portfolio/AssetAccountRegistration.vue';
     import AccountTossConnection from '@/components/portfolio/AccountTossConnection.vue';
-    import { accountToss } from '@/services/accountToss.js';
+    import AccountEvidencePanel from '@/components/portfolio/AccountEvidencePanel.vue';
+    import { accountToss, localToss } from '@/services/accountToss.js';
     import AssetUploadDialog from '@/components/portfolio/AssetUploadDialog.vue';
     import { createScopedRefresh } from '@/services/scopedRefresh.js';
     import AccountRecoveryOverview from '@/components/portfolio/AccountRecoveryOverview.vue';
@@ -33,7 +34,6 @@
     } from '@/services/tossImportReview.js';
     import { useRoute, useRouter } from 'vue-router';
     import PortfolioDividendCalendar from '@/components/portfolio/PortfolioDividendCalendar.vue';
-    import DividendAlerts from '@/components/portfolio/DividendAlerts.vue';
     import PortfolioValuation from '@/components/portfolio/PortfolioValuation.vue';
     import PortfolioInsights from '@/components/portfolio/PortfolioInsights.vue';
     import Button from 'primevue/button';
@@ -58,13 +58,7 @@
 
     const router = useRouter();
     const route = useRoute();
-    const portfolioTabs = [
-        'overview',
-        'calendar',
-        'insights',
-        'assets',
-        'settings',
-    ];
+    const portfolioTabs = ['overview', 'calendar', 'insights', 'assets'];
     const portfolioTab = computed({
         get: () =>
             portfolioTabs.includes(route.query.tab)
@@ -75,7 +69,8 @@
     watch(
         () => route.query.tab,
         (tab) => {
-            if (['accounts', 'family', 'upload'].includes(tab))
+            if (tab === 'settings') portfolioTab.value = 'overview';
+            else if (['accounts', 'family', 'upload'].includes(tab))
                 portfolioTab.value = 'assets';
         },
         { immediate: true }
@@ -131,6 +126,7 @@
                   timeZoneName: 'short',
               }).format(accountCooldown.retryAt.value)
     );
+    const tossOpenRequest = ref(0);
     const selectedAccount = ref(''),
         kind = ref('transactions'),
         asOf = ref(''),
@@ -255,6 +251,7 @@
         }
         return { saved, failed, inferred };
     }
+    const capitalPanel = ref(null);
     const capital = ref({ entries: [], classifications: [], allocations: [] });
     const capitalLoading = ref(false),
         capitalError = ref(''),
@@ -1297,8 +1294,7 @@
                 ><Tab value="overview">한눈에 보기</Tab
                 ><Tab value="calendar">배당 캘린더</Tab
                 ><Tab value="insights">배당 분석</Tab
-                ><Tab value="assets">자산관리</Tab
-                ><Tab value="settings">설정</Tab></TabList
+                ><Tab value="assets">자산관리</Tab></TabList
             ><TabPanels
                 ><TabPanel value="overview"
                     ><div
@@ -1472,6 +1468,7 @@
                                     <PortfolioCapitalPanel
                                         v-if="activeAccount"
                                         :key="`${ownUid}-${selectedAccount}`"
+                                        ref="capitalPanel"
                                         :user="firebaseUser"
                                         :account-id="selectedAccount"
                                         :state="capital"
@@ -1483,6 +1480,20 @@
                                             )
                                         "
                                         @refresh="loadCapital" />
+                                    <AccountEvidencePanel
+                                        v-if="activeAccount"
+                                        :key="`${ownUid}:${selectedAccount}`"
+                                        :account="activeAccount"
+                                        :state="capital"
+                                        :loading="capitalLoading"
+                                        :ledger-error="capitalError"
+                                        :client="accountToss"
+                                        @review-cash="
+                                            capitalPanel?.openEntry(
+                                                $event.id,
+                                                $event.parts
+                                            )
+                                        " />
                                     <details
                                         class="all-account-recovery"
                                         @toggle="
@@ -1764,6 +1775,10 @@
                             :user-id="ownUid"
                             :busy="busy"
                             @select="selectedAccount = $event"
+                            @connect-toss="
+                                selectedAccount = $event;
+                                tossOpenRequest++;
+                            "
                             @upload="openUpload" />
                     </section>
                     <template v-if="space">
@@ -1786,7 +1801,15 @@
                                     placeholder="선택"
                             /></label>
                             <AccountTossConnection
+                                v-if="
+                                    /토스|toss/i.test(
+                                        activeAccount.institution || ''
+                                    )
+                                "
                                 :account-id="selectedAccount"
+                                :account-label="`${activeAccount.alias} · ${activeAccount.maskedNumber}`"
+                                :open-request="tossOpenRequest"
+                                :local-client="localToss"
                                 :client="accountToss" />
                             <template v-if="canConfigure">
                                 <form
@@ -2142,12 +2165,7 @@
                                     @close="fundingDialog = false" />
                             </template>
                         </Dialog>
-                    </template> </TabPanel
-                ><TabPanel value="settings">
-                    <DividendAlerts
-                        v-if="portfolioTab === 'settings'"
-                        :key="`alert-settings:${ownUid}`"
-                        :show-upcoming="false" /> </TabPanel></TabPanels
+                    </template> </TabPanel></TabPanels
         ></Tabs>
         <AssetMemberDialog
             v-model:visible="memberDialog"

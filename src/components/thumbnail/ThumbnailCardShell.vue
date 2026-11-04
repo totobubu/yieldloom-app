@@ -44,8 +44,6 @@
             <slot name="header">
                 <div class="thumbnail-card-title-stack">
                     <div class="thumbnail-card-context">
-                        <span>TOTTOBUBU DIVIDEND SCHEDULE</span>
-                        <i aria-hidden="true">•</i>
                         <span class="thumbnail-card-context-label">{{
                             contextLabel
                         }}</span>
@@ -74,9 +72,6 @@
             <span class="thumbnail-card-footer-note">
                 <slot name="footer" />
             </span>
-            <span class="thumbnail-card-footer-brand"
-                >토또부부의 배당 스튜디오</span
-            >
         </footer>
     </section>
 </template>

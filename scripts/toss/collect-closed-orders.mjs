@@ -136,7 +136,7 @@ function validateOrder(order) {
     }
 }
 
-function parsePage(raw, token, status = 'CLOSED') {
+export function parseTossOrderPage(raw, token, status = 'CLOSED') {
     // Never archive credentials accidentally reflected by an upstream service.
     if (token && raw.includes(token)) stop('invalid_response');
     let payload;
@@ -177,6 +177,7 @@ function parsePage(raw, token, status = 'CLOSED') {
     for (const order of result.orders) validateOrder(order);
     return result;
 }
+const parsePage = parseTossOrderPage;
 
 function optionsFor({
     accountSeq,
@@ -249,6 +250,7 @@ function retryDelay(headers, now = Date.now()) {
         /^\d+(?:\.\d+)?$/.test(reset ?? '') ? Number(reset) * 1000 : 0
     );
 }
+export { retryDelay as tossRetryDelay };
 
 async function responseBytes(response) {
     const reader = response.body?.getReader();

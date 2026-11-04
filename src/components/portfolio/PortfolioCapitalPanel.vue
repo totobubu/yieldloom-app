@@ -93,11 +93,11 @@
                 unknown: amount,
             };
     }
-    async function openEntry(id) {
+    async function openEntry(id, proposedParts) {
         if (!cashReview.value) return;
         cashReview.value.open = true;
         await nextTick();
-        await reviewList.value?.openEntry(id);
+        await reviewList.value?.openEntry(id, proposedParts);
     }
     defineExpose({ openEntry });
     async function save(input) {
@@ -125,7 +125,12 @@
         aria-label="투자 원금 대비 회수 현황">
         <div class="heading">
             <div>
-                <h2>선택 계좌 원금 회수</h2>
+                <h2>저장 분류 기준 원금 회수</h2>
+                <p>
+                    저장된 현금 입출금 분류의 합계입니다. 매매 손익·기초
+                    잔액·자료 누락까지 검증한 최종 남은 원금은 아래 자료
+                    출처·계산 근거에서 구분해 확인하세요.
+                </p>
             </div>
             <button
                 type="button"

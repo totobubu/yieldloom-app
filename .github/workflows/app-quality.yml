@@ -106,9 +106,11 @@ jobs:
                   CAPITAL_TEST_URL=http://127.0.0.1:5175 node tests/cash-fx-links.browser.mjs
                   CAPITAL_TEST_URL=http://127.0.0.1:5175 node tests/portfolio-capital.browser.mjs
                   FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/account-recovery-reads.browser.mjs
+                  FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/portfolio-calendar.browser.mjs
                   node tests/portfolio-enhancements.browser.mjs
                   node tests/portfolio-import-review.browser.mjs
                   node tests/mobile-import-feedback.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-partial-public.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/public-dividend-review.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/share-monthly-history.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/dividend-comparison-splits.browser.mjs

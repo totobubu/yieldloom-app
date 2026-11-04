@@ -1,8 +1,12 @@
 // Synthetic in-memory serializable transactions; never connects to a database.
 import { capitalHandler } from '../../lib/portfolio-capital-handler.js';
-export function createCapitalFixture(uid = 'owner', initialRecords = []) {
-    const records = new Map(initialRecords);
-    let transactionQueue = Promise.resolve();
+export function createCapitalFixture(
+    uid = 'owner',
+    initialRecords = [],
+    options = {}
+) {
+    const records = options.records || new Map(initialRecords);
+    if (!records.transactionQueue) records.transactionQueue = Promise.resolve();
     const reads = [],
         usage = [];
     const ref = (path) => ({
@@ -12,16 +16,20 @@ export function createCapitalFixture(uid = 'owner', initialRecords = []) {
             return snapshot(path);
         },
     });
-    const snapshot = (path) => ({
-        id: path.split('/').at(-1),
-        exists: records.has(path),
-        data: () => records.get(path),
-    });
+    const snapshot = (path) => {
+        const value = structuredClone(records.get(path));
+        return {
+            id: path.split('/').at(-1),
+            exists: records.has(path),
+            data: () => value,
+        };
+    };
     const db = {
         doc: ref,
         collection: (path) => {
             const get = async (field, value) => {
                 reads.push(path);
+                await options.onCollectionRead?.(path);
                 return {
                     docs: [...records.keys()]
                         .filter(
@@ -50,12 +58,17 @@ export function createCapitalFixture(uid = 'owner', initialRecords = []) {
                 const result = await fn({
                     get: async (r) => snapshot(r.path),
                     set: (r, d) => writes.push([r.path, d]),
+                    delete: (r) => writes.push([r.path, undefined]),
                 });
-                for (const [p, d] of writes) records.set(p, d);
+                for (const [p, d] of writes) {
+                    if (d === undefined) records.delete(p);
+                    else records.set(p, structuredClone(d));
+                    options.onWrite?.(p);
+                }
                 return result;
             };
-            const result = transactionQueue.then(operation);
-            transactionQueue = result.catch(() => {});
+            const result = records.transactionQueue.then(operation);
+            records.transactionQueue = result.catch(() => {});
             return result;
         },
     };
@@ -67,6 +80,8 @@ export function createCapitalFixture(uid = 'owner', initialRecords = []) {
         database: () => db,
         timestamp: () => 'now',
         onReadUsage: (row) => usage.push(row),
+        durableReadModels: false, // Baseline contract tests also cover the legacy rollback path.
+        ...options.handlerOptions,
     });
     const call = async (body, method = 'POST', query = {}) => {
         let status, data;
@@ -86,5 +101,5 @@ export function createCapitalFixture(uid = 'owner', initialRecords = []) {
         );
         return { status, data };
     };
-    return { call, records, reads, usage };
+    return { call, records, reads, usage, db };
 }

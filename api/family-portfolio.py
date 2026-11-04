@@ -21,7 +21,7 @@ from api.server_cors import configure_cors
 from api.firebase_credential import parse_firebase_credential
 from api.portfolio_pdf_secret import seal_password, open_password
 from api.portfolio_spreadsheet import inspect_spreadsheet, mapped_spreadsheet, standard_xlsx
-from api.portfolio_statements import monthly_reports, change_monthly_report, alert_preferences, save_alert_preferences
+from api.portfolio_statements import monthly_reports, change_monthly_report
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 3 * 1024 * 1024
@@ -716,7 +716,7 @@ def route():
         uid = claims['uid']
         if request.method == 'GET':
             if request.args.get('view') == 'preferences':
-                return jsonify(alert_preferences(db, uid, read_snapshot=read_snapshot))
+                raise PortfolioError('자동 배당 알림 기능은 종료되었습니다.', 410)
             if request.args.get('view') == 'statements':
                 try:
                     ids = json.loads(request.args.get('accountIds', '[]'))
@@ -772,7 +772,7 @@ def route():
         elif action in {'saveMonthlyStatement', 'deleteMonthlyStatement'}:
             result = change_monthly_report(db, uid, body, load=load, read_snapshot=read_snapshot, now=now, transactional=firestore.transactional, delete=action == 'deleteMonthlyStatement')
         elif action == 'savePreferences':
-            result = save_alert_preferences(db, uid, body, read_snapshot=read_snapshot, transactional=firestore.transactional)
+            raise PortfolioError('자동 배당 알림 기능은 종료되었습니다.', 410)
         elif action == 'previewManualHoldings':
             result = preview_manual_holdings(db, uid, body)
         elif action == 'ensurePersonal':

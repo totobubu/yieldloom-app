@@ -38,9 +38,9 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 				<article v-for="(row, index) in historyRows" :key="row.month"
 					:class="{ latest: index === historyRows.length - 1 && row.total != null, missing: row.total == null }"><span>{{ row.month }}</span><b>{{
 						row.total == null ? '자료 없음' : usd(row.total, 4)
-					}}</b><em v-if="row.partial && row.total != null">집계 중</em></article>
+					}}</b><em v-if="row.partial">집계 중</em></article>
 			</div>
-            <p class="history-note">배당락일 기준 · {{ data.referenceData ? '참고 주당 세전 금액 합계' : '확인된 주당 세전 금액 합계' }}</p>
+            <p class="history-note">배당락일 기준 세전 합계 · {{ data.referenceData ? '참고 자료' : '당월 확정 공시 포함' }}</p>
 		</section>
 		<template #footer><span v-if="data.referenceData">Yahoo Finance 참고 배당 · 검토 필요 · </span>주당 USD 기준 · 세후 금액은 15% 원천징수 단순 가정</template>
 	</ThumbnailCardShell>
@@ -59,7 +59,7 @@ const historyRows = computed(() => chartRows.value.slice(-3));
 .hero {
 	display: flex;
 	height: 100%;
-	padding: 24px;
+	padding: 20px;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;

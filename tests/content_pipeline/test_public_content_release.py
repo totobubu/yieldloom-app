@@ -106,6 +106,30 @@ class PublicContentTests(unittest.TestCase):
         restore(self.store, 'bucket', self.root, channel)
         self.assertEqual(json.loads((self.root / 'distribution-ticker-test.json').read_text())['history'][0]['amount'], '0.10')
 
+    def test_fixed_dividend_and_source_survive_and_cannot_be_removed(self):
+        fixed = {'amountFixed': '0.123400', 'date': '2026-01-01',
+                 'source': {'url': 'https://issuer.example/notice', 'sha256': 'issuer-evidence'}}
+        self.write('distribution-ticker-test.json', {'history': [fixed]})
+        self.publish()
+        manifest = next(json.loads(body) for key, body in self.store.data.items() if key.endswith('/manifest.json'))
+        sha = manifest['files']['distribution-ticker-test.json']['sha256']
+        body = self.store.data[f'public-content/production/objects/{sha}.json']
+        self.assertEqual(json.loads(body)['history'], [fixed])
+        self.write('distribution-ticker-test.json', {'history': [{'date': '2026-01-01'}]})
+        self.store.writes.clear()
+        with self.assertRaisesRegex(ValueError, 'History loss'):
+            self.publish()
+        self.assertEqual(self.store.writes, [])
+
+    def test_legacy_mixed_price_and_fixed_dividend_file_is_untouched(self):
+        mixed = self.root / 'data' / 'us' / 'example.json'
+        mixed.parent.mkdir(parents=True)
+        original = b'{"backtestData":[{"date":"2026-01-01","close":10,"amountFixed":0.1234,"sourceUrl":"https://issuer.example"}]}'
+        mixed.write_bytes(original)
+        self.publish()
+        self.assertEqual(mixed.read_bytes(), original)
+        self.assertFalse(any('/data/' in key for key in self.store.data))
+
     def test_missing_reference_and_validation_failure_write_nothing(self):
         (self.root / 'distribution-ticker-test.json').unlink()
         with self.assertRaisesRegex(ValueError, 'Missing or unsafe'):

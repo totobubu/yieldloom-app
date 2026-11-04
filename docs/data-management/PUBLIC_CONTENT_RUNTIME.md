@@ -108,6 +108,66 @@ R2 반영은 이 도구의 범위가 아니며, 대상 버킷의 실제 비공�
 검증 결과를 확인한 별도 승인 전에는 업로드하지 않는다. 공개 URL의 기존 403을 우회하거나
 private라는 경로명만으로 비공개를 보장한다고 보지 않는다.
 
+## 실제 R2 읽기 점검과 무손실 전송 경로 (2026-11-04 후속)
+
+로컬에 원본이 없는 사실과 원격 원본 접근 가능성은 다르다. 승인된 Cloudflare 연결의
+R2 List/Get API로 `divgrow-data`의 아래 경로를 읽었다. 전체 원본 다운로드나 무손실
+추출 완료를 뜻하지 않는다. 목록 pagination을 도구 안에서 끝까지 수행한 결과다.
+
+| Prefix | 객체 수 | Bytes |
+| --- | ---: | ---: |
+| data/bats/ | 19 | 650,897 |
+| data/kosdaq/ | 1,309 | 579,862,238 |
+| data/kospi/ | 36 | 16,605,024 |
+| data/nasdaq/ | 333 | 383,602,100 |
+| data/nyse/ | 1,843 | 1,861,232,167 |
+| 합계 | 3,540 | 2,841,952,426 |
+
+TSLY 원격 표본의 전체 history 1,014행 중 amountFixed 88행, ULTY는 704행 중
+97행이었다. 각각 해당 행 모두 close를 함께 보유한다. ULTY의 해당 행 중
+amountOriginal 54행, amountSplitAdjustments 51행을 확인했다. 원문 값은 로그에
+출력하지 않았으며 이 두 표본을 전체 배당 이력 완전성으로 일반화하지 않는다.
+
+현재 Cloudflare 연결의 Get Object는 파싱된 JSON 객체를 반환한다. 노출된 반환형에는
+원문 응답 바이트/숫자 token/응답 헤더를 가져오는 옵션이 없다. 이 객체를 JSON으로
+재직렬화한 해시를 R2 원본의 SHA라고 부르거나 원문 무손실 사본으로 저장하지 않았다.
+실제 raw 전송에는 별도 승인된 S3 읽기 연결이 필요하다. 환경의 R2 키·세션 토큰,
+.env.r2, AWS profile/credential 및 Cloudflare CLI 자격증명은 현재 구성되어 있지 않다.
+임시 R2 자격증명 발급 API도 parentAccessKeyId가 필수이므로 원래 키 없이 발급하지 않았다.
+공개 도메인의 기존 403을 다른 주소로 우회하지 않았다.
+
+`scripts/data_pipeline/download_market_originals.py`는 위 버킷과 다섯 prefix만 List/Get한다.
+새 비공개 로컬 디렉터리에 시장 폴더를 유지해 raw 바이트를 stream 저장하고, 객체별
+bucket/key/SHA·ETag·바이트수와 전/후 목록을 대조한다. Get에는 IfMatch를 적용하며
+도중 원본 변경·전송 잘림·목록 변경은 실패한다. 부분 파일은 미완료 표시로 보존하고
+검증된 source-objects.json을 발행하지 않는다. 원격 쓰기/삭제 명령은 없다.
+기존 download_data_from_r2.py의 파일명 평탄화/--clear 경로는 사용하지 않는다.
+
+관리형 환경의 비밀 설정에 **기존** bucket-scoped object-read-only R2 자격증명을
+연결한 뒤 아래 명령을 사용한다. 비밀값을 채팅·명령 인자·Git 파일에 넣지 않는다.
+요구 변수는 R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY이며 임시 자격증명은
+R2_SESSION_TOKEN 또는 AWS_SESSION_TOKEN도 지원한다. R2 버킷/권한 확대나 새로운 토큰
+발급은 이 코드가 수행하지 않는다. boto3는 저장소 requirements-workflow.txt에 있다.
+
+```sh
+python scripts/data_pipeline/download_market_originals.py \
+  --output-dir var/data-management/amount-fixed/r2-actual-001/download
+python scripts/data_pipeline/extract_amount_fixed.py extract \
+  --input-dir var/data-management/amount-fixed/r2-actual-001/download/sources \
+  --source-manifest var/data-management/amount-fixed/r2-actual-001/download/source-objects.json \
+  --catalog data-v2/catalog-seed.json \
+  --output-dir var/data-management/amount-fixed/r2-actual-001/extracted
+python scripts/data_pipeline/extract_amount_fixed.py verify \
+  --input-dir var/data-management/amount-fixed/r2-actual-001/download/sources \
+  --output-dir var/data-management/amount-fixed/r2-actual-001/extracted
+```
+
+전송+추출 통합, raw 숫자 token·원격 위치 보존, truncated stream 및 동시 원본 변경
+차단 등 전송 테스트 3개와 추출 테스트 8개가 통과했다. 실제 전송 명령은 자격증명
+미연결을 확인하고 네트워크 Get 전에 종료했다. 실제 원격 점검 증거는 Git에서 제외된
+`var/data-management/r2-readonly-check-20261104/report.json`에 있다. R2/공개 저장소로
+자료를 업로드하지 않았고 원본·정책·권한을 변경하지 않았다.
+
 ## 소비자와 최신성
 
 `VITE_PUBLIC_CONTENT_BASE_URL` + `VITE_PUBLIC_CONTENT_CHANNEL`이 설정된 앱은

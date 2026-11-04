@@ -1,5 +1,6 @@
 <script setup>
     import { computed, ref, watch } from 'vue';
+    import brandSymbol from '@/assets/brand/stitch-symbol.png';
     import { useRoute, useRouter } from 'vue-router';
     import { signOut } from 'firebase/auth';
     import { auth, authLoading, firebaseUser } from '@/services/firebaseClient';
@@ -66,8 +67,12 @@
                     class="studio-brand"
                     to="/"
                     aria-label="모으멍 배당달력 홈"
-                    ><span class="brand-mark"
-                        ><i class="pi pi-chart-bar" aria-hidden="true" /></span
+                    ><span class="brand-mark brand-mark--logo"
+                        ><img
+                            :src="brandSymbol"
+                            alt=""
+                            width="36"
+                            height="36" /></span
                     ><span
                         >모으멍
                         <span class="brand-secondary">배당달력</span></span
@@ -341,6 +346,14 @@
         display: inline-grid;
         place-items: center;
         flex-shrink: 0;
+    }
+    .brand-mark--logo {
+        background: transparent;
+    }
+    .brand-mark--logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
     }
     .desktop-nav {
         height: 100%;

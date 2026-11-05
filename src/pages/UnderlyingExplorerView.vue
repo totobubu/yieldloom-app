@@ -1,6 +1,7 @@
 <script setup>
     import { computed, onScopeDispose, ref, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
+    import { useHead } from '@vueuse/head';
     import Select from 'primevue/select';
     import Button from 'primevue/button';
     import Tag from 'primevue/tag';
@@ -50,6 +51,7 @@
                 (item) => item.value === route.query.view
             ) ?? comparisonSections[0]
     );
+    useHead({ title: computed(() => section.value.label) });
     const theme = computed(
         () =>
             comparisonThemes.find((item) => item.value === route.query.theme) ??

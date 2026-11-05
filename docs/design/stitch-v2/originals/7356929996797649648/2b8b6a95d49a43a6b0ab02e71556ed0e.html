@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_blank" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-fixed-variant":"#5a4300","primary":"#005f55","surface":"#f7f9fb","surface-container-low":"#f2f4f6","on-surface-variant":"#3e4947","primary-fixed-dim":"#7dd6c8","on-primary-container":"#abfff0","on-surface":"#191c1e","on-tertiary-fixed-variant":"#005047","tertiary-fixed-dim":"#3cddc7","tertiary-fixed":"#62fae3","secondary-fixed":"#ffdf9a","tertiary":"#005f54","surface-container-lowest":"#ffffff","surface-bright":"#f7f9fb","tertiary-container":"#007a6d","on-secondary":"#ffffff","on-primary":"#ffffff","outline":"#6e7977","inverse-primary":"#7dd6c8","outline-variant":"#bdc9c6","on-tertiary-container":"#a8ffef","secondary":"#785a00","error":"#ba1a1a","primary-container":"#0d7a6e","inverse-on-surface":"#eff1f3","on-tertiary":"#ffffff","surface-variant":"#e0e3e5","on-tertiary-fixed":"#00201c","surface-container-highest":"#e0e3e5","surface-tint":"#006b60","on-primary-fixed-variant":"#005048","secondary-container":"#fdc425","primary-fixed":"#99f3e4","secondary-fixed-dim":"#f7be1d","background":"#f7f9fb","surface-container":"#eceef0","on-secondary-container":"#6d5200","surface-dim":"#d8dadc","inverse-surface":"#2d3133","on-error":"#ffffff","on-secondary-fixed":"#251a00","surface-container-high":"#e6e8ea","on-background":"#191c1e","on-primary-fixed":"#00201c","error-container":"#ffdad6","on-error-container":"#93000a"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-lg":"1rem",gutter:"1rem","gutter-lg":"1.5rem","margin-md":"1.5rem",margin:"1rem","space-xs":"0.25rem","space-md":"0.75rem","space-xl":"1.5rem","margin-lg":"2rem","space-sm":"0.5rem"},fontFamily:{"label-sm":["JetBrains Mono"],"body-md":["Hanken Grotesk"],"body-lg":["Hanken Grotesk"],"display-lg":["Hanken Grotesk"],"label-md":["JetBrains Mono"],"headline-lg":["Hanken Grotesk"],"display-lg-mobile":["Hanken Grotesk"],"body-sm":["Hanken Grotesk"],"headline-sm":["Hanken Grotesk"],"title-md":["Hanken Grotesk"]},fontSize:{"label-sm":["11px",{lineHeight:"14px",fontWeight:"500"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"display-lg":["36px",{lineHeight:"44px",fontWeight:"700"}],"label-md":["13px",{lineHeight:"16px",fontWeight:"500"}],"headline-lg":["24px",{lineHeight:"32px",fontWeight:"600"}],"display-lg-mobile":["28px",{lineHeight:"36px",fontWeight:"700"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"title-md":["16px",{lineHeight:"24px",fontWeight:"600"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface min-h-screen antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><main class="w-full min-h-screen bg-surface px-margin md:px-margin-md lg:px-margin-lg py-margin md:py-margin-md lg:py-margin-lg"><div class="w-full max-w-[1440px] mx-auto"><div class="flex flex-col w-full text-on-surface" style="word-break: keep-all;">
+<!-- Top Bar -->
+<div class="flex items-center justify-between py-space-sm mb-space-md">
+<button class="inline-flex items-center gap-1.5 h-11 px-4 rounded-lg bg-surface-container-lowest text-primary text-body-md font-body-md hover:bg-surface-container-low transition-colors shadow-sm focus:outline-none" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span>검색으로 돌아가기</span>
+</button>
+<div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-secondary-container/20 text-on-secondary-container text-label-sm font-label-sm">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>예시 데이터</span>
+</div>
+</div>
+<!-- Common Stock Summary Card -->
+<section class="bg-surface-container-lowest rounded-xl shadow-sm p-space-md md:p-space-lg mb-space-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pb-space-md">
+<div class="flex flex-col gap-1">
+<div class="flex items-center flex-wrap gap-2">
+<h1 class="text-headline-lg font-headline-lg text-on-surface tracking-tight">DEMO-A</h1>
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-primary-container/10 text-primary text-label-sm font-label-sm">예시 배당 ETF</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container text-on-surface-variant text-label-sm font-label-sm">USD ($)</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">가상 고배당 인덱스 ETF · 예시 운용사 (ETF)</p>
+</div>
+<div class="flex items-center">
+<a class="inline-flex items-center justify-center gap-1.5 h-11 px-5 rounded-lg bg-primary-container text-on-primary font-title-md text-title-md hover:opacity-95 shadow-sm transition-opacity" href="#share-generator">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span>공유 카드 만들기</span>
+</a>
+</div>
+</div>
+<!-- 4 Key Metrics -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-sm py-space-md">
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between min-h-[92px]">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>현재 가격</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">USD</span>
+</div>
+<div class="mt-1">
+<div class="text-headline-sm font-headline-sm font-label-md text-on-surface">$50.00</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant mt-0.5">전일 $49.50</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between min-h-[92px]">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>전일 대비 변동</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">trending_up</span>
+</div>
+<div class="mt-1">
+<div class="text-headline-sm font-headline-sm font-label-md text-primary">+0.50 (+1.01%)</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant mt-0.5">종가 기준 반영</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between min-h-[92px]">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>최근 12개월 주당 배당금</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">TTM</span>
+</div>
+<div class="mt-1">
+<div class="text-headline-sm font-headline-sm font-label-md text-on-surface">$2.00</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant mt-0.5 truncate" title="완전한 12개월 집계치 (단회 연율화 아님)">완전한 12개월 집계치 (단회 연율화 아님)</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between min-h-[92px]">
+<div class="flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>최근 시세 대비 세전 배당률</span>
+<span class="inline-block w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<div class="mt-1">
+<div class="text-headline-sm font-headline-sm font-label-md text-primary">4.00%</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant mt-0.5">연율화 추정치 아닌 실적 기준</div>
+</div>
+</div>
+</div>
+<!-- Sub-info Bar -->
+<div class="pt-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm text-body-sm font-body-sm text-on-surface-variant bg-surface-container-lowest">
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-1 text-label-sm font-label-sm">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline">schedule</span>
+          시세 기준: 2026.11.03
+        </span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-outline">event_available</span>
+          배당 기준: 2026.10.20
+        </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-fixed/50 text-on-secondary-fixed-variant">
+          다음 배당락: 11.15 (주기 추정)
+        </span>
+</div>
+<p class="text-body-sm font-body-sm text-outline">※ 실시간 시세가 아닐 수 있으며 미확인 데이터는 0원이 아닙니다.</p>
+</div>
+</section>
+<!-- Local 4 Tabs (Exactly once) -->
+<nav aria-label="상세 탭" class="flex items-center gap-2 mb-space-lg bg-surface-container-low p-1.5 rounded-xl">
+<button class="flex-1 h-11 px-4 rounded-lg text-body-md font-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest/60 transition-colors" type="button">상세정보</button>
+<button class="flex-1 h-11 px-4 rounded-lg text-body-md font-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest/60 transition-colors" type="button">시세정보</button>
+<button class="flex-1 h-11 px-4 rounded-lg text-body-md font-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest/60 transition-colors" type="button">배당정보</button>
+<button aria-current="page" class="flex-1 h-11 px-4 rounded-lg text-body-md font-title-md bg-surface-container-lowest text-primary shadow-sm flex items-center justify-center gap-1.5" type="button">
+<span class="inline-block w-2 h-2 rounded-full bg-primary"></span>
+      공유정보
+    </button>
+</nav>
+<!-- Share Generator Workspace -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-lg items-start" id="share-generator">
+<!-- LEFT COLUMN: Card Selector & 720x720 Preview -->
+<div class="lg:col-span-7 flex flex-col gap-space-lg">
+<!-- Card Types Selector -->
+<section class="bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<h2 class="text-title-md font-title-md text-on-surface">공유 카드 유형 선택</h2>
+<span class="text-label-sm font-label-sm text-outline">총 5개 템플릿</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-space-md">
+          ※ DEMO-A 종목은 기초지수(DEMO-DIV-INDEX) 연동 데이터가 확보되어 [기초자산·종목 비교] 생성이 활성화되어 있습니다.
+        </p>
+<!-- 5 Selector Buttons -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-2" id="card-type-group" role="radiogroup">
+<button class="card-type-btn text-left p-3 rounded-lg bg-primary-container text-on-primary transition-all shadow-sm flex flex-col gap-1" data-type="div-summary" onclick="selectCardType('div-summary')" type="button">
+<div class="flex items-center justify-between">
+<span class="text-body-md font-title-md">1. 배당 요약</span>
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+<span class="text-label-sm font-label-sm opacity-90">핵심 지표 &amp; 배당 현황</span>
+</button>
+<button class="card-type-btn text-left p-3 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container transition-all flex flex-col gap-1" data-type="div-compare" onclick="selectCardType('div-compare')" type="button">
+<div class="flex items-center justify-between">
+<span class="text-body-md font-title-md">2. 배당 비교</span>
+<span class="material-symbols-outlined text-[16px] text-outline">tune</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">비교군 수익률 대조</span>
+</button>
+<button class="card-type-btn text-left p-3 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container transition-all flex flex-col gap-1" data-type="asset-compare" onclick="selectCardType('asset-compare')" type="button">
+<div class="flex items-center justify-between">
+<span class="text-body-md font-title-md">3. 기초자산·종목 비교</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">link</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">DEMO-DIV-INDEX 연동</span>
+</button>
+<button class="card-type-btn text-left p-3 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container transition-all flex flex-col gap-1" data-type="schedule" onclick="selectCardType('schedule')" type="button">
+<div class="flex items-center justify-between">
+<span class="text-body-md font-title-md">4. 배당 일정</span>
+<span class="material-symbols-outlined text-[16px] text-outline">calendar_month</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">배당락·지급 주기</span>
+</button>
+<button class="card-type-btn text-left p-3 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container transition-all flex flex-col gap-1" data-type="yield-history" onclick="selectCardType('yield-history')" type="button">
+<div class="flex items-center justify-between">
+<span class="text-body-md font-title-md">5. 과거 매수별 배당률</span>
+<span class="material-symbols-outlined text-[16px] text-outline">stacked_line_chart</span>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface-variant">시점별 Yield-on-Cost</span>
+</button>
+<div class="p-3 rounded-lg bg-surface-container-low/60 text-outline flex flex-col justify-center cursor-not-allowed">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span>비교 데이터 없음</span>
+<span class="material-symbols-outlined text-[14px]">lock</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline">충분한 과거 공시 부재 시 비활성화</span>
+</div>
+</div>
+</section>
+<!-- 720x720 Square Card Preview -->
+<section class="bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm flex flex-col items-center">
+<div class="w-full flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<h2 class="text-title-md font-title-md text-on-surface">카드 프리뷰 (Square 1:1)</h2>
+<span class="text-label-sm font-label-sm text-primary px-2 py-0.5 rounded bg-primary/10">720 × 720 px</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline">실제 내보내기 렌더링 규격</span>
+</div>
+<!-- Square Container (Aspect 1:1) -->
+<div class="w-full max-w-[520px] aspect-square rounded-xl bg-surface-container-lowest shadow-md overflow-hidden flex flex-col justify-between p-6 sm:p-7 relative select-none">
+<!-- Card Header & Badge -->
+<div class="relative z-10">
+<div class="flex items-center justify-between mb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-label-md font-headline-sm">
+                  D
+                </div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="text-title-md font-title-md text-on-surface tracking-tight" id="preview-stock-title">DEMO-A</span>
+<span class="text-label-sm font-label-sm bg-primary/10 text-primary px-1.5 py-0.5 rounded">고배당 ETF</span>
+</div>
+<div class="text-label-sm font-label-sm text-on-surface-variant" id="preview-card-subtitle">배당 요약 스냅샷</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-headline-sm font-headline-sm font-label-md text-on-surface">$50.00</div>
+<div class="text-label-sm font-label-sm text-primary">+0.50 (+1.01%)</div>
+</div>
+</div>
+<!-- Dynamic Preview Body based on selection -->
+<div class="bg-surface-container-low rounded-xl p-4 mt-2" id="preview-content-box">
+<div class="grid grid-cols-2 gap-3 mb-3">
+<div class="bg-surface-container-lowest p-3 rounded-lg">
+<span class="text-label-sm font-label-sm text-on-surface-variant block">최근 12개월 주당 배당금</span>
+<span class="text-headline-sm font-headline-sm font-label-md text-on-surface">$2.00</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-lg">
+<span class="text-label-sm font-label-sm text-on-surface-variant block">세전 연 배당률</span>
+<span class="text-headline-sm font-headline-sm font-label-md text-primary">4.00%</span>
+</div>
+</div>
+<!-- Mini SVG Sparkline / Bar Chart -->
+<div class="p-3 bg-surface-container-lowest rounded-lg">
+<div class="flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant mb-2">
+<span>분기별 배당 지급 추이 (USD)</span>
+<span class="text-primary font-label-sm">4개 분기 실적</span>
+</div>
+<div class="flex items-end justify-between h-14 pt-2 px-2 gap-2">
+<div class="flex-1 flex flex-col items-center gap-1">
+<span class="text-label-sm font-label-sm text-outline">$0.48</span>
+<div class="w-full bg-primary/20 rounded-t h-7"></div>
+<span class="text-label-sm font-label-sm text-outline">Q1</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<span class="text-label-sm font-label-sm text-outline">$0.50</span>
+<div class="w-full bg-primary/30 rounded-t h-8"></div>
+<span class="text-label-sm font-label-sm text-outline">Q2</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<span class="text-label-sm font-label-sm text-outline">$0.50</span>
+<div class="w-full bg-primary/50 rounded-t h-8"></div>
+<span class="text-label-sm font-label-sm text-outline">Q3</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<span class="text-label-sm font-label-sm text-primary font-bold">$0.52</span>
+<div class="w-full bg-primary rounded-t h-10"></div>
+<span class="text-label-sm font-label-sm text-on-surface font-bold">Q4</span>
+</div>
+</div>
+</div>
+<!-- Upcoming Div pill -->
+<div class="flex items-center justify-between mt-3 px-3 py-2 rounded-lg bg-secondary-fixed/40 text-on-secondary-fixed-variant text-label-sm font-label-sm">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">notifications_active</span>
+                  다음 예상 배당락일: <strong>11월 15일</strong>
+</span>
+<span class="opacity-80">주기 추정</span>
+</div>
+</div>
+</div>
+<!-- Card Footer Metadata -->
+<div class="relative z-10 pt-3 flex items-center justify-between text-label-sm font-label-sm text-outline">
+<span>데이터 기준: 2026.11.03 · 세전 · 추정</span>
+<span class="text-primary font-title-md">FIN-SHARE</span>
+</div>
+</div>
+<!-- Action Controls Under Preview -->
+<div class="w-full max-w-[520px] mt-space-md flex flex-col sm:flex-row items-center justify-between gap-3">
+<button class="w-full sm:w-auto flex-1 h-11 px-5 rounded-lg bg-primary-container text-on-primary font-title-md text-title-md hover:opacity-95 shadow-sm transition-all flex items-center justify-center gap-2" onclick="triggerDownload()" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>현재 카드 PNG 다운로드</span>
+</button>
+<div class="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 bg-surface-container-low px-3 h-11 rounded-lg">
+<label class="flex items-center gap-2 text-body-sm font-body-sm text-on-surface cursor-pointer select-none">
+<input checked="" class="w-[18px] h-[18px] accent-primary rounded cursor-pointer" id="batch-check" type="checkbox"/>
+<span>선택된 카드 ZIP 다운로드</span>
+</label>
+<span class="text-label-sm font-label-sm bg-surface-container text-primary px-2 py-0.5 rounded" id="batch-count-badge">1개</span>
+</div>
+</div>
+</section>
+</div>
+<!-- RIGHT COLUMN: Tone selector, Text Copy, Comparison tickers & Presets -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg">
+<!-- 1. Copy Tone Selector & Text Preview -->
+<section class="bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<h2 class="text-title-md font-title-md text-on-surface">문구 톤 선택</h2>
+<span class="text-label-sm font-label-sm text-outline">SNS &amp; 메신저 공유용</span>
+</div>
+<!-- 3 Tone Options -->
+<div class="grid grid-cols-3 gap-2 mb-space-md">
+<button class="tone-btn h-11 px-2 rounded-lg bg-primary-container text-on-primary text-body-sm font-title-md transition-all shadow-sm" data-tone="info" onclick="setCopyTone('info')" type="button">
+            정보형 (기본)
+          </button>
+<button class="tone-btn h-11 px-2 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container text-body-sm font-body-md transition-all" data-tone="concise" onclick="setCopyTone('concise')" type="button">
+            간결형
+          </button>
+<button class="tone-btn h-11 px-2 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container text-body-sm font-body-md transition-all" data-tone="friendly" onclick="setCopyTone('friendly')" type="button">
+            친근형
+          </button>
+</div>
+<!-- Single Copy Preview Box -->
+<div class="relative bg-surface-container-low rounded-xl p-space-md">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-sm font-label-sm text-outline">복사 대상 텍스트 미리보기</span>
+<span class="text-label-sm font-label-sm text-on-surface-variant font-label-md" id="copy-char-count">128자</span>
+</div>
+<pre class="w-full text-body-sm font-label-sm text-on-surface whitespace-pre-wrap leading-relaxed select-all bg-transparent focus:outline-none" id="copy-text-area">[DEMO-A 배당 요약]
+현재가: $50.00 (+1.01%)
+최근 12개월 배당금: $2.00 (세전 4.00%)
+다음 예상 배당락일: 11.15 (주기 추정)
+* 세전 실적 기준 및 가상 데이터 스냅샷</pre>
+<div class="mt-space-md flex items-center justify-between">
+<div class="opacity-0 transition-opacity text-label-sm font-label-sm text-tertiary flex items-center gap-1" id="copy-toast">
+<span class="material-symbols-outlined text-[16px]">check</span>
+              클립보드에 복사되었습니다!
+            </div>
+<button class="h-11 px-5 rounded-lg bg-surface-container-lowest text-primary hover:bg-surface-container transition-colors shadow-sm text-title-md font-title-md flex items-center gap-1.5 ml-auto" onclick="copyShareText()" type="button">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+<span>문구 복사</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 2. Comparison Tickers (For Comparison Cards) -->
+<section class="bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<h2 class="text-title-md font-title-md text-on-surface">비교 대상 종목 설정</h2>
+<span class="text-label-sm font-label-sm text-outline" id="ticker-counter">2 / 3개 설정</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-space-md">비교 카드 선택 시 함께 시각화할 보조 ETF/주식을 지정합니다.</p>
+<!-- Search input + Add Button -->
+<div class="flex items-center gap-2 mb-space-md">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-3 text-outline text-[20px]">search</span>
+<input class="w-full h-11 pl-10 pr-3 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface focus:outline-none placeholder:text-outline" id="ticker-input" placeholder="비교 종목 티커 검색 (최대 3개)" type="text"/>
+</div>
+<button class="h-11 px-4 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors text-title-md font-title-md" onclick="addTicker()" type="button">
+            추가
+          </button>
+</div>
+<!-- Selected Comparison Chips -->
+<div class="flex flex-wrap gap-2" id="ticker-chip-container">
+<div class="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-surface-container-low text-on-surface text-body-sm font-body-md" id="chip-demo-b">
+<span><strong>DEMO-B</strong> ($24.30 · 인컴 ETF)</span>
+<button aria-label="DEMO-B 삭제" class="text-outline hover:text-error transition-colors flex items-center" onclick="removeTicker('chip-demo-b')" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+<div class="inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-surface-container-low text-on-surface text-body-sm font-body-md" id="chip-demo-c">
+<span><strong>DEMO-C</strong> ($88.10 · 레버리지 ETF)</span>
+<button aria-label="DEMO-C 삭제" class="text-outline hover:text-error transition-colors flex items-center" onclick="removeTicker('chip-demo-c')" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 3. Card Preset Management -->
+<section class="bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<h2 class="text-title-md font-title-md text-on-surface">카드 설정 프리셋</h2>
+<span class="text-label-sm font-label-sm text-outline">로컬 브라우저 저장</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-space-md">자주 공유하는 카드 스타일과 문구 조합을 로컬에 보관합니다.</p>
+<!-- Preset input & Save -->
+<div class="flex items-center gap-2 mb-space-md">
+<input class="flex-1 h-11 px-3 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface focus:outline-none placeholder:text-outline" id="preset-name-input" maxlength="40" placeholder="예: 월간 배당 공유 템플릿 (최대 40자)" type="text"/>
+<button class="h-11 px-4 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors text-title-md font-title-md whitespace-nowrap" onclick="savePreset()" type="button">
+            프리셋 저장
+          </button>
+</div>
+<!-- Saved Presets Loader -->
+<div class="flex flex-col gap-2 mb-space-md">
+<label class="text-label-sm font-label-sm text-outline">저장된 프리셋 불러오기</label>
+<div class="flex items-center gap-2">
+<select class="flex-1 h-11 px-3 rounded-lg bg-surface-container-low text-body-md font-body-md text-on-surface focus:outline-none cursor-pointer" id="preset-dropdown">
+<option value="preset-1">월초 배당 요약 템플릿 (배당 요약 · 정보형)</option>
+<option value="preset-2">SNS 인컴 브리핑 (기초자산 비교 · 간결형)</option>
+</select>
+<button class="h-11 px-3 rounded-lg bg-surface-container-lowest shadow-sm text-primary hover:bg-surface-container transition-colors text-body-md font-title-md" onclick="applyPreset()" type="button">
+              적용
+            </button>
+<button class="h-11 w-11 rounded-lg bg-surface-container-low text-outline hover:text-error transition-colors flex items-center justify-center" onclick="deletePreset()" title="프리셋 삭제" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Presets notice & Fallback logs -->
+<div class="p-3 rounded-lg bg-surface-container-low text-label-sm font-label-sm text-outline space-y-1">
+<p>※ 브라우저 로컬 저장소에 저장되며 자동 저장, 워터마크 설정, SNS 자동 게시는 지원하지 않습니다.</p>
+<div class="flex items-center gap-2 text-on-surface-variant pt-1">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span id="preset-status-log">상태: 정상 준비됨 (로컬 2건 등록)</span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+<script>
+  // State
+  let currentCardType = 'div-summary';
+  let currentTone = 'info';
+
+  const toneCopies = {
+    'div-summary': {
+      info: `[DEMO-A 배당 요약]\n현재가: $50.00 (+1.01%)\n최근 12개월 배당금: $2.00 (세전 4.00%)\n다음 예상 배당락일: 11.15 (주기 추정)\n* 세전 실적 기준 및 가상 데이터 스냅샷`,
+      concise: `DEMO-A | $50.00 | 배당률 4.00% (TTM $2.00) | 다음 배당락 11.15`,
+      friendly: `📌 이번 주 DEMO-A 배당 체크!\n현재 $50.00에 연 배당률 4.00% 기록 중이네요 💰\n다가오는 배당락 예정일(11.15) 잊지 마세요!`
+    },
+    'div-compare': {
+      info: `[DEMO-A 배당 비교 브리핑]\nDEMO-A: $50.00 (배당률 4.00%)\nDEMO-B: $24.30 (배당률 6.20%)\nDEMO-C: $88.10 (배당률 1.80%)\n* 동일 시점 기준 실적 비교`,
+      concise: `배당비교: DEMO-A 4.00% vs DEMO-B 6.20% vs DEMO-C 1.80%`,
+      friendly: `🔍 보유 종목 배당 비교표입니다.\nDEMO-A(4.00%)와 피어 종목(DEMO-B, DEMO-C)의 배당 매력도를 한눈에 대조해보세요!`
+    },
+    'asset-compare': {
+      info: `[DEMO-A & 기초자산(DEMO-DIV-INDEX) 비교]\nDEMO-A: $50.00 (추종오차 0.12%)\n기초지수: 1,240.50 pt (배당 반영 인덱스)\n* 공시 지수 연동 데이터 기반`,
+      concise: `DEMO-A vs 기초지수(DEMO-DIV-INDEX): 배당 재투자 성과 일치율 99.4%`,
+      friendly: `💡 DEMO-A와 연동된 기초자산 비교 데이터!\n지수 흐름 대비 탄탄한 분기 배당이 그대로 이어지는 중입니다.`
+    },
+    'schedule': {
+      info: `[DEMO-A 향후 배당 일정 안내]\n예상 배당락일: 2026.11.15\n지급 예정일: 2026.11.28\n지급 주기: 분기 (3, 6, 9, 12월 말 공시)\n* 직전 주기 패턴 추정치`,
+      concise: `DEMO-A 일정: 배당락 11.15 → 지급일 11.28 (분기)`,
+      friendly: `🗓 달력에 메모해둘 DEMO-A 배당 타임라인!\n11월 15일 배당락 전까지 매수 완료 시 11월 28일 입금 예정이에요.`
+    },
+    'yield-history': {
+      info: `[DEMO-A 매수 시점별 세전 배당률 (Yield on Cost)]\n1년 전 ($45.00): 4.44%\n6개월 전 ($48.00): 4.16%\n현재가 ($50.00): 4.00%\n* TTM $2.00 배당 기준 역산`,
+      concise: `DEMO-A 매수가별 배당률: $45(4.44%) / $48(4.16%) / $50(4.00%)`,
+      friendly: `📊 언제 샀느냐에 따른 내 실질 배당 수익률!\n평단가 $45 홀더라면 현재 배당률은 무려 4.44% 효과입니다.`
+    }
+  };
+
+  function updateCopyBox() {
+    const text = toneCopies[currentCardType][currentTone] || toneCopies['div-summary']['info'];
+    const area = document.getElementById('copy-text-area');
+    const counter = document.getElementById('copy-char-count');
+    if (area) area.textContent = text;
+    if (counter) counter.textContent = `${text.length}자`;
+  }
+
+  function selectCardType(type) {
+    currentCardType = type;
+    const buttons = document.querySelectorAll('.card-type-btn');
+    buttons.forEach(b => {
+      if (b.dataset.type === type) {
+        b.className = 'card-type-btn text-left p-3 rounded-lg bg-primary-container text-on-primary transition-all shadow-sm flex flex-col gap-1';
+        const icon = b.querySelector('.material-symbols-outlined');
+        if (icon) icon.className = 'material-symbols-outlined text-[16px]';
+      } else {
+        b.className = 'card-type-btn text-left p-3 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container transition-all flex flex-col gap-1';
+        const icon = b.querySelector('.material-symbols-outlined');
+        if (icon) icon.className = 'material-symbols-outlined text-[16px] text-outline';
+      }
+    });
+
+    const sub = document.getElementById('preview-card-subtitle');
+    const box = document.getElementById('preview-content-box');
+    
+    if (type === 'div-summary') {
+      sub.textContent = '배당 요약 스냅샷';
+      box.innerHTML = `
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div class="bg-surface-container-lowest p-3 rounded-lg">
+            <span class="text-label-sm font-label-sm text-on-surface-variant block">최근 12개월 주당 배당금</span>
+            <span class="text-headline-sm font-headline-sm font-label-md text-on-surface">$2.00</span>
+          </div>
+          <div class="bg-surface-container-lowest p-3 rounded-lg">
+            <span class="text-label-sm font-label-sm text-on-surface-variant block">세전 연 배당률</span>
+            <span class="text-headline-sm font-headline-sm font-label-md text-primary">4.00%</span>
+          </div>
+        </div>
+        <div class="p-3 bg-surface-container-lowest rounded-lg">
+          <div class="flex items-center justify-between text-label-sm font-label-sm text-on-surface-variant mb-2">
+            <span>분기별 배당 지급 추이 (USD)</span>
+            <span class="text-primary font-label-sm">4개 분기 실적</span>
+          </div>
+          <div class="flex items-end justify-between h-14 pt-2 px-2 gap-2">
+            <div class="flex-1 flex flex-col items-center gap-1">
+              <span class="text-label-sm font-label-sm text-outline">$0.48</span>
+              <div class="w-full bg-primary/20 rounded-t h-7"></div>
+              <span class="text-label-sm font-label-sm text-outline">Q1</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-1">
+              <span class="text-label-sm font-label-sm text-outline">$0.50</span>
+              <div class="w-full bg-primary/30 rounded-t h-8"></div>
+              <span class="text-label-sm font-label-sm text-outline">Q2</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-1">
+              <span class="text-label-sm font-label-sm text-outline">$0.50</span>
+              <div class="w-full bg-primary/50 rounded-t h-8"></div>
+              <span class="text-label-sm font-label-sm text-outline">Q3</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-1">
+              <span class="text-label-sm font-label-sm text-primary font-bold">$0.52</span>
+              <div class="w-full bg-primary rounded-t h-10"></div>
+              <span class="text-label-sm font-label-sm text-on-surface font-bold">Q4</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-3 px-3 py-2 rounded-lg bg-secondary-fixed/40 text-on-secondary-fixed-variant text-label-sm font-label-sm">
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">notifications_active</span>
+            다음 예상 배당락일: <strong>11월 15일</strong>
+          </span>
+          <span class="opacity-80">주기 추정</span>
+        </div>
+      `;
+    } else if (type === 'div-compare') {
+      sub.textContent = '피어 그룹 배당 수익률 비교';
+      box.innerHTML = `
+        <div class="space-y-2">
+          <div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+            <div>
+              <span class="text-title-md font-title-md text-primary">DEMO-A (기준)</span>
+              <span class="text-label-sm font-label-sm text-outline block">$50.00</span>
+            </div>
+            <div class="text-right">
+              <span class="text-headline-sm font-headline-sm font-label-md text-primary">4.00%</span>
+              <span class="text-label-sm font-label-sm text-outline block">TTM $2.00</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+            <div>
+              <span class="text-title-md font-title-md text-on-surface">DEMO-B</span>
+              <span class="text-label-sm font-label-sm text-outline block">$24.30 · 인컴</span>
+            </div>
+            <div class="text-right">
+              <span class="text-headline-sm font-headline-sm font-label-md text-on-surface">6.20%</span>
+              <span class="text-label-sm font-label-sm text-outline block">TTM $1.51</span>
+            </div>
+          </div>
+          <div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+            <div>
+              <span class="text-title-md font-title-md text-on-surface">DEMO-C</span>
+              <span class="text-label-sm font-label-sm text-outline block">$88.10 · 레버리지</span>
+            </div>
+            <div class="text-right">
+              <span class="text-headline-sm font-headline-sm font-label-md text-on-surface">1.80%</span>
+              <span class="text-label-sm font-label-sm text-outline block">TTM $1.58</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (type === 'asset-compare') {
+      sub.textContent = '기초자산 (DEMO-DIV-INDEX) 비교';
+      box.innerHTML = `
+        <div class="bg-surface-container-lowest p-3 rounded-lg mb-2">
+          <div class="flex items-center justify-between text-label-sm font-label-sm text-outline mb-1">
+            <span>연동 기초지수명</span>
+            <span class="text-tertiary font-bold">인덱스 데이터 매핑 완료</span>
+          </div>
+          <div class="text-title-md font-title-md text-on-surface">DEMO-DIV-INDEX</div>
+          <div class="text-label-sm font-label-sm text-on-surface-variant mt-0.5">지수 현재가 1,240.50 pt (추종 오차율 ±0.12%)</div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="bg-surface-container-lowest p-3 rounded-lg">
+            <span class="text-label-sm font-label-sm text-outline block">ETF 배당률</span>
+            <span class="text-headline-sm font-headline-sm text-primary font-label-md">4.00%</span>
+          </div>
+          <div class="bg-surface-container-lowest p-3 rounded-lg">
+            <span class="text-label-sm font-label-sm text-outline block">지수 배당수익률</span>
+            <span class="text-headline-sm font-headline-sm text-on-surface font-label-md">4.11%</span>
+          </div>
+        </div>
+      `;
+    } else if (type === 'schedule') {
+      sub.textContent = '배당 일정 및 캘린더';
+      box.innerHTML = `
+        <div class="space-y-2">
+          <div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+            <div>
+              <span class="text-label-sm font-label-sm text-outline block">다음 배당락 예정일</span>
+              <span class="text-title-md font-title-md text-on-surface">2026년 11월 15일</span>
+            </div>
+            <span class="px-2 py-1 rounded bg-secondary-fixed/50 text-on-secondary-fixed-variant text-label-sm font-label-sm">D-12</span>
+          </div>
+          <div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+            <div>
+              <span class="text-label-sm font-label-sm text-outline block">배당 지급 예정일</span>
+              <span class="text-title-md font-title-md text-on-surface">2026년 11월 28일</span>
+            </div>
+            <span class="text-label-sm font-label-sm text-primary font-bold">주기: 분기</span>
+          </div>
+          <div class="bg-surface-container-lowest p-3 rounded-lg text-label-sm font-label-sm text-outline">
+            공시 기준 4분기 배당 집계 완료 후 최종 확정치 반영
+          </div>
+        </div>
+      `;
+    } else if (type === 'yield-history') {
+      sub.textContent = '과거 매수 시점별 배당률';
+      box.innerHTML = `
+        <div class="bg-surface-container-lowest p-3 rounded-lg mb-2">
+          <span class="text-label-sm font-label-sm text-outline block">기준 TTM 배당금: $2.00</span>
+          <span class="text-body-sm font-body-sm text-on-surface">매수가가 낮을수록 취득 원가 대비 배당률(YOC)이 상승합니다.</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-surface-container-lowest p-2 rounded-lg">
+            <span class="text-label-sm font-label-sm text-outline block">1년 전 ($45)</span>
+            <span class="text-title-md font-title-md text-primary font-label-md">4.44%</span>
+          </div>
+          <div class="bg-surface-container-lowest p-2 rounded-lg">
+            <span class="text-label-sm font-label-sm text-outline block">6개월 전 ($48)</span>
+            <span class="text-title-md font-title-md text-on-surface font-label-md">4.16%</span>
+          </div>
+          <div class="bg-surface-container-lowest p-2 rounded-lg">
+            <span class="text-label-sm font-label-sm text-outline block">현재가 ($50)</span>
+            <span class="text-title-md font-title-md text-on-surface font-label-md">4.00%</span>
+          </div>
+        </div>
+      `;
+    }
+
+    updateCopyBox();
+  }
+
+  function setCopyTone(tone) {
+    currentTone = tone;
+    const buttons = document.querySelectorAll('.tone-btn');
+    buttons.forEach(b => {
+      if (b.dataset.tone === tone) {
+        b.className = 'tone-btn h-11 px-2 rounded-lg bg-primary-container text-on-primary text-body-sm font-title-md transition-all shadow-sm';
+      } else {
+        b.className = 'tone-btn h-11 px-2 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container text-body-sm font-body-md transition-all';
+      }
+    });
+    updateCopyBox();
+  }
+
+  function copyShareText() {
+    const text = document.getElementById('copy-text-area').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const toast = document.getElementById('copy-toast');
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 2500);
+    }).catch(() => {
+      document.getElementById('preset-status-log').textContent = '상태: 클립보드 복사 실패 (보안 정책 확인)';
+    });
+  }
+
+  function removeTicker(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+    updateTickerCounter();
+  }
+
+  function updateTickerCounter() {
+    const container = document.getElementById('ticker-chip-container');
+    const count = container.children.length;
+    document.getElementById('ticker-counter').textContent = `${count} / 3개 설정`;
+  }
+
+  function addTicker() {
+    const input = document.getElementById('ticker-input');
+    const val = input.value.trim().toUpperCase();
+    const container = document.getElementById('ticker-chip-container');
+    
+    if (container.children.length >= 3) {
+      alert('비교 종목은 최대 3개까지만 등록 가능합니다.');
+      return;
+    }
+    if (!val) return;
+
+    const chipId = 'chip-' + Date.now();
+    const chip = document.createElement('div');
+    chip.id = chipId;
+    chip.className = 'inline-flex items-center gap-2 h-9 px-3 rounded-lg bg-surface-container-low text-on-surface text-body-sm font-body-md';
+    chip.innerHTML = `
+      <span><strong>${val}</strong> (가상 티커)</span>
+      <button type="button" onclick="removeTicker('${chipId}')" class="text-outline hover:text-error transition-colors flex items-center">
+        <span class="material-symbols-outlined text-[16px]">close</span>
+      </button>
+    `;
+    container.appendChild(chip);
+    input.value = '';
+    updateTickerCounter();
+  }
+
+  function triggerDownload() {
+    const status = document.getElementById('preset-status-log');
+    status.textContent = `상태: '${currentCardType}.png' 카드 이미지 생성 및 다운로드 완료`;
+    setTimeout(() => {
+      status.textContent = '상태: 정상 준비됨';
+    }, 3000);
+  }
+
+  function savePreset() {
+    const input = document.getElementById('preset-name-input');
+    const name = input.value.trim();
+    if (!name) {
+      alert('프리셋 명칭을 입력해주세요.');
+      return;
+    }
+    const select = document.getElementById('preset-dropdown');
+    const option = document.createElement('option');
+    option.value = 'preset-' + Date.now();
+    option.textContent = `${name} (${currentCardType} · ${currentTone})`;
+    select.appendChild(option);
+    select.value = option.value;
+    input.value = '';
+
+    const status = document.getElementById('preset-status-log');
+    status.textContent = `상태: 새 프리셋 '${name}' 로컬 저장 완료`;
+  }
+
+  function applyPreset() {
+    const select = document.getElementById('preset-dropdown');
+    const text = select.options[select.selectedIndex]?.text || '';
+    const status = document.getElementById('preset-status-log');
+    status.textContent = `상태: '${text}' 프리셋 적용 완료`;
+  }
+
+  function deletePreset() {
+    const select = document.getElementById('preset-dropdown');
+    if (select.children.length === 0) return;
+    const removedText = select.options[select.selectedIndex]?.text;
+    select.remove(select.selectedIndex);
+    const status = document.getElementById('preset-status-log');
+    status.textContent = `상태: '${removedText}' 프리셋 삭제됨`;
+  }
+
+  // Batch checkbox listener
+  document.getElementById('batch-check')?.addEventListener('change', (e) => {
+    const badge = document.getElementById('batch-count-badge');
+    if (e.target.checked) {
+      badge.textContent = '1개';
+    } else {
+      badge.textContent = '0개';
+    }
+  });
+</script></div></main></body></html>

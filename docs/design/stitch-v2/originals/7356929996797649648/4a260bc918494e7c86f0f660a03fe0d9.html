@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONTENT / Asset Management</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .frame-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .control-btn, .control-select, .control-input {
+    min-height: 44px;
+    height: 44px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    padding: 0 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .control-btn-primary {
+    background: #0d7a6e;
+    color: #ffffff;
+    border-color: #0d7a6e;
+  }
+  .control-btn-primary:hover { background: #0a655b; }
+  .control-btn-outline {
+    border-color: #0d7a6e;
+    color: #0d7a6e;
+    background: transparent;
+  }
+  .control-btn-danger {
+    background: #fff1f2;
+    color: #be123c;
+    border-color: #fecdd3;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .badge-demo { background: #e6fffa; color: #0d7a6e; border: 1px solid #99f6e4; }
+  .badge-warn { background: #fefce8; color: #854d0e; border: 1px solid #fef08a; }
+  .badge-neutral { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+  .badge-owner { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+  .badge-editor { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+  .badge-viewer { background: #f8fafc; color: #64748b; border: 1px solid #cbd5e1; }
+
+  /* Header Bar */
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  /* Account Cards Grid */
+  .account-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .account-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    transition: all 0.15s ease;
+  }
+  .account-card.selected {
+    border-color: #0d7a6e;
+    box-shadow: 0 0 0 2px rgba(13, 122, 110, 0.15);
+  }
+  .account-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .account-alias {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .account-sub {
+    font-size: 13px;
+    color: #64748b;
+  }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+  }
+  .data-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #1e293b;
+  }
+  .num-cell { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* Tab Header */
+  .tab-header {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .tab-item-btn {
+    padding: 10px 16px;
+    border-bottom: 2px solid transparent;
+    font-weight: 600;
+    color: #64748b;
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .tab-item-btn.active {
+    color: #0d7a6e;
+    border-bottom-color: #0d7a6e;
+  }
+
+  /* Action Buttons bar */
+  .action-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .mobile-card-list { display: none; }
+
+  @media (max-width: 1024px) {
+    .account-grid { grid-template-columns: 1fr; }
+    .table-desktop-view { display: none; }
+    .mobile-card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .holding-card-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .holding-card-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    body { padding: 14px; }
+    .header-bar { flex-direction: column; align-items: flex-start; }
+    .action-bar { flex-direction: column; width: 100%; }
+    .action-bar .control-btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="frame-container">
+
+  <!-- Header -->
+  <div class="card header-bar">
+    <div class="title-group">
+      <h1 class="page-title">자산 관리</h1>
+      <span class="badge badge-demo">예시 데이터</span>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+      <span style="font-size: 13px; color: #64748b;">선택 소유자 범위:</span>
+      <select class="control-select" style="min-height: 38px; height: 38px;">
+        <option value="ALL">전체 가상 구성원 (김모음, 이모음)</option>
+        <option value="KIM">김모음 (소유 2계좌)</option>
+        <option value="LEE">이모음 (소유 1계좌)</option>
+      </select>
+      <button class="control-btn control-btn-outline" style="min-height: 38px; height: 38px; font-size: 13px;">
+        + 소유자 추가
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary of currencies (Separate KRW & USD) -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+    <div class="card" style="padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 12px; color: #64748b;">KRW 자료평가액 합계 (단독 집계)</div>
+        <div style="font-size: 20px; font-weight: 700; color: #0f172a;">₩190,000</div>
+      </div>
+      <span class="badge badge-neutral">1개 계좌</span>
+    </div>
+
+    <div class="card" style="padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 12px; color: #64748b;">USD 자료평가액 합계 (단독 집계)</div>
+        <div style="font-size: 20px; font-weight: 700; color: #0f172a;">$1,430.00</div>
+      </div>
+      <span class="badge badge-neutral">2개 계좌 (추정 1 포함)</span>
+    </div>
+
+    <div class="card" style="padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <div style="font-size: 12px; color: #64748b;">환산·합산 정책</div>
+        <div style="font-size: 13px; font-weight: 600; color: #475569;">통화별 독립 보존 (환율 합산 없음)</div>
+      </div>
+      <span class="badge badge-demo">원칙 적용</span>
+    </div>
+  </div>
+
+  <!-- Account Scope: 3 Fictional Masked Accounts Always Present -->
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <div style="font-size: 15px; font-weight: 700; color: #0f172a;">등록 계좌 목록 (3건)</div>
+      <button class="control-btn control-btn-primary" style="height: 38px; min-height: 38px; font-size: 13px;">
+        + 계좌 추가
+      </button>
+    </div>
+
+    <div class="account-grid">
+
+      <!-- Account 1: 김모음 토스***115 (Selected) -->
+      <div class="account-card selected">
+        <div class="account-card-header">
+          <div>
+            <div class="account-alias">김모음 · 토스증권 ****0115</div>
+            <div class="account-sub">토스증권 · 일반위탁 (끝4자리 0115)</div>
+          </div>
+          <span class="badge badge-owner">Owner</span>
+        </div>
+        <div style="font-size: 13px; color: #475569; display: flex; flex-direction: column; gap: 4px;">
+          <div>최신 출처: <strong>토스 거래내역 PDF</strong></div>
+          <div>자료 기준일: <strong>2026.11.03</strong></div>
+          <div>보유 현황: <strong>USD 20주 (DEMO-A) · $980.00</strong></div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+            <span class="badge badge-warn">API 연결: 미연결</span>
+            <span class="badge badge-demo">정상</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
+          <button class="control-btn" style="height: 34px; min-height: 34px; font-size: 12px; padding: 0 10px;">별칭 수정</button>
+          <button class="control-btn" style="height: 34px; min-height: 34px; font-size: 12px; padding: 0 10px;">출처 원본 보기</button>
+          <button class="control-btn control-btn-danger" style="height: 34px; min-height: 34px; font-size: 12px; padding: 0 10px;">보관</button>
+        </div>
+      </div>
+
+      <!-- Account 2: 김모음 미래에셋***492 -->
+      <div class="account-card">
+        <div class="account-card-header">
+          <div>
+            <div class="account-alias">김모음 · 미래에셋 ****0492</div>
+            <div class="account-sub">미래에셋증권 · ISA (끝4자리 0492)</div>
+          </div>
+          <span class="badge badge-editor">Editor</span>
+        </div>
+        <div style="font-size: 13px; color: #475569; display: flex; flex-direction: column; gap: 4px;">
+          <div>최신 출처: <strong>수기 전체 잔고 스냅샷</strong></div>
+          <div>자료 기준일: <strong>2026.10.31</strong></div>
+          <div>보유 현황: <strong>KRW 10주 (DEMO-K) · ₩190,000</strong></div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+            <span class="badge badge-neutral">수기 관리</span>
+            <span class="badge badge-demo">정상</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
+          <button class="control-btn" style="height: 34px; min-height: 34px; font-size: 12px; padding: 0 10px;">별칭 수정</button>
+          <button class="control-btn" style="height: 34px; min-height: 34px; font-size: 12px; padding: 0 10px;">출처 원본 보기</button>
+          <button class="control-btn control-btn-danger" style="height: 34px; min-height: 34px; font-size: 12px; padding: 0 10px;">보관</button>
+        </div>
+      </div>
+
+      <!-- Account 3: 이모음 미래에셋***884 -->
+      <div class="account-card">
+        <div class="account-card-header">
+          <div>
+            <div class="account-alias">이모음 · 미래에셋 ****0884</div>
+            <div class="account-sub">미래에셋증권 · 연금계좌 (끝4자리 0884)</div>
+          </div>
+          <span class="badge badge-viewer">Viewer (읽기 전용)</span>
+        </div>
+        <div style="font-size: 13px; color: #475569; display: flex; flex-direction: column; gap: 4px;">
+          <div>최신 출처: <strong>증권사 CSV 맵핑</strong></div>
+          <div>자료 기준일: <strong>2026.10.28 (추정)</strong></div>
+          <div>보유 현황: <strong>USD 15주 (DEMO-M) · $450.00</strong></div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+            <span class="badge badge-warn">추정 스냅샷</span>
+            <span class="badge badge-demo">조회 전용</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
+          <button class="control-btn" style="height: 34px; min-height: 34px; font-size: 12px; padding: 0 10px;" disabled title="Viewer 권한으로 수정 불가">별칭 수정 불가</button>
+          <button class="control-btn" style="height: 34px; min-height: 34px; font-size: 12px; padding: 0 10px;">출처 원본 보기</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Selected Account Detail Workspace (Tabs: 저장된 거래 / 저장된 잔고 / 출처 증빙) -->
+  <div class="card">
+    <div class="tab-header">
+      <button class="tab-item-btn active">저장된 보유 잔고 (스냅샷)</button>
+      <button class="tab-item-btn">저장된 거래 원장 (5건)</button>
+      <button class="tab-item-btn">전체 출처 증빙 및 원본 파일</button>
+      <button class="tab-item-btn">토스 로컬/API 연동 설정</button>
+      <button class="tab-item-btn">자금 출처·원장 수정 검토</button>
+    </div>
+
+    <!-- Source Action Bar -->
+    <div class="action-bar">
+      <button class="control-btn control-btn-primary">파일 업로드 (PDF/CSV)</button>
+      <button class="control-btn">수기 전체 잔고 입력</button>
+      <button class="control-btn">증권사 컬럼 맵핑</button>
+      <button class="control-btn">CSV 내보내기</button>
+      <div style="margin-left: auto; font-size: 13px; color: #64748b; display: flex; align-items: center;">
+        * 보유 잔고는 실시간 시장가가 아닌 <strong>저장 스냅샷 자료평가액</strong> 기준입니다.
+      </div>
+    </div>
+
+    <!-- Holdings Table (Desktop) -->
+    <div class="table-desktop-view">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>종목코드 / 종목명</th>
+            <th>통화</th>
+            <th class="num-cell">보유수량</th>
+            <th class="num-cell">자료평가액</th>
+            <th>스냅샷 기준일</th>
+            <th>데이터 출처</th>
+            <th>조작 (권한: Owner)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>DEMO-A</strong> (가상 해외주식)</td>
+            <td><span class="badge badge-neutral">USD</span></td>
+            <td class="num-cell">20주</td>
+            <td class="num-cell" style="font-weight: 700;">$980.00</td>
+            <td>2026.11.03</td>
+            <td>토스 거래내역 PDF 추출</td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                <button class="control-btn" style="height: 32px; min-height: 32px; font-size: 12px; padding: 0 8px;">수정</button>
+                <button class="control-btn" style="height: 32px; min-height: 32px; font-size: 12px; padding: 0 8px;">자금출처</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Holdings Mobile Card View -->
+    <div class="mobile-card-list">
+      <div class="holding-card-item">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong>DEMO-A (가상 해외주식)</strong>
+          <span class="badge badge-demo">USD 20주</span>
+        </div>
+        <div class="holding-card-row">
+          <span style="color: #64748b;">자료평가액</span>
+          <span style="font-weight: 700;">$980.00</span>
+        </div>
+        <div class="holding-card-row">
+          <span style="color: #64748b;">기준일 / 출처</span>
+          <span>2026.11.03 · 토스 거래내역 PDF</span>
+        </div>
+        <div style="display: flex; gap: 6px; margin-top: 4px;">
+          <button class="control-btn" style="height: 34px; min-height: 34px; font-size: 12px; width: 100%;">수정</button>
+          <button class="control-btn" style="height: 34px; min-height: 34px; font-size: 12px; width: 100%;">자금출처 점검</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toss Connection Box -->
+    <div style="margin-top: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div style="font-weight: 700; font-size: 14px; color: #0f172a;">토스 계좌 로컬/API 상태</div>
+        <span class="badge badge-warn">연결 상태: 미연결 (기본)</span>
+      </div>
+      <div style="font-size: 13px; color: #64748b; line-height: 1.5; margin-bottom: 12px;">
+        기성 은행 범용 OAuth가 아니며, 사용자가 직접 설정하는 로컬 연결 방식입니다. API 관측 내역은 기존 PDF로 확정된 거래 원장을 자동 덮어쓰지 않습니다.
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <button class="control-btn control-btn-primary" style="height: 38px; min-height: 38px; font-size: 13px;">연결 설정 및 테스트</button>
+        <span style="font-size: 12px; color: #64748b;">마지막 점검: 없음 · 실시간 자동 동기화 꺼짐</span>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>

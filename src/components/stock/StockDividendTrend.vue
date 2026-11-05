@@ -9,16 +9,53 @@
         currency: { type: String, default: 'USD' },
     });
     const selected = ref(null),
-        length = ref(12);
-    const series = computed(() =>
-        monthlyDividendSeries(props.rows, props.asOf, length.value)
+        length = ref(12),
+        chartYear = ref('all');
+    const years = computed(() => {
+        const year = Number(props.asOf.slice(0, 4));
+        return Number.isFinite(year) && year > 0 ? [year, year - 1] : [];
+    });
+    // Reuse the strict ex-date cutoff. Calendar padding never advances asOf
+    // or turns future/unobserved months into zero-valued observations.
+    const series = computed(() => {
+        if (chartYear.value === 'rolling')
+            return monthlyDividendSeries(props.rows, props.asOf, length.value);
+        const year =
+            chartYear.value === 'all' ? years.value[0] : chartYear.value;
+        if (!year) return [];
+        const count =
+            (years.value[0] - Number(year)) * 12 +
+            Number(props.asOf.slice(5, 7));
+        const observed = new Map(
+            monthlyDividendSeries(props.rows, props.asOf, count).map((row) => [
+                row.month,
+                row,
+            ])
+        );
+        return Array.from({ length: 12 }, (_, index) => {
+            const month = `${year}-${String(index + 1).padStart(2, '0')}`;
+            return (
+                observed.get(month) ?? {
+                    month,
+                    total: null,
+                    count: null,
+                    average: null,
+                    previousTotal: null,
+                    growth: null,
+                    partial: false,
+                }
+            );
+        });
+    });
+    const compare = computed(
+        () => chartYear.value === 'all' || chartYear.value === 'rolling'
     );
     const max = computed(() =>
         Math.max(
             0.001,
             ...series.value.flatMap((row) => [
                 row.total ?? 0,
-                row.previousTotal ?? 0,
+                compare.value ? (row.previousTotal ?? 0) : 0,
             ])
         )
     );
@@ -49,21 +86,68 @@
             <p
                 v-if="series.some((row) => row.total != null)"
                 class="trend-note">
-                <span><i class="blue" aria-hidden="true" />선택 연도</span>
-                <span><i class="gray" aria-hidden="true" />전년 동월</span>
+                <span v-if="compare"
+                    ><i class="gray" aria-hidden="true" />{{
+                        chartYear === 'rolling'
+                            ? '전년 동월'
+                            : `${years[0] - 1}년`
+                    }}</span
+                >
+                <span
+                    ><i class="blue" aria-hidden="true" />{{
+                        chartYear === 'all'
+                            ? years[0]
+                            : chartYear === 'rolling'
+                              ? '선택 기간'
+                              : chartYear
+                    }}{{ chartYear === 'rolling' ? '' : '년' }}</span
+                >
             </p>
             <div class="trend-controls">
+                <Button
+                    label="전체 비교"
+                    :aria-pressed="chartYear === 'all'"
+                    :severity="chartYear === 'all' ? undefined : 'secondary'"
+                    text
+                    @click="
+                        chartYear = 'all';
+                        selected = null;
+                    " />
+                <Button
+                    v-for="year in years"
+                    :key="year"
+                    :label="String(year)"
+                    :aria-pressed="chartYear === year"
+                    :severity="chartYear === year ? undefined : 'secondary'"
+                    text
+                    @click="
+                        chartYear = year;
+                        selected = null;
+                    " />
+            </div>
+        </header>
+        <p class="trend-coverage">
+            기록 없음은 0이 아닙니다. 기준 월은 집계 중이며 미래 월은
+            미확인입니다.
+        </p>
+        <details class="trend-periods">
+            <summary>최근 기간 보기</summary>
+            <div class="trend-period-buttons">
                 <Button
                     :severity="length === n ? undefined : 'secondary'"
                     :outlined="length !== n"
                     v-for="n in [12, 24]"
                     :key="n"
                     :aria-pressed="length === n"
-                    @click="length = n">
+                    @click="
+                        length = n;
+                        chartYear = 'rolling';
+                        selected = null;
+                    ">
                     {{ n }}개월
                 </Button>
             </div>
-        </header>
+        </details>
         <div
             v-if="series.some((row) => row.total != null)"
             class="trend-chart"
@@ -79,7 +163,7 @@
                 @click="selected = row.month">
                 <div class="bars">
                     <i
-                        v-if="row.previousTotal != null"
+                        v-if="compare && row.previousTotal != null"
                         class="previous"
                         :style="{
                             height: `${(row.previousTotal / max) * 100}%`,
@@ -93,7 +177,11 @@
                         >—</span
                     >
                 </div>
-                <span>{{ row.month.slice(2).replace('-', '.') }}</span>
+                <span>{{
+                    chartYear === 'rolling'
+                        ? row.month.slice(2).replace('-', '.')
+                        : `${Number(row.month.slice(5))}월`
+                }}</span>
             </button>
         </div>
         <div v-else class="trend-empty" role="status">
@@ -113,9 +201,9 @@
                 >지급 회차 <b>{{ current.count ?? '미확인' }}회</b></span
             ><span
                 >회당 평균 <b>{{ format(current.average) }}</b></span
-            ><span
+            ><span v-if="compare"
                 >전년 동월 <b>{{ format(current.previousTotal) }}</b></span
-            ><span
+            ><span v-if="compare"
                 >전년 대비
                 <b>{{
                     current.growth == null
@@ -159,6 +247,28 @@
         grid-column: 3;
         display: flex;
         gap: 6px;
+        border-radius: 8px;
+        background: var(--app-surface-muted);
+        padding: 2px;
+    }
+    .trend-controls :deep(.p-button) {
+        height: 32px;
+        padding: 0 10px;
+        font-size: 11px;
+    }
+    .trend-coverage,
+    .trend-periods {
+        font-size: 12px;
+        color: var(--app-muted);
+        margin: 8px 0;
+    }
+    .trend-periods summary {
+        cursor: pointer;
+    }
+    .trend-period-buttons {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
     }
     .trend-chart {
         display: flex;

@@ -1,3 +1,8 @@
+import { selectAssetOwner } from './portfolio-navigation.mjs';
+import {
+    openPortfolioPage,
+    waitForPortfolioPage,
+} from './portfolio-navigation.mjs';
 // Local Vite + tests/family_portfolio_test_server.py; synthetic identity only.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -9,6 +14,7 @@ const base = process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175';
 const output = path.join(os.tmpdir(), 'yieldloom-asset-management-review');
 await fs.mkdir(output, { recursive: true });
 const browser = await chromium.launch({
+    args: ['--no-sandbox'],
     ...(process.env.CHROMIUM_PATH
         ? { executablePath: process.env.CHROMIUM_PATH }
         : {}),
@@ -49,15 +55,23 @@ await page.route('**/api/portfolio-capital*', (route) =>
 );
 const button = (name) => page.getByRole('button', { name, exact: true });
 const closeDialog = async () => {
+    if (await page.locator('.account-registration-page').isVisible()) {
+        await button('계좌 목록으로 돌아가기').click();
+        await page
+            .locator('.account-registration-page')
+            .waitFor({ state: 'hidden' });
+        return;
+    }
     await page.locator('.p-dialog-close-button').waitFor();
-    await page.keyboard.press('Escape');
+    await page.locator('.p-dialog-close-button').last().click();
     await page.waitForFunction(
         () => document.querySelectorAll('[role="dialog"]').length === 0
     );
 };
 const addAccount = async (alias, last4) => {
     await button('계좌 추가').click();
-    const dialog = page.getByRole('dialog');
+    await button('직접 입력').click();
+    const dialog = page.locator('.account-registration-page, [role="dialog"]');
     await dialog.getByLabel('금융기관', { exact: true }).fill('테스트증권');
     await dialog.getByLabel('별칭', { exact: true }).fill(alias);
     await dialog.getByLabel('계좌 끝 4자리 (선택)').fill(last4);
@@ -71,37 +85,51 @@ const addAccount = async (alias, last4) => {
 };
 try {
     await page.goto(base + '/mypage?tab=upload');
-    await page.getByRole('tab', { name: '자산관리', exact: true }).waitFor();
+    await waitForPortfolioPage(page, '자산관리');
     await button('계좌 추가').waitFor();
     await page.waitForURL('**/mypage?tab=assets');
-    await page.getByRole('dialog').waitFor({ state: 'hidden' });
-    assert.equal(await page.getByRole('dialog').count(), 0);
-    assert.deepEqual(await page.getByRole('tab').allTextContents(), [
-        '한눈에 보기',
-        '배당 캘린더',
-        '배당 분석',
-        '자산관리',
-    ]);
+    await page
+        .locator('.account-registration-page, [role="dialog"]')
+        .waitFor({ state: 'hidden' });
+    assert.equal(
+        await page
+            .locator('.account-registration-page, [role="dialog"]')
+            .count(),
+        0
+    );
+    assert.equal(
+        await page.locator('.portfolio-tabs [role="tab"]').count(),
+        0,
+        'duplicate portfolio tab bars must not reappear'
+    );
     assert.equal(requests.filter((r) => r.method === 'GET').length, 1);
     await addAccount('본인 계좌', '1234');
     await button('가족 추가').click();
     await page.getByLabel('가족 이름', { exact: true }).fill('배우자');
     await button('가족 등록').click();
-    await page.getByRole('dialog').waitFor({ state: 'hidden' });
+    await page
+        .locator('.account-registration-page, [role="dialog"]')
+        .waitFor({ state: 'hidden' });
     await page.getByRole('heading', { name: '배우자의 계좌' }).waitFor();
     assert.equal(await page.locator('.accounts li').count(), 0);
     await addAccount('가족 계좌', '4321');
     const before = requests.length;
-    await button('테스트 본인').click();
+    await selectAssetOwner(page, '테스트 본인');
     await page
-        .getByText('테스트증권 · 본인 계좌 · ****1234', { exact: true })
+        .getByRole('button', {
+            name: '테스트증권 · 본인 계좌 · ****1234',
+            exact: true,
+        })
         .waitFor();
-    await button('배우자').click();
+    await selectAssetOwner(page, '배우자');
     await page
-        .getByText('테스트증권 · 가족 계좌 · ****4321', { exact: true })
+        .getByRole('button', {
+            name: '테스트증권 · 가족 계좌 · ****4321',
+            exact: true,
+        })
         .waitFor();
-    await page.getByRole('tab', { name: '한눈에 보기', exact: true }).click();
-    await page.getByRole('tab', { name: '자산관리', exact: true }).click();
+    await openPortfolioPage(page, '한눈에 보기');
+    await openPortfolioPage(page, '자산관리');
     assert.equal(
         requests.length,
         before,
@@ -114,7 +142,7 @@ try {
     await closeDialog();
     await button('계좌 추가').click();
     await page
-        .getByRole('dialog')
+        .locator('.account-registration-page, [role="dialog"]')
         .getByRole('button', {
             name: '문서로 등록 (토스 거래내역 PDF)',
             exact: true,
@@ -128,14 +156,14 @@ try {
     await page.getByLabel('PDF 비밀번호', { exact: true }).fill('fixture');
     await button('계좌 정보 추출').click();
     await page
-        .getByRole('dialog')
+        .locator('.account-registration-page, [role="dialog"]')
         .getByText('토스 거래내역 PDF를 선택하세요.', { exact: true })
         .waitFor();
     await closeDialog();
     if (process.env.FAMILY_TEST_SYNTHETIC_PDF === '1') {
         await button('계좌 추가').click();
         await page
-            .getByRole('dialog')
+            .locator('.account-registration-page, [role="dialog"]')
             .getByRole('button', {
                 name: '문서로 등록 (토스 거래내역 PDF)',
                 exact: true,
@@ -151,7 +179,7 @@ try {
         await page.getByLabel('PDF 비밀번호', { exact: true }).fill('wrong');
         await button('계좌 정보 추출').click();
         await page
-            .getByRole('dialog')
+            .locator('.account-registration-page, [role="dialog"]')
             .getByText('PDF 비밀번호를 확인하세요.', { exact: true })
             .waitFor();
         await page.getByLabel('PDF 비밀번호', { exact: true }).fill('fixture');
@@ -170,11 +198,14 @@ try {
         await page.getByText('저장 1행 · 중복 0행', { exact: true }).waitFor();
         await closeDialog();
         await page
-            .getByText('토스증권 · 문서 계좌 · ****5678', { exact: true })
+            .getByRole('button', {
+                name: '토스증권 · 문서 계좌 · ****5678',
+                exact: true,
+            })
             .waitFor();
         await button('계좌 추가').click();
         await page
-            .getByRole('dialog')
+            .locator('.account-registration-page, [role="dialog"]')
             .getByRole('button', {
                 name: '문서로 등록 (토스 거래내역 PDF)',
                 exact: true,
@@ -208,7 +239,8 @@ try {
         await closeDialog();
         await page.unroute('**/api/family-portfolio?action=preview');
         await page
-            .getByText('토스증권 · 업로드 재시도 계좌 · ****6789', {
+            .getByRole('button', {
+                name: '토스증권 · 업로드 재시도 계좌 · ****6789',
                 exact: true,
             })
             .waitFor();
@@ -232,7 +264,7 @@ try {
     await button('가족 추가').click();
     await page.getByLabel('가족 이름', { exact: true }).waitFor();
     await page
-        .getByRole('dialog')
+        .locator('.account-registration-page, [role="dialog"]')
         .evaluate((element) =>
             Promise.allSettled(
                 element
@@ -269,13 +301,22 @@ try {
             await button('계좌 추가').click();
             const registration = page.locator('.account-registration');
             await registration.waitFor();
+            const pageRegistration = await page
+                .locator('.account-registration-page')
+                .isVisible();
+            const defaultMethod = pageRegistration
+                ? '문서로 등록 (토스 거래내역 PDF)'
+                : '직접 입력';
             assert.equal(
                 await registration
-                    .getByRole('button', { name: '직접 입력', exact: true })
+                    .getByRole('button', { name: defaultMethod, exact: true })
                     .getAttribute('aria-pressed'),
                 'true',
-                'The production Dialog keeps its existing manual-entry default'
+                'The reference page defaults to document; the legacy production Dialog defaults to manual'
             );
+            await registration
+                .getByRole('button', { name: '직접 입력', exact: true })
+                .click();
             const beforeTyping = requests.length;
             await registration
                 .getByLabel('금융기관', { exact: true })
@@ -351,12 +392,20 @@ try {
                 'Choosing a file does not submit or inspect it'
             );
             await closeDialog();
-            assert.equal(
-                await button('계좌 추가').evaluate(
-                    (e) => e === document.activeElement
-                ),
-                true
-            );
+            if (pageRegistration) {
+                assert.equal(
+                    await page.locator('.account-registration-page').count(),
+                    0
+                );
+                await button('계좌 추가').waitFor();
+            } else {
+                assert.equal(
+                    await button('계좌 추가').evaluate(
+                        (e) => e === document.activeElement
+                    ),
+                    true
+                );
+            }
         }
     }
     assert.deepEqual(errors, []);
@@ -373,7 +422,11 @@ try {
         )
     );
 } catch (error) {
-    console.log(await page.getByRole('dialog').allTextContents());
+    console.log(
+        await page
+            .locator('.account-registration-page, [role="dialog"]')
+            .allTextContents()
+    );
     await page.screenshot({
         path: path.join(output, 'failure.png'),
         fullPage: true,

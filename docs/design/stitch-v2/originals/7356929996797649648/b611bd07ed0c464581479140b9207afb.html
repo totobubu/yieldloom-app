@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_blank" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-container": "#fdc425", "on-surface-variant": "#3e4947", "surface-container": "#eceef0", "on-background": "#191c1e", "surface-bright": "#f7f9fb", "primary-fixed": "#99f3e4", "surface": "#f7f9fb", "error": "#ba1a1a", "tertiary-fixed-dim": "#3cddc7", "surface-container-low": "#f2f4f6", "on-primary-container": "#abfff0", "inverse-surface": "#2d3133", "on-secondary-container": "#6d5200", "primary-container": "#0d7a6e", "primary": "#005f55", "surface-tint": "#006b60", "surface-container-lowest": "#ffffff", "surface-variant": "#e0e3e5", "secondary-fixed": "#ffdf9a", "on-primary-fixed-variant": "#005048", "secondary-fixed-dim": "#f7be1d", "inverse-on-surface": "eff1f3", "surface-container-highest": "#e0e3e5", "inverse-primary": "#7dd6c8", "on-primary-fixed": "#00201c", "outline-variant": "#bdc9c6", "on-error": "#ffffff", "surface-container-high": "#e6e8ea", "on-tertiary-fixed-variant": "#005047", "on-tertiary-container": "#a8ffef", "background": "#f7f9fb", "error-container": "#ffdad6", "secondary": "#785a00", "tertiary-container": "#007a6d", "on-secondary-fixed-variant": "#5a4300", "on-secondary-container": "#6d5200", "on-surface": "#191c1e", "tertiary": "#005f54", "tertiary-fixed": "#62fae3", "on-secondary-fixed": "#251a00", "on-error-container": "#93000a", "on-tertiary-fixed": "#00201c", "outline": "#6e7977", "primary-fixed-dim": "#7dd6c8", "on-primary": "#ffffff", "on-secondary": "#ffffff", "on-tertiary": "#ffffff", "surface-dim": "#d8dadc" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-md": "1.5rem", "space-xs": "0.25rem", "space-md": "0.75rem", "gutter": "1rem", "margin": "1rem", "space-lg": "1rem", "space-sm": "0.5rem", "gutter-lg": "1.5rem", "margin-lg": "2rem", "space-xl": "1.5rem" }, fontFamily: { "label-md": ["JetBrains Mono"], "display-lg": ["Hanken Grotesk"], "display-lg-mobile": ["Hanken Grotesk"], "label-sm": ["JetBrains Mono"], "title-md": ["Hanken Grotesk"], "body-md": ["Hanken Grotesk"], "body-sm": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"], "headline-sm": ["Hanken Grotesk"], "headline-lg": ["Hanken Grotesk"] }, fontSize: { "label-md": ["13px", { lineHeight: "16px", fontWeight: "500" }], "display-lg": ["36px", { lineHeight: "44px", fontWeight: "700" }], "display-lg-mobile": ["28px", { lineHeight: "36px", fontWeight: "700" }], "label-sm": ["11px", { lineHeight: "14px", fontWeight: "500" }], "title-md": ["16px", { lineHeight: "24px", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }], "body-sm": ["12px", { lineHeight: "16px", fontWeight: "400" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }], "headline-lg": ["24px", { lineHeight: "32px", fontWeight: "600" }] } } } };</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen"><main class="w-full min-h-screen px-margin md:px-margin-md lg:px-margin-lg py-margin md:py-margin-md lg:py-margin-lg"><div class="flex flex-col w-full text-on-surface [word-break:keep-all]">
+<!-- TOP CONTEXT & AGGREGATION HEADER -->
+<section class="flex flex-col gap-6 mb-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex flex-wrap items-center gap-3">
+<h1 class="font-display-lg text-headline-lg md:text-display-lg text-on-surface tracking-tight">자산 관리</h1>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>예시 데이터: 가상 예시 스냅샷 기준 · 실제 서비스 미연결</span>
+</div>
+</div>
+<!-- Member Filter & Top Primary Actions -->
+<div class="flex flex-wrap items-center gap-3">
+<div class="relative inline-flex items-center">
+<label class="sr-only" for="member-select">명의자 선택</label>
+<select class="h-11 pl-3.5 pr-9 bg-surface-container-lowest rounded-lg font-body-md text-body-md text-on-surface shadow-sm focus:outline-none appearance-none cursor-pointer" id="member-select">
+<option value="all">전체 구성원 (김모음, 이모음)</option>
+<option value="kim">김모음 (소유 2)</option>
+<option value="lee">이모음 (조회 1)</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-2.5 text-outline text-[20px]">expand_more</span>
+</div>
+<button class="h-11 px-4 inline-flex items-center gap-2 bg-surface-container-lowest hover:bg-surface-container text-on-surface font-title-md text-body-md rounded-lg shadow-sm transition-colors" onclick="document.getElementById('family-modal').classList.remove('hidden')" type="button">
+<span class="material-symbols-outlined text-[20px] text-primary">group_add</span>
+<span>가족 추가</span>
+</button>
+<button class="h-11 px-4 inline-flex items-center gap-2 bg-primary-container hover:bg-primary text-on-primary font-title-md text-body-md rounded-lg shadow-sm transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">account_balance</span>
+<span>계좌 등록</span>
+</button>
+</div>
+</div>
+<!-- Independent Currency Valuation Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- KRW Aggregation Card -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm flex flex-col justify-between gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-md text-label-md">KRW</span>
+<span class="font-body-md text-body-md text-on-surface-variant">원화 자료평가액 독립 집계</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">1개 계좌</span>
+</div>
+<div class="flex items-baseline justify-between pt-1">
+<div class="font-label-md text-display-lg text-on-surface font-semibold tracking-tight">
+            ₩190,000
+          </div>
+<div class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>확정 스냅샷</span>
+</div>
+</div>
+<div class="pt-3 bg-surface-container-low/50 rounded-lg px-3 py-2 text-on-surface-variant font-body-sm text-body-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">info</span>
+<span>환산·합산 없음 · 통화별 독립 보존 정책 적용</span>
+</div>
+</div>
+<!-- USD Aggregation Card -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm flex flex-col justify-between gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-secondary-container/20 text-on-secondary-container font-label-md text-label-md">USD</span>
+<span class="font-body-md text-body-md text-on-surface-variant">외화 자료평가액 독립 집계</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">2개 계좌 (추정 1개 포함)</span>
+</div>
+<div class="flex items-baseline justify-between pt-1">
+<div class="font-label-md text-display-lg text-on-surface font-semibold tracking-tight">
+            $1,430.00
+          </div>
+<div class="inline-flex items-center gap-1 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-[16px]">pending</span>
+<span>추정 합산 반영중</span>
+</div>
+</div>
+<div class="pt-3 bg-surface-container-low/50 rounded-lg px-3 py-2 text-on-surface-variant font-body-sm text-body-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-outline">shield</span>
+<span>임의 환율 적용 없이 원통화 보존 원칙</span>
+</div>
+</div>
+</div>
+</section>
+<!-- REGISTERED ACCOUNTS SECTION -->
+<section class="flex flex-col gap-4 mb-8">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<h2 class="font-title-md text-headline-sm text-on-surface">등록 계좌 목록</h2>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">3건</span>
+</div>
+<div class="font-body-sm text-body-sm text-outline">최신 스냅샷 기준 정렬</div>
+</div>
+<!-- Account Cards Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4" id="accounts-grid">
+<!-- Card 1: Selected (Owner) -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm flex flex-col justify-between gap-5 relative group" id="acc-card-1">
+<div class="flex flex-col gap-3">
+<div class="flex items-start justify-between gap-2">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-title-md text-title-md text-on-surface">김모음</span>
+<span class="font-body-sm text-body-sm text-outline">토스증권 ****0115</span>
+</div>
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-primary-container text-on-primary font-label-sm text-label-sm font-semibold">소유자 (Owner)</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">일반위탁</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-primary-fixed/40 text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+              선택됨
+            </span>
+</div>
+<div class="bg-surface-container-low/60 rounded-lg p-3 flex flex-col gap-2 font-body-sm text-body-sm">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>최신 자료</span>
+<span class="font-label-sm text-label-sm text-on-surface font-medium">토스 거래내역 PDF</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>기준 일자</span>
+<span class="font-label-sm text-label-sm text-on-surface">2026.11.03 (정상)</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-on-surface-variant">보유 현황</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">USD 20주 (DEMO-A) · $980.00</span>
+</div>
+</div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-outline">
+<span class="material-symbols-outlined text-[16px] text-outline">link_off</span>
+<span>API 미연결 (기본) · 정상 스냅샷</span>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-2">
+<button class="flex-1 h-9 px-3 bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-sm rounded-lg transition-colors flex items-center justify-center gap-1" onclick="selectAccount(1)" type="button">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>별칭 수정</span>
+</button>
+<button class="h-9 px-3 bg-surface-container-lowest hover:bg-surface-container text-on-surface-variant font-body-md text-body-sm rounded-lg transition-colors flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">description</span>
+<span>출처 원본</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Editor -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm flex flex-col justify-between gap-5 relative opacity-95 hover:opacity-100 transition-opacity" id="acc-card-2">
+<div class="flex flex-col gap-3">
+<div class="flex items-start justify-between gap-2">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-title-md text-title-md text-on-surface">김모음</span>
+<span class="font-body-sm text-body-sm text-outline">미래에셋 ****0492</span>
+</div>
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">편집자 (Editor)</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">ISA</span>
+</div>
+</div>
+<button class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm transition-colors" onclick="selectAccount(2)" type="button">
+              계좌 선택
+            </button>
+</div>
+<div class="bg-surface-container-low/60 rounded-lg p-3 flex flex-col gap-2 font-body-sm text-body-sm">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>최신 자료</span>
+<span class="font-label-sm text-label-sm text-on-surface font-medium">수기 전체 잔고 스냅샷</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>기준 일자</span>
+<span class="font-label-sm text-label-sm text-on-surface">2026.10.31 (정상)</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-on-surface-variant">보유 현황</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">KRW 10주 (DEMO-K) · ₩190,000</span>
+</div>
+</div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-outline">
+<span class="material-symbols-outlined text-[16px] text-outline">edit</span>
+<span>수기 관리 · 정상 스냅샷</span>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-2">
+<button class="flex-1 h-9 px-3 bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-sm rounded-lg transition-colors flex items-center justify-center gap-1" onclick="selectAccount(2)" type="button">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>별칭 수정</span>
+</button>
+<button class="h-9 px-3 bg-surface-container-lowest hover:bg-surface-container text-on-surface-variant font-body-md text-body-sm rounded-lg transition-colors flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">description</span>
+<span>출처 원본</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Viewer -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm flex flex-col justify-between gap-5 relative opacity-95 hover:opacity-100 transition-opacity" id="acc-card-3">
+<div class="flex flex-col gap-3">
+<div class="flex items-start justify-between gap-2">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-title-md text-title-md text-on-surface">이모음</span>
+<span class="font-body-sm text-body-sm text-outline">미래에셋 ****0884</span>
+</div>
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-outline font-label-sm text-label-sm font-semibold">조회 전용 (Viewer)</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">연금계좌</span>
+</div>
+</div>
+<button class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-sm text-label-sm transition-colors" onclick="selectAccount(3)" type="button">
+              계좌 선택
+            </button>
+</div>
+<div class="bg-surface-container-low/60 rounded-lg p-3 flex flex-col gap-2 font-body-sm text-body-sm">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>최신 자료</span>
+<span class="font-label-sm text-label-sm text-on-surface font-medium">증권사 CSV 맵핑</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span>기준 일자</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">2026.10.28 (추정)</span>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="text-on-surface-variant">보유 현황</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">USD 15주 (DEMO-M) · $450.00</span>
+</div>
+</div>
+<div class="flex items-center gap-2 font-label-sm text-label-sm text-secondary">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>추정 스냅샷 · 조회 전용 계좌</span>
+</div>
+</div>
+<div class="flex items-center gap-2 pt-2">
+<div class="flex-1 h-9 px-3 bg-surface-container-low text-outline font-body-sm text-body-sm rounded-lg flex items-center justify-center gap-1 cursor-not-allowed" title="조회 전용 계좌는 별칭을 변경할 수 없습니다.">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span>별칭 수정 불가</span>
+</div>
+<button class="h-9 px-3 bg-surface-container-lowest hover:bg-surface-container text-on-surface-variant font-body-md text-body-sm rounded-lg transition-colors flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">description</span>
+<span>출처 원본</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- SELECTED ACCOUNT DETAIL PANEL -->
+<section class="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm mb-8 flex flex-col gap-6" id="account-detail-panel">
+<!-- Panel Header & Alias Control -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-primary-fixed/50 text-primary font-label-sm text-label-sm font-semibold">선택된 관리 계좌</span>
+<span class="font-title-md text-headline-sm text-on-surface" id="detail-account-name">김모음 · 토스증권 ****0115</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">원장 정정 및 증빙 자료 보존 권한이 활성화되어 있습니다.</p>
+</div>
+<!-- Alias Input Control -->
+<form class="flex items-center gap-2" onsubmit="event.preventDefault(); showToast('별칭이 안전하게 저장되었습니다.');">
+<div class="relative">
+<input class="h-11 w-64 md:w-80 px-3 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:bg-surface-container-lowest focus:outline-none transition-colors" id="account-alias-input" maxlength="100" placeholder="계좌 별칭 입력 (최대 100자)" required="" type="text" value="김모음 토스 주계좌"/>
+</div>
+<button class="h-11 px-4 bg-primary-container hover:bg-primary text-on-primary font-title-md text-body-md rounded-lg shadow-sm transition-colors whitespace-nowrap" id="alias-save-btn" type="submit">
+          별칭 저장
+        </button>
+</form>
+</div>
+<!-- Action Button Bar -->
+<div class="flex flex-wrap items-center gap-2.5 pb-2">
+<button class="h-11 px-4 inline-flex items-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface font-title-md text-body-md rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px] text-primary">upload_file</span>
+<span>파일 업로드 (PDF/CSV)</span>
+</button>
+<button class="h-11 px-4 inline-flex items-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface font-title-md text-body-md rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px] text-outline">edit_calendar</span>
+<span>수기 전체 잔고 입력</span>
+</button>
+<button class="h-11 px-4 inline-flex items-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface font-title-md text-body-md rounded-lg transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px] text-outline">view_column</span>
+<span>증권사 컬럼 맵핑</span>
+</button>
+<button class="h-11 px-4 inline-flex items-center gap-2 bg-surface-container hover:bg-surface-container-high text-on-surface font-title-md text-body-md rounded-lg transition-colors ml-auto" type="button">
+<span class="material-symbols-outlined text-[20px] text-outline">file_download</span>
+<span>CSV 내보내기</span>
+</button>
+</div>
+<!-- 5 Local Tabs Navigation -->
+<div class="flex items-center gap-2 overflow-x-auto">
+<button class="detail-tab-btn h-10 px-4 rounded-lg font-title-md text-body-md text-on-surface-variant hover:text-on-surface whitespace-nowrap transition-colors" data-tab="transactions" onclick="switchDetailTab('transactions')" type="button">
+        저장 거래
+      </button>
+<button class="detail-tab-btn h-10 px-4 rounded-lg bg-surface-container-high font-title-md text-body-md text-primary font-semibold whitespace-nowrap transition-colors" data-tab="balance" onclick="switchDetailTab('balance')" type="button">
+        저장 잔고
+      </button>
+<button class="detail-tab-btn h-10 px-4 rounded-lg font-title-md text-body-md text-on-surface-variant hover:text-on-surface whitespace-nowrap transition-colors" data-tab="evidence" onclick="switchDetailTab('evidence')" type="button">
+        원본·증빙
+      </button>
+<button class="detail-tab-btn h-10 px-4 rounded-lg font-title-md text-body-md text-on-surface-variant hover:text-on-surface whitespace-nowrap transition-colors" data-tab="sync" onclick="switchDetailTab('sync')" type="button">
+        연동 설정
+      </button>
+<button class="detail-tab-btn h-10 px-4 rounded-lg font-title-md text-body-md text-on-surface-variant hover:text-on-surface whitespace-nowrap transition-colors" data-tab="funding" onclick="switchDetailTab('funding')" type="button">
+        매수 자금
+      </button>
+</div>
+<!-- Tab Panels Container -->
+<div class="pt-2">
+<!-- 1. Tab: 저장 거래 -->
+<div class="tab-content hidden flex-col gap-4" id="tab-transactions">
+<div class="flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2 flex-1 max-w-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-3 text-[20px] text-outline">search</span>
+<input class="w-full h-11 pl-10 pr-3 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none" placeholder="종목코드, 메모, 체결가 검색" type="text"/>
+</div>
+<select class="h-11 px-3 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none cursor-pointer">
+<option>전체 유형</option>
+<option>매수</option>
+<option>매도</option>
+<option>배당</option>
+</select>
+</div>
+<div class="flex items-center gap-2">
+<button class="h-11 px-3 bg-surface-container hover:bg-surface-container-high rounded-lg font-body-md text-body-md text-on-surface" type="button">원장 정정/추가</button>
+<button class="h-11 px-3 bg-surface-container hover:bg-surface-container-high rounded-lg font-body-md text-body-md text-on-surface" type="button">매수 자금 분류</button>
+</div>
+</div>
+<div class="overflow-x-auto rounded-lg bg-surface-container-low">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="bg-surface-container-high text-outline font-label-sm text-label-sm uppercase">
+<th class="py-2.5 px-3">체결일</th>
+<th class="py-2.5 px-3">유형</th>
+<th class="py-2.5 px-3">종목명/티커</th>
+<th class="py-2.5 px-3 text-right">수량</th>
+<th class="py-2.5 px-3 text-right">단가</th>
+<th class="py-2.5 px-3 text-right">정산금액</th>
+<th class="py-2.5 px-3 text-center">원장 조치</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container/50">
+<td class="py-3 px-3 font-label-md text-label-md">2026-11-02</td>
+<td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-primary-fixed/30 text-primary font-label-sm text-label-sm font-semibold">매수</span></td>
+<td class="py-3 px-3 font-medium">DEMO-A (가상 자산 A)</td>
+<td class="py-3 px-3 text-right font-label-md text-label-md">20주</td>
+<td class="py-3 px-3 text-right font-label-md text-label-md">$49.00</td>
+<td class="py-3 px-3 text-right font-label-md text-label-md font-semibold">$980.00</td>
+<td class="py-3 px-3 text-center">
+<button class="px-2 py-1 text-on-surface-variant hover:text-error font-body-sm text-body-sm" type="button">무효화</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- 2. Tab: 저장 잔고 (Default Active) -->
+<div class="tab-content flex flex-col gap-4" id="tab-balance">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-title-md text-title-md text-on-surface">확정 스냅샷 보유 잔고</span>
+<span class="font-body-sm text-body-sm text-outline">최신 수집 문서 기반 (2026.11.03)</span>
+</div>
+<div class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>원장 정합성 검증 완료</span>
+</div>
+</div>
+<div class="overflow-x-auto rounded-lg bg-surface-container-low">
+<table class="w-full text-left font-body-md text-body-md">
+<thead>
+<tr class="bg-surface-container-high text-outline font-label-sm text-label-sm uppercase">
+<th class="py-3 px-4">종목 코드</th>
+<th class="py-3 px-4">종목명</th>
+<th class="py-3 px-4 text-right">보유 수량</th>
+<th class="py-3 px-4 text-right">평가 금액</th>
+<th class="py-3 px-4">원장 증빙 및 보정 경로</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-container/50">
+<td class="py-4 px-4 font-label-md text-label-md font-medium text-primary">DEMO-A</td>
+<td class="py-4 px-4 font-title-md text-body-md">글로벌 테크 인덱스 (가상 A)</td>
+<td class="py-4 px-4 text-right font-label-md text-label-md">20주</td>
+<td class="py-4 px-4 text-right font-label-md text-label-md font-semibold text-on-surface">$980.00</td>
+<td class="py-4 px-4 font-body-sm text-body-sm">
+<div class="flex items-center gap-3">
+<a class="text-primary hover:underline flex items-center gap-1" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[16px]">file_open</span>
+                      토스 PDF 발송분 매핑
+                    </a>
+<span class="text-outline">/</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">수기 임의 가감 없음</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- 3. Tab: 원본·증빙 -->
+<div class="tab-content hidden flex-col gap-4" id="tab-evidence">
+<div class="flex items-center justify-between">
+<span class="font-title-md text-title-md text-on-surface">문서 및 스냅샷 원본 목록</span>
+<span class="font-body-sm text-body-sm text-outline">보존 기간 영구</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[32px] text-primary">picture_as_pdf</span>
+<div>
+<div class="font-title-md text-body-md text-on-surface">토스_statement_202611.pdf</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">기준일 2026.11.03 · 원본 SHA-256 무결성 검증 완료</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<a class="h-10 px-3.5 bg-surface-container hover:bg-surface-container-high rounded-lg font-body-md text-body-md text-on-surface inline-flex items-center gap-1.5 transition-colors" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>원본 다운로드</span>
+</a>
+<a class="h-10 px-3.5 bg-primary-container text-on-primary hover:bg-primary rounded-lg font-body-md text-body-md inline-flex items-center gap-1.5 transition-colors" href="javascript:void(0)">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+<span>뷰어로 확인</span>
+</a>
+</div>
+</div>
+</div>
+<!-- 4. Tab: 연동 설정 -->
+<div class="tab-content hidden flex-col gap-5" id="tab-sync">
+<div class="bg-surface-container-low rounded-lg p-5 flex flex-col gap-4">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-title-md text-title-md text-on-surface">토스 로컬 프로그램 등록</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-outline font-label-sm text-label-sm">연결 상태: 미연결</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                마지막 점검 기록 없음 (실시간 자동 동기화 꺼짐)
+              </p>
+</div>
+<button class="h-11 px-4 bg-surface-container hover:bg-surface-container-high text-on-surface font-title-md text-body-md rounded-lg transition-colors inline-flex items-center gap-2 self-start md:self-auto" type="button">
+<span class="material-symbols-outlined text-[20px] text-primary">sync_saved_locally</span>
+<span>연결 설정 및 테스트</span>
+</button>
+</div>
+<div class="p-3.5 bg-surface-container-lowest rounded-lg flex items-start gap-2.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[20px] text-secondary mt-0.5">policy</span>
+<span>
+<strong>데이터 불변성 안내:</strong> 증권사 API 관측 내역은 사용자가 등록한 PDF/수기 원장을 자동으로 덮어쓰지 않습니다. 수집된 최신 내역은 항상 대사 전용 후보로 격리되어 승인 절차를 거칩니다.
+            </span>
+</div>
+</div>
+</div>
+<!-- 5. Tab: 매수 자금 -->
+<div class="tab-content hidden flex-col gap-4" id="tab-funding">
+<div class="flex items-center justify-between">
+<span class="font-title-md text-title-md text-on-surface">자금 출처 및 환전 연결</span>
+<span class="font-body-sm text-body-sm text-outline">1건 매핑됨</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col gap-3 font-body-sm text-body-sm">
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">2026.11.02 DEMO-A 매수 대금</span>
+<span class="font-label-md text-label-md font-semibold text-on-surface">$980.00</span>
+</div>
+<div class="flex items-center justify-between pt-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">subdirectory_arrow_right</span>
+<span>연결 원천: 2026.10.30 외화 입금 환전 내역</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">정합 확인됨</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- MIGRATION SECTION: Conditional Single Account Preservation -->
+<section class="bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm mb-8 flex flex-col md:flex-row md:items-center justify-between gap-5">
+<div class="flex items-start gap-4">
+<div class="p-3 bg-secondary-container/20 text-on-secondary-container rounded-xl">
+<span class="material-symbols-outlined text-[28px]">move_to_inbox</span>
+</div>
+<div class="flex flex-col gap-1 max-w-2xl">
+<div class="flex items-center gap-2">
+<h3 class="font-title-md text-headline-sm text-on-surface">이전 단일 계좌 데이터 보존 이전</h3>
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">안전 복사 모드</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          본인 소유 계좌 및 권한 조건에서 원본을 유지하는 별도 복사 방식이며, 기준일 불명 잔고는 합산하지 않습니다. 기존 단일 원장의 타임스탬프와 증빙 링크는 그대로 보존됩니다.
+        </p>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-2.5">
+<button class="h-11 px-4 bg-surface-container hover:bg-surface-container-high text-on-surface font-title-md text-body-md rounded-lg transition-colors whitespace-nowrap" type="button">
+        자료 없는 계좌로 보존 이전
+      </button>
+<button class="h-11 px-4 bg-surface-container-lowest hover:bg-surface-container text-on-surface-variant font-title-md text-body-md rounded-lg shadow-sm transition-colors whitespace-nowrap" type="button">
+        보존 이전 원장 확인
+      </button>
+</div>
+</section>
+<!-- ACCOUNT STATUS & OBSERVABILITY NOTICES -->
+<section class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-outline">시스템 진단 및 동기화 상태 감시</span>
+<span class="font-label-sm text-label-sm text-outline">마지막 진단 1분 전</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<!-- Loading State Spec Indicator -->
+<div class="p-3.5 bg-surface-container-lowest rounded-lg shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-primary">sync</span>
+<span class="font-body-sm text-body-sm text-on-surface">원장 색인 상태</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-medium">동기화 완료</span>
+</div>
+<!-- Empty State Spec Indicator -->
+<div class="p-3.5 bg-surface-container-lowest rounded-lg shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-outline">inventory_2</span>
+<span class="font-body-sm text-body-sm text-on-surface">미확정 등록 대기</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline font-medium">0건 (대기 없음)</span>
+</div>
+<!-- Network Retry Spec Indicator -->
+<div class="p-3.5 bg-surface-container-lowest rounded-lg shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">lan</span>
+<span class="font-body-sm text-body-sm text-on-surface">원격 조회 헬스</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">정상 응답</span>
+<button class="text-primary hover:underline font-label-sm text-label-sm" type="button">재시도</button>
+</div>
+</div>
+</div>
+</section>
+<!-- MODAL: ADD FAMILY MEMBER (가족 추가) -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/40 backdrop-blur-sm hidden" id="family-modal">
+<div class="bg-surface-container-lowest rounded-xl p-6 shadow-xl max-w-md w-full flex flex-col gap-5">
+<div class="flex items-start justify-between">
+<div>
+<h3 class="font-title-md text-headline-sm text-on-surface">가족 구성원 추가</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">
+            이 로그인 계정에서 가족의 계좌와 자료를 직접 관리합니다.
+          </p>
+</div>
+<button class="text-outline hover:text-on-surface" onclick="document.getElementById('family-modal').classList.add('hidden')" type="button">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<form class="flex flex-col gap-4" onsubmit="event.preventDefault(); document.getElementById('family-modal').classList.add('hidden'); showToast('새 구성원이 등록되었습니다.');">
+<div class="flex flex-col gap-1.5">
+<label class="font-body-sm text-body-sm font-medium text-on-surface" for="family-name">
+            이름 <span class="text-error">*</span>
+</label>
+<input class="h-11 px-3.5 bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest" id="family-name" maxlength="100" placeholder="구성원 이름 입력 (필수, 최대 100자)" required="" type="text"/>
+<span class="font-label-sm text-label-sm text-outline">임의의 가족관계 선택이나 초대 이메일 발송 절차는 없습니다.</span>
+</div>
+<div class="flex items-center justify-end gap-2.5 pt-2">
+<button class="h-11 px-4 bg-surface-container hover:bg-surface-container-high text-on-surface font-title-md text-body-md rounded-lg transition-colors" onclick="document.getElementById('family-modal').classList.add('hidden')" type="button">
+            취소
+          </button>
+<button class="h-11 px-5 bg-primary-container hover:bg-primary text-on-primary font-title-md text-body-md rounded-lg shadow-sm transition-colors" type="submit">
+            등록
+          </button>
+</div>
+</form>
+</div>
+</div>
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div class="fixed bottom-6 right-6 z-50 px-4 py-3 bg-inverse-surface text-inverse-on-surface rounded-lg shadow-lg font-body-md text-body-md flex items-center gap-2 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300" id="toast">
+<span class="material-symbols-outlined text-[20px] text-primary-fixed">check_circle</span>
+<span id="toast-message">알림</span>
+</div>
+<script>
+    const accountsData = {
+      1: {
+        name: '김모음 · 토스증권 ****0115',
+        alias: '김모음 토스 주계좌',
+        role: 'owner',
+        readOnlyReason: null
+      },
+      2: {
+        name: '김모음 · 미래에셋 ****0492',
+        alias: '김모음 ISA 비과세',
+        role: 'editor',
+        readOnlyReason: null
+      },
+      3: {
+        name: '이모음 · 미래에셋 ****0884',
+        alias: '이모음 연금저축',
+        role: 'viewer',
+        readOnlyReason: '조회 전용 권한(Viewer) 계좌는 별칭을 변경할 수 없습니다.'
+      }
+    };
+
+    function selectAccount(id) {
+      const data = accountsData[id];
+      if (!data) return;
+
+      document.querySelectorAll('#accounts-grid > div').forEach((card, idx) => {
+        if (idx + 1 === id) {
+          card.classList.add('ring-2', 'ring-primary-container');
+        } else {
+          card.classList.remove('ring-2', 'ring-primary-container');
+        }
+      });
+
+      document.getElementById('detail-account-name').textContent = data.name;
+      const aliasInput = document.getElementById('account-alias-input');
+      const saveBtn = document.getElementById('alias-save-btn');
+
+      aliasInput.value = data.alias;
+
+      if (data.role === 'viewer') {
+        aliasInput.disabled = true;
+        aliasInput.classList.add('opacity-60', 'cursor-not-allowed');
+        saveBtn.disabled = true;
+        saveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        saveBtn.title = data.readOnlyReason;
+        showToast('조회 전용 계좌로 전환되었습니다. (수정 불가)');
+      } else {
+        aliasInput.disabled = false;
+        aliasInput.classList.remove('opacity-60', 'cursor-not-allowed');
+        saveBtn.disabled = false;
+        saveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        saveBtn.title = '';
+        showToast(data.name + ' 계좌가 선택되었습니다.');
+      }
+    }
+
+    function switchDetailTab(tabId) {
+      const tabs = ['transactions', 'balance', 'evidence', 'sync', 'funding'];
+      tabs.forEach(t => {
+        const contentEl = document.getElementById('tab-' + t);
+        const btnEl = document.querySelector(`.detail-tab-btn[data-tab="${t}"]`);
+        if (t === tabId) {
+          contentEl.classList.remove('hidden');
+          contentEl.classList.add('flex');
+          btnEl.classList.add('bg-surface-container-high', 'text-primary', 'font-semibold');
+          btnEl.classList.remove('text-on-surface-variant');
+        } else {
+          contentEl.classList.add('hidden');
+          contentEl.classList.remove('flex');
+          btnEl.classList.remove('bg-surface-container-high', 'text-primary', 'font-semibold');
+          btnEl.classList.add('text-on-surface-variant');
+        }
+      });
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 2600);
+    }
+  </script>
+</div></main></body></html>

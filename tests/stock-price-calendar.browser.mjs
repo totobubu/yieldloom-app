@@ -70,6 +70,9 @@ try {
         });
         await page.goto(`${base}/stock/QLDY?tab=prices`);
         const history = page.locator('.stock-price-history');
+        await history
+            .getByRole('button', { name: '달력', exact: true })
+            .click();
         await history.locator('.price-calendar').waitFor();
         assert.equal(await page.locator('.price-history summary').count(), 0);
         assert.equal(await history.locator('.calendar-note').count(), 0);
@@ -202,6 +205,7 @@ try {
             '저가',
             '종가',
             '거래량',
+            '이벤트',
         ]);
         assert.match(
             await history.locator('tbody tr').first().innerText(),
@@ -223,6 +227,9 @@ try {
                 .click();
             await page
                 .getByRole('tab', { name: '시세정보', exact: true })
+                .click();
+            await history
+                .getByRole('button', { name: '달력', exact: true })
                 .click();
             await history
                 .getByRole('button', {
@@ -280,6 +287,9 @@ try {
     );
     await stale.goto(`${base}/stock/QLDY?tab=prices`);
     const staleHistory = stale.locator('.stock-price-history');
+    await staleHistory
+        .getByRole('button', { name: '달력', exact: true })
+        .click();
     await staleHistory.locator('.price-calendar').waitFor();
     await staleHistory
         .getByRole('button', { name: '현재 월', exact: true })

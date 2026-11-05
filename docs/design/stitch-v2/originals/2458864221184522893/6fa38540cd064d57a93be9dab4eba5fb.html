@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V2 SHELL / PC / Navigation Closed</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/primeicons@6.0.1/primeicons.css">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Pretendard", sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f9fb;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden w-[1280px] max-w-[1280px] mx-auto bg-[#f7f9fb]">
+
+  <!-- Top Global Header (PC 1280px) -->
+  <header class="w-full bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-[1120px] mx-auto h-16 px-4 flex items-center justify-between">
+      <!-- Left: Brand Logo & Title -->
+      <div class="flex items-center gap-8">
+        <a href="#" class="flex items-center gap-2.5 group">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuATiHMItvmqZSKkBXH9Zn4AoQreV0w2U76y-Dhxdf6UG8gqJkQGaahw4c7KfG3Rpv_BnBYgfSHquB1O3aFFFXsM0lKmdWaZJy0PqbZgVnPBhpBvdEpzuYL92hUXPsEu4m_Gdv_0bnt9UeKkB31Xq2CAocg-YnSA8-mALCNxlt7w2OmGZSsW5-aIKr3_Cn-KT-XGFIvWr7969SEtOT6l-gGzrXBriuOI04xjAk0nCle43-Lf3jMnmFuw" alt="모으멍 배당달력" class="w-8 h-8 rounded-lg object-contain transition-transform group-hover:scale-105" />
+          <span class="font-bold text-lg tracking-tight text-slate-900 flex items-center gap-1.5">
+            모으멍 <span class="text-[#0d7a6e]">배당달력</span>
+          </span>
+        </a>
+
+        <!-- Public Navigation Menu Items -->
+        <nav class="hidden md:flex items-center gap-1 text-[14px] font-medium text-slate-600">
+          <a href="#" class="px-3.5 py-2 rounded-lg hover:text-[#0d7a6e] hover:bg-emerald-50/60 transition-colors">종목 검색</a>
+          <a href="#" class="px-3.5 py-2 rounded-lg hover:text-[#0d7a6e] hover:bg-emerald-50/60 transition-colors">종목 비교</a>
+          <a href="#" class="px-3.5 py-2 rounded-lg hover:text-[#0d7a6e] hover:bg-emerald-50/60 transition-colors">신규 상장</a>
+          <a href="#" class="px-3.5 py-2 rounded-lg hover:text-[#0d7a6e] hover:bg-emerald-50/60 transition-colors">이용 안내</a>
+        </nav>
+      </div>
+
+      <!-- Right: Utility Controls & Admin Profile Button -->
+      <div class="flex items-center gap-3">
+        <!-- Light / Dark Mode Toggle Button -->
+        <button type="button" aria-label="테마 전환" class="w-9 h-9 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors">
+          <i class="pi pi-sun text-sm"></i>
+        </button>
+
+        <!-- Authorized Admin Account Button (Closed Drawer Trigger) -->
+        <button type="button" aria-label="계정 및 관리 메뉴 열기" class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 transition-all text-xs font-semibold text-slate-700 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-[#0d7a6e]"></span>
+          <span>관리자</span>
+          <span class="text-slate-300 font-normal">|</span>
+          <span class="text-slate-600 font-medium">계정 메뉴</span>
+          <i class="pi pi-angle-down text-[10px] text-slate-400"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Workspace Container: Compact Left Rail + Main Content Slot -->
+  <div class="w-full max-w-[1120px] mx-auto px-4 flex-1 flex py-6 gap-6 items-start">
+
+    <!-- Submenu Collapsed Left Rail / Trigger Bar (56px width compact rail) -->
+    <aside aria-label="서브메뉴 컴팩트 레일" class="w-14 bg-white rounded-2xl border border-slate-200/80 p-2.5 flex flex-col items-center gap-4 shadow-sm shrink-0">
+      <!-- Submenu Expand Trigger Button -->
+      <button type="button" title="포트폴리오 서브메뉴 펼치기" class="w-9 h-9 rounded-xl bg-slate-50 hover:bg-emerald-50 hover:text-[#0d7a6e] text-slate-600 flex items-center justify-center transition-colors">
+        <i class="pi pi-bars text-sm"></i>
+      </button>
+
+      <div class="w-6 h-[1px] bg-slate-100"></div>
+
+      <!-- Current Location Icon: Portfolio Active Indicator -->
+      <div class="relative group">
+        <button type="button" title="포트폴리오 > 개요 > 원금 (현재 위치)" class="w-9 h-9 rounded-xl bg-[#0d7a6e] text-white flex items-center justify-center shadow-sm">
+          <i class="pi pi-wallet text-sm"></i>
+        </button>
+        <span class="absolute left-11 top-1.5 whitespace-nowrap bg-slate-900 text-white text-[11px] font-medium px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow">
+          포트폴리오 &gt; 개요 &gt; 원금
+        </span>
+      </div>
+
+      <!-- Simulator Icon -->
+      <div class="relative group">
+        <button type="button" title="배당 시뮬레이터" class="w-9 h-9 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-50 flex items-center justify-center transition-colors">
+          <i class="pi pi-calculator text-sm"></i>
+        </button>
+        <span class="absolute left-11 top-1.5 whitespace-nowrap bg-slate-900 text-white text-[11px] font-medium px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20 shadow">
+          배당 시뮬레이터
+        </span>
+      </div>
+
+      <div class="w-6 h-[1px] bg-slate-100"></div>
+
+      <!-- Expand Chevron Action -->
+      <button type="button" title="서브메뉴 열기" class="w-9 h-9 rounded-xl text-slate-400 hover:text-[#0d7a6e] hover:bg-slate-50 flex items-center justify-center transition-colors">
+        <i class="pi pi-chevron-right text-xs"></i>
+      </button>
+    </aside>
+
+    <!-- Main Content Area: Breadcrumb / Location Bar + Empty Content Frame -->
+    <main class="flex-1 flex flex-col gap-4 min-w-0">
+
+      <!-- Breadcrumb Bar indicating Current Position -->
+      <div class="h-10 px-4 bg-white/80 backdrop-blur rounded-xl border border-slate-200/70 flex items-center justify-between text-xs text-slate-500">
+        <div class="flex items-center gap-2">
+          <button type="button" class="flex items-center gap-1.5 text-slate-600 hover:text-[#0d7a6e] font-semibold transition-colors">
+            <i class="pi pi-folder text-[11px] text-[#0d7a6e]"></i>
+            <span>포트폴리오</span>
+          </button>
+          <span class="text-slate-300">/</span>
+          <span class="text-slate-600 font-medium">개요</span>
+          <span class="text-slate-300">/</span>
+          <span class="text-[#0d7a6e] font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">원금</span>
+        </div>
+
+        <button type="button" class="text-slate-500 hover:text-slate-800 text-xs font-medium flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors">
+          <i class="pi pi-sliders-h text-[10px]"></i>
+          <span>메뉴 펼치기</span>
+        </button>
+      </div>
+
+      <!-- Blank Main Slot -->
+      <div class="w-full min-h-[580px] rounded-2xl border-2 border-dashed border-slate-200 bg-white/50 flex flex-col items-center justify-center p-8 text-center transition-colors hover:border-slate-300">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#0d7a6e] mb-3 shadow-sm">
+          <i class="pi pi-box text-xl"></i>
+        </div>
+        <p class="text-sm font-semibold text-slate-700 tracking-tight">콘텐츠 영역</p>
+        <p class="text-xs text-slate-400 mt-1 max-w-sm font-normal">
+          본 프레임은 전역 셸(상단 헤더 + 컴팩트 레일 + 푸터)이 조립된 닫힘 상태입니다.
+        </p>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Standard Product Footer -->
+  <footer class="w-full bg-white border-t border-slate-200 py-4 mt-auto">
+    <div class="max-w-[1120px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+      <div class="flex items-center gap-3">
+        <span class="font-semibold text-slate-700">모으멍 배당달력</span>
+        <span class="text-slate-300">|</span>
+        <a href="#" class="hover:text-slate-800 transition-colors">데이터 출처 · 이용 안내</a>
+      </div>
+      <div class="text-slate-400 text-right">
+        공개된 자료를 정리한 정보입니다. 기준일과 원문을 확인해 주세요.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

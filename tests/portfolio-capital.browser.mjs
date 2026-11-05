@@ -1,3 +1,4 @@
+import { openPortfolioPage } from './portfolio-navigation.mjs';
 // Run with the Vite dev server at CAPITAL_TEST_URL (default localhost:5173).
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
@@ -15,9 +16,9 @@ const layoutStyles = layoutSource
 await writeFile(
     harness,
     `<!doctype html><html><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${layoutStyles}</style><div id="portfolio-header-actions"></div><div id="app" class="thumbnail-app"></div><script type="module">
-import {createApp,h} from 'vue'; import PrimeVue from 'primevue/config'; import {MyPreset} from '/src/config/theme.js'; import ko from '/src/config/locale/ko.js'; import '/src/styles/style.scss'; import '/src/styles/studio.scss'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import MyPage from '/src/pages/MyPageView.vue'; import FamilyPage from '/src/pages/FamilyPortfolioView.vue';
-const router=createRouter({history:createMemoryHistory(),routes:[{path:'/',component:new URLSearchParams(location.search).has('family')?FamilyPage:MyPage},{path:'/login',component:{template:'<p>login</p>'}}]});
-createApp({render:()=>h(RouterView)}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).use(router).mount('#app');</script></html>`
+import {createApp,h} from 'vue'; import PrimeVue from 'primevue/config'; import {MyPreset} from '/src/config/theme.js'; import ko from '/src/config/locale/ko.js'; import '/src/styles/style.scss'; import '/src/styles/studio.scss'; import {createRouter,createMemoryHistory,RouterView} from 'vue-router'; import PortfolioNavigation from '/src/components/navigation/PortfolioNavigation.vue'; import MyPage from '/src/pages/MyPageView.vue'; import FamilyPage from '/src/pages/FamilyPortfolioView.vue';
+const router=createRouter({history:createMemoryHistory(),routes:[{path:'/mypage',component:FamilyPage},{path:'/',component:new URLSearchParams(location.search).has('family')?FamilyPage:MyPage},{path:'/login',component:{template:'<p>login</p>'}}]});
+createApp({render:()=>h('div',[h('aside',{class:'shell-submenu'},[h(PortfolioNavigation)]),h(RouterView)])}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).use(router).mount('#app');</script></html>`
 );
 const trade = {
     id: 'T',
@@ -550,7 +551,7 @@ try {
     await page
         .locator('.portfolio-loading-overlay')
         .waitFor({ state: 'hidden' });
-    await page.getByRole('tab', { name: '원금·자금', exact: true }).click();
+    await openPortfolioPage(page, '원금·자금');
     await page.locator('.all-account-recovery > summary').click();
     const overview = page.getByRole('region', {
         name: '전체 계좌 원금 회수 현황',
@@ -570,7 +571,7 @@ try {
         .getByText('분류 확인 필요 1건', { exact: false })
         .first()
         .waitFor();
-    await page.getByRole('tab', { name: '자산관리', exact: true }).click();
+    await openPortfolioPage(page, '자산관리');
     await page.getByRole('button', { name: '조회', exact: true }).click();
     await page
         .getByRole('button', { name: '자금 구성 확인', exact: true })
@@ -613,7 +614,7 @@ try {
     await familyDialog
         .getByRole('button', { name: '상세 창 닫기', exact: true })
         .click();
-    await page.getByRole('tab', { name: '한눈에 보기', exact: true }).click();
+    await openPortfolioPage(page, '원금·자금');
     const selectedSection = page.getByRole('region', {
         name: '회수 현황 계좌 선택',
         exact: true,
@@ -659,7 +660,7 @@ try {
     familyFailure = false;
     await page.clock.fastForward(61000);
     await page.getByRole('button', { name: '새로고침', exact: true }).click();
-    await page.getByRole('tab', { name: '자산관리', exact: true }).click();
+    await openPortfolioPage(page, '자산관리');
     await page
         .getByRole('heading', { name: '선택 계좌: 검증 계좌', exact: true })
         .waitFor();

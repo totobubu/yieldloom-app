@@ -71,13 +71,25 @@ const browser = await chromium.launch({
     args: ['--no-sandbox'],
 });
 try {
-    for (const width of [1440, 390]) {
+    for (const width of [1280, 768, 390]) {
         const page = await browser.newPage({
             viewport: { width, height: 1000 },
         });
+        const productsSelector =
+            width > 1024
+                ? '.comparison-summary tbody tr'
+                : '.product-grid article';
+        const resultsSelector =
+            width > 1024 ? '.comparison-summary' : '.product-grid';
+        await page.route('**/api/analytics', (r) =>
+            r.fulfill({ status: 204, body: '' })
+        );
         const errors = [];
         const requests = [];
-        page.on('pageerror', (e) => errors.push(e.message));
+        page.on('pageerror', (e) => {
+            errors.push(e.message);
+            console.error('Browser error:', e.message);
+        });
         page.on('request', (r) => {
             if (['fetch', 'xhr'].includes(r.resourceType()))
                 requests.push(r.url());
@@ -92,9 +104,18 @@ try {
             r.fulfill({ json: { tickers } })
         );
         await page.goto(base + '/compare?view=similar&symbol=AMD&ticker=APLY');
-        await page.locator('.product-grid article').first().waitFor();
+        await page
+            .locator(productsSelector)
+            .first()
+            .waitFor()
+            .catch(async (e) => {
+                console.error(
+                    (await page.locator('body').innerText()).slice(0, 3000)
+                );
+                throw e;
+            });
         assert.equal(await page.locator('#explorer-reference').count(), 0);
-        assert.equal(await page.locator('.product-grid article').count(), 12);
+        assert.equal(await page.locator(productsSelector).count(), 12);
         const before = requests.length;
         async function select(id, name) {
             await page.locator('#explorer-' + id).click();
@@ -121,8 +142,29 @@ try {
         ]);
         await select('dividend', '배당 이력 있음');
         await select('frequency', '매주');
-        assert.equal(await page.locator('.product-grid article').count(), 1);
-        assert.match(await page.locator('.product-grid').innerText(), /NVDY/);
+        assert.equal(await page.locator(productsSelector).count(), 1);
+        assert.match(await page.locator(resultsSelector).innerText(), /NVDY/);
+        assert.equal(
+            await page.locator('.comparison-applied-conditions button').count(),
+            4
+        );
+        await page
+            .getByRole('button', { name: '지급 주기 조건 해제', exact: true })
+            .click();
+        assert.equal(await page.locator(productsSelector).count(), 3);
+        assert.equal(
+            await page.locator('.comparison-applied-conditions button').count(),
+            3
+        );
+        await page
+            .getByRole('button', { name: '전략 조건 해제', exact: true })
+            .click();
+        assert.equal(
+            await page.locator('.comparison-applied-conditions button').count(),
+            0
+        );
+        assert.equal(await page.locator(productsSelector).count(), 12);
+        assert.equal(requests.length, before);
         await select('strategy', '레버리지');
         assert.match(
             await page.locator('#explorer-direction').innerText(),
@@ -137,40 +179,47 @@ try {
             /모든 지급 주기/
         );
         await select('direction', '인버스');
-        assert.equal(await page.locator('.product-grid article').count(), 1);
-        assert.match(await page.locator('.product-grid').innerText(), /AAPD/);
+        assert.equal(await page.locator(productsSelector).count(), 1);
+        assert.match(await page.locator(resultsSelector).innerText(), /AAPD/);
         await page
             .getByRole('button', { name: '필터 초기화', exact: true })
             .click();
-        assert.equal(await page.locator('.product-grid article').count(), 12);
+        assert.equal(await page.locator(productsSelector).count(), 12);
         await page
             .getByRole('navigation', { name: '종목 비교 하위 메뉴' })
             .getByRole('link', { name: '테마 비교', exact: true })
             .click();
         await select('theme', /^M7 /);
         assert.equal(
-            await page.locator('.product-grid article h3').first().innerText(),
+            await page
+                .locator(
+                    width > 1024
+                        ? '.comparison-summary tbody th a'
+                        : '.product-grid article h3'
+                )
+                .first()
+                .innerText(),
             'AAPL'
         );
         await select('strategy', '본주(기초자산)');
-        assert.equal(await page.locator('.product-grid article').count(), 8);
+        assert.equal(await page.locator(productsSelector).count(), 8);
         assert.doesNotMatch(
-            await page.locator('.product-grid').innerText(),
+            await page.locator(resultsSelector).innerText(),
             /배수 미확인|재검증 대기|운용사 미확인/
         );
         assert.deepEqual(await options('direction'), ['모든 방향', '롱']);
         await select('theme', /^FAANG /);
         await select('strategy', '본주(기초자산)');
-        assert.equal(await page.locator('.product-grid article').count(), 6);
-        assert.match(await page.locator('.product-grid').innerText(), /AAPL/);
+        assert.equal(await page.locator(productsSelector).count(), 6);
+        assert.match(await page.locator(resultsSelector).innerText(), /AAPL/);
         await select('theme', /^금융 \(/);
-        assert.match(await page.locator('.product-grid').innerText(), /XLF/);
+        assert.match(await page.locator(resultsSelector).innerText(), /XLF/);
         assert.match(
-            await page.locator('.product-grid').innerText(),
-            /분류 근거: 상품명 키워드/
+            await page.locator(resultsSelector).innerText(),
+            /상품명 키워드/
         );
         await select('theme', /^여행·항공·레저 \(/);
-        assert.match(await page.locator('.product-grid').innerText(), /JETS/);
+        assert.match(await page.locator(resultsSelector).innerText(), /JETS/);
         assert.equal(requests.length, before);
         assert.ok(
             await page.evaluate(

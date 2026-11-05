@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V2 SHELL / Mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              primary: '#0d7a6e',
+              hover: '#005048',
+              light: '#ecfdf5',
+              surface: '#f7f9fb',
+              dark: '#2d1e18',
+              accent: '#eab308',
+              accentLight: '#fef3c7'
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans KR"', '"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', 'Plus Jakarta Sans', sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      width: 390px;
+      min-height: 844px;
+    }
+    .num-tabular {
+      font-variant-numeric: tabular-nums;
+    }
+    .header-inner, .footer-inner {
+      max-width: 358px;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased pb-20">
+
+  <!-- V2 GLOBAL HEADER (Mobile: 56px, inner max 358px) -->
+  <header class="sticky top-0 z-50 h-14 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="header-inner mx-auto h-full px-4 flex items-center justify-between">
+      
+      <!-- Brand Logo & Name -->
+      <a href="#" class="flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-teal-600 rounded-lg py-1 min-h-[44px]">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzoU6pRRn00HSLNKZ2515AxrKYCH8Zwwcw80Xx0U-SudU8Qt5E8s1OfQRAf6oYozvbnDehL69iRcCD6Lz_EsYivyVmMjHS5Hq3gPq8J1-bDRvU0SrM9ghwViiX5vyvRMLPX7m0RQZRr10_g2cZtIpzlaG7EUG28xqUwsM557SzxxePDKyRV8GKi7_jxHmTgJ_8WTumMvQtmbiiRohtrINrHVNpG4CJRhsCJlARM9wpf6thLaqhS31N" alt="모으멍 심볼" class="w-7 h-7 object-contain" />
+        <span class="text-sm font-bold tracking-tight text-slate-900 flex items-center gap-1">
+          모으멍 <span class="text-[#0d7a6e]">배당달력</span>
+        </span>
+      </a>
+
+      <!-- Right Utility Actions (Theme toggle + Guide icon button with min 44px touch target) -->
+      <div class="flex items-center gap-1">
+        <a href="#" aria-label="이용 안내" class="w-11 h-11 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-600">
+          <i class="fa-regular fa-circle-question text-lg"></i>
+        </a>
+        <button type="button" aria-label="테마 전환" class="w-11 h-11 flex items-center justify-center rounded-lg text-slate-600 hover:text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-600">
+          <i class="fa-regular fa-sun text-base"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- V2 MAIN CONTENT SLOT (Mobile: Full-width frame, deliberately empty with dashed placeholder) -->
+  <main class="flex-1 w-full flex flex-col justify-center items-center py-8 px-4">
+    <div class="header-inner w-full flex-1 flex flex-col items-center justify-center min-h-[460px]">
+      
+      <!-- Empty Slot Wireframe Container -->
+      <div class="w-full flex-1 border-2 border-dashed border-slate-300 rounded-2xl bg-white/70 p-6 flex flex-col items-center justify-center text-center shadow-sm">
+        <div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-100 flex items-center justify-center mb-3 text-[#0d7a6e]">
+          <i class="fa-solid fa-layer-group text-lg"></i>
+        </div>
+        <h2 class="text-base font-bold text-slate-800 mb-1.5">콘텐츠 영역 · 별도 콘텐츠 프레임 삽입</h2>
+        <p class="text-xs text-slate-500 leading-relaxed mb-4">
+          본 프레임은 상단 헤더, 하단 고정 전역 4대 내비게이션, 푸터가 연결된 <strong class="text-slate-700">V2 Mobile Shell(390px)</strong>입니다.
+        </p>
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-[10px] font-medium text-slate-600 border border-slate-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Mobile 슬롯 여백: 좌우 16px (최대 358px)</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- DESIGN NOTE & ACCESS RULE (Mobile spec banner) -->
+  <aside class="w-full bg-slate-100/90 border-t border-slate-200 py-3 px-4 text-[10px] text-slate-500">
+    <div class="header-inner mx-auto flex flex-col gap-1">
+      <div class="flex items-center gap-1.5 font-semibold text-slate-700">
+        <span class="px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 text-[9px]">설계 사양 안내</span>
+        <span>공개 셸 4대 메뉴 기준 · 관리자 Drawer 규칙 보존</span>
+      </div>
+      <p class="text-slate-400 leading-normal">
+        일반 로그인/회원가입/알림 벨 미노출. 관리자 권한 확인 시 계정 Drawer로 포트폴리오 접근.
+      </p>
+    </div>
+  </aside>
+
+  <!-- V2 GLOBAL FOOTER (Mobile: Safe distance above fixed bottom nav) -->
+  <footer class="w-full bg-white border-t border-slate-200 py-5">
+    <div class="footer-inner mx-auto px-4 flex flex-col items-center text-center gap-2">
+      <div class="flex items-center gap-2">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzoU6pRRn00HSLNKZ2515AxrKYCH8Zwwcw80Xx0U-SudU8Qt5E8s1OfQRAf6oYozvbnDehL69iRcCD6Lz_EsYivyVmMjHS5Hq3gPq8J1-bDRvU0SrM9ghwViiX5vyvRMLPX7m0RQZRr10_g2cZtIpzlaG7EUG28xqUwsM557SzxxePDKyRV8GKi7_jxHmTgJ_8WTumMvQtmbiiRohtrINrHVNpG4CJRhsCJlARM9wpf6thLaqhS31N" alt="모으멍 로고 심볼" class="w-4 h-4 object-contain opacity-80" />
+        <span class="text-xs font-bold text-slate-800">모으멍 배당달력</span>
+      </div>
+      <a href="#" class="text-[11px] text-slate-500 hover:text-slate-800 underline decoration-slate-300">데이터 출처 · 이용 안내</a>
+      <p class="text-[10px] text-slate-400 mt-1">
+        공개된 자료를 정리한 정보입니다.<br>기준일과 원문을 확인해 주세요.
+      </p>
+    </div>
+  </footer>
+
+  <!-- V2 MOBILE FIXED BOTTOM NAVIGATION BAR (4 Public Menus, min 44px Touch Targets) -->
+  <nav class="fixed bottom-0 left-0 right-0 z-50 h-16 bg-white/95 backdrop-blur border-t border-slate-200 flex items-center justify-around px-2 max-w-[390px] mx-auto shadow-lg" aria-label="전역 하단 내비게이션">
+    
+    <!-- 1. 종목 검색 (Active) -->
+    <a href="#" class="flex flex-col items-center justify-center flex-1 h-full min-h-[44px] text-[#0d7a6e] font-semibold focus:outline-none">
+      <div class="w-7 h-7 flex items-center justify-center rounded-lg bg-[#ecfdf5]">
+        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+      </div>
+      <span class="text-[10px] mt-0.5 tracking-tight">종목 검색</span>
+    </a>
+
+    <!-- 2. 종목 비교 -->
+    <a href="#" class="flex flex-col items-center justify-center flex-1 h-full min-h-[44px] text-slate-500 hover:text-slate-800 font-medium focus:outline-none">
+      <div class="w-7 h-7 flex items-center justify-center">
+        <i class="fa-solid fa-code-compare text-xs"></i>
+      </div>
+      <span class="text-[10px] mt-0.5 tracking-tight">종목 비교</span>
+    </a>
+
+    <!-- 3. 신규 상장 -->
+    <a href="#" class="flex flex-col items-center justify-center flex-1 h-full min-h-[44px] text-slate-500 hover:text-slate-800 font-medium focus:outline-none">
+      <div class="w-7 h-7 flex items-center justify-center">
+        <i class="fa-solid fa-sparkles text-xs text-amber-500"></i>
+      </div>
+      <span class="text-[10px] mt-0.5 tracking-tight">신규 상장</span>
+    </a>
+
+    <!-- 4. 이용 안내 -->
+    <a href="#" class="flex flex-col items-center justify-center flex-1 h-full min-h-[44px] text-slate-500 hover:text-slate-800 font-medium focus:outline-none">
+      <div class="w-7 h-7 flex items-center justify-center">
+        <i class="fa-regular fa-circle-question text-xs"></i>
+      </div>
+      <span class="text-[10px] mt-0.5 tracking-tight">이용 안내</span>
+    </a>
+
+  </nav>
+
+</body>
+</html>

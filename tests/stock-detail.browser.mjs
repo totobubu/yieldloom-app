@@ -12,12 +12,18 @@ try {
         viewport: { width: 1440, height: 1000 },
     });
     page.setDefaultTimeout(15000);
+    await page.route('**/api/analytics', (r) =>
+        r.fulfill({ status: 204, body: '' })
+    );
     page.setDefaultNavigationTimeout(15000);
     await page.route('**/security-insights/*.json', (r) =>
         r.fulfill({ json: { securities: {}, asOfDate: '2026-10-15' } })
     );
     const errors = [];
-    page.on('pageerror', (e) => errors.push(e.message));
+    page.on('pageerror', (e) => {
+        errors.push(e.message);
+        console.error('Browser error:', e.message);
+    });
     const rows = Array.from({ length: 16 }, (_, i) => ({
         date: new Date(Date.UTC(2025, i, 2)).toISOString().slice(0, 10),
         close: 30 + i / 10,
@@ -88,7 +94,15 @@ try {
         })
     );
     await page.goto(`${base}/thumbnail/TOPW?rivals=`);
-    await page.getByRole('heading', { name: 'TOPW 종목 개요' }).waitFor();
+    await page
+        .getByRole('heading', { name: '개요 및 기본 정보' })
+        .waitFor()
+        .catch(async (e) => {
+            console.error(
+                (await page.locator('body').innerText()).slice(0, 3000)
+            );
+            throw e;
+        });
     assert.match(page.url(), /\/stock\/TOPW\?rivals=/);
     const candleRows = Array.from({ length: 150 }, (_, i) => ({
         date: new Date(Date.UTC(2026, 0, i + 1)).toISOString().slice(0, 10),
@@ -114,6 +128,15 @@ try {
     await page.getByRole('tab', { name: '시세정보', exact: true }).click();
     await page.locator('.candle-plot').waitFor();
     assert.ok(await page.locator('.stock-overview').isVisible());
+    assert.equal(
+        await page
+            .getByRole('button', { name: '1개월', exact: true })
+            .getAttribute('aria-pressed'),
+        'true'
+    );
+    const initialMonthCount = await page.locator('.candle').count();
+    await page.getByRole('button', { name: '3개월', exact: true }).click();
+    assert.ok((await page.locator('.candle').count()) > initialMonthCount);
     assert.equal(await page.locator('.chart-event circle.split').count(), 1);
     const threeMonths = await page.locator('.candle').count();
     await page.getByRole('button', { name: '주봉', exact: true }).click();
@@ -177,6 +200,7 @@ try {
         .getByRole('heading', { name: '월별 배당 흐름', exact: true })
         .waitFor();
     assert.equal(await page.locator('.month-bar').count(), 12);
+    await page.getByText('최근 기간 보기', { exact: true }).click();
     await page.getByRole('button', { name: '24개월', exact: true }).click();
     assert.equal(await page.locator('.month-bar').count(), 24);
     const rocHistory = page.locator('.dividend-roc-history');
@@ -188,9 +212,16 @@ try {
         .getByRole('button', { name: '2026년 4월 상세 보기', exact: true })
         .click();
     assert.match(
-        await rocHistory.locator('.selected-month').innerText(),
+        await page
+            .getByRole('dialog', { name: '달 상세', exact: true })
+            .locator('.selected-month')
+            .innerText(),
         /4월/
     );
+    await page.keyboard.press('Escape');
+    await page
+        .getByRole('dialog', { name: '달 상세', exact: true })
+        .waitFor({ state: 'hidden' });
     await rocHistory
         .getByRole('button', { name: '회차별 이력', exact: true })
         .click();
@@ -215,6 +246,9 @@ try {
     });
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.getByRole('tab', { name: '공유정보', exact: true }).click();
+    await page
+        .getByRole('checkbox', { name: '선택한 카드 모두 보기', exact: true })
+        .check();
     await page
         .getByRole('button', { name: '배당 요약 PNG 다운로드', exact: true })
         .waitFor({ state: 'visible' });
@@ -241,7 +275,10 @@ try {
     // This older fixture starts before TOPW's verified launch and has no
     // complete inception coverage; it must not become a short-fund estimate.
     await page.locator('.entry-efficiency-card .unavailable').waitFor();
-    assert.match(await page.locator('.entry-efficiency-card .unavailable').innerText(), /공식 최초 거래일 2025-09-04/);
+    assert.match(
+        await page.locator('.entry-efficiency-card .unavailable').innerText(),
+        /공식 최초 거래일 2025-09-04/
+    );
     for (const name of ['summary', 'comparison']) {
         const card = page.locator(`[data-thumbnail-kind="${name}"]`).first();
         await card.screenshot({ path: `/tmp/${name}-larger-type.png` });
@@ -342,7 +379,7 @@ try {
     });
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page
-        .getByRole('heading', { name: 'TOPW 종목 개요', exact: true })
+        .getByRole('heading', { name: '개요 및 기본 정보', exact: true })
         .waitFor();
     assert.equal(await page.locator('.holding-panel').count(), 0);
     assert.equal(

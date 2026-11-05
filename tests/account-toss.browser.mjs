@@ -27,7 +27,8 @@ try {
                 req.method() === 'POST' ? req.postDataJSON().action : 'status'
             );
     });
-    await page.goto('http://127.0.0.1:5173/tests/toss-connection-demo.html');
+    const base = process.env.UI_BASE_URL || 'http://127.0.0.1:5173';
+    await page.goto(base + '/tests/toss-connection-demo.html');
     const summary = page.locator('summary');
     await summary.focus();
     await page.keyboard.press('Enter');

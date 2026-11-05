@@ -50,7 +50,7 @@ try {
     await page.goto(`${base}/?q=COII`);
     await page.getByText('검색 결과가 없습니다', { exact: true }).waitFor();
     const beforeToggle = requests.length;
-    const checkbox = page.getByRole('checkbox', { name: '상장폐지 포함' });
+    const checkbox = page.getByRole('checkbox', { name: '상장폐지 종목 포함' });
     await checkbox.focus();
     await page.keyboard.press('Space');
     await page
@@ -149,7 +149,10 @@ try {
         .locator('.stock-price-history')
         .getByRole('button', { name: '표', exact: true })
         .click();
-    await page.getByRole('cell', { name: '2026-01-02', exact: true }).waitFor();
+    await page
+        .locator('.price-observation-cards')
+        .getByText('2026-01-02', { exact: true })
+        .waitFor();
     await page.getByRole('tab', { name: '배당정보' }).click();
     await page
         .getByRole('heading', { name: '배당·ROC 이력', exact: true })

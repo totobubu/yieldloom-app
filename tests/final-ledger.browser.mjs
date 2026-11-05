@@ -146,7 +146,11 @@ try {
         ).includes('0.2500')
     );
     assert.equal(requests.length, 2);
-    await page.getByRole('listbox').waitFor({ state: 'hidden' });
+    // Both Select overlays can coexist while their leave transitions finish.
+    // Wait for every list to detach before changing the viewport.
+    await page.waitForFunction(
+        () => document.querySelectorAll('[role="listbox"]').length === 0
+    );
     await page.setViewportSize({ width: 390, height: 844 });
     const dimensions = await page.evaluate(() => ({
         width: document.documentElement.clientWidth,

@@ -1,3 +1,4 @@
+import { openPortfolioPage } from './portfolio-navigation.mjs';
 // Local Vite + in-memory Flask only. No production identities or data.
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -49,6 +50,7 @@ try {
             '/mypage?tab=assets'
     );
     await page.getByRole('button', { name: '계좌 추가', exact: true }).click();
+    await page.getByRole('button', { name: '직접 입력', exact: true }).click();
     await page.getByLabel('금융기관', { exact: true }).waitFor();
     await page.getByLabel('금융기관', { exact: true }).fill('테스트증권');
     await page.getByLabel('별칭', { exact: true }).fill('수동입력');
@@ -155,12 +157,15 @@ try {
         })
         .waitFor();
     await page.locator('.p-dialog-close-button').click();
-    await page.getByRole('tab', { name: '배당 분석', exact: true }).click();
+    await openPortfolioPage(page, '배당 분석');
     const insights = page.getByRole('region', {
         name: '배당 성과·집중도 분석',
         exact: true,
     });
-    await insights.getByLabel('분석 월', { exact: true }).fill('2026-09');
+    await insights
+        .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
+        .fill('2026년 09월');
+    await page.keyboard.press('Tab');
     const statement = insights.getByRole('region', {
         name: '월간 결산 저장·비교',
         exact: true,

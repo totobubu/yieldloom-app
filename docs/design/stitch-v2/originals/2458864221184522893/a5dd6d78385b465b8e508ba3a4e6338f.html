@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V2 SHELL / Tablet / Drawer Open</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/primeicons@6.0.1/primeicons.css">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", sans-serif; width: 768px; margin: 0 auto; overflow-x: hidden; }
+</style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex flex-col relative antialiased overflow-hidden">
+
+  <!-- Backdrop Dim for Left Drawer -->
+  <div class="fixed inset-0 bg-slate-900/35 z-40 transition-opacity"></div>
+
+  <!-- Tablet Header (768px) Under Dim -->
+  <header class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-10">
+    <div class="flex items-center gap-3">
+      <!-- Menu Drawer Open Button (Active state) -->
+      <button type="button" aria-label="메뉴 열기" class="w-11 h-11 rounded-lg border border-[#0d7a6e] bg-emerald-50 text-[#0d7a6e] flex items-center justify-center">
+        <i class="pi pi-bars text-base"></i>
+      </button>
+      <a href="#" class="flex items-center gap-2">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXRy9GykKwoROEy5WitiSyUynNVweqrxpMPDIdfjbvJoHhXOsh2xuPLT2vHbkpvr_H9mhAdAH0wK1jaKd52AZYl3eMgPb5NrTLnWFbUjoyzxQiYYeK4XLomVeqy_kde6uv67J0gGwb941ODx2JFXhJVRmFq8qyUe52y4ESABD9u2Zx3XNFhQxQip1iQpX7kU3lG7NX02kdoE6nlUBuaqUhGDxirK6SZtI4qGJAC4rfKTZalWpsX0QB" alt="모으멍 심볼" class="w-7 h-7 object-contain">
+        <span class="font-bold text-base tracking-tight text-slate-900">모으멍 <span class="text-[#0d7a6e]">배당달력</span></span>
+      </a>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button type="button" class="w-11 h-11 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500">
+        <i class="pi pi-sun text-sm"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Empty Main Slot Under Dim (Max 720px) -->
+  <main class="flex-1 w-full max-w-[720px] mx-auto px-6 py-6">
+    <div class="w-full h-full min-h-[500px] border-2 border-dashed border-slate-300 rounded-2xl bg-white/60 p-8 flex flex-col items-center justify-center text-center">
+      <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#0d7a6e] mb-3">
+        <i class="pi pi-box text-xl"></i>
+      </div>
+      <h2 class="text-sm font-bold text-slate-700 mb-1">콘텐츠 영역 · 별도 콘텐츠 프레임 삽입</h2>
+      <p class="text-xs text-slate-400 max-w-sm">
+        좌측에 320px 전역 탐색 드로어가 열려 있습니다. 뒷배경 본문은 비어 있는 콘텐츠 슬롯입니다.
+      </p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto bg-white border-t border-slate-200 py-5 px-6 text-xs text-slate-500 z-10">
+    <div class="max-w-[720px] mx-auto flex items-center justify-between">
+      <span class="font-semibold text-slate-700">모으멍 배당달력</span>
+      <p class="text-slate-400">공개된 자료를 정리한 정보입니다. 기준일과 원문을 확인해 주세요.</p>
+    </div>
+  </footer>
+
+  <!-- Left 320px Global Navigation Drawer (z-50) -->
+  <aside class="fixed top-0 left-0 w-[320px] h-full bg-white shadow-2xl z-50 flex flex-col border-r border-slate-200">
+    <!-- Drawer Header -->
+    <div class="h-16 px-5 border-b border-slate-200 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-2.5">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXRy9GykKwoROEy5WitiSyUynNVweqrxpMPDIdfjbvJoHhXOsh2xuPLT2vHbkpvr_H9mhAdAH0wK1jaKd52AZYl3eMgPb5NrTLnWFbUjoyzxQiYYeK4XLomVeqy_kde6uv67J0gGwb941ODx2JFXhJVRmFq8qyUe52y4ESABD9u2Zx3XNFhQxQip1iQpX7kU3lG7NX02kdoE6nlUBuaqUhGDxirK6SZtI4qGJAC4rfKTZalWpsX0QB" alt="모으멍 심볼" class="w-7 h-7 object-contain">
+        <span class="font-bold text-sm text-slate-900">전역 탐색 &amp; 관리</span>
+      </div>
+      <!-- Close Button (44px) -->
+      <button type="button" aria-label="메뉴 닫기" class="w-11 h-11 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 focus:outline-hidden focus:ring-2 focus:ring-[#0d7a6e]">
+        <i class="pi pi-times text-base"></i>
+      </button>
+    </div>
+
+    <!-- Scrollable Nav List -->
+    <div class="flex-1 overflow-y-auto p-4 space-y-5">
+      <!-- 1. 공개 글로벌 메뉴 (Public Global Nav) -->
+      <div class="space-y-1">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-2">공개 메뉴</span>
+        <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg">
+          <i class="pi pi-search text-slate-400"></i>
+          종목 검색
+        </a>
+        <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg">
+          <i class="pi pi-sync text-slate-400"></i>
+          종목 비교
+        </a>
+        <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg">
+          <i class="pi pi-plus-circle text-slate-400"></i>
+          신규 상장
+        </a>
+        <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg">
+          <i class="pi pi-question-circle text-slate-400"></i>
+          이용 안내
+        </a>
+      </div>
+
+      <!-- 2. 관리자 인증: 포트폴리오 그룹 (OPEN / Expanded) -->
+      <div class="space-y-1 pt-2 border-t border-slate-100">
+        <div class="flex items-center justify-between px-2.5 py-1.5 text-xs font-bold text-slate-900 bg-slate-50 rounded-lg">
+          <span class="flex items-center gap-2">
+            <i class="pi pi-chart-pie text-[#0d7a6e]"></i>
+            포트폴리오
+          </span>
+          <i class="pi pi-chevron-down text-xs text-slate-500"></i>
+        </div>
+
+        <div class="pl-3 pr-1 space-y-1 border-l-2 border-emerald-100 ml-2.5 pt-1">
+          <div class="text-[11px] font-semibold text-slate-400 px-2">개요</div>
+          <a href="#" class="block px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md">요약</a>
+          <a href="#" class="block px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md">보유 종목</a>
+          <!-- Selected: 원금 -->
+          <a href="#" aria-current="page" class="flex items-center justify-between px-2.5 py-1.5 text-xs font-bold rounded-md bg-[#0d7a6e] text-white shadow-2xs">
+            <span>원금 (선택됨)</span>
+            <i class="pi pi-check text-[10px]"></i>
+          </a>
+          <a href="#" class="block px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md">캘린더</a>
+          <a href="#" class="block px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md">분석</a>
+          <a href="#" class="block px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-50 rounded-md">자산 관리</a>
+        </div>
+      </div>
+
+      <!-- 3. 시뮬레이터 -->
+      <div class="pt-2 border-t border-slate-100">
+        <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 rounded-lg">
+          <i class="pi pi-calculator text-slate-400"></i>
+          배당 시뮬레이터
+        </a>
+      </div>
+
+      <!-- 4. 다른 관리 그룹 (CLOSED State) -->
+      <div class="space-y-1 pt-2 border-t border-slate-100">
+        <div class="flex items-center justify-between px-2.5 py-2 text-xs font-bold text-slate-600 rounded-lg hover:bg-slate-50">
+          <span class="flex items-center gap-2">
+            <i class="pi pi-cog text-slate-400"></i>
+            관리자 설정 그룹
+          </span>
+          <i class="pi pi-chevron-right text-xs text-slate-400"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Bottom: Logout (Independent) -->
+    <div class="p-4 border-t border-slate-200 bg-slate-50 shrink-0">
+      <button type="button" class="w-full h-11 rounded-lg border border-slate-300 bg-white hover:bg-rose-50 hover:text-rose-600 text-slate-700 font-semibold text-xs flex items-center justify-center gap-2">
+        <i class="pi pi-sign-out"></i>
+        <span>로그아웃</span>
+      </button>
+    </div>
+  </aside>
+
+</body>
+</html>

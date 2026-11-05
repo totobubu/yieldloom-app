@@ -21,8 +21,12 @@ try {
                 requests.push(r.url());
         });
         page.on('pageerror', (e) => errors.push(e.message));
+        const products =
+            width > 1024
+                ? '.comparison-summary tbody tr'
+                : '.product-grid article';
         await page.goto(base + '/underlying/AAPL');
-        await page.locator('.product-grid article').first().waitFor();
+        await page.locator(products).first().waitFor();
         assert.equal(
             await page
                 .getByRole('heading', { name: '종목 비교', exact: true })
@@ -34,7 +38,7 @@ try {
         });
         assert.equal(await nav.getByRole('link').count(), 3);
         const heading = page.getByRole('heading', {
-            name: '기초자산별 ETF 비교',
+            name: '단계적 비교 필터',
             exact: true,
         });
         const button = page.getByRole('button', {
@@ -43,7 +47,7 @@ try {
         });
         assert.equal(
             await page
-                .locator('.comparison-section-heading')
+                .locator('.comparison-action-banner')
                 .getByRole('button', {
                     name: '수익률·수수료·가격 하락 조회',
                     exact: true,
@@ -51,12 +55,8 @@ try {
                 .count(),
             1
         );
-        if (width >= 768) {
-            const a = await heading.boundingBox(),
-                b = await button.boundingBox();
-            assert.ok(b.x > a.x + a.width);
-            assert.ok(Math.abs(b.y - a.y) < 55);
-        }
+        assert.ok(await heading.isVisible());
+        assert.ok(await button.isVisible());
         const info = page.getByRole('button', {
             name: '비교 안내',
             exact: true,
@@ -92,13 +92,13 @@ try {
         await page.waitForURL(
             (url) => url.searchParams.get('view') === 'similar'
         );
-        await page.locator('.product-grid article').first().waitFor();
+        await page.locator(products).first().waitFor();
         assert.match(
             await page.locator('.comparison-result-count').innerText(),
             /조건별 ETF 비교/
         );
         assert.equal(await page.locator('#explorer-reference').count(), 0);
-        assert.ok((await page.locator('.product-grid article').count()) > 1);
+        assert.ok((await page.locator(products).count()) > 1);
         await page.screenshot({ path: `${output}/${width}-similar.png` });
         await nav.getByRole('link', { name: '테마 비교', exact: true }).click();
         await page.waitForURL(
@@ -147,7 +147,7 @@ try {
             .click();
         await page.screenshot({ path: `${output}/${width}-dark.png` });
         await page.reload();
-        await page.locator('.product-grid article').first().waitFor();
+        await page.locator(products).first().waitFor();
         assert.match(
             await page.locator('.comparison-context').innerText(),
             /반도체/
@@ -205,9 +205,10 @@ try {
             },
         })
     );
+    const products = '.comparison-summary tbody tr';
     await page.goto(base + '/compare?view=underlying&symbol=AAPL');
-    await page.locator('.product-grid article').first().waitFor();
-    const count = await page.locator('.product-grid article').count();
+    await page.locator(products).first().waitFor();
+    const count = await page.locator(products).count();
     await page
         .getByRole('button', {
             name: '수익률·수수료·가격 하락 조회',
@@ -217,10 +218,13 @@ try {
     await page
         .getByRole('heading', { name: '한눈에 비교', exact: true })
         .waitFor();
+    await page
+        .locator('.comparison-load-button[data-p~="loading"]')
+        .waitFor({ state: 'hidden' });
     assert.equal(prices.length, Math.min(count, 12));
     assert.equal(
         await page
-            .locator('.comparison-summary tbody td:nth-child(3).is-best')
+            .locator('.comparison-summary tbody td:nth-of-type(4).is-best')
             .count(),
         0,
         'Different return periods must not produce a winner'
@@ -234,7 +238,7 @@ try {
         /미확인/
     );
     await page.goto(base + '/compare?view=similar&ticker=INVALID');
-    await page.locator('.product-grid article').first().waitFor();
+    await page.locator(products).first().waitFor();
     assert.match(
         await page.locator('.comparison-result-count').innerText(),
         /조건별 ETF 비교/

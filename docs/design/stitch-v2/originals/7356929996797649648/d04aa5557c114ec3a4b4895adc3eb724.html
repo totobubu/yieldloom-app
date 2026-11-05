@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CONTENT / Account Registration / Reviewed</title>
+<style>
+  :root {
+    --primary: #0d7a6e;
+    --primary-hover: #0a6359;
+    --primary-light: #e6f4f2;
+    --yellow: #eab308;
+    --yellow-light: #fef9c3;
+    --mint: #10b981;
+    --mint-light: #ecfdf5;
+    --dark-brown: #382418;
+    --bg-page: #f8fafc;
+    --card-bg: #ffffff;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --text-sub: #94a3b8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.5;
+    font-size: 15px;
+    padding: 24px;
+    word-break: keep-all;
+  }
+  .content-frame {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+  .header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+  }
+  .badge-example {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(13, 122, 110, 0.2);
+  }
+  .status-meta {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  .status-meta strong {
+    color: var(--text-main);
+  }
+
+  /* Method Toggle Button Group */
+  .method-nav {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .method-btn {
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .method-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  /* Document Upload & Extraction Area */
+  .extraction-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .upload-box {
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 24px;
+    text-align: center;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .file-info {
+    font-weight: 600;
+    color: var(--text-main);
+    font-size: 15px;
+  }
+  .file-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* Form Elements */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .control-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+  .req-mark {
+    color: #ef4444;
+    margin-left: 2px;
+  }
+  .select-box, .text-input {
+    height: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .select-box:focus, .text-input:focus {
+    border-color: var(--primary);
+  }
+
+  /* Extracted Summary Banner */
+  .extracted-summary {
+    background: var(--mint-light);
+    border: 1px solid #a7f3d0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+  }
+  .extracted-text {
+    font-weight: 600;
+    color: #065f46;
+  }
+  .extracted-badge {
+    font-size: 12px;
+    font-weight: 600;
+    background: #fff;
+    color: #047857;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid #a7f3d0;
+  }
+
+  /* Duplicate warning banner */
+  .warning-box {
+    background: var(--yellow-light);
+    border: 1px solid #fde047;
+    border-radius: 8px;
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #854d0e;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Action buttons */
+  .btn-base {
+    height: 44px;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--primary-hover);
+  }
+  .btn-primary:disabled {
+    background: #cbd5e1;
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+  .btn-secondary {
+    background: #fff;
+    border-color: var(--border);
+    color: var(--text-main);
+  }
+
+  /* Checkbox Agreement */
+  .check-wrapper {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .check-wrapper input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+  .check-wrapper label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    .warning-box {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 12px; }
+    .method-nav {
+      flex-direction: column;
+    }
+    .method-btn {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="content-frame">
+  <!-- Top Bar -->
+  <div class="header-bar">
+    <div class="title-group">
+      <h1>계좌 등록</h1>
+      <span class="badge-example">예시 데이터</span>
+    </div>
+    <div class="status-meta">
+      선택 명의자: <strong>김모음</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <!-- Registration Method Selection (Single unified view, '문서로 등록' active by default) -->
+    <div class="method-nav">
+      <button class="method-btn active" id="btn-doc-mode">문서로 등록 (토스 거래내역 PDF)</button>
+      <button class="method-btn" id="btn-manual-mode">직접 입력</button>
+    </div>
+
+    <!-- Document Extraction Part (Shown when Document Mode is active) -->
+    <div class="extraction-section" id="doc-extract-area">
+      <div class="upload-box">
+        <div style="font-size: 28px;">📄</div>
+        <div class="file-info">toss_statement_202611.pdf (1.2MB 선택됨)</div>
+        <div class="file-sub">최대 2MB 이하 토스증권 거래내역 PDF 원본만 지원합니다.</div>
+      </div>
+
+      <div class="form-grid" style="align-items: end;">
+        <div class="control-group">
+          <label class="control-label">PDF 암호 <span class="req-mark">*</span></label>
+          <input type="password" class="text-input" value="••••••" placeholder="문서 비밀번호 입력" id="pdf-pwd">
+        </div>
+        <div>
+          <button class="btn-base btn-primary" style="width: 100%;">계좌 정보 추출 실행</button>
+        </div>
+      </div>
+
+      <!-- Extracted Identity Summary Banner (Pure summary text, not editable) -->
+      <div class="extracted-summary">
+        <div>
+          <span style="color:var(--text-muted); margin-right:8px;">추출 요약</span>
+          <span class="extracted-text">명의 김모음 · 토스증권 ****0115</span>
+        </div>
+        <span class="extracted-badge">문서 식별 완료</span>
+      </div>
+    </div>
+
+    <!-- Common 4 Fields (Displayed once, prefilled from document extraction) -->
+    <div class="form-grid" style="margin-top: 10px;">
+      <div class="control-group">
+        <label class="control-label">금융기관 <span class="req-mark">*</span></label>
+        <input type="text" class="text-input" value="토스증권" maxlength="100">
+      </div>
+      <div class="control-group">
+        <label class="control-label">유형</label>
+        <select class="select-box">
+          <option selected>일반</option>
+          <option>ISA</option>
+          <option>연금</option>
+          <option>기타</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label class="control-label">별칭 <span class="req-mark">*</span></label>
+        <input type="text" class="text-input" value="김모음 토스 주계좌" maxlength="100">
+      </div>
+      <div class="control-group">
+        <label class="control-label">계좌 끝 4자리 (선택)</label>
+        <input type="text" class="text-input" value="0115" maxlength="4" placeholder="4자리 숫자">
+      </div>
+    </div>
+
+    <!-- Duplicate Warning Banner -->
+    <div class="warning-box" style="margin-top: 20px;">
+      <div>
+        <strong>동일 기관·끝자리 계좌 안내:</strong> 동일한 금융기관(토스증권)과 끝자리(0115)를 가진 기존 계좌가 등록되어 있습니다.
+      </div>
+      <button class="btn-base btn-secondary" style="height:36px; padding:0 12px; font-size:13px; background:#fff;">
+        김모음 · 토스증권 ****0115에 자료 업로드
+      </button>
+    </div>
+
+    <!-- Verification Checkbox -->
+    <div class="check-wrapper">
+      <input type="checkbox" id="verify-consent">
+      <label for="verify-consent">원본의 명의·계좌와 선택 가족을 확인했습니다.</label>
+    </div>
+
+    <!-- Single Final Submit Button (Disabled until consent checked) -->
+    <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
+      <button class="btn-base btn-primary" id="btn-submit-reg" disabled style="min-width: 180px; height: 44px;">
+        계좌 등록 완료
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Interactive handlers for state changes
+  const verifyConsent = document.getElementById('verify-consent');
+  const btnSubmit = document.getElementById('btn-submit-reg');
+  const btnDocMode = document.getElementById('btn-doc-mode');
+  const btnManualMode = document.getElementById('btn-manual-mode');
+  const docExtractArea = document.getElementById('doc-extract-area');
+  const pdfPwd = document.getElementById('pdf-pwd');
+
+  function resetConfirmation() {
+    if (verifyConsent) {
+      verifyConsent.checked = false;
+      btnSubmit.disabled = true;
+    }
+  }
+
+  if (verifyConsent && btnSubmit) {
+    verifyConsent.addEventListener('change', function() {
+      btnSubmit.disabled = !this.checked;
+    });
+  }
+
+  if (btnDocMode && btnManualMode && docExtractArea) {
+    btnDocMode.addEventListener('click', function() {
+      btnDocMode.classList.add('active');
+      btnManualMode.classList.remove('active');
+      docExtractArea.style.display = 'flex';
+      resetConfirmation();
+    });
+
+    btnManualMode.addEventListener('click', function() {
+      btnManualMode.classList.add('active');
+      btnDocMode.classList.remove('active');
+      docExtractArea.style.display = 'none';
+      resetConfirmation();
+    });
+  }
+
+  if (pdfPwd) {
+    pdfPwd.addEventListener('input', resetConfirmation);
+  }
+</script>
+</body>
+</html>

@@ -1,3 +1,7 @@
+import {
+    openPortfolioPage,
+    waitForPortfolioPage,
+} from './portfolio-navigation.mjs';
 // Local Vite server; authentication and account data are fixtures.
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
@@ -17,7 +21,7 @@ try {
             route.fulfill({
                 contentType: 'application/javascript',
                 body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js';
-                export const firebaseUser=ref({uid:'A',email:'test@example.test',getIdToken:async()=> 'A'}),
+                export const firebaseUser=ref({uid:'A',email:'totobubu.lab@gmail.com',emailVerified:true,getIdToken:async()=> 'A'}),
                     authLoading=ref(false),firebaseReady=false,db=null,auth=null;
                 export const signedIn=computed(()=>Boolean(firebaseUser.value));`,
             })
@@ -112,17 +116,14 @@ try {
             });
         });
         await page.goto(base + '/mypage');
-        const capitalTab = page.getByRole('tab', {
-            name: '원금·자금',
-            exact: true,
-        });
-        await capitalTab.waitFor();
+        await waitForPortfolioPage(page, '한눈에 보기');
         assert.equal(
             reads,
             0,
             'inactive capital tab must not query the ledger'
         );
-        await capitalTab.click();
+        await openPortfolioPage(page, '원금·자금');
+        await page.locator('.all-account-recovery > summary').click();
         const overview = page.getByRole('region', {
             name: '전체 계좌 원금 회수 현황',
             exact: true,
@@ -144,10 +145,9 @@ try {
                     '#portfolio-header-actions button[aria-label="새로고침"]'
                 )?.disabled
         );
-        await page.getByRole('tab', { name: '자산관리', exact: true }).click();
-        await page
-            .getByRole('tab', { name: '한눈에 보기', exact: true })
-            .click();
+        await openPortfolioPage(page, '자산관리');
+        await openPortfolioPage(page, '원금·자금');
+        await page.locator('.all-account-recovery > summary').click();
         await overview
             .getByRole('region', { name: '종목별 투자 비용 회수' })
             .waitFor();

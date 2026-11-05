@@ -2698,6 +2698,7 @@
         <AssetUploadDialog
             v-model:visible="uploadDialog"
             :receipt="!!importReceipt"
+            :upload="inputMethod === 'file' && !review && !importReceipt"
             :title="`자료 업로드 · ${activeAccount?.alias || ''}`"
             :mapping="inputMethod === 'broker' && !review && !importReceipt"
             :busy="busy">
@@ -2824,6 +2825,7 @@
                         @clear="selectedFiles = []"
                         @preview="preview"
                         @remove-password="removePdfPassword"
+                        @manual="inputMethod = 'manual'"
                         @reset="resetFileInput" />
                     <PortfolioImportReview
                         v-if="review"

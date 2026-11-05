@@ -6,6 +6,7 @@
         busy: Boolean,
         mapping: Boolean,
         receipt: Boolean,
+        upload: Boolean,
     });
 </script>
 <template>
@@ -16,10 +17,18 @@
         :class="{
             'asset-upload-dialog--mapping': mapping,
             'asset-upload-dialog--receipt': receipt,
+            'asset-upload-dialog--upload': upload,
         }"
         :style="{
-            width: mapping ? '80rem' : receipt ? '882px' : '72rem',
-            maxWidth: mapping || receipt ? '100vw' : 'calc(100vw - 24px)',
+            width: mapping
+                ? '80rem'
+                : receipt
+                  ? '882px'
+                  : upload
+                    ? '834px'
+                    : '72rem',
+            maxWidth:
+                mapping || receipt || upload ? '100vw' : 'calc(100vw - 24px)',
             overflowX: 'hidden',
         }"
         :content-style="{ minWidth: 0, overflowX: 'hidden' }"
@@ -59,6 +68,18 @@
     @media (max-width: 640px) {
         .asset-upload-dialog--receipt .p-dialog-content {
             padding: 16px 8px;
+        }
+    }
+    .asset-upload-dialog--upload {
+        border-width: 0;
+    }
+    .asset-upload-dialog--upload .p-dialog-content {
+        padding: 24px;
+        background: var(--app-bg);
+    }
+    @media (max-width: 640px) {
+        .asset-upload-dialog--upload .p-dialog-content {
+            padding: 16px;
         }
     }
 </style>

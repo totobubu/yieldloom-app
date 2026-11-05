@@ -1,0 +1,35 @@
+{
+  "samples": [
+    {
+      "viewport": 1440,
+      "width": 786,
+      "overflow": false
+    },
+    {
+      "viewport": 1280,
+      "width": 786,
+      "overflow": false
+    },
+    {
+      "viewport": 834,
+      "width": 786,
+      "overflow": false
+    },
+    {
+      "viewport": 768,
+      "width": 720,
+      "overflow": false
+    },
+    {
+      "viewport": 390,
+      "width": 358,
+      "overflow": false
+    },
+    {
+      "viewport": 360,
+      "width": 328,
+      "overflow": false
+    }
+  ],
+  "resizeApiCalls": 0
+}

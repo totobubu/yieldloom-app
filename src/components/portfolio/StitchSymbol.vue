@@ -13,7 +13,18 @@
     import arrow_forward from '@/assets/icons/material-symbols/arrow_forward.svg';
     import download from '@/assets/icons/material-symbols/download.svg';
     import calendar_month from '@/assets/icons/material-symbols/calendar_month.svg';
+    import inventory_2 from '@/assets/icons/material-symbols/inventory_2.svg';
+    import edit_note from '@/assets/icons/material-symbols/edit_note.svg';
+    import preview from '@/assets/icons/material-symbols/preview.svg';
+    import lock_open from '@/assets/icons/material-symbols/lock_open.svg';
+    import verified_user from '@/assets/icons/material-symbols/verified_user.svg';
     const icons = {
+        inventory_2,
+        edit_note,
+        preview,
+        lock_open,
+        verified_user,
+
         check,
         done_all,
         receipt_long,

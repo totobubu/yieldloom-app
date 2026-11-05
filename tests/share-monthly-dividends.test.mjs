@@ -16,11 +16,11 @@ const declared = (date, amount, extra = {}) => ({
     ...extra,
 });
 
-test('YMAX published official projection counts Nov 4 declaration on Nov 3 without changing historical charts', () => {
+test('archived YMAX projection counts the Nov 4 ex-date declaration on Nov 3 without changing historical charts', () => {
     const events = JSON.parse(
         fs.readFileSync(
             new URL(
-                '../public/content-studio/distribution-ticker-ymax.json',
+                './fixtures/ymax-declaration-20261103.json',
                 import.meta.url
             )
         )
@@ -38,6 +38,30 @@ test('YMAX published official projection counts Nov 4 declaration on Nov 3 witho
     assert.equal(shareMonthlyDividends(rows, '2026-11-04')[2].total, 0.0528);
     assert.equal(monthlyDividendSeries(rows, '2026-11-03', 3)[2].total, null);
     assert.equal(shareMonthlyDividends(rows, '2026-11-02')[2].total, null);
+});
+
+// Preserve the current projection policy when later captures disagree on declaration date.
+// A null product value is unavailable, not a NaN amount or a fabricated zero.
+test('duplicate official captures preserve the current latest-declaration cutoff', () => {
+    const capture = {
+        ex_date: '2026-11-04',
+        declared_date: '2026-11-03',
+        distribution_per_share: '0.0528',
+        verification_status: 'official',
+    };
+    for (const events of [
+        [capture, { ...capture, declared_date: '2026-11-04' }],
+        [{ ...capture, declared_date: '2026-11-04' }, capture],
+    ]) {
+        const rows = toBacktestData(events);
+        assert.equal(rows.length, 1);
+        assert.equal(rows[0].declaredDate, '2026-11-04');
+        assert.equal(shareMonthlyDividends(rows, '2026-11-03')[2].total, null);
+        assert.equal(
+            shareMonthlyDividends(rows, '2026-11-04')[2].total,
+            0.0528
+        );
+    }
 });
 
 test('future amount requires verified already declared evidence, never forecast, reference or review', () => {

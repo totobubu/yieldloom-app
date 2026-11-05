@@ -1,0 +1,6 @@
+PASS analysis/normal/1280:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+PASS analysis/unknown/1280:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+PASS analysis/normal/768:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+PASS analysis/unknown/768:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+PASS analysis/normal/390:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+PASS analysis/unknown/390:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow

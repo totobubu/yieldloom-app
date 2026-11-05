@@ -7,7 +7,7 @@
     "families": 9,
     "testFramesExcluded": 1,
     "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-    "currentCodeBase": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
+    "currentCodeBase": "8a95a0219665dd81851d6790620f41b8b31fb0e4",
     "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
     "frames": [
         {
@@ -1628,7 +1628,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
+            "implementation": "draft PR#258 head70f0f42; authoritative handoff91b81ab preserved; remote CI4 pass; not production",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/2476bb94e3174e6182500d8f520a6424",
@@ -1675,7 +1675,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
+            "implementation": "draft PR#258 head70f0f42; authoritative handoff91b81ab preserved; remote CI4 pass; not production",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/77fdbd798a3941c68f098120a210c44d",
@@ -1722,7 +1722,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
+            "implementation": "draft PR#258 head70f0f42; authoritative handoff91b81ab preserved; remote CI4 pass; not production",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/4dbfbf717c75483e88e6d1186ecbdb2b",
@@ -1769,7 +1769,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
+            "implementation": "draft PR#258 head70f0f42; authoritative handoff91b81ab preserved; remote CI4 pass; not production",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/12bcd42390bb468eb1700a909aec3f5d",
@@ -1816,8 +1816,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "Draft #253; actual CSV/XLSX/holdings response preview and zero-request next stage verified locally; visual work incomplete; not deployed",
-            "visualAcceptance": "not accepted: raw preview now implemented; source header 834/768 matched; settings/file/state/copy/spacing differences and Mobile source font HTTP400 remain",
+            "implementation": "production via #253/#259 at main8a95a02; actual extracted preview; remaining visual differences recorded",
+            "visualAcceptance": "not accepted as whole frame; required settings and real financial metadata differ",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6",
             "sourceFiles": [
@@ -1850,7 +1850,8 @@
                 "environment": "local only",
                 "branch": "feat/stitch-upload-phase36"
             },
-            "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md"
+            "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
+            "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
         },
         {
             "family": "Data Upload",
@@ -1861,8 +1862,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "Draft #253; actual CSV/XLSX/holdings response preview and zero-request next stage verified locally; visual work incomplete; not deployed",
-            "visualAcceptance": "not accepted: raw preview now implemented; source header 834/768 matched; settings/file/state/copy/spacing differences and Mobile source font HTTP400 remain",
+            "implementation": "production via #253/#259 at main8a95a02; actual extracted preview; remaining visual differences recorded",
+            "visualAcceptance": "not accepted as whole frame; required settings and real financial metadata differ",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33",
             "sourceFiles": [
@@ -1895,7 +1896,8 @@
                 "environment": "local only",
                 "branch": "feat/stitch-upload-phase36"
             },
-            "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md"
+            "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
+            "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
         },
         {
             "family": "Import Result",
@@ -1996,7 +1998,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "Draft #256; source header geometry/width and existing functionality verified locally; full body work remains",
+            "implementation": "draft PR#256 head2e61f4f; header/width/consent and integrated preview verified; remote CI4 pass; not production",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/6bd9777b8bea43b98aea8397a29f809a",
@@ -2043,7 +2045,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "Draft #256; source header geometry/width and existing functionality verified locally; full body work remains",
+            "implementation": "draft PR#256 head2e61f4f; header/width/consent and integrated preview verified; remote CI4 pass; not production",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/5aa7a573854a46db9b106f89c09c4f23",
@@ -2090,7 +2092,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "draft PR#260 head47a29bf; structure/stored records; local and remote CI4 pass; not production",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/986013fd6b61404f82b4eeda2b643cd6",
@@ -2137,7 +2139,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "draft PR#260 head47a29bf; structure/stored records; local and remote CI4 pass; not production",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/65c1b225397746ada071cf14ae4f687c",
@@ -2398,18 +2400,17 @@
     "projectFrameCountAtInitialRead": 64,
     "registeredFrameCount": 73,
     "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-    "latestImplementationBase": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
+    "latestImplementationBase": "8a95a0219665dd81851d6790620f41b8b31fb0e4",
     "rolloutSnapshot": {
-        "recordedAt": "2026-11-05T10:01:35.477415+00:00",
-        "scope": "20 final reviewed IDs / 9 families only; not additive to original 14",
-        "productionMergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
-        "productionTargets": 5,
+        "recordedAt": "2026-11-05T11:28:26.907547+00:00",
+        "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
+        "productionMergeSha": "8a95a0219665dd81851d6790620f41b8b31fb0e4",
+        "productionTargets": 7,
         "localWorkTargets": 4,
-        "otherTargets": 11,
-        "visualAcceptance": "production does not mean whole-frame acceptance",
-        "evidence": "CURRENT_ROLLOUT.md",
-        "remainingOwnTargets": 2,
-        "parallelScopeTargets": 9,
-        "qualification": "5 production / 4 current integration WIP / 2 ledger / 9 parallel scope; whole-frame acceptance incomplete"
+        "parallelDeliveredDraftTargets": 4,
+        "externalUnverifiedTargets": 5,
+        "visualAcceptance": "whole-frame acceptance remains incomplete",
+        "evidence": "PHASE47_UPLOAD_PRODUCTION.md",
+        "qualification": "7 production-connected /8 draft /5 external handoff unverified"
     }
 }

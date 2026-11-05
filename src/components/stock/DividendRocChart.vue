@@ -302,13 +302,13 @@
         stroke: #9333ea;
         stroke-dasharray: 2 5;
     }
-    :global(.p-dark) .ratio-point {
+    .p-dark .ratio-point {
         fill: #d8b4fe;
     }
-    :global(.p-dark) .ratio-line {
+    .p-dark .ratio-line {
         stroke: #d8b4fe;
     }
-    :global(.p-dark) .ratio-key {
+    .p-dark .ratio-key {
         border-color: #d8b4fe;
     }
     .chart-scroll {
@@ -364,7 +364,7 @@
     .ratio-value {
         fill: #9333ea;
     }
-    :global(.p-dark) .ratio-value {
+    .p-dark .ratio-value {
         fill: #d8b4fe;
     }
     .chart-detail {

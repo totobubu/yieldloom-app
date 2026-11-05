@@ -37,13 +37,60 @@ try {
     await page.route('**/api/stock-prices*', (route) =>
         route.fulfill({ json: { prices: {}, errors: [] } })
     );
+    if (process.env.BROKER_SLOW_ANALYSIS)
+        await page.route(
+            '**/portfolio-classifications.json*',
+            async (route) => {
+                await new Promise((resolve) =>
+                    setTimeout(
+                        resolve,
+                        Number(process.env.BROKER_SLOW_ANALYSIS) || 5000
+                    )
+                );
+                await route.fulfill({
+                    json: { schemaVersion: 1, securities: {} },
+                });
+            }
+        );
+    const diagnosticReads = [],
+        authIdentities = new Set();
+    page.on('response', (response) => {
+        const url = new URL(response.url());
+        if (url.pathname !== '/api/family-portfolio') return;
+        diagnosticReads.push(
+            (async () => {
+                const payload = await response.json().catch(() => ({}));
+                return {
+                    action: url.searchParams.get('action') || '',
+                    scope: url.searchParams.has('accountId')
+                        ? 'account'
+                        : 'family',
+                    status: response.status(),
+                    entryCount: Array.isArray(payload.entries)
+                        ? payload.entries.length
+                        : undefined,
+                    fixtureDividend25Count: Array.isArray(payload.entries)
+                        ? payload.entries.filter(
+                              (entry) =>
+                                  entry.row?.type === 'dividend' &&
+                                  entry.row?.currency === 'USD' &&
+                                  Number(entry.row?.amount) === 25
+                          ).length
+                        : undefined,
+                };
+            })()
+        );
+    });
     const requests = [];
     page.on('request', (request) => {
-        if (request.url().includes('/api/family-portfolio'))
+        if (request.url().includes('/api/family-portfolio')) {
+            const authorization = request.headers().authorization;
+            if (authorization) authIdentities.add(authorization);
             requests.push({
                 method: request.method(),
                 action: new URL(request.url()).searchParams.get('action') || '',
             });
+        }
     });
     await page.goto(
         (process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5175') +
@@ -289,15 +336,82 @@ try {
         name: '배당 성과·집중도 분석',
         exact: true,
     });
-    await insights
-        .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
-        .fill('2026년 09월');
-    await page.keyboard.press('Tab');
     const statement = insights.getByRole('region', {
         name: '월간 결산 저장·비교',
         exact: true,
     });
-    await statement.getByText(/확인된 저장 배당 25 USD/).waitFor();
+    try {
+        if (process.env.BROKER_SLOW_ANALYSIS)
+            console.log(
+                JSON.stringify({
+                    scope: 'before month edit',
+                    busy: await insights.getAttribute('aria-busy'),
+                    loadingMask: await page
+                        .locator('.fullscreen-data-loading-mask')
+                        .isVisible(),
+                })
+            );
+        await page.waitForFunction(
+            () =>
+                document
+                    .querySelector('.insights')
+                    ?.getAttribute('aria-busy') === 'false'
+        );
+        await page
+            .locator('.fullscreen-data-loading-mask')
+            .waitFor({ state: 'hidden' });
+        if (process.env.BROKER_SLOW_ANALYSIS)
+            console.log(
+                JSON.stringify({
+                    scope: 'ready for month edit',
+                    busy: await insights.getAttribute('aria-busy'),
+                    loadingMask: await page
+                        .locator('.fullscreen-data-loading-mask')
+                        .isVisible(),
+                })
+            );
+        await insights
+            .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
+            .fill('2026년 09월');
+        await page.keyboard.press('Tab');
+        await insights
+            .locator('.insights-heading p')
+            .filter({ hasText: '2026년 9월' })
+            .waitFor();
+        assert.equal(
+            await insights.locator('#insights-month').inputValue(),
+            '2026년 09월'
+        );
+        await statement.getByText(/확인된 저장 배당 25 USD/).waitFor();
+    } catch (error) {
+        console.error(
+            JSON.stringify({
+                scope: 'synthetic broker analysis only',
+                month: await insights
+                    .locator('#insights-month')
+                    .inputValue({ timeout: 1000 })
+                    .catch(() => null),
+                renderedPeriod: await insights
+                    .locator('.insights-heading p')
+                    .innerText({ timeout: 1000 })
+                    .catch(() => null),
+                busy: await insights.getAttribute('aria-busy'),
+                loadingMask: await page
+                    .locator('.fullscreen-data-loading-mask')
+                    .isVisible(),
+                statement: await statement
+                    .innerText({ timeout: 1000 })
+                    .catch(() => null),
+                requestActions: requests.map((r) => r.action),
+                authIdentityCount: authIdentities.size,
+                responses: (await Promise.allSettled(diagnosticReads))
+                    .filter((r) => r.status === 'fulfilled')
+                    .map((r) => r.value),
+            })
+        );
+        throw error;
+    }
+
     await statement
         .getByRole('button', { name: '계정 보관함 열기', exact: true })
         .click();

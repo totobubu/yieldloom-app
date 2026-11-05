@@ -1,0 +1,14 @@
+{
+  "integrationRun": 42051036781,
+  "integrationJob": 127327307432,
+  "installStarted": "2026-11-05T15:04:37Z",
+  "installCompleted": "2026-11-05T15:13:57Z",
+  "successfulComparisonRun": 42047419660,
+  "successfulComparisonJob": 127314068862,
+  "browserFlowsStarted": "2026-11-05T14:42:26Z",
+  "browserFlowsCompleted": "2026-11-05T14:58:11Z",
+  "oldJobBudgetMinutes": 20,
+  "newJobBudgetMinutes": 30,
+  "assertionsAndFlowList": "unchanged",
+  "observedBeforeChange": "old integration execution still running, not asserted failed or passed"
+}

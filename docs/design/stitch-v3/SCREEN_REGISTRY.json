@@ -2090,8 +2090,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
-            "visualAcceptance": "not accepted",
+            "implementation": "phase46 partial: reference structure and stored-record table; existing financial logic and gates preserved; local checks passed; remote CI/production pending",
+            "visualAcceptance": "not accepted; definitions/controls/detail layout remain",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/986013fd6b61404f82b4eeda2b643cd6",
             "sourceFiles": [
@@ -2126,7 +2126,8 @@
             "rollout": {
                 "environment": "not verified against final selected ID",
                 "qualification": "existing production feature is not final-reference acceptance"
-            }
+            },
+            "implementationEvidence": "PHASE46_LEDGER_ANALYSIS.md"
         },
         {
             "family": "Ledger Analysis",
@@ -2137,8 +2138,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
-            "visualAcceptance": "not accepted",
+            "implementation": "phase46 partial: reference structure and stored-record table; existing financial logic and gates preserved; local checks passed; remote CI/production pending",
+            "visualAcceptance": "not accepted; definitions/controls/detail layout remain",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/65c1b225397746ada071cf14ae4f687c",
             "sourceFiles": [
@@ -2170,7 +2171,8 @@
             "rollout": {
                 "environment": "not verified against final selected ID",
                 "qualification": "existing production feature is not final-reference acceptance"
-            }
+            },
+            "implementationEvidence": "PHASE46_LEDGER_ANALYSIS.md"
         },
         {
             "family": "Simulator",

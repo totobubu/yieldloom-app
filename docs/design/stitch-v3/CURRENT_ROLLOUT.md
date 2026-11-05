@@ -6,9 +6,9 @@
 | --- | ---: | --- | --- |
 | 열 연결 | PC·Tablet·Mobile 3 | #249 운영, #257에서 보존 | 기록된 전체 프레임 차이 검수 |
 | 저장 결과 | Tablet·Mobile 2 | #251/#257 운영 | 기록된 시각 차이·실계좌 흐름 |
-| 업로드 | Tablet·Mobile 2 | #253 초안, 실제 추출 미리보기 연결·로컬 검증 | phase43 로컬 7종·5폭 통과, 최종 CI·Preview·운영 확인 대기 |
+| 업로드 | Tablet·Mobile 2 | #253 work4b78ccc 반영, #259 운영 승격 검증 중 | phase43 로컬 7종·5폭 통과, 최종 CI·Preview·운영 확인 대기 |
 | 가져오기 검토 | Tablet·Mobile 2 | #256 초안, 헤더·폭·기존 기능 검증 | 본문·카드·원문·요약·최종 동의 구조 |
-| 장부 분석 | Tablet·Mobile 2 | 기존 기능 있음, 최종 원본 적용 미검증 | 원본 대조·적용 |
+| 장부 분석 | Tablet·Mobile 2 | phase46 부분 구현, 원장 표·지표/독립 집계 배치·로컬 검증 | 필터 통합·정의/자료 계약·도구·시각 차이 |
 | 유사 비교 | Tablet·Mobile 2 | 별도 branch91b81ab, 기계적 충돌 없음 | 전용 검사 CI 등록·통합 검증·남은 시각 차이 |
 | 테마 비교 | Tablet·Mobile 2 | 별도 branch91b81ab, 기계적 충돌 없음 | 전용 검사 CI 등록·통합 검증·남은 시각 차이 |
 | 시뮬레이터 | Tablet·Mobile 2 | 별도 담당, 최신 결과 미확인 | SHA/검증 인계 후 통합 |
@@ -21,3 +21,5 @@
 업로드 최신 근거는 PHASE43_UPLOAD_FIDELITY.md, 검토는 별도 PR#256의 PHASE39_IMPORT_REVIEW.md, 비교 통합 검토는 COMPARISON_INTEGRATION_REVIEW.md다. 기존 43종/29개 미생성 기록은 현재 전수 ID 목록으로 확인되지 않아 이 합계와 섞지 않는다. 없는 프레임·동작·수치를 만들어 완료 처리하지 않는다.
 
 업로드·검토 초안은 FamilyPortfolioView/AssetUploadDialog/StitchSymbol을 공유한다. 두 초안 통합 시 inlineReview 단계에서는 upload만 활성화하고 review 모드는 꺼야 하며, 다음 단계에서는 반대로 전환해야 한다. 양쪽 SVG 목록도 합쳐야 한다. 각 초안의 개별 검증을 두 초안의 최종 결합 검증으로 취급하지 않는다. 비교 branch는 이 공유 파일들을 수정하지 않아 별도로 충돌 없이 합칠 수 있다.
+
+후속 작업 기준: 장부 분석 PHASE46_LEDGER_ANALYSIS.md. 비교 #258의 인계 SHA91b81ab 통합 head70f0f42는 원격 CI4개 통과이며 초안/미배포다. 검토 #256의 동의 카드 및 #253 결합 head2e61f4f는 원격 CI4개·Preview 통과, 초안/미배포다. 승격 #259에 이 초안들은 포함하지 않는다.

@@ -1,0 +1,53 @@
+[
+  {
+    "width": 1280,
+    "geometry": {
+      "width": 834,
+      "height": 1652.59375
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ",
+    "sourceId": "65c1b225397746ada071cf14ae4f687c",
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 834,
+    "geometry": {
+      "width": 786,
+      "height": 2001.46875
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ",
+    "sourceId": "65c1b225397746ada071cf14ae4f687c",
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 768,
+    "geometry": {
+      "width": 720,
+      "height": 2035.140625
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ"
+  },
+  {
+    "width": 390,
+    "geometry": {
+      "width": 358,
+      "height": 2300.84375
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ",
+    "sourceId": "986013fd6b61404f82b4eeda2b643cd6",
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 360,
+    "geometry": {
+      "width": 328,
+      "height": 2422.90625
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ"
+  }
+]

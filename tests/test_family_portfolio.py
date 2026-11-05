@@ -408,7 +408,7 @@ class FamilyApiTest(unittest.TestCase):
                   if path.startswith(f'investmentAccounts/{self.account}/entries/')}
         for item in result['rowResults']:
             self.assertEqual(item['row'], {key: value for key, value in stored[item['row']['externalId']].items()
-                                         if key in ('date', 'symbol', 'type', 'quantity', 'amount', 'currency', 'externalId', 'cashKind')})
+                                         if key in ('date', 'symbol', 'type', 'quantity', 'amount', 'currency', 'externalId', 'cashKind', 'securityName')})
         # A receipt replay cannot describe submitted rows as the stored transaction.
         replay = self.commit(self.preview(overlap).json)
         self.assertTrue(replay.json['alreadyImported'])
@@ -418,6 +418,21 @@ class FamilyApiTest(unittest.TestCase):
         other = self.new_account()
         self.assertEqual(self.commit(self.preview(content, account=other).json, account=other).json['inserted'], 1)
         self.assertEqual(len(self.get('accountId=' + self.account).json['entries']), 2)
+
+    def test_receipt_returns_canonical_cash_types_and_only_stored_security_name(self):
+        content = ('date,symbol,quantity,amount,currency,type,externalId,securityName\n'
+                   '2026-10-14,CASH,,10,USD,cash_in,receipt-cash-in,\n'
+                   '2026-10-15,CASH,,3,USD,cash_out,receipt-cash-out,\n'
+                   '2026-10-15,DEMO-A,,1,USD,dividend,receipt-dividend,DEMO <name>\n').encode()
+        response = self.commit(self.preview(content).json)
+        self.assertEqual(response.status_code, 200, response.json)
+        outcomes = response.json['rowResults']
+        self.assertEqual([item['row']['type'] for item in outcomes], ['cash_in', 'cash_out', 'dividend'])
+        self.assertNotIn('securityName', outcomes[0]['row'])
+        self.assertEqual(outcomes[2]['row']['securityName'], 'DEMO <name>')
+        stored = next(item['row'] for path, item in self.db.data.items()
+                      if path.startswith(f'investmentAccounts/{self.account}/entries/') and item['row']['externalId'] == 'receipt-dividend')
+        self.assertEqual(outcomes[2]['row']['securityName'], stored['securityName'])
 
     def test_invalid_row_is_reported_correctable_and_never_silently_saved(self):
         invalid = b'date,symbol,quantity,amount,currency,type,externalId\n2026-02-30,AAPL,2,100,USD,buy,t1\n'

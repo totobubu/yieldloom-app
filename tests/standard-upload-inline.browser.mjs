@@ -212,7 +212,7 @@ try {
             { exact: true }
         )
         .check();
-    await button('수정 내용 검증·저장').click();
+    await button('배당달력 포트폴리오에 저장 및 반영').click();
     await page
         .getByRole('heading', { name: /^증권 거래내역 저장 영수증$/ })
         .waitFor();
@@ -349,7 +349,7 @@ try {
             { exact: true }
         )
         .check();
-    await button('수정 내용 검증·저장').click();
+    await button('배당달력 포트폴리오에 저장 및 반영').click();
     await page
         .getByRole('heading', { name: /^증권 거래내역 저장 영수증$/ })
         .waitFor();

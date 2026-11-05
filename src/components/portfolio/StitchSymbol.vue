@@ -21,7 +21,24 @@
     import preview from '@/assets/icons/material-symbols/preview.svg';
     import lock_open from '@/assets/icons/material-symbols/lock_open.svg';
     import verified_user from '@/assets/icons/material-symbols/verified_user.svg';
+    import visibility from '@/assets/icons/material-symbols/visibility.svg';
+    import verified from '@/assets/icons/material-symbols/verified.svg';
+    import task_alt from '@/assets/icons/material-symbols/task_alt.svg';
+    import help_outline from '@/assets/icons/material-symbols/help_outline.svg';
+    import info from '@/assets/icons/material-symbols/info.svg';
+    import cloud_done from '@/assets/icons/material-symbols/cloud_done.svg';
+    import cloud_upload from '@/assets/icons/material-symbols/cloud_upload.svg';
+    import sort from '@/assets/icons/material-symbols/sort.svg';
     const icons = {
+        visibility,
+        verified,
+        task_alt,
+        help_outline,
+        info,
+        cloud_done,
+        cloud_upload,
+        sort,
+
         inventory_2,
         edit_note,
         preview,

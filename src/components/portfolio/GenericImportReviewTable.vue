@@ -2,6 +2,7 @@
     import { ref, watch } from 'vue';
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
+    import StitchSymbol from './StitchSymbol.vue';
     import GenericImportReviewFields from './GenericImportReviewFields.vue';
     import { reviewRawAmount } from '@/services/importReviewPresentation.js';
     import { transactionTypeLabel } from '@/services/tossImportReview.js';
@@ -49,14 +50,21 @@
         :rows-per-page-options="[25, 50, 100, 200]"
         scrollable
         scroll-height="600px"
-        table-style="min-width:760px"
+        table-style="min-width:760px;border-collapse:collapse"
         :row-class="
             (item) => (issueIndices.has(item.index) ? 'review-issue-row' : '')
         ">
         <template #empty
             >표시할 자료가 없습니다. 검색어와 필터를 확인하세요.</template
         >
-        <Column header="No" style="width: 40px; text-align: center"
+        <Column
+            header="No"
+            :body-style="{
+                fontSize: '12px',
+                lineHeight: '16px',
+                fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace',
+            }"
+            style="width: 40px; text-align: center"
             ><template #body="{ data }"
                 ><button
                     type="button"
@@ -81,12 +89,26 @@
                 ></template
             ></Column
         >
-        <Column header="거래일자" style="width: 96px"
+        <Column
+            header="거래일자"
+            :body-style="{
+                fontSize: '12px',
+                lineHeight: '16px',
+                fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace',
+            }"
+            style="width: 96px"
             ><template #body="{ data }"
                 ><time>{{ raw(data.row.date) }}</time></template
             ></Column
         >
-        <Column header="고유번호" style="width: 96px"
+        <Column
+            header="고유번호"
+            :body-style="{
+                fontSize: '12px',
+                lineHeight: '16px',
+                fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace',
+            }"
+            style="width: 96px"
             ><template #body="{ data }"
                 ><span class="review-raw-id">{{
                     raw(data.row.externalId)
@@ -108,12 +130,22 @@
                 }}</span></template
             ></Column
         >
-        <Column header="수량" style="width: 80px; text-align: right"
+        <Column
+            header="수량"
+            :body-style="{
+                fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace',
+            }"
+            style="width: 80px; text-align: right"
             ><template #body="{ data }">{{
                 raw(data.row.quantity)
             }}</template></Column
         >
-        <Column header="추출 금액" style="width: 128px; text-align: right"
+        <Column
+            header="추출 금액"
+            :body-style="{
+                fontFamily: 'ui-monospace,SFMono-Regular,Menlo,monospace',
+            }"
+            style="width: 128px; text-align: right"
             ><template #body="{ data }"
                 >{{ reviewRawAmount(data.row.amount, data.row.currency) }}
                 <span
@@ -131,9 +163,8 @@
                         class="review-original-unavailable"
                         :aria-label="`${data.index + 1}행 원문 보기 (미지원)`"
                         disabled>
-                        <i
-                            class="pi pi-eye"
-                            aria-hidden="true" /></button></span></template
+                        <StitchSymbol
+                            name="visibility" /></button></span></template
         ></Column>
         <template #expansion="{ data }"
             ><section
@@ -253,5 +284,44 @@
         line-height: 16px;
         opacity: 0.45;
         cursor: not-allowed;
+    }
+    .generic-review-table {
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 2px rgb(23 32 51 / 6%);
+        font-size: 13px;
+        line-height: 19.5px;
+    }
+    .generic-review-table :deep(thead tr) {
+        height: 44px;
+        border-bottom: 1px solid var(--app-border);
+    }
+    .generic-review-table :deep(th) {
+        font-size: 11px;
+        line-height: 16px;
+    }
+    .generic-review-table :deep(td) {
+        border: 0;
+        line-height: inherit;
+        vertical-align: middle;
+    }
+    .generic-review-table :deep(tbody tr + tr) {
+        border-top: 1px solid var(--app-border);
+    }
+    .review-row-status {
+        font-size: 12px;
+        line-height: 16px;
+        border: 1px solid var(--app-border);
+    }
+    .generic-review-table :deep(.p-paginator) {
+        padding: 8px 16px;
+        border: 0;
+        border-top: 1px solid var(--app-border);
+        font-size: 12px;
+        line-height: 16px;
+    }
+    .generic-review-table :deep(.p-paginator-current) {
+        line-height: 16px;
     }
 </style>

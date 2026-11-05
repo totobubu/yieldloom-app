@@ -321,7 +321,10 @@ try {
         )
         .check();
     await page
-        .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
+        .getByRole('button', {
+            name: '배당달력 포트폴리오에 저장 및 반영',
+            exact: true,
+        })
         .click();
     await page
         .getByRole('heading', {

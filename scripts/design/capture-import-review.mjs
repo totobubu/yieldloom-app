@@ -56,6 +56,14 @@ try {
         const page = await context.newPage(),
             errors = [];
         page.on('pageerror', (error) => errors.push(error.message));
+        page.on('console', (message) => {
+            if (
+                message.type() === 'warning' &&
+                /Teleport target|Failed to locate Teleport/.test(message.text())
+            )
+                errors.push(message.text());
+        });
+
         await page.goto(new URL('/.phase39-review.html', base).href);
         await page
             .getByRole('heading', {
@@ -89,6 +97,10 @@ try {
                     })),
                     width: part.getBoundingClientRect().width,
                     height: part.getBoundingClientRect().height,
+                })),
+                tableRows: [...el.querySelectorAll('table tr')].map((row) => ({
+                    height: row.getBoundingClientRect().height,
+                    font: getComputedStyle(row).font,
                 })),
                 bodyFont: getComputedStyle(el).fontFamily,
                 panels: [
@@ -173,6 +185,38 @@ try {
             'help disclosure does not overflow'
         );
         await page.locator('.import-currency-explanation > summary').click();
+        const guide = page.locator('.review-example-guide');
+        await guide
+            .locator('.review-supplementary-disclosure > summary')
+            .click();
+        await guide
+            .getByText('추출 배당·거래 상세 요약', { exact: true })
+            .click();
+        assert.equal(
+            await guide.getByText('총 추출 건수', { exact: true }).isVisible(),
+            true,
+            'source guide retains the existing review metrics'
+        );
+        await guide
+            .getByText('배당 기록·저장 상세 안내', { exact: true })
+            .click();
+        assert.equal(
+            await guide
+                .getByText('필터는 표시할 거래만 변경', { exact: true })
+                .isVisible(),
+            true,
+            'source guide retains existing save guidance'
+        );
+        assert.equal(
+            await page.evaluate(
+                () => document.documentElement.scrollWidth > innerWidth
+            ),
+            false,
+            'expanded supporting information does not overflow'
+        );
+        await guide
+            .locator('.review-supplementary-disclosure > summary')
+            .click();
 
         await page.evaluate(() =>
             window.reviewFixture.component.value.focusHeading()
@@ -195,7 +239,7 @@ try {
         assert.equal(
             await page
                 .getByRole('button', {
-                    name: '수정 내용 검증·저장',
+                    name: '배당달력 포트폴리오에 저장 및 반영',
                     exact: true,
                 })
                 .isDisabled(),
@@ -208,7 +252,10 @@ try {
             )
             .check();
         await page
-            .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
+            .getByRole('button', {
+                name: '배당달력 포트폴리오에 저장 및 반영',
+                exact: true,
+            })
             .click();
         assert.deepEqual(
             await page.evaluate(() => window.reviewFixture.events),
@@ -288,7 +335,7 @@ try {
         assert.equal(
             await page
                 .getByRole('button', {
-                    name: '수정 내용 검증·저장',
+                    name: '배당달력 포트폴리오에 저장 및 반영',
                     exact: true,
                 })
                 .isDisabled(),
@@ -368,7 +415,7 @@ try {
         assert.equal(
             await page
                 .getByRole('button', {
-                    name: '수정 내용 검증·저장',
+                    name: '배당달력 포트폴리오에 저장 및 반영',
                     exact: true,
                 })
                 .isDisabled(),
@@ -381,7 +428,7 @@ try {
         assert.equal(
             await page
                 .getByRole('button', {
-                    name: '수정 내용 검증·저장',
+                    name: '배당달력 포트폴리오에 저장 및 반영',
                     exact: true,
                 })
                 .isDisabled(),
@@ -444,6 +491,12 @@ try {
                     width: part.getBoundingClientRect().width,
                     height: part.getBoundingClientRect().height,
                 })),
+                tableRows: [...document.querySelectorAll('table tr')].map(
+                    (row) => ({
+                        height: row.getBoundingClientRect().height,
+                        font: getComputedStyle(row).font,
+                    })
+                ),
                 bodyFont: getComputedStyle(document.body).fontFamily,
                 panels: [
                     ...(document.querySelector('main > .grid')?.children ||

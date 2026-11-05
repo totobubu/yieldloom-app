@@ -14,6 +14,10 @@ const browser = await chromium.launch({
         : {}),
 });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+// Keep interception armed before keyboard activation; subscription setup is asynchronous.
+page.on('filechooser', () => {
+    // Individual actions below wait for the event and select their own files.
+});
 page.setDefaultTimeout(15000);
 const errors = [],
     requests = [],
@@ -35,7 +39,7 @@ page.on('response', (response) => {
 await page.route('**/src/services/firebaseClient*', (route) =>
     route.fulfill({
         contentType: 'application/javascript',
-        body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'${uid}',displayName:'테스트 본인',getIdToken:async()=>'${uid}'}); export const authLoading=ref(false),signedIn=computed(()=>true),firebaseReady=false,db=null,auth=null,googleProvider=null;`,
+        body: `import {ref,computed} from '/node_modules/.vite/deps/vue.js'; export const firebaseUser=ref({uid:'${uid}',displayName:'테스트 본인',email:'totobubu.lab@gmail.com',emailVerified:true,getIdToken:async()=>'${uid}'}); export const authLoading=ref(false),signedIn=computed(()=>true),firebaseReady=false,db=null,auth=null,googleProvider=null;`,
     })
 );
 await page.route('**/api/portfolio-capital*', (route) =>
@@ -111,7 +115,10 @@ try {
     await button('계좌 추가').click();
     await page
         .getByRole('dialog')
-        .getByRole('button', { name: '문서로 등록', exact: true })
+        .getByRole('button', {
+            name: '문서로 등록 (토스 거래내역 PDF)',
+            exact: true,
+        })
         .click();
     await page.getByLabel('토스 거래내역 PDF', { exact: true }).setInputFiles({
         name: 'invalid.pdf',
@@ -129,7 +136,10 @@ try {
         await button('계좌 추가').click();
         await page
             .getByRole('dialog')
-            .getByRole('button', { name: '문서로 등록', exact: true })
+            .getByRole('button', {
+                name: '문서로 등록 (토스 거래내역 PDF)',
+                exact: true,
+            })
             .click();
         await page
             .getByLabel('토스 거래내역 PDF', { exact: true })
@@ -147,7 +157,7 @@ try {
         await page.getByLabel('PDF 비밀번호', { exact: true }).fill('fixture');
         await button('계좌 정보 추출').click();
         await page
-            .getByText('추출된 명의: 배우자 · ****5678', { exact: true })
+            .getByText('명의 배우자 · 토스증권 ****5678', { exact: true })
             .waitFor();
         await page.getByLabel('별칭', { exact: true }).last().fill('문서 계좌');
         await page
@@ -165,7 +175,10 @@ try {
         await button('계좌 추가').click();
         await page
             .getByRole('dialog')
-            .getByRole('button', { name: '문서로 등록', exact: true })
+            .getByRole('button', {
+                name: '문서로 등록 (토스 거래내역 PDF)',
+                exact: true,
+            })
             .click();
         await page
             .getByLabel('토스 거래내역 PDF', { exact: true })
@@ -177,7 +190,7 @@ try {
         await page.getByLabel('PDF 비밀번호', { exact: true }).fill('fixture');
         await button('계좌 정보 추출').click();
         await page
-            .getByText('추출된 명의: 배우자 · ****5678', { exact: true })
+            .getByText('명의 배우자 · 토스증권 ****5678', { exact: true })
             .waitFor();
         await page
             .getByLabel('별칭', { exact: true })
@@ -221,12 +234,13 @@ try {
     await page
         .getByRole('dialog')
         .evaluate((element) =>
-            Promise.all(
+            Promise.allSettled(
                 element
                     .getAnimations({ subtree: true })
                     .map((animation) => animation.finished)
             )
         );
+    await page.getByRole('dialog').waitFor({ state: 'visible' });
     await page.screenshot({
         path: path.join(output, 'mobile-dark-dialog.png'),
         fullPage: true,
@@ -238,6 +252,113 @@ try {
         ),
         true
     );
+    const themeToggle = page.getByRole('button', {
+        name: /^(다크 모드|라이트 모드)$/,
+    });
+    // Synchronize the real theme control after the earlier CSS-only legacy check.
+    await themeToggle.click();
+    await themeToggle.click();
+    for (const width of [1280, 768, 390, 320]) {
+        await page.setViewportSize({ width, height: 1000 });
+        for (const theme of ['light', 'dark']) {
+            const switchMode = page.getByRole('button', {
+                name: theme === 'dark' ? '다크 모드' : '라이트 모드',
+                exact: true,
+            });
+            if (await switchMode.count()) await switchMode.click();
+            await button('계좌 추가').click();
+            const registration = page.locator('.account-registration');
+            await registration.waitFor();
+            assert.equal(
+                await registration
+                    .getByRole('button', { name: '직접 입력', exact: true })
+                    .getAttribute('aria-pressed'),
+                'true',
+                'The production Dialog keeps its existing manual-entry default'
+            );
+            const beforeTyping = requests.length;
+            await registration
+                .getByLabel('금융기관', { exact: true })
+                .fill('합성기관');
+            await registration
+                .getByLabel('별칭', { exact: true })
+                .fill('합성 폼 확인');
+            assert.equal(requests.length, beforeTyping);
+            await registration
+                .getByRole('button', {
+                    name: '문서로 등록 (토스 거래내역 PDF)',
+                    exact: true,
+                })
+                .click();
+            const picker = registration.getByRole('button', {
+                name: '토스 거래내역 PDF 선택',
+                exact: true,
+            });
+            await picker.focus();
+            assert.equal(
+                await picker.evaluate((e) => e === document.activeElement),
+                true
+            );
+            const chooser = page.waitForEvent('filechooser');
+            await page.keyboard.press(theme === 'light' ? 'Enter' : 'Space');
+            await (
+                await chooser
+            ).setFiles({
+                name: '합성긴문서이름'.repeat(20) + '.pdf',
+                mimeType: 'application/pdf',
+                buffer: Buffer.from('x'),
+            });
+            assert.equal(
+                await registration
+                    .getByRole('button', { name: '계좌 등록', exact: true })
+                    .isDisabled(),
+                true
+            );
+            assert.equal(
+                await registration.locator('.identified-summary').count(),
+                0
+            );
+            await page.evaluate(() =>
+                Promise.allSettled(
+                    document
+                        .getAnimations()
+                        .filter(
+                            (a) =>
+                                a.effect?.getComputedTiming().iterations !==
+                                Infinity
+                        )
+                        .map((a) => a.finished)
+                )
+            );
+            assert.equal(
+                await page.evaluate(() =>
+                    document.documentElement.classList.contains('p-dark')
+                ),
+                theme === 'dark'
+            );
+            assert.ok(
+                await page.evaluate(
+                    () => document.documentElement.scrollWidth <= innerWidth + 1
+                )
+            );
+            await page.screenshot({
+                path: path.join(output, `registration-${width}-${theme}.png`),
+                fullPage: true,
+            });
+            assert.equal(
+                requests.length,
+                beforeTyping,
+                'Choosing a file does not submit or inspect it'
+            );
+            await closeDialog();
+            assert.equal(
+                await button('계좌 추가').evaluate(
+                    (e) => e === document.activeElement
+                ),
+                true
+            );
+        }
+    }
     assert.deepEqual(errors, []);
     console.log(
         JSON.stringify(

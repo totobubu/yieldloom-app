@@ -674,6 +674,7 @@
         height: 44px;
         padding: 0 40px 0 14px;
         border-radius: 8px;
+        font-size: 15px;
         background: var(--app-surface);
         border-color: var(--app-border);
     }

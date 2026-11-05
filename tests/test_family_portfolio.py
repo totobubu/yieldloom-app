@@ -392,13 +392,28 @@ class FamilyApiTest(unittest.TestCase):
     def test_repeat_file_overlapping_transactions_and_distinct_accounts(self):
         content = b'date,symbol,quantity,amount,currency,type,externalId\n2026-10-14,AAPL,2,100,USD,buy,t1\n'
         first = self.preview(content).json
-        self.assertEqual(self.commit(first).json['inserted'], 1)
+        first_saved = self.commit(first)
+        self.assertEqual(first_saved.json['inserted'], 1)
+        self.assertEqual(first_saved.headers['X-Portfolio-Document-Reads'], '11')
         self.assertEqual(self.db.data[f'investmentAccounts/{self.account}']['entriesRevision'], 1)
         self.assertTrue(self.commit(self.preview(content).json).json['alreadyImported'])
         self.assertEqual(self.db.data[f'investmentAccounts/{self.account}']['entriesRevision'], 1)
         overlap = content + b'2026-10-15,AAPL,3,150,USD,buy,t2\n'
-        result = self.commit(self.preview(overlap).json).json
-        self.assertEqual(result, {'inserted': 1, 'duplicates': 1})
+        saved = self.commit(self.preview(overlap).json)
+        self.assertEqual(saved.headers['X-Portfolio-Document-Reads'], '8')
+        result = saved.json
+        self.assertEqual({key: result[key] for key in ('inserted', 'duplicates')}, {'inserted': 1, 'duplicates': 1})
+        self.assertEqual([item['status'] for item in result['rowResults']], ['duplicate', 'inserted'])
+        stored = {entry['row']['externalId']: entry['row'] for path, entry in self.db.data.items()
+                  if path.startswith(f'investmentAccounts/{self.account}/entries/')}
+        for item in result['rowResults']:
+            self.assertEqual(item['row'], {key: value for key, value in stored[item['row']['externalId']].items()
+                                         if key in ('date', 'symbol', 'type', 'quantity', 'amount', 'currency', 'externalId', 'cashKind')})
+        # A receipt replay cannot describe submitted rows as the stored transaction.
+        replay = self.commit(self.preview(overlap).json)
+        self.assertTrue(replay.json['alreadyImported'])
+        self.assertNotIn('rowResults', replay.json)
+        self.assertEqual(replay.headers['X-Portfolio-Document-Reads'], '5')
         self.assertEqual(self.db.data[f'investmentAccounts/{self.account}']['entriesRevision'], 2)
         other = self.new_account()
         self.assertEqual(self.commit(self.preview(content, account=other).json, account=other).json['inserted'], 1)

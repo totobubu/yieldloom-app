@@ -1,0 +1,12 @@
+{
+  "sameDimensions": [
+    780,
+    4912
+  ],
+  "meanAbsoluteChannelDifference": [
+    8.869493078175896,
+    8.176186262841393,
+    8.675450492775411
+  ],
+  "pixelAcceptance": "not asserted; native reference and unchanged HTML render are independently retained"
+}

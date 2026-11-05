@@ -96,7 +96,8 @@ try {
         .click();
     await page
         .getByRole('heading', {
-            name: '자료 저장이 완료되었습니다',
+            name: /^증권 (거래|잔고)내역 저장 영수증$/,
+            level: 2,
             exact: true,
         })
         .waitFor();

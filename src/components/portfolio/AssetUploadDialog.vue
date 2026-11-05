@@ -5,6 +5,7 @@
         title: { type: String, default: '자료 업로드' },
         busy: Boolean,
         mapping: Boolean,
+        receipt: Boolean,
     });
 </script>
 <template>
@@ -12,10 +13,13 @@
         v-model:visible="visible"
         modal
         :header="title"
-        :class="{ 'asset-upload-dialog--mapping': mapping }"
+        :class="{
+            'asset-upload-dialog--mapping': mapping,
+            'asset-upload-dialog--receipt': receipt,
+        }"
         :style="{
-            width: mapping ? '80rem' : '72rem',
-            maxWidth: mapping ? '100vw' : 'calc(100vw - 24px)',
+            width: mapping ? '80rem' : receipt ? '882px' : '72rem',
+            maxWidth: mapping || receipt ? '100vw' : 'calc(100vw - 24px)',
             overflowX: 'hidden',
         }"
         :content-style="{ minWidth: 0, overflowX: 'hidden' }"
@@ -41,6 +45,20 @@
     @media (max-width: 640px) {
         .asset-upload-dialog--mapping .p-dialog-content {
             padding: 20px 16px;
+        }
+    }
+
+    /* Reference content max-width 834px plus the two 24px outer gutters. */
+    .asset-upload-dialog--receipt {
+        border-width: 0;
+    }
+    .asset-upload-dialog--receipt .p-dialog-content {
+        padding: 24px;
+        background: var(--app-bg);
+    }
+    @media (max-width: 640px) {
+        .asset-upload-dialog--receipt .p-dialog-content {
+            padding: 16px 8px;
         }
     }
 </style>

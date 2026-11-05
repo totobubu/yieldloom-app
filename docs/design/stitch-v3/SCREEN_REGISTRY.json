@@ -1807,9 +1807,7 @@
                 "height": "4152"
             },
             "sourceTitle": "V5 CORRECTED / Data Upload / Mobile / source-4355c5b5",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6"
-            ]
+            "supersededCandidates": []
         },
         {
             "family": "Data Upload",
@@ -1849,9 +1847,7 @@
                 "height": "2048"
             },
             "sourceTitle": "V5 CORRECTED / Data Upload / Tablet / source-5a09e7d3",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33"
-            ]
+            "supersededCandidates": []
         },
         {
             "family": "Import Result",
@@ -1862,8 +1858,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
-            "visualAcceptance": "not accepted",
+            "implementation": "reference-backed responsive receipt and original SVG symbols implemented; financial aggregates explicitly unavailable; release status tracked in PR #250",
+            "visualAcceptance": "header/stepper dimensions match 834/768/390; tablet aggregate card matches 376.5px; full pixel acceptance pending; see PHASE35_RECEIPT_FIDELITY.md",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/f5a2132c4e234e648269220f0e889387",
             "sourceFiles": [
@@ -1891,9 +1887,7 @@
                 "height": "4912"
             },
             "sourceTitle": "V5 CORRECTED / Import Result / Mobile / source-b8337d51",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/f5a2132c4e234e648269220f0e889387"
-            ]
+            "supersededCandidates": []
         },
         {
             "family": "Import Result",
@@ -1904,8 +1898,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
-            "visualAcceptance": "not accepted",
+            "implementation": "reference-backed responsive receipt and original SVG symbols implemented; financial aggregates explicitly unavailable; release status tracked in PR #250",
+            "visualAcceptance": "header/stepper dimensions match 834/768/390; tablet aggregate card matches 376.5px; full pixel acceptance pending; see PHASE35_RECEIPT_FIDELITY.md",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/cf7686fbb620465f93418fde1572a6cc",
             "sourceFiles": [
@@ -1933,9 +1927,7 @@
                 "height": "2244"
             },
             "sourceTitle": "V5 CORRECTED / Import Result / Tablet / source-5694fa4d",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/cf7686fbb620465f93418fde1572a6cc"
-            ]
+            "supersededCandidates": []
         },
         {
             "family": "Import Review",
@@ -2102,9 +2094,7 @@
                 "height": "2824"
             },
             "sourceTitle": "V6 REVIEWED / Ledger Analysis / Tablet / source-644db83b",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/65c1b225397746ada071cf14ae4f687c"
-            ]
+            "supersededCandidates": []
         },
         {
             "family": "Simulator",
@@ -2144,9 +2134,7 @@
                 "height": "6198"
             },
             "sourceTitle": "V6 REVIEWED / Simulator / Mobile / source-d6588413",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/fbb16724366740e1ab9d8fce50db986a"
-            ]
+            "supersededCandidates": []
         },
         {
             "family": "Simulator",
@@ -2186,9 +2174,7 @@
                 "height": "4164"
             },
             "sourceTitle": "V6 REVIEWED / Simulator / Tablet / source-5afff199",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/85f567e48c3c4dbdad938b7e210c22ed"
-            ]
+            "supersededCandidates": []
         },
         {
             "family": "Tax Comparison",
@@ -2228,9 +2214,7 @@
                 "height": "6400"
             },
             "sourceTitle": "V6 REVIEWED / Tax Comparison / Mobile / source-f7fe46e6",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/b640738daaf5434d9af72530fe150006"
-            ]
+            "supersededCandidates": []
         },
         {
             "family": "Tax Comparison",
@@ -2270,9 +2254,7 @@
                 "height": "2792"
             },
             "sourceTitle": "V6 REVIEWED / Tax Comparison / PC / source-0c64cbee",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/678e97a05dc14fec9c77e971bd5ef960"
-            ]
+            "supersededCandidates": []
         },
         {
             "family": "Tax Comparison",
@@ -2312,9 +2294,7 @@
                 "height": "3340"
             },
             "sourceTitle": "V7 REFINED / Tax Comparison / Tablet / source-4b63bd4e",
-            "supersededCandidates": [
-                "projects/17382728461495959991/screens/388202e7721941e98095ae02b264b1b1"
-            ]
+            "supersededCandidates": []
         }
     ],
     "finalReviewedTargets": 20,

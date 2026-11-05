@@ -76,6 +76,11 @@ try {
                     view +
                     (view === 'theme' ? '&theme=semiconductors' : '')
             );
+            await page.waitForFunction(
+                (title) => document.title === title,
+                `${view === 'theme' ? '테마 비교' : '유사 ETF 비교'} - 모으멍 배당달력`,
+                { timeout: 5000 }
+            );
             if (width > 1024) {
                 await page
                     .locator('.comparison-summary tbody tr')
@@ -474,6 +479,56 @@ try {
             await page.close();
         }
     }
+    // A query-only navigation reuses the page; leaving it must restore search's title.
+    const page = await browser.newPage();
+    await installStitchFixtures(page);
+    await installStaticAssets(page);
+    await page.route('**/src/services/securityDirectory.js*', (route) =>
+        route.fulfill({
+            contentType: 'application/javascript',
+            body: `export async function loadSecurityDirectory(){window.comparisonDirectoryReads=(window.comparisonDirectoryReads||0)+1;return ${JSON.stringify(directory)}};export async function loadSecurityInsights(){window.comparisonTitleDetailReads=(window.comparisonTitleDetailReads||0)+1;return {}}`,
+        })
+    );
+    await page.goto(base + '/compare?view=similar');
+    for (const [view, title] of [
+        ['similar', '유사 ETF 비교'],
+        ['theme', '테마 비교'],
+        ['underlying', '기초자산별 ETF 비교'],
+        ['unknown-view', '기초자산별 ETF 비교'],
+    ]) {
+        await page.evaluate(async (view) => {
+            const router =
+                document.querySelector('#app').__vue_app__.config
+                    .globalProperties.$router;
+            await router.push({ path: '/compare', query: { view } });
+        }, view);
+        await page.waitForFunction(
+            (title) => document.title === title,
+            `${title} - 모으멍 배당달력`
+        );
+    }
+    assert.equal(await page.evaluate(() => window.comparisonDirectoryReads), 1);
+    assert.equal(
+        await page.evaluate(() => window.comparisonTitleDetailReads || 0),
+        0
+    );
+    await page.evaluate(async () => {
+        const router =
+            document.querySelector('#app').__vue_app__.config.globalProperties
+                .$router;
+        await router.push('/');
+    });
+    await page.waitForFunction(
+        () => document.title === 'ETF·주식 검색 - 모으멍 배당달력'
+    );
+    await page.goBack();
+    await page.waitForFunction(
+        () => document.title === '기초자산별 ETF 비교 - 모으멍 배당달력'
+    );
+    await page.close();
+    console.log(
+        'PASS comparison title: query/fallback and search/history; query-only changes reuse one directory read and make no detail requests.'
+    );
 } finally {
     await fs.writeFile(
         `${output}/results.json`,

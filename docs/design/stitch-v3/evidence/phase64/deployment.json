@@ -1,0 +1,35 @@
+{
+  "featurePr": 267,
+  "promotionPr": 268,
+  "sourceHead": "1c5c97c6a5d141b7ec258dcdbeccaac622e27851",
+  "workHead": "a5844f6a34326880f167dca369f51d373a9ae5c3",
+  "preservedMainDataCommit": "63fd610ff1f76bd2bfec0891ea6b6c0014ead5a6",
+  "testedPromotionMerge": "eae12ac86ba116812bf85f661ed0c9e41eeab3a9",
+  "finalMain": "0abdcdad7ada8b4fc95ac50a492f51565c134fdb",
+  "sameTreeAsTestedPromotion": true,
+  "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
+  "ci": {
+    "feature": 42065981896,
+    "work": 42069087747,
+    "promotion": 42069150878,
+    "main": 42072394324
+  },
+  "pages": {
+    "run": 42072394353,
+    "conclusion": "success"
+  },
+  "vercel": {
+    "id": "dpl_6XUeP928nan98UqPWSvag6dCguFY",
+    "url": "yieldloom-bsbhl6hkm-totobubus-projects.vercel.app",
+    "target": "production",
+    "readyState": "READY",
+    "sha": "0abdcdad7ada8b4fc95ac50a492f51565c134fdb"
+  },
+  "publicComparisonCombinations": 4,
+  "transitionFramesPerCombination": 30,
+  "observedOverflowFrames": 0,
+  "privateAccountOrCustomerPdfExercised": false,
+  "wholeFrameVisualAcceptance": "incomplete",
+  "simulatorPublicPrApprovalBlock": "preserved",
+  "mainCiStatus": "success:4/4"
+}

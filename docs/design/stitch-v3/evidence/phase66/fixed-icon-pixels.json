@@ -1,0 +1,242 @@
+[
+  {
+    "viewport": 1280,
+    "physicalSize": [
+      80,
+      82
+    ],
+    "fixedSyntheticData": true,
+    "sourceType": "original HTML rendered, file-icon container only",
+    "rootAndCardsUnchanged": true,
+    "sourceGlyph": {
+      "width": 22,
+      "height": 22,
+      "font": "22px",
+      "line": "22px",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 168.75
+    },
+    "beforeGlyph": {
+      "width": 16,
+      "height": 16,
+      "font": "16px",
+      "line": "16px",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 171.75
+    },
+    "afterGlyph": {
+      "width": 22,
+      "height": 22,
+      "font": "22px",
+      "line": "normal",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 168.75
+    },
+    "before": {
+      "meanAbsoluteChannelDifference": 14.027489837398372,
+      "pixelsOver16": 732
+    },
+    "after": {
+      "meanAbsoluteChannelDifference": 1.4561483739837398,
+      "pixelsOver16": 185
+    }
+  },
+  {
+    "viewport": 768,
+    "physicalSize": [
+      80,
+      82
+    ],
+    "fixedSyntheticData": true,
+    "sourceType": "original HTML rendered, file-icon container only",
+    "rootAndCardsUnchanged": true,
+    "sourceGlyph": {
+      "width": 24.015625,
+      "height": 32,
+      "font": "24px",
+      "line": "32px",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 260.25
+    },
+    "beforeGlyph": {
+      "width": 16,
+      "height": 16,
+      "font": "16px",
+      "line": "16px",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 268.25
+    },
+    "afterGlyph": {
+      "width": 24,
+      "height": 24,
+      "font": "24px",
+      "line": "normal",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 264.25
+    },
+    "before": {
+      "meanAbsoluteChannelDifference": 24.009095528455287,
+      "pixelsOver16": 937
+    },
+    "after": {
+      "meanAbsoluteChannelDifference": 0.008638211382113821,
+      "pixelsOver16": 0
+    }
+  },
+  {
+    "viewport": 834,
+    "physicalSize": [
+      80,
+      82
+    ],
+    "fixedSyntheticData": true,
+    "sourceType": "original HTML rendered, file-icon container only",
+    "rootAndCardsUnchanged": true,
+    "sourceGlyph": {
+      "width": 24.015625,
+      "height": 32,
+      "font": "24px",
+      "line": "32px",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 237.5
+    },
+    "beforeGlyph": {
+      "width": 16,
+      "height": 16,
+      "font": "16px",
+      "line": "16px",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 245.5
+    },
+    "afterGlyph": {
+      "width": 24,
+      "height": 24,
+      "font": "24px",
+      "line": "normal",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 241.5
+    },
+    "before": {
+      "meanAbsoluteChannelDifference": 24.009095528455287,
+      "pixelsOver16": 937
+    },
+    "after": {
+      "meanAbsoluteChannelDifference": 0.008638211382113821,
+      "pixelsOver16": 0
+    }
+  },
+  {
+    "viewport": 390,
+    "physicalSize": [
+      80,
+      82
+    ],
+    "fixedSyntheticData": true,
+    "sourceType": "original HTML rendered, file-icon container only",
+    "rootAndCardsUnchanged": true,
+    "sourceGlyph": {
+      "width": 22,
+      "height": 22,
+      "font": "22px",
+      "line": "22px",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "flex",
+      "y": 228.75
+    },
+    "beforeGlyph": {
+      "width": 16,
+      "height": 16,
+      "font": "16px",
+      "line": "16px",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 231.75
+    },
+    "afterGlyph": {
+      "width": 22,
+      "height": 22,
+      "font": "22px",
+      "line": "normal",
+      "weight": "400",
+      "padding": "0px",
+      "radius": "0px",
+      "color": "rgb(13, 122, 110)",
+      "gap": "normal",
+      "margin": "0px",
+      "display": "block",
+      "y": 228.75
+    },
+    "before": {
+      "meanAbsoluteChannelDifference": 14.027489837398372,
+      "pixelsOver16": 732
+    },
+    "after": {
+      "meanAbsoluteChannelDifference": 1.4561483739837398,
+      "pixelsOver16": 185
+    }
+  }
+]

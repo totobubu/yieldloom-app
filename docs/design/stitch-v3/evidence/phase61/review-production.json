@@ -1,0 +1,28 @@
+{
+  "main": "3b5dd96e2dce6474f644ab1b3b81536ae789b300",
+  "work": "543748e435a75505ccab446b4a3c4c96de578299",
+  "feature": "04c8a42bfb840ba1c2b879e2c092f684796f63d0",
+  "promotionPR": 264,
+  "featureCI": 42046692359,
+  "workCI": 42048890070,
+  "promotionCI": 42049027196,
+  "premergeCI": "all four jobs passed on each run",
+  "pagesCI": 42051862442,
+  "pagesState": "success",
+  "vercelDeployment": "dpl_82bUpRZiaks9qMmJE2DK72fDgH2R",
+  "vercelState": "READY",
+  "metadataSha256": "b54bc1cca63cb303a8b1e982b42a7238e1741013d3ce3908616c5dcd206827b7",
+  "anonymousAccountAPI": {
+    "status": 401,
+    "documentReads": 0,
+    "readOperations": 0
+  },
+  "postMainCI": {
+    "run": 42051861032,
+    "firstAttempt": "cancelled by 20 minute job budget; exact GitHub annotation confirmed",
+    "installSeconds": 519,
+    "attempt2": "SUCCESS; application/portfolio-api/browser/registration-browser all passed",
+    "finalConclusion": "success"
+  },
+  "realAccountAndCustomerPDF": "not exercised"
+}

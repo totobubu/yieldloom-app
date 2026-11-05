@@ -132,6 +132,7 @@ jobs:
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-dividend-navigation.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/security-insights.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/browser-harness-isolation.browser.mjs
+                  node tests/scoped-theme-styles.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-priority-panels.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-shell.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-data-contracts.browser.mjs

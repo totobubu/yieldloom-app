@@ -1561,10 +1561,10 @@
         outline: 2px solid var(--app-accent);
         outline-offset: 3px;
     }
-    :global(.p-dark) .issue-metric {
+    .p-dark .issue-metric {
         color: #fcd34d;
     }
-    :global(.p-dark) .preview-badge {
+    .p-dark .preview-badge {
         color: #6ee7b7;
     }
     @media (max-width: 1200px) {

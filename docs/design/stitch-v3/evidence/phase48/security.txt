@@ -1,0 +1,5 @@
+PASS 1440: QLDY real snapshot, precision, missing ROC amount, shared source, disclosure, help, no extra reads, light/dark layout
+PASS 768: QLDY real snapshot, precision, missing ROC amount, shared source, disclosure, help, no extra reads, light/dark layout
+PASS 390: QLDY real snapshot, precision, missing ROC amount, shared source, disclosure, help, no extra reads, light/dark layout
+PASS 360: QLDY real snapshot, precision, missing ROC amount, shared source, disclosure, help, no extra reads, light/dark layout
+PASS: SPYI precision and separate fiscal scope; TXN empty ROC and quarterly evidence

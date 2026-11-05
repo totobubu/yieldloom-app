@@ -1,0 +1,1 @@
+PASS actual CSV/XLSX (first sheet)/holdings → one explicit preview per extraction → three rows/zero/missing values → scope invalidation → next without API → edit/full six-row commit; four widths, no page overflow, no production writes.

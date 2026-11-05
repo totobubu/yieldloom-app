@@ -123,16 +123,14 @@ try {
             /계좌와 파일을 선택/
         );
         assert.equal(previews, 0);
-        await page.getByText('눌러서 PDF 파일 선택', { exact: true }).waitFor();
+        await page.getByText('PDF 파일 업로드', { exact: true }).waitFor();
         assert.equal(
             await page.locator('.dropzone-desktop').first().isVisible(),
             false
         );
         const [chooser] = await Promise.all([
             page.waitForEvent('filechooser'),
-            page
-                .getByRole('button', { name: 'PDF 파일 선택', exact: true })
-                .tap(),
+            page.getByRole('button', { name: '파일 선택', exact: true }).tap(),
         ]);
         assert.equal(chooser.isMultiple(), true);
         await chooser.setFiles({

@@ -65,3 +65,18 @@ export function reviewSecurityLabel(row) {
         return row.securityName;
     return row.symbol || row.securityName || '미식별 종목';
 }
+
+// Preserve supplied fractional precision; only add the conventional USD minimum.
+export function reviewRawAmount(value, currency = '') {
+    if (value == null || value === '') return '미제공';
+    return String(value).replace(
+        /^([+-]?)(\d+)(\.\d+)?$/,
+        (_, sign, whole, fraction = '') => {
+            const decimal =
+                currency === 'USD'
+                    ? '.' + fraction.slice(1).padEnd(2, '0')
+                    : fraction;
+            return sign + whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + decimal;
+        }
+    );
+}

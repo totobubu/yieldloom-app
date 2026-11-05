@@ -1,0 +1,26 @@
+✔ reference six rows keep both currencies and review cash difference separate (2.679685ms)
+✔ genuine zero survives; a missing value blocks a complete group and cash difference (1.254583ms)
+✔ unknown currency is never inferred; other types are not cash or capital (0.261579ms)
+✔ existing exact arithmetic keeps decimal sums and scientific numeric input precise (0.419353ms)
+✔ invalid signed/boolean/out-of-range or unsupported precision values never become zero totals (0.297535ms)
+✔ domestic labels use names without changing codes; currencies stay attached to amounts (34.056469ms)
+✔ dividend display keeps currencies separate, subtracts reversals, and preserves missing amounts (1.442794ms)
+✔ cross-checked ISINs become symbols while unresolved identifiers stay reviewable (3.096704ms)
+✔ only an unambiguous exact exchange and USD settlement are linked (12.305683ms)
+✔ instant conversion links observed KRW and USD settlements even without a cash-side rate (0.543224ms)
+✔ rate rounding is bounded and a cash leg cannot fund multiple buys (0.718983ms)
+✔ same-day conversion pool links multiple purchases despite different reference KRW values, without inventing the shortfall (0.6799ms)
+✔ balanced repeated conversions are paired once; cancelled conversion and another date/account cannot supply a purchase (0.612824ms)
+✔ overlapping PDFs do not duplicate pool money, and cash edits clear derived links (1.376661ms)
+✔ cash registration excludes funded conversion withdrawals while retaining raw evidence and owner annotations (2.010746ms)
+✔ a purchase can use more than five conversion pairs, with a bounded evidence list (0.960574ms)
+✔ both currency legs of forward/reverse conversions are linked and cleared after edits (0.647199ms)
+✔ legacy exact matches also keep accounts separate (0.237344ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 152.722357

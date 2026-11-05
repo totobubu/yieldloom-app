@@ -1,0 +1,841 @@
+
+> etf@0.0.0 build
+> vue-tsc --noEmit && vite build && node scripts/seo/prerender-thumbnail-pages.mjs
+
+vite v7.2.7 building client environment for production...
+transforming...
+✓ 1076 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/content-studio/stock-evidence-index.json             0.03 kB │ gzip:   0.05 kB
+dist/content-studio/archive.json                          0.04 kB │ gzip:   0.06 kB
+dist/ads.txt                                              0.06 kB │ gzip:   0.08 kB
+dist/app-release.json                                     0.16 kB │ gzip:   0.14 kB
+dist/content-studio/recommendations.json                  0.17 kB │ gzip:   0.15 kB
+dist/content-studio/renders/4348/toss.txt                 0.30 kB │ gzip:   0.28 kB
+dist/content-studio/renders/4366/toss.txt                 0.30 kB │ gzip:   0.28 kB
+dist/content-studio/renders/4349/toss.txt                 0.30 kB │ gzip:   0.28 kB
+dist/content-studio/renders/4357/toss.txt                 0.30 kB │ gzip:   0.28 kB
+dist/content-studio/renders/4358/toss.txt                 0.30 kB │ gzip:   0.28 kB
+dist/content-studio/renders/4367/toss.txt                 0.30 kB │ gzip:   0.28 kB
+dist/content-studio/renders/3868/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/3869/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/3870/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4029/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4116/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4117/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4264/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4311/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4027/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4028/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4118/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4189/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4190/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4191/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4262/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4263/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4312/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/4313/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/12588/toss.txt                0.32 kB │ gzip:   0.28 kB
+dist/content-studio/renders/3374/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/3561/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/3662/toss.txt                 0.32 kB │ gzip:   0.29 kB
+dist/content-studio/renders/3395/toss.txt                 0.32 kB │ gzip:   0.28 kB
+dist/content-studio/distribution-ticker-fb.json           0.60 kB │ gzip:   0.33 kB
+dist/content-studio/distribution-ticker-qb.json           0.60 kB │ gzip:   0.33 kB
+dist/content-studio/distribution-ticker-rb.json           0.60 kB │ gzip:   0.33 kB
+dist/content-studio/distribution-ticker-kryp.json         0.60 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-tiny.json         0.60 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-csm.json          0.60 kB │ gzip:   0.33 kB
+dist/content-studio/distribution-ticker-hdg.json          0.60 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-ion.json          0.60 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-ond.json          0.60 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-pex.json          0.60 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-tdv.json          0.60 kB │ gzip:   0.33 kB
+dist/content-studio/distribution-ticker-anew.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-buyb.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-clix.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-ctex.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-efad.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-emdv.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-eqrr.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-eudv.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-makx.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-mrgr.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-nobl.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-onln.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-pawz.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-qqqa.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-regl.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-rinf.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-smdv.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-spxe.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-spxn.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-spxt.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-spxv.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-supl.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-tint.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-tmdv.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-tolz.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-vers.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-cry.json          0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-dog.json          0.61 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-mvv.json          0.61 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-plyy.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-sbb.json          0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-sdd.json          0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-sdp.json          0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-upv.json          0.61 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-uym.json          0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-sh.json           0.61 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-azyy.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-cwy.json          0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-mtyy.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-nugy.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-qby.json          0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-slon.json         0.61 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-tsyy.json         0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-xey.json          0.61 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-bib.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-bis.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-bzq.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ddm.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-dig.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-dug.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-dxd.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-eet.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-eev.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-efo.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-efu.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-efz.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-epv.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-eum.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ewv.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ezj.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-fxp.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ltl.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-myy.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-mzz.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-psq.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-pst.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-qid.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-qld.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-rek.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-rew.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-rom.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-rwm.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-rxd.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-rxl.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-saa.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-scc.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-sds.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-sef.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-sij.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-sjb.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-skf.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-smn.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-srs.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ssg.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-sso.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-szk.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-tbf.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-tbt.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-tbx.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ttt.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-twm.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ubr.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-ubt.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-ucc.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-uge.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ujb.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-upw.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ure.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-usd.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-ust.json          0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-uwm.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-uxi.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-uyg.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-xpp.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-yxi.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-amyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-bbyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-bioy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-coyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-fbyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-finy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-fiyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-hmyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-hoyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-ioyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-maay.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-muyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-nvyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-rgyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-rtyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-semy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-smyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-tecy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-tmyy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-tqqy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-xbty.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-yspy.json         0.62 kB │ gzip:   0.34 kB
+dist/content-studio/distribution-ticker-coia.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-crca.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-emty.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-eqqq.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-nvdb.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-plta.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-qqdn.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-qqup.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-qqxl.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-sdow.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-skhu.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-skyu.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-smdd.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-spcf.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-spxu.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-sqqq.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-srty.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-tqqq.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-tsli.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ucop.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ucyb.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-udow.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-umdd.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-upal.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-uplt.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-upro.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ursp.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-urty.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-uxrp.json         0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-pla.json          0.62 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-sca.json          0.63 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-ahd.json          0.63 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-anv.json          0.63 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-atc.json          0.63 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-iacl.json         0.63 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-mra.json          0.63 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-msr.json          0.63 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-tla.json          0.63 kB │ gzip:   0.35 kB
+dist/content-studio/distribution-ticker-dia.json          0.64 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-xlp.json          0.64 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-dwx.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-mdy.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-rly.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xes.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xli.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xph.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-dgt.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-fez.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-gal.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-inkm.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-kbe.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-kce.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-kie.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-kre.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-mdyg.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-rwo.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-rwr.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-rwx.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-sdy.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-she.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spy.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spyv.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-vlu.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-xar.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xhb.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-xhs.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xlb.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-xlc.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-xle.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xlf.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xlk.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xlu.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xlv.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xly.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xme.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xop.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xrt.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xsd.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-xtl.json          0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-xtn.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-allw.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-cery.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-deco.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-tekx.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-cnrg.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-ediv.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-efiv.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-fite.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-gii.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-gmf.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-hail.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-komp.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-lglv.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-mdyv.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-mmtm.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-oneo.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-onev.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-oney.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-qndx.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-rokt.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-sims.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-slyg.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-slyv.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-smlv.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spdg.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-speu.json         0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-spmd.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spsm.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-sptm.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spyd.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spyg.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spym.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spyx.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-ucbg.json         0.65 kB │ gzip:   0.36 kB
+dist/content-studio/distribution-ticker-wdiv.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xlre.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xlsr.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xntk.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-cwi.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-efax.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-ewx.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-gnr.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-gwx.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-gxc.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-qus.json          0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-eemx.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-nanr.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-nzac.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-qefa.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-qemm.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-qwld.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spdw.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spem.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-spgm.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/distribution-ticker-xcny.json         0.65 kB │ gzip:   0.37 kB
+dist/content-studio/price-quality.json                    0.88 kB │ gzip:   0.26 kB
+dist/content-studio/renders/4348/naver-blog.md            0.92 kB
+dist/content-studio/renders/4366/naver-blog.md            0.92 kB
+dist/content-studio/renders/4349/naver-blog.md            0.92 kB
+dist/content-studio/renders/4357/naver-blog.md            0.92 kB
+dist/content-studio/renders/4358/naver-blog.md            0.92 kB
+dist/content-studio/renders/4367/naver-blog.md            0.92 kB
+dist/content-studio/renders/3868/naver-blog.md            0.94 kB
+dist/content-studio/renders/3869/naver-blog.md            0.94 kB
+dist/content-studio/renders/3870/naver-blog.md            0.94 kB
+dist/content-studio/renders/4029/naver-blog.md            0.94 kB
+dist/content-studio/renders/4116/naver-blog.md            0.94 kB
+dist/content-studio/renders/4117/naver-blog.md            0.94 kB
+dist/content-studio/renders/4264/naver-blog.md            0.94 kB
+dist/content-studio/renders/4311/naver-blog.md            0.94 kB
+dist/content-studio/renders/4027/naver-blog.md            0.94 kB
+dist/content-studio/renders/4028/naver-blog.md            0.94 kB
+dist/content-studio/renders/4118/naver-blog.md            0.94 kB
+dist/content-studio/renders/4189/naver-blog.md            0.94 kB
+dist/content-studio/renders/4190/naver-blog.md            0.94 kB
+dist/content-studio/renders/4191/naver-blog.md            0.94 kB
+dist/content-studio/renders/4262/naver-blog.md            0.94 kB
+dist/content-studio/renders/4263/naver-blog.md            0.94 kB
+dist/content-studio/renders/4312/naver-blog.md            0.94 kB
+dist/content-studio/renders/4313/naver-blog.md            0.94 kB
+dist/content-studio/renders/3374/naver-blog.md            0.94 kB
+dist/content-studio/renders/3561/naver-blog.md            0.94 kB
+dist/content-studio/renders/3662/naver-blog.md            0.94 kB
+dist/content-studio/renders/12588/naver-blog.md           0.94 kB
+dist/content-studio/renders/3395/naver-blog.md            0.94 kB
+dist/content-studio/renders/4348/blog-explainer.md        0.96 kB
+dist/content-studio/renders/4349/blog-explainer.md        0.96 kB
+dist/content-studio/renders/4357/blog-explainer.md        0.96 kB
+dist/content-studio/renders/4358/blog-explainer.md        0.96 kB
+dist/content-studio/renders/4366/blog-explainer.md        0.96 kB
+dist/content-studio/renders/4367/blog-explainer.md        0.96 kB
+dist/content-studio/renders/3868/blog-explainer.md        0.98 kB
+dist/content-studio/renders/3869/blog-explainer.md        0.98 kB
+dist/content-studio/renders/3870/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4029/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4116/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4117/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4264/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4311/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4027/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4028/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4118/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4189/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4190/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4191/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4262/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4263/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4312/blog-explainer.md        0.98 kB
+dist/content-studio/renders/4313/blog-explainer.md        0.98 kB
+dist/content-studio/renders/3374/blog-explainer.md        0.98 kB
+dist/content-studio/renders/3561/blog-explainer.md        0.98 kB
+dist/content-studio/renders/3662/blog-explainer.md        0.98 kB
+dist/content-studio/renders/12588/blog-explainer.md       0.98 kB
+dist/content-studio/renders/3395/blog-explainer.md        0.98 kB
+dist/content-studio/distribution-ticker-dacl.json         1.09 kB │ gzip:   0.39 kB
+dist/content-studio/distribution-ticker-dddd.json         1.12 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-beth.json         1.15 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-hyhg.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-acqq.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-acsp.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-bito.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-ighg.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-acrt.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-bete.json         1.16 kB │ gzip:   0.40 kB
+dist/content-studio/distribution-ticker-eeth.json         1.16 kB │ gzip:   0.40 kB
+dist/content-studio/distribution-ticker-iqqq.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-ispy.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-itwo.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-oilk.json         1.16 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-ethd.json         1.18 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-biti.json         1.18 kB │ gzip:   0.42 kB
+dist/content-studio/distribution-ticker-bitu.json         1.18 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-sbit.json         1.18 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-seth.json         1.18 kB │ gzip:   0.42 kB
+dist/content-studio/distribution-ticker-etht.json         1.19 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-psk.json          1.22 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-mmk.json          1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-jnk.json          1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-shm.json          1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-wip.json          1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-mymk.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-spmb.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-xlui.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-xlvi.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-bil.json          1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-bwx.json          1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-bwz.json          1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-cwb.json          1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-tfi.json          1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-emhc.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-fisr.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-flrn.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-ibnd.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-lvln.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-mbnd.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-mycf.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-mych.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-mycl.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-mycm.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-mycp.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-myhb.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-myhd.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-myhe.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-mymg.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-obnd.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-prsd.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-spab.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-spbo.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-sphy.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-spib.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-spsb.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-sptb.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-spti.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-sptu.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-srln.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-tipx.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-ulst.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-xlbi.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-xlci.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-xlfi.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-xlsi.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-xlyi.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-bils.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-ebnd.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-hybl.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-hymb.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-mycg.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-myci.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-mycj.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-myck.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-mycn.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-myco.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-myha.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-myhc.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-myhf.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-mymf.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-mymh.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-mymi.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-mymj.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-myml.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-prab.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-priv.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-sjnk.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-spin.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-spip.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-splb.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-sptl.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-spts.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-stot.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-totl.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-xlei.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-xlii.json         1.24 kB │ gzip:   0.43 kB
+dist/content-studio/distribution-ticker-xlki.json         1.24 kB │ gzip:   0.44 kB
+dist/content-studio/distribution-ticker-xlri.json         1.24 kB │ gzip:   0.44 kB
+dist/thumbnail-catalog.json                               1.28 kB │ gzip:   0.55 kB
+dist/content-studio/distribution-ticker-lcto.json         1.60 kB │ gzip:   0.41 kB
+dist/content-studio/distribution-ticker-yeth.json         1.74 kB │ gzip:   0.60 kB
+dist/content-studio/distribution-ticker-ybtc.json         1.74 kB │ gzip:   0.60 kB
+dist/index.html                                           1.79 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-xshp.json         2.14 kB │ gzip:   0.47 kB
+dist/content-studio/distribution-ticker-iqmm.json         2.27 kB │ gzip:   0.50 kB
+dist/content-studio/distribution-ticker-magy.json         2.29 kB │ gzip:   0.68 kB
+dist/content-studio/distribution-ticker-muy.json          2.30 kB │ gzip:   0.57 kB
+dist/favicon-32x32.png                                    2.39 kB
+dist/content-studio/distribution-ticker-rdte.json         2.40 kB │ gzip:   0.67 kB
+dist/content-studio/distribution-ticker-qdte.json         2.42 kB │ gzip:   0.66 kB
+dist/content-studio/distribution-ticker-xdte.json         2.42 kB │ gzip:   0.66 kB
+dist/content-studio/distribution-ticker-lqid.json         2.62 kB │ gzip:   0.46 kB
+dist/content-studio/sources.json                          2.81 kB │ gzip:   0.61 kB
+dist/content-studio/distribution-ticker-nvdw.json         4.14 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-armw.json         4.15 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-nflw.json         4.15 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-msfw.json         4.15 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-mstw.json         4.15 kB │ gzip:   0.76 kB
+dist/content-studio/distribution-ticker-brkw.json         4.15 kB │ gzip:   0.76 kB
+dist/content-studio/distribution-ticker-metw.json         4.15 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-unhw.json         4.15 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-amdw.json         4.15 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-kcop.json         4.15 kB │ gzip:   0.53 kB
+dist/content-studio/renders/4348/blog-cover.html          4.15 kB │ gzip:   1.76 kB
+dist/content-studio/distribution-ticker-coiw.json         4.15 kB │ gzip:   0.76 kB
+dist/content-studio/distribution-ticker-tslw.json         4.15 kB │ gzip:   0.76 kB
+dist/content-studio/renders/4366/blog-cover.html          4.15 kB │ gzip:   1.76 kB
+dist/content-studio/renders/4349/blog-cover.html          4.15 kB │ gzip:   1.76 kB
+dist/content-studio/renders/4357/blog-cover.html          4.15 kB │ gzip:   1.76 kB
+dist/content-studio/renders/4358/blog-cover.html          4.15 kB │ gzip:   1.76 kB
+dist/content-studio/renders/4367/blog-cover.html          4.15 kB │ gzip:   1.76 kB
+dist/content-studio/renders/4348/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4366/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4349/social-square.html       4.16 kB │ gzip:   1.76 kB
+dist/content-studio/renders/4357/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4358/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4367/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/3868/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/3869/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/3870/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4029/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4116/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4117/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4190/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4262/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4264/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4311/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4027/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4028/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4118/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4189/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4191/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4263/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4312/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4313/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/12588/blog-cover.html         4.16 kB │ gzip:   1.78 kB
+dist/content-studio/renders/3374/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/3561/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/3662/blog-cover.html          4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/3868/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/3869/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/3870/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4029/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4116/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4117/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4190/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4262/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4264/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4311/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4027/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4028/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4118/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4189/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4191/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4263/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4312/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/4313/social-square.html       4.16 kB │ gzip:   1.77 kB
+dist/content-studio/renders/12588/social-square.html      4.17 kB │ gzip:   1.78 kB
+dist/content-studio/renders/3374/social-square.html       4.17 kB │ gzip:   1.78 kB
+dist/content-studio/renders/3561/social-square.html       4.17 kB │ gzip:   1.78 kB
+dist/content-studio/renders/3662/social-square.html       4.17 kB │ gzip:   1.77 kB
+dist/content-studio/renders/3395/blog-cover.html          4.17 kB │ gzip:   1.76 kB
+dist/content-studio/distribution-ticker-cosw.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-aapw.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/renders/3395/social-square.html       4.17 kB │ gzip:   1.76 kB
+dist/content-studio/distribution-ticker-tsyw.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-ubew.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-hoow.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-pltw.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-goow.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-amzw.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-gldw.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-avgw.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-babw.json         4.17 kB │ gzip:   0.77 kB
+dist/content-studio/distribution-ticker-gdxw.json         4.17 kB │ gzip:   0.77 kB
+dist/fonts/Inter-OFL.txt                                  4.38 kB │ gzip:   1.97 kB
+dist/content-studio/distribution-ticker-qqqi.json         5.18 kB │ gzip:   0.71 kB
+dist/content-studio/distribution-ticker-keo.json          5.19 kB │ gzip:   0.55 kB
+dist/content-studio/distribution-ticker-spyi.json         5.21 kB │ gzip:   0.71 kB
+dist/content-studio/distribution-ticker-iwmi.json         5.22 kB │ gzip:   0.72 kB
+dist/content-studio/distribution-ticker-amzp.json         5.23 kB │ gzip:   0.62 kB
+dist/content-studio/distribution-ticker-kqqq.json         5.23 kB │ gzip:   0.63 kB
+dist/content-studio/distribution-ticker-kslv.json         5.24 kB │ gzip:   0.63 kB
+dist/content-studio/distribution-ticker-goop.json         5.24 kB │ gzip:   0.61 kB
+dist/content-studio/distribution-ticker-kgld.json         5.24 kB │ gzip:   0.64 kB
+dist/content-studio/distribution-ticker-aapy.json         5.25 kB │ gzip:   0.61 kB
+dist/content-studio/distribution-ticker-msfy.json         5.27 kB │ gzip:   0.64 kB
+dist/content-studio/distribution-ticker-nflp.json         5.27 kB │ gzip:   0.65 kB
+dist/content-studio/distribution-ticker-tslp.json         5.28 kB │ gzip:   0.65 kB
+dist/content-studio/distribution-ticker-divo.json         5.35 kB │ gzip:   0.71 kB
+dist/content-studio/distribution-ticker-qdvo.json         5.38 kB │ gzip:   0.72 kB
+dist/content-studio/distribution-ticker-idvo.json         5.38 kB │ gzip:   0.71 kB
+dist/content-studio/distribution-ticker-yram.json         5.54 kB │ gzip:   0.83 kB
+dist/content-studio/distribution-ticker-fthi.json         5.77 kB │ gzip:   0.65 kB
+dist/content-studio/distribution-ticker-ftqi.json         5.77 kB │ gzip:   0.67 kB
+dist/content-studio/distribution-ticker-tdvi.json         5.81 kB │ gzip:   0.75 kB
+dist/content-studio/distribution-ticker-xise.json         6.34 kB │ gzip:   0.63 kB
+dist/content-studio/distribution-ticker-lqti.json         6.40 kB │ gzip:   0.76 kB
+dist/content-studio/distribution-ticker-hyti.json         6.42 kB │ gzip:   0.76 kB
+dist/content-studio/distribution-ticker-topw.json         7.39 kB │ gzip:   1.03 kB
+dist/content-studio/distribution-ticker-atcl.json         7.88 kB │ gzip:   0.88 kB
+dist/content-studio/distribution-ticker-jepi.json         8.09 kB │ gzip:   0.93 kB
+dist/content-studio/distribution-ticker-jepq.json         8.22 kB │ gzip:   0.94 kB
+dist/content-studio/distribution-ticker-yspc.json         8.23 kB │ gzip:   1.08 kB
+dist/content-studio/distribution-ticker-rnty.json         9.94 kB │ gzip:   1.25 kB
+dist/content-studio/distribution-ticker-qqqt.json        11.04 kB │ gzip:   0.69 kB
+dist/content-studio/distribution-ticker-spyt.json        11.07 kB │ gzip:   0.69 kB
+dist/content-studio/distribution-ticker-goli.json        11.15 kB │ gzip:   0.90 kB
+dist/content-studio/distribution-ticker-usoy.json        11.20 kB │ gzip:   0.90 kB
+dist/content-studio/distribution-ticker-qqqy.json        11.21 kB │ gzip:   0.91 kB
+dist/content-studio/distribution-ticker-iwmy.json        11.23 kB │ gzip:   0.90 kB
+dist/content-studio/distribution-ticker-wdte.json        11.27 kB │ gzip:   0.92 kB
+dist/content-studio/distribution-ticker-qldy.json        11.30 kB │ gzip:   0.98 kB
+dist/licenses/material-symbols-LICENSE.txt               11.36 kB │ gzip:   3.93 kB
+dist/content-studio/distribution-ticker-inyy.json        11.47 kB │ gzip:   1.35 kB
+dist/content-studio/distribution-ticker-soxy.json        12.62 kB │ gzip:   1.43 kB
+dist/content-studio/distribution-ticker-bigy.json        12.64 kB │ gzip:   1.45 kB
+dist/content-studio/price-index.json                     13.60 kB │ gzip:   1.62 kB
+dist/screenshot/YieldMax_2026-09-22.webp                 17.63 kB
+dist/content-studio/distribution-ticker-miny.json        19.64 kB │ gzip:   1.87 kB
+dist/content-studio/distribution-ticker-cepi.json        21.29 kB │ gzip:   1.88 kB
+dist/content-studio/distribution-ticker-tldr.json        21.31 kB │ gzip:   1.62 kB
+dist/content-studio/distribution-ticker-kyld.json        22.23 kB │ gzip:   1.34 kB
+dist/content-studio/distribution-ticker-msst.json        24.44 kB │ gzip:   2.28 kB
+dist/content-studio/distribution-ticker-nvit.json        24.48 kB │ gzip:   2.23 kB
+dist/content-studio/distribution-ticker-test.json        24.50 kB │ gzip:   2.28 kB
+dist/content-studio/distribution-ticker-rylg.json        26.44 kB │ gzip:   2.24 kB
+dist/content-studio/distribution-ticker-ulti.json        26.56 kB │ gzip:   2.00 kB
+dist/content-studio/distribution-ticker-wmti.json        27.15 kB │ gzip:   2.25 kB
+dist/content-studio/distribution-ticker-aipi.json        27.96 kB │ gzip:   2.32 kB
+dist/content-studio/distribution-ticker-crco.json        30.40 kB │ gzip:   2.79 kB
+dist/content-studio/distribution-ticker-gmey.json        30.42 kB │ gzip:   2.77 kB
+dist/content-studio/distribution-ticker-hiyy.json        30.44 kB │ gzip:   2.77 kB
+dist/content-studio/distribution-ticker-rdyy.json        31.07 kB │ gzip:   2.78 kB
+dist/content-studio/distribution-ticker-dray.json        31.45 kB │ gzip:   2.84 kB
+dist/content-studio/distribution-ticker-rbly.json        31.62 kB │ gzip:   2.83 kB
+dist/content-studio/distribution-ticker-fepi.json        32.25 kB │ gzip:   2.61 kB
+dist/content-studio/distribution-ticker-brkc.json        32.56 kB │ gzip:   2.88 kB
+dist/apple-touch-icon.png                                32.69 kB
+dist/content-studio/distribution-ticker-hooy.json        33.16 kB │ gzip:   3.02 kB
+dist/content-studio/distribution-ticker-wntr.json        33.69 kB │ gzip:   3.09 kB
+dist/content-studio/distribution-ticker-slty.json        34.28 kB │ gzip:   3.04 kB
+dist/content-studio/renders.json                         34.37 kB │ gzip:   1.73 kB
+dist/content-studio/distribution-ticker-cvny.json        34.65 kB │ gzip:   3.14 kB
+dist/assets/primeicons-C6QP2o4f.woff2                    35.15 kB
+dist/icon-192.png                                        36.21 kB
+dist/content-studio/distribution-ticker-maro.json        36.30 kB │ gzip:   3.20 kB
+dist/content-studio/distribution-ticker-smcy.json        37.46 kB │ gzip:   3.29 kB
+dist/content-studio/distribution-ticker-plty.json        37.49 kB │ gzip:   3.38 kB
+dist/content-studio/distribution-ticker-yqqq.json        38.06 kB │ gzip:   3.26 kB
+dist/content-studio/distribution-ticker-tsmy.json        38.12 kB │ gzip:   3.33 kB
+dist/content-studio/distribution-ticker-babo.json        38.47 kB │ gzip:   3.31 kB
+dist/content-studio/distribution-ticker-dips.json        38.48 kB │ gzip:   3.36 kB
+dist/content-studio/distribution-ticker-fiat.json        38.48 kB │ gzip:   3.40 kB
+dist/content-studio/distribution-ticker-tsii.json        38.79 kB │ gzip:   3.07 kB
+dist/content-studio/distribution-ticker-qylg.json        39.34 kB │ gzip:   3.16 kB
+dist/content-studio/distribution-ticker-xylg.json        39.42 kB │ gzip:   3.17 kB
+dist/content-studio/distribution-ticker-gdxy.json        39.67 kB │ gzip:   3.44 kB
+dist/content-studio/distribution-ticker-snoy.json        39.69 kB │ gzip:   3.46 kB
+dist/content-studio/distribution-ticker-crsh.json        40.15 kB │ gzip:   3.48 kB
+dist/content-studio/distribution-ticker-ybit.json        40.21 kB │ gzip:   3.49 kB
+dist/content-studio/distribution-ticker-msty.json        40.69 kB │ gzip:   3.59 kB
+dist/screenshot/Roundhill_2026-09-25.webp                42.15 kB
+dist/content-studio/distribution-ticker-aiyy.json        42.18 kB │ gzip:   3.59 kB
+dist/content-studio/distribution-ticker-nvii.json        42.96 kB │ gzip:   3.29 kB
+dist/content-studio/distribution-ticker-amdy.json        43.29 kB │ gzip:   3.78 kB
+dist/content-studio/distribution-ticker-xyzy.json        43.33 kB │ gzip:   3.75 kB
+dist/content-studio/distribution-ticker-pypy.json        43.44 kB │ gzip:   3.79 kB
+dist/content-studio/distribution-ticker-mrny.json        43.45 kB │ gzip:   3.72 kB
+dist/content-studio/distribution-ticker-cony.json        43.82 kB │ gzip:   3.82 kB
+dist/content-studio/distribution-ticker-msfo.json        43.99 kB │ gzip:   3.77 kB
+dist/content-studio/distribution-ticker-jpo.json         44.26 kB │ gzip:   3.73 kB
+dist/content-studio/distribution-ticker-nfly.json        44.45 kB │ gzip:   3.77 kB
+dist/content-studio/distribution-ticker-amzy.json        44.46 kB │ gzip:   3.76 kB
+dist/content-studio/distribution-ticker-xomo.json        44.47 kB │ gzip:   3.73 kB
+dist/content-studio/distribution-ticker-fby.json         44.80 kB │ gzip:   3.76 kB
+dist/content-studio/distribution-ticker-gooy.json        44.99 kB │ gzip:   3.76 kB
+dist/content-studio/distribution-ticker-chpy.json        45.05 kB │ gzip:   3.74 kB
+dist/screenshot/YieldMax_2026-09-23.webp                 45.45 kB
+dist/content-studio/system-logs.json                     45.91 kB │ gzip:   2.77 kB
+dist/content-studio/distribution-ticker-aply.json        46.06 kB │ gzip:   3.87 kB
+dist/screenshot/YieldMax_2026-09-16.webp                 46.33 kB
+dist/content-studio/distribution-ticker-nvdy.json        46.59 kB │ gzip:   3.96 kB
+dist/content-studio/distribution-ticker-rdty.json        47.27 kB │ gzip:   3.83 kB
+dist/content-studio/content.json                         47.75 kB │ gzip:   2.42 kB
+dist/content-studio/distribution-ticker-ryld.json        47.83 kB │ gzip:   3.64 kB
+dist/screenshot/Roundhill_2026-09-23.webp                48.14 kB
+dist/assets/Inter-latin-variable-Dx4kXJAl.woff2          48.26 kB
+dist/content-studio/distribution-ticker-qdty.json        48.86 kB │ gzip:   3.91 kB
+dist/content-studio/distribution-ticker-tsly.json        49.26 kB │ gzip:   4.05 kB
+dist/content-studio/distribution-ticker-oark.json        49.32 kB │ gzip:   4.11 kB
+dist/content-studio/distribution-ticker-sdty.json        49.44 kB │ gzip:   3.96 kB
+dist/screenshot/Roundhill_2026-09-22.webp                49.85 kB
+dist/content-studio/distribution-ticker-gpty.json        50.46 kB │ gzip:   4.03 kB
+dist/content-studio/distribution-ticker-lfgy.json        51.66 kB │ gzip:   4.12 kB
+dist/content-studio/distribution-ticker-ulty.json        54.90 kB │ gzip:   4.34 kB
+dist/security-insights/10.json                           55.20 kB │ gzip:   5.56 kB
+dist/screenshot/Roundhill_2026-09-24.webp                55.89 kB
+dist/content-studio/distribution-ticker-ymag.json        65.07 kB │ gzip:   5.20 kB
+dist/content-studio/distribution-ticker-ymax.json        65.11 kB │ gzip:   5.16 kB
+dist/security-insights/8.json                            66.65 kB │ gzip:   6.58 kB
+dist/content-studio/distribution-ticker-qyld.json        82.55 kB │ gzip:   6.19 kB
+dist/assets/primeicons-MpK4pl85.ttf                      84.98 kB
+dist/assets/primeicons-WjwUDZjB.woff                     85.06 kB
+dist/assets/primeicons-DMOk5skT.eot                      85.16 kB
+dist/content-studio/distribution-ticker-xyld.json        85.83 kB │ gzip:   6.51 kB
+dist/security-insights/15.json                           86.37 kB │ gzip:   8.28 kB
+dist/security-insights/17.json                           89.98 kB │ gzip:   8.24 kB
+dist/favicon.ico                                         92.91 kB
+dist/security-insights/22.json                           96.36 kB │ gzip:   8.93 kB
+dist/security-insights/5.json                           109.42 kB │ gzip:  10.96 kB
+dist/security-insights/19.json                          112.04 kB │ gzip:  10.41 kB
+dist/security-insights/16.json                          121.26 kB │ gzip:  11.07 kB
+dist/security-insights/23.json                          121.68 kB │ gzip:  11.12 kB
+dist/security-insights/7.json                           122.00 kB │ gzip:  12.91 kB
+dist/security-insights/21.json                          123.20 kB │ gzip:  11.07 kB
+dist/portfolio-classifications.json                     124.26 kB │ gzip:   9.96 kB
+dist/security-insights/6.json                           131.88 kB │ gzip:  14.11 kB
+dist/security-insights/13.json                          134.40 kB │ gzip:  14.55 kB
+dist/screenshot/Roundhill_2026-09-21.webp               140.83 kB
+dist/screenshot/Roundhill_2026-09-28.webp               141.24 kB
+dist/security-insights/11.json                          147.96 kB │ gzip:  14.61 kB
+dist/security-insights/14.json                          157.03 kB │ gzip:  15.75 kB
+dist/security-insights/59.json                          157.17 kB │ gzip:  13.69 kB
+dist/security-insights/26.json                          158.05 kB │ gzip:  13.31 kB
+dist/security-insights/58.json                          163.02 kB │ gzip:  14.86 kB
+dist/security-insights/61.json                          167.93 kB │ gzip:  15.87 kB
+dist/security-insights/25.json                          169.49 kB │ gzip:  14.06 kB
+dist/security-insights/51.json                          172.21 kB │ gzip:  14.79 kB
+dist/security-insights/24.json                          177.31 kB │ gzip:  15.18 kB
+dist/assets/stitch-symbol-DSIWb5UG.png                  177.53 kB
+dist/security-insights/20.json                          179.19 kB │ gzip:  17.71 kB
+dist/security-insights/28.json                          179.44 kB │ gzip:  15.09 kB
+dist/security-insights/55.json                          181.27 kB │ gzip:  15.85 kB
+dist/icon-512.png                                       186.04 kB
+dist/security-insights/2.json                           186.47 kB │ gzip:  18.29 kB
+dist/security-insights/18.json                          189.87 kB │ gzip:  18.60 kB
+dist/security-insights/9.json                           192.88 kB │ gzip:  20.46 kB
+dist/security-insights/62.json                          193.41 kB │ gzip:  18.56 kB
+dist/security-insights/0.json                           208.33 kB │ gzip:  21.50 kB
+dist/security-insights/29.json                          222.38 kB │ gzip:  18.93 kB
+dist/security-insights/63.json                          228.87 kB │ gzip:  22.51 kB
+dist/security-insights/31.json                          234.16 kB │ gzip:  19.62 kB
+dist/security-insights/32.json                          235.01 kB │ gzip:  19.58 kB
+dist/security-insights/27.json                          239.35 kB │ gzip:  20.50 kB
+dist/screenshot/Roundhill_2026-10-19.png                243.71 kB
+dist/security-insights/30.json                          248.83 kB │ gzip:  20.57 kB
+dist/security-insights/49.json                          249.54 kB │ gzip:  20.85 kB
+dist/security-insights/54.json                          251.00 kB │ gzip:  23.97 kB
+dist/security-insights/4.json                           252.51 kB │ gzip:  25.77 kB
+dist/security-insights/53.json                          253.80 kB │ gzip:  24.18 kB
+dist/security-insights/38.json                          259.21 kB │ gzip:  21.40 kB
+dist/security-insights/12.json                          268.48 kB │ gzip:  26.98 kB
+dist/security-insights/56.json                          269.23 kB │ gzip:  23.90 kB
+dist/security-insights/35.json                          274.70 kB │ gzip:  23.24 kB
+dist/security-insights/42.json                          276.07 kB │ gzip:  23.11 kB
+dist/security-insights/57.json                          279.30 kB │ gzip:  28.15 kB
+dist/security-insights/37.json                          280.31 kB │ gzip:  23.15 kB
+dist/security-insights/39.json                          283.74 kB │ gzip:  25.33 kB
+dist/security-insights/3.json                           285.03 kB │ gzip:  29.67 kB
+dist/security-insights/1.json                           299.69 kB │ gzip:  30.31 kB
+dist/security-insights/45.json                          306.71 kB │ gzip:  27.90 kB
+dist/security-insights/52.json                          312.44 kB │ gzip:  28.75 kB
+dist/security-insights/44.json                          313.18 kB │ gzip:  26.36 kB
+dist/security-insights/47.json                          320.33 kB │ gzip:  28.33 kB
+dist/security-insights/60.json                          320.79 kB │ gzip:  33.09 kB
+dist/security-insights/33.json                          321.10 kB │ gzip:  28.63 kB
+dist/security-insights/46.json                          321.46 kB │ gzip:  27.83 kB
+dist/security-insights/34.json                          323.27 kB │ gzip:  28.93 kB
+dist/security-insights/43.json                          323.75 kB │ gzip:  29.29 kB
+dist/security-insights/40.json                          326.89 kB │ gzip:  26.73 kB
+dist/screenshot/YieldMax_2026-09-17.png                 332.75 kB
+dist/security-insights/41.json                          333.12 kB │ gzip:  29.45 kB
+dist/screenshot/YieldMax_2026-09-24.png                 335.05 kB
+dist/assets/primeicons-Dr5RGzOO.svg                     342.53 kB │ gzip: 105.26 kB
+dist/security-insights/48.json                          363.58 kB │ gzip:  35.38 kB
+dist/security-insights/50.json                          374.89 kB │ gzip:  34.96 kB
+dist/security-insights/36.json                          381.51 kB │ gzip:  35.33 kB
+dist/content-studio/dashboard.json                      494.62 kB │ gzip:  21.00 kB
+dist/content-studio/distribution-index.json             541.29 kB │ gzip:  33.70 kB
+dist/us-dividend-stocks.json                          1,902.55 kB │ gzip:  90.83 kB
+dist/ticker-index.json                                1,903.97 kB │ gzip: 137.85 kB
+dist/content-studio/reconciliation.json               4,576.00 kB │ gzip: 246.99 kB
+dist/assets/dividend-availability-C5f1Dy1_.css            0.33 kB │ gzip:   0.19 kB
+dist/assets/LegalView-D8BKzBpA.css                        0.51 kB │ gzip:   0.26 kB
+dist/assets/StockFeedbackAdminView-BPO57WoB.css           1.23 kB │ gzip:   0.56 kB
+dist/assets/MetadataReviewView-ECNmJ9Aj.css               2.12 kB │ gzip:   0.71 kB
+dist/assets/PortfolioMappingsView-CjJmr-rs.css            2.87 kB │ gzip:   0.91 kB
+dist/assets/SheetTrialLedgerView-wvfDnCmd.css             3.07 kB │ gzip:   0.88 kB
+dist/assets/FifoAssetReport-Vslzq2Mf.css                  3.40 kB │ gzip:   0.98 kB
+dist/assets/LoginView-B7CfAq0S.css                        3.72 kB │ gzip:   0.97 kB
+dist/assets/DividendSimulatorView-B8LfrdMt.css            5.01 kB │ gzip:   1.14 kB
+dist/assets/AdminPortfolioExampleView-BYeREGbd.css        5.99 kB │ gzip:   1.43 kB
+dist/assets/ThumbnailHomeView-B8TDIMQC.css                9.53 kB │ gzip:   2.02 kB
+dist/assets/SheetLedgerSourceToolsView-igaz08Gw.css       9.66 kB │ gzip:   2.24 kB
+dist/assets/MyPageView-B_T4Mcoh.css                       9.70 kB │ gzip:   2.07 kB
+dist/assets/UnderlyingExplorerView-DXytTXJG.css          19.19 kB │ gzip:   3.24 kB
+dist/assets/PurchaseFundingEditor-CcoC84zF.css           21.03 kB │ gzip:   3.83 kB
+dist/assets/index-CD8HgmB6.css                           43.62 kB │ gzip:   9.16 kB
+dist/assets/TickerThumbnailView-BFBIawR3.css            108.48 kB │ gzip:  16.35 kB
+dist/assets/FamilyPortfolioView-BWfQub4x.css            206.44 kB │ gzip:  29.36 kB
+dist/assets/apiUrl-DlNRGSCV.js                            0.21 kB │ gzip:   0.19 kB
+dist/assets/stockPrices-C3fHJv3T.js                       0.37 kB │ gzip:   0.28 kB
+dist/assets/portfolioMappings-C0FNm98Q.js                 0.48 kB │ gzip:   0.41 kB
+dist/assets/stockFeedback-IO7-79aq.js                     0.74 kB │ gzip:   0.42 kB
+dist/assets/LegalView-BxW9UIzo.js                         1.91 kB │ gzip:   1.10 kB
+dist/assets/dividend-availability-CY8IJ6_X.js             1.92 kB │ gzip:   1.06 kB
+dist/assets/portfolioValuation-CFPcmx2J.js                2.94 kB │ gzip:   1.59 kB
+dist/assets/portfolio-pddQ4po8.js                         3.00 kB │ gzip:   1.45 kB
+dist/assets/dividendSimulation-MyJcvrRR.js                3.01 kB │ gzip:   1.68 kB
+dist/assets/holdingSimulation-BPtb9Vpk.js                 3.11 kB │ gzip:   1.57 kB
+dist/assets/publicJson-C9drUoMG.js                        3.31 kB │ gzip:   1.73 kB
+dist/assets/dividendSchedule-BNo-jJmO.js                  3.88 kB │ gzip:   1.90 kB
+dist/assets/StockFeedbackAdminView-DMUcqQid.js            3.93 kB │ gzip:   1.91 kB
+dist/assets/portfolioCalendar-CdAy0YTv.js                 4.92 kB │ gzip:   2.24 kB
+dist/assets/dividendLedger-B6JF7myV.js                    5.82 kB │ gzip:   2.31 kB
+dist/assets/security-status-Cv9nYayk.js                   8.93 kB │ gzip:   2.24 kB
+dist/assets/PortfolioMappingsView-D1uEZag4.js            11.11 kB │ gzip:   4.25 kB
+dist/assets/AdminPortfolioExampleView-3yV5G9uq.js        11.82 kB │ gzip:   4.94 kB
+dist/assets/MetadataReviewView-C76Kr2eL.js               12.24 kB │ gzip:   4.99 kB
+dist/assets/LoginView-CMHCuZYr.js                        14.17 kB │ gzip:   4.94 kB
+dist/assets/SheetTrialLedgerView-k9u9zNe2.js             14.74 kB │ gzip:   6.20 kB
+dist/assets/DividendSimulatorView-Yki6GxHB.js            15.65 kB │ gzip:   5.91 kB
+dist/assets/sheetReports-y-eJpJ2O.js                     16.52 kB │ gzip:   6.10 kB
+dist/assets/ThumbnailHomeView-DUDKwEif.js                18.88 kB │ gzip:   7.15 kB
+dist/assets/fifo-asset-report-RbqfTBRD.js                19.75 kB │ gzip:   7.38 kB
+dist/assets/MyPageView-DAT9Y2rC.js                       28.23 kB │ gzip:   9.54 kB
+dist/assets/FifoAssetReport-R7yeO8dO.js                  30.84 kB │ gzip:  10.54 kB
+dist/assets/UnderlyingExplorerView-DQ3Hy0hg.js           34.02 kB │ gzip:  11.57 kB
+dist/assets/index-NtR5Nrjc.js                            36.90 kB │ gzip:  13.71 kB
+dist/assets/securityDirectory-UQnSiXPg.js                88.11 kB │ gzip:  14.38 kB
+dist/assets/SheetLedgerSourceToolsView-DFHiEV15.js      102.26 kB │ gzip:  34.29 kB
+dist/assets/PurchaseFundingEditor-DKt4nYOY.js           103.27 kB │ gzip:  32.55 kB
+dist/assets/TickerThumbnailView-CUdRGZUw.js             183.45 kB │ gzip:  57.48 kB
+dist/assets/firebase-BWW_MlIJ.js                        324.20 kB │ gzip:  98.26 kB
+dist/assets/FamilyPortfolioView-DKFlSeoh.js             429.83 kB │ gzip: 131.19 kB
+dist/assets/primevue-D-ZhM7Mg.js                        653.33 kB │ gzip: 140.73 kB
+dist/assets/vendor-DUTMcVMy.js                        2,048.94 kB │ gzip: 373.06 kB
+
+(!) Some chunks are larger than 1000 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 18.06s

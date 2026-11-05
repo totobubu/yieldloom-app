@@ -30,6 +30,10 @@ page.on('request', (request) => {
         requests.push({
             method: request.method(),
             action: new URL(request.url()).searchParams.get('action'),
+            rows:
+                new URL(request.url()).searchParams.get('action') === 'commit'
+                    ? request.postDataJSON()?.rows
+                    : undefined,
         });
 });
 const count = (action) => requests.filter((r) => r.action === action).length;
@@ -98,6 +102,8 @@ try {
     await choose();
     await extract();
     assert.equal(count('preview'), 1);
+    assert.equal(await page.locator('.asset-upload-dialog--upload').count(), 1);
+    assert.equal(await page.locator('.asset-upload-dialog--review').count(), 0);
     assert.equal(count('commit'), 0);
     assert.equal(await page.locator('.upload-sample-row').count(), 3);
     assert.equal(
@@ -165,9 +171,11 @@ try {
     await choose();
     await extract();
     assert.equal(count('preview'), 3);
-    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.setViewportSize({ width: 390, height: 1000 });
     const beforeNext = requests.length;
     await button('다음: 데이터 검토').click();
+    assert.equal(await page.locator('.asset-upload-dialog--upload').count(), 0);
+    assert.equal(await page.locator('.asset-upload-dialog--review').count(), 1);
     await page
         .getByRole('heading', {
             name: /추출 결과 미리보기 · 저장 전 검토|증권 데이터 검토 및 확정/,
@@ -183,13 +191,28 @@ try {
         0,
         'inline preview and next do not commit ledger rows'
     );
+    await page.getByRole('button', { name: '2행 수정', exact: true }).click();
+    if (
+        (await page
+            .getByRole('button', { name: '3행 수정', exact: true })
+            .getAttribute('aria-expanded')) !== 'true'
+    )
+        await page
+            .getByRole('button', { name: '3행 수정', exact: true })
+            .click();
     await page.getByLabel('2행 amount', { exact: true }).fill('200');
     await page.getByLabel('3행 amount', { exact: true }).fill('24000');
     await page
         .getByRole('combobox', { name: '3행 currency', exact: true })
         .click();
-    await page.getByRole('option', { name: '₩', exact: true }).click();
-    await button('수정 내용 검증·저장').click();
+    await page.getByRole('option', { name: 'KRW', exact: true }).click();
+    await page
+        .getByLabel(
+            '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+            { exact: true }
+        )
+        .check();
+    await button('배당달력 포트폴리오에 저장 및 반영').click();
     await page
         .getByRole('heading', { name: /^증권 거래내역 저장 영수증$/ })
         .waitFor();
@@ -276,9 +299,71 @@ try {
         'kind changes do not request another extraction'
     );
     assert.equal(count('commit'), 1);
+    // Actual generic Mobile cards: page/filter edit original rows and commit the full review.
+    await page.setViewportSize({ width: 390, height: 1000 });
+    await page.getByLabel('조회 종료일', { exact: true }).fill('2026-03-10');
+    const pageCsv =
+        'date,symbol,quantity,amount,currency,type,externalId\n' +
+        Array.from(
+            { length: 101 },
+            (_, index) =>
+                `2026-03-10,PAGE-K,1,${index + 1},KRW,buy,PAGE-${String(index + 1).padStart(4, '0')}`
+        ).join('\n') +
+        '\n';
+    await page.getByLabel('파일', { exact: true }).setInputFiles({
+        name: 'DEMO_101_ROWS.csv',
+        mimeType: 'text/csv',
+        buffer: Buffer.from(pageCsv),
+    });
+    await page.locator('#import-confirmed').check();
+    await extract();
+    assert.equal(count('preview'), 6);
+    const beforePageNext = requests.length;
+    await button('다음: 데이터 검토').click();
+    await page
+        .getByRole('region', { name: '모바일 추출 거래 카드', exact: true })
+        .waitFor();
+    assert.equal(requests.length, beforePageNext);
+    assert.equal(await page.locator('.generic-review-card').count(), 50);
+    const beforeCardEdits = requests.length;
+    await button('다음 페이지').click();
+    await page.getByRole('button', { name: '51행 수정', exact: true }).click();
+    await page.getByLabel('51행 quantity', { exact: true }).fill('2');
+    await page.getByLabel('추출 결과 검색', { exact: true }).fill('PAGE-0099');
+    assert.equal(await page.locator('.generic-review-card').count(), 1);
+    await page.getByRole('button', { name: '99행 수정', exact: true }).click();
+    await page.getByLabel('99행 amount', { exact: true }).fill('9999');
+    await page.setViewportSize({ width: 834, height: 1100 });
+    await page.locator('.generic-review-table').waitFor();
+    assert.equal(await page.locator('.generic-review-card').count(), 0);
+    await page.getByRole('button', { name: '99행 수정', exact: true }).click();
+    await page.getByLabel('99행 quantity', { exact: true }).fill('4');
+    assert.equal(
+        requests.length,
+        beforeCardEdits,
+        'pagination/filter/Mobile and Tablet edits stay local'
+    );
+    await page
+        .getByLabel(
+            '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+            { exact: true }
+        )
+        .check();
+    await button('배당달력 포트폴리오에 저장 및 반영').click();
+    await page
+        .getByRole('heading', { name: /^증권 거래내역 저장 영수증$/ })
+        .waitFor();
+    assert.equal(count('commit'), 2);
+    const committed = requests.filter((r) => r.action === 'commit').at(-1).rows;
+    assert.equal(committed.length, 101);
+    assert.equal(committed[50].externalId, 'PAGE-0051');
+    assert.equal(Number(committed[50].quantity), 2);
+    assert.equal(committed[98].externalId, 'PAGE-0099');
+    assert.equal(Number(committed[98].amount), 9999);
+    assert.equal(Number(committed[98].quantity), 4);
     assert.deepEqual(errors, []);
     console.log(
-        'PASS actual CSV/XLSX (first sheet)/holdings → one explicit preview per extraction → three rows/zero/missing values → scope invalidation → next without API → edit/full six-row commit; four widths, no page overflow, no production writes.'
+        'PASS actual CSV/XLSX (first sheet)/holdings → one explicit preview per extraction → three rows/zero/missing values → scope invalidation → next without API → Mobile edits/full six-row commit and Mobile→Tablet filtered101-row commit with original row identity; four widths, no page overflow, no production writes.'
     );
 } catch (error) {
     console.error(

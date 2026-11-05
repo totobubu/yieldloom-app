@@ -194,6 +194,12 @@ try {
         await button('계좌 등록').click();
         await page.getByRole('heading', { name: /검토 · toss-pdf/ }).waitFor();
         await page.getByLabel(/첨부한 모든 거래내역서/).check();
+        await page
+            .getByLabel(
+                '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+                { exact: true }
+            )
+            .check();
         await button('수정 내용 검증·저장').click();
         await page.getByText('저장 1행 · 중복 0행', { exact: true }).waitFor();
         await closeDialog();

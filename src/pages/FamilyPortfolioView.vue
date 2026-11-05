@@ -2726,6 +2726,7 @@
         <AssetUploadDialog
             v-model:visible="uploadDialog"
             :receipt="!!importReceipt"
+            :review="!!review && !inlineReview"
             :upload="
                 inputMethod === 'file' &&
                 (!review || inlineReview) &&

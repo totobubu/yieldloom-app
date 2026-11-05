@@ -1,0 +1,38 @@
+[
+  {
+    "candidate": "noto-serif",
+    "dimensions": [
+      780,
+      5414
+    ],
+    "meanError": 6.43090712903236,
+    "fractionAbove16": 0.06943205175565723
+  },
+  {
+    "candidate": "noto-cjk",
+    "dimensions": [
+      780,
+      5414
+    ],
+    "meanError": 6.3268481682500886,
+    "fractionAbove16": 0.0683683328123668
+  },
+  {
+    "candidate": "generic-serif",
+    "dimensions": [
+      780,
+      5414
+    ],
+    "meanError": 6.3268481682500886,
+    "fractionAbove16": 0.0683683328123668
+  },
+  {
+    "candidate": "liberation",
+    "dimensions": [
+      780,
+      5414
+    ],
+    "meanError": 6.142896384492246,
+    "fractionAbove16": 0.06786607371202864
+  }
+]

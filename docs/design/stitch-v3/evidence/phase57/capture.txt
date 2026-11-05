@@ -1,0 +1,1 @@
+PASS ledger: five widths, raw zero/missing currency, account scope, local filters, all101 rows by paging, XIRR/closed confirmation reset, dark, zero API. Full visual acceptance pending.

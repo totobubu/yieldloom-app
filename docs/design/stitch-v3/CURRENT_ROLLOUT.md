@@ -19,3 +19,9 @@
 [운영 근거](PHASE53_DARK_PRODUCTION_RECHECK.md): main90f0673287ab318f524f9e995b33919561da204f, Pages42030090181 성공, Vercel dpl_8MJnZv2Y2xgqYepcDFpmW7vK9mNb READY. 두 도메인의 실제 SHA·공개 메타데이터 해시, 배포 CSS의 자식 선택자, Draft 미포함, 공개 PC/Mobile 화면을 확인했다. #262의 최초 browser 실패 이후 #263에서 분석 준비 상태와 월 반영 검사를 보강했고, 기능/work/승격 CI가 각각4개 작업 모두 통과했다. 병합 후 정확한 main90f0673의 CI42030090218도4개 작업 모두 통과했다. 최초 금액 실패의 직접 원인은 미확정이며 실제 인증 계좌/PDF와 전체 화면 일치는 미완료다.
 
 검토 근거는 PR#256의 PHASE45_REVIEW_CONSENT.md·PHASE50_REVIEW_CARDS_AND_CURRENCIES.md·PHASE52_MOBILE_REVIEW_SUMMARY.md, 장부는 PR#260의 PHASE46_LEDGER_ANALYSIS.md, 비교는 PR#258의 PHASE44_COMPARISON_INTEGRATION.md에 있다. 각 초안의 자체 브랜치에 보존되어 있으며 현재 main에 포함되지 않는다. UnderlyingExplorerView/DividendSimulatorView는 병렬 원본 소유자의 파일을 임의로 수정하지 않았다. 없는 프레임·기능·금융 수치를 만들어 완료 처리하지 않는다.
+
+
+phase58 통합 후보: 검토04c8a42·비교fcf2d48·장부4d0c625를 로컬 조합했다. phase55/56/57의 시각 치수·실제 기능 검증과 미완 항목을 유지한다. 결합 검증·원격 CI·운영 반영은 해당 실제 결과가 확인되기 전 완료로 세지 않는다.
+
+
+phase58 결합 로컬 검증 통과: 검토/장부5폭·비교14상태·기존 지표9상태·표준 업로드101행·XIRR/청산 검사·타입 포함 빌드. PHASE58_INTEGRATED_QUALIFICATION.md를 본다. #256은 work543748e에 병합됐으며 #264 운영 승격 검증 중이다. 비교/장부 후보의 원격 최종 검증과 전체 시각 수용·실계좌 검증은 별도이며 아직 운영 반영으로 세지 않는다.

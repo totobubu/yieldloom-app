@@ -1,0 +1,5 @@
+PASS src/components/portfolio/AdvancedPortfolioInsights.vue: dark target and document isolation
+PASS src/components/portfolio/PortfolioImportReview.vue: dark target and document isolation
+PASS src/components/portfolio/TossPdfImportReview.vue: dark target and document isolation
+PASS src/components/portfolio/PortfolioInsights.vue: dark target and document isolation
+PASS src/components/stock/DividendRocChart.vue: dark target and document isolation

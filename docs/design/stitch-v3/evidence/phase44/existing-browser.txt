@@ -1,0 +1,9 @@
+PASS comparison/underlying/1280: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+PASS comparison/similar/1280: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+PASS comparison/theme/1280: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+PASS comparison/underlying/768: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+PASS comparison/similar/768: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+PASS comparison/theme/768: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+PASS comparison/underlying/390: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+PASS comparison/similar/390: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+PASS comparison/theme/390: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors

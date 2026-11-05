@@ -603,7 +603,10 @@
     }
     .search-heading h1 {
         margin: 10px 0 8px;
-        font-size: 32px;
+        font-size: 22px;
+        line-height: 33px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
     }
     .search-heading p {
         color: var(--app-muted);
@@ -619,8 +622,9 @@
         min-width: 0;
     }
     .search-input :deep(.p-inputtext) {
-        height: 56px;
-        border-radius: 12px;
+        height: 44px;
+        border-radius: 8px;
+        font-size: 15px;
         background: color-mix(
             in srgb,
             var(--app-accent) 5%,
@@ -917,7 +921,7 @@
             margin-bottom: 20px;
         }
         .search-heading h1 {
-            font-size: 26px;
+            font-size: 22px;
         }
         .search-heading p {
             font-size: 14px;
@@ -930,8 +934,8 @@
             gap: 8px;
         }
         .search-input :deep(.p-inputtext) {
-            height: 48px;
-            font-size: 14px;
+            height: 44px;
+            font-size: 15px;
         }
         .search-controls {
             padding: 0;

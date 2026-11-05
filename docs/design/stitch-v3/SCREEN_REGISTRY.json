@@ -7,7 +7,7 @@
     "families": 9,
     "testFramesExcluded": 1,
     "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-    "currentCodeBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
+    "currentCodeBase": "f2dba7ecf2048bdb16bf18552e7f0cafc8d4b58a",
     "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
     "frames": [
         {
@@ -2320,5 +2320,6 @@
     "finalReviewedTargets": 20,
     "candidateInventoryQualification": "Initial MCP listing:64 frames. Final20 IDs supplied later are authoritative; only selectedScreen is adopted. Older latestCandidates are superseded inventory hints, not implementation targets.",
     "projectFrameCountAtInitialRead": 64,
-    "registeredFrameCount": 73
+    "registeredFrameCount": 73,
+    "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f"
 }

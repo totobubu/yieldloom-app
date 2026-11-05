@@ -139,7 +139,10 @@ try {
     await button('계좌 추가').click();
     await page
         .locator('.account-registration-page, [role="dialog"]')
-        .getByRole('button', { name: '문서로 등록', exact: true })
+        .getByRole('button', {
+            name: '문서로 등록 (토스 거래내역 PDF)',
+            exact: true,
+        })
         .click();
     await page.getByLabel('토스 거래내역 PDF', { exact: true }).setInputFiles({
         name: 'invalid.pdf',
@@ -157,7 +160,10 @@ try {
         await button('계좌 추가').click();
         await page
             .locator('.account-registration-page, [role="dialog"]')
-            .getByRole('button', { name: '문서로 등록', exact: true })
+            .getByRole('button', {
+                name: '문서로 등록 (토스 거래내역 PDF)',
+                exact: true,
+            })
             .click();
         await page
             .getByLabel('토스 거래내역 PDF', { exact: true })
@@ -175,7 +181,7 @@ try {
         await page.getByLabel('PDF 비밀번호', { exact: true }).fill('fixture');
         await button('계좌 정보 추출').click();
         await page
-            .getByText('추출된 명의: 배우자 · ****5678', { exact: true })
+            .getByText('명의 배우자 · 토스증권 ****5678', { exact: true })
             .waitFor();
         await page.getByLabel('별칭', { exact: true }).last().fill('문서 계좌');
         await page
@@ -196,7 +202,10 @@ try {
         await button('계좌 추가').click();
         await page
             .locator('.account-registration-page, [role="dialog"]')
-            .getByRole('button', { name: '문서로 등록', exact: true })
+            .getByRole('button', {
+                name: '문서로 등록 (토스 거래내역 PDF)',
+                exact: true,
+            })
             .click();
         await page
             .getByLabel('토스 거래내역 PDF', { exact: true })
@@ -208,7 +217,7 @@ try {
         await page.getByLabel('PDF 비밀번호', { exact: true }).fill('fixture');
         await button('계좌 정보 추출').click();
         await page
-            .getByText('추출된 명의: 배우자 · ****5678', { exact: true })
+            .getByText('명의 배우자 · 토스증권 ****5678', { exact: true })
             .waitFor();
         await page
             .getByLabel('별칭', { exact: true })
@@ -253,7 +262,7 @@ try {
     await page
         .locator('.account-registration-page, [role="dialog"]')
         .evaluate((element) =>
-            Promise.all(
+            Promise.allSettled(
                 element
                     .getAnimations({ subtree: true })
                     .map((animation) => animation.finished)

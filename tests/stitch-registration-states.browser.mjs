@@ -20,6 +20,10 @@ try {
         });
         await installStitchFixtures(page, { admin: true });
         const failures = await installStaticAssets(page);
+        // Keep interception armed: first-listener registration is asynchronous in Playwright.
+        page.on('filechooser', () => {
+            // Each picker action below waits for its own event and chooses the file.
+        });
         const mutations = [],
             errors = [];
         let mode = 'success',
@@ -75,6 +79,10 @@ try {
             exact: true,
         });
         const pdf = form.getByLabel('토스 거래내역 PDF', { exact: true });
+        const picker = form.getByRole('button', {
+            name: '토스 거래내역 PDF 선택',
+            exact: true,
+        });
         const password = form.getByLabel('PDF 비밀번호', { exact: true });
         const capture = async (name) => {
             await page.evaluate(() => document.fonts.ready);
@@ -102,16 +110,23 @@ try {
         await form.getByLabel('별칭', { exact: true }).fill('직접 입력 예시');
         await capture('manual-input');
         await form
-            .getByRole('button', { name: '문서로 등록', exact: true })
+            .getByRole('button', {
+                name: '문서로 등록 (토스 거래내역 PDF)',
+                exact: true,
+            })
             .click();
-        await pdf.focus();
+        await picker.focus();
         assert.equal(
-            await page.evaluate(() => document.activeElement?.id),
-            'registration-pdf'
+            await picker.evaluate(
+                (element) => element === document.activeElement
+            ),
+            true
         );
         const keyboardChooser = page.waitForEvent('filechooser');
         await page.keyboard.press('Enter');
-        await (await keyboardChooser).setFiles({
+        await (
+            await keyboardChooser
+        ).setFiles({
             name: 'oversize.pdf',
             mimeType: 'application/pdf',
             buffer: Buffer.alloc(2 * 1024 * 1024 + 1),
@@ -125,7 +140,9 @@ try {
         await capture('document-oversize');
         const pointerChooser = page.waitForEvent('filechooser');
         await form.locator('.document-upload').click();
-        await (await pointerChooser).setFiles({
+        await (
+            await pointerChooser
+        ).setFiles({
             name: 'synthetic.pdf',
             mimeType: 'application/pdf',
             buffer: Buffer.from('%PDF-synthetic-identity-only'),
@@ -145,11 +162,12 @@ try {
             () => document.querySelector('#registration-password')?.disabled
         );
         assert.equal(await pdf.isDisabled(), true);
+        assert.equal(await picker.isDisabled(), true);
         await capture('inspection-pending');
         release();
         mode = 'success';
         await form
-            .getByText('추출된 명의: 김모음 · ****0115', { exact: true })
+            .getByText('명의 김모음 · 토스증권 ****0115', { exact: true })
             .waitFor();
         assert.equal(await register.isDisabled(), true);
         assert.equal(
@@ -164,15 +182,12 @@ try {
         await capture('identified-confirmed');
         await password.fill('changed-fixture');
         assert.equal(await register.isDisabled(), true);
-        assert.equal(
-            await form.getByText('추출된 명의:', { exact: false }).count(),
-            0
-        );
+        assert.equal(await form.locator('.identified-summary').count(), 0);
         await capture('identity-invalidated');
         mode = 'viewer';
         await inspect.click();
         await form
-            .getByText('추출된 명의: 이모음 · ****0884', { exact: true })
+            .getByText('명의 이모음 · 미래에셋 ****0884', { exact: true })
             .waitFor();
         assert.equal(
             await form
@@ -189,7 +204,7 @@ try {
 
         await inspect.click();
         await form
-            .getByText('추출된 명의: 김모음 · ****0115', { exact: true })
+            .getByText('명의 김모음 · 토스증권 ****0115', { exact: true })
             .waitFor();
         await form
             .getByRole('button', {

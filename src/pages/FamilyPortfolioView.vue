@@ -3460,6 +3460,15 @@
     .account-registration-page h2 {
         margin: 0;
         font-size: 20px;
+        line-height: 30px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+    @media (max-width: 640px) {
+        .account-registration-page {
+            max-width: none;
+            margin-inline: -4px;
+        }
     }
 
     .portfolio-panels {

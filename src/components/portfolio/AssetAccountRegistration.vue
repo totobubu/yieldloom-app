@@ -27,9 +27,10 @@
         confirmed = ref(false),
         inspecting = ref(false),
         inspectionError = ref('');
+    const fileInput = ref(null);
     let generation = 0;
     const options = [
-        { label: '문서로 등록', value: 'document' },
+        { label: '문서로 등록 (토스 거래내역 PDF)', value: 'document' },
         { label: '직접 입력', value: 'manual' },
     ];
     const types = [
@@ -117,27 +118,43 @@
         <div v-if="method === 'document'" class="document">
             <div class="document-upload">
                 <span class="document-upload-icon" aria-hidden="true">📄</span>
-                <label for="registration-pdf" class="document-file-info">{{
-                    file
-                        ? `${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB 선택됨)`
-                        : '토스 거래내역 PDF 선택'
-                }}</label>
-                <p>최대 2MB 이하 토스증권 거래내역 PDF 원본만 지원합니다.</p>
+                <label
+                    id="registration-file-summary"
+                    for="registration-pdf"
+                    class="document-file-info"
+                    >{{
+                        file
+                            ? `${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB 선택됨)`
+                            : '토스 거래내역 PDF 선택'
+                    }}</label
+                >
+                <p id="registration-file-help">
+                    최대 2MB 이하 토스증권 거래내역 PDF 원본만 지원합니다.
+                </p>
                 <input
                     id="registration-pdf"
+                    ref="fileInput"
                     type="file"
                     accept=".pdf,application/pdf"
                     aria-label="토스 거래내역 PDF"
+                    tabindex="-1"
                     :disabled="busy || inspecting"
                     @change="file = $event.target.files?.[0] || null" />
+                <Button
+                    class="document-upload-trigger"
+                    type="button"
+                    aria-label="토스 거래내역 PDF 선택"
+                    aria-describedby="registration-file-summary registration-file-help"
+                    :disabled="busy || inspecting"
+                    @click="fileInput?.click()" />
             </div>
             <div class="document-extract">
                 <div class="registration-field">
                     <label for="registration-password"
                         >PDF 비밀번호<span
                             class="required-mark"
-                            aria-hidden="true" /></label
-                    >
+                            aria-hidden="true"
+                    /></label>
                     <InputText
                         id="registration-password"
                         v-model="password"
@@ -157,59 +174,93 @@
                 :closable="false"
                 >{{ inspectionError }}</Message
             >
-            <p v-if="identity" class="identified-summary">
-                추출된 명의: {{ identity.customerName || '확인할 수 없음' }} ·
-                {{ identity.maskedNumber || '끝 4자리 확인 필요' }}
-            </p>
+            <div v-if="identity" class="identified-summary">
+                <p class="identified-summary-copy">
+                    <span class="identified-label">추출 요약</span>
+                    <span class="identified-person"
+                        >명의 {{ identity.customerName || '확인할 수 없음' }} ·
+                        {{ identity.institution || '금융기관 확인 필요' }}
+                        {{
+                            identity.maskedNumber || '끝 4자리 확인 필요'
+                        }}</span
+                    >
+                </p>
+                <span class="identified-badge">문서 추출 결과</span>
+            </div>
         </div>
         <form class="account-form" @submit.prevent="submit">
-            <div class="registration-field">
-                <label for="registration-institution"
-                    >금융기관<span
-                        class="required-mark"
-                        aria-hidden="true" /></label
-                >
-                <InputText
-                    id="registration-institution"
-                    v-model="form.institution"
-                    required
-                    maxlength="100"
-                    :disabled="busy || inspecting" />
+            <div class="registration-fields">
+                <div class="registration-field">
+                    <label for="registration-institution"
+                        >금융기관<span class="required-mark" aria-hidden="true"
+                    /></label>
+                    <InputText
+                        id="registration-institution"
+                        v-model="form.institution"
+                        required
+                        maxlength="100"
+                        :disabled="busy || inspecting" />
+                </div>
+                <div class="registration-field">
+                    <label for="registration-type">유형</label>
+                    <Select
+                        v-model="form.type"
+                        input-id="registration-type"
+                        :options="types"
+                        option-label="label"
+                        option-value="value"
+                        :disabled="busy || inspecting" />
+                </div>
+                <div class="registration-field">
+                    <label for="registration-alias"
+                        >별칭<span class="required-mark" aria-hidden="true"
+                    /></label>
+                    <InputText
+                        id="registration-alias"
+                        v-model="form.alias"
+                        required
+                        maxlength="100"
+                        :disabled="busy || inspecting" />
+                </div>
+                <div class="registration-field">
+                    <label for="registration-last4">계좌 끝 4자리 (선택)</label>
+                    <InputText
+                        id="registration-last4"
+                        v-model="form.last4"
+                        maxlength="4"
+                        pattern="[0-9]{4}"
+                        inputmode="numeric"
+                        autocomplete="off"
+                        :disabled="busy || inspecting" />
+                </div>
             </div>
-            <div class="registration-field">
-                <label for="registration-type">유형</label>
-                <Select
-                    v-model="form.type"
-                    input-id="registration-type"
-                    :options="types"
-                    option-label="label"
-                    option-value="value"
-                    :disabled="busy || inspecting" />
-            </div>
-            <div class="registration-field">
-                <label for="registration-alias"
-                    >별칭<span
-                        class="required-mark"
-                        aria-hidden="true" /></label
-                >
-                <InputText
-                    id="registration-alias"
-                    v-model="form.alias"
-                    required
-                    maxlength="100"
-                    :disabled="busy || inspecting" />
-            </div>
-            <div class="registration-field">
-                <label for="registration-last4">계좌 끝 4자리 (선택)</label>
-                <InputText
-                    id="registration-last4"
-                    v-model="form.last4"
-                    maxlength="4"
-                    pattern="[0-9]{4}"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    :disabled="busy || inspecting" />
-            </div>
+            <Message
+                v-if="duplicates.length"
+                class="registration-duplicate-warning"
+                severity="warn"
+                :closable="false">
+                <div class="duplicate-warning-content">
+                    <p>
+                        <strong>동일 기관·끝자리 계좌 안내:</strong>
+                        동일한 금융기관({{ form.institution }})과 끝자리({{
+                            form.last4
+                        }})를 가진 기존 계좌가 등록되어 있습니다.
+                    </p>
+                    <Button
+                        v-for="account in duplicates"
+                        :key="account.id"
+                        :label="`${account.alias}에 자료 업로드`"
+                        severity="secondary"
+                        outlined
+                        :disabled="
+                            busy || !['owner', 'editor'].includes(account._role)
+                        "
+                        @click="$emit('existing', account.id)" />
+                </div>
+            </Message>
+            <Message v-if="error" severity="error" :closable="false">{{
+                error
+            }}</Message>
             <template v-if="method === 'document' && identity">
                 <label class="identity-confirmation"
                     ><input
@@ -220,43 +271,23 @@
                     확인했습니다.</label
                 >
             </template>
-            <Message v-if="duplicates.length" severity="warn" :closable="false">
-                같은 기관·끝 4자리의 계좌가 있습니다. 같은 계좌인지 확인하세요.
+            <div class="registration-actions">
                 <Button
-                    v-for="account in duplicates"
-                    :key="account.id"
-                    :label="`${account.alias}에 자료 업로드`"
+                    type="submit"
+                    label="계좌 등록"
+                    :loading="busy"
                     :disabled="
-                        busy || !['owner', 'editor'].includes(account._role)
-                    "
-                    @click="$emit('existing', account.id)" />
-            </Message>
-            <Message v-if="error" severity="error" :closable="false">{{
-                error
-            }}</Message>
-            <Button
-                type="submit"
-                label="계좌 등록"
-                :loading="busy"
-                :disabled="
-                    busy ||
-                    inspecting ||
-                    (method === 'document' && (!identity || !confirmed))
-                " />
+                        busy ||
+                        inspecting ||
+                        (method === 'document' && (!identity || !confirmed))
+                    " />
+            </div>
         </form>
     </section>
 </template>
 <style scoped>
-    .account-form,
     .document {
         display: grid;
-        gap: 0.75rem;
-        margin-top: 1.25rem;
-    }
-    .account-form label:has(input) {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.5rem;
     }
 
     .account-registration {
@@ -271,8 +302,12 @@
         border: 1px solid var(--app-border);
         border-radius: 12px;
         background: var(--app-surface);
+        line-height: 1.5;
+        word-break: keep-all;
+        box-shadow: 0 1px 3px rgb(0 0 0 / 2%);
     }
     .account-registration > p {
+        overflow-wrap: anywhere;
         font-size: 14px;
         margin: 0;
         color: var(--app-muted);
@@ -282,10 +317,15 @@
         gap: 8px;
     }
     .account-registration :deep(.p-togglebutton) {
+        height: 44px;
         min-height: 44px;
         padding: 0 20px;
         border-radius: 8px;
         font-size: 14px;
+        font-weight: 600;
+    }
+    .account-registration :deep(.p-togglebutton-label) {
+        white-space: normal;
     }
     .account-registration :deep(.p-togglebutton-checked),
     .account-registration
@@ -295,7 +335,7 @@
     }
     .document {
         gap: 16px;
-        margin: 0;
+        margin: 0 0 4px;
     }
     .document-upload {
         position: relative;
@@ -342,7 +382,7 @@
         gap: 16px;
     }
     .document-extract :deep(.p-button),
-    .account-form > .p-button {
+    .registration-actions > .p-button {
         height: 44px;
         min-height: 44px;
         padding: 0 20px;
@@ -351,23 +391,99 @@
         font-weight: 600;
     }
     .identified-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         padding: 14px 18px;
         border: 1px solid var(--app-accent);
         border-radius: 8px;
         background: var(--app-accent-light);
+        font-size: 14px;
+        line-height: 21px;
+    }
+    .identified-summary-copy {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        margin: 0;
+    }
+    .identified-label {
+        margin-right: 8px;
+        color: var(--app-muted);
+    }
+    .identified-person {
+        font-weight: 600;
+    }
+    .identified-badge {
+        padding: 2px 8px;
+        border: 1px solid var(--app-accent);
+        border-radius: 4px;
+        background: var(--app-surface);
+        color: var(--app-accent);
+        font-size: 12px;
+        line-height: 18px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .registration-duplicate-warning {
+        margin: 20px 0 0;
+        padding: 14px 18px;
+        border: 1px solid var(--p-message-warn-border-color);
+        border-radius: 8px;
+        box-shadow: none;
+    }
+    .registration-duplicate-warning :deep(.p-message-content) {
+        padding: 0;
+    }
+    .registration-duplicate-warning :deep(.p-message-text) {
+        width: 100%;
+        font-size: 13px;
+        line-height: 19.5px;
+        font-weight: 400;
+    }
+    .duplicate-warning-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .duplicate-warning-content p {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        margin: 0;
+    }
+    .duplicate-warning-content :deep(.p-button) {
+        min-height: 36px;
+        max-width: 100%;
+        padding: 0 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: normal;
+    }
+    .duplicate-warning-content :deep(.p-button-label) {
+        min-width: 0;
+        overflow-wrap: anywhere;
     }
     .identity-confirmation {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
         padding: 14px 16px;
         border: 1px solid var(--app-border);
         border-radius: 8px;
         background: var(--app-bg);
         font-size: 14px;
+        line-height: 21px;
         font-weight: 600;
     }
     .identity-confirmation input {
         accent-color: var(--app-accent);
         width: 18px;
         height: 18px;
+        margin: 0;
+        flex-shrink: 0;
     }
     .document > p {
         margin: 0;
@@ -375,24 +491,45 @@
         font-size: 13px;
     }
     .document input[type='file'] {
+        display: none;
+    }
+    .document-upload-trigger {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
-        opacity: 0;
-        cursor: pointer;
+        padding: 0;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
     }
-    .document input[type='file']:disabled {
-        cursor: not-allowed;
+    .document-upload-trigger:not(:disabled):hover,
+    .document-upload-trigger:not(:disabled):active,
+    .document-upload-trigger:disabled {
+        background: transparent;
+        border: 0;
+        opacity: 1;
+    }
+    .document-upload-trigger:focus-visible {
+        outline: none;
+        box-shadow: none;
     }
     .account-form {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
         margin: 0;
         padding: 0;
         border: 0;
         background: transparent;
+    }
+    .registration-fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+    .account-form > .p-message-error {
+        margin: 20px 0 0;
     }
     .registration-field {
         display: grid;
@@ -422,17 +559,22 @@
         font-size: 14px;
         font-weight: 500;
     }
-    .account-form > :not(.registration-field) {
-        grid-column: 1 / -1;
+    .registration-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 24px;
     }
-    .account-form > .p-button {
-        justify-self: end;
+    .registration-actions > .p-button {
         min-width: 180px;
     }
     @media (max-width: 768px) {
-        .account-form,
+        .registration-fields,
         .document-extract {
             grid-template-columns: 1fr;
+        }
+        .duplicate-warning-content {
+            flex-direction: column;
+            align-items: flex-start;
         }
     }
     @media (max-width: 640px) {

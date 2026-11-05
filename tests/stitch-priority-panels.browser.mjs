@@ -51,6 +51,8 @@ try {
             });
         };
         await page.goto(base + '/compare?view=similar');
+        if (width <= 1024)
+            await page.locator('.filter-details > summary').click();
         const reference = page.locator('.similar-reference-card');
         await reference.waitFor();
         await ready();

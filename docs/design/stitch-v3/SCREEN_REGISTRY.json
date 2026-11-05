@@ -7,7 +7,7 @@
     "families": 9,
     "testFramesExcluded": 1,
     "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-    "currentCodeBase": "f2dba7ecf2048bdb16bf18552e7f0cafc8d4b58a",
+    "currentCodeBase": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
     "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
     "frames": [
         {
@@ -1513,7 +1513,13 @@
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/12982c4c330e4791ae020668c8495b4e"
             ],
-            "evidence": "PHASE33_MAPPING_LAYOUT.md"
+            "evidence": "PHASE33_MAPPING_LAYOUT.md",
+            "rollout": {
+                "environment": "production",
+                "pr": 249,
+                "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
+                "preservedBy": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+            }
         },
         {
             "family": "Column Mapping",
@@ -1556,7 +1562,13 @@
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/a3527858fcd748e384a70f1037018dd7"
             ],
-            "evidence": "PHASE33_MAPPING_LAYOUT.md"
+            "evidence": "PHASE33_MAPPING_LAYOUT.md",
+            "rollout": {
+                "environment": "production",
+                "pr": 249,
+                "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
+                "preservedBy": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+            }
         },
         {
             "family": "Column Mapping",
@@ -1599,7 +1611,13 @@
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/ad4ae8d524504cef9c82424822ebb24b"
             ],
-            "evidence": "PHASE33_MAPPING_LAYOUT.md"
+            "evidence": "PHASE33_MAPPING_LAYOUT.md",
+            "rollout": {
+                "environment": "production",
+                "pr": 249,
+                "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
+                "preservedBy": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+            }
         },
         {
             "family": "Compare Similar",
@@ -1610,7 +1628,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/2476bb94e3174e6182500d8f520a6424",
@@ -1641,7 +1659,12 @@
             "sourceTitle": "V10 A11Y REVIEW / Compare Similar / Mobile / from-513b8d3e",
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/1b227a5b79784aa9b8e13ba0513b8d3e"
-            ]
+            ],
+            "rollout": {
+                "environment": "parallel implementation; not integrated",
+                "branch": "feat/stitch-comparison-responsive-20261105",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
+            }
         },
         {
             "family": "Compare Similar",
@@ -1652,7 +1675,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/77fdbd798a3941c68f098120a210c44d",
@@ -1683,7 +1706,12 @@
             "sourceTitle": "V10 A11Y REVIEW / Compare Similar / Tablet / from-c3ac8208",
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/e64931e753ca4625b32d9124c3ac8208"
-            ]
+            ],
+            "rollout": {
+                "environment": "parallel implementation; not integrated",
+                "branch": "feat/stitch-comparison-responsive-20261105",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
+            }
         },
         {
             "family": "Compare Theme",
@@ -1694,7 +1722,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/4dbfbf717c75483e88e6d1186ecbdb2b",
@@ -1725,7 +1753,12 @@
             "sourceTitle": "V10 A11Y REVIEW / Compare Theme / Mobile / from-cf4aa237",
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/7a7f75ab55b64d38a618e21bcf4aa237"
-            ]
+            ],
+            "rollout": {
+                "environment": "parallel implementation; not integrated",
+                "branch": "feat/stitch-comparison-responsive-20261105",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
+            }
         },
         {
             "family": "Compare Theme",
@@ -1736,7 +1769,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/12bcd42390bb468eb1700a909aec3f5d",
@@ -1767,7 +1800,12 @@
             "sourceTitle": "V9 FINAL REVIEW / Compare Theme / Tablet / source-94409554",
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/c4f19b1c965840e8adc2fbe5056fe473"
-            ]
+            ],
+            "rollout": {
+                "environment": "parallel implementation; not integrated",
+                "branch": "feat/stitch-comparison-responsive-20261105",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
+            }
         },
         {
             "family": "Data Upload",
@@ -1778,8 +1816,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
-            "visualAcceptance": "not accepted",
+            "implementation": "Draft #253; actual CSV/XLSX/holdings response preview and zero-request next stage verified locally; visual work incomplete; not deployed",
+            "visualAcceptance": "not accepted: raw preview now implemented; source header 834/768 matched; settings/file/state/copy/spacing differences and Mobile source font HTTP400 remain",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6",
             "sourceFiles": [
@@ -1807,7 +1845,12 @@
                 "height": "4152"
             },
             "sourceTitle": "V5 CORRECTED / Data Upload / Mobile / source-4355c5b5",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "local only",
+                "branch": "feat/stitch-upload-phase36"
+            },
+            "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md"
         },
         {
             "family": "Data Upload",
@@ -1818,8 +1861,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
-            "visualAcceptance": "not accepted",
+            "implementation": "Draft #253; actual CSV/XLSX/holdings response preview and zero-request next stage verified locally; visual work incomplete; not deployed",
+            "visualAcceptance": "not accepted: raw preview now implemented; source header 834/768 matched; settings/file/state/copy/spacing differences and Mobile source font HTTP400 remain",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33",
             "sourceFiles": [
@@ -1847,7 +1890,12 @@
                 "height": "2048"
             },
             "sourceTitle": "V5 CORRECTED / Data Upload / Tablet / source-5a09e7d3",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "local only",
+                "branch": "feat/stitch-upload-phase36"
+            },
+            "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md"
         },
         {
             "family": "Import Result",
@@ -1858,7 +1906,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "reference-backed responsive receipt and original SVG symbols implemented; financial aggregates explicitly unavailable; release status tracked in PR #250",
+            "implementation": "reference receipt and canonical stored type/name display deployed #257; financial aggregates unavailable; whole-frame differences remain",
             "visualAcceptance": "header/stepper dimensions match 834/768/390; tablet aggregate card matches 376.5px; full pixel acceptance pending; see PHASE35_RECEIPT_FIDELITY.md",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/f5a2132c4e234e648269220f0e889387",
@@ -1887,7 +1935,12 @@
                 "height": "4912"
             },
             "sourceTitle": "V5 CORRECTED / Import Result / Mobile / source-b8337d51",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "production",
+                "pr": 257,
+                "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+            }
         },
         {
             "family": "Import Result",
@@ -1898,7 +1951,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "reference-backed responsive receipt and original SVG symbols implemented; financial aggregates explicitly unavailable; release status tracked in PR #250",
+            "implementation": "reference receipt and canonical stored type/name display deployed #257; financial aggregates unavailable; whole-frame differences remain",
             "visualAcceptance": "header/stepper dimensions match 834/768/390; tablet aggregate card matches 376.5px; full pixel acceptance pending; see PHASE35_RECEIPT_FIDELITY.md",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/cf7686fbb620465f93418fde1572a6cc",
@@ -1927,7 +1980,12 @@
                 "height": "2244"
             },
             "sourceTitle": "V5 CORRECTED / Import Result / Tablet / source-5694fa4d",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "production",
+                "pr": 257,
+                "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+            }
         },
         {
             "family": "Import Review",
@@ -1938,7 +1996,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "Draft #256; source header geometry/width and existing functionality verified locally; full body work remains",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/6bd9777b8bea43b98aea8397a29f809a",
@@ -1969,7 +2027,12 @@
             "sourceTitle": "V10 A11Y REVIEW / Import Review / Mobile / from-b8229755",
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/36b701cb88c84a91a4ed9edab8229755"
-            ]
+            ],
+            "rollout": {
+                "environment": "local partial only",
+                "pr": 256,
+                "branch": "feat/stitch-review-phase39"
+            }
         },
         {
             "family": "Import Review",
@@ -1980,7 +2043,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "Draft #256; source header geometry/width and existing functionality verified locally; full body work remains",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/5aa7a573854a46db9b106f89c09c4f23",
@@ -2011,7 +2074,12 @@
             "sourceTitle": "V10 A11Y REVIEW / Import Review / Tablet / from-5f85528e",
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/b7be4fa2034e4e2ea5585be95f85528e"
-            ]
+            ],
+            "rollout": {
+                "environment": "local partial only",
+                "pr": 256,
+                "branch": "feat/stitch-review-phase39"
+            }
         },
         {
             "family": "Ledger Analysis",
@@ -2054,7 +2122,11 @@
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/63247c7189054c4db2c298e59095cfe5",
                 "projects/17382728461495959991/screens/a163a9cc046d4663891135abfcc98c00"
-            ]
+            ],
+            "rollout": {
+                "environment": "not verified against final selected ID",
+                "qualification": "existing production feature is not final-reference acceptance"
+            }
         },
         {
             "family": "Ledger Analysis",
@@ -2094,7 +2166,11 @@
                 "height": "2824"
             },
             "sourceTitle": "V6 REVIEWED / Ledger Analysis / Tablet / source-644db83b",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "not verified against final selected ID",
+                "qualification": "existing production feature is not final-reference acceptance"
+            }
         },
         {
             "family": "Simulator",
@@ -2134,7 +2210,11 @@
                 "height": "6198"
             },
             "sourceTitle": "V6 REVIEWED / Simulator / Mobile / source-d6588413",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "not verified against final selected ID",
+                "qualification": "separate worker progress not independently verified"
+            }
         },
         {
             "family": "Simulator",
@@ -2174,7 +2254,11 @@
                 "height": "4164"
             },
             "sourceTitle": "V6 REVIEWED / Simulator / Tablet / source-5afff199",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "not verified against final selected ID",
+                "qualification": "separate worker progress not independently verified"
+            }
         },
         {
             "family": "Tax Comparison",
@@ -2214,7 +2298,11 @@
                 "height": "6400"
             },
             "sourceTitle": "V6 REVIEWED / Tax Comparison / Mobile / source-f7fe46e6",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "not verified against final selected ID",
+                "qualification": "separate worker progress not independently verified"
+            }
         },
         {
             "family": "Tax Comparison",
@@ -2254,7 +2342,11 @@
                 "height": "2792"
             },
             "sourceTitle": "V6 REVIEWED / Tax Comparison / PC / source-0c64cbee",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "not verified against final selected ID",
+                "qualification": "separate worker progress not independently verified"
+            }
         },
         {
             "family": "Tax Comparison",
@@ -2294,7 +2386,11 @@
                 "height": "3340"
             },
             "sourceTitle": "V7 REFINED / Tax Comparison / Tablet / source-4b63bd4e",
-            "supersededCandidates": []
+            "supersededCandidates": [],
+            "rollout": {
+                "environment": "not verified against final selected ID",
+                "qualification": "separate worker progress not independently verified"
+            }
         }
     ],
     "finalReviewedTargets": 20,
@@ -2302,5 +2398,18 @@
     "projectFrameCountAtInitialRead": 64,
     "registeredFrameCount": 73,
     "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-    "latestImplementationBase": "c48d049d258c2773fe58948a14e005f8af04578a"
+    "latestImplementationBase": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
+    "rolloutSnapshot": {
+        "recordedAt": "2026-11-05T10:01:35.477415+00:00",
+        "scope": "20 final reviewed IDs / 9 families only; not additive to original 14",
+        "productionMergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
+        "productionTargets": 5,
+        "localWorkTargets": 4,
+        "otherTargets": 11,
+        "visualAcceptance": "production does not mean whole-frame acceptance",
+        "evidence": "CURRENT_ROLLOUT.md",
+        "remainingOwnTargets": 2,
+        "parallelScopeTargets": 9,
+        "qualification": "5 production / 4 current integration WIP / 2 ledger / 9 parallel scope; whole-frame acceptance incomplete"
+    }
 }

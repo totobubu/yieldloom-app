@@ -1,0 +1,1 @@
+PASS: 5 widths, real file selection/remove, ownership gate, kind/format, password owner controls, busy/dark, manual shortcut; zero API calls. Full visual acceptance pending.

@@ -1,0 +1,209 @@
+[
+  {
+    "width": 1280,
+    "implementation": {
+      "width": 786,
+      "height": 1142.46875,
+      "header": 159.5,
+      "headerParts": {
+        ".upload-badges": {
+          "width": 786,
+          "height": 22
+        },
+        ".upload-heading-row > div": {
+          "width": 649.03125,
+          "height": 55.5
+        },
+        ".upload-heading-row .p-button": {
+          "width": 124.96875,
+          "height": 44
+        },
+        ".upload-steps": {
+          "width": 786,
+          "height": 58
+        }
+      }
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted; actual raw preview supported, but required format/date controls, financial labels and remaining layout differ from source"
+  },
+  {
+    "width": 834,
+    "implementation": {
+      "width": 786,
+      "height": 1142.46875,
+      "header": 159.5,
+      "headerParts": {
+        ".upload-badges": {
+          "width": 786,
+          "height": 22
+        },
+        ".upload-heading-row > div": {
+          "width": 649.03125,
+          "height": 55.5
+        },
+        ".upload-heading-row .p-button": {
+          "width": 124.96875,
+          "height": 44
+        },
+        ".upload-steps": {
+          "width": 786,
+          "height": 58
+        }
+      }
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted; actual raw preview supported, but required format/date controls, financial labels and remaining layout differ from source",
+    "sourceId": "3c2a0d37b5f54a63b3a633f01f0d2b33",
+    "sourceGeometry": {
+      "titleSize": "24px",
+      "titleHeight": 32,
+      "headerHeight": 159.5,
+      "manualButtonHeight": 44,
+      "manualButtonWidth": 124.96875,
+      "tabletParts": [
+        {
+          "tag": "DIV",
+          "width": 786,
+          "height": 22
+        },
+        {
+          "tag": "DIV",
+          "width": 786,
+          "height": 55.5
+        },
+        {
+          "tag": "NAV",
+          "width": 786,
+          "height": 58
+        }
+      ]
+    },
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 768,
+    "implementation": {
+      "width": 720,
+      "height": 1195.96875,
+      "header": 179,
+      "headerParts": {
+        ".upload-badges": {
+          "width": 720,
+          "height": 22
+        },
+        ".upload-heading-row > div": {
+          "width": 583.03125,
+          "height": 75
+        },
+        ".upload-heading-row .p-button": {
+          "width": 124.96875,
+          "height": 44
+        },
+        ".upload-steps": {
+          "width": 720,
+          "height": 58
+        }
+      }
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted; actual raw preview supported, but required format/date controls, financial labels and remaining layout differ from source",
+    "sourceId": "3c2a0d37b5f54a63b3a633f01f0d2b33",
+    "sourceGeometry": {
+      "titleSize": "24px",
+      "titleHeight": 32,
+      "headerHeight": 179,
+      "manualButtonHeight": 50,
+      "manualButtonWidth": 121.890625,
+      "tabletParts": [
+        {
+          "tag": "DIV",
+          "width": 720,
+          "height": 22
+        },
+        {
+          "tag": "DIV",
+          "width": 720,
+          "height": 75
+        },
+        {
+          "tag": "NAV",
+          "width": 720,
+          "height": 58
+        }
+      ]
+    },
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 390,
+    "implementation": {
+      "width": 358,
+      "height": 2228.75,
+      "header": 223,
+      "headerParts": {
+        ".upload-badges": {
+          "width": 225.03125,
+          "height": 51
+        },
+        ".upload-heading-row > div": {
+          "width": 358,
+          "height": 71
+        },
+        ".upload-heading-row .p-button": {
+          "width": 124.96875,
+          "height": 44
+        },
+        ".upload-steps": {
+          "width": 358,
+          "height": 69
+        }
+      }
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "blocked: original source font asset unavailable",
+    "sourceId": "80b06442816e4d1baebc96cb520b19d6",
+    "sourceGeometry": {
+      "titleSize": "20px",
+      "titleHeight": 28,
+      "headerHeight": 244,
+      "manualButtonHeight": 46,
+      "manualButtonWidth": 118.796875,
+      "tabletParts": null
+    },
+    "sourceAssetFailures": [
+      {
+        "host": "fonts.googleapis.com",
+        "status": "asset-fetch-failed"
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "implementation": {
+      "width": 328,
+      "height": 2278.75,
+      "header": 223,
+      "headerParts": {
+        ".upload-badges": {
+          "width": 195.03125,
+          "height": 51
+        },
+        ".upload-heading-row > div": {
+          "width": 328,
+          "height": 71
+        },
+        ".upload-heading-row .p-button": {
+          "width": 124.96875,
+          "height": 44
+        },
+        ".upload-steps": {
+          "width": 328,
+          "height": 69
+        }
+      }
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted; actual raw preview supported, but required format/date controls, financial labels and remaining layout differ from source"
+  }
+]

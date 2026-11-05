@@ -28,7 +28,7 @@ class YieldMaxPolicyTest(unittest.TestCase):
         self.assertEqual(GROUPS['group-1']['tickers'], 'CHPY GPTY LFGY MINY QDTY RDTY SDTY SLTY ULTY YMAG YMAX YRAM'.split())
         self.assertEqual(GROUPS['group-2']['tickers'], 'AIYY AMDY AMZY APLY BABO BRKC CONY CRCO CRSH CVNY DIPS DRAY FBY FIAT GDXY GMEY GOOY HIYY HOOY INYY JPO MARO MRNY MSFO MSTY MUY NFLY NVDY OARK PLTY PYPY RBLY RDYY SMCY SNOY TSLY TSMY WNTR XOMO XYZY YBIT YQQQ YSKH YSPC'.split())
         self.assertEqual([len(GROUPS[group]['tickers']) for group in ('group-3', 'group-1', 'group-2')], [3, 12, 44])
-        self.assertEqual(len(set(TRACKED_SYMBOLS)), 59)
+        self.assertEqual(len(set(TRACKED_SYMBOLS)), 62)
         self.assertEqual([GROUPS[group]['weekday'] for group in ('group-3', 'group-1', 'group-2')], [0, 1, 2])
         for day, expected in ((26, 'group-3'), (27, 'group-1'), (28, 'group-2')):
             request = runner.request_for(cron=PRIMARY_CRONS[1], created_at=instant(f'2026-10-{day}T11:05:00'), now=instant('2026-10-30T00:00:00'))
@@ -181,6 +181,25 @@ class YieldMaxObservationFlowTest(unittest.TestCase):
         discover.assert_not_called()
         onboard.assert_not_called()
         return result
+
+    def test_monthly_recovery_completes_once_and_does_not_create_weekly_cycles(self):
+        self.release_fallback = True
+        self.release_content = Path('tests/content_pipeline/fixtures/yieldmax_monthly_2026_11.html').read_bytes()
+        now = instant('2026-11-20T00:00:00')
+        request = runner.request_for(group='monthly', now=now)
+        report, code = self.run_request(request, now)
+        self.assertEqual(code, 0)
+        state = runner.read_state(self.state)
+        self.assertEqual(set(state['cycles']), {'monthly:2026-11-03'})
+        self.assertEqual(state['cycles']['monthly:2026-11-03']['status'], 'collected')
+        self.assertTrue(report['publish'])
+        self.requests.clear()
+        report, code = self.run_request(request, now)
+        self.assertEqual(code, 0)
+        self.assertFalse(report['attempted'])
+        self.assertEqual(self.requests, [])
+        rows = json.loads((self.public/'distribution-ticker-bigy.json').read_text())['history']
+        self.assertEqual((rows[0]['frequency'], rows[0]['ex_date']), ('monthly', '2026-11-04'))
 
     def primary(self, group):
         anchor = { 'group-3': '2026-10-26', 'group-1': '2026-10-27', 'group-2': '2026-10-28'}[group]

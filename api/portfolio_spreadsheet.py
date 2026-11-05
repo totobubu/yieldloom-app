@@ -79,7 +79,11 @@ def spreadsheet_table(content, filename, sheet='', header_row=1, encoding='utf-8
 
 def inspect_spreadsheet(content, filename, form):
     table = spreadsheet_table(content, filename, form.get('sheet', ''), _header_row(form), form.get('encoding', 'utf-8-sig'))
-    return {key: table[key] for key in ('sheets', 'sheet', 'headers')} | {'rowCount': len(table['rows'])}
+    return {key: table[key] for key in ('sheets', 'sheet', 'headers')} | {
+        'rowCount': len(table['rows']),
+        # A bounded view of this upload, not normalized ledger rows or persisted data.
+        'previewRows': [row[:len(table['headers'])] for row in table['rows'][:3]],
+    }
 
 
 def _header_row(form):

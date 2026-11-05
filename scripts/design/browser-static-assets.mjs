@@ -23,7 +23,7 @@ export async function installStaticAssets(context) {
             // rendering; keep the immutable source HTML unchanged.
             const fetchUrl =
                 host === 'cdn.tailwindcss.com' && new URL(url).pathname === '/'
-                    ? 'https://cdn.tailwindcss.com/3.4.17'
+                    ? 'https://cdn.tailwindcss.com/3.4.17' + new URL(url).search
                     : url;
             let body = cache.get(fetchUrl);
             if (!body) {
@@ -31,6 +31,7 @@ export async function installStaticAssets(context) {
                     'curl',
                     [
                         '--fail',
+                        '--location',
                         '--silent',
                         '--show-error',
                         '--max-time',

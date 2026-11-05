@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>V4 SUPPLEMENT / Column Mapping / PC / source-698b942e</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#e6e8ea",
+            "surface-container-low": "#f2f4f6",
+            "surface-container": "#eceef0",
+            "surface-container-highest": "#e0e3e5",
+            "surface": "#f7f9fb",
+            "primary": "#005f55",
+            "primary-container": "#0d7a6e",
+            "on-primary-container": "#abfff0",
+            "brand-espresso": "#382418",
+            "on-surface": "#191c1e",
+            "on-surface-variant": "#3e4947",
+            "outline": "#6e7977",
+            "outline-variant": "#bdc9c6",
+            "error": "#ba1a1a"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            sans: ["Inter", "Pretendard", "Apple SD Gothic Neo", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #f8fafc;
+      color: #191c1e;
+      font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'tnum';
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-on-surface antialiased selection:bg-teal-100 selection:text-teal-900">
+<main class="max-w-7xl mx-auto py-8 px-6 min-h-screen">
+<!-- PAGE HEADER AREA -->
+<header class="mb-6">
+<div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="text-xs font-semibold text-outline tracking-normal">데이터 가져오기 및 동기화</span>
+</div>
+<h1 class="text-2xl lg:text-[28px] font-bold text-brand-espresso mb-2">증권사 파일 열 연결 (컬럼 매핑)</h1>
+<p class="text-sm text-outline max-w-3xl leading-relaxed">
+            업로드된 증권사 거래내역 파일의 열을 표준 항목에 연결합니다. 필수 항목이 모두 연결되면 검토 단계로 진행할 수 있습니다.
+          </p>
+</div>
+<!-- 3-STEP STEPPER -->
+<nav aria-label="진행 단계" class="bg-surface-container-lowest border border-slate-200 rounded-xl p-3 shadow-sm self-start shrink-0">
+<ol class="flex items-center gap-2.5 text-xs">
+<!-- Step 1: 완료 -->
+<li class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-emerald-50 text-primary-container border border-primary-container/20 flex items-center justify-center font-bold text-xs">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</span>
+<span class="text-on-surface font-medium">1. 파일 업로드</span>
+</li>
+<li class="w-5 h-[1px] bg-slate-200"></li>
+<!-- Step 2: 현재 진행중 -->
+<li class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-primary-container text-white flex items-center justify-center font-bold text-xs">
+                2
+              </span>
+<span class="text-primary-container font-semibold">2. 열 연결·검토</span>
+<span class="px-1.5 py-0.5 text-[10px] font-semibold bg-emerald-50 text-primary-container border border-emerald-200 rounded-full">진행중</span>
+</li>
+<li class="w-5 h-[1px] bg-slate-200"></li>
+<!-- Step 3: 대기 -->
+<li class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-slate-100 text-outline flex items-center justify-center font-medium text-xs">
+                3
+              </span>
+<span class="text-outline font-medium">3. 저장 결과</span>
+</li>
+</ol>
+</nav>
+</div>
+</header>
+<!-- FILE & PRESET SETTING BAR (CSV State) -->
+<section class="bg-surface-container-lowest rounded-xl p-4 mb-6 border border-slate-200 shadow-sm flex flex-col gap-4">
+<div class="flex flex-wrap items-center justify-between gap-4">
+<!-- Left: File Metadata & Broker Context -->
+<div class="flex flex-wrap items-center gap-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-emerald-50 text-primary-container flex items-center justify-center border border-emerald-100 shrink-0">
+<span class="material-symbols-outlined text-[22px]">description</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-sm font-bold text-brand-espresso">DEMO.csv</span>
+<span class="text-[11px] px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">기타 직접 설정</span>
+</div>
+<p class="text-xs text-outline tabular-nums mt-0.5">총 3행 데이터 감지됨</p>
+</div>
+</div>
+<div class="h-6 w-[1px] bg-slate-200 hidden md:block"></div>
+<!-- Account info & checkbox -->
+<div class="flex items-center gap-2 text-xs">
+<span class="text-outline font-medium">계좌:</span>
+<span class="font-mono text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200 font-medium">DEMO-ACC-****-891</span>
+<label class="flex items-center gap-1.5 ml-2 cursor-pointer text-slate-700 font-medium" for="account-confirm-checkbox">
+<input checked="" class="rounded border-slate-300 text-primary-container focus:ring-primary-container/20 w-4 h-4" id="account-confirm-checkbox" type="checkbox"/>
+<span>계좌 및 소유자 확인</span>
+</label>
+</div>
+</div>
+<!-- Right: Actions -->
+<div class="flex items-center gap-2">
+<button class="h-9 px-3 text-xs font-semibold rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-brand-espresso transition-colors shadow-sm" type="button">
+            열 연결 설정 불러오기
+          </button>
+<button class="h-9 px-3 text-xs font-semibold rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed transition-colors shadow-sm" disabled="" title="필수 항목 매핑 완료 후 저장할 수 있습니다." type="button">
+            열 연결 설정 저장
+          </button>
+</div>
+</div>
+<!-- Secondary Row: Encoding, Header Row Number, Data Kind Toggle (No worksheet selector) -->
+<div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-100 text-xs">
+<div class="flex flex-wrap items-center gap-5">
+<!-- Encoding -->
+<div class="flex items-center gap-1.5">
+<label class="text-outline font-medium" for="encoding-select">인코딩:</label>
+<select class="h-8 text-xs rounded-lg border-slate-300 bg-white text-on-surface focus:border-primary-container focus:ring-primary-container/20 py-0 pl-2.5 pr-8" id="encoding-select">
+<option selected="">UTF-8</option>
+<option>UTF-8-sig</option>
+<option>CP949</option>
+</select>
+</div>
+<!-- Header Row Number -->
+<div class="flex items-center gap-1.5">
+<label class="text-outline font-medium" for="header-row-input">헤더 시작 행:</label>
+<input class="h-8 w-16 text-xs rounded-lg border-slate-300 bg-white text-center tabular-nums text-on-surface focus:border-primary-container focus:ring-primary-container/20 py-0 px-2" id="header-row-input" max="20" min="1" type="number" value="1"/>
+<span class="text-slate-400 text-[11px]">(1-20행)</span>
+</div>
+<!-- Data Kind Toggle -->
+<div class="flex items-center gap-2">
+<span class="text-outline font-medium">데이터 종류:</span>
+<div class="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 text-xs">
+<label class="px-2.5 py-1 rounded-[6px] bg-white font-semibold text-brand-espresso shadow-xs cursor-pointer flex items-center gap-1" for="data-kind-transactions">
+<input checked="" class="sr-only" id="data-kind-transactions" name="data_kind" type="radio" value="transactions"/>
+<span>거래 내역</span>
+</label>
+<label class="px-2.5 py-1 rounded-[6px] text-slate-500 font-medium hover:text-slate-800 cursor-pointer flex items-center gap-1" for="data-kind-balances">
+<input class="sr-only" id="data-kind-balances" name="data_kind" type="radio" value="balances"/>
+<span>전체 잔고</span>
+</label>
+</div>
+</div>
+</div>
+<div class="text-[11px] text-outline">
+          ※ CSV 파일은 시트 선택을 지원하지 않습니다.
+        </div>
+</div>
+</section>
+<!-- HEADER MISMATCH WARNING BANNER -->
+<div class="mb-6 rounded-xl bg-amber-50 border border-amber-300 p-4 flex items-start gap-3 text-amber-900 shadow-xs">
+<span class="material-symbols-outlined text-[#eab308] text-[22px] shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="text-xs leading-relaxed">
+<strong class="font-bold text-amber-950 block mb-1 text-[13px]">헤더 지문 불일치 안내</strong>
+<p class="text-amber-900 mb-1.5">
+          기존 저장된 설정과 업로드된 파일의 헤더 구조가 일치하지 않아 자동 연결이 해제되었습니다. 각 항목의 열 연결을 직접 확인해 주세요.
+        </p>
+<p class="text-amber-800 text-[11px]">
+          이 브라우저에 열 위치 설정만 저장하며 파일·계좌·시트 이름은 저장하지 않습니다.
+        </p>
+</div>
+</div>
+<!-- MAIN TWO-COLUMN WORKSPACE -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+<!-- LEFT COLUMN: Standard Field Mapping (7 cols) -->
+<section class="xl:col-span-7 bg-surface-container-lowest rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+<!-- Mapping Header & Status Summary -->
+<div class="p-5 border-b border-slate-100 bg-white">
+<div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+<h2 class="text-lg font-bold text-brand-espresso">표준 항목 열 연결</h2>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-300">
+              필수 3/4 연결 · 거래 유형 확인 필요
+            </span>
+</div>
+<p class="text-xs text-outline leading-relaxed">
+            동일한 원본 열을 두 개 이상의 항목에 중복 매핑할 수 없습니다. 필수 항목 4개를 모두 지정해야 데이터 검토 단계로 이동할 수 있습니다.
+          </p>
+</div>
+<!-- Mapping List -->
+<div class="p-5 space-y-3.5">
+<!-- 1. 거래일 (date) [필수] -->
+<div class="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="md:w-1/3">
+<div class="flex items-center gap-1.5">
+<label class="text-sm font-semibold text-brand-espresso cursor-pointer" for="mapping-select-date">거래일</label>
+<span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">필수</span>
+</div>
+<p class="text-[11px] text-outline mt-0.5 font-mono">date</p>
+</div>
+<div class="flex items-center gap-3 flex-1">
+<div class="relative w-full">
+<select aria-label="거래일 연결 열" class="w-full h-11 text-xs rounded-lg border-slate-300 bg-white text-on-surface focus:border-primary-container focus:ring-primary-container/20 pl-3 pr-8" id="mapping-select-date">
+<option selected="">거래일자 / Date</option>
+<option>종목코드 / Symbol</option>
+<option>거래유형 / Type</option>
+<option>체결수량 / Qty</option>
+<option>거래금액 / Amount</option>
+<option>통화 / Currency</option>
+<option>거래번호 / externalId</option>
+</select>
+</div>
+<span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                매핑 완료
+              </span>
+</div>
+</div>
+<!-- 2. 종목 코드 (symbol) [필수] -->
+<div class="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="md:w-1/3">
+<div class="flex items-center gap-1.5">
+<label class="text-sm font-semibold text-brand-espresso cursor-pointer" for="mapping-select-symbol">종목 코드</label>
+<span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">필수</span>
+</div>
+<p class="text-[11px] text-outline mt-0.5 font-mono">symbol</p>
+</div>
+<div class="flex items-center gap-3 flex-1">
+<div class="relative w-full">
+<select aria-label="종목 코드 연결 열" class="w-full h-11 text-xs rounded-lg border-slate-300 bg-white text-on-surface focus:border-primary-container focus:ring-primary-container/20 pl-3 pr-8" id="mapping-select-symbol">
+<option>거래일자 / Date</option>
+<option selected="">종목코드 / Symbol</option>
+<option>거래유형 / Type</option>
+<option>체결수량 / Qty</option>
+<option>거래금액 / Amount</option>
+<option>통화 / Currency</option>
+<option>거래번호 / externalId</option>
+</select>
+</div>
+<span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                매핑 완료
+              </span>
+</div>
+</div>
+<!-- 3. 거래 유형 (type) [필수] - MISSING / WARNING STATE -->
+<div class="p-3.5 rounded-xl border-2 border-red-400 bg-red-50/40 transition-colors flex flex-col gap-2">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="md:w-1/3">
+<div class="flex items-center gap-1.5">
+<label class="text-sm font-semibold text-red-950 cursor-pointer" for="mapping-select-type">거래 유형</label>
+<span class="text-xs font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded border border-red-300">필수 미지정</span>
+</div>
+<p class="text-[11px] text-red-700 mt-0.5 font-mono">type</p>
+</div>
+<div class="flex items-center gap-3 flex-1">
+<div class="relative w-full">
+<select aria-label="거래 유형 연결 열" class="w-full h-11 text-xs rounded-lg border-red-400 bg-white text-red-900 font-semibold focus:border-red-500 focus:ring-red-200 pl-3 pr-8" id="mapping-select-type">
+<option selected="" value="">-- [열을 선택하세요 (미지정)] --</option>
+<option>거래유형(원본)</option>
+<option>적요구분</option>
+<option>거래종류</option>
+</select>
+</div>
+<span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-700 border border-red-300">
+<span class="material-symbols-outlined text-[14px]">error</span>
+                  선택 필요
+                </span>
+</div>
+</div>
+<!-- Alert message -->
+<div class="text-[12px] text-red-700 font-medium flex items-center gap-1.5 pt-1.5 border-t border-red-200">
+<span class="material-symbols-outlined text-[16px] shrink-0 text-red-600">info</span>
+              거래구분(매수/매도/배당/입출금 등) 식별 열을 반드시 지정하세요.
+            </div>
+</div>
+<!-- 4. 거래 고유번호 (externalId) [필수] -->
+<div class="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="md:w-1/3">
+<div class="flex items-center gap-1.5">
+<label class="text-sm font-semibold text-brand-espresso cursor-pointer" for="mapping-select-external-id">거래 고유번호</label>
+<span class="text-xs font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">필수</span>
+</div>
+<p class="text-[11px] text-outline mt-0.5 font-mono">externalId</p>
+</div>
+<div class="flex items-center gap-3 flex-1">
+<div class="relative w-full">
+<select aria-label="거래 고유번호 연결 열" class="w-full h-11 text-xs rounded-lg border-slate-300 bg-white text-on-surface focus:border-primary-container focus:ring-primary-container/20 pl-3 pr-8" id="mapping-select-external-id">
+<option>거래일자 / Date</option>
+<option>종목코드 / Symbol</option>
+<option>체결수량 / Qty</option>
+<option>거래금액 / Amount</option>
+<option>통화 / Currency</option>
+<option selected="">거래번호 / externalId</option>
+</select>
+</div>
+<span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                매핑 완료
+              </span>
+</div>
+</div>
+<!-- 5. 수량 (quantity) [선택] -->
+<div class="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col gap-1.5">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="md:w-1/3">
+<div class="flex items-center gap-1.5">
+<label class="text-sm font-semibold text-brand-espresso cursor-pointer" for="mapping-select-quantity">수량</label>
+<span class="text-xs font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">선택</span>
+</div>
+<p class="text-[11px] text-outline mt-0.5 font-mono">quantity</p>
+</div>
+<div class="flex items-center gap-3 flex-1">
+<div class="relative w-full">
+<select aria-label="수량 연결 열" class="w-full h-11 text-xs rounded-lg border-slate-300 bg-white text-on-surface focus:border-primary-container focus:ring-primary-container/20 pl-3 pr-8" id="mapping-select-quantity">
+<option>선택 안 함</option>
+<option selected="">체결수량 / Qty</option>
+<option>거래금액 / Amount</option>
+</select>
+</div>
+<span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  매핑 완료
+                </span>
+</div>
+</div>
+<p class="text-[11px] text-outline pl-0.5">※ 거래행 수량 또는 거래금액 중 최소 하나가 필요합니다.</p>
+</div>
+<!-- 6. 거래금액 (amount) [선택] -->
+<div class="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="md:w-1/3">
+<div class="flex items-center gap-1.5">
+<label class="text-sm font-semibold text-brand-espresso cursor-pointer" for="mapping-select-amount">거래금액</label>
+<span class="text-xs font-medium text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">선택</span>
+</div>
+<p class="text-[11px] text-outline mt-0.5 font-mono">amount</p>
+</div>
+<div class="flex items-center gap-3 flex-1">
+<div class="relative w-full">
+<select aria-label="거래금액 연결 열" class="w-full h-11 text-xs rounded-lg border-slate-300 bg-white text-on-surface focus:border-primary-container focus:ring-primary-container/20 pl-3 pr-8" id="mapping-select-amount">
+<option>선택 안 함</option>
+<option selected="">거래금액 / Amount</option>
+<option>정산금액</option>
+</select>
+</div>
+<span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                매핑 완료
+              </span>
+</div>
+</div>
+<!-- 7. 통화 (currency) [필수 설정] -->
+<div class="p-3.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-colors flex flex-col gap-2.5">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="md:w-1/3">
+<div class="flex items-center gap-1.5">
+<label class="text-sm font-semibold text-brand-espresso cursor-pointer" for="mapping-select-currency">통화</label>
+<span class="text-xs font-bold text-primary-container bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">필수 설정</span>
+</div>
+<p class="text-[11px] text-outline mt-0.5 font-mono">currency</p>
+</div>
+<div class="flex items-center gap-3 flex-1">
+<div class="relative w-full">
+<select aria-label="통화 연결 열" class="w-full h-11 text-xs rounded-lg border-slate-300 bg-white text-on-surface focus:border-primary-container focus:ring-primary-container/20 pl-3 pr-8" id="mapping-select-currency">
+<option selected="">열 매핑: 통화 / Currency</option>
+<option>선택 안 함 (직접 지정 사용)</option>
+</select>
+</div>
+<span class="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  매핑 완료
+                </span>
+</div>
+</div>
+<!-- Currency Direct Confirmation Options (no implicit KRW default) -->
+<div class="bg-slate-50 rounded-lg p-2.5 border border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+<span class="text-slate-600 font-medium">통화 처리 방식 직접 확인:</span>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 rounded border border-primary-container bg-emerald-50 text-primary-container font-semibold text-xs transition-colors" type="button">
+                  [파일 내 통화 열 사용]
+                </button>
+<button class="px-2.5 py-1 rounded border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-100 text-xs transition-colors" type="button">
+                  [USD로 확인]
+                </button>
+<button class="px-2.5 py-1 rounded border border-slate-300 bg-white text-slate-700 font-medium hover:bg-slate-100 text-xs transition-colors" type="button">
+                  [KRW로 확인]
+                </button>
+</div>
+</div>
+</div>
+<!-- COLLAPSIBLE SECTION: 상세 항목 매핑 (7개 선택 항목) -->
+<details class="group rounded-xl border border-slate-200 bg-slate-50/50 overflow-hidden">
+<summary class="p-3.5 flex items-center justify-between cursor-pointer select-none bg-white hover:bg-slate-50 transition-colors">
+<span class="text-xs font-bold text-brand-espresso flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-slate-500">tune</span>
+                상세 항목 매핑 (7개 선택 항목)
+              </span>
+<span class="text-xs text-outline group-open:rotate-180 transition-transform">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</span>
+</summary>
+<div class="p-4 space-y-3 bg-white border-t border-slate-200">
+<!-- 1) 원화정산액 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+<div class="sm:w-1/3">
+<label class="font-medium text-slate-700 cursor-pointer" for="mapping-select-settlement-amount">원화정산액</label>
+<span class="text-[10px] text-outline font-mono block">settlementAmount</span>
+</div>
+<div class="flex-1">
+<select aria-label="원화 정산액 연결 열" class="w-full h-9 text-xs rounded-lg border-slate-300 bg-white text-slate-600 focus:border-primary-container focus:ring-primary-container/20" id="mapping-select-settlement-amount">
+<option selected="">미지정 (선택 안 함)</option>
+<option>원화정산액</option>
+</select>
+</div>
+</div>
+<!-- 2) 달러정산액 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+<div class="sm:w-1/3">
+<label class="font-medium text-slate-700 cursor-pointer" for="mapping-select-native-settlement-amount">달러정산액</label>
+<span class="text-[10px] text-outline font-mono block">nativeSettlementAmount</span>
+</div>
+<div class="flex-1">
+<select aria-label="달러 정산액 연결 열" class="w-full h-9 text-xs rounded-lg border-slate-300 bg-white text-slate-600 focus:border-primary-container focus:ring-primary-container/20" id="mapping-select-native-settlement-amount">
+<option selected="">미지정 (선택 안 함)</option>
+<option>외화정산액</option>
+</select>
+</div>
+</div>
+<!-- 3) 달러거래금액 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+<div class="sm:w-1/3">
+<label class="font-medium text-slate-700 cursor-pointer" for="mapping-select-native-amount">달러거래금액</label>
+<span class="text-[10px] text-outline font-mono block">nativeAmount</span>
+</div>
+<div class="flex-1">
+<select aria-label="달러 거래금액 연결 열" class="w-full h-9 text-xs rounded-lg border-slate-300 bg-white text-slate-600 focus:border-primary-container focus:ring-primary-container/20" id="mapping-select-native-amount">
+<option selected="">미지정 (선택 안 함)</option>
+<option>외화거래금액</option>
+</select>
+</div>
+</div>
+<!-- 4) 달러수수료 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+<div class="sm:w-1/3">
+<label class="font-medium text-slate-700 cursor-pointer" for="mapping-select-native-commission">달러수수료</label>
+<span class="text-[10px] text-outline font-mono block">nativeCommission</span>
+</div>
+<div class="flex-1">
+<select aria-label="달러 수수료 연결 열" class="w-full h-9 text-xs rounded-lg border-slate-300 bg-white text-slate-600 focus:border-primary-container focus:ring-primary-container/20" id="mapping-select-native-commission">
+<option selected="">미지정 (선택 안 함)</option>
+<option>외화수수료</option>
+</select>
+</div>
+</div>
+<!-- 5) 달러세금 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+<div class="sm:w-1/3">
+<label class="font-medium text-slate-700 cursor-pointer" for="mapping-select-native-tax">달러세금</label>
+<span class="text-[10px] text-outline font-mono block">nativeTax</span>
+</div>
+<div class="flex-1">
+<select aria-label="달러 세금 연결 열" class="w-full h-9 text-xs rounded-lg border-slate-300 bg-white text-slate-600 focus:border-primary-container focus:ring-primary-container/20" id="mapping-select-native-tax">
+<option selected="">미지정 (선택 안 함)</option>
+<option>외화세금</option>
+</select>
+</div>
+</div>
+<!-- 6) 환율 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+<div class="sm:w-1/3">
+<label class="font-medium text-slate-700 cursor-pointer" for="mapping-select-exchange-rate">환율</label>
+<span class="text-[10px] text-outline font-mono block">exchangeRate</span>
+</div>
+<div class="flex-1">
+<select aria-label="환율 연결 열" class="w-full h-9 text-xs rounded-lg border-slate-300 bg-white text-slate-600 focus:border-primary-container focus:ring-primary-container/20" id="mapping-select-exchange-rate">
+<option selected="">미지정 (선택 안 함)</option>
+<option>환율</option>
+</select>
+</div>
+</div>
+<!-- 7) 현금분류 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+<div class="sm:w-1/3">
+<label class="font-medium text-slate-700 cursor-pointer" for="mapping-select-cash-kind">현금분류</label>
+<span class="text-[10px] text-outline font-mono block">cashKind</span>
+</div>
+<div class="flex-1">
+<select aria-label="현금분류 연결 열" class="w-full h-9 text-xs rounded-lg border-slate-300 bg-white text-slate-600 focus:border-primary-container focus:ring-primary-container/20" id="mapping-select-cash-kind">
+<option selected="">미지정 (선택 안 함)</option>
+<option>현금분류</option>
+</select>
+</div>
+</div>
+</div>
+</details>
+</div>
+</section>
+<!-- RIGHT COLUMN: Raw Preview & Actions (5 cols) -->
+<div class="xl:col-span-5 space-y-6">
+<!-- CARD 1: RAW DATA 3-ROW PREVIEW -->
+<section class="bg-surface-container-lowest rounded-xl border border-slate-200 shadow-sm p-5">
+<div class="flex items-center justify-between mb-1.5">
+<h2 class="text-[15px] font-bold text-brand-espresso flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]">table_view</span>
+              원본 파일 미리보기 (상위 3행)
+            </h2>
+<span class="text-xs px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-mono">Top 3 Rows / 총 3행</span>
+</div>
+<p class="text-xs text-outline mb-3.5">
+            미리보기는 원본 파일 확인용이며 실제 원장 반영(저장)이 아닙니다.
+          </p>
+<!-- Raw Preview DataTable (7 columns contract) -->
+<div class="overflow-x-auto border border-slate-200 rounded-lg bg-white">
+<table class="w-full text-left border-collapse text-xs">
+<thead>
+<tr class="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold text-[11px]">
+<th class="py-2 px-2.5 border-r border-slate-100 whitespace-nowrap">거래일<br/><span class="font-normal font-mono text-[10px] text-slate-400">date</span></th>
+<th class="py-2 px-2.5 border-r border-slate-100 whitespace-nowrap">종목코드<br/><span class="font-normal font-mono text-[10px] text-slate-400">symbol</span></th>
+<th class="py-2 px-2.5 border-r border-slate-100 whitespace-nowrap text-red-700 bg-red-50/50">거래유형<br/><span class="font-normal font-mono text-[10px] text-red-400">rawtype</span></th>
+<th class="py-2 px-2.5 border-r border-slate-100 text-right whitespace-nowrap">수량<br/><span class="font-normal font-mono text-[10px] text-slate-400">quantity</span></th>
+<th class="py-2 px-2.5 border-r border-slate-100 text-right whitespace-nowrap">거래금액<br/><span class="font-normal font-mono text-[10px] text-slate-400">amount</span></th>
+<th class="py-2 px-2.5 border-r border-slate-100 text-center whitespace-nowrap">통화<br/><span class="font-normal font-mono text-[10px] text-slate-400">currency</span></th>
+<th class="py-2 px-2.5 whitespace-nowrap font-mono text-[11px]">거래번호<br/><span class="font-normal text-[10px] text-slate-400">externalId</span></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 tabular-nums font-mono text-[11px]">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-2.5 px-2.5 border-r border-slate-100 whitespace-nowrap text-slate-700">2026-11-01</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 font-semibold text-slate-800">DEMO-K</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 font-sans text-slate-800 bg-red-50/20 whitespace-nowrap">매수</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 text-right text-slate-800">10</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 text-right font-medium text-slate-900">100,000</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 text-center text-slate-700 font-sans">KRW</td>
+<td class="py-2.5 px-2.5 text-slate-600 whitespace-nowrap">DEMO-001</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-2.5 px-2.5 border-r border-slate-100 whitespace-nowrap text-slate-700">2026-11-02</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 font-semibold text-slate-800">DEMO-A</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 font-sans text-slate-800 bg-red-50/20 whitespace-nowrap">배당금</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 text-right text-slate-400">-</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 text-right font-medium text-slate-900">10.00</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 text-center text-slate-700 font-sans">USD</td>
+<td class="py-2.5 px-2.5 text-slate-600 whitespace-nowrap">DEMO-002</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-2.5 px-2.5 border-r border-slate-100 whitespace-nowrap text-slate-700">2026-11-03</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 font-semibold text-slate-800">CASH</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 font-sans text-slate-800 bg-red-50/20 whitespace-nowrap">입금</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 text-right text-slate-400">-</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 text-right font-medium text-slate-900">500.00</td>
+<td class="py-2.5 px-2.5 border-r border-slate-100 text-center text-slate-700 font-sans">USD</td>
+<td class="py-2.5 px-2.5 text-slate-600 whitespace-nowrap">DEMO-003</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Explanatory synthetic caption list -->
+<div class="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-100 text-[11px] text-slate-600 space-y-1">
+<p>• <strong>1행 (2026-11-01):</strong> 체결금액 100,000 KRW</p>
+<p>• <strong>2행 (2026-11-02):</strong> 세전 배당금 총액 10.00 USD (주당 단가가 아닌 배당 입금 총액)</p>
+<p>• <strong>3행 (2026-11-03):</strong> 예수금 입금 500.00 USD</p>
+</div>
+</section>
+<!-- CARD 2: CONFIRMATION & ACTION CARD -->
+<section class="bg-surface-container-lowest rounded-xl border border-slate-200 shadow-sm p-6">
+<h2 class="text-base font-bold text-brand-espresso mb-4">확인 및 다음 단계</h2>
+<!-- Checkbox: 필수 확인 완료 (Unchecked and Disabled state) -->
+<div class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-200">
+<label class="flex items-start gap-2.5 cursor-not-allowed text-xs text-slate-400" for="confirmation-required-checkbox">
+<input class="mt-0.5 rounded border-slate-300 text-slate-300 focus:ring-0 w-4 h-4 cursor-not-allowed" disabled="" id="confirmation-required-checkbox" type="checkbox"/>
+<span class="font-medium leading-relaxed">
+<strong class="text-slate-500">[필수]</strong> 열 연결 및 기본 통화 확인
+              </span>
+</label>
+</div>
+<!-- Blocking Reason Banner -->
+<div class="mb-4 p-3.5 rounded-xl bg-red-50 border border-red-200 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-red-600 text-[18px] shrink-0 mt-0.5">error_outline</span>
+<div class="text-xs text-red-900 leading-relaxed font-medium">
+              필수 항목 '거래 유형' 열을 지정해야 활성화됩니다.
+            </div>
+</div>
+<!-- Action Buttons -->
+<div class="space-y-3">
+<div class="flex flex-col sm:flex-row items-center gap-2.5">
+<!-- Disabled CTA Button -->
+<button class="w-full sm:flex-1 h-11 px-5 rounded-lg bg-slate-200 text-slate-400 font-semibold text-xs cursor-not-allowed flex items-center justify-center gap-2 shadow-none" disabled="" type="button">
+<span>연결 자료 미리보기</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+<!-- Save mapping preset button (Disabled) -->
+<button class="w-full sm:w-auto h-11 px-4 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 font-semibold text-xs cursor-not-allowed transition-colors shadow-none shrink-0" disabled="" type="button">
+                열 연결 설정 저장
+              </button>
+</div>
+<!-- Plain text guidance only -->
+<p class="text-[11px] text-outline text-center leading-relaxed pt-1">
+              이 브라우저에 열 위치 설정만 저장하며 파일·계좌·시트 이름은 저장하지 않습니다.
+            </p>
+</div>
+</section>
+</div>
+</div>
+</main>
+</body></html>

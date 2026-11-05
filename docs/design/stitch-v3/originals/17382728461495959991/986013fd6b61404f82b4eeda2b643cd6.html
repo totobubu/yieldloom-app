@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>V5 CORRECTED / Ledger Analysis / Mobile / source-49b47c2d</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface": "#f7f9fb",
+            "surface-container-low": "#f2f4f6",
+            "surface-variant": "#e0e3e5",
+            "secondary-container": "#ffdbc9",
+            "primary-fixed": "#99f3e4",
+            "on-tertiary": "#ffffff",
+            "on-primary-fixed-variant": "#005048",
+            "on-error-container": "#93000a",
+            "outline": "#6e7977",
+            "on-surface-variant": "#3e4947",
+            "on-tertiary-fixed-variant": "#5a4300",
+            "on-secondary-fixed": "#29170c",
+            "inverse-primary": "#7dd6c8",
+            "secondary-fixed-dim": "#e1c0ae",
+            "tertiary-container": "#896700",
+            "on-background": "#191c1e",
+            "on-secondary-container": "#795f50",
+            "on-primary-fixed": "#00201c",
+            "on-error": "#ffffff",
+            "secondary-fixed": "#ffdbc9",
+            "inverse-surface": "#2d3133",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#ffedcb",
+            "on-secondary-fixed-variant": "#594234",
+            "tertiary-fixed": "#ffdf9a",
+            "on-tertiary-fixed": "#251a00",
+            "background": "#f7f9fb",
+            "on-secondary": "#ffffff",
+            "tertiary": "#6b5000",
+            "primary": "#005f55",
+            "surface-dim": "#d8dadc",
+            "on-surface": "#191c1e",
+            "surface-container-highest": "#e0e3e5",
+            "surface-container": "#eceef0",
+            "surface-tint": "#006b60",
+            "on-primary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "surface-bright": "#f7f9fb",
+            "on-primary-container": "#abfff0",
+            "primary-container": "#0d7a6e",
+            "outline-variant": "#bdc9c6",
+            "surface-container-high": "#e6e8ea",
+            "error-container": "#ffdad6",
+            "tertiary-fixed-dim": "#f7be1d",
+            "secondary": "#73594a",
+            "primary-fixed-dim": "#7dd6c8",
+            "inverse-on-surface": "#eff1f3"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "gutter": "1.5rem",
+            "margin": "2rem",
+            "space-xl": "2rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter", "Pretendard", "'Apple SD Gothic Neo'", "sans-serif"],
+            "metric-num-lg": ["Inter", "Pretendard", "sans-serif"],
+            "label-md": ["Inter", "Pretendard", "'Apple SD Gothic Neo'", "sans-serif"],
+            "body-md": ["Inter", "Pretendard", "'Apple SD Gothic Neo'", "sans-serif"],
+            "body-lg": ["Inter", "Pretendard", "'Apple SD Gothic Neo'", "sans-serif"],
+            "label-sm": ["Inter", "Pretendard", "'Apple SD Gothic Neo'", "sans-serif"],
+            "display-lg": ["Inter", "Pretendard", "'Apple SD Gothic Neo'", "sans-serif"],
+            "metric-num-md": ["Inter", "Pretendard", "sans-serif"],
+            "headline-sm": ["Inter", "Pretendard", "'Apple SD Gothic Neo'", "sans-serif"],
+            "headline-md": ["Inter", "Pretendard", "'Apple SD Gothic Neo'", "sans-serif"]
+          },
+          "fontSize": {
+            "headline-lg": ["30px", { lineHeight: "38px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "metric-num-lg": ["32px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "label-md": ["13px", { lineHeight: "18px", letterSpacing: "0em", fontWeight: "600" }],
+            "body-md": ["14px", { lineHeight: "20px", letterSpacing: "-0.005em", fontWeight: "400" }],
+            "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "400" }],
+            "label-sm": ["11px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500" }],
+            "display-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "metric-num-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-sm": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .material-symbols-outlined {
+      font-size: 18px;
+      line-height: 1;
+      vertical-align: middle;
+    }
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased flex justify-center min-h-screen py-4 px-2 sm:px-4">
+<!-- Mobile Viewport Wrapper (Max 390px, Zero Horizontal Scroll) -->
+<main class="w-full max-w-[390px] bg-surface flex flex-col gap-5 overflow-hidden pb-12">
+<!-- Reusable Page Header -->
+<header class="flex flex-col gap-2 pt-1">
+<!-- Badge Pills -->
+<div class="flex flex-wrap items-center gap-1.5"><span class="inline-flex items-center gap-1 bg-primary-fixed/30 text-primary border border-primary/20 px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold"><span class="text-[9px] text-primary">●</span> 원장 데이터 분석</span><span class="inline-flex items-center bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold border border-tertiary-fixed-dim/40">예시 데이터</span></div>
+<!-- Title & Subtitle -->
+<div class="mt-1">
+<h1 class="font-headline-sm text-headline-sm text-[#1e293b] font-bold tracking-tight">
+          원장 품질 및 청산 손익 분석
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1.5 leading-snug">
+          가져온 증권 거래 원장의 데이터 품질 정합성을 검증하고, 실현 손익 및 현금흐름 연동 상태를 분석합니다.
+        </p>
+</div>
+</header>
+<!-- Top Filter & Scope Controls -->
+<section class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-3.5 shadow-sm flex flex-col gap-3">
+<!-- 기준 통화 -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant">기준 통화 (통화 결측치 합산 금지 원칙)</label>
+<span class="font-label-sm text-label-sm text-primary font-semibold">KRW / USD 엄격 분리</span>
+</div>
+<!-- Segmented Button (44px target) -->
+<div class="grid grid-cols-3 bg-surface-container-low p-1 rounded-lg gap-1 border border-outline-variant/40 h-[44px] items-center">
+<button class="h-full bg-surface-container-lowest text-primary font-label-md text-label-md rounded shadow-xs font-semibold flex items-center justify-center transition-all" type="button">
+            전체 (분리표시)
+          </button>
+<button class="h-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded flex items-center justify-center transition-all" type="button">
+            KRW
+          </button>
+<button class="h-full text-on-surface-variant hover:text-on-surface font-label-md text-label-md rounded flex items-center justify-center transition-all" type="button">
+            USD
+          </button>
+</div>
+</div>
+<!-- 연동 가상 계좌 -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant">연동 가상 계좌</label>
+<div class="relative flex items-center">
+<select aria-label="연동 가상 계좌 선택" class="w-full h-[44px] bg-surface-container-lowest border border-outline-variant rounded-lg px-3 pr-8 font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20" id="account-select">
+<option selected="">DEMO-ACC-****-891 (가상 모의 계좌)</option>
+<option>DEMO-ACC-****-104 (모의 테크 포트폴리오)</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-2.5 text-on-surface-variant" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+<!-- 분석 마감월 -->
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant">분석 마감월</label>
+<span class="bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm px-1.5 py-0.5 rounded font-medium">단일 월 표본</span>
+</div>
+<div class="relative flex items-center">
+<input aria-label="분석 마감월" class="w-full h-[44px] bg-surface-container-low border border-outline-variant/70 rounded-lg px-3 font-body-md text-body-md text-on-surface font-medium cursor-default" id="month-input" readonly="" type="text" value="2026년 03월 (마감월 1개 존재)"/>
+<span class="material-symbols-outlined absolute right-2.5 text-outline" data-icon="calendar_month">calendar_month</span>
+</div>
+</div>
+<!-- 거래 성격 분류 -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant">거래 성격 분류</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="h-[44px] bg-primary text-on-primary font-label-md text-label-md rounded-lg flex items-center justify-center gap-1 font-semibold shadow-xs" type="button">
+<span>⇄</span> 매수 / 매도 / 배당
+          </button>
+<button class="h-[44px] bg-surface-container-low border border-outline-variant/60 text-on-surface-variant font-label-md text-label-md rounded-lg flex items-center justify-center gap-1 font-medium hover:bg-surface-container" type="button">
+<span>⇋</span> 외부 입출금 / 이체
+          </button>
+</div>
+</div>
+</section>
+<!-- Summary Metric Cards (2x2 Grid) -->
+<section class="grid grid-cols-2 gap-2.5"><!-- Metric 1: 원장 정합성 검증 --><div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3 flex flex-col justify-between shadow-xs"><div><span class="font-label-sm text-label-sm text-outline font-medium">원장 정합성 검증</span><div class="font-metric-num-md text-metric-num-md font-bold text-on-surface mt-1 tabular-nums">5건 유효 <span class="text-xs font-normal text-outline">/ 1건 검토</span></div></div><div class="mt-2.5"><div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden flex"><div class="bg-[#0d7a6e] h-full" style="width: 83.3%"></div><div class="bg-tertiary-fixed-dim h-full" style="width: 16.7%"></div></div><p class="font-label-sm text-[10px] text-outline mt-1 tabular-nums">총 6건 원본 데이터 매핑 완료</p></div></div><!-- Metric 2: 6개월 배당 연속성 지표 --><div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3 flex flex-col justify-between shadow-xs"><div><span class="font-label-sm text-label-sm text-outline font-medium">6개월 배당 연속성 지표</span><div class="font-metric-num-md text-[15px] font-bold text-rose-600 mt-1 flex items-center gap-1 leading-tight"><span class="material-symbols-outlined text-[16px]">info</span> 산출 불가 (표본 부족)</div></div><div class="mt-1 pt-1 border-t border-outline-variant/30"><p class="font-label-sm text-[10px] text-error leading-tight font-medium">현재 예시 자료만으로 산출하지 않음</p><span class="font-label-sm text-[9px] text-outline block mt-0.5">※ 0으로 임의 왜곡 표기하지 않음</span></div></div><!-- Metric 3: XIRR (연환산 내부수익률) --><div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3 flex flex-col justify-between shadow-xs"><div><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-outline font-medium">XIRR (연환산)</span><span class="bg-secondary-container text-on-secondary-fixed text-[9px] px-1 py-0.2 rounded font-semibold">자료 부족</span></div><div class="font-metric-num-md text-[15px] font-bold text-on-surface mt-1 leading-tight">산출 보류 (자료 부족)</div></div><div class="mt-1 pt-1 border-t border-outline-variant/30"><p class="font-label-sm text-[10px] text-on-surface-variant leading-tight">과거 시계열 현금흐름 자료 부족으로 XIRR 산출 보류</p><span class="font-label-sm text-[9px] text-outline block mt-0.5">※ 0으로 임의 왜곡 표기하지 않음</span></div></div><!-- Metric 4: 청산 포지션 실현손익 --><div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3 flex flex-col justify-between shadow-xs"><div><span class="font-label-sm text-label-sm text-outline font-medium">청산 포지션 실현손익</span><div class="font-metric-num-md text-metric-num-md font-bold text-emerald-700 mt-1 tabular-nums">+40,000 <span class="text-xs font-semibold">KRW</span></div></div><div class="mt-1 flex flex-col gap-0.5 pt-1 border-t border-outline-variant/30"><div class="flex justify-between items-center font-label-sm text-[10px]"><span class="text-outline">USD 포지션</span><span class="text-on-surface-variant font-medium">미실현 잔고</span></div><span class="bg-surface-container-low text-primary font-label-sm text-[9px] px-1.5 py-0.5 rounded text-center font-medium mt-0.5">예시 매수 원장 대조 (가정치)</span></div></div></section>
+<!-- Currency Breakdown Card (엄격 분리 집계) -->
+<section class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3.5 shadow-sm flex flex-col gap-3">
+<div class="flex items-center justify-between border-b border-outline-variant/40 pb-2">
+<h2 class="font-label-md text-label-md text-on-surface font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary" data-icon="account_balance_wallet">account_balance_wallet</span>
+          통화별 독립 집계 내역
+        </h2>
+<span class="font-label-sm text-label-sm text-outline bg-surface-container-low px-1.5 py-0.5 rounded">환산합산 금지</span>
+</div>
+<!-- KRW Breakdown -->
+<div class="bg-surface-container-low/60 rounded-lg p-2.5 border border-outline-variant/30 flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md font-bold text-[#1e293b] flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span> 대한민국 원 (KRW)
+          </span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">3건 유효</span>
+</div>
+<div class="grid grid-cols-3 gap-1 pt-1 text-center font-label-sm">
+<div class="bg-surface-container-lowest p-1.5 rounded border border-outline-variant/20">
+<span class="text-[10px] text-outline block">매수 집계액</span>
+<span class="font-semibold text-on-surface tabular-nums text-xs">720,000 ₩</span>
+</div>
+<div class="bg-surface-container-lowest p-1.5 rounded border border-outline-variant/20">
+<span class="text-[10px] text-outline block">매도(정산액)</span>
+<span class="font-semibold text-on-surface tabular-nums text-xs">140,000 ₩</span>
+</div>
+<div class="bg-surface-container-lowest p-1.5 rounded border border-outline-variant/20">
+<span class="text-[10px] text-outline block">순입금(예수금)</span>
+<span class="font-semibold text-primary tabular-nums text-xs">+500,000 ₩</span>
+</div>
+</div>
+</div>
+<!-- USD Breakdown -->
+<div class="bg-surface-container-low/60 rounded-lg p-2.5 border border-outline-variant/30 flex flex-col gap-1.5">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md font-bold text-[#1e293b] flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span> 미국 달러 (USD)
+          </span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">2건 유효</span>
+</div>
+<div class="grid grid-cols-2 gap-1.5 pt-1 text-center font-label-sm">
+<div class="bg-surface-container-lowest p-1.5 rounded border border-outline-variant/20">
+<span class="text-[10px] text-outline block">매수 집계액</span>
+<span class="font-semibold text-on-surface tabular-nums text-xs">$226.00 USD</span>
+</div>
+<div class="bg-surface-container-lowest p-1.5 rounded border border-outline-variant/20">
+<span class="text-[10px] text-outline block">배당 수령액</span>
+<span class="font-semibold text-emerald-700 tabular-nums text-xs">+$5.75 USD</span>
+</div>
+</div>
+</div>
+<!-- 결측치 격리 보관 경고 box -->
+<div class="bg-amber-50/90 border border-amber-200 rounded-lg p-2.5 flex items-start gap-2">
+<span class="text-base select-none">🔒</span>
+<div class="font-body-md text-xs text-amber-900 leading-snug">
+<span class="font-bold">결측치 격리 보관 중:</span> 통화 식별값이 없는 1건 <span class="font-semibold tabular-nums underline">(150,000 ?)</span>은 임의 환산하거나 타 통화에 합산하지 않고 안전하게 격리 보관 중입니다.
+        </div>
+</div>
+</section>
+<!-- Transaction Verification Section -->
+<section class="flex flex-col gap-2.5">
+<!-- Exactly SIX Synthetic Transaction Cards (Rendered Once, No Duplication) -->
+<div class="flex flex-col gap-2">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3 shadow-2xs flex flex-col gap-1.5">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-[11px] text-outline font-semibold">No. 1</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant tabular-nums">2026-03-05</span>
+<span class="bg-rose-100 text-rose-700 font-label-sm text-[10px] px-1.5 py-0.2 rounded font-semibold">매수</span>
+</div>
+<span class="font-label-sm text-[11px] text-primary font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="check_circle">check_circle</span> 정상
+</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-on-surface">KRX-DEMO-01 <span class="text-xs font-normal text-on-surface-variant">(가상모의전자)</span></div>
+<div class="flex justify-between items-center text-xs pt-1 border-t border-outline-variant/20 tabular-nums">
+<span class="text-on-surface-variant">10주 @ 72,000 KRW</span>
+<span class="font-semibold text-on-surface">체결: 720,000 KRW</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3 shadow-2xs flex flex-col gap-1.5">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-[11px] text-outline font-semibold">No. 2</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant tabular-nums">2026-03-12</span>
+<span class="bg-rose-100 text-rose-700 font-label-sm text-[10px] px-1.5 py-0.2 rounded font-semibold">매수</span>
+</div>
+<span class="font-label-sm text-[11px] text-primary font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="check_circle">check_circle</span> 정상
+</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-on-surface">NYSE-DEMO-US <span class="text-xs font-normal text-on-surface-variant">(알파테크가상 ETF)</span></div>
+<div class="flex justify-between items-center text-xs pt-1 border-t border-outline-variant/20 tabular-nums">
+<span class="text-on-surface-variant">5주 @ $45.20 USD</span>
+<span class="font-semibold text-on-surface">체결: $226.00 USD</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3 shadow-2xs flex flex-col gap-1.5">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-[11px] text-outline font-semibold">No. 3</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant tabular-nums">2026-03-18</span>
+<span class="bg-indigo-100 text-indigo-700 font-label-sm text-[10px] px-1.5 py-0.2 rounded font-semibold">매도 (청산)</span>
+</div>
+<span class="font-label-sm text-[11px] text-primary font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="check_circle">check_circle</span> 정상
+</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-on-surface">KRX-DEMO-99 <span class="text-xs font-normal text-on-surface-variant">(모의에너지홀딩스)</span></div>
+<div class="flex justify-between items-center text-xs pt-1 border-t border-outline-variant/20 tabular-nums">
+<span class="text-on-surface-variant">4주 @ 35,000 KRW</span>
+<span class="font-semibold text-emerald-700">140,000 KRW (+40,000 KRW 실현손익)</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3 shadow-2xs flex flex-col gap-1.5">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-[11px] text-outline font-semibold">No. 4</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant tabular-nums">2026-03-24</span>
+<span class="bg-emerald-100 text-emerald-800 font-label-sm text-[10px] px-1.5 py-0.2 rounded font-semibold">현금배당</span>
+</div>
+<span class="font-label-sm text-[11px] text-primary font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="check_circle">check_circle</span> 정상
+</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-on-surface">NYSE-DEMO-US <span class="text-xs font-normal text-on-surface-variant">(알파테크가상 ETF)</span></div>
+<div class="flex justify-between items-center text-xs pt-1 border-t border-outline-variant/20 tabular-nums">
+<span class="text-on-surface-variant">5주 보유 (DPS $1.15)</span>
+<span class="font-semibold text-emerald-700">실지급: +$5.75 USD</span>
+</div>
+</div>
+<!-- Card 5 (Anomaly Card) -->
+<div class="bg-rose-50/40 border-2 border-amber-300 rounded-xl p-3 shadow-xs flex flex-col gap-2 relative">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-[11px] text-outline font-semibold">No. 5</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant tabular-nums">2026-03-27</span>
+<span class="bg-rose-100 text-rose-700 font-label-sm text-[10px] px-1.5 py-0.2 rounded font-semibold">매수</span>
+</div>
+<span class="bg-amber-100 text-amber-800 font-label-sm text-[10px] px-1.5 py-0.2 rounded font-bold">통화 미지정 - 검토 요망</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-error flex items-center gap-1">
+<span>⚠️ [미확인 티커]</span> 신규미식별인프라
+</div>
+<div class="flex justify-between items-center text-xs pt-1 border-t border-amber-200 tabular-nums">
+<span class="text-on-surface-variant">20주</span>
+<span class="font-bold text-amber-900 bg-amber-100/70 px-1 rounded">결측/미확인: 150,000 (?)</span>
+</div>
+<div class="grid grid-cols-2 gap-2 mt-1">
+<button class="h-[36px] bg-surface-container-lowest border border-outline-variant hover:border-primary text-primary font-label-md text-xs rounded-lg font-semibold flex items-center justify-center gap-1 shadow-2xs" type="button">
+<span>🔗</span> 티커 연결
+</button>
+<button class="h-[36px] bg-surface-container-lowest border border-rose-200 text-rose-600 hover:bg-rose-50 font-label-md text-xs rounded-lg font-semibold flex items-center justify-center gap-1 shadow-2xs" type="button">
+<span>🗑️</span> 이 행 제외
+</button>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-3 shadow-2xs flex flex-col gap-1.5">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-[11px] text-outline font-semibold">No. 6</span>
+<span class="font-label-sm text-[11px] text-on-surface-variant tabular-nums">2026-03-30</span>
+<span class="bg-slate-200 text-slate-700 font-label-sm text-[10px] px-1.5 py-0.2 rounded font-semibold">원화입금</span>
+</div>
+<span class="font-label-sm text-[11px] text-primary font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="check_circle">check_circle</span> 정상
+</span>
+</div>
+<div class="font-label-md text-label-md font-bold text-on-surface">가상 연동 입금 전표 (DEMO 계좌) <span class="text-xs font-normal text-on-surface-variant">(예수금 충전 거래)</span></div>
+<div class="flex justify-between items-center text-xs pt-1 border-t border-outline-variant/20 tabular-nums">
+<span class="text-outline">수량/단가: -</span>
+<span class="font-semibold text-primary">정산: +500,000 KRW</span>
+</div>
+</div>
+</div>
+<!-- Footnote info box -->
+<div class="bg-surface-container-low border border-outline-variant/40 rounded-lg p-2.5 flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="verified">verified</span>
+<div class="flex justify-between items-center w-full">
+<p class="font-label-sm text-[11px] text-on-surface-variant leading-tight">총 6건 중 유효 청산·현금흐름 5건 집계 반영 예시 계산 (미확인 1건 제외)</p>
+<span class="font-label-sm text-[10px] text-outline tabular-nums">2026년 3월 단일 마감월 기준</span>
+</div>
+</div>
+</section>
+<!-- Policy & Guide Cards -->
+<section class="flex flex-col gap-2.5"><!-- Policy 1: 스냅샷 vs 시가평가 --><div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-3.5 shadow-2xs flex flex-col gap-2"><h3 class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1.5"><span class="material-symbols-outlined text-primary" data-icon="rule">rule</span> 스냅샷 vs 시가평가(Mark-to-Market) 분리 원칙</h3><p class="font-body-md text-xs text-on-surface-variant leading-relaxed">청산 완료 건만 실현 손익에 산입되며, 현재 보유 중인 미청산 잔고는 시장 평가 스냅샷으로 분리 보관됩니다.</p><ul class="text-[11px] text-on-surface-variant space-y-1 pl-3.5 list-disc"><li><span class="font-semibold text-on-surface">KRX-DEMO-99 청산:</span> 매수원가 100,000 KRW, 매도금액 140,000 KRW, 실현손익 <span class="text-primary font-semibold">+40,000 KRW</span> 예시 계산.</li><li><span class="font-semibold text-on-surface">원가 산출 기준:</span> 예시 매수원장 대조(가정치) 기준입니다.</li><li><span class="font-semibold text-on-surface">미청산 잔고:</span> 알파테크가상 ETF 5주는 잔고 보유 상태로 배당 현금흐름만 계상됩니다.</li></ul></div><!-- Notice Card --><div class="bg-surface-container-lowest border border-outline-variant/50 rounded-xl p-3 shadow-2xs flex flex-col gap-1"><div class="flex items-center gap-1.5 font-label-sm text-xs font-semibold text-outline"><span class="material-symbols-outlined text-[16px]">info</span><span>안내 및 유의사항</span></div><p class="font-label-sm text-[11px] text-on-surface-variant leading-relaxed">본 화면은 가상 시뮬레이션 및 데이터 정합성 검토 목적의 시안이며, 세무 자문이나 실제 금융 거래 체결 기능을 제공하지 않습니다.</p></div></section>
+<!-- Bottom Action Buttons (Stacked Mobile 44px) -->
+<section class="flex flex-col gap-2 pt-2">
+<!-- Primary Action -->
+<button class="w-full h-[44px] bg-[#0d7a6e] hover:bg-[#0b665c] text-white rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] transition-all" type="button">
+<span>배당달력에서 종합 흐름 보기</span>
+<span>→</span>
+</button>
+<!-- Secondary Outline Action -->
+<button class="w-full h-[44px] bg-surface-container-lowest hover:bg-surface-container-low border border-outline-variant text-[#382418] rounded-lg font-label-md text-label-md font-semibold flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all" type="button">
+<span>📊</span>
+<span>분석 보고서 CSV 내보내기</span>
+</button>
+<!-- Tertiary Subtle Action -->
+<button class="w-full h-[44px] bg-transparent hover:bg-surface-container-low text-on-surface-variant hover:text-on-surface rounded-lg font-label-md text-label-md font-medium flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all" type="button">
+<span>🔀</span>
+<span>미식별 1건 매핑 재조정</span>
+</button>
+</section>
+</main>
+</body></html>

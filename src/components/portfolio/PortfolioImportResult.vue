@@ -5,6 +5,7 @@
     import Tag from 'primevue/tag';
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
+    import StitchSymbol from './StitchSymbol.vue';
 
     const props = defineProps({
         receipt: { type: Object, required: true },
@@ -82,20 +83,22 @@
         }));
     });
     const summaryGroups = computed(() =>
-        currencyGroups.value.length
-            ? currencyGroups.value
-            : [
-                  {
-                      currency: '통화별 신규 내역 미제공',
-                      count: null,
-                      labels: [
-                          '매수 금액',
-                          '매도 금액',
-                          '입출금 순액',
-                          '배당 입금액',
-                      ],
-                  },
-              ]
+        props.receipt.inserted === 0
+            ? [{ currency: '신규 저장 내역 없음', count: 0, labels: [] }]
+            : currencyGroups.value.length
+              ? currencyGroups.value
+              : [
+                    {
+                        currency: '통화별 신규 내역 미제공',
+                        count: null,
+                        labels: [
+                            '매수 금액',
+                            '매도 금액',
+                            '입출금 순액',
+                            '배당 입금액',
+                        ],
+                    },
+                ]
     );
     const heading = ref(null);
     function focusHeading() {
@@ -107,7 +110,7 @@
     defineExpose({ focusHeading });
     const explanation = computed(() => {
         if (props.accountsState !== 'ready')
-            return '저장은 완료되었습니다. 계좌 목록 갱신 상태를 확인해 주세요.';
+            return '계좌 목록 갱신 상태를 확인해 주세요.';
         if (props.receipt.kind === 'transactions')
             return '거래 기록을 저장했고 계산 잔고에 반영했습니다. 증권사 잔고내역을 등록하면 해당 기준일 이후 거래만 누적합니다.';
         if (
@@ -123,49 +126,72 @@
     <div class="import-result">
         <header class="receipt-header">
             <div class="receipt-badges">
-                <Tag value="데이터 가져오기 및 저장 영수증" /><Tag
+                <Tag value="데이터 가져오기 및 저장 영수증" /><slot
+                    name="badges" /><Tag
                     severity="secondary"
-                    :value="`기준일: ${receipt.asOf}`" />
+                    :value="`기준일: ${(receipt.asOf || '미제공').replace(/^(\d{4})-(\d{2})-(\d{2})$/, '$1년 $2월 $3일')}`"
+                    ><template #icon
+                        ><StitchSymbol name="receipt_long" /></template
+                ></Tag>
             </div>
             <ol class="receipt-steps" aria-label="가져오기 진행 단계">
-                <li>
-                    <i class="pi pi-check" aria-hidden="true" />Step 1 파일
-                    업로드
-                </li>
-                <li>
-                    <i class="pi pi-check" aria-hidden="true" />Step 2 열
-                    매핑·검토
-                </li>
-                <li aria-current="step">
-                    <i class="pi pi-check-circle" aria-hidden="true" />Step 3
-                    저장 결과 영수증
+                <li
+                    v-for="(label, index) in [
+                        '파일 업로드',
+                        '열 매핑·검토',
+                        '저장 결과 영수증',
+                    ]"
+                    :key="label"
+                    :aria-current="index === 2 ? 'step' : undefined">
+                    <span class="receipt-step-icon"
+                        ><StitchSymbol
+                            :name="index === 2 ? 'done_all' : 'check'"
+                    /></span>
+                    <span class="receipt-step-text"
+                        ><span class="receipt-step-index"
+                            >Step {{ index + 1
+                            }}<span class="receipt-step-complete">
+                                (완료)</span
+                            ></span
+                        >
+                        <strong>{{ label }}</strong></span
+                    >
                 </li>
             </ol>
-            <div class="result-heading" role="status" aria-live="polite">
-                <h2 ref="heading" tabindex="-1">
-                    {{
-                        receipt.inserted
-                            ? '자료 저장이 완료되었습니다'
-                            : '이미 등록된 자료입니다'
-                    }}
-                </h2>
-                <Tag
-                    :value="`${number(receipt.inserted)}건 저장 완료 · ${number(receipt.duplicates)}건 중복 제외`" />
+            <div class="receipt-context">
+                <div class="result-heading" role="status" aria-live="polite">
+                    <h2 ref="heading" tabindex="-1">
+                        증권
+                        {{
+                            receipt.kind === 'holdings'
+                                ? '잔고내역'
+                                : '거래내역'
+                        }}
+                        저장 영수증
+                    </h2>
+                    <Tag
+                        :value="`${number(receipt.inserted)}건 저장 완료 · ${number(receipt.duplicates)}건 중복 제외`" />
+                </div>
+                <p class="receipt-description">
+                    총 {{ number(total) }}건 중
+                    {{ number(receipt.inserted) }}건을 새로 저장하고
+                    {{ number(receipt.duplicates) }}건은 중복으로 제외했습니다.
+                    ({{
+                        receipt.kind === 'holdings'
+                            ? '잔고 기준일'
+                            : '조회 종료일'
+                    }}: {{ receipt.asOf }})
+                </p>
             </div>
-            <p class="receipt-description">
-                총 {{ number(total) }}건 중 {{ number(receipt.inserted) }}건을
-                새로 저장하고 {{ number(receipt.duplicates) }}건은 중복으로
-                제외했습니다. ({{
-                    receipt.kind === 'holdings' ? '잔고 기준일' : '조회 종료일'
-                }}: {{ receipt.asOf }})
-            </p>
         </header>
         <Card class="receipt-card">
             <template #content>
                 <div class="receipt-workflow">
                     <div class="receipt-overview">
                         <div class="receipt-summary">
-                            <i class="pi pi-receipt" aria-hidden="true" />
+                            <span class="receipt-summary-icon"
+                                ><StitchSymbol name="receipt_long"
+                            /></span>
                             <div>
                                 <h3>
                                     {{
@@ -176,26 +202,48 @@
                                     저장 영수증
                                 </h3>
                                 <p>
-                                    {{ receipt.accountAlias }} · 기준일
-                                    {{ receipt.asOf }}
+                                    총 {{ number(total) }}건 처리: 신규
+                                    {{ number(receipt.inserted) }}건 · 중복 제외
+                                    {{ number(receipt.duplicates) }}건
                                 </p>
                             </div>
                             <Tag
                                 severity="secondary"
                                 value="저장 영수증 유지" />
                         </div>
-                        <p class="result-explanation">{{ explanation }}</p>
+                        <p class="result-explanation">
+                            <span
+                                class="receipt-state"
+                                role="status"
+                                aria-live="polite"
+                                >{{
+                                    receipt.inserted
+                                        ? '자료 저장이 완료되었습니다'
+                                        : '이미 등록된 자료입니다'
+                                }}</span
+                            >. {{ explanation }}
+                        </p>
                         <dl class="result-counts">
                             <div>
-                                <dt>기준일</dt>
+                                <dt>
+                                    <StitchSymbol name="event_available" />
+                                    기준일
+                                </dt>
                                 <dd>{{ receipt.asOf }}</dd>
                             </div>
                             <div>
-                                <dt>연동 계좌</dt>
+                                <dt>
+                                    <StitchSymbol
+                                        name="account_balance_wallet" />
+                                    연동 계좌
+                                </dt>
                                 <dd>{{ receipt.accountAlias }}</dd>
                             </div>
                             <div>
-                                <dt>업로드 파일</dt>
+                                <dt>
+                                    <StitchSymbol name="description" /> 업로드
+                                    파일
+                                </dt>
                                 <dd>
                                     {{
                                         receipt.fileNames?.join(', ') ||
@@ -209,11 +257,15 @@
                         <section
                             class="receipt-finance"
                             aria-label="통화별 금융 요약 제공 상태">
-                            <h3>통화별 요약</h3>
-                            <p>
-                                매수·매도 금액, 입출금 순액과 배당 입금액는 이
-                                저장 영수증에서 제공하지 않습니다.
-                            </p>
+                            <div class="receipt-finance-title">
+                                <h3>
+                                    <StitchSymbol name="account_balance" />
+                                    통화별 저장 현황
+                                </h3>
+                                <Tag
+                                    severity="secondary"
+                                    value="금액 집계 미제공" />
+                            </div>
                             <div class="receipt-currencies">
                                 <article
                                     v-for="group in summaryGroups"
@@ -235,87 +287,134 @@
                                     </dl>
                                 </article>
                             </div>
-                        </section>
-                        <div
-                            v-if="accountsState !== 'ready'"
-                            class="receipt-refresh"
-                            :role="
-                                accountsState === 'error' ? 'alert' : 'status'
-                            ">
-                            <i
-                                class="pi pi-exclamation-triangle"
-                                aria-hidden="true" />
-                            <div>
-                                <strong>{{
-                                    accountsState === 'error'
-                                        ? '계좌 목록 새로고침이 필요합니다'
-                                        : '계좌 목록을 갱신하고 있습니다'
-                                }}</strong>
-                                <p>
-                                    저장 영수증은 유지됩니다. 계좌 목록 갱신이
-                                    완료되면 잔고·거래, 배당 캘린더와 CSV
-                                    내보내기를 이용할 수 있습니다.
-                                </p>
-                                <Button
-                                    v-if="accountsState === 'error'"
-                                    label="계좌 목록 다시 불러오기"
-                                    icon="pi pi-refresh"
-                                    severity="secondary"
-                                    outlined
-                                    :disabled="busy"
-                                    @click="$emit('retry')" />
-                            </div>
-                        </div>
-                        <div class="receipt-next">
-                            <h3>후속 작업 및 확인</h3>
-                            <div class="result-actions">
-                                <Button
-                                    :label="
-                                        receipt.kind === 'holdings'
-                                            ? '잔고 확인'
-                                            : '저장 거래 확인'
-                                    "
-                                    :disabled="
-                                        busy || accountsState !== 'ready'
-                                    "
-                                    @click="$emit('view')" />
-                                <Button
-                                    label="배당 캘린더 확인"
-                                    icon="pi pi-calendar"
-                                    severity="secondary"
-                                    outlined
-                                    :disabled="
-                                        busy || accountsState !== 'ready'
-                                    "
-                                    @click="$emit('calendar')" />
-                                <Button
-                                    label="CSV로 내려받기"
-                                    icon="pi pi-download"
-                                    severity="secondary"
-                                    outlined
-                                    :disabled="
-                                        busy || accountsState !== 'ready'
-                                    "
-                                    @click="$emit('export')" />
-                            </div>
-                            <p class="receipt-footnote">
-                                CSV는 선택한 계좌의
-                                {{
-                                    receipt.kind === 'holdings'
-                                        ? '잔고내역'
-                                        : '거래내역'
-                                }}을 내보냅니다. 이 영수증의 행만 내보내는
-                                기능은 아닙니다.
+                            <p class="receipt-finance-note">
+                                <StitchSymbol name="lock" /> 금융 집계 계약이
+                                없어 합계는 미제공입니다. 통화는 합산하지
+                                않습니다.
                             </p>
-                            <Button
-                                class="receipt-another"
-                                label="추가 등록"
-                                icon="pi pi-upload"
-                                severity="secondary"
-                                outlined
-                                :disabled="busy"
-                                @click="$emit('another')" />
-                        </div>
+                        </section>
+                        <section
+                            class="receipt-followup"
+                            aria-label="계좌 갱신과 후속 작업">
+                            <div
+                                v-if="accountsState !== 'ready'"
+                                class="receipt-refresh"
+                                :role="
+                                    accountsState === 'error'
+                                        ? 'alert'
+                                        : 'status'
+                                ">
+                                <StitchSymbol
+                                    class="receipt-warning-icon"
+                                    name="warning" />
+                                <div>
+                                    <strong>{{
+                                        accountsState === 'error'
+                                            ? '계좌 목록 새로고침이 필요합니다'
+                                            : '계좌 목록을 갱신하고 있습니다'
+                                    }}</strong>
+                                    <p>
+                                        저장 영수증은 유지됩니다. 계좌 목록
+                                        갱신이 완료되면 잔고·거래, 배당 캘린더와
+                                        CSV 내보내기를 이용할 수 있습니다.
+                                    </p>
+                                    <Button
+                                        v-if="accountsState === 'error'"
+                                        label="계좌 목록 다시 불러오기"
+                                        severity="secondary"
+                                        outlined
+                                        :disabled="busy"
+                                        @click="$emit('retry')"
+                                        ><template #icon
+                                            ><StitchSymbol
+                                                name="refresh" /></template
+                                    ></Button>
+                                </div>
+                            </div>
+                            <div class="receipt-next">
+                                <h3>후속 작업 및 확인</h3>
+                                <div class="result-actions">
+                                    <Button
+                                        label="배당 캘린더 확인"
+                                        severity="secondary"
+                                        outlined
+                                        :disabled="
+                                            busy || accountsState !== 'ready'
+                                        "
+                                        @click="$emit('calendar')"
+                                        ><template #icon
+                                            ><StitchSymbol
+                                                :name="
+                                                    accountsState === 'ready'
+                                                        ? 'calendar_month'
+                                                        : 'lock'
+                                                " /></template
+                                    ></Button>
+                                    <Button
+                                        :label="
+                                            receipt.kind === 'holdings'
+                                                ? '잔고 확인'
+                                                : '저장 거래 확인'
+                                        "
+                                        :severity="
+                                            accountsState === 'ready'
+                                                ? 'primary'
+                                                : 'secondary'
+                                        "
+                                        :outlined="accountsState !== 'ready'"
+                                        :disabled="
+                                            busy || accountsState !== 'ready'
+                                        "
+                                        @click="$emit('view')"
+                                        ><template #icon
+                                            ><StitchSymbol
+                                                :name="
+                                                    accountsState === 'ready'
+                                                        ? 'account_balance_wallet'
+                                                        : 'lock'
+                                                " /></template
+                                    ></Button>
+                                </div>
+                                <p
+                                    v-if="accountsState !== 'ready'"
+                                    class="receipt-lock-help">
+                                    계좌 목록 갱신이 완료되면 배당 캘린더와
+                                    잔고·거래를 확인할 수 있습니다.
+                                </p>
+                                <div class="receipt-export-actions">
+                                    <Button
+                                        label="CSV로 내려받기"
+                                        severity="secondary"
+                                        outlined
+                                        :disabled="
+                                            busy || accountsState !== 'ready'
+                                        "
+                                        @click="$emit('export')"
+                                        ><template #icon
+                                            ><StitchSymbol
+                                                :name="
+                                                    accountsState === 'ready'
+                                                        ? 'download'
+                                                        : 'lock'
+                                                " /></template
+                                    ></Button>
+                                    <p class="receipt-footnote">
+                                        CSV는 선택 계좌 전체 내역입니다.
+                                    </p>
+                                    <Button
+                                        class="receipt-another"
+                                        label="추가 등록"
+                                        severity="secondary"
+                                        outlined
+                                        :disabled="busy"
+                                        @click="$emit('another')"
+                                        ><template #icon
+                                            ><StitchSymbol
+                                                name="upload_file" /></template
+                                    ></Button>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
                 <section
@@ -326,46 +425,48 @@
                         <span>총 {{ number(total) }}건</span>
                     </div>
                     <template v-if="hasDetails">
-                        <div
-                            class="receipt-filters"
-                            role="group"
-                            aria-label="저장 결과 필터">
-                            <Button
-                                label="전체 결과"
-                                :aria-pressed="filter === 'all'"
-                                :severity="
-                                    filter === 'all' ? 'primary' : 'secondary'
-                                "
-                                text
-                                @click="filter = 'all'" />
-                            <Button
-                                :label="`신규 저장 (${number(receipt.inserted)})`"
-                                :aria-pressed="filter === 'inserted'"
-                                :severity="
-                                    filter === 'inserted'
-                                        ? 'primary'
-                                        : 'secondary'
-                                "
-                                text
-                                @click="filter = 'inserted'" />
-                            <Button
-                                :label="`중복 제외 (${number(receipt.duplicates)})`"
-                                :aria-pressed="filter === 'duplicate'"
-                                :severity="
-                                    filter === 'duplicate'
-                                        ? 'primary'
-                                        : 'secondary'
-                                "
-                                text
-                                @click="filter = 'duplicate'" />
+                        <div class="receipt-table-controls">
+                            <div
+                                class="receipt-filters"
+                                role="group"
+                                aria-label="저장 결과 필터">
+                                <Button
+                                    label="전체 결과"
+                                    :aria-pressed="filter === 'all'"
+                                    :severity="
+                                        filter === 'all'
+                                            ? 'primary'
+                                            : 'secondary'
+                                    "
+                                    text
+                                    @click="filter = 'all'" />
+                                <Button
+                                    :label="`신규 저장 (${number(receipt.inserted)})`"
+                                    :aria-pressed="filter === 'inserted'"
+                                    :severity="
+                                        filter === 'inserted'
+                                            ? 'primary'
+                                            : 'secondary'
+                                    "
+                                    text
+                                    @click="filter = 'inserted'" />
+                                <Button
+                                    :label="`중복 제외 (${number(receipt.duplicates)})`"
+                                    :aria-pressed="filter === 'duplicate'"
+                                    :severity="
+                                        filter === 'duplicate'
+                                            ? 'primary'
+                                            : 'secondary'
+                                    "
+                                    text
+                                    @click="filter = 'duplicate'" />
+                            </div>
+
+                            <p class="receipt-scroll-hint">
+                                가로 스크롤 가능
+                                <StitchSymbol name="arrow_forward" />
+                            </p>
                         </div>
-                        <p class="receipt-footnote">
-                            서버가 이번 저장 요청에서 판정한 행입니다. 신규 저장
-                            표시는 현재 잔고 반영·금융사 확인을 뜻하지 않습니다.
-                        </p>
-                        <p class="receipt-scroll-hint">
-                            가로 스크롤로 전체 열을 확인할 수 있습니다. →
-                        </p>
                         <DataTable
                             class="receipt-table"
                             :pt="{
@@ -396,16 +497,30 @@
                                         " /></template
                             ></Column>
                             <Column field="row.date" header="거래일자" /><Column
-                                field="row.symbol"
-                                header="종목/전표" />
+                                header="종목/전표"
+                                ><template #body="{ data }"
+                                    ><strong>{{ data.row.symbol }}</strong>
+                                    <p class="receipt-symbol-name">
+                                        명칭 미제공 ({{
+                                            data.row.currency || '통화 미제공'
+                                        }})
+                                    </p></template
+                                ></Column
+                            >
                             <Column header="구분"
-                                ><template #body="{ data }">{{
-                                    typeLabels[data.row.type] ||
-                                    data.row.type ||
-                                    (receipt.kind === 'holdings'
-                                        ? '잔고'
-                                        : '유형 미제공')
-                                }}</template></Column
+                                ><template #body="{ data }"
+                                    ><span
+                                        class="receipt-row-type"
+                                        :class="`receipt-type-${data.row.type || 'unknown'}`"
+                                        >{{
+                                            typeLabels[data.row.type] ||
+                                            data.row.type ||
+                                            (receipt.kind === 'holdings'
+                                                ? '잔고'
+                                                : '유형 미제공')
+                                        }}</span
+                                    ></template
+                                ></Column
                             >
                             <Column header="수량 (저장값)"
                                 ><template #body="{ data }">{{
@@ -425,7 +540,11 @@
                                         data.status === 'duplicate'
                                             ? '기존 내역과 일치하여 제외'
                                             : '신규 저장'
-                                    }}<span v-if="data.row.externalId">
+                                    }}<span
+                                        v-if="
+                                            data.status === 'duplicate' &&
+                                            data.row.externalId
+                                        ">
                                         · {{ data.row.externalId }}</span
                                     ></template
                                 ></Column
@@ -464,7 +583,15 @@
                                     >
                                 </div>
                                 <div class="receipt-row-values">
-                                    <strong>{{ item.row.symbol }}</strong>
+                                    <div class="receipt-row-symbol">
+                                        <strong>{{ item.row.symbol }}</strong>
+                                        <p class="receipt-symbol-name">
+                                            명칭 미제공 ({{
+                                                item.row.currency ||
+                                                '통화 미제공'
+                                            }})
+                                        </p>
+                                    </div>
                                     <div>
                                         <strong>{{
                                             item.row.amount == null
@@ -490,13 +617,21 @@
                                         item.status === 'duplicate'
                                             ? '기존 등록 내역과 일치하여 제외했습니다.'
                                             : '이번 요청에서 새로 저장했습니다.'
-                                    }}<span v-if="item.row.externalId">
+                                    }}<span
+                                        v-if="
+                                            item.status === 'duplicate' &&
+                                            item.row.externalId
+                                        ">
                                         · 고유번호
                                         {{ item.row.externalId }}</span
                                     >
                                 </p>
                             </article>
                         </div>
+                        <p class="receipt-footnote">
+                            서버가 이번 저장 요청에서 판정한 행입니다. 신규 저장
+                            표시는 현재 잔고 반영·금융사 확인을 뜻하지 않습니다.
+                        </p>
                         <p v-if="!filtered.length" class="receipt-footnote">
                             선택한 처리 결과가 없습니다.
                         </p>
@@ -1247,5 +1382,644 @@
     .receipt-currency-title > span {
         font-size: 11px;
         color: var(--app-muted);
+    }
+
+    /* Match the source's actual step hierarchy and metric-sized icon outlines. */
+    .receipt-badges {
+        gap: 8px;
+    }
+    .receipt-badges :deep(.p-tag) {
+        font-size: 12px;
+        line-height: 16px;
+        padding: 4px 10px;
+        border: 1px solid color-mix(in srgb, var(--app-accent) 30%, transparent);
+    }
+    .receipt-badges :deep(.p-tag-warn) {
+        border-color: var(--p-yellow-400);
+    }
+    .receipt-badges :deep(.p-tag-secondary) {
+        border-color: var(--app-border);
+    }
+    .receipt-steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+    .receipt-steps li {
+        gap: 12px;
+    }
+    .receipt-step-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+        border: 1px solid var(--app-accent);
+        border-radius: 50%;
+        color: var(--app-accent);
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 15%,
+            var(--app-surface)
+        );
+        font-size: 18px;
+    }
+    [aria-current='step'] .receipt-step-icon {
+        background: var(--app-accent);
+        color: var(--app-accent-contrast);
+        box-shadow: 0 0 0 2px
+            color-mix(in srgb, var(--app-accent) 20%, transparent);
+    }
+    .receipt-step-text {
+        display: flex;
+        flex-direction: column;
+    }
+    .receipt-step-index {
+        font-size: 11px;
+        line-height: 16.5px;
+        font-weight: 500;
+        color: var(--app-muted);
+    }
+    .receipt-step-text strong {
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 600;
+    }
+    .receipt-steps li:last-child {
+        justify-content: flex-end;
+    }
+    .receipt-steps li:last-child .receipt-step-text {
+        text-align: right;
+    }
+    .receipt-context {
+        padding-top: 4px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .result-heading {
+        gap: 8px;
+    }
+    .result-heading h2 {
+        color: var(--receipt-title, var(--app-brand-brown));
+    }
+    :global(.p-dark) .result-heading h2 {
+        color: var(--app-text);
+    }
+    .receipt-summary {
+        padding: 0;
+        background: transparent;
+        border: 0;
+        align-items: flex-start;
+        flex-wrap: nowrap;
+    }
+    .receipt-summary-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+        background: color-mix(
+            in srgb,
+            var(--app-accent) 12%,
+            var(--app-surface)
+        );
+        color: var(--app-accent);
+        border-radius: 8px;
+    }
+    .receipt-summary h3 {
+        font-size: 16px;
+        line-height: 22px;
+    }
+    .receipt-summary p {
+        font-size: 11px;
+        line-height: 18px;
+    }
+    .result-counts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--app-border);
+        margin: 12px 0 0;
+    }
+    .result-counts > div {
+        display: flex;
+        gap: 6px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+    }
+    .result-counts > div:last-child {
+        flex-basis: 100%;
+    }
+    .result-counts dt,
+    .result-counts dd {
+        font-size: 11px;
+        line-height: 18px;
+    }
+    .result-counts dd {
+        margin: 0;
+        font-weight: 500;
+        max-width: none;
+        text-align: left;
+    }
+    .result-explanation {
+        margin: 12px 0 0;
+        font-size: 12px;
+        line-height: 20px;
+    }
+    .receipt-finance-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--app-border);
+        margin-bottom: 16px;
+    }
+    .receipt-finance-title h3 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .receipt-finance-title h3 .stitch-symbol {
+        font-size: 20px;
+        color: var(--app-accent);
+    }
+    .receipt-finance-note {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        font-size: 11px;
+        line-height: 16px;
+        background: var(--app-bg);
+        padding: 8px;
+        border-radius: 6px;
+        margin: 16px 0 0;
+    }
+    .receipt-finance-note .stitch-symbol {
+        font-size: 14px;
+        margin-top: 1px;
+    }
+    .receipt-currencies > article {
+        padding: 12px;
+        background: var(--app-bg);
+        border-radius: 8px;
+    }
+    .receipt-currency-title {
+        font-size: 12px;
+        line-height: 18px;
+    }
+    .receipt-currencies dl {
+        margin-top: 12px;
+        gap: 8px;
+    }
+    .receipt-warning-icon {
+        font-size: 24px;
+        color: var(--app-warning-text);
+        margin-top: 2px;
+    }
+    .receipt-next :deep(.p-button .stitch-symbol),
+    .receipt-refresh :deep(.p-button .stitch-symbol) {
+        font-size: 18px;
+    }
+    @media (max-width: 640px) {
+        .receipt-header {
+            padding-top: 8px;
+        }
+        .receipt-badges {
+            gap: 6px;
+        }
+        .receipt-badges :deep(.p-tag) {
+            font-size: 11px;
+            line-height: 16px;
+            padding: 2px 8px;
+            border: 0;
+        }
+        .receipt-badges :deep(.p-tag-warn) {
+            border: 1px solid var(--p-yellow-400);
+        }
+        .receipt-steps {
+            gap: 0;
+        }
+        .receipt-steps li {
+            gap: 4px;
+            justify-content: flex-start;
+        }
+        .receipt-steps li:last-child {
+            justify-content: flex-start;
+        }
+        .receipt-step-icon {
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+        }
+        .receipt-step-text {
+            display: block;
+            font-size: 11px;
+            line-height: 16px;
+            text-align: center;
+        }
+        .receipt-step-index,
+        .receipt-step-text strong {
+            font-size: 11px;
+            line-height: 16px;
+            font-weight: 500;
+        }
+        .receipt-step-complete {
+            display: none;
+        }
+        .receipt-steps li:last-child .receipt-step-text {
+            text-align: center;
+        }
+        .receipt-context {
+            padding: 0 2px;
+        }
+        .result-heading {
+            flex-wrap: nowrap;
+        }
+        .result-heading h2 {
+            flex: 1;
+            min-width: 0;
+            color: var(--app-text);
+        }
+        .result-heading :deep(.p-tag) {
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .receipt-summary {
+            padding: 12px;
+            border: 1px solid var(--app-border);
+            border-radius: 8px;
+            background: var(--app-bg);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .receipt-summary-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 18px;
+            border-radius: 50%;
+            background: var(--app-accent);
+            color: var(--app-accent-contrast);
+        }
+        .receipt-summary h3 {
+            font-size: 15px;
+            line-height: 20px;
+        }
+        .result-counts {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            border: 0;
+            margin-top: 12px;
+            padding-top: 0;
+            gap: 0;
+        }
+        .result-counts > div {
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--app-border);
+        }
+        .result-counts dd {
+            max-width: 65%;
+            text-align: right;
+        }
+        .receipt-finance-title {
+            margin-bottom: 12px;
+            padding-bottom: 0;
+            border: 0;
+        }
+        .receipt-finance-title h3 {
+            font-size: 15px;
+        }
+    }
+    :global(html:not(.p-dark)) .import-result {
+        --receipt-title: #382418;
+    }
+    .receipt-next h3 {
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .receipt-another {
+        min-height: 40px;
+    }
+    @media (max-width: 640px) {
+        .receipt-next h3 {
+            font-size: 15px;
+        }
+        .receipt-another {
+            min-height: 44px;
+        }
+    }
+
+    .receipt-badges .stitch-symbol {
+        font-size: 14px;
+    }
+    .result-counts dt {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .result-counts dt .stitch-symbol {
+        font-size: 13px;
+        color: var(--app-muted);
+    }
+    @media (min-width: 641px) {
+        .receipt-badges :deep(.p-tag:first-child)::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--app-accent);
+            margin-inline-end: 2px;
+        }
+    }
+    @media (max-width: 640px) {
+        .result-counts dt .stitch-symbol {
+            display: none;
+        }
+        .receipt-badges .stitch-symbol {
+            font-size: 13px;
+        }
+    }
+
+    .receipt-next h3 {
+        font-size: 12px;
+        line-height: 16px;
+    }
+    .result-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 10px;
+    }
+    .receipt-next :deep(.p-button),
+    .receipt-refresh :deep(.p-button) {
+        min-height: 40px;
+        font-size: 12px;
+        line-height: 16px;
+        padding: 8px 12px;
+    }
+    .receipt-lock-help {
+        font-size: 11px;
+        line-height: 13.75px;
+        margin: 8px 0 10px;
+        color: var(--app-muted);
+    }
+    .receipt-export-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        border-top: 1px solid var(--app-border);
+        padding-top: 8px;
+        margin-top: 10px;
+    }
+    .receipt-export-actions .receipt-footnote {
+        font-size: 11px;
+        line-height: 16px;
+        margin: 0;
+    }
+    .receipt-export-actions .receipt-another {
+        margin: 0;
+    }
+    .receipt-summary h3,
+    .receipt-finance-title h3,
+    .receipt-next h3 {
+        color: var(--receipt-title, var(--app-text));
+    }
+    @media (min-width: 641px) {
+        :global(html:not(.p-dark)) .import-result {
+            --app-border: #e2e8f0;
+            --app-muted: #64748b;
+        }
+        :global(html:not(.p-dark)) .receipt-description {
+            color: #475569;
+        }
+    }
+    @media (max-width: 640px) {
+        .receipt-next h3 {
+            font-size: 15px;
+            line-height: 20px;
+        }
+        .receipt-next :deep(.p-button),
+        .receipt-refresh :deep(.p-button) {
+            min-height: 44px;
+            font-size: 13px;
+            line-height: 18px;
+        }
+        .receipt-summary h3,
+        .receipt-finance-title h3,
+        .receipt-next h3 {
+            color: var(--app-text);
+        }
+    }
+
+    /* The source separates the final metric with a rule; use its measured type rhythm. */
+    .receipt-currency-title {
+        font-size: 12px;
+        line-height: 16px;
+    }
+    .receipt-currencies {
+        gap: 16px;
+    }
+    .receipt-currencies dl {
+        margin-top: 8px;
+        gap: 6px;
+        font-size: 12px;
+        line-height: 16px;
+    }
+    .receipt-currencies dl > div:last-child:not(:first-child) {
+        border-top: 1px solid var(--app-border);
+        padding-top: 8px;
+        margin-top: 2px;
+    }
+    .receipt-finance > .receipt-finance-note {
+        font-size: 11px;
+        line-height: 13.75px;
+    }
+    @media (max-width: 640px) {
+        .receipt-currency-title {
+            font-size: 13px;
+            line-height: 18px;
+        }
+        .receipt-currencies {
+            gap: 8px;
+        }
+        .receipt-currencies dl {
+            padding-top: 4px;
+            border-top: 1px solid var(--app-border);
+            font-size: 13px;
+            line-height: 19.5px;
+            gap: 4px;
+        }
+        .receipt-currencies dl > div:last-child:not(:first-child) {
+            border: 0;
+            padding-top: 0;
+            margin-top: 0;
+        }
+    }
+
+    .receipt-symbol-name {
+        font-size: 11px;
+        line-height: 16px;
+        color: var(--app-muted);
+        margin: 0;
+        font-weight: 400;
+    }
+    .receipt-table .receipt-row-type {
+        display: inline-block;
+        margin: 0;
+        border: 1px solid currentColor;
+    }
+    .receipt-table :deep(.p-datatable-tbody > tr > td) {
+        padding: 10px 12px;
+        font-size: 12px;
+        line-height: 16px;
+    }
+    @media (max-width: 640px) {
+        .receipt-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .receipt-row-type {
+            padding: 2px 8px;
+        }
+        .receipt-row-values {
+            margin: 0;
+            padding-top: 2px;
+            line-height: 18.75px;
+        }
+        .receipt-row-values strong {
+            display: block;
+            font-size: 15px;
+            line-height: 18.75px;
+        }
+        .receipt-row-values p {
+            font-size: 11px;
+            line-height: 16px;
+            margin: 0;
+        }
+        .receipt-row-values > .receipt-row-symbol {
+            text-align: left;
+        }
+    }
+
+    [aria-current='step'] .receipt-step-index {
+        color: var(--app-accent);
+        font-weight: 700;
+    }
+    [aria-current='step'] .receipt-step-text strong {
+        color: var(--receipt-title, var(--app-text));
+    }
+    @media (max-width: 640px) {
+        [aria-current='step'] .receipt-step-text strong {
+            color: var(--app-accent);
+            font-weight: 700;
+        }
+    }
+
+    .receipt-followup {
+        display: contents;
+    }
+    @media (max-width: 640px) {
+        .import-result {
+            padding-bottom: 48px;
+        }
+        .receipt-workflow,
+        .receipt-side {
+            display: contents;
+        }
+        .receipt-overview,
+        .receipt-finance {
+            padding: 16px;
+            border: 1px solid var(--app-border);
+            border-radius: 12px;
+            background: var(--app-surface);
+        }
+        .receipt-overview {
+            order: 0;
+        }
+        .receipt-finance {
+            order: 1;
+        }
+        .receipt-followup {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-top: 4px;
+            order: 2;
+            min-width: 0;
+        }
+        .receipt-followup .receipt-refresh,
+        .receipt-followup .receipt-next {
+            padding: 14px;
+            border: 1px solid var(--app-border);
+            border-radius: 12px;
+        }
+        .receipt-followup .receipt-refresh {
+            border-color: var(--p-yellow-400);
+        }
+        .receipt-detail {
+            padding-top: 8px;
+        }
+    }
+
+    @media (min-width: 641px) {
+        .receipt-detail {
+            padding: 0;
+            overflow: hidden;
+        }
+        .receipt-table-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 14px;
+            background: var(--app-bg);
+            border-bottom: 1px solid var(--app-border);
+        }
+        .receipt-table-controls .receipt-filters {
+            flex: 0 1 auto;
+            padding: 2px;
+            gap: 0;
+        }
+        .receipt-table-controls .receipt-filters :deep(.p-button) {
+            border: 0;
+            min-height: 24px;
+            padding: 4px 10px;
+            font-size: 12px;
+            line-height: 16px;
+        }
+        .receipt-table-controls .receipt-scroll-hint {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin: 0;
+            padding: 2px 8px;
+            border: 1px solid var(--app-border);
+            border-radius: 4px;
+            background: var(--app-surface);
+            font-size: 11px;
+            line-height: 16px;
+        }
+        .receipt-scroll-hint .stitch-symbol {
+            font-size: 13px;
+            color: var(--app-accent);
+        }
+        .receipt-detail > .receipt-footnote {
+            margin: 0;
+            padding: 10px 14px;
+            border-top: 1px solid var(--app-border);
+            background: var(--app-bg);
+            line-height: 16.5px;
+        }
     }
 </style>

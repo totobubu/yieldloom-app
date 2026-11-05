@@ -1858,8 +1858,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "server-confirmed first-commit row outcomes and responsive receipt implemented on phase34 branch; not deployed",
-            "visualAcceptance": "width/title font match 834/768/390; full acceptance pending, height/meaning differences recorded in PHASE34_IMPORT_RESULT.md",
+            "implementation": "reference-backed responsive receipt and original SVG symbols implemented; financial aggregates explicitly unavailable; release status tracked in PR #250",
+            "visualAcceptance": "header/stepper dimensions match 834/768/390; tablet aggregate card matches 376.5px; full pixel acceptance pending; see PHASE35_RECEIPT_FIDELITY.md",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/f5a2132c4e234e648269220f0e889387",
             "sourceFiles": [
@@ -1898,8 +1898,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "server-confirmed first-commit row outcomes and responsive receipt implemented on phase34 branch; not deployed",
-            "visualAcceptance": "width/title font match 834/768/390; full acceptance pending, height/meaning differences recorded in PHASE34_IMPORT_RESULT.md",
+            "implementation": "reference-backed responsive receipt and original SVG symbols implemented; financial aggregates explicitly unavailable; release status tracked in PR #250",
+            "visualAcceptance": "header/stepper dimensions match 834/768/390; tablet aggregate card matches 376.5px; full pixel acceptance pending; see PHASE35_RECEIPT_FIDELITY.md",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/cf7686fbb620465f93418fde1572a6cc",
             "sourceFiles": [

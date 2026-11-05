@@ -95,6 +95,7 @@ declare module 'vue' {
     SimulationScenarioForm: typeof import('./src/components/portfolio/SimulationScenarioForm.vue')['default']
     SnapshotHistory: typeof import('./src/components/portfolio/SnapshotHistory.vue')['default']
     StatementIdentityReview: typeof import('./src/components/portfolio/StatementIdentityReview.vue')['default']
+    StitchSymbol: typeof import('./src/components/portfolio/StitchSymbol.vue')['default']
     StockCandlestickChart: typeof import('./src/components/stock/StockCandlestickChart.vue')['default']
     StockDividendMetrics: typeof import('./src/components/stock/StockDividendMetrics.vue')['default']
     StockDividendTrend: typeof import('./src/components/stock/StockDividendTrend.vue')['default']

@@ -105,13 +105,79 @@ const fixture = {
 };
 await fs.writeFile(
     harness,
-    `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app" class="studio-shell"></div><script type="module">import {createApp,h,ref} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import ko from '/src/config/locale/ko.js';import Result from '/src/components/portfolio/PortfolioImportResult.vue';import 'primeicons/primeicons.css';import '/src/styles/style.scss';import '/src/styles/studio.scss';const receipt=ref(${JSON.stringify(fixture)}),state=ref('error'),busy=ref(false),events=[];window.receiptFixture={receipt,state,busy,events};createApp({setup(){return()=>h('main',{class:'fixture-frame'},[h('p',{class:'fixture-label'},'합성 검증 데이터 (DEMO)'),h(Result,{receipt:receipt.value,accountsState:state.value,busy:busy.value,onRetry:()=>events.push('retry'),onView:()=>events.push('view'),onExport:()=>events.push('export'),onCalendar:()=>events.push('calendar'),onAnother:()=>events.push('another')})]);}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script><style>body{margin:0}.fixture-frame{max-width:834px;margin:auto;padding:24px}.fixture-label{font-size:11px;color:#64748b;margin:0 0 8px}@media(max-width:640px){.fixture-frame{max-width:390px;padding:16px 8px}}</style></body></html>`
+    `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app" class="studio-shell"></div><script type="module">import {createApp,h,ref} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import ko from '/src/config/locale/ko.js';import Result from '/src/components/portfolio/PortfolioImportResult.vue';import Tag from 'primevue/tag';import 'primeicons/primeicons.css';import '/src/styles/style.scss';import '/src/styles/studio.scss';const receipt=ref(${JSON.stringify(fixture)}),state=ref('error'),busy=ref(false),events=[];window.receiptFixture={receipt,state,busy,events};createApp({setup(){return()=>h('main',{class:'fixture-frame'},[h(Result,{receipt:receipt.value,accountsState:state.value,busy:busy.value,onRetry:()=>events.push('retry'),onView:()=>events.push('view'),onExport:()=>events.push('export'),onCalendar:()=>events.push('calendar'),onAnother:()=>events.push('another')},{badges:()=>h(Tag,{value:'가상 검증 데이터 (DEMO)',severity:'warn'})})]);}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script><style>body{margin:0}.fixture-frame{max-width:882px;margin:auto;padding:24px}.fixture-label{font-size:11px;color:#64748b;margin:0 0 8px}@media(min-width:641px) and (max-width:1023px){.fixture-frame{max-width:834px}}@media(max-width:640px){.fixture-frame{max-width:390px;padding:16px 8px}}</style></body></html>`
 );
 const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
     args: ['--no-sandbox'],
 });
 const measurements = [];
+const layoutBoxes = (root, source) => {
+    const outer = root.getBoundingClientRect();
+    const shape = (element) => {
+        if (!element) return null;
+        const r = element.getBoundingClientRect(),
+            s = getComputedStyle(element);
+        return {
+            width: r.width,
+            height: r.height,
+            top: r.top - outer.top,
+            padding: s.padding,
+            gap: s.gap,
+            font: s.fontSize,
+            line: s.lineHeight,
+            color: s.color,
+        };
+    };
+    const header = source
+        ? root.querySelector('header') || root.querySelector('section')
+        : root.querySelector('.receipt-header');
+    return {
+        columns:
+            source && root.querySelector(':scope > div.grid')
+                ? [...root.querySelector(':scope > div.grid').children].map(
+                      (column) =>
+                          [...column.children].map((element) => ({
+                              ...shape(element),
+                              prefix: element.innerText.slice(0, 60),
+                              children: [...element.children].map(shape),
+                          }))
+                  )
+                : undefined,
+        sections: source
+            ? [...root.querySelectorAll(':scope > section')].map(shape)
+            : [
+                  shape(root.querySelector('.receipt-workflow')),
+                  shape(root.querySelector('.receipt-detail')),
+              ],
+        sourceMobileRows: source
+            ? [
+                  ...root.querySelectorAll(
+                      '[class~="p-3.5"][class*="shadow-sm"]'
+                  ),
+              ].map(shape)
+            : undefined,
+        header: shape(header),
+        headerChildren: [...header.children].map(shape),
+        steps: shape(
+            source ? header.children[1] : root.querySelector('.receipt-steps')
+        ),
+        title: shape(root.querySelector(source ? 'h1' : 'h2')),
+        summary: shape(root.querySelector('.receipt-overview')),
+        finance: shape(root.querySelector('.receipt-finance')),
+        financeChildren: root.querySelector('.receipt-finance')
+            ? [...root.querySelector('.receipt-finance').children].map((e) => ({
+                  ...shape(e),
+                  children: [...e.children].map(shape),
+              }))
+            : undefined,
+        refresh: shape(root.querySelector('.receipt-refresh')),
+        next: shape(root.querySelector('.receipt-next')),
+        rows: [...root.querySelectorAll(source ? 'tbody tr' : '.receipt-row')]
+            .slice(0, 2)
+            .map(shape),
+    };
+};
 try {
     for (const width of [1280, 834, 768, 390, 360]) {
         const context = await browser.newContext({
@@ -129,7 +195,8 @@ try {
         await page.goto(new URL('/.phase34-result.html', base).href);
         await page
             .getByRole('heading', {
-                name: '자료 저장이 완료되었습니다',
+                name: /^증권 (거래|잔고)내역 저장 영수증$/,
+                level: 2,
                 exact: true,
             })
             .waitFor();
@@ -173,6 +240,18 @@ try {
             ),
             false
         );
+        assert.ok(
+            await page
+                .locator('.stitch-symbol')
+                .evaluateAll(
+                    (elements) =>
+                        elements.length > 0 &&
+                        elements.every(
+                            (e) => getComputedStyle(e).maskImage !== 'none'
+                        )
+                ),
+            'Original SVG masks must render instead of solid squares'
+        );
         const data = await page.locator('.import-result').evaluate((e) => ({
             width: e.getBoundingClientRect().width,
             height: e.getBoundingClientRect().height,
@@ -180,6 +259,9 @@ try {
                 .height,
             titleFont: getComputedStyle(e.querySelector('h2')).fontSize,
         }));
+        data.layout = await page
+            .locator('.import-result')
+            .evaluate(layoutBoxes, false);
         await page.screenshot({
             path: resolve(out, `implementation-${width}.png`),
             fullPage: true,
@@ -205,22 +287,17 @@ try {
             };
         });
         await page
-            .getByRole('heading', {
-                name: '이미 등록된 자료입니다',
-                exact: true,
-            })
+            .getByText('이미 등록된 자료입니다', { exact: true })
             .waitFor();
         assert.equal(await page.locator('.receipt-row').count(), 0);
         assert.match(
             await page.locator('.receipt-unavailable').innerText(),
             /행별 저장 결과를 제공하지 않습니다/
         );
-        assert.equal(
-            await page
-                .locator('.receipt-currencies dd')
-                .filter({ hasText: '미제공' })
-                .count(),
-            4
+        assert.equal(await page.locator('.receipt-currencies dd').count(), 0);
+        assert.match(
+            await page.locator('.receipt-currencies').innerText(),
+            /신규 저장 내역 없음/
         );
         await page.evaluate((fixture) => {
             const f = window.receiptFixture;
@@ -306,11 +383,24 @@ try {
                     height: e.getBoundingClientRect().height,
                     titleFont: getComputedStyle(e.querySelector('h1')).fontSize,
                 }));
+            measurements.at(-1).source.layout = await page
+                .locator(width === 390 ? 'body > div' : 'main')
+                .evaluate(layoutBoxes, true);
             const measured = measurements.at(-1);
             assert.equal(measured.implementation.width, measured.source.width);
             assert.equal(
                 measured.implementation.titleFont,
                 measured.source.titleFont
+            );
+            assert.equal(
+                measured.implementation.layout.header.height,
+                measured.source.layout.header.height,
+                'Header geometry matches the authoritative reference'
+            );
+            assert.equal(
+                measured.implementation.layout.steps.height,
+                measured.source.layout.steps.height,
+                'Stepper geometry matches the authoritative reference'
             );
             measured.sourceComparison =
                 'content width and title font match; full visual acceptance pending';

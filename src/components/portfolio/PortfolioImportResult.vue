@@ -45,12 +45,12 @@
         buy: '매수',
         sell: '매도',
         dividend: '배당금',
-        deposit: '입금',
-        withdrawal: '출금',
-        fee: '수수료',
-        tax: '세금',
+        dividend_reversal: '배당 취소',
+        cash_in: '입금',
+        cash_out: '출금',
+        transfer_in: '이체 입고',
+        transfer_out: '이체 출고',
         split: '분할',
-        transfer: '이체',
     };
     function number(value) {
         return typeof value === 'number' && Number.isFinite(value)
@@ -75,7 +75,7 @@
             labels: [
                 ...(group.types.has('buy') ? ['매수 금액'] : []),
                 ...(group.types.has('sell') ? ['매도 금액'] : []),
-                ...(group.types.has('deposit') || group.types.has('withdrawal')
+                ...(group.types.has('cash_in') || group.types.has('cash_out')
                     ? ['입출금 순액']
                     : []),
                 ...(group.types.has('dividend') ? ['배당 입금액'] : []),
@@ -501,7 +501,11 @@
                                 ><template #body="{ data }"
                                     ><strong>{{ data.row.symbol }}</strong>
                                     <p class="receipt-symbol-name">
-                                        명칭 미제공 ({{
+                                        {{
+                                            data.row.securityName ||
+                                            '명칭 미제공'
+                                        }}
+                                        ({{
                                             data.row.currency || '통화 미제공'
                                         }})
                                     </p></template
@@ -586,7 +590,11 @@
                                     <div class="receipt-row-symbol">
                                         <strong>{{ item.row.symbol }}</strong>
                                         <p class="receipt-symbol-name">
-                                            명칭 미제공 ({{
+                                            {{
+                                                item.row.securityName ||
+                                                '명칭 미제공'
+                                            }}
+                                            ({{
                                                 item.row.currency ||
                                                 '통화 미제공'
                                             }})

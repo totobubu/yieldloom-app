@@ -553,7 +553,7 @@ def import_row_results(rows, existing=None):
     File receipt replays intentionally do not use submitted rows as stored facts.
     They return counts only because historical receipts do not retain row details.
     """
-    fields = ('date', 'symbol', 'type', 'quantity', 'amount', 'currency', 'externalId', 'cashKind')
+    fields = ('date', 'symbol', 'type', 'quantity', 'amount', 'currency', 'externalId', 'cashKind', 'securityName')
     return [{'status': 'duplicate' if existing is not None and existing[index].exists else 'inserted',
              'row': {key: row[key] for key in fields if key in row}}
             for index, row in enumerate(rows)]

@@ -84,6 +84,18 @@ const metrics = (source) => {
               }
             : null;
     return {
+        fileIcon: (() => {
+            const icon = source
+                ? [
+                      ...document.querySelectorAll(
+                          '.material-symbols-outlined'
+                      ),
+                  ].find((node) => node.textContent.trim() === 'description')
+                : document.querySelector(
+                      '.broker-file-settings .stitch-symbol, .broker-file-settings .pi'
+                  );
+            return icon ? m(icon) : null;
+        })(),
         mappingCard: (() => {
             const e = source
                 ? document
@@ -154,6 +166,12 @@ try {
             path: `${out}/source-${width}.png`,
             fullPage: true,
         });
+        await source
+            .locator('.material-symbols-outlined')
+            .filter({ hasText: /^description$/ })
+            .first()
+            .locator('..')
+            .screenshot({ path: `${out}/source-file-icon-${width}.png` });
         const page = await b.newPage({
             viewport: { width, height: 1024 },
             deviceScaleFactor: 2,
@@ -273,6 +291,9 @@ try {
         await page.screenshot({
             path: `${out}/implementation-${width}.png`,
             fullPage: true,
+        });
+        await page.locator('.broker-file-settings').screenshot({
+            path: `${out}/implementation-file-icon-${width}.png`,
         });
         if (width === 390) {
             await page.evaluate(() =>

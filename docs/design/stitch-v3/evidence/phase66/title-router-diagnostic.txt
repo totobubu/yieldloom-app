@@ -1,0 +1,4 @@
+{"view":"similar","same":false,"app":"/compare?view=similar","imported":"/compare?view=similar","title":"유사 ETF 비교 - 모으멍 배당달력","url":"http://127.0.0.1:5199/compare?view=similar"}
+{"view":"theme","same":false,"app":"/compare?view=similar","imported":"/compare?view=theme","title":"모으멍 배당달력","url":"http://127.0.0.1:5199/compare?view=theme"}
+{"view":"underlying","same":false,"app":"/compare?view=theme","imported":"/compare?view=underlying","title":"테마 비교 - 모으멍 배당달력","url":"http://127.0.0.1:5199/compare?view=underlying"}
+{"view":"unknown-view","same":false,"app":"/compare?view=theme","imported":"/compare?view=unknown-view","title":"테마 비교 - 모으멍 배당달력","url":"http://127.0.0.1:5199/compare?view=unknown-view"}

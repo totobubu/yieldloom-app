@@ -21,3 +21,5 @@
 최종20개 시안 ID와 HTML20/PNG20의 실제 크기·해시·컴포넌트 존재는 다시 모두 확인했다. 이는 전체 픽셀 수용이 아니다. [화면별 남은 차이와 검증 경계](REMAINING_VERIFICATION_PHASE64.md)에 원본/계약 부재와 일반 UI 후속 작업을 구분한다. 별도 담당 비교 페이지·시뮬레이터 파일은 변경하지 않았다.
 
 [이전13fefac 운영 기록](PHASE62_COMPARISON_LEDGER_PRODUCTION.md)은 당시의 Pages404·전환 넘침 표본을 그대로 보존한다. [검토 첫 운영 기록](PHASE61_REVIEW_PRODUCTION_AND_STATUS.md), [Python 패키지 용량 수정](PHASE59_PYTHON_BUNDLE_EXCLUSION.md), [CI 설치 시간 예산](PHASE60_CI_SETUP_BUDGET.md)도 역사 기록이다. 원본이 없거나 수치가 미확정인 곳을 가짜 화면·값으로 완료 처리하지 않는다.
+
+후속 로컬 검증: [복구 후 비교 제목·파일 아이콘 보정](PHASE66_RECOVERY_TITLES_AND_FILE_ICON.md)을 기록했다. 이 후속 코드의 원격 CI·Preview·운영 반영은 별도 결과로 구분하며 위 운영 snapshot을 미리 바꾸지 않는다.

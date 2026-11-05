@@ -1,0 +1,47 @@
+[
+  {
+    "width": 1280,
+    "geometry": {
+      "width": 834,
+      "height": 1680.84375
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ"
+  },
+  {
+    "width": 834,
+    "geometry": {
+      "width": 786,
+      "height": 2043.59375
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ"
+  },
+  {
+    "width": 768,
+    "geometry": {
+      "width": 720,
+      "height": 2047.09375
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ"
+  },
+  {
+    "width": 390,
+    "geometry": {
+      "width": 358,
+      "height": 2295.125
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ"
+  },
+  {
+    "width": 360,
+    "geometry": {
+      "width": 328,
+      "height": 2411.953125
+    },
+    "requests": 0,
+    "visualAcceptance": "pending; actual data and gated calculations preserved; reference model metrics and controls differ"
+  }
+]

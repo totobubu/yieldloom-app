@@ -63,9 +63,52 @@ const metrics = (source) => {
             radius: s.borderRadius,
             color: s.color,
             gap: s.gap,
+            margin: s.margin,
+            display: s.display,
+            y: r.y,
         };
     };
+    const tree = (e, depth = 0) =>
+        e
+            ? {
+                  tag: e.tagName,
+                  class: e.className,
+                  text: e.children.length
+                      ? undefined
+                      : e.textContent.trim().slice(0, 35),
+                  box: m(e),
+                  children:
+                      depth < 2
+                          ? [...e.children].map((c) => tree(c, depth + 1))
+                          : undefined,
+              }
+            : null;
     return {
+        mappingCard: (() => {
+            const e = source
+                ? document
+                      .querySelector('select[id^="mapping-"]')
+                      ?.closest('section')
+                : document.querySelector('.broker-mapping-card');
+            return e ? m(e) : null;
+        })(),
+        visibleSelectLabels: [
+            ...document.querySelectorAll(source ? 'select' : '.p-select-label'),
+        ]
+            .filter(
+                (e) =>
+                    e.getBoundingClientRect().height > 0 &&
+                    !e.closest('details:not([open])')
+            )
+            .map(m),
+        fileLayout: tree(
+            document.querySelector(
+                source ? 'main>section' : '.broker-file-card'
+            )
+        ),
+        headerLayout: tree(
+            document.querySelector(source ? 'main>header' : '.broker-heading')
+        ),
         icons: [...document.querySelectorAll('.pi')].slice(0, 2).map((e) => ({
             family: getComputedStyle(e).fontFamily,
             before: getComputedStyle(e, '::before').fontFamily,
@@ -207,8 +250,26 @@ try {
             await page.locator('.broker-raw-preview tbody tr').count(),
             3
         );
+        await page.evaluate(() => window.scrollTo(0, 0));
         const implementation = await page.evaluate(metrics, false);
         assert.equal(implementation.overflow, false);
+        assert.deepEqual(sourceFailures, [], 'reference assets must load');
+        assert.deepEqual(failures, [], 'implementation assets must load');
+        for (const key of ['fileLayout', 'headerLayout']) {
+            for (const dimension of ['width', 'height'])
+                assert.ok(
+                    Math.abs(
+                        original[key].box[dimension] -
+                            implementation[key].box[dimension]
+                    ) < 0.1,
+                    `${key} ${dimension} ${width}`
+                );
+        }
+        assert.deepEqual(
+            implementation.visibleSelectLabels.map((e) => e.font),
+            original.visibleSelectLabels.map((e) => e.font),
+            'rendered selection label fonts match actual source'
+        );
         await page.screenshot({
             path: `${out}/implementation-${width}.png`,
             fullPage: true,
@@ -232,6 +293,28 @@ try {
                 document.documentElement.classList.remove('p-dark')
             );
         }
+        await source.locator('details > summary').first().click();
+        await page.locator('.broker-detail-fields > summary').click();
+        const sourceOpen = await source.evaluate(metrics, true),
+            implementationOpen = await page.evaluate(metrics, false);
+        assert.deepEqual(
+            implementationOpen.visibleSelectLabels.map((e) => e.font),
+            sourceOpen.visibleSelectLabels.map((e) => e.font),
+            'all seven optional fields retain source fonts'
+        );
+        assert.equal(await page.locator('.broker-optional-row').count(), 7);
+        if (width === 768) {
+            await source.screenshot({
+                path: `${out}/source-optional-${width}.png`,
+                fullPage: true,
+            });
+            await page.screenshot({
+                path: `${out}/implementation-optional-${width}.png`,
+                fullPage: true,
+            });
+        }
+        await source.locator('details > summary').first().click();
+        await page.locator('.broker-detail-fields > summary').click();
         await choose('연결 거래 유형', '3열 · rawtype');
         assert.equal(
             await page

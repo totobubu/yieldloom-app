@@ -37,7 +37,11 @@ const button = (name) => page.getByRole('button', { name, exact: true });
 const csv =
     'date,symbol,quantity,amount,currency,type,externalId\n2026-03-01,DEMO-K,10,100000,KRW,buy,DEMO-001\n2026-03-02,DEMO-A,2,0,USD,buy,DEMO-002\n2026-03-03,DEMO-K,2,,,sell,DEMO-003\n2026-03-04,DEMO-A,0,10,USD,dividend,DEMO-004\n2026-03-05,CASH,0,1000000,KRW,cash_in,DEMO-005\n2026-03-06,CASH,0,50000,KRW,cash_out,DEMO-006\n';
 const choose = async () => {
-    await page.getByLabel('파일', { exact: true }).setInputFiles({
+    const selected = page.waitForEvent('filechooser');
+    await button('파일 선택').click();
+    await (
+        await selected
+    ).setFiles({
         name: 'DEMO_SIX_ROWS.csv',
         mimeType: 'text/csv',
         buffer: Buffer.from(csv),
@@ -52,8 +56,30 @@ const extract = async () => {
         .evaluate((el) => el.scrollIntoView());
 };
 try {
+    await page.route('**/api/stock-prices*', (route) =>
+        route.fulfill({ json: { prices: {}, errors: [] } })
+    );
+    await page.goto(base + '/');
+    await page
+        .getByRole('heading', { name: 'ETF·주식 검색', exact: true })
+        .waitFor();
+    const rootStyle = () =>
+        page.evaluate(() => {
+            const style = getComputedStyle(document.documentElement);
+            return {
+                color: style.color,
+                background: style.backgroundColor,
+                border: style.borderTopColor,
+            };
+        });
+    const beforeImportStyles = await rootStyle();
     await page.goto(base + '/mypage?tab=assets');
     await waitForPortfolioPage(page, '자산관리');
+    assert.deepEqual(
+        await rootStyle(),
+        beforeImportStyles,
+        'upload styles must not recolor the global root'
+    );
     await button('계좌 추가').click();
     await button('직접 입력').click();
     const registration = page.locator('.account-registration-page');
@@ -129,7 +155,7 @@ try {
     assert.equal(count('preview'), 1, 'date invalidation is local');
     await extract();
     assert.equal(count('preview'), 2);
-    await button('모두 제거').click();
+    await button('DEMO_SIX_ROWS.csv 제거').click();
     await button('추출·미리보기').waitFor();
     assert.equal(
         await page.locator('.upload-sample-card').count(),
@@ -212,7 +238,7 @@ try {
     await button('1단계: 파일 다시 선택하기').click();
     await page
         .locator('.import-kind-choice label')
-        .filter({ hasText: '잔고내역' })
+        .filter({ hasText: '잔고 스냅샷 (보유주식)' })
         .click();
     await page
         .getByRole('combobox', { name: '파일 형식', exact: true })
@@ -236,7 +262,7 @@ try {
     assert.match(await page.locator('.upload-preview').innerText(), /미제공/);
     await page
         .locator('.import-kind-choice label')
-        .filter({ hasText: '거래내역' })
+        .filter({ hasText: '거래내역 (배당입금)' })
         .click();
     await button('추출·미리보기').waitFor();
     assert.equal(

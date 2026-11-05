@@ -98,6 +98,10 @@
         ...sample,
         href: `data:text/csv;charset=utf-8,${encodeURIComponent('\uFEFF' + sample.text)}`,
     }));
+    function chooseFile() {
+        if (!isPdf.value) clear();
+        uploader.value?.choose();
+    }
     function clear() {
         showPassword.value = false;
         uploader.value?.clear();
@@ -148,8 +152,8 @@
                 <template
                     v-for="(label, index) in [
                         '파일 업로드',
-                        '데이터 검토',
-                        '저장 결과',
+                        '데이터 검토 & 열 매핑',
+                        '완료 및 달력 반영',
                     ]"
                     :key="label">
                     <li
@@ -183,8 +187,15 @@
             <fieldset :disabled="busy" class="import-fields">
                 <article class="import-card">
                     <div class="card-heading">
-                        <h3>데이터 유형 선택</h3>
-                        <span class="status-pill">필수 지정</span>
+                        <h3>
+                            데이터 유형 선택
+                            <span class="upload-required" aria-hidden="true"
+                                >*</span
+                            >
+                        </h3>
+                        <span class="upload-kind-method"
+                            >배당 집계 방식 지정</span
+                        >
                     </div>
                     <div class="field-grid">
                         <fieldset
@@ -278,7 +289,12 @@
 
                 <article class="import-card">
                     <div class="card-heading">
-                        <h3><span class="step-number">2</span>파일 업로드</h3>
+                        <h3>
+                            파일 첨부
+                            <span class="upload-required" aria-hidden="true"
+                                >*</span
+                            >
+                        </h3>
                         <span class="status-pill">{{
                             selectedFiles.length
                                 ? `${selectedFiles.length}개 선택됨`
@@ -315,31 +331,71 @@
                         @clear="emit('clear')">
                         <template
                             #header="{ chooseCallback, clearCallback, files }">
-                            <Button
-                                type="button"
-                                :label="
-                                    files.length
-                                        ? isPdf
+                            <div class="upload-mobile-picker">
+                                <span class="upload-picker-symbol"
+                                    ><i
+                                        class="pi pi-cloud-upload"
+                                        aria-hidden="true"
+                                /></span>
+                                <strong>{{ fileExtension }} 파일 업로드</strong>
+                                <p>
+                                    다른 형식은 파일 형식 설정에서 선택하세요.
+                                </p>
+                                <Button
+                                    type="button"
+                                    :label="
+                                        isPdf && files.length
                                             ? '파일 추가'
-                                            : '파일 변경'
-                                        : '파일 선택'
-                                "
-                                icon="pi pi-plus"
-                                :disabled="busy"
-                                @click="
-                                    () => {
-                                        if (!isPdf) clearCallback();
-                                        chooseCallback();
-                                    }
-                                " />
-                            <Button
-                                v-if="files.length"
-                                type="button"
-                                label="모두 제거"
-                                severity="secondary"
-                                text
-                                :disabled="busy"
-                                @click="clearCallback" />
+                                            : '파일 선택'
+                                    "
+                                    icon="pi pi-upload"
+                                    :disabled="busy"
+                                    @click="chooseFile" />
+                                <a
+                                    :href="
+                                        samples[kind === 'holdings' ? 1 : 0]
+                                            .href
+                                    "
+                                    :download="
+                                        samples[kind === 'holdings' ? 1 : 0]
+                                            .name
+                                    "
+                                    >모의 CSV 샘플 다운로드</a
+                                >
+                            </div>
+                            <div
+                                class="upload-file-toolbar"
+                                :class="{
+                                    'has-standard-file': files.length && !isPdf,
+                                    'is-pdf-toolbar': isPdf,
+                                }">
+                                <Button
+                                    class="upload-toolbar-choose"
+                                    type="button"
+                                    :label="
+                                        files.length
+                                            ? isPdf
+                                                ? '파일 추가'
+                                                : '파일 변경'
+                                            : '파일 선택'
+                                    "
+                                    icon="pi pi-plus"
+                                    :disabled="busy"
+                                    @click="
+                                        () => {
+                                            if (!isPdf) clearCallback();
+                                            chooseCallback();
+                                        }
+                                    " />
+                                <Button
+                                    v-if="files.length"
+                                    type="button"
+                                    label="모두 제거"
+                                    severity="secondary"
+                                    text
+                                    :disabled="busy"
+                                    @click="clearCallback" />
+                            </div>
                         </template>
                         <template
                             #content="{ files, removeFileCallback, messages }">
@@ -362,7 +418,13 @@
                                         fileExtension
                                     }}</span>
                                     <div class="file-info">
-                                        <strong>{{ file.name }}</strong
+                                        <button
+                                            type="button"
+                                            class="upload-file-name"
+                                            :aria-label="`${file.name} 변경`"
+                                            :disabled="busy"
+                                            @click="chooseFile">
+                                            {{ file.name }}</button
                                         ><small
                                             >{{ fileSize(file.size) }} ·
                                             {{ fileExtension }} ·
@@ -373,11 +435,15 @@
                                             }}</small
                                         >
                                     </div>
+                                    <Tag
+                                        v-if="previewReady"
+                                        class="upload-file-result"
+                                        value="추출 완료" />
                                     <Button
                                         type="button"
-                                        icon="pi pi-trash"
+                                        icon="pi pi-times"
                                         :aria-label="`${file.name} 제거`"
-                                        severity="danger"
+                                        severity="secondary"
                                         text
                                         :disabled="busy"
                                         @click="removeFileCallback(index)" />
@@ -561,31 +627,34 @@
                             </p>
                         </Message>
                     </div>
-                    <div class="upload-account-label">
-                        <StitchSymbol name="account_balance_wallet" /><span
-                            >매칭 대상 계좌</span
-                        ><strong>{{ accountLabel }}</strong>
+                    <div class="upload-account-confirmation">
+                        <div class="upload-account-label">
+                            <StitchSymbol name="account_balance_wallet" /><span
+                                >매칭 대상 계좌</span
+                            ><strong>{{ accountLabel }}</strong>
+                        </div>
+                        <label
+                            v-if="!isPdf && selectedFiles.length"
+                            class="import-check"
+                            for="import-confirmed">
+                            <input
+                                id="import-confirmed"
+                                v-model="confirmed"
+                                type="checkbox"
+                                required />
+                            <span
+                                ><strong>{{ accountLabel }}</strong
+                                >의 자료임을 확인했습니다. 파일에서 확실히
+                                확인할 수 없으면 저장하지 않습니다.</span
+                            >
+                        </label>
                     </div>
-                    <label
-                        v-if="!isPdf && selectedFiles.length"
-                        class="import-check"
-                        for="import-confirmed">
-                        <input
-                            id="import-confirmed"
-                            v-model="confirmed"
-                            type="checkbox"
-                            required />
-                        <span
-                            ><strong>{{ accountLabel }}</strong
-                            >의 자료임을 확인했습니다. 파일에서 확실히 확인할 수
-                            없으면 저장하지 않습니다.</span
-                        >
-                    </label>
                     <div class="submit-actions">
                         <Button
                             type="button"
                             label="초기화"
                             severity="secondary"
+                            outlined
                             :disabled="busy"
                             @click="emit('reset')" />
                         <Button
@@ -606,6 +675,12 @@
                             "
                             class="preview-button" />
                     </div>
+                    <p
+                        v-if="!isPdf && selectedFiles.length && !confirmed"
+                        class="upload-confirmation-note"
+                        role="status">
+                        진행 전 자료의 명의자·계좌를 확인해 주세요.
+                    </p>
                     <p class="field-note submit-note">
                         <i class="pi pi-shield" aria-hidden="true" />추출 후
                         내용을 확인하고 저장합니다. 이 단계에서는 거래·잔고
@@ -683,19 +758,28 @@
                     <article
                         v-for="(row, index) in previewRows"
                         :key="index"
-                        class="upload-sample-card">
+                        class="upload-sample-card"
+                        :class="{ 'has-missing-currency': !row.currency }">
                         <div>
                             <strong>{{
                                 previewCell(row.securityName || row.symbol)
                             }}</strong
-                            ><span>{{ previewType(row) }}</span>
+                            ><span class="upload-type-pill">{{
+                                previewType(row)
+                            }}</span>
                         </div>
                         <div>
                             <span>{{ previewCell(row.symbol) }}</span
                             ><span>{{ previewCell(row.date) }}</span>
                         </div>
                         <div>
-                            <span>검토 전 추출 금액</span
+                            <span
+                                >검토 전 추출 금액
+                                <em
+                                    v-if="!row.currency"
+                                    class="upload-currency-review"
+                                    >통화 검토 요망</em
+                                ></span
                             ><strong
                                 >{{ previewAmount(row.amount) }}
                                 {{ row.currency || '(통화 미지정)' }}</strong
@@ -703,10 +787,18 @@
                         </div>
                     </article>
                 </div>
-                <p class="upload-data-note">
-                    통화가 없거나 금액이 비어 있으면 검토 화면에서 확인하세요.
-                    미제공 값을 0이나 기본 통화로 표시하지 않습니다.
-                </p>
+                <div class="upload-data-note">
+                    <h4>
+                        <StitchSymbol name="warning" />통화 누락 및 결측치 안전
+                        정책
+                    </h4>
+                    <p>
+                        원화와 외화는 환산·합산하지 않고 각각 표시합니다. 통화가
+                        없거나 금액이 비어 있는 행은 다음 검토 화면에서 원본을
+                        확인하고 수정하세요. 미제공 값을 0이나 기본 통화로
+                        치환하지 않으며, 전체 행이 검증을 통과해야 저장됩니다.
+                    </p>
+                </div>
             </article>
             <article class="import-card upload-account-info">
                 <h3><StitchSymbol name="verified_user" />자료 대상 확인</h3>
@@ -1831,7 +1923,7 @@ date,symbol,quantity,amount,currency,type,externalId
     .upload-file-rules > p {
         margin-top: 8px;
     }
-    :global(.p-dark) .upload-heading-row h2 {
+    .p-dark .upload-heading-row h2 {
         color: var(--app-text);
     }
     @media (max-width: 640px) {
@@ -1858,7 +1950,7 @@ date,symbol,quantity,amount,currency,type,externalId
         margin: 12px 0 0;
         gap: 8px;
     }
-    :global(html:not(.p-dark)) .upload-heading-row h2 {
+    html:not(.p-dark) .upload-heading-row h2 {
         color: #382418;
     }
     .upload-sample-row td {
@@ -1959,5 +2051,289 @@ date,symbol,quantity,amount,currency,type,externalId
         background: var(--import-tint);
         line-height: 16px;
         word-break: keep-all;
+    }
+
+    .upload-mobile-picker {
+        display: none;
+    }
+    .upload-file-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+    }
+    .upload-file-toolbar.has-standard-file {
+        display: none;
+    }
+    .import-file-list {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        margin: 8px 0 0;
+    }
+    .import-file {
+        background: var(--app-bg);
+        border: 1px solid var(--app-border);
+        padding: 12px;
+    }
+    .upload-file-name {
+        display: block;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: left;
+        color: var(--app-text);
+        cursor: pointer;
+        overflow-wrap: anywhere;
+    }
+    .upload-file-name:focus-visible {
+        outline: 2px solid var(--app-accent);
+        outline-offset: 3px;
+    }
+    .upload-file-result {
+        flex-shrink: 0;
+        font-size: 10px;
+        line-height: 16px;
+        border: 1px solid var(--app-border);
+        border-radius: 4px;
+    }
+    .import-kind-choice label.selected {
+        border-color: var(--app-border);
+        box-shadow: 0 1px 2px rgb(23 32 51 / 6%);
+    }
+    .import-form .password-unneeded {
+        display: grid;
+        grid-template-columns: 16px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+    }
+    .password-unneeded > .stitch-symbol {
+        font-size: 16px;
+    }
+    .password-unneeded :deep(.p-tag) {
+        max-width: 94px;
+        white-space: normal;
+        line-height: 16px;
+        border: 1px solid var(--app-border);
+        border-radius: 4px;
+        background: var(--app-surface);
+    }
+    .upload-account-confirmation {
+        padding: 12px;
+        border: 1px solid var(--app-warning-text);
+        border-radius: 8px;
+        background: var(--app-warning-light);
+    }
+    .upload-account-confirmation .upload-account-label {
+        background: transparent;
+        padding: 0 0 8px;
+        margin-bottom: 8px;
+        border-bottom: 1px solid var(--app-border);
+        border-radius: 0;
+    }
+    .upload-account-label strong {
+        text-align: right;
+    }
+    .upload-confirmation-note {
+        font-size: 11px;
+        line-height: 18px;
+        margin-top: 12px;
+        text-align: right;
+        color: var(--app-warning-text);
+    }
+    .upload-data-note {
+        border: 1px solid var(--app-warning-text);
+    }
+    .upload-data-note h4 {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        line-height: 16px;
+        margin: 0 0 4px;
+    }
+    .upload-data-note h4 .stitch-symbol {
+        font-size: 14px;
+    }
+    .upload-data-note p {
+        font-size: 10px;
+        line-height: 16.25px;
+    }
+    @media (max-width: 640px) {
+        .upload-mobile-picker {
+            display: grid;
+            justify-items: center;
+            gap: 8px;
+            padding: 16px;
+            border: 2px dashed var(--app-accent);
+            background: var(--import-tint);
+            border-radius: 12px;
+            width: 100%;
+        }
+        .upload-picker-symbol {
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--review-strong-tint, var(--import-tint));
+            color: var(--app-accent);
+            font-size: 20px;
+        }
+        .upload-mobile-picker > strong {
+            font-size: 12px;
+            line-height: 18px;
+            text-align: center;
+        }
+        .upload-mobile-picker > p {
+            font-size: 10px;
+            line-height: 16px;
+            color: var(--app-muted);
+            text-align: center;
+        }
+        .upload-mobile-picker :deep(.p-button) {
+            width: 100%;
+            min-height: 44px;
+            font-size: 12px;
+        }
+        .upload-mobile-picker > a {
+            font-size: 11px;
+            line-height: 16px;
+            color: var(--app-muted);
+            text-decoration: underline;
+            padding: 2px;
+        }
+        .upload-file-toolbar {
+            display: none;
+        }
+        .upload-file-toolbar.is-pdf-toolbar {
+            display: flex;
+        }
+        .upload-file-toolbar .upload-toolbar-choose {
+            display: none;
+        }
+        .import-dropzone {
+            display: none;
+        }
+        .import-file {
+            padding: 10px;
+            gap: 8px;
+        }
+        .file-icon {
+            width: 32px;
+            height: 24px;
+            border-radius: 4px;
+        }
+        .upload-file-result {
+            max-width: 52px;
+            padding: 2px 5px;
+        }
+        .upload-account-label strong {
+            width: auto;
+            margin-inline-start: auto;
+        }
+        .submit-actions {
+            flex-direction: row;
+            align-items: stretch;
+            gap: 8px;
+        }
+        .submit-actions :deep(.p-button:first-child) {
+            flex: 0 0 auto;
+        }
+        .submit-actions :deep(.p-button:last-child) {
+            flex: 1;
+            min-width: 0;
+        }
+    }
+    html:not(.p-dark) .upload-account-confirmation {
+        background: #fffbeb;
+        border-color: #fde68a;
+    }
+    html:not(.p-dark) .upload-data-note {
+        background: #fffbeb;
+        border-color: #fde68a;
+        color: #92400e;
+    }
+    @media (min-width: 641px) {
+        html:not(.p-dark) .upload-data-note {
+            background: #fff1f2;
+            border-color: #fecdd3;
+            color: #9f1239;
+        }
+    }
+    .import-form :deep(.p-fileupload-header) {
+        background: transparent;
+    }
+    .upload-sample-card.has-missing-currency {
+        border-color: var(--app-warning-text);
+    }
+    .upload-currency-review {
+        font-size: 10px;
+        line-height: 16px;
+        font-style: normal;
+        font-weight: 600;
+        color: var(--app-warning-text);
+        background: var(--app-warning-light);
+        border-radius: 4px;
+        padding: 1px 4px;
+    }
+    html:not(.p-dark) .upload-sample-card.has-missing-currency {
+        border-color: #fde68a;
+        background: #fffbeb;
+    }
+
+    .import-form :deep(.import-uploader-content:has(.import-file-list)) {
+        padding: 0;
+        border: 0;
+        background: transparent;
+        border-radius: 0;
+    }
+    .upload-file-result {
+        padding: 2px 6px;
+        white-space: nowrap;
+        max-width: none;
+        background: var(--import-tint);
+        color: var(--app-accent);
+        border-color: var(--app-accent);
+    }
+    .upload-kind-method {
+        font-size: 11px;
+        line-height: 18px;
+        color: var(--app-muted);
+    }
+    .upload-required {
+        color: var(--app-danger, #e11d48);
+    }
+    @media (max-width: 640px) {
+        .import-form :deep(.import-uploader-content) {
+            padding: 0;
+            border: 0;
+            background: transparent;
+            border-radius: 0;
+        }
+        .upload-file-result {
+            max-width: none;
+        }
+    }
+    html:not(.p-dark) .upload-mobile-picker {
+        background: #fcfffe;
+        border-color: #5eead4;
+    }
+    html:not(.p-dark) .upload-picker-symbol {
+        background: #ccfbf1;
+    }
+    html:not(.p-dark) .upload-type-pill {
+        color: #0d7a6e;
+        border-color: #99f6e4;
+        background: #f0fdfa;
+    }
+    html:not(.p-dark) .upload-file-result {
+        color: #047857;
+        border-color: #a7f3d0;
+        background: #ecfdf5;
     }
 </style>

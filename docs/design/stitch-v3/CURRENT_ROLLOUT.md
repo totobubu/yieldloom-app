@@ -6,7 +6,7 @@
 | --- | ---: | --- | --- |
 | 열 연결 | PC·Tablet·Mobile 3 | #249 운영, #257에서 보존 | 기록된 전체 프레임 차이 검수 |
 | 저장 결과 | Tablet·Mobile 2 | #251/#257 운영 | 기록된 시각 차이·실계좌 흐름 |
-| 업로드 | Tablet·Mobile 2 | #253 초안, 실제 추출 미리보기 연결·로컬 검증 | 새 head CI·남은 파일/설정·본문 시각 차이 |
+| 업로드 | Tablet·Mobile 2 | #253 초안, 실제 추출 미리보기 연결·로컬 검증 | phase43 로컬 7종·5폭 통과, 최종 CI·Preview·운영 확인 대기 |
 | 가져오기 검토 | Tablet·Mobile 2 | #256 초안, 헤더·폭·기존 기능 검증 | 본문·카드·원문·요약·최종 동의 구조 |
 | 장부 분석 | Tablet·Mobile 2 | 기존 기능 있음, 최종 원본 적용 미검증 | 원본 대조·적용 |
 | 유사 비교 | Tablet·Mobile 2 | 별도 branch91b81ab, 기계적 충돌 없음 | 전용 검사 CI 등록·통합 검증·남은 시각 차이 |
@@ -18,6 +18,6 @@
 
 #257 main9cbe3334a3bcd626632438e1bfa14fa310d58809. 병합 후 CI42004620869 네 작업과 Pages42004620872 성공, Vercel dpl_9qgj3PEQwaVQFrTTP2CLn5WS3EzW READY. 두 도메인의 실제 릴리스 SHA·메타데이터 b54bc1cca63cb303a8b1e982b42a7238e1741013d3ce3908616c5dcd206827b7 확인. 공개 번들에 영수증 코드가 있고 업로드·검토 초안은 없다. 익명 계좌 API401·문서 읽기0, 공개 검색 PC/Mobile 렌더 오류/넘침0. 직접 Chromium TLS 연결은 미검증이며 인증서 검증을 통과하는 Node 전송으로 공개 자산을 렌더링했다. 로그인 계좌/PDF와 운영 원장 쓰기는 수행하지 않았다.
 
-업로드 최신 근거는 PHASE41_UPLOAD_PREVIEW.md, 검토는 별도 PR#256의 PHASE39_IMPORT_REVIEW.md, 비교 통합 검토는 COMPARISON_INTEGRATION_REVIEW.md다. 기존 43종/29개 미생성 기록은 현재 전수 ID 목록으로 확인되지 않아 이 합계와 섞지 않는다. 없는 프레임·동작·수치를 만들어 완료 처리하지 않는다.
+업로드 최신 근거는 PHASE43_UPLOAD_FIDELITY.md, 검토는 별도 PR#256의 PHASE39_IMPORT_REVIEW.md, 비교 통합 검토는 COMPARISON_INTEGRATION_REVIEW.md다. 기존 43종/29개 미생성 기록은 현재 전수 ID 목록으로 확인되지 않아 이 합계와 섞지 않는다. 없는 프레임·동작·수치를 만들어 완료 처리하지 않는다.
 
 업로드·검토 초안은 FamilyPortfolioView/AssetUploadDialog/StitchSymbol을 공유한다. 두 초안 통합 시 inlineReview 단계에서는 upload만 활성화하고 review 모드는 꺼야 하며, 다음 단계에서는 반대로 전환해야 한다. 양쪽 SVG 목록도 합쳐야 한다. 각 초안의 개별 검증을 두 초안의 최종 결합 검증으로 취급하지 않는다. 비교 branch는 이 공유 파일들을 수정하지 않아 별도로 충돌 없이 합칠 수 있다.

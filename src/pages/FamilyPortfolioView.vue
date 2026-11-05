@@ -90,8 +90,8 @@
         exportKind = ref('holdings'),
         importReceipt = ref(null);
     const kindOptions = [
-        { label: '거래내역', value: 'transactions' },
-        { label: '잔고내역', value: 'holdings' },
+        { label: '거래내역 (배당입금)', value: 'transactions' },
+        { label: '잔고 스냅샷 (보유주식)', value: 'holdings' },
     ];
     const formatOptions = [
         { label: '표준 CSV', value: 'standard-csv' },

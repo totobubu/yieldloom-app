@@ -1,4 +1,4 @@
-/* global window, document, innerWidth */
+/* global window, document, innerWidth, getComputedStyle */
 // Isolated local UI with synthetic files. No auth, API or customer writes.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -16,7 +16,7 @@ await fs.mkdir(out, { recursive: true });
 const harness = resolve(repo, '.phase36-upload.html');
 await fs.writeFile(
     harness,
-    `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app" class="studio-shell"></div><script type="module">import {createApp,h,ref} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import ko from '/src/config/locale/ko.js';import Upload from '/src/components/portfolio/PortfolioFileImportForm.vue';import Tag from 'primevue/tag';import 'primeicons/primeicons.css';import '/src/styles/style.scss';import '/src/styles/studio.scss';const values={kind:ref('transactions'),format:ref('standard-csv'),asOf:ref('2026-03-31'),password:ref(''),rememberPassword:ref(false),confirmed:ref(false)},files=ref([]),busy=ref(false),owner=ref(true),error=ref(''),component=ref(null),events=[];window.uploadFixture={values,files,busy,owner,error,component,events};createApp({setup(){return()=>h('main',{class:'fixture-frame'},h(Upload,{ref:component,accountLabel:'DEMO-ACC-****-891',passwordConfigured:true,isOwner:owner.value,busy:busy.value,error:error.value,reviewing:false,kindOptions:[{label:'거래 내역',value:'transactions'},{label:'보유 잔고',value:'holdings'}],formatOptions:[{label:'표준 CSV',value:'standard-csv'},{label:'표준 XLSX',value:'standard-xlsx'},{label:'토스 거래내역 PDF',value:'toss-pdf'}],selectedFiles:files.value,...Object.fromEntries(Object.entries(values).map(([k,v])=>[k,v.value])),...Object.fromEntries(Object.entries(values).map(([k,v])=>['onUpdate:'+k,x=>v.value=x])),onSelect:e=>{files.value=e.files;values.confirmed.value=false;events.push('select')},onClear:()=>{files.value=[];events.push('clear')},onPreview:()=>events.push('preview'),onManual:()=>events.push('manual'),onRemovePassword:()=>events.push('remove-password'),onReset:()=>{component.value.clear();values.confirmed.value=false;events.push('reset')}},{badges:()=>h(Tag,{value:'합성 검증 데이터 (DEMO)',severity:'warn'})}));}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script><style>body{margin:0}.fixture-frame{max-width:834px;margin:auto;padding:24px}@media(max-width:640px){.fixture-frame{max-width:390px;padding:16px}}</style></body></html>`
+    `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app" class="studio-shell"></div><script type="module">import {createApp,h,ref} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import ko from '/src/config/locale/ko.js';import Upload from '/src/components/portfolio/PortfolioFileImportForm.vue';import 'primeicons/primeicons.css';import '/src/styles/style.scss';import '/src/styles/studio.scss';const values={kind:ref('transactions'),format:ref('standard-csv'),asOf:ref('2026-03-31'),password:ref(''),rememberPassword:ref(false),confirmed:ref(false)},files=ref([]),busy=ref(false),owner=ref(true),error=ref(''),component=ref(null),events=[];window.uploadFixture={values,files,busy,owner,error,component,events};createApp({setup(){return()=>h('main',{class:'fixture-frame'},h(Upload,{ref:component,accountLabel:'DEMO-ACC-****-891',passwordConfigured:true,isOwner:owner.value,busy:busy.value,error:error.value,reviewing:false,kindOptions:[{label:'거래 내역',value:'transactions'},{label:'보유 잔고',value:'holdings'}],formatOptions:[{label:'표준 CSV',value:'standard-csv'},{label:'표준 XLSX',value:'standard-xlsx'},{label:'토스 거래내역 PDF',value:'toss-pdf'}],selectedFiles:files.value,...Object.fromEntries(Object.entries(values).map(([k,v])=>[k,v.value])),...Object.fromEntries(Object.entries(values).map(([k,v])=>['onUpdate:'+k,x=>v.value=x])),onSelect:e=>{files.value=e.files;values.confirmed.value=false;events.push('select')},onClear:()=>{files.value=[];events.push('clear')},onPreview:()=>events.push('preview'),onManual:()=>events.push('manual'),onRemovePassword:()=>events.push('remove-password'),onReset:()=>{component.value.clear();values.confirmed.value=false;events.push('reset')}}));}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script><style>body{margin:0}.fixture-frame{max-width:834px;margin:auto;padding:24px}@media(max-width:640px){.fixture-frame{max-width:390px;padding:16px}}</style></body></html>`
 );
 const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
@@ -93,6 +93,22 @@ try {
                 header: e
                     .querySelector('.upload-heading')
                     .getBoundingClientRect().height,
+                headerParts: Object.fromEntries(
+                    [
+                        '.upload-badges',
+                        '.upload-heading-row > div',
+                        '.upload-heading-row .p-button',
+                        '.upload-steps',
+                    ].map((sel) => {
+                        const rect = e
+                            .querySelector(sel)
+                            .getBoundingClientRect();
+                        return [
+                            sel,
+                            { width: rect.width, height: rect.height },
+                        ];
+                    })
+                ),
             };
         });
         await page.screenshot({
@@ -238,6 +254,38 @@ try {
                 fullPage: true,
             });
             item.sourceId = id;
+            item.sourceGeometry = await page.evaluate(() => {
+                const title = document.querySelector('h1');
+                const header = title.closest('header');
+                const group = title.parentElement.parentElement;
+                const first = group.children[0].getBoundingClientRect();
+                const last = group.children[2]?.getBoundingClientRect();
+                const action = [...document.querySelectorAll('button')].find(
+                    (el) => el.textContent.includes('직접 수기 입력')
+                );
+                return {
+                    titleSize: getComputedStyle(title).fontSize,
+                    titleHeight: title.getBoundingClientRect().height,
+                    headerHeight: header
+                        ? header.getBoundingClientRect().height
+                        : last.bottom - first.top,
+                    manualButtonHeight: action.getBoundingClientRect().height,
+                    manualButtonWidth: action.getBoundingClientRect().width,
+                    tabletParts: header
+                        ? [...header.children].map((el) => ({
+                              tag: el.tagName,
+                              width: el.getBoundingClientRect().width,
+                              height: el.getBoundingClientRect().height,
+                          }))
+                        : null,
+                };
+            });
+            if (width >= 768)
+                assert.equal(
+                    item.implementation.header,
+                    item.sourceGeometry.headerHeight,
+                    'Tablet header must match the unmodified source height'
+                );
             item.sourceAssetFailures = [...failures];
             if (failures.length)
                 item.visualAcceptance =

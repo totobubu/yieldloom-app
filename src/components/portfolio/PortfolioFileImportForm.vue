@@ -93,8 +93,9 @@
                 <div>
                     <h2>증권 데이터 등록</h2>
                     <p>
-                        증권사 거래내역 및 잔고를 불러옵니다. 모든 자료는 검토
-                        후 저장됩니다.
+                        증권사 거래내역 및 잔고 스냅샷을 안전하게 불러와
+                        배당달력 포트폴리오를 구성합니다. 모든 데이터는 검토 후
+                        저장됩니다.
                     </p>
                 </div>
                 <Button
@@ -108,24 +109,34 @@
                 </Button>
             </div>
             <ol class="upload-steps" aria-label="자료 등록 단계">
-                <li
+                <template
                     v-for="(label, index) in [
                         '파일 업로드',
                         '데이터 검토',
                         '저장 결과',
                     ]"
-                    :key="label"
-                    :aria-current="
-                        index === (reviewing ? 1 : 0) ? 'step' : undefined
-                    ">
-                    <span>{{ index + 1 }}</span>
-                    <div>
-                        <strong>{{ label }}</strong
-                        ><small>{{
-                            index === (reviewing ? 1 : 0) ? '진행 중' : '대기'
-                        }}</small>
-                    </div>
-                </li>
+                    :key="label">
+                    <li
+                        :aria-current="
+                            index === (reviewing ? 1 : 0) ? 'step' : undefined
+                        ">
+                        <span>{{ index + 1 }}</span>
+                        <div>
+                            <strong>{{ label }}</strong
+                            ><small>{{
+                                index === 0
+                                    ? '거래/잔고 (진행중)'
+                                    : index === 1
+                                      ? '필수 항목 확인 (대기)'
+                                      : '포트폴리오 적재 (대기)'
+                            }}</small>
+                        </div>
+                    </li>
+                    <li
+                        v-if="index < 2"
+                        aria-hidden="true"
+                        class="upload-step-connector" />
+                </template>
             </ol>
         </header>
         <form
@@ -1178,27 +1189,39 @@ date,symbol,quantity,amount,currency,type,externalId
     }
     .upload-heading {
         grid-column: 1/-1;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: 'meta meta' 'copy action' 'steps steps';
+        column-gap: 12px;
+        row-gap: 8px;
+        align-items: center;
     }
     .upload-badges {
+        grid-area: meta;
         display: flex;
         align-items: center;
         flex-wrap: wrap;
         gap: 8px;
     }
     .upload-badges :deep(.p-tag) {
-        font-size: 11px;
+        font-size: 12px;
         line-height: 16px;
         padding: 2px 8px;
+        border: 1px solid var(--app-accent-border, var(--app-accent));
+        background: var(--import-tint);
+        color: var(--app-accent);
         border-radius: 4px;
     }
+    .upload-badges :deep(.p-tag-secondary) {
+        border-color: var(--app-warning-border, var(--app-warning-text));
+        background: var(--app-warning-light);
+        color: var(--app-warning-text);
+    }
     .upload-heading-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
+        display: contents;
+    }
+    .upload-heading-row > div {
+        grid-area: copy;
     }
     .upload-heading-row h2 {
         font-size: 24px;
@@ -1207,39 +1230,55 @@ date,symbol,quantity,amount,currency,type,externalId
         color: var(--app-brand-brown);
     }
     .upload-heading-row p {
-        font-size: 13px;
-        line-height: 20px;
+        font-size: 12px;
+        line-height: 19.5px;
         color: var(--app-muted);
-        margin: 8px 0 0;
+        margin: 4px 0 0;
     }
     .upload-heading-row :deep(.p-button) {
-        flex-shrink: 0;
+        grid-area: action;
         font-size: 12px;
-        min-height: 36px;
+        min-height: 44px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        color: var(--app-accent);
+        border-color: var(--app-accent);
+        gap: 6px;
+    }
+    .upload-heading-row .stitch-symbol {
+        font-size: 16px;
     }
     .upload-steps {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 16px;
+        grid-area: steps;
+        display: flex;
+        align-items: center;
         list-style: none;
-        padding: 16px;
-        margin: 0;
+        padding: 12px;
+        margin: 8px 0 0;
         background: var(--app-surface);
         border: 1px solid var(--app-border);
         border-radius: 12px;
     }
     .upload-steps li {
+        flex: 1;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         color: var(--app-muted);
+    }
+    .upload-steps .upload-step-connector {
+        display: block;
+        flex: 0 0 32px;
+        height: 1px;
+        margin: 0 8px;
+        background: var(--app-border);
     }
     .upload-steps li > span {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
         border: 1px solid var(--app-border);
         font-size: 12px;
@@ -1255,12 +1294,13 @@ date,symbol,quantity,amount,currency,type,externalId
     .upload-steps strong {
         display: block;
         font-size: 12px;
-        line-height: 18px;
+        line-height: 16px;
     }
     .upload-steps small {
         display: block;
-        font-size: 11px;
+        font-size: 10px;
         line-height: 16px;
+        font-weight: 400;
     }
     .import-form {
         grid-column: 1 / span 7;
@@ -1558,12 +1598,20 @@ date,symbol,quantity,amount,currency,type,externalId
             padding-bottom: 48px;
         }
         .upload-heading {
-            gap: 16px;
+            grid-template-areas: 'meta action' 'copy copy' 'steps steps';
+            gap: 16px 8px;
         }
-        .upload-heading-row {
-            align-items: flex-start;
-            flex-wrap: wrap;
-            gap: 8px;
+        .upload-badges {
+            gap: 6px;
+        }
+        .upload-badges :deep(.p-tag) {
+            font-size: 11px;
+            line-height: 16.5px;
+        }
+        .upload-heading-row :deep(.p-button) {
+            padding: 6px 14px;
+            white-space: nowrap;
+            font-size: 12px;
         }
         .upload-heading-row h2 {
             font-size: 20px;
@@ -1571,25 +1619,33 @@ date,symbol,quantity,amount,currency,type,externalId
         }
         .upload-heading-row p {
             font-size: 12px;
-            line-height: 18px;
+            line-height: 19.5px;
         }
         .upload-steps {
             padding: 12px;
-            gap: 8px;
+            margin: 0;
+            gap: 0;
+        }
+        .upload-steps .upload-step-connector {
+            flex-basis: 16px;
+            margin: 0;
         }
         .upload-steps li {
-            flex-direction: column;
+            flex-direction: row;
             gap: 6px;
-            text-align: center;
+            text-align: left;
             min-width: 0;
+        }
+        .upload-steps li > span {
+            font-size: 11px;
         }
         .upload-steps strong {
             font-size: 11px;
             line-height: 16px;
         }
         .upload-steps small {
-            font-size: 10px;
-            line-height: 14px;
+            font-size: 9px;
+            line-height: 13.5px;
         }
         .import-form {
             padding: 14px;

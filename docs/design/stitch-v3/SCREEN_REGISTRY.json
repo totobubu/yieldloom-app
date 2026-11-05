@@ -1812,7 +1812,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "reference-backed shell and existing inputs connected locally; preview remains in existing review flow; not deployed",
+            "implementation": "Draft PR #253; reference header geometry corrected (Tablet 834/768 matched); actual controls retained; inline preview incomplete; not deployed",
             "visualAcceptance": "not accepted: source inspection state differs; Mobile source Pretendard Google Fonts URL HTTP 400; see PHASE36_UPLOAD.md",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6",
@@ -1845,7 +1845,8 @@
             "rollout": {
                 "environment": "local only",
                 "branch": "feat/stitch-upload-phase36"
-            }
+            },
+            "latestEvidence": "PHASE38_UPLOAD_HEADER.md"
         },
         {
             "family": "Data Upload",
@@ -1856,7 +1857,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "reference-backed shell and existing inputs connected locally; preview remains in existing review flow; not deployed",
+            "implementation": "Draft PR #253; reference header geometry corrected (Tablet 834/768 matched); actual controls retained; inline preview incomplete; not deployed",
             "visualAcceptance": "not accepted: source inspection state differs; Mobile source Pretendard Google Fonts URL HTTP 400; see PHASE36_UPLOAD.md",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33",
@@ -1889,7 +1890,8 @@
             "rollout": {
                 "environment": "local only",
                 "branch": "feat/stitch-upload-phase36"
-            }
+            },
+            "latestEvidence": "PHASE38_UPLOAD_HEADER.md"
         },
         {
             "family": "Import Result",

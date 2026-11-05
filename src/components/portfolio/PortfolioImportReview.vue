@@ -1,5 +1,5 @@
 <script setup>
-    import { computed, ref, watch } from 'vue';
+    import { computed, ref, watch, onScopeDispose } from 'vue';
     import Button from 'primevue/button';
     import Checkbox from 'primevue/checkbox';
     import Column from 'primevue/column';
@@ -8,6 +8,10 @@
     import Select from 'primevue/select';
     import StitchSymbol from './StitchSymbol.vue';
     import TossPdfImportReview from './TossPdfImportReview.vue';
+    import GenericImportReviewCards from './GenericImportReviewCards.vue';
+    import ImportReviewCurrencySummary from './ImportReviewCurrencySummary.vue';
+    import { reviewCurrencyBreakdown } from '@/services/importReviewCurrency.js';
+    import { validCalendarDate } from '@/services/portfolioCalendar.js';
     import { importReviewGroups } from '@/services/tossImportReview.js';
     import {
         reviewDividendSummary,
@@ -42,6 +46,19 @@
         )
             emit('commit');
     }
+    const compactQuery =
+        typeof window === 'undefined'
+            ? null
+            : window.matchMedia('(max-width: 640px)');
+    const compactReview = ref(compactQuery?.matches || false);
+    const updateCompactReview = (event) => {
+        compactReview.value = event.matches;
+    };
+    compactQuery?.addEventListener('change', updateCompactReview);
+    onScopeDispose(() =>
+        compactQuery?.removeEventListener('change', updateCompactReview)
+    );
+    const pageSize = ref(50);
     const heading = ref(null);
     function focusHeading() {
         heading.value?.focus({ preventScroll: true });
@@ -49,6 +66,12 @@
     }
     defineExpose({ focusHeading });
     const search = ref('');
+    const sortOrder = ref('oldest');
+    const sortOptions = [
+        { label: '오래된 순', value: 'oldest' },
+        { label: '최신 순', value: 'newest' },
+        { label: '원본 순', value: 'source' },
+    ];
     const category = ref('all');
     const symbol = ref('');
     const onlyIssues = ref(false);
@@ -59,6 +82,7 @@
             category.value,
             symbol.value,
             onlyIssues.value,
+            sortOrder.value,
         ])
     );
     watch(filterKey, () => {
@@ -115,7 +139,7 @@
     );
     const filteredRows = computed(() => {
         const query = search.value.trim().toLocaleLowerCase();
-        return groups.value.all.filter(
+        const result = groups.value.all.filter(
             ({ row, index }) =>
                 (!symbol.value || row.symbol === symbol.value) &&
                 (!onlyIssues.value || issueIndices.value.has(index)) &&
@@ -144,6 +168,21 @@
                             .includes(query)
                     ))
         );
+        if (
+            props.review.source === 'toss-pdf' ||
+            isHoldings.value ||
+            sortOrder.value === 'source'
+        )
+            return result;
+        return result.sort((a, b) => {
+            const av = validCalendarDate(a.row.date),
+                bv = validCalendarDate(b.row.date);
+            if (!av || !bv) return av ? -1 : bv ? 1 : a.index - b.index;
+            return (
+                a.row.date.localeCompare(b.row.date) *
+                    (sortOrder.value === 'newest' ? -1 : 1) || a.index - b.index
+            );
+        });
     });
     const period = computed(() => {
         const dates = props.review.rows
@@ -173,6 +212,12 @@
         },
         ...(!isHoldings.value ? [{ field: 'type', label: '거래 유형' }] : []),
     ]);
+    const genericTransactions = computed(
+        () => !isHoldings.value && props.review.source !== 'toss-pdf'
+    );
+    const currencyBreakdown = computed(() =>
+        reviewCurrencyBreakdown(props.review.rows)
+    );
     const dividendSummary = computed(() =>
         reviewDividendSummary(props.review.rows)
     );
@@ -209,6 +254,7 @@
         () => props.review.rows.filter((row) => row.symbol === 'CASH').length
     );
     function resetFilters() {
+        sortOrder.value = 'oldest';
         search.value = '';
         category.value = 'all';
         symbol.value = '';
@@ -271,97 +317,129 @@
                 </li>
             </ol>
         </header>
-        <div class="review-metrics">
-            <article class="metric-card">
-                <span
-                    >총 추출 건수<i
-                        class="pi pi-calculator"
-                        aria-hidden="true" /></span
-                ><strong
-                    >{{ counts.all.toLocaleString() }}<small>건</small></strong
-                >
-                <p>
-                    {{
-                        review.fileCount
-                            ? `파일 ${review.fileCount}개`
-                            : isHoldings
-                              ? '전체 잔고 스냅샷'
-                              : '저장 전 추출 자료'
-                    }}<b>{{ currencies }}</b>
-                </p>
-            </article>
-            <article class="metric-card">
-                <span
-                    >{{ isHoldings ? '보유 종목' : '추출 배당 금액'
-                    }}<i class="pi pi-wallet" aria-hidden="true" /></span
-                ><strong v-if="isHoldings"
-                    >{{ symbols.length - 1 }}<small>개</small></strong
-                ><strong v-else class="dividend-total">{{
-                    dividendSummary.totals.length
-                        ? reviewMoney(
-                              dividendSummary.totals[0].amount,
-                              dividendSummary.totals[0].currency
-                          )
-                        : '—'
-                }}</strong>
-                <p v-if="!isHoldings">
-                    {{
-                        dividendSummary.totals[1]
-                            ? reviewMoney(
-                                  dividendSummary.totals[1].amount,
-                                  dividendSummary.totals[1].currency
-                              )
-                            : '원문 거래금액 · 취소 차감'
-                    }}<span v-if="dividendSummary.missing"
-                        >금액 미확인 {{ dividendSummary.missing }}건</span
-                    >
-                </p>
-                <p v-else>현금 CASH를 포함한 종목 코드 기준</p>
-            </article>
-            <article class="metric-card trade-metric">
-                <span
-                    >{{ isHoldings ? '자료 기준일' : '주요 거래 요약'
-                    }}<i
-                        class="pi pi-arrow-right-arrow-left"
-                        aria-hidden="true" /></span
-                ><strong v-if="isHoldings" class="metric-date">{{
-                    review.asOf || '확인 필요'
-                }}</strong>
-                <div v-else class="trade-counts">
-                    <div>
-                        <small class="buy-label">매수</small
-                        ><b>{{ counts.buy.toLocaleString() }}<em>건</em></b>
-                    </div>
-                    <div>
-                        <small class="sell-label">매도</small
-                        ><b>{{ counts.sell.toLocaleString() }}<em>건</em></b>
-                    </div>
-                    <div>
-                        <small>현금·환전</small
-                        ><b>{{ cashCount.toLocaleString() }}<em>건</em></b>
-                    </div>
+        <section
+            v-if="genericTransactions"
+            class="review-verification-summary"
+            aria-label="검토 현황 요약">
+            <h3>검토 현황 요약</h3>
+            <div class="review-verification-body">
+                <div class="review-verification-ring">
+                    {{ busy ? '처리 중' : '대기' }}
                 </div>
-                <p class="period-label">조회 기간: {{ period }}</p>
-            </article>
-            <article class="metric-card issue-metric">
-                <span
-                    ><span
-                        ><i
-                            class="pi pi-exclamation-triangle"
-                            aria-hidden="true" />이상치 및 검토 필요</span
-                    ><em>확인 요망</em></span
-                ><strong>{{ counts.unresolved }}<small>건</small></strong>
-                <p>
-                    <span>추출 시 오류 · 미식별 거래</span
-                    ><button
-                        type="button"
-                        :disabled="busy"
-                        @click="category = 'unresolved'">
-                        바로 보기
-                    </button>
-                </p>
-            </article>
-        </div>
+                <div>
+                    <strong>최종 검증 {{ busy ? '진행 중' : '대기' }}</strong>
+                    <p>
+                        추출 {{ counts.all }}건 · 확인 필요
+                        {{ counts.unresolved }}건
+                    </p>
+                    <small>수정 후 전체 자료를 검증하고 저장합니다.</small>
+                </div>
+            </div>
+        </section>
+        <ImportReviewCurrencySummary
+            v-if="genericTransactions && compactReview"
+            :summary="currencyBreakdown"
+            class="review-top-currency" />
+        <details class="review-extra-metrics" :open="!genericTransactions">
+            <summary>
+                {{ isHoldings ? '잔고 상세 요약' : '추출 배당·거래 상세 요약' }}
+            </summary>
+            <div class="review-metrics">
+                <article class="metric-card">
+                    <span
+                        >총 추출 건수<i
+                            class="pi pi-calculator"
+                            aria-hidden="true" /></span
+                    ><strong
+                        >{{ counts.all.toLocaleString()
+                        }}<small>건</small></strong
+                    >
+                    <p>
+                        {{
+                            review.fileCount
+                                ? `파일 ${review.fileCount}개`
+                                : isHoldings
+                                  ? '전체 잔고 스냅샷'
+                                  : '저장 전 추출 자료'
+                        }}<b>{{ currencies }}</b>
+                    </p>
+                </article>
+                <article class="metric-card">
+                    <span
+                        >{{ isHoldings ? '보유 종목' : '추출 배당 금액'
+                        }}<i class="pi pi-wallet" aria-hidden="true" /></span
+                    ><strong v-if="isHoldings"
+                        >{{ symbols.length - 1 }}<small>개</small></strong
+                    ><strong v-else class="dividend-total">{{
+                        dividendSummary.totals.length
+                            ? reviewMoney(
+                                  dividendSummary.totals[0].amount,
+                                  dividendSummary.totals[0].currency
+                              )
+                            : '—'
+                    }}</strong>
+                    <p v-if="!isHoldings">
+                        {{
+                            dividendSummary.totals[1]
+                                ? reviewMoney(
+                                      dividendSummary.totals[1].amount,
+                                      dividendSummary.totals[1].currency
+                                  )
+                                : '원문 거래금액 · 취소 차감'
+                        }}<span v-if="dividendSummary.missing"
+                            >금액 미확인 {{ dividendSummary.missing }}건</span
+                        >
+                    </p>
+                    <p v-else>현금 CASH를 포함한 종목 코드 기준</p>
+                </article>
+                <article class="metric-card trade-metric">
+                    <span
+                        >{{ isHoldings ? '자료 기준일' : '주요 거래 요약'
+                        }}<i
+                            class="pi pi-arrow-right-arrow-left"
+                            aria-hidden="true" /></span
+                    ><strong v-if="isHoldings" class="metric-date">{{
+                        review.asOf || '확인 필요'
+                    }}</strong>
+                    <div v-else class="trade-counts">
+                        <div>
+                            <small class="buy-label">매수</small
+                            ><b>{{ counts.buy.toLocaleString() }}<em>건</em></b>
+                        </div>
+                        <div>
+                            <small class="sell-label">매도</small
+                            ><b
+                                >{{ counts.sell.toLocaleString()
+                                }}<em>건</em></b
+                            >
+                        </div>
+                        <div>
+                            <small>현금·환전</small
+                            ><b>{{ cashCount.toLocaleString() }}<em>건</em></b>
+                        </div>
+                    </div>
+                    <p class="period-label">조회 기간: {{ period }}</p>
+                </article>
+                <article class="metric-card issue-metric">
+                    <span
+                        ><span
+                            ><i
+                                class="pi pi-exclamation-triangle"
+                                aria-hidden="true" />이상치 및 검토 필요</span
+                        ><em>확인 요망</em></span
+                    ><strong>{{ counts.unresolved }}<small>건</small></strong>
+                    <p>
+                        <span>추출 시 오류 · 미식별 거래</span
+                        ><button
+                            type="button"
+                            :disabled="busy"
+                            @click="category = 'unresolved'">
+                            바로 보기
+                        </button>
+                    </p>
+                </article>
+            </div>
+        </details>
         <div class="review-assurance">
             <span class="assurance-icon"
                 ><i class="pi pi-verified" aria-hidden="true"
@@ -390,7 +468,9 @@
         <slot name="holdings-warning" />
         <div class="review-grid">
             <div class="review-main">
-                <article class="review-toolbar">
+                <article
+                    class="review-toolbar"
+                    :class="{ 'review-toolbar--generic': genericTransactions }">
                     <div class="filter-top-line">
                         <div
                             class="filter-categories"
@@ -413,7 +493,7 @@
                                 }}<b>{{ counts[filter.value] }}</b>
                             </button>
                         </div>
-                        <label class="issues-toggle"
+                        <label v-if="!genericTransactions" class="issues-toggle"
                             ><input
                                 v-model="onlyIssues"
                                 type="checkbox"
@@ -430,10 +510,11 @@
                                 aria-hidden="true" /><InputText
                                 v-model="search"
                                 aria-label="추출 결과 검색"
-                                placeholder="종목명, 티커, 거래메모 검색..."
+                                placeholder="종목명/코드/고유번호 검색..."
                                 :disabled="busy"
                                 size="small" /></label
                         ><Select
+                            v-if="!genericTransactions"
                             v-model="symbol"
                             :options="symbols"
                             option-label="label"
@@ -444,6 +525,7 @@
                             :disabled="busy"
                             filter
                             size="small" /><Button
+                            v-if="!genericTransactions"
                             label="필터 초기화"
                             type="button"
                             text
@@ -451,7 +533,97 @@
                             :disabled="busy"
                             @click="resetFilters" />
                     </div>
+                    <div v-if="genericTransactions" class="review-sort-line">
+                        <span>정렬 방식:</span
+                        ><span v-if="compactReview" class="review-sort-label">{{
+                            sortOptions.find(
+                                (option) => option.value === sortOrder
+                            )?.label
+                        }}</span
+                        ><Select
+                            v-else
+                            v-model="sortOrder"
+                            :options="sortOptions"
+                            option-label="label"
+                            option-value="value"
+                            aria-label="거래 내역 정렬"
+                            size="small"
+                            :disabled="busy" />
+                    </div>
+                    <details
+                        v-if="genericTransactions"
+                        class="review-advanced-filters"
+                        :open="!!symbol || onlyIssues">
+                        <summary>
+                            추가 필터{{
+                                symbol || onlyIssues ? ' · 적용 중' : ''
+                            }}
+                        </summary>
+                        <div class="review-advanced-controls">
+                            <label class="issues-toggle"
+                                ><input
+                                    v-model="onlyIssues"
+                                    type="checkbox"
+                                    :disabled="busy" /><span
+                                    class="toggle-track"
+                                    aria-hidden="true" />검토 필요 항목만
+                                모아보기</label
+                            ><Select
+                                v-model="symbol"
+                                :options="symbols"
+                                option-label="label"
+                                option-value="value"
+                                aria-label="추출 종목 필터"
+                                :filter-fields="['label', 'value']"
+                                placeholder="전체 종목 (모든 추출건)"
+                                :disabled="busy"
+                                filter
+                                size="small" /><Button
+                                label="필터 초기화"
+                                type="button"
+                                text
+                                size="small"
+                                :disabled="busy"
+                                @click="resetFilters" /><label
+                                v-if="compactReview"
+                                >정렬 방식<Select
+                                    v-model="sortOrder"
+                                    :options="sortOptions"
+                                    option-label="label"
+                                    option-value="value"
+                                    aria-label="거래 내역 정렬"
+                                    size="small"
+                                    :disabled="busy"
+                            /></label>
+                        </div>
+                        <div
+                            class="symbol-chips"
+                            role="group"
+                            aria-label="주요 종목">
+                            <span
+                                ><i
+                                    class="pi pi-sliders-h"
+                                    aria-hidden="true" />주요 종목:</span
+                            ><button
+                                type="button"
+                                :class="{ active: !symbol }"
+                                :disabled="busy"
+                                @click="symbol = ''">
+                                전체</button
+                            ><button
+                                v-for="chip in symbolChips"
+                                :key="chip.value"
+                                type="button"
+                                :class="{ active: symbol === chip.value }"
+                                :disabled="busy"
+                                :aria-label="`${chip.label} ${chip.count}건 보기`"
+                                @click="symbol = chip.value">
+                                {{ chip.label }}<b>{{ chip.count }}</b>
+                            </button>
+                        </div>
+                    </details>
                     <div
+                        v-if="!genericTransactions"
                         class="symbol-chips"
                         role="group"
                         aria-label="주요 종목">
@@ -492,13 +664,15 @@
                         </li>
                     </ul>
                 </details>
-                <p class="review-scroll-cue">
+                <p
+                    v-if="!compactReview || review.source === 'toss-pdf'"
+                    class="review-scroll-cue">
                     <StitchSymbol name="swipe" />가로로 스크롤하여 세부 금액 및
                     원본 대조 열을 확인할 수 있습니다.
                 </p>
                 <div class="review-table-card">
                     <div
-                        v-if="review.source !== 'toss-pdf'"
+                        v-if="review.source !== 'toss-pdf' && !compactReview"
                         class="table-caption">
                         <strong>{{
                             isHoldings ? '보유 잔고 검토' : '거래 내역 검토'
@@ -521,13 +695,23 @@
                         :selected-symbol="symbol"
                         :cash-only="category === 'cash' || symbol === 'CASH'"
                         @update-row="updateRow($event)" />
+                    <GenericImportReviewCards
+                        v-else-if="compactReview"
+                        v-model:first="first"
+                        v-model:page-size="pageSize"
+                        :rows="filteredRows"
+                        :columns="columns"
+                        :issue-indices="issueIndices"
+                        :is-holdings="isHoldings"
+                        :busy="busy"
+                        @update-row="updateRow" />
                     <DataTable
                         v-else
                         v-model:first="first"
+                        v-model:rows="pageSize"
                         :value="filteredRows"
                         data-key="index"
                         paginator
-                        :rows="50"
                         :rows-per-page-options="[25, 50, 100, 200]"
                         scrollable
                         scroll-height="600px"
@@ -602,135 +786,163 @@
                 </div>
             </div>
             <aside class="review-sidebar" aria-label="추출 자료 확인 안내">
-                <article class="review-side-card dividend-preview">
-                    <h3>
-                        <i class="pi pi-chart-line" aria-hidden="true" />배당
-                        기록 미리보기<span class="preview-badge"
-                            >추출 자료 기준</span
-                        >
-                    </h3>
-                    <p>
-                        이번에 추출된 배당 거래의 금액과 월별 분포입니다. 저장
-                        전 자료이며 세전·세후 기준은 원문에서 확인하세요.
-                    </p>
-                    <div
-                        v-if="dividendSummary.totals.length > 1"
-                        class="preview-currency">
-                        <button
-                            v-for="total in dividendSummary.totals"
-                            :key="total.currency"
-                            type="button"
-                            :class="{
-                                active:
-                                    chartSummary?.currency === total.currency,
-                            }"
-                            :disabled="busy"
-                            @click="chartCurrency = total.currency">
-                            {{ total.currency }}
-                        </button>
-                    </div>
-                    <div class="preview-metric">
-                        <span>추출 배당 금액 (취소 차감)</span
-                        ><strong>{{
-                            chartSummary
-                                ? reviewMoney(
-                                      chartSummary.amount,
-                                      chartSummary.currency
-                                  )
-                                : '금액 미확인'
-                        }}</strong>
-                    </div>
-                    <div class="preview-metric">
-                        <span>배당 거래 기록</span
-                        ><strong>{{ counts.dividend }}<small>건</small></strong>
-                    </div>
-                    <div class="preview-metric">
-                        <span>금액이 확인된 배당 기록</span
-                        ><strong
-                            >{{ chartSummary?.count || 0
-                            }}<small
-                                >건 ·
-                                {{
-                                    chartSummary?.currency || '통화 미확인'
-                                }}</small
-                            ></strong
-                        >
-                    </div>
-                    <div class="chart-heading">
-                        <strong>월별 배당금 합계</strong
-                        ><span>{{ chartSummary?.currency || '—' }}</span>
-                    </div>
-                    <div
-                        class="dividend-bars"
-                        role="img"
-                        :aria-label="`추출 배당 기록의 월별 금액 분포 (${chartSummary?.currency || '자료 없음'})`">
+                <ImportReviewCurrencySummary
+                    v-if="genericTransactions && !compactReview"
+                    :summary="currencyBreakdown" />
+                <details
+                    class="review-existing-guidance"
+                    :open="!genericTransactions">
+                    <summary>배당 기록·저장 상세 안내</summary>
+                    <article class="review-side-card dividend-preview">
+                        <h3>
+                            <i
+                                class="pi pi-chart-line"
+                                aria-hidden="true" />배당 기록 미리보기<span
+                                class="preview-badge"
+                                >추출 자료 기준</span
+                            >
+                        </h3>
+                        <p>
+                            이번에 추출된 배당 거래의 금액과 월별 분포입니다.
+                            저장 전 자료이며 세전·세후 기준은 원문에서
+                            확인하세요.
+                        </p>
                         <div
-                            v-for="(amount, month) in chartSummary?.months ||
-                            Array(12).fill(0)"
-                            :key="month"
-                            :title="`${month + 1}월 ${reviewMoney(amount, chartSummary?.currency)}`">
-                            <span
-                                :class="{ negative: amount < 0 }"
-                                :style="{
-                                    height: `${Math.max(3, (Math.abs(amount) / chartMaximum) * 78)}px`,
-                                }" /><small>{{ month + 1 }}월</small>
+                            v-if="dividendSummary.totals.length > 1"
+                            class="preview-currency">
+                            <button
+                                v-for="total in dividendSummary.totals"
+                                :key="total.currency"
+                                type="button"
+                                :class="{
+                                    active:
+                                        chartSummary?.currency ===
+                                        total.currency,
+                                }"
+                                :disabled="busy"
+                                @click="chartCurrency = total.currency">
+                                {{ total.currency }}
+                            </button>
                         </div>
-                    </div>
-                    <p class="chart-note">
-                        여러 해의 같은 월은 합산합니다. 기록이 없는 달은 추출된
-                        배당 기록이 없는 달입니다.
-                    </p>
-                </article>
-                <article class="review-side-card">
-                    <h3>
-                        <i class="pi pi-shield" aria-hidden="true" />안전 저장
-                        및 검토 안내
-                    </h3>
-                    <ul class="save-guidance">
-                        <li>
-                            <i class="pi pi-server" aria-hidden="true" />
-                            <div>
-                                <strong>{{
-                                    batches > 1
-                                        ? `200행 단위 · ${batches}개 묶음 저장`
-                                        : '전체 행 검증 후 저장'
-                                }}</strong>
-                                <p>
-                                    모든 자료를 먼저 검증합니다. 분할 저장 중
-                                    실패하면 같은 미리보기에서 다시 시도할 수
-                                    있습니다.
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="pi pi-check-square" aria-hidden="true" />
-                            <div>
-                                <strong>{{
-                                    isHoldings
-                                        ? '전체 잔고 확인'
-                                        : '거래 고유번호로 중복 확인'
-                                }}</strong>
-                                <p>
+                        <div class="preview-metric">
+                            <span>추출 배당 금액 (취소 차감)</span
+                            ><strong>{{
+                                chartSummary
+                                    ? reviewMoney(
+                                          chartSummary.amount,
+                                          chartSummary.currency
+                                      )
+                                    : '금액 미확인'
+                            }}</strong>
+                        </div>
+                        <div class="preview-metric">
+                            <span>배당 거래 기록</span
+                            ><strong
+                                >{{ counts.dividend }}<small>건</small></strong
+                            >
+                        </div>
+                        <div class="preview-metric">
+                            <span>금액이 확인된 배당 기록</span
+                            ><strong
+                                >{{ chartSummary?.count || 0
+                                }}<small
+                                    >건 ·
                                     {{
+                                        chartSummary?.currency || '통화 미확인'
+                                    }}</small
+                                ></strong
+                            >
+                        </div>
+                        <div class="chart-heading">
+                            <strong>월별 배당금 합계</strong
+                            ><span>{{ chartSummary?.currency || '—' }}</span>
+                        </div>
+                        <div
+                            class="dividend-bars"
+                            role="img"
+                            :aria-label="`추출 배당 기록의 월별 금액 분포 (${chartSummary?.currency || '자료 없음'})`">
+                            <div
+                                v-for="(
+                                    amount, month
+                                ) in chartSummary?.months || Array(12).fill(0)"
+                                :key="month"
+                                :title="`${month + 1}월 ${reviewMoney(amount, chartSummary?.currency)}`">
+                                <span
+                                    :class="{ negative: amount < 0 }"
+                                    :style="{
+                                        height: `${Math.max(3, (Math.abs(amount) / chartMaximum) * 78)}px`,
+                                    }" /><small>{{ month + 1 }}월</small>
+                            </div>
+                        </div>
+                        <p class="chart-note">
+                            여러 해의 같은 월은 합산합니다. 기록이 없는 달은
+                            추출된 배당 기록이 없는 달입니다.
+                        </p>
+                    </article>
+                    <article class="review-side-card">
+                        <h3>
+                            <i class="pi pi-shield" aria-hidden="true" />안전
+                            저장 및 검토 안내
+                        </h3>
+                        <ul class="save-guidance">
+                            <li>
+                                <i class="pi pi-server" aria-hidden="true" />
+                                <div>
+                                    <strong>{{
+                                        batches > 1
+                                            ? `200행 단위 · ${batches}개 묶음 저장`
+                                            : '전체 행 검증 후 저장'
+                                    }}</strong>
+                                    <p>
+                                        모든 자료를 먼저 검증합니다. 분할 저장
+                                        중 실패하면 같은 미리보기에서 다시
+                                        시도할 수 있습니다.
+                                    </p>
+                                </div>
+                            </li>
+                            <li>
+                                <i
+                                    class="pi pi-check-square"
+                                    aria-hidden="true" />
+                                <div>
+                                    <strong>{{
                                         isHoldings
-                                            ? '기준일의 전체 잔고를 입력합니다. 빠진 종목은 새 잔고에서 제외됩니다.'
-                                            : '같은 계좌의 동일 거래 고유번호를 확인합니다. 기존 거래를 자동으로 덮어쓰지 않습니다.'
-                                    }}
-                                </p>
-                            </div>
-                        </li>
-                        <li>
-                            <i class="pi pi-filter" aria-hidden="true" />
-                            <div>
-                                <strong>필터는 표시할 거래만 변경</strong>
-                                <p>
-                                    검색 결과와 관계없이 전체
-                                    {{ counts.all.toLocaleString() }}건이
-                                    검증·저장 대상입니다.
-                                </p>
-                            </div>
-                        </li>
-                    </ul>
+                                            ? '전체 잔고 확인'
+                                            : '거래 고유번호로 중복 확인'
+                                    }}</strong>
+                                    <p>
+                                        {{
+                                            isHoldings
+                                                ? '기준일의 전체 잔고를 입력합니다. 빠진 종목은 새 잔고에서 제외됩니다.'
+                                                : '같은 계좌의 동일 거래 고유번호를 확인합니다. 기존 거래를 자동으로 덮어쓰지 않습니다.'
+                                        }}
+                                    </p>
+                                </div>
+                            </li>
+                            <li>
+                                <i class="pi pi-filter" aria-hidden="true" />
+                                <div>
+                                    <strong>필터는 표시할 거래만 변경</strong>
+                                    <p>
+                                        검색 결과와 관계없이 전체
+                                        {{ counts.all.toLocaleString() }}건이
+                                        검증·저장 대상입니다.
+                                    </p>
+                                </div>
+                            </li>
+                        </ul>
+                    </article>
+                </details>
+                <article
+                    v-if="genericTransactions"
+                    class="review-example-guide">
+                    <h3>예시 검토 결과 안내</h3>
+                    <p>
+                        현재 검토 자료와 별개인 참고 예시입니다. 미등록
+                        종목·누락 통화는 원문을 대조하고 수정하세요.
+                    </p>
+                    <code>20260307, 신규미식별종목, 매수, 10, , 100000</code
+                    ><small>예시: 통화 누락 시 원문 확인 후 수정</small>
                 </article>
                 <article class="review-side-card review-save-bar">
                     <h3>최종 반영 동의 및 저장</h3>
@@ -1179,6 +1391,7 @@
     .review-main,
     .review-sidebar {
         display: grid;
+        grid-template-columns: minmax(0, 1fr);
         gap: 16px;
         min-width: 0;
     }
@@ -1978,5 +2191,178 @@
     .review-save-bar .review-save-actions .p-button {
         width: 100%;
         min-height: 36px;
+    }
+    .review-table-card:has(.generic-review-cards) {
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+    }
+    .review-verification-summary {
+        padding: 14px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+        margin-bottom: 16px;
+    }
+    .review-verification-summary h3 {
+        font-size: 13px;
+        line-height: 20px;
+        margin: 0 0 12px;
+    }
+    .review-verification-body {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    .review-verification-ring {
+        display: grid;
+        place-items: center;
+        flex: 0 0 72px;
+        width: 72px;
+        height: 72px;
+        border: 6px solid var(--app-border);
+        border-radius: 50%;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 700;
+        color: var(--app-muted);
+    }
+    .review-verification-body strong {
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .review-verification-body p,
+    .review-verification-body small {
+        font-size: 11px;
+        line-height: 18px;
+        color: var(--app-muted);
+        margin-top: 4px;
+    }
+    .review-top-currency {
+        margin-bottom: 16px;
+    }
+    .review-extra-metrics {
+        margin-bottom: 16px;
+    }
+    .review-extra-metrics > summary,
+    .review-existing-guidance > summary {
+        padding: 10px 12px;
+        font-size: 11px;
+        line-height: 18px;
+        cursor: pointer;
+        color: var(--app-accent);
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-surface);
+    }
+    .review-existing-guidance {
+        min-width: 0;
+    }
+    .review-example-guide {
+        padding: 14px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+        font-size: 11px;
+        line-height: 18px;
+    }
+    .review-example-guide h3 {
+        font-size: 13px;
+        line-height: 20px;
+        margin: 0 0 10px;
+    }
+    .review-example-guide p {
+        color: var(--app-muted);
+        margin-bottom: 10px;
+    }
+    .review-example-guide code {
+        display: block;
+        padding: 10px;
+        border-radius: 8px;
+        background: var(--app-bg);
+        overflow-wrap: anywhere;
+    }
+    .review-example-guide small {
+        display: block;
+        margin-top: 10px;
+        color: var(--app-muted);
+    }
+    .review-toolbar--generic {
+        padding: 12px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+    }
+    .review-toolbar--generic .filter-categories {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        max-width: 100%;
+        padding-bottom: 4px;
+    }
+    .review-toolbar--generic .filter-categories button {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+    .review-toolbar--generic .filter-top-line {
+        min-width: 0;
+    }
+    .review-toolbar--generic .review-search {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .review-toolbar--generic .search-field {
+        min-width: 0;
+    }
+    .review-toolbar--generic .search-field .p-inputtext {
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+    }
+    .review-sort-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        line-height: 18px;
+        margin: 8px 0;
+        color: var(--app-muted);
+    }
+    .review-sort-label {
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: var(--review-tint);
+        color: var(--app-accent);
+        font-weight: 600;
+    }
+    .review-sort-line :deep(.p-select) {
+        font-size: 12px;
+    }
+    .review-advanced-filters {
+        font-size: 11px;
+        line-height: 18px;
+        border-top: 1px solid var(--app-border);
+        margin-top: 8px;
+    }
+    .review-advanced-filters > summary {
+        padding: 8px 0;
+        cursor: pointer;
+        color: var(--app-muted);
+    }
+    .review-advanced-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+    .review-advanced-controls > label {
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .review-advanced-controls .issues-toggle {
+        margin: 0;
+    }
+    .review-advanced-controls :deep(.p-select) {
+        max-width: 100%;
+        font-size: 11px;
     }
 </style>

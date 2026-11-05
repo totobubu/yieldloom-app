@@ -34,7 +34,7 @@ await fs.writeFile(
     harness,
     `<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>합성 검토 시안 검증</title><div id="app" class="studio-shell"></div><script type="module">
 import {createApp,h,ref} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import ko from '/src/config/locale/ko.js';import Review from '/src/components/portfolio/PortfolioImportReview.vue';import 'primeicons/primeicons.css';import '/src/styles/style.scss';import '/src/styles/studio.scss';
-const label=ref('DEMO-ACC-****-891'),review=ref({reviewId:'DEMO-REVIEW',source:'standard-csv',kind:'transactions',asOf:'2026-03-06',rows:${JSON.stringify(rows)},errors:[]}),busy=ref(false),blocked=ref(false),component=ref(null),events=[];window.reviewFixture={review,busy,blocked,component,events,label};createApp({setup(){return()=>h('main',{class:'fixture-frame'},h(Review,{ref:component,review:review.value,accountLabel:label.value,busy:busy.value,saveDisabled:blocked.value,onCommit:()=>events.push('commit'),onCancel:()=>events.push('cancel'),'onUpdate-row':value=>events.push(value)}));}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script><style>body{margin:0}.fixture-frame{max-width:882px;margin:auto;padding:24px}@media(max-width:640px){.fixture-frame{max-width:390px;padding:20px 16px 48px}}</style></html>`
+const label=ref('DEMO-ACC-****-891'),review=ref({reviewId:'DEMO-REVIEW',source:'standard-csv',kind:'transactions',asOf:'2026-03-06',rows:${JSON.stringify(rows)},errors:[]}),busy=ref(false),blocked=ref(false),component=ref(null),events=[];window.reviewFixture={review,busy,blocked,component,events,label};createApp({setup(){return()=>h('main',{class:'fixture-frame'},h(Review,{ref:component,review:review.value,accountLabel:label.value,busy:busy.value,saveDisabled:blocked.value,onCommit:()=>events.push('commit'),onCancel:()=>events.push('cancel'),'onUpdate-row':value=>{review.value.rows[value.index][value.field]=value.value;events.push(value)}}));}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script><style>body{margin:0}.fixture-frame{max-width:882px;margin:auto;padding:24px}@media(max-width:640px){.fixture-frame{max-width:390px;padding:20px 16px 48px}}</style></html>`
 );
 const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
@@ -85,6 +85,9 @@ try {
                     .height,
                 overflow: document.documentElement.scrollWidth > innerWidth,
             }));
+        if (measured.overflow) {
+            console.error(JSON.stringify({ width, measured, overflowing: await page.locator('*').evaluateAll(nodes => nodes.filter(node => node.getBoundingClientRect().right > innerWidth + 1).map(node => ({ tag: node.tagName, class: String(node.className), right: node.getBoundingClientRect().right, width: node.getBoundingClientRect().width })).slice(0, 20)) }));
+        }
         assert.equal(measured.overflow, false);
         await page.screenshot({
             path: resolve(out, `implementation-${width}.png`),
@@ -136,9 +139,19 @@ try {
             ),
             6
         );
+        assert.match(await page.locator('[aria-label="KRW 추출 금액 합계"]').innerText(), /950,000 KRW/);
+        await page.locator('.review-advanced-filters summary').click();
         await page
             .getByRole('button', { name: '필터 초기화', exact: true })
             .click();
+        if (width <= 640) {
+            await page.getByRole('combobox', { name: '거래 내역 정렬', exact: true }).click();
+            await page.getByRole('option', { name: '최신 순', exact: true }).click();
+            assert.equal(await page.locator('.generic-review-card').first().getAttribute('aria-label'), '6행 추출 자료');
+            assert.equal(await page.evaluate(() => window.reviewFixture.review.value.rows[0].externalId), 'DEMO-001');
+            await page.getByRole('button', { name: '필터 초기화', exact: true }).click();
+            await page.getByText('1행 수정', { exact: true }).click();
+        }
         await page.getByLabel('1행 quantity', { exact: true }).fill('11');
         assert.equal(
             await page
@@ -166,6 +179,65 @@ try {
             )
             .check();
 
+        if (width <= 640) {
+            assert.equal(await page.locator('.generic-review-card').count(), 6);
+            assert.equal(
+                await page.locator('.p-datatable').count(),
+                0,
+                'Mobile uses cards'
+            );
+            await page.getByText('2행 수정', { exact: true }).click();
+            await page.getByLabel('2행 amount', { exact: true }).fill('0');
+            assert.match(
+                await page
+                    .locator('.generic-review-card')
+                    .nth(1)
+                    .locator('.generic-card-values')
+                    .innerText(),
+                /0.00 USD/
+            );
+            await page
+                .getByLabel('2행 amount', { exact: true })
+                .fill('0.00000100');
+            assert.match(
+                await page
+                    .locator('.generic-review-card')
+                    .nth(1)
+                    .locator('.generic-card-values')
+                    .innerText(),
+                /0.00000100 USD/
+            );
+            await page.getByLabel('2행 amount', { exact: true }).fill('');
+            assert.match(
+                await page
+                    .locator('.generic-review-card')
+                    .nth(1)
+                    .locator('.generic-card-values')
+                    .innerText(),
+                /미제공/
+            );
+            await page.evaluate(() => {
+                window.reviewFixture.review.value.rows[1].amount = '200.00';
+                window.reviewFixture.review.value.rows[1].currency = '';
+            });
+            assert.match(
+                await page
+                    .locator('.generic-review-card')
+                    .nth(1)
+                    .locator('.generic-card-values')
+                    .innerText(),
+                /통화 미지정/
+            );
+            await page.evaluate(() => {
+                window.reviewFixture.review.value.rows[1].currency = 'USD';
+            });
+            await page
+                .getByLabel(
+                    '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+                    { exact: true }
+                )
+                .check();
+        }
         await page.evaluate(() => {
             window.reviewFixture.busy.value = true;
         });
@@ -220,7 +292,7 @@ try {
             implementation: measured,
             apiCalls,
             visualAcceptance:
-                'not accepted: header/width only; body panels and raw/approval states need source implementation',
+                'not accepted: body cards and currency summaries implemented; source font, controls and panel geometry differences remain',
         };
         if ([1280, 834, 768, 390].includes(width)) {
             const id =

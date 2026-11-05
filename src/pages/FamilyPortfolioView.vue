@@ -3454,6 +3454,8 @@
     .registration-back {
         width: 44px;
         height: 44px;
+        /* Preserve the touch target while matching the source's 30px header row. */
+        margin-block: -7px;
         padding: 0;
         flex-shrink: 0;
     }

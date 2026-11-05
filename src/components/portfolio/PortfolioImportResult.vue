@@ -1185,7 +1185,7 @@
         }
     }
 
-    :global(html:not(.p-dark)) .import-result {
+    html:not(.p-dark) .import-result {
         --app-text: #191c1e;
         --app-muted: #3e4947;
         --app-border: #bdc9c699;
@@ -1472,7 +1472,7 @@
     .result-heading h2 {
         color: var(--receipt-title, var(--app-brand-brown));
     }
-    :global(.p-dark) .result-heading h2 {
+    .p-dark .result-heading h2 {
         color: var(--app-text);
     }
     .receipt-summary {
@@ -1707,7 +1707,7 @@
             font-size: 15px;
         }
     }
-    :global(html:not(.p-dark)) .import-result {
+    html:not(.p-dark) .import-result {
         --receipt-title: #382418;
     }
     .receipt-next h3 {
@@ -1802,11 +1802,11 @@
         color: var(--receipt-title, var(--app-text));
     }
     @media (min-width: 641px) {
-        :global(html:not(.p-dark)) .import-result {
+        html:not(.p-dark) .import-result {
             --app-border: #e2e8f0;
             --app-muted: #64748b;
         }
-        :global(html:not(.p-dark)) .receipt-description {
+        html:not(.p-dark) .receipt-description {
             color: #475569;
         }
     }

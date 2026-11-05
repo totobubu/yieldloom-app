@@ -7,6 +7,7 @@
         mapping: Boolean,
         receipt: Boolean,
         review: Boolean,
+        upload: Boolean,
     });
 </script>
 <template>
@@ -18,11 +19,20 @@
             'asset-upload-dialog--mapping': mapping,
             'asset-upload-dialog--receipt': receipt,
             'asset-upload-dialog--review': review,
+            'asset-upload-dialog--upload': upload,
         }"
         :style="{
-            width: mapping ? '80rem' : receipt || review ? '882px' : '72rem',
+            width: mapping
+                ? '80rem'
+                : receipt || review
+                  ? '882px'
+                  : upload
+                    ? '834px'
+                    : '72rem',
             maxWidth:
-                mapping || receipt || review ? '100vw' : 'calc(100vw - 24px)',
+                mapping || receipt || review || upload
+                    ? '100vw'
+                    : 'calc(100vw - 24px)',
             overflowX: 'hidden',
         }"
         :content-style="{ minWidth: 0, overflowX: 'hidden' }"
@@ -74,6 +84,18 @@
     @media (max-width: 640px) {
         .asset-upload-dialog--review .p-dialog-content {
             padding: 20px 16px 48px;
+        }
+    }
+    .asset-upload-dialog--upload {
+        border-width: 0;
+    }
+    .asset-upload-dialog--upload .p-dialog-content {
+        padding: 24px;
+        background: var(--app-bg);
+    }
+    @media (max-width: 640px) {
+        .asset-upload-dialog--upload .p-dialog-content {
+            padding: 16px;
         }
     }
 </style>

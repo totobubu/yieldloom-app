@@ -16,7 +16,18 @@
     import sync_alt from '@/assets/icons/material-symbols/sync_alt.svg';
     import cloud_sync from '@/assets/icons/material-symbols/cloud_sync.svg';
     import swipe from '@/assets/icons/material-symbols/swipe.svg';
+    import inventory_2 from '@/assets/icons/material-symbols/inventory_2.svg';
+    import edit_note from '@/assets/icons/material-symbols/edit_note.svg';
+    import preview from '@/assets/icons/material-symbols/preview.svg';
+    import lock_open from '@/assets/icons/material-symbols/lock_open.svg';
+    import verified_user from '@/assets/icons/material-symbols/verified_user.svg';
     const icons = {
+        inventory_2,
+        edit_note,
+        preview,
+        lock_open,
+        verified_user,
+
         sync_alt,
         cloud_sync,
         swipe,

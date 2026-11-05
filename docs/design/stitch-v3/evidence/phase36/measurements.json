@@ -1,0 +1,63 @@
+[
+  {
+    "width": 1280,
+    "implementation": {
+      "width": 786,
+      "height": 1342.625,
+      "header": 180
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted; pre-extraction data and format controls differ from source post-inspection fixture"
+  },
+  {
+    "width": 834,
+    "implementation": {
+      "width": 786,
+      "height": 1342.625,
+      "header": 180
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted; pre-extraction data and format controls differ from source post-inspection fixture",
+    "sourceId": "3c2a0d37b5f54a63b3a633f01f0d2b33",
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 768,
+    "implementation": {
+      "width": 720,
+      "height": 1384.625,
+      "header": 180
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted; pre-extraction data and format controls differ from source post-inspection fixture",
+    "sourceId": "3c2a0d37b5f54a63b3a633f01f0d2b33",
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 390,
+    "implementation": {
+      "width": 358,
+      "height": 2416.1875,
+      "header": 275
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "blocked: original source font asset unavailable",
+    "sourceId": "80b06442816e4d1baebc96cb520b19d6",
+    "sourceAssetFailures": [
+      {
+        "host": "fonts.googleapis.com",
+        "status": "asset-fetch-failed"
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "implementation": {
+      "width": 328,
+      "height": 2460.1875,
+      "header": 293
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted; pre-extraction data and format controls differ from source post-inspection fixture"
+  }
+]

@@ -258,6 +258,73 @@ try {
                         })
                         .click();
                 }
+                // Source tab labels retain their meaning without invented allocation data.
+                const detailReadsBeforeTabs = await page.evaluate(
+                    () => window.comparisonDetailReads?.length || 0
+                );
+                await component
+                    .getByRole('button', {
+                        name:
+                            view === 'theme'
+                                ? '기초자산 비중 및 섹터 분배'
+                                : '테마 및 섹터 분배',
+                        exact: true,
+                    })
+                    .click();
+                assert.match(
+                    await component.locator('.analysis-panel').innerText(),
+                    /제공되지 않습니다/
+                );
+                if (view === 'theme') {
+                    await component
+                        .getByRole('button', {
+                            name: '배당 지급 주기 및 현금흐름 대조',
+                            exact: true,
+                        })
+                        .click();
+                    assert.match(
+                        await component.locator('.analysis-panel').innerText(),
+                        /예측 자료는 제공되지 않습니다/
+                    );
+                }
+                await component
+                    .getByRole('button', {
+                        name:
+                            view === 'theme'
+                                ? '테마 대표 종목 및 연관 ETF 매트릭스'
+                                : '유사 상품군 매트릭스',
+                        exact: true,
+                    })
+                    .click();
+                assert.equal(
+                    await page.evaluate(
+                        () => window.comparisonDetailReads?.length || 0
+                    ),
+                    detailReadsBeforeTabs
+                );
+                if (mobile) {
+                    const trigger = component
+                        .locator('.product-detail-trigger')
+                        .first();
+                    await trigger.click();
+                    const dialog = page.getByRole('dialog');
+                    await dialog.waitFor();
+                    assert.match(await dialog.innerText(), /배당락일/);
+                    assert.equal(
+                        await page.evaluate(
+                            () => window.comparisonDetailReads?.length || 0
+                        ),
+                        detailReadsBeforeTabs
+                    );
+                    await page.keyboard.press('Escape');
+                    await dialog.waitFor({ state: 'hidden' });
+                    assert.equal(
+                        await trigger.evaluate(
+                            (el) => el === document.activeElement
+                        ),
+                        true
+                    );
+                }
                 // Only explicitly selected symbols are queried; max three remain selectable.
                 await component
                     .getByRole('button', { name: '선택 초기화', exact: true })

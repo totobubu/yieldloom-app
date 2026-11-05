@@ -122,7 +122,7 @@ try {
                         .getAttribute('tabindex'),
                     '0'
                 );
-            } else if (!tablet) {
+            } else if (!tablet && !compact) {
                 assert.equal(
                     await a.locator('.product-fields dt').count(),
                     compact ? 3 : 4
@@ -200,6 +200,37 @@ try {
                     .locator('.tablet-extra tbody tr')
                     .filter({ hasText: symbol });
                 assert.match(await extra.innerText(), /0%/);
+            } else if (compact) {
+                await a.locator('.product-detail-trigger').click();
+                const dialog = page.getByRole('dialog');
+                await dialog.waitFor();
+                assert.match(
+                    await dialog
+                        .locator('.product-metrics > div')
+                        .nth(0)
+                        .innerText(),
+                    /0%/
+                );
+                assert.match(
+                    await dialog
+                        .locator('.product-metrics > div')
+                        .nth(1)
+                        .innerText(),
+                    /0%/
+                );
+                assert.match(await dialog.innerText(), /2026-11-03/);
+                assert.match(
+                    await dialog.locator('.product-meta').innerText(),
+                    /재검증 대기/
+                );
+                assert.equal(
+                    await dialog
+                        .getByRole('link', { name: '종목 상세', exact: true })
+                        .getAttribute('href'),
+                    view === 'theme' ? '/stock/DEMO-E' : '/stock/DEMO-A'
+                );
+                await page.keyboard.press('Escape');
+                await dialog.waitFor({ state: 'hidden' });
             } else {
                 assert.match(
                     await a

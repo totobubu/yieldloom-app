@@ -44,10 +44,1314 @@
         }
     ],
     "visualAcceptance": "not accepted: structural implementation and geometry checked, known differences remain",
-    "visualEvidenceDirectory": "/workspace/scratch/compare-stitch/visual",
-    "functionalEvidenceDirectory": "/workspace/scratch/compare-stitch/verification",
+    "visualEvidenceDirectory": "docs/design/stitch-v3/evidence/comparison-responsive-refined",
+    "functionalEvidenceDirectory": "/workspace/scratch/compare-stitch/verification-final",
     "localEvidencePathsAreEphemeral": true,
     "visualChecks": [
+        {
+            "view": "similar",
+            "width": 834,
+            "id": "77fdbd798a3941c68f098120a210c44d",
+            "htmlSha256": "618705db215d08ec61084b19dc7cfffe2754745b619a9a6f57203dc6bd2504d2",
+            "sourceGeometry": {
+                "root": {
+                    "width": 786,
+                    "height": 1698.125,
+                    "padding": "0px",
+                    "gap": "24px",
+                    "radius": "0px",
+                    "font": "16px",
+                    "line": "24px",
+                    "fontFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "title": {
+                    "width": 175.203125,
+                    "height": 38,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "30px",
+                    "line": "38px",
+                    "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                    "color": "rgb(56, 36, 24)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "selects": [
+                    {
+                        "width": 362,
+                        "height": 44,
+                        "padding": "8px 32px 8px 12px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgba(189, 201, 198, 0.6)"
+                    },
+                    {
+                        "width": 362,
+                        "height": 44,
+                        "padding": "8px 32px 8px 12px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgba(189, 201, 198, 0.6)"
+                    },
+                    {
+                        "width": 362,
+                        "height": 44,
+                        "padding": "8px 32px 8px 12px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgba(189, 201, 198, 0.6)"
+                    },
+                    {
+                        "width": 362,
+                        "height": 44,
+                        "padding": "8px 32px 8px 12px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgba(189, 201, 198, 0.6)"
+                    }
+                ],
+                "cards": [],
+                "table": {
+                    "width": 784,
+                    "height": 400,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "16px",
+                    "line": "24px",
+                    "fontFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "overflow": false,
+                "loadedFontFamilies": ["Material Symbols Outlined"]
+            },
+            "appGeometry": {
+                "root": {
+                    "width": 786,
+                    "height": 1868,
+                    "padding": "0px",
+                    "gap": "24px",
+                    "radius": "0px",
+                    "font": "14px",
+                    "line": "20px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(25, 28, 30)"
+                },
+                "title": {
+                    "width": 386.078125,
+                    "height": 38,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "30px",
+                    "line": "38px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(56, 36, 24)",
+                    "border": "rgb(56, 36, 24)"
+                },
+                "selects": [
+                    {
+                        "width": 362,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    },
+                    {
+                        "width": 362,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    },
+                    {
+                        "width": 362,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    },
+                    {
+                        "width": 362,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    }
+                ],
+                "cards": [
+                    {
+                        "width": 0,
+                        "height": 0,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    },
+                    {
+                        "width": 0,
+                        "height": 0,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    },
+                    {
+                        "width": 0,
+                        "height": 0,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    }
+                ],
+                "table": {
+                    "width": 928,
+                    "height": 390,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "14px",
+                    "line": "20px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(25, 28, 30)"
+                },
+                "overflow": false,
+                "loadedFontFamilies": [
+                    "Comparison Inter",
+                    "Comparison Material Symbols",
+                    "Comparison Pretendard",
+                    "Noto Sans KR",
+                    "primeicons"
+                ]
+            },
+            "sourceAssetFailures": [],
+            "appAssetFailures": [],
+            "failedResponses": []
+        },
+        {
+            "view": "similar",
+            "width": 390,
+            "id": "2476bb94e3174e6182500d8f520a6424",
+            "htmlSha256": "abe067baf66892adb794551e3d0b69aaca17e13cafb1efd6a5275dc4015a538e",
+            "sourceGeometry": {
+                "root": {
+                    "width": 390,
+                    "height": 2242.5,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "16px",
+                    "line": "24px",
+                    "fontFamily": "Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "title": {
+                    "width": 88.328125,
+                    "height": 56,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "20px",
+                    "line": "28px",
+                    "fontFamily": "Pretendard, Inter, sans-serif",
+                    "color": "rgb(56, 36, 24)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "selects": [
+                    {
+                        "width": 157,
+                        "height": 44,
+                        "padding": "8px 28px 8px 10px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "Pretendard, Inter, sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 157,
+                        "height": 44,
+                        "padding": "8px 28px 8px 10px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "Pretendard, Inter, sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 157,
+                        "height": 44,
+                        "padding": "8px 28px 8px 10px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "Pretendard, Inter, sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 157,
+                        "height": 44,
+                        "padding": "8px 28px 8px 10px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "Pretendard, Inter, sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    }
+                ],
+                "cards": [
+                    {
+                        "width": 358,
+                        "height": 306.5,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "16px",
+                        "line": "24px",
+                        "fontFamily": "Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 358,
+                        "height": 306.5,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "16px",
+                        "line": "24px",
+                        "fontFamily": "Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 358,
+                        "height": 306.5,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "16px",
+                        "line": "24px",
+                        "fontFamily": "Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    }
+                ],
+                "table": null,
+                "overflow": false,
+                "loadedFontFamilies": [
+                    "Material Symbols Outlined",
+                    "Pretendard"
+                ]
+            },
+            "appGeometry": {
+                "root": {
+                    "width": 358,
+                    "height": 2638,
+                    "padding": "0px",
+                    "gap": "16px",
+                    "radius": "0px",
+                    "font": "14px",
+                    "line": "20px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(25, 28, 30)"
+                },
+                "title": {
+                    "width": 207.96875,
+                    "height": 28,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "20px",
+                    "line": "28px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(56, 36, 24)",
+                    "border": "rgb(56, 36, 24)"
+                },
+                "selects": [
+                    {
+                        "width": 157,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 157,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 157,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 157,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    }
+                ],
+                "cards": [
+                    {
+                        "width": 358,
+                        "height": 316,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 358,
+                        "height": 316,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 358,
+                        "height": 316,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    }
+                ],
+                "table": {
+                    "width": 0,
+                    "height": 0,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "14px",
+                    "line": "20px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(25, 28, 30)"
+                },
+                "overflow": false,
+                "loadedFontFamilies": [
+                    "Comparison Inter",
+                    "Comparison Material Symbols",
+                    "Comparison Pretendard",
+                    "Noto Sans KR",
+                    "primeicons"
+                ]
+            },
+            "sourceAssetFailures": [],
+            "appAssetFailures": [],
+            "failedResponses": []
+        },
+        {
+            "view": "theme",
+            "width": 834,
+            "id": "12bcd42390bb468eb1700a909aec3f5d",
+            "htmlSha256": "425bb68dca03a88b3cb077409bf4c70cc30c7eea5ce522823000a3d06c1af146",
+            "sourceGeometry": {
+                "root": {
+                    "width": 834,
+                    "height": 1825.625,
+                    "padding": "24px 24px 0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "16px",
+                    "line": "24px",
+                    "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "title": {
+                    "width": 590.75,
+                    "height": 32,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "24px",
+                    "line": "32px",
+                    "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                    "color": "rgb(56, 36, 24)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "selects": [
+                    {
+                        "width": 370,
+                        "height": 44,
+                        "padding": "8px 32px 8px 12px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "13px",
+                        "line": "24px",
+                        "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                        "color": "rgb(56, 36, 24)",
+                        "border": "rgba(189, 201, 198, 0.6)"
+                    },
+                    {
+                        "width": 370,
+                        "height": 44,
+                        "padding": "8px 32px 8px 12px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "13px",
+                        "line": "24px",
+                        "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                        "color": "rgb(56, 36, 24)",
+                        "border": "rgba(189, 201, 198, 0.6)"
+                    },
+                    {
+                        "width": 370,
+                        "height": 44,
+                        "padding": "8px 32px 8px 12px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "13px",
+                        "line": "24px",
+                        "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                        "color": "rgb(56, 36, 24)",
+                        "border": "rgba(189, 201, 198, 0.6)"
+                    },
+                    {
+                        "width": 370,
+                        "height": 44,
+                        "padding": "8px 32px 8px 12px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "13px",
+                        "line": "24px",
+                        "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                        "color": "rgb(56, 36, 24)",
+                        "border": "rgba(189, 201, 198, 0.6)"
+                    }
+                ],
+                "cards": [],
+                "table": {
+                    "width": 784,
+                    "height": 366,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "16px",
+                    "line": "24px",
+                    "fontFamily": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "overflow": false,
+                "loadedFontFamilies": ["Material Symbols Outlined"]
+            },
+            "appGeometry": {
+                "root": {
+                    "width": 786,
+                    "height": 2214,
+                    "padding": "0px",
+                    "gap": "16px",
+                    "radius": "0px",
+                    "font": "14px",
+                    "line": "20px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(25, 28, 30)"
+                },
+                "title": {
+                    "width": 429.5,
+                    "height": 32,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "24px",
+                    "line": "32px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(56, 36, 24)",
+                    "border": "rgb(56, 36, 24)"
+                },
+                "selects": [
+                    {
+                        "width": 370,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    },
+                    {
+                        "width": 370,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    },
+                    {
+                        "width": 370,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    },
+                    {
+                        "width": 370,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    }
+                ],
+                "cards": [
+                    {
+                        "width": 0,
+                        "height": 0,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(222, 228, 227)"
+                    }
+                ],
+                "table": {
+                    "width": 784,
+                    "height": 399,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "14px",
+                    "line": "20px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(25, 28, 30)"
+                },
+                "overflow": false,
+                "loadedFontFamilies": [
+                    "Comparison Inter",
+                    "Comparison Material Symbols",
+                    "Comparison Pretendard",
+                    "Noto Sans KR",
+                    "primeicons"
+                ]
+            },
+            "sourceAssetFailures": [],
+            "appAssetFailures": [],
+            "failedResponses": []
+        },
+        {
+            "view": "theme",
+            "width": 390,
+            "id": "4dbfbf717c75483e88e6d1186ecbdb2b",
+            "htmlSha256": "b5b474c438c4b060a9cbb6f9f3f95c6e9139ced8e27fa6cc99c9cd4d34b4a1fd",
+            "sourceGeometry": {
+                "root": {
+                    "width": 390,
+                    "height": 2542.5,
+                    "padding": "20px 16px 24px",
+                    "gap": "16px",
+                    "radius": "0px",
+                    "font": "16px",
+                    "line": "24px",
+                    "fontFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "title": {
+                    "width": 358,
+                    "height": 32,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "24px",
+                    "line": "32px",
+                    "fontFamily": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(56, 36, 24)",
+                    "border": "rgb(229, 231, 235)"
+                },
+                "selects": [],
+                "cards": [
+                    {
+                        "width": 358,
+                        "height": 290,
+                        "padding": "16px",
+                        "gap": "12px",
+                        "radius": "12px",
+                        "font": "16px",
+                        "line": "24px",
+                        "fontFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgba(189, 201, 198, 0.8)"
+                    },
+                    {
+                        "width": 358,
+                        "height": 290,
+                        "padding": "16px",
+                        "gap": "12px",
+                        "radius": "12px",
+                        "font": "16px",
+                        "line": "24px",
+                        "fontFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgba(189, 201, 198, 0.8)"
+                    },
+                    {
+                        "width": 358,
+                        "height": 294,
+                        "padding": "16px",
+                        "gap": "12px",
+                        "radius": "12px",
+                        "font": "16px",
+                        "line": "24px",
+                        "fontFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgba(189, 201, 198, 0.8)"
+                    }
+                ],
+                "table": null,
+                "overflow": false,
+                "loadedFontFamilies": ["Inter", "Material Symbols Outlined"]
+            },
+            "appGeometry": {
+                "root": {
+                    "width": 358,
+                    "height": 1988,
+                    "padding": "0px",
+                    "gap": "16px",
+                    "radius": "0px",
+                    "font": "14px",
+                    "line": "20px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(25, 28, 30)"
+                },
+                "title": {
+                    "width": 358,
+                    "height": 32,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "24px",
+                    "line": "32px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(56, 36, 24)",
+                    "border": "rgb(56, 36, 24)"
+                },
+                "selects": [
+                    {
+                        "width": 175,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 175,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 175,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    },
+                    {
+                        "width": 175,
+                        "height": 44,
+                        "padding": "0px",
+                        "gap": "normal",
+                        "radius": "8px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    }
+                ],
+                "cards": [
+                    {
+                        "width": 358,
+                        "height": 282,
+                        "padding": "16px",
+                        "gap": "normal",
+                        "radius": "12px",
+                        "font": "14px",
+                        "line": "20px",
+                        "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                        "color": "rgb(25, 28, 30)",
+                        "border": "rgb(203, 213, 225)"
+                    }
+                ],
+                "table": {
+                    "width": 0,
+                    "height": 0,
+                    "padding": "0px",
+                    "gap": "normal",
+                    "radius": "0px",
+                    "font": "14px",
+                    "line": "20px",
+                    "fontFamily": "\"Comparison Pretendard\", \"Comparison Inter\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
+                    "color": "rgb(25, 28, 30)",
+                    "border": "rgb(25, 28, 30)"
+                },
+                "overflow": false,
+                "loadedFontFamilies": [
+                    "Comparison Inter",
+                    "Comparison Material Symbols",
+                    "Comparison Pretendard",
+                    "Noto Sans KR",
+                    "primeicons"
+                ]
+            },
+            "sourceAssetFailures": [],
+            "appAssetFailures": [],
+            "failedResponses": []
+        },
+        {
+            "view": "similar",
+            "width": 1280,
+            "baselineExactScreenshotMatch": true,
+            "screenshotHashes": [
+                "dc88176755d7435e0a2f99adf5ef35ba429956eea6e2c51a2e3a628b1f82016d",
+                "dc88176755d7435e0a2f99adf5ef35ba429956eea6e2c51a2e3a628b1f82016d"
+            ]
+        },
+        {
+            "view": "theme",
+            "width": 1280,
+            "baselineExactScreenshotMatch": true,
+            "screenshotHashes": [
+                "fe04cb8fe4a9609a93b2cd56929ec1c34ad87d4c117420d046f081be30b5f859",
+                "fe04cb8fe4a9609a93b2cd56929ec1c34ad87d4c117420d046f081be30b5f859"
+            ]
+        },
+        {
+            "view": "underlying",
+            "width": 390,
+            "baselineExactScreenshotMatch": true,
+            "screenshotHashes": [
+                "ed55306501ff42041da2a67b5dc64cab398779ff6ab297acac8668631601c989",
+                "ed55306501ff42041da2a67b5dc64cab398779ff6ab297acac8668631601c989"
+            ]
+        }
+    ],
+    "functionalChecks": [
+        {
+            "width": 1280,
+            "view": "similar",
+            "classic": true,
+            "errors": []
+        },
+        {
+            "width": 1280,
+            "view": "theme",
+            "classic": true,
+            "errors": []
+        },
+        {
+            "width": 1024,
+            "view": "similar",
+            "geometry": {
+                "width": 834,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 386,
+                        "height": 44
+                    },
+                    {
+                        "width": 386,
+                        "height": 44
+                    },
+                    {
+                        "width": 386,
+                        "height": 44
+                    },
+                    {
+                        "width": 386,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "30px",
+                "matrixScrollable": true,
+                "gridColumns": "386px 386px"
+            },
+            "errors": []
+        },
+        {
+            "width": 1024,
+            "view": "theme",
+            "geometry": {
+                "width": 786,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 370,
+                        "height": 44
+                    },
+                    {
+                        "width": 370,
+                        "height": 44
+                    },
+                    {
+                        "width": 370,
+                        "height": 44
+                    },
+                    {
+                        "width": 370,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "24px",
+                "matrixScrollable": false,
+                "gridColumns": "370px 370px"
+            },
+            "errors": []
+        },
+        {
+            "width": 834,
+            "view": "similar",
+            "geometry": {
+                "width": 786,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 362,
+                        "height": 44
+                    },
+                    {
+                        "width": 362,
+                        "height": 44
+                    },
+                    {
+                        "width": 362,
+                        "height": 44
+                    },
+                    {
+                        "width": 362,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "30px",
+                "matrixScrollable": true,
+                "gridColumns": "362px 362px"
+            },
+            "errors": []
+        },
+        {
+            "width": 834,
+            "view": "theme",
+            "geometry": {
+                "width": 786,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 370,
+                        "height": 44
+                    },
+                    {
+                        "width": 370,
+                        "height": 44
+                    },
+                    {
+                        "width": 370,
+                        "height": 44
+                    },
+                    {
+                        "width": 370,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "24px",
+                "matrixScrollable": false,
+                "gridColumns": "370px 370px"
+            },
+            "errors": []
+        },
+        {
+            "width": 768,
+            "view": "similar",
+            "geometry": {
+                "width": 720,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 329,
+                        "height": 44
+                    },
+                    {
+                        "width": 329,
+                        "height": 44
+                    },
+                    {
+                        "width": 329,
+                        "height": 44
+                    },
+                    {
+                        "width": 329,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "30px",
+                "matrixScrollable": true,
+                "gridColumns": "329px 329px"
+            },
+            "errors": []
+        },
+        {
+            "width": 768,
+            "view": "theme",
+            "geometry": {
+                "width": 720,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 337,
+                        "height": 44
+                    },
+                    {
+                        "width": 337,
+                        "height": 44
+                    },
+                    {
+                        "width": 337,
+                        "height": 44
+                    },
+                    {
+                        "width": 337,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "24px",
+                "matrixScrollable": true,
+                "gridColumns": "337px 337px"
+            },
+            "errors": []
+        },
+        {
+            "width": 640,
+            "view": "similar",
+            "geometry": {
+                "width": 358,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 157,
+                        "height": 44
+                    },
+                    {
+                        "width": 157,
+                        "height": 44
+                    },
+                    {
+                        "width": 157,
+                        "height": 44
+                    },
+                    {
+                        "width": 157,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "20px",
+                "matrixScrollable": false,
+                "gridColumns": "157px 157px"
+            },
+            "errors": []
+        },
+        {
+            "width": 640,
+            "view": "theme",
+            "geometry": {
+                "width": 358,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 175,
+                        "height": 44
+                    },
+                    {
+                        "width": 175,
+                        "height": 44
+                    },
+                    {
+                        "width": 175,
+                        "height": 44
+                    },
+                    {
+                        "width": 175,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "24px",
+                "matrixScrollable": false,
+                "gridColumns": "175px 175px"
+            },
+            "errors": []
+        },
+        {
+            "width": 390,
+            "view": "similar",
+            "geometry": {
+                "width": 358,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 157,
+                        "height": 44
+                    },
+                    {
+                        "width": 157,
+                        "height": 44
+                    },
+                    {
+                        "width": 157,
+                        "height": 44
+                    },
+                    {
+                        "width": 157,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "20px",
+                "matrixScrollable": false,
+                "gridColumns": "157px 157px"
+            },
+            "errors": []
+        },
+        {
+            "width": 390,
+            "view": "theme",
+            "geometry": {
+                "width": 358,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 175,
+                        "height": 44
+                    },
+                    {
+                        "width": 175,
+                        "height": 44
+                    },
+                    {
+                        "width": 175,
+                        "height": 44
+                    },
+                    {
+                        "width": 175,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "24px",
+                "matrixScrollable": false,
+                "gridColumns": "175px 175px"
+            },
+            "errors": []
+        },
+        {
+            "width": 320,
+            "view": "similar",
+            "geometry": {
+                "width": 288,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 122,
+                        "height": 44
+                    },
+                    {
+                        "width": 122,
+                        "height": 44
+                    },
+                    {
+                        "width": 122,
+                        "height": 44
+                    },
+                    {
+                        "width": 122,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "20px",
+                "matrixScrollable": false,
+                "gridColumns": "122px 122px"
+            },
+            "errors": []
+        },
+        {
+            "width": 320,
+            "view": "theme",
+            "geometry": {
+                "width": 288,
+                "pageOverflow": false,
+                "filters": [
+                    {
+                        "width": 140,
+                        "height": 44
+                    },
+                    {
+                        "width": 140,
+                        "height": 44
+                    },
+                    {
+                        "width": 140,
+                        "height": 44
+                    },
+                    {
+                        "width": 140,
+                        "height": 44
+                    }
+                ],
+                "titleFont": "24px",
+                "matrixScrollable": false,
+                "gridColumns": "140px 140px"
+            },
+            "errors": []
+        }
+    ],
+    "font": {
+        "source": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
+        "sha256": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
+        "bytes": 2057688,
+        "license": "src/assets/fonts/Pretendard-LICENSE.txt",
+        "scope": "Comparison Pretendard family; no global Pretendard alias"
+    },
+    "initialVisualChecks": [
         {
             "view": "similar",
             "width": 834,
@@ -966,385 +2270,13 @@
             ]
         }
     ],
-    "functionalChecks": [
-        {
-            "width": 1280,
-            "view": "similar",
-            "classic": true,
-            "errors": []
-        },
-        {
-            "width": 1280,
-            "view": "theme",
-            "classic": true,
-            "errors": []
-        },
-        {
-            "width": 1024,
-            "view": "similar",
-            "geometry": {
-                "width": 834,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 386,
-                        "height": 44
-                    },
-                    {
-                        "width": 386,
-                        "height": 44
-                    },
-                    {
-                        "width": 386,
-                        "height": 44
-                    },
-                    {
-                        "width": 386,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "30px",
-                "matrixScrollable": true,
-                "gridColumns": "386px 386px"
-            },
-            "errors": []
-        },
-        {
-            "width": 1024,
-            "view": "theme",
-            "geometry": {
-                "width": 786,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 370,
-                        "height": 44
-                    },
-                    {
-                        "width": 370,
-                        "height": 44
-                    },
-                    {
-                        "width": 370,
-                        "height": 44
-                    },
-                    {
-                        "width": 370,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "24px",
-                "matrixScrollable": false,
-                "gridColumns": "370px 370px"
-            },
-            "errors": []
-        },
-        {
-            "width": 834,
-            "view": "similar",
-            "geometry": {
-                "width": 786,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 362,
-                        "height": 44
-                    },
-                    {
-                        "width": 362,
-                        "height": 44
-                    },
-                    {
-                        "width": 362,
-                        "height": 44
-                    },
-                    {
-                        "width": 362,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "30px",
-                "matrixScrollable": true,
-                "gridColumns": "362px 362px"
-            },
-            "errors": []
-        },
-        {
-            "width": 834,
-            "view": "theme",
-            "geometry": {
-                "width": 786,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 370,
-                        "height": 44
-                    },
-                    {
-                        "width": 370,
-                        "height": 44
-                    },
-                    {
-                        "width": 370,
-                        "height": 44
-                    },
-                    {
-                        "width": 370,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "24px",
-                "matrixScrollable": false,
-                "gridColumns": "370px 370px"
-            },
-            "errors": []
-        },
-        {
-            "width": 768,
-            "view": "similar",
-            "geometry": {
-                "width": 720,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 329,
-                        "height": 44
-                    },
-                    {
-                        "width": 329,
-                        "height": 44
-                    },
-                    {
-                        "width": 329,
-                        "height": 44
-                    },
-                    {
-                        "width": 329,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "30px",
-                "matrixScrollable": true,
-                "gridColumns": "329px 329px"
-            },
-            "errors": []
-        },
-        {
-            "width": 768,
-            "view": "theme",
-            "geometry": {
-                "width": 720,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 337,
-                        "height": 44
-                    },
-                    {
-                        "width": 337,
-                        "height": 44
-                    },
-                    {
-                        "width": 337,
-                        "height": 44
-                    },
-                    {
-                        "width": 337,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "24px",
-                "matrixScrollable": true,
-                "gridColumns": "337px 337px"
-            },
-            "errors": []
-        },
-        {
-            "width": 640,
-            "view": "similar",
-            "geometry": {
-                "width": 358,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 157,
-                        "height": 44
-                    },
-                    {
-                        "width": 157,
-                        "height": 44
-                    },
-                    {
-                        "width": 157,
-                        "height": 44
-                    },
-                    {
-                        "width": 157,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "20px",
-                "matrixScrollable": false,
-                "gridColumns": "157px 157px"
-            },
-            "errors": []
-        },
-        {
-            "width": 640,
-            "view": "theme",
-            "geometry": {
-                "width": 358,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 175,
-                        "height": 44
-                    },
-                    {
-                        "width": 175,
-                        "height": 44
-                    },
-                    {
-                        "width": 175,
-                        "height": 44
-                    },
-                    {
-                        "width": 175,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "24px",
-                "matrixScrollable": false,
-                "gridColumns": "175px 175px"
-            },
-            "errors": []
-        },
-        {
-            "width": 390,
-            "view": "similar",
-            "geometry": {
-                "width": 358,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 157,
-                        "height": 44
-                    },
-                    {
-                        "width": 157,
-                        "height": 44
-                    },
-                    {
-                        "width": 157,
-                        "height": 44
-                    },
-                    {
-                        "width": 157,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "20px",
-                "matrixScrollable": false,
-                "gridColumns": "157px 157px"
-            },
-            "errors": []
-        },
-        {
-            "width": 390,
-            "view": "theme",
-            "geometry": {
-                "width": 358,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 175,
-                        "height": 44
-                    },
-                    {
-                        "width": 175,
-                        "height": 44
-                    },
-                    {
-                        "width": 175,
-                        "height": 44
-                    },
-                    {
-                        "width": 175,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "24px",
-                "matrixScrollable": false,
-                "gridColumns": "175px 175px"
-            },
-            "errors": []
-        },
-        {
-            "width": 320,
-            "view": "similar",
-            "geometry": {
-                "width": 288,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 122,
-                        "height": 44
-                    },
-                    {
-                        "width": 122,
-                        "height": 44
-                    },
-                    {
-                        "width": 122,
-                        "height": 44
-                    },
-                    {
-                        "width": 122,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "20px",
-                "matrixScrollable": false,
-                "gridColumns": "122px 122px"
-            },
-            "errors": []
-        },
-        {
-            "width": 320,
-            "view": "theme",
-            "geometry": {
-                "width": 288,
-                "pageOverflow": false,
-                "filters": [
-                    {
-                        "width": 140,
-                        "height": 44
-                    },
-                    {
-                        "width": 140,
-                        "height": 44
-                    },
-                    {
-                        "width": 140,
-                        "height": 44
-                    },
-                    {
-                        "width": 140,
-                        "height": 44
-                    }
-                ],
-                "titleFont": "24px",
-                "matrixScrollable": false,
-                "gridColumns": "140px 140px"
-            },
-            "errors": []
-        }
-    ],
-    "font": {
-        "source": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/variable/woff2/PretendardVariable.woff2",
-        "sha256": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
-        "bytes": 2057688,
-        "license": "src/assets/fonts/Pretendard-LICENSE.txt",
-        "scope": "Comparison Pretendard family; no global Pretendard alias"
+    "visualScreenshotsCommitted": true,
+    "materialSymbols": {
+        "font": "src/assets/fonts/MaterialSymbolsOutlined.ttf",
+        "weight": 400,
+        "bytes": 973420,
+        "sha256": "b499b3b2d26f67c13f8e017815a5200591711946c64677ff2f5259272e0646d3",
+        "sourceCss": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+        "license": "src/assets/fonts/MaterialSymbols-LICENSE.txt"
     }
 }

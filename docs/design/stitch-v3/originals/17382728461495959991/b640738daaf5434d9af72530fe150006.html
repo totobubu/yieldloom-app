@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>V6 REVIEWED / Tax Comparison / Mobile / source-f7fe46e6</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter,+'Pretendard',+'Apple+SD+Gothic+Neo',+sans-serif:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary": "#ffffff",
+            "surface-variant": "#e0e3e5",
+            "on-surface": "#191c1e",
+            "outline": "#6e7977",
+            "on-tertiary-container": "#ffedcb",
+            "on-secondary-container": "#795f50",
+            "tertiary": "#6b5000",
+            "surface-container-low": "#f2f4f6",
+            "surface-bright": "#f7f9fb",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#ffdbc9",
+            "surface-tint": "#006b60",
+            "on-secondary": "#ffffff",
+            "inverse-on-surface": "#eff1f3",
+            "primary-container": "#0d7a6e",
+            "surface-container-highest": "#e0e3e5",
+            "outline-variant": "#bdc9c6",
+            "on-error-container": "#93000a",
+            "surface-container": "#eceef0",
+            "surface": "#f7f9fb",
+            "primary-fixed-dim": "#7dd6c8",
+            "on-primary-fixed": "#00201c",
+            "error": "#ba1a1a",
+            "on-secondary-fixed": "#29170c",
+            "tertiary-fixed": "#ffdf9a",
+            "secondary-container": "#ffdbc9",
+            "on-primary": "#ffffff",
+            "primary": "#005f55",
+            "tertiary-container": "#896700",
+            "primary-fixed": "#99f3e4",
+            "on-background": "#191c1e",
+            "inverse-surface": "#2d3133",
+            "secondary": "#73594a",
+            "tertiary-fixed-dim": "#f7be1d",
+            "on-primary-fixed-variant": "#005048",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "surface-dim": "#d8dadc",
+            "secondary-fixed-dim": "#e1c0ae",
+            "on-tertiary-fixed": "#251a00",
+            "on-secondary-fixed-variant": "#594234",
+            "on-surface-variant": "#3e4947",
+            "background": "#f7f9fb",
+            "inverse-primary": "#7dd6c8",
+            "surface-container-high": "#e6e8ea",
+            "on-tertiary-fixed-variant": "#5a4300",
+            "on-primary-container": "#abfff0"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "margin": "2rem",
+            "gutter": "1.5rem"
+          },
+          "fontFamily": {
+            "headline-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "display-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "body-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "body-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "label-sm": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "metric-num-lg": ["\"Inter, 'Pretendard', sans-serif\""],
+            "label-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "metric-num-md": ["\"Inter, 'Pretendard', sans-serif\""],
+            "headline-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-sm": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""]
+          },
+          "fontSize": {
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "metric-num-lg": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "600" }],
+            "metric-num-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 6px;
+      cursor: pointer;
+      background: #e2e8f0;
+      border-radius: 9999px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #0d7a6e;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -7px;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface antialiased font-body-md text-body-md selection:bg-primary-fixed selection:text-on-primary-fixed min-h-screen">
+<main class="w-full max-w-[390px] mx-auto px-4 py-6 flex flex-col gap-5 overflow-x-hidden"><!-- 1. TOP HEADER & ASSUMPTION NOTE -->
+<header class="flex flex-col gap-3">
+<!-- Badges Cluster -->
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-primary-container/10 text-primary-container font-label-sm text-label-sm font-semibold border border-primary-container/20">
+      예시 시뮬레이션 환경
+    </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm border border-outline-variant font-medium">
+      단일 과세연도(12개월) 단순 보유 가정
+    </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-medium">
+      기준: 단일 과세연도(연 1회 연말 지급 가정)
+    </span>
+</div>
+<!-- Main Title & Subtitle -->
+<div class="space-y-1">
+<h1 class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">
+      배당소득 원천징수율 비교 시뮬레이션
+    </h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-snug">
+      동일한 투자 원금 및 배당 정책 조건에서 가상 원천징수율(시나리오 A vs 시나리오 B) 차이에 따른 단순 세후 배당금 및 기말 예상 자산 변동을 대조합니다.
+    </p>
+</div>
+<!-- Brief Top Assumption Note -->
+<div class="bg-surface-container-lowest border-l-4 border-primary-container border-y border-r border-outline-variant/60 rounded-r-lg p-3.5 shadow-sm">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary-container text-[20px] shrink-0 mt-0.5" data-icon="info">info</span>
+<div class="flex flex-col gap-1">
+<span class="font-label-md text-label-md text-primary font-bold">시뮬레이션 전제조건 및 산출 유의사항 (가정 예시)</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant leading-relaxed">
+          본 화면은 단순 단일 과세연도(12개월) 말 배당 1회 지급 가정을 적용하며, 수수료·주가변동(시세차익)·환율변동(FX)·세법 적격성은 배제되었습니다. 주가불변가정 기준, 시나리오 A(가정 원천징수율 0%) 및 시나리오 B(가정 원천징수율 15%)의 1년 후 총 평가자산 및 세후 배당금을 대조합니다.
+        </p>
+</div>
+</div>
+</div>
+</header>
+<!-- 2. SETTINGS PANEL (시나리오 가정 설정) -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-surface-container pb-3">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-md bg-primary-container text-on-primary flex items-center justify-center font-label-sm text-label-sm font-bold">01</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[17px] leading-snug">시나리오 가정 설정</h2>
+</div>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm font-semibold text-primary bg-primary-fixed/30 px-2 py-0.5 rounded border border-primary/20">
+<span class="material-symbols-outlined text-[14px]" data-icon="tune">tune</span>
+      설정 제어판
+    </span>
+</div>
+<!-- Common Settings Sub-card -->
+<div class="p-3.5 rounded-lg bg-surface border border-outline-variant/60 flex flex-col gap-3">
+<div class="flex items-center justify-between border-b border-surface-container pb-2">
+<span class="font-label-md text-label-md font-bold text-on-surface flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+        공통 기본 가정
+      </span>
+<span class="font-label-sm text-label-sm text-outline">전체 시나리오 공통 적용</span>
+</div>
+<div class="grid grid-cols-1 gap-2.5">
+<!-- Currency Select -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium" for="common-currency">기준 통화 (Currency)</label>
+<select class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md" id="common-currency">
+<option selected="" value="USD">USD ($)</option>
+<option value="KRW">KRW (원)</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<!-- Period -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium" for="sim-period">시뮬레이션 기간 (개월)</label>
+<input class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-mono font-semibold text-body-md text-right tabular-nums" id="sim-period" max="360" min="0" type="number" value="12"/>
+</div>
+<!-- Price Volatility -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium" for="price-change">연간 주가 변동률 (%)</label>
+<input class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-mono font-semibold text-body-md text-right tabular-nums" id="price-change" max="100" min="-95" step="0.1" type="number" value="0.0"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Scenario A Settings Sub-card -->
+<div class="p-3.5 rounded-lg bg-surface border border-primary-container/40 flex flex-col gap-3">
+<div class="flex items-center justify-between border-b border-surface-container pb-2">
+<span class="font-label-md text-label-md font-bold text-primary flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+        시나리오 A 설정 (기준 · 편집 가능)
+      </span>
+<span class="px-2 py-0.5 rounded bg-primary-container/10 text-primary font-label-sm text-label-sm font-semibold border border-primary-container/20">기준 모델</span>
+</div>
+<div class="flex flex-col gap-2.5">
+<!-- Initial Principal & Monthly Deposit -->
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium" for="principal-a">초기 투자원금 ($)</label>
+<input class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-mono font-semibold text-body-md text-right tabular-nums" id="principal-a" max="1000000000" min="0" step="100" type="number" value="1000.00"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium" for="monthly-deposit-a">월 추가 적립금 ($)</label>
+<input class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-mono font-semibold text-body-md text-right tabular-nums" id="monthly-deposit-a" max="10000000" min="0" step="10" type="number" value="0.00"/>
+</div>
+</div>
+<!-- Price per share & Annual DPS -->
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium" for="stock-price-a">기준 1주당 단가 ($)</label>
+</div>
+<input class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-mono font-semibold text-body-md text-right tabular-nums" id="stock-price-a" max="10000000" min="0.000001" step="0.01" type="number" value="10.00"/>
+<span class="font-label-sm text-label-sm text-outline text-right">100주 자동 도출</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium" for="dps-a">연간 주당 배당금 (DPS, $)</label>
+</div>
+<input class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-mono font-semibold text-body-md text-right tabular-nums" id="dps-a" max="10000000" min="0" step="0.01" type="number" value="0.40"/>
+<span class="font-label-sm text-label-sm text-primary font-medium text-right">연 4.0% 고정 배당률</span>
+</div>
+</div>
+<!-- Tax Rate A & Fee -->
+<div class="grid grid-cols-2 gap-2">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-primary font-bold" for="tax-rate-a">적용 가상 원천징수율 A (%)</label>
+<input class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-primary-container text-primary font-mono font-bold text-body-md text-right tabular-nums" id="tax-rate-a" max="100" min="0" step="0.1" type="number" value="0.0"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium" for="fee-a">1회 매수 수수료 (USD)</label>
+<input class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-mono font-semibold text-body-md text-right tabular-nums" id="fee-a" max="10000" min="0" step="0.1" type="number" value="0.00"/>
+</div>
+</div>
+<!-- Dividend Cycle Select -->
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-medium" for="payout-cycle-a">배당 지급 주기</label>
+<select class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md text-body-md" id="payout-cycle-a">
+<option value="weekly">매주</option>
+<option value="monthly">매월</option>
+<option value="quarterly">분기</option>
+<option value="semiannual">반기</option>
+<option selected="" value="annual">매년 (연 1회 연말 지급)</option>
+</select>
+</div>
+<!-- Checkboxes -->
+<div class="space-y-2 pt-1">
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="w-4 h-4 rounded text-primary-container border-outline-variant" id="reinvest-a" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface">배당금 재투자 (미체크 시 현금 수령)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded text-primary-container border-outline-variant" id="fractional-a" type="checkbox"/>
+<span class="font-label-sm text-label-sm text-on-surface font-medium">소수점 주식(단주) 재투자 허용 (ON)</span>
+</label>
+</div>
+</div>
+</div>
+<!-- Scenario B Settings Panel (Visible Editable Tax Rate + Inherited Assumptions) -->
+<div class="p-3.5 rounded-lg bg-surface border border-secondary/40 flex flex-col gap-3">
+<div class="flex items-center justify-between border-b border-surface-container pb-2">
+<span class="font-label-md text-label-md font-bold text-secondary flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+        시나리오 B 설정 (세율 차이 비교)
+      </span>
+<span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">비교 모델</span>
+</div>
+<!-- Editable B Tax Rate -->
+<div class="flex flex-col gap-1.5 p-3 rounded-lg bg-surface-container-lowest border border-secondary/30">
+<div class="flex justify-between items-center">
+<label class="font-label-sm text-label-sm text-secondary font-bold" for="tax-rate-b">B 원천징수율 가정 (%)</label>
+<span class="font-label-sm text-label-sm text-secondary font-bold font-mono">시나리오 A 대비 세율 격차: +15.0%p</span>
+</div>
+<input class="h-11 px-3 rounded-lg bg-surface border border-secondary text-secondary font-mono font-bold text-body-md text-right tabular-nums" id="tax-rate-b" max="100" min="0" step="0.1" type="number" value="15.0"/>
+</div>
+<!-- Compact Inherited-Assumptions Summary Card -->
+<div class="p-3 rounded-lg bg-surface-container-lowest border border-outline-variant/50 space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-bold">시나리오 A 설정값 상속 (수정 불가 / 고정 연동)</span>
+<span class="material-symbols-outlined text-[16px] text-outline" data-icon="link">link</span>
+</div>
+<div class="grid grid-cols-2 gap-x-2 gap-y-1 font-label-sm text-label-sm text-outline border-y border-surface-container py-2">
+<span>초기 원금: <strong class="text-on-surface font-mono">$1,000.00</strong></span>
+<span>월 적립: <strong class="text-on-surface font-mono">$0.00</strong></span>
+<span>1주 단가: <strong class="text-on-surface font-mono">$10.00</strong></span>
+<span>연간 DPS: <strong class="text-on-surface font-mono">$0.40</strong></span>
+<span>매수 수수료: <strong class="text-on-surface font-mono">$0.00</strong></span>
+<span>배당 주기: <strong class="text-on-surface">매년 (연말)</strong></span>
+<span>배당 재투자: <strong class="text-on-surface">OFF</strong></span>
+<span>소수주 허용: <strong class="text-on-surface">ON</strong></span>
+</div>
+<p class="font-label-sm text-label-sm text-outline">
+        * 원천징수율(15.0%) 외 모든 변수는 시나리오 A와 동일하게 고정 연동됩니다.
+      </p>
+</div>
+</div>
+<!-- Control Action Buttons -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="h-11 px-3 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md font-semibold hover:bg-primary transition-colors flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="refresh">refresh</span>
+      가정치 재계산
+    </button>
+<button class="h-11 px-3 rounded-lg bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md font-semibold hover:bg-surface transition-colors flex items-center justify-center gap-1.5 active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px] text-outline" data-icon="restart_alt">restart_alt</span>
+      기본 가정으로 초기화
+    </button>
+</div>
+</section>
+<!-- 3. COMPARISON METRICS SUMMARY CARDS -->
+<section class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between px-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[17px]">산출 요약 지표</h2>
+<span class="font-label-sm text-label-sm text-outline">12개월 단일 과세연도 귀속</span>
+</div>
+<div class="grid grid-cols-2 gap-2.5">
+<!-- Card 1: 초기 원금 (공통) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 flex flex-col justify-between shadow-sm">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium block">초기 원금 (공통)</span>
+<div class="font-metric-num-md text-metric-num-md text-on-surface font-bold font-mono text-right tabular-nums mt-1">
+          $ 1,000.00
+        </div>
+</div>
+<span class="font-label-sm text-label-sm text-outline mt-2 pt-1 border-t border-surface-container">
+        USD 기준 고정, 100주
+      </span>
+</div>
+<!-- Card 2: 시나리오 A 세후 배당 -->
+<div class="bg-surface-container-lowest border border-primary-container/40 rounded-xl p-3.5 flex flex-col justify-between shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-12 h-12 bg-primary-container/5 rounded-bl-full pointer-events-none"></div>
+<div>
+<span class="font-label-sm text-label-sm text-primary font-semibold block flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+          시나리오 A (0.0%)
+        </span>
+<div class="font-metric-num-md text-metric-num-md text-primary font-bold font-mono text-right tabular-nums mt-1">
+          $ 40.00
+        </div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-2 pt-1 border-t border-surface-container text-right font-mono">
+        예상 원천징수: $ 0.00
+      </span>
+</div>
+<!-- Card 3: 시나리오 B 세후 배당 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 flex flex-col justify-between shadow-sm">
+<div>
+<span class="font-label-sm text-label-sm text-secondary font-semibold block flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          시나리오 B (15.0%)
+        </span>
+<div class="font-metric-num-md text-metric-num-md text-on-surface font-bold font-mono text-right tabular-nums mt-1">
+          $ 34.00
+        </div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-2 pt-1 border-t border-surface-container text-right font-mono">
+        예상 원천징수: $ 6.00
+      </span>
+</div>
+<!-- Card 4: 세후 배당 격차 -->
+<div class="bg-primary-container/10 border border-primary-container rounded-xl p-3.5 flex flex-col justify-between shadow-sm">
+<div>
+<span class="font-label-sm text-label-sm text-primary font-bold block flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="difference">difference</span>
+          세후 배당 격차 (1년 기준)
+        </span>
+<div class="font-metric-num-md text-metric-num-md text-primary font-extrabold font-mono text-right tabular-nums mt-1">
+          +$ 6.00
+        </div>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-semibold mt-2 pt-1 border-t border-primary-container/20">
+        USD · 시나리오 A 우위
+      </span>
+</div>
+</div>
+</section>
+<!-- 4. 1년 후 예상 기말 자산 비교 CARD -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-sm flex flex-col gap-3.5">
+<div>
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[17px]">
+        1년 후 예상 기말 자산 비교
+      </h2>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+        단순 합산 모델
+      </span>
+</div>
+<p class="font-label-sm text-label-sm text-outline mt-0.5">
+      산출 공식: 기말 자산 = 주식 평가액 ($1,000.00, 주가불변 가정 100주 × $10) + 세후 배당금 현금
+    </p>
+</div>
+<!-- Visual Comparison Bars -->
+<div class="space-y-3 pt-1">
+<!-- Scenario A Row -->
+<div class="space-y-1.5">
+<div class="flex justify-between items-baseline">
+<span class="font-label-md text-label-md font-semibold text-on-surface flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+          시나리오 A (0.0%)
+        </span>
+<span class="font-metric-num-md text-metric-num-md text-primary font-bold font-mono tabular-nums">
+          $ 1,040.00
+        </span>
+</div>
+<div class="w-full bg-surface-container h-3.5 rounded-full overflow-hidden p-0.5 border border-outline-variant/40 flex">
+<div class="bg-primary-container h-full rounded-full transition-all duration-300" style="width: 100%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-outline block text-right font-mono">
+        원금 $1,000.00 + 세후 배당 $40.00
+      </span>
+</div>
+<!-- Scenario B Row -->
+<div class="space-y-1.5">
+<div class="flex justify-between items-baseline">
+<span class="font-label-md text-label-md font-semibold text-on-surface flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+          시나리오 B (15.0%)
+        </span>
+<span class="font-metric-num-md text-metric-num-md text-on-surface font-bold font-mono tabular-nums">
+          $ 1,034.00
+        </span>
+</div>
+<div class="w-full bg-surface-container h-3.5 rounded-full overflow-hidden p-0.5 border border-outline-variant/40 flex">
+<div class="bg-secondary h-full rounded-full transition-all duration-300" style="width: 99.42%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-outline block text-right font-mono">
+        원금 $1,000.00 + 세후 배당 $34.00
+      </span>
+</div>
+</div>
+<!-- Difference Ribbon -->
+<div class="mt-1 p-3 rounded-lg bg-surface border border-outline-variant flex items-center justify-between">
+<div>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium block">기말 자산 차이 (A - B)</span>
+<span class="font-label-sm text-label-sm text-outline">세후 배당금 기준 15.0% 감액 격차</span>
+</div>
+<div class="flex items-center gap-1 text-primary font-bold">
+<span class="material-symbols-outlined text-[18px]" data-icon="trending_up">trending_up</span>
+<span class="font-metric-num-md text-metric-num-md font-mono tabular-nums">+$ 6.00 USD</span>
+</div>
+</div>
+</section>
+<!-- 5. DETAILED COMPARISON BREAKDOWN (6 ITEMS) -->
+<section class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-1">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold text-[17px]">
+        상세 항목별 대조 명세
+      </h2>
+<p class="font-label-sm text-label-sm text-outline">모바일 단일 컬럼 분할 카드 뷰</p>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-medium">
+      6개 항목
+    </span>
+</div>
+<div class="space-y-2.5">
+<!-- Item 1: 투자 원금 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 shadow-sm space-y-2">
+<div class="flex justify-between items-center border-b border-surface-container pb-1.5">
+<span class="font-label-md text-label-md text-on-surface font-bold">01. 투자 원금</span>
+<span class="font-label-sm text-label-sm text-outline font-mono tabular-nums">격차 $ 0.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-right">
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 A</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold font-mono tabular-nums">$ 1,000.00</span>
+</div>
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 B</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold font-mono tabular-nums">$ 1,000.00</span>
+</div>
+</div>
+</div>
+<!-- Item 2: 연간 세전 총 배당금 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 shadow-sm space-y-2">
+<div class="flex justify-between items-center border-b border-surface-container pb-1.5">
+<span class="font-label-md text-label-md text-on-surface font-bold">02. 연간 세전 총 배당금</span>
+<span class="font-label-sm text-label-sm text-outline font-mono tabular-nums">격차 $ 0.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-right">
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 A</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold font-mono tabular-nums">$ 40.00</span>
+</div>
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 B</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold font-mono tabular-nums">$ 40.00</span>
+</div>
+</div>
+</div>
+<!-- Item 3: 적용 원천징수율 (가정) -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 shadow-sm space-y-2">
+<div class="flex justify-between items-center border-b border-surface-container pb-1.5">
+<span class="font-label-md text-label-md text-on-surface font-bold">03. 적용 원천징수율 (가정)</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold font-mono tabular-nums">격차 -15.0%p</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-right">
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 A</span>
+<span class="font-body-md text-body-md text-primary font-bold font-mono tabular-nums">0.0%</span>
+</div>
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 B</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold font-mono tabular-nums">15.0%</span>
+</div>
+</div>
+</div>
+<!-- Item 4: 예상 원천징수세액 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 shadow-sm space-y-2">
+<div class="flex justify-between items-center border-b border-surface-container pb-1.5">
+<span class="font-label-md text-label-md text-on-surface font-bold">04. 예상 원천징수세액</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold font-mono tabular-nums">격차(A - B) -$ 6.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-right">
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 A</span>
+<span class="font-body-md text-body-md text-primary font-bold font-mono tabular-nums">$ 0.00</span>
+</div>
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 B</span>
+<span class="font-body-md text-body-md text-secondary font-semibold font-mono tabular-nums">$ 6.00</span>
+</div>
+</div>
+</div>
+<!-- Item 5: 세후 수령 배당금 -->
+<div class="bg-surface-container-lowest border border-primary-container/40 rounded-xl p-3.5 shadow-sm space-y-2">
+<div class="flex justify-between items-center border-b border-surface-container pb-1.5">
+<div>
+<span class="font-label-md text-label-md text-on-surface font-bold">05. 세후 수령 배당금</span>
+<span class="font-label-sm text-label-sm text-outline block font-normal">현금 실수령액 기준</span>
+</div>
+<span class="font-label-md text-label-md text-primary font-extrabold font-mono tabular-nums">격차 +$ 6.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-right">
+<div class="p-2 rounded bg-primary-fixed/20 border border-primary-fixed/40">
+<span class="font-label-sm text-label-sm text-primary font-semibold block text-left">시나리오 A</span>
+<span class="font-metric-num-md text-metric-num-md text-primary font-bold font-mono tabular-nums">$ 40.00</span>
+</div>
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 B</span>
+<span class="font-metric-num-md text-metric-num-md text-on-surface font-semibold font-mono tabular-nums">$ 34.00</span>
+</div>
+</div>
+</div>
+<!-- Item 6: 1년 후 최종 총자산 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-3.5 shadow-sm space-y-2">
+<div class="flex justify-between items-center border-b border-surface-container pb-1.5">
+<div>
+<span class="font-label-md text-label-md text-on-surface font-bold">06. 1년 후 최종 총자산</span>
+<span class="font-label-sm text-label-sm text-outline block font-normal">주식 평가액($1,000) + 세후 배당금</span>
+</div>
+<span class="font-label-md text-label-md text-primary font-extrabold font-mono tabular-nums">격차 +$ 6.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-right">
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 A</span>
+<span class="font-body-md text-body-md text-primary font-bold font-mono tabular-nums">$ 1,040.00</span>
+</div>
+<div class="p-2 rounded bg-surface">
+<span class="font-label-sm text-label-sm text-outline block text-left">시나리오 B</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold font-mono tabular-nums">$ 1,034.00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sole Footnote Requirement -->
+<div class="px-1 text-outline font-label-sm text-label-sm pt-1">
+<p>* 소수점 둘째 자리 반올림 표기 기준</p>
+</div>
+</section>
+<!-- BOTTOM SPACING BUFFER -->
+<div class="h-6"></div></main>
+</body></html>

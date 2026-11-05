@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>V5 CORRECTED / Data Upload / Mobile / source-4355c5b5</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      -webkit-font-smoothing: antialiased;
+    }
+    .num-tabular {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-slate-900 pb-16">
+<!-- Mobile 390px Container -->
+<div class="max-w-[390px] mx-auto px-4 pt-4 space-y-4">
+<!-- Top Meta Badges & Direct Input Action -->
+<div class="flex items-center justify-between gap-2"><div class="flex items-center gap-1.5 flex-wrap"><span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-teal-50 text-teal-800 border border-teal-200">데이터 가져오기 및 등록</span><span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200">모으멍 포트폴리오</span></div><button class="inline-flex items-center justify-center min-h-[44px] px-3.5 py-1.5 rounded-lg border border-[#e2e8f0] bg-white text-xs font-semibold text-slate-700 shadow-sm active:bg-slate-50 transition-colors" type="button"><svg class="w-3.5 h-3.5 mr-1 text-slate-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>직접 수기 입력</button></div>
+<!-- Page Title & Guidance (Content Only: starts at title) -->
+<div class="space-y-1">
+<h1 class="text-xl font-bold text-[#382418] tracking-tight">증권 데이터 등록</h1>
+<p class="text-xs text-slate-600 leading-relaxed">
+        증권사 거래내역 및 잔고 스냅샷을 안전하게 불러와 배당달력 포트폴리오를 구성합니다. 모든 데이터는 검토 후 저장됩니다.
+      </p>
+</div>
+<!-- Step Stepper (Upload -> Review -> Result) -->
+<div class="bg-white border border-[#e2e8f0] rounded-xl p-3 shadow-sm"><div class="flex items-center justify-between text-xs"><div class="flex items-center gap-1.5"><div class="w-6 h-6 rounded-full bg-[#0d7a6e] text-white flex items-center justify-center font-bold text-[11px] shadow-sm">1</div><div><div class="font-bold text-[#0d7a6e] text-[11px]">파일 업로드</div><div class="text-[9px] text-teal-700 font-normal">거래/잔고 (진행중)</div></div></div><div class="w-4 h-[1px] bg-slate-300"></div><div class="flex items-center gap-1.5 opacity-60"><div class="w-6 h-6 rounded-full border border-slate-300 text-slate-500 flex items-center justify-center font-semibold text-[11px]">2</div><div><div class="font-medium text-slate-700 text-[11px]">데이터 검토 &amp; 열 매핑</div><div class="text-[9px] text-slate-400">필수 항목 확인 (대기)</div></div></div><div class="w-4 h-[1px] bg-slate-300"></div><div class="flex items-center gap-1.5 opacity-50"><div class="w-6 h-6 rounded-full border border-slate-300 text-slate-400 flex items-center justify-center font-semibold text-[11px]">3</div><div><div class="font-medium text-slate-600 text-[11px]">완료 및 달력 반영</div><div class="text-[9px] text-slate-400">포트폴리오 적재 (대기)</div></div></div></div></div>
+<!-- Main Upload Form Card -->
+<div class="bg-white border border-[#e2e8f0] rounded-xl p-3.5 space-y-4 shadow-sm"><div class="space-y-1.5"><div class="flex items-center justify-between"><label class="text-xs font-bold text-slate-800">데이터 유형 선택 <span class="text-red-500">*</span></label><span class="text-[10px] text-slate-500">배당 집계 방식 지정</span></div><div class="grid grid-cols-2 p-1 bg-slate-100 rounded-lg border border-slate-200"><button class="min-h-[44px] flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md bg-white text-[#0d7a6e] font-bold text-xs shadow-sm border border-slate-200/60" type="button"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><span>거래내역 (배당입금)</span></button><button class="min-h-[44px] flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-md text-slate-600 font-medium text-xs hover:text-slate-900 active:bg-slate-200/50" type="button"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><span>잔고 스냅샷 (보유주식)</span></button></div><p class="text-[11px] text-slate-500 leading-normal">배당금 입금 내역을 분석하거나 현재 보유 주식 잔고를 기반으로 향후 예상 배당을 계산합니다.</p></div><div class="space-y-2"><label class="block text-xs font-bold text-slate-800">파일 첨부 <span class="text-red-500">*</span></label><div class="border-2 border-dashed border-teal-300 bg-teal-50/20 rounded-xl p-4 text-center space-y-2"><div class="w-10 h-10 mx-auto rounded-full bg-teal-100 text-[#0d7a6e] flex items-center justify-center"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></div><div><div class="text-xs font-bold text-slate-800">CSV, XLSX 또는 거래명세서 PDF 파일 업로드</div><div class="text-[10px] text-slate-500 mt-0.5">스프레드시트 (CSV/XLSX) 또는 보안 PDF 다중 첨부 지원</div></div><div class="pt-1 flex flex-col gap-1.5"><button class="min-h-[44px] w-full py-2 px-3 rounded-lg bg-[#0d7a6e] text-white text-xs font-bold shadow hover:bg-[#0b695e] active:scale-[0.99] transition-transform flex items-center justify-center gap-1.5" type="button"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>파일 선택</button><button class="text-[11px] text-slate-500 hover:text-slate-800 underline decoration-slate-300 py-1" type="button">또는 모의 샘플 불러오기</button></div></div><div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 flex items-center justify-between gap-2"><div class="flex items-center gap-2 min-w-0"><span class="px-1.5 py-0.5 rounded bg-teal-100 text-teal-800 text-[10px] font-bold shrink-0">CSV</span><div class="min-w-0"><div class="text-xs font-semibold text-slate-800 truncate">DEMO_DIVIDEND_2024.csv</div><div class="text-[10px] text-slate-500 num-tabular">18.4 KB • 총 142건 감지 • UTF-8 인코딩</div></div></div><div class="flex items-center gap-1.5 shrink-0"><span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">정상 인식</span><button aria-label="파일 제거" class="min-h-[44px] min-w-[36px] flex items-center justify-center text-slate-400 hover:text-slate-600" type="button">✕</button></div></div><div class="bg-slate-100/70 border border-slate-200 rounded-lg p-2.5 flex items-start gap-2 text-slate-700 text-[11px] leading-tight"><span class="text-slate-500 font-bold shrink-0">ℹ</span><span>형식 안내: <strong>CSV 파일</strong>은 단일 데이터 스트림으로 시트 선택기가 비활성화됩니다. (XLSX 첨부 시 멀티 시트 감지 활성화)</span></div><div class="p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2"><div class="flex items-center gap-1.5 font-bold text-slate-800 text-[11px]"><svg class="w-3.5 h-3.5 text-[#0d7a6e]" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>파일 규격 및 분할 처리 기준</div><div class="space-y-1.5 text-[11px] text-slate-600"><div class="p-2 bg-white rounded border border-slate-200 space-y-0.5"><div class="font-bold text-slate-800">일반 스프레드시트 (CSV / XLSX)</div><div class="text-slate-500 text-[10px]">• 파일당 최대 2MB</div><div class="text-slate-500 text-[10px]">• 최대 200행 / 최대 50개 열(컬럼)</div></div><div class="p-2 bg-white rounded border border-slate-200 space-y-0.5"><div class="font-bold text-slate-800">거래명세서 PDF</div><div class="text-slate-500 text-[10px]">• 최대 20개 파일 다중 첨부 가능 (파일당 2MB)</div><div class="text-slate-500 text-[10px]">• 최대 10,000행 추출 지원 (200행 배치 분할 저장)</div></div></div></div></div><div class="space-y-2 pt-2 border-t border-slate-100"><div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex items-center justify-between text-xs text-slate-600"><div class="space-y-0.5"><div><span class="font-semibold text-slate-800">문서 암호 입력 불필요</span></div><p class="text-[11px] text-slate-500 leading-normal">현재 첨부된 <strong>CSV 파일</strong>은 일반 텍스트 포맷으로 암호 복호화 절차가 필요하지 않습니다. (보안 PDF 첨부 시 활성화)</p></div><span class="text-[10px] text-slate-400 font-mono px-2 py-0.5 bg-white rounded border border-slate-200 shrink-0">선택 사항 미적용</span></div><div class="p-2.5 bg-amber-50/60 rounded-lg border border-amber-200/80 space-y-1.5"><div class="flex items-center justify-between text-xs"><span class="font-bold text-amber-800">매칭 대상 계좌</span><span class="font-mono font-bold text-slate-800">DEMO-ACC-****-891</span></div><label class="flex items-start gap-2 cursor-pointer text-xs pt-1 border-t border-amber-200/60"><input class="mt-0.5 w-4 h-4 rounded text-[#0d7a6e] border-slate-300 focus:ring-[#0d7a6e] cursor-pointer" id="owner-confirmation" type="checkbox"/><span class="font-bold text-[#382418]">[필수] 선택한 가상 계좌의 소유자 본인 데이터임을 확인하며 검토 단계로 진행합니다.</span></label></div></div><div class="pt-2 flex flex-col gap-1.5"><div class="flex items-center gap-2"><button class="min-h-[44px] px-3.5 py-2 rounded-lg border border-[#e2e8f0] bg-white text-xs font-semibold text-slate-600 active:bg-slate-100" type="button">초기화</button><button class="min-h-[44px] flex-1 py-2 px-4 rounded-lg bg-slate-200 text-slate-400 text-xs font-bold cursor-not-allowed flex items-center justify-center gap-1.5 opacity-60" disabled="" title="계좌 소유자 본인 확인 체크가 필요합니다" type="button"><span>다음: 데이터 검토 &amp; 열 매핑</span><svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg></button></div><div class="text-right"><span class="text-[10px] text-amber-700 font-medium">※ 진행 불가: 본인 계좌 명의확인필요</span></div></div></div>
+<!-- Raw Cashflow Preview Cards (Table Rows adapted to Cards for 390px Mobile) -->
+<div class="bg-white border border-[#e2e8f0] rounded-xl p-3.5 space-y-3 shadow-sm">
+<div class="flex items-center justify-between border-b border-slate-100 pb-2">
+<div class="flex items-center gap-1.5">
+<span class="text-teal-600 font-bold">▦</span>
+<h2 class="text-xs font-bold text-slate-800">원본 배당금 캐시플로우 미리보기</h2>
+</div>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+          Top 3 Rows
+        </span>
+</div>
+<p class="text-[11px] text-slate-500">
+        상위 3건 가맹 샘플 (수량×단가 곱셈이 아닌 실제 입금액 배당 캐시플로우)
+      </p>
+<!-- Labelled Cards list (replacing wide table to prevent overflow) -->
+<div class="space-y-2.5 pt-1">
+<!-- Card Row 1 -->
+<div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-slate-800">가상모의전자</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-[#0d7a6e] border border-teal-200">
+              현금배당
+            </span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-500">
+<span class="num-tabular">KRX-DEMO-01</span>
+<span class="num-tabular">2024-03-15</span>
+</div>
+<div class="pt-1 border-t border-slate-200/60 flex items-center justify-between">
+<span class="text-[11px] font-medium text-slate-600">세전 실입금액</span>
+<span class="text-xs font-bold text-[#382418] num-tabular">43,320 원</span>
+</div>
+</div>
+<!-- Card Row 2 (USD Sample) -->
+<div class="p-2.5 rounded-lg border border-slate-200 bg-slate-50/50 space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-slate-800">알파테크가상 ETF</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-[#0d7a6e] border border-teal-200">
+              배당금입금
+            </span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-500">
+<span class="num-tabular">NYSE-DEMO-US</span>
+<span class="num-tabular">2024-03-20</span>
+</div>
+<div class="pt-1 border-t border-slate-200/60 flex items-center justify-between">
+<span class="text-[11px] font-medium text-slate-600">세전 실입금액</span>
+<span class="text-xs font-bold text-[#382418] num-tabular">$ 10.80</span>
+</div>
+</div>
+<!-- Card Row 3 (Missing Currency / Review needed) -->
+<div class="p-2.5 rounded-lg border border-amber-200 bg-amber-50/30 space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-slate-800">모의에너지홀딩스</span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-[#0d7a6e] border border-teal-200">
+              분기배당
+            </span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-500">
+<span class="num-tabular">KRX-DEMO-99</span>
+<span class="num-tabular">2024-04-02</span>
+</div>
+<div class="pt-1 border-t border-amber-200/60 flex items-center justify-between">
+<div class="flex items-center gap-1">
+<span class="text-[11px] font-medium text-slate-600">세전 실입금액</span>
+<span class="text-[10px] font-semibold text-amber-700 bg-amber-100/80 px-1 rounded">통화 검토 요망</span>
+</div>
+<span class="text-xs font-bold text-[#382418] num-tabular">60,000 (미지정)</span>
+</div>
+</div>
+</div>
+<!-- Currency Safeguard Callout -->
+<div class="p-2.5 rounded-lg border border-amber-200/80 bg-amber-50/50 space-y-1 text-slate-700">
+<div class="flex items-center gap-1 text-[11px] font-bold text-amber-800">
+<svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          통화 누락 및 결측치 안전 정책
+        </div>
+<p class="text-[10px] text-slate-600 leading-relaxed">
+          통화 식별값이 없는 행(Row #3)은 기본값 KRW로 임의 치환하지 않으며, 다음 열 매핑 및 데이터 검토 단계에서 사용자가 직접 통화를 확정해야 저장할 수 있습니다. 결측치 또한 0원으로 자동 대체되지 않습니다.
+        </p>
+</div>
+</div>
+<!-- Fictional Account & Data Protection Status Card -->
+<div class="bg-white border border-[#e2e8f0] rounded-xl p-3.5 space-y-2.5 shadow-sm"><div class="flex items-center gap-1.5 border-b border-slate-100 pb-2"><svg class="w-4 h-4 text-[#0d7a6e]" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><h2 class="text-xs font-bold text-slate-800">가상 모의 계좌 연동 정보</h2></div><div class="space-y-1.5 text-xs"><div class="flex items-center justify-between py-1 border-b border-slate-100"><span class="text-slate-500">매칭 대상 가상 계좌</span><span class="font-bold text-slate-800 num-tabular font-mono">DEMO-ACC-****-891</span></div><div class="flex items-center justify-between py-1 border-b border-slate-100"><span class="text-slate-500">계좌 소유권 검증</span><span class="font-medium text-slate-800">필수 확인 체크 필요</span></div></div></div>
+<!-- Error/Retry Inline Message State (Prime Message Compact Pattern) -->
+</div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>V7 REFINED / Import Review / Mobile / source-26b5d69e</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary": "#73594a",
+            "primary-fixed-dim": "#7dd6c8",
+            "on-primary": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-tertiary-fixed-variant": "#5a4300",
+            "on-surface": "#191c1e",
+            "on-secondary-container": "#795f50",
+            "on-background": "#191c1e",
+            "on-secondary-fixed": "#29170c",
+            "surface-variant": "#e0e3e5",
+            "surface-tint": "#006b60",
+            "primary-fixed": "#99f3e4",
+            "on-primary-fixed-variant": "#005048",
+            "secondary-fixed": "#ffdbc9",
+            "on-tertiary-fixed": "#251a00",
+            "surface": "#f7f9fb",
+            "error": "#ba1a1a",
+            "tertiary-container": "#896700",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed-dim": "#e1c0ae",
+            "background": "#f7f9fb",
+            "primary-container": "#0d7a6e",
+            "tertiary-fixed": "#ffdf9a",
+            "tertiary": "#6b5000",
+            "surface-container-low": "#f2f4f6",
+            "outline": "#6e7977",
+            "on-tertiary-container": "#ffedcb",
+            "on-secondary-fixed-variant": "#594234",
+            "error-container": "#ffdad6",
+            "surface-container": "#eceef0",
+            "tertiary-fixed-dim": "#f7be1d",
+            "secondary-container": "#ffdbc9",
+            "on-surface-variant": "#3e4947",
+            "surface-dim": "#d8dadc",
+            "inverse-primary": "#7dd6c8",
+            "surface-container-highest": "#e0e3e5",
+            "on-primary-container": "#abfff0",
+            "on-error-container": "#93000a",
+            "on-primary-fixed": "#00201c",
+            "inverse-surface": "#2d3133",
+            "on-error": "#ffffff",
+            "surface-container-high": "#e6e8ea",
+            "outline-variant": "#bdc9c6",
+            "surface-bright": "#f7f9fb",
+            "primary": "#005f55",
+            "inverse-on-surface": "#eff1f3"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2rem",
+            "margin": "2rem"
+          },
+          "fontFamily": {
+            "metric-num-md": ["\"Inter, 'Pretendard', sans-serif\""],
+            "metric-num-lg": ["\"Inter, 'Pretendard', sans-serif\""],
+            "body-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "display-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "label-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-sm": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "body-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "label-sm": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""]
+          },
+          "fontSize": {
+            "metric-num-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "metric-num-lg": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "600" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "700" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .num-tabular {
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum";
+    }
+    /* Hide scrollbars for pill chips container */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-[#f8fafc] text-on-surface antialiased min-h-screen p-0 m-0 font-body-md text-body-md flex justify-center">
+<!-- Mobile Viewport Container: 390px Max Single Column Layout -->
+<main class="w-full max-w-[390px] min-h-screen bg-[#f8fafc] px-4 pt-5 pb-12 flex flex-col gap-5 overflow-x-hidden">
+<!-- 1. Header & Stepper Section -->
+<header class="flex flex-col gap-3">
+<!-- Badges -->
+<div class="flex items-center gap-2 flex-wrap">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#e6f4f2] text-[#0d7a6e] border border-[#b2ded7]">
+<span class="material-symbols-outlined text-[14px]">cloud_sync</span>
+          데이터 가져오기 및 등록
+        </span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[#f1f5f9] text-[#475569] border border-[#e2e8f0]">
+          예시 데이터
+        </span>
+</div>
+<!-- Title & Subtitle -->
+<div class="flex flex-col gap-1">
+<h1 class="font-headline-sm text-headline-sm font-bold text-[#382418] tracking-tight">증권 데이터 검토 및 확정</h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          업로드된 데이터 파싱 결과를 최종 확인하고 배당달력 포트폴리오에 안전하게 반영합니다.
+        </p>
+</div>
+<!-- Stepper: Compact Step Tracker -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3 shadow-sm"><div class="flex items-center justify-between relative"><div class="flex items-center gap-1.5 z-10 bg-surface-container-lowest pr-1"><div class="w-6 h-6 rounded-full bg-[#0d7a6e] text-white flex items-center justify-center text-[12px]"><span class="material-symbols-outlined text-[16px]">check</span></div><span class="text-[12px] font-medium text-on-surface">파일 업로드</span></div><div class="flex-1 h-[2px] bg-[#0d7a6e] mx-1"></div><div class="flex items-center gap-1.5 z-10 bg-surface-container-lowest px-1"><div class="w-6 h-6 rounded-full bg-[#0d7a6e] text-white flex items-center justify-center text-[12px] font-bold ring-2 ring-[#0d7a6e]/20">2</div><span class="text-[12px] font-bold text-[#0d7a6e]">열 매핑·검토</span></div><div class="flex-1 h-[2px] bg-[#cbd5e1] mx-1"></div><div class="flex items-center gap-1.5 z-10 bg-surface-container-lowest pl-1"><div class="w-6 h-6 rounded-full bg-[#cbd5e1] text-[#64748b] flex items-center justify-center text-[12px] font-bold">3</div><span class="text-[12px] font-medium text-[#64748b]">저장 결과</span></div></div></div>
+</header>
+<!-- 2. Review Status Summary & Totals (Summary Card) -->
+<section class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-4 shadow-sm flex flex-col gap-4"><div class="flex flex-col gap-2"><div class="flex justify-between items-baseline"><span class="font-label-md text-label-md text-[#64748b]">검토 현황 요약</span><span class="text-[13px] font-bold text-[#382418]">정상율 <span class="num-tabular text-[#0d7a6e] text-[15px]">100%</span> (6/6건)</span></div><div class="w-full h-2 rounded-full bg-[#f1f5f9] overflow-hidden flex"><div class="h-full bg-[#0d7a6e] w-full"></div></div><div class="flex justify-between items-center text-[11px] text-[#64748b] pt-0.5"><span class="flex items-center gap-1 text-[#0d7a6e] font-medium"><span class="w-1.5 h-1.5 rounded-full bg-[#0d7a6e]"></span>검토 완료 6건</span><span class="flex items-center gap-1 text-[#64748b] font-medium"><span class="w-1.5 h-1.5 rounded-full bg-[#cbd5e1]"></span>차단 이슈 0건</span></div></div><div class="border-t border-[#f1f5f9] pt-3 flex flex-col gap-3"><div class="flex items-center justify-between"><span class="text-[12px] font-bold text-[#382418]">통화별 합계 (KRW / USD 엄격 분리)</span><span class="text-[11px] text-[#0d7a6e] font-semibold bg-[#e6f4f2] px-2 py-0.5 rounded-full">교차합산 금지</span></div><div class="bg-[#f8fafc] border border-[#e2e8f0] rounded-[8px] p-2.5 flex flex-col gap-1.5"><div class="flex justify-between items-center text-[12px]"><span class="font-semibold text-[#0f172a] flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-600"></span>원화(KRW) 거래 내역</span><span class="text-[11px] text-[#64748b]">4건 집계</span></div><div class="grid grid-cols-2 gap-2 pt-1 border-t border-[#e2e8f0]/60 text-[12px]"><div><span class="text-[#64748b] block text-[11px]">매수 합계</span><span class="num-tabular font-semibold text-[#382418]">100,000 KRW</span></div><div><span class="text-[#64748b] block text-[11px]">매도 합계</span><span class="num-tabular font-semibold text-[#382418]">24,000 KRW</span></div><div><span class="text-[#64748b] block text-[11px]">입금 합계</span><span class="num-tabular font-semibold text-[#382418]">1,000,000 KRW</span></div><div><span class="text-[#64748b] block text-[11px]">출금 합계</span><span class="num-tabular font-semibold text-[#382418]">50,000 KRW</span></div><div class="col-span-2 pt-1 border-t border-dashed border-[#cbd5e1] flex justify-between items-center"><span class="text-[11px] text-[#0d7a6e] font-semibold">순입출금 (검토합계)</span><span class="num-tabular font-bold text-[#0d7a6e] text-[13px]">+950,000 KRW</span></div></div></div><div class="bg-[#f8fafc] border border-[#e2e8f0] rounded-[8px] p-2.5 flex flex-col gap-1.5"><div class="flex justify-between items-center text-[12px]"><span class="font-semibold text-[#0f172a] flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#0d7a6e]"></span>달러(USD) 거래 및 배당</span><span class="text-[11px] text-[#64748b]">2건 집계</span></div><div class="grid grid-cols-2 gap-2 pt-1 border-t border-[#e2e8f0]/60 text-[12px]"><div><span class="text-[#64748b] block text-[11px]">매수 합계</span><span class="num-tabular font-semibold text-[#382418]">200.00 USD</span></div><div><span class="text-[#64748b] block text-[11px]">배당금 입금</span><span class="num-tabular font-semibold text-[#0d7a6e]">+10.00 USD</span></div></div></div></div></section>
+<!-- 3. Blocking Warning Banner -->
+<!-- 4. Filter & Search Bar Section -->
+<section class="flex flex-col gap-2.5"><div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5"><button class="shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-[#0d7a6e] text-white" type="button">전체 (6)</button><button class="shrink-0 px-3 py-1.5 rounded-full text-[12px] font-medium bg-[#f1f5f9] text-[#475569] border border-[#e2e8f0]" type="button">배당/배당취소 (1)</button><button class="shrink-0 px-3 py-1.5 rounded-full text-[12px] font-medium bg-[#f1f5f9] text-[#475569] border border-[#e2e8f0]" type="button">매수 (2)</button><button class="shrink-0 px-3 py-1.5 rounded-full text-[12px] font-medium bg-[#f1f5f9] text-[#475569] border border-[#e2e8f0]" type="button">매도 (1)</button><button class="shrink-0 px-3 py-1.5 rounded-full text-[12px] font-medium bg-[#f1f5f9] text-[#475569] border border-[#e2e8f0]" type="button">입출금 (2)</button><button class="shrink-0 px-3 py-1.5 rounded-full text-[12px] font-medium bg-[#f1f5f9] text-[#64748b] border border-[#e2e8f0] flex items-center gap-1" type="button"><span class="w-1.5 h-1.5 rounded-full bg-[#cbd5e1]"></span>확인 필요 이슈 (0)</button></div><div class="flex flex-col gap-2"><div class="relative w-full"><span class="material-symbols-outlined absolute left-3 top-3 text-[18px] text-[#94a3b8]">search</span><input aria-label="거래 내역 검색" class="w-full h-11 pl-9 pr-3 rounded-[8px] border border-[#cbd5e1] bg-white text-[#382418] text-[13px] placeholder:text-[#94a3b8] focus:border-[#0d7a6e] focus:ring-2 focus:ring-[#0d7a6e]/20 outline-none" id="tx-search-input" placeholder="종목명/코드/고유번호 검색..." type="text"/></div><div class="flex items-center justify-between px-1 py-0.5"><div class="flex items-center gap-1.5 text-[12px] text-[#64748b]"><span class="material-symbols-outlined text-[16px]">sort</span><span>정렬 방식:</span><span class="font-semibold text-[#0d7a6e] bg-[#e6f4f2] px-2 py-0.5 rounded">오래된 순</span></div><span class="text-[11px] font-mono text-[#64748b]">2026-03 순차 정렬</span></div></div></section>
+<!-- 5. Parsed Rows as Mobile Cards (6 Synthetic Rows) -->
+<section class="flex flex-col gap-3"><div class="flex items-center justify-between px-0.5"><span class="text-[13px] font-bold text-[#382418]">파싱 완료 거래 카드 (6건)</span><span class="text-[11px] text-[#64748b]">정렬: 오래된 순 (2026-03)</span></div><article class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5"><div class="flex justify-between items-center border-b border-[#f1f5f9] pb-2"><div class="flex items-center gap-1.5"><span class="inline-flex items-center gap-0.5 text-[11px] font-semibold text-[#0d7a6e] bg-[#e6f4f2] px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">check_circle</span> 정상</span><span class="text-[11px] text-[#94a3b8] font-mono font-bold">No. 1</span></div><span class="text-[11px] text-[#64748b] font-mono font-semibold">2026-03-01</span></div><div class="flex justify-between items-start"><div><div class="text-[14px] font-bold text-[#382418]">DEMO-K</div><div class="text-[11px] text-[#64748b] font-mono">고유번호: DEMO-001</div></div><span class="inline-block px-2 py-0.5 text-[11px] font-semibold text-blue-700 bg-blue-50 rounded">매수</span></div><div class="bg-[#f8fafc] rounded-[8px] p-2.5 grid grid-cols-2 gap-2 text-[12px]"><div><span class="text-[11px] text-[#64748b] block">체결수량</span><span class="font-semibold num-tabular text-[#1e293b]">10주</span></div><div><span class="text-[11px] text-[#64748b] block font-medium">체결금액</span><span class="num-tabular font-bold text-[#382418]">100,000 KRW</span></div></div></article><article class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5"><div class="flex justify-between items-center border-b border-[#f1f5f9] pb-2"><div class="flex items-center gap-1.5"><span class="inline-flex items-center gap-0.5 text-[11px] font-semibold text-[#0d7a6e] bg-[#e6f4f2] px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">check_circle</span> 정상</span><span class="text-[11px] text-[#94a3b8] font-mono font-bold">No. 2</span></div><span class="text-[11px] text-[#64748b] font-mono font-semibold">2026-03-02</span></div><div class="flex justify-between items-start"><div><div class="text-[14px] font-bold text-[#382418]">DEMO-A</div><div class="text-[11px] text-[#64748b] font-mono">고유번호: DEMO-002</div></div><span class="inline-block px-2 py-0.5 text-[11px] font-semibold text-blue-700 bg-blue-50 rounded">매수</span></div><div class="bg-[#f8fafc] rounded-[8px] p-2.5 grid grid-cols-2 gap-2 text-[12px]"><div><span class="text-[11px] text-[#64748b] block">체결수량</span><span class="font-semibold num-tabular text-[#1e293b]">2주</span></div><div><span class="text-[11px] text-[#64748b] block font-medium">체결금액</span><span class="num-tabular font-bold text-[#382418]">200.00 USD</span></div></div></article><article class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5"><div class="flex justify-between items-center border-b border-[#f1f5f9] pb-2"><div class="flex items-center gap-1.5"><span class="inline-flex items-center gap-0.5 text-[11px] font-semibold text-[#0d7a6e] bg-[#e6f4f2] px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">check_circle</span> 정상</span><span class="text-[11px] text-[#94a3b8] font-mono font-bold">No. 3</span></div><span class="text-[11px] text-[#64748b] font-mono font-semibold">2026-03-03</span></div><div class="flex justify-between items-start"><div><div class="text-[14px] font-bold text-[#382418]">DEMO-K</div><div class="text-[11px] text-[#64748b] font-mono">고유번호: DEMO-003</div></div><span class="inline-block px-2 py-0.5 text-[11px] font-semibold text-purple-700 bg-purple-50 rounded">매도</span></div><div class="bg-[#f8fafc] rounded-[8px] p-2.5 grid grid-cols-2 gap-2 text-[12px]"><div><span class="text-[11px] text-[#64748b] block">체결수량</span><span class="font-semibold num-tabular text-[#1e293b]">2주</span></div><div><span class="text-[11px] text-[#64748b] block font-medium">체결금액</span><span class="num-tabular font-bold text-[#382418]">24,000 KRW</span></div></div></article><article class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5"><div class="flex justify-between items-center border-b border-[#f1f5f9] pb-2"><div class="flex items-center gap-1.5"><span class="inline-flex items-center gap-0.5 text-[11px] font-semibold text-[#0d7a6e] bg-[#e6f4f2] px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">check_circle</span> 정상</span><span class="text-[11px] text-[#94a3b8] font-mono font-bold">No. 4</span></div><span class="text-[11px] text-[#64748b] font-mono font-semibold">2026-03-04</span></div><div class="flex justify-between items-start"><div><div class="text-[14px] font-bold text-[#382418]">DEMO-A</div><div class="text-[11px] text-[#64748b] font-mono">고유번호: DEMO-004</div></div><span class="inline-block px-2 py-0.5 text-[11px] font-semibold text-amber-700 bg-amber-50 rounded">배당금</span></div><div class="bg-[#f8fafc] rounded-[8px] p-2.5 grid grid-cols-2 gap-2 text-[12px]"><div><span class="text-[11px] text-[#64748b] block">체결수량</span><span class="font-semibold num-tabular text-[#64748b]">-</span></div><div><span class="text-[11px] text-[#64748b] block font-medium">실지급 배당금</span><span class="num-tabular font-bold text-[#0d7a6e]">+10.00 USD</span></div></div></article><article class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5"><div class="flex justify-between items-center border-b border-[#f1f5f9] pb-2"><div class="flex items-center gap-1.5"><span class="inline-flex items-center gap-0.5 text-[11px] font-semibold text-[#0d7a6e] bg-[#e6f4f2] px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">check_circle</span> 정상</span><span class="text-[11px] text-[#94a3b8] font-mono font-bold">No. 5</span></div><span class="text-[11px] text-[#64748b] font-mono font-semibold">2026-03-05</span></div><div class="flex justify-between items-start"><div><div class="text-[14px] font-bold text-[#382418]">CASH</div><div class="text-[11px] text-[#64748b] font-mono">고유번호: DEMO-005</div></div><span class="inline-block px-2 py-0.5 text-[11px] font-semibold text-teal-800 bg-[#e6f4f2] rounded">입금</span></div><div class="bg-[#f8fafc] rounded-[8px] p-2.5 grid grid-cols-2 gap-2 text-[12px]"><div><span class="text-[11px] text-[#64748b] block">체결수량</span><span class="num-tabular text-[#64748b]">-</span></div><div><span class="text-[11px] text-[#64748b] block font-medium">입금액</span><span class="num-tabular font-bold text-[#0d7a6e]">+1,000,000 KRW</span></div></div></article><article class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5"><div class="flex justify-between items-center border-b border-[#f1f5f9] pb-2"><div class="flex items-center gap-1.5"><span class="inline-flex items-center gap-0.5 text-[11px] font-semibold text-[#0d7a6e] bg-[#e6f4f2] px-2 py-0.5 rounded-full"><span class="material-symbols-outlined text-[13px]">check_circle</span> 정상</span><span class="text-[11px] text-[#94a3b8] font-mono font-bold">No. 6</span></div><span class="text-[11px] text-[#64748b] font-mono font-semibold">2026-03-06</span></div><div class="flex justify-between items-start"><div><div class="text-[14px] font-bold text-[#382418]">CASH</div><div class="text-[11px] text-[#64748b] font-mono">고유번호: DEMO-006</div></div><span class="inline-block px-2 py-0.5 text-[11px] font-semibold text-[#b91c1c] bg-[#fee2e2] rounded">출금</span></div><div class="bg-[#f8fafc] rounded-[8px] p-2.5 grid grid-cols-2 gap-2 text-[12px]"><div><span class="text-[11px] text-[#64748b] block">체결수량</span><span class="num-tabular text-[#64748b]">-</span></div><div><span class="text-[11px] text-[#64748b] block font-medium">출금액</span><span class="num-tabular font-bold text-[#b91c1c]">-50,000 KRW</span></div></div></article><div class="flex items-center justify-center p-2 rounded-[8px] bg-[#f1f5f9] text-[11px] text-[#64748b] font-medium">페이지: 1-6 / 총 6건 (1 페이지)</div></section>
+<!-- 6. Raw Inspector Drawer / Section (원문 인스펙터: 5번 행) -->
+<section class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5"><div class="flex items-center justify-between"><div class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px] text-[#f59e0b]">help</span><span class="text-[13px] font-bold text-[#382418]">예시 검토 결과 안내</span></div><span class="text-[11px] text-[#64748b] font-semibold bg-[#f1f5f9] px-2 py-0.5 rounded-full">참고용 가이드</span></div><div class="text-[12px] text-[#475569] leading-snug bg-[#fff7ed] border border-[#fed7aa] p-2.5 rounded-[8px]">안내: 본 가이드는 향후 추가 업로드 시 발생 가능한 예시 오류(미등록 종목코드, 통화 코드 결측)에 대한 점검 안내이며 현재 목록 6건은 전건 정상입니다.</div><div class="bg-[#1e293b] rounded-[8px] p-2.5 overflow-x-auto text-[11px] font-mono text-[#94a3b8] leading-relaxed"><span class="text-amber-500 block text-[10px] pb-1 font-semibold">[결측 예시 참고 데이터]</span><code class="text-[#e2e8f0] whitespace-nowrap block">20260307, 신규미식별종목, 매수, 10, , 100000</code></div><div class="flex items-start gap-2 text-[12px] bg-[#f8fafc] border border-[#e2e8f0] p-2 rounded-[8px]"><span class="material-symbols-outlined text-[16px] text-[#64748b] shrink-0 mt-0.5">info</span><div class="text-[#64748b] text-[11px] leading-snug"><strong class="text-[#382418] font-semibold">점검 지침:</strong> 통화 누락 시 수정 후 저장</div></div></section>
+<!-- 7. Final Confirmation & Action Section -->
+<section class="bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-4 shadow-sm flex flex-col gap-4"><div class="flex items-center justify-between text-[12px] border-b border-[#f1f5f9] pb-3"><span class="text-[#64748b]">연동 가상 계좌</span><span class="font-mono font-semibold text-[#1e293b]">DEMO-ACC-****-891</span></div><label class="flex items-start gap-2.5 cursor-pointer select-none"><input class="mt-0.5 h-4 w-4 rounded border-[#cbd5e1] text-[#0d7a6e] focus:ring-[#0d7a6e]/20 cursor-pointer" type="checkbox"/><span class="text-[12px] text-[#334155] leading-snug"><strong class="text-[#0d7a6e]">[필수]</strong> 원본 파일 대조 및 가상 계좌 거래 내역 반영에 동의합니다.</span></label><div class="bg-[#fff7ed] border border-[#fed7aa] rounded-[8px] p-2.5 flex items-center gap-2 text-[11px] text-[#9a3412]"><span class="material-symbols-outlined text-[16px] text-[#f59e0b]">info</span><span>소유자 확인 및 반영 동의 체크 필요</span></div><button class="w-full h-12 rounded-[8px] bg-[#0d7a6e] text-white font-bold text-[14px] flex items-center justify-center gap-2 opacity-50 cursor-not-allowed shadow-none" disabled="" type="button"><span class="material-symbols-outlined text-[20px]">cloud_done</span>배당달력 포트폴리오에 저장 및 반영</button><button class="w-full h-11 rounded-[8px] border border-[#cbd5e1] bg-white text-[#382418] font-medium text-[13px] flex items-center justify-center gap-1 active:bg-[#f8fafc]" type="button"><span class="material-symbols-outlined text-[16px]">arrow_back</span>이전 단계 (열 재조정)</button></section>
+</main>
+</body></html>

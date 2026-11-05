@@ -65,6 +65,20 @@ try {
         exact: true,
     });
     const choose = async (label, option) => {
+        if (label === '연결 자료 종류') {
+            const group = form.getByRole('radiogroup', {
+                name: label,
+                exact: true,
+            });
+            await group.getByText(option, { exact: true }).click();
+            assert.equal(
+                await group
+                    .getByRole('radio', { name: option, exact: true })
+                    .isChecked(),
+                true
+            );
+            return;
+        }
         await form.getByLabel(label, { exact: true }).click();
         await page
             .getByRole('option', { name: option, exact: true })
@@ -85,6 +99,33 @@ try {
         .getByRole('button', { name: '파일 열 확인', exact: true })
         .click();
     await form.getByLabel('연결 종목 코드', { exact: true }).waitFor();
+    assert.equal(await form.locator('.broker-raw-preview tbody tr').count(), 1);
+    assert.equal(
+        await form
+            .locator('.broker-raw-preview tbody tr')
+            .textContent()
+            .then((text) => text.includes('1.25')),
+        true,
+        'raw inspection preserves uploaded values'
+    );
+    // Duplicate columns must not enable a review that the server would reject.
+    await choose('연결 종목 코드', '1열 · 종목코드');
+    await choose('연결 수량', '1열 · 종목코드');
+    assert.equal(
+        await form
+            .getByRole('button', { name: '연결 자료 미리보기', exact: true })
+            .isDisabled(),
+        true
+    );
+    assert.equal(
+        await form
+            .getByText(
+                '같은 열을 여러 항목에 연결할 수 없습니다. 중복 연결을 해제하세요.',
+                { exact: true }
+            )
+            .isVisible(),
+        true
+    );
     assert.deepEqual(requests.slice(before), [
         { method: 'POST', action: 'inspectSpreadsheet' },
     ]);

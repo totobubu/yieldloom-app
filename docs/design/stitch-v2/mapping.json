@@ -3048,5 +3048,14 @@
   "viewportCaveat": "Original PNGs are PC capture boards (including Mobile-labeled shell records); 3-device content verification requires independent HTML captures. No claim of original device PNG parity.",
   "refinementEvidence": "CURRENT_MATRIX.md; 42 content comparisons and 12 shell states; no pixel-parity claim",
   "integrationBaseCommit": "df60198b514142ecfda3865f249b4a4cc754b2d4",
-  "phase27Qualification": "Full redesign integrated on production #234/#235 but not merged/released; 20 new draft designs excluded."
+  "phase27Qualification": "Full redesign integrated on production #234/#235 but not merged/released; 20 new draft designs excluded.",
+  "currentImplementationQualification": {
+    "production": "existing14 implemented and deployed via PR236/241 and subsequent corrections;not full visual acceptance",
+    "latestRegistry": "../stitch-v3/SCREEN_REGISTRY.json",
+    "newProject": "17382728461495959991",
+    "candidateFrames": 64,
+    "newDeviceTargets": 20,
+    "newFamilies": 9,
+    "warning": "not20new pages;Compare Similar/Theme overlap existing14;upload/mapping/review/result are states of one existing flow;Simulator and Tax Comparison share one route"
+  }
 }

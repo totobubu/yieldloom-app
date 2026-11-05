@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>V4 SUPPLEMENT / Column Mapping / Tablet / source-635b763d</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Pretendard & Inter Web Fonts -->
+<link as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#f7f9fb",
+            "secondary-fixed-dim": "#e1c0ae",
+            "on-secondary-container": "#795f50",
+            "on-background": "#191c1e",
+            "error": "#ba1a1a",
+            "primary": "#005f55",
+            "inverse-primary": "#7dd6c8",
+            "tertiary": "#6b5000",
+            "inverse-on-surface": "#eff1f3",
+            "on-tertiary-fixed-variant": "#5a4300",
+            "primary-fixed-dim": "#7dd6c8",
+            "on-secondary-fixed": "#29170c",
+            "primary-container": "#0d7a6e",
+            "on-surface-variant": "#3e4947",
+            "tertiary-container": "#896700",
+            "on-primary-fixed-variant": "#005048",
+            "outline": "#6e7977",
+            "background": "#f7f9fb",
+            "surface-variant": "#e0e3e5",
+            "error-container": "#ffdad6",
+            "on-primary": "#ffffff",
+            "on-secondary-fixed-variant": "#594234",
+            "on-primary-fixed": "#00201c",
+            "on-error": "#ffffff",
+            "on-tertiary-fixed": "#251a00",
+            "on-surface": "#191c1e",
+            "secondary-fixed": "#ffdbc9",
+            "tertiary-fixed": "#ffdf9a",
+            "surface-tint": "#006b60",
+            "on-primary-container": "#abfff0",
+            "secondary": "#73594a",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed-dim": "#f7be1d",
+            "surface-container-highest": "#e0e3e5",
+            "surface-bright": "#f7f9fb",
+            "primary-fixed": "#99f3e4",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-high": "#e6e8ea",
+            "surface-container": "#eceef0",
+            "surface-dim": "#d8dadc",
+            "secondary-container": "#ffdbc9",
+            "on-tertiary-container": "#ffedcb",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "surface-container-low": "#f2f4f6",
+            "inverse-surface": "#2d3133",
+            "outline-variant": "#bdc9c6"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "margin": "2rem",
+            "space-xl": "2rem",
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem"
+          },
+          fontFamily: {
+            "metric-num-md": ["'Inter', 'Pretendard', sans-serif"],
+            "headline-sm": ["'Inter', 'Pretendard', 'Apple SD Gothic Neo', sans-serif"],
+            "headline-md": ["'Inter', 'Pretendard', 'Apple SD Gothic Neo', sans-serif"],
+            "display-lg": ["'Inter', 'Pretendard', 'Apple SD Gothic Neo', sans-serif"],
+            "metric-num-lg": ["'Inter', 'Pretendard', sans-serif"],
+            "body-lg": ["'Inter', 'Pretendard', 'Apple SD Gothic Neo', sans-serif"],
+            "headline-lg": ["'Inter', 'Pretendard', 'Apple SD Gothic Neo', sans-serif"],
+            "label-md": ["'Inter', 'Pretendard', 'Apple SD Gothic Neo', sans-serif"],
+            "body-md": ["'Inter', 'Pretendard', 'Apple SD Gothic Neo', sans-serif"],
+            "label-sm": ["'Inter', 'Pretendard', 'Apple SD Gothic Neo', sans-serif"]
+          },
+          fontSize: {
+            "metric-num-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-sm": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "display-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "metric-num-lg": ["32px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "400" }],
+            "headline-lg": ["30px", { lineHeight: "38px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "label-md": ["13px", { lineHeight: "18px", letterSpacing: "0em", fontWeight: "600" }],
+            "body-md": ["14px", { lineHeight: "20px", letterSpacing: "-0.005em", fontWeight: "400" }],
+            "label-sm": ["11px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Tabular alignment for financial precision */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    /* Custom scrollbar for raw preview */
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased p-4 md:p-6 min-h-screen flex justify-center items-start">
+<!-- Tablet Shell Container (Fixed 834px target width layout) -->
+<main class="w-full max-w-[834px] mx-auto flex flex-col gap-5">
+<!-- 1. Page Header & Process Stepper -->
+<header class="bg-surface-container-lowest border border-slate-200 rounded-xl p-space-lg shadow-sm flex flex-col gap-4"><div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+<div class="flex flex-col gap-1.5 flex-1">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 font-label-sm text-label-sm border border-slate-200">
+        데이터 가져오기 및 동기화
+      </span>
+</div>
+<h1 class="text-[#382418] font-headline-md text-headline-md font-bold tracking-tight">
+      증권사 파일 열 연결 (컬럼 매핑)
+    </h1>
+<p class="text-slate-600 font-body-md text-body-md leading-relaxed">
+      업로드된 증권사 거래내역 파일의 열을 표준 항목에 연결합니다. 필수 항목이 모두 연결되면 검토 단계로 진행할 수 있습니다.
+    </p>
+</div>
+<nav aria-label="진행 단계" class="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-2 shrink-0 self-start">
+<ol class="flex items-center gap-1.5 text-xs">
+<li class="flex items-center gap-1 text-primary-container font-medium px-2 py-1 bg-white rounded shadow-xs border border-slate-200/60">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-sm text-label-sm">1. 파일 업로드</span>
+</li>
+<span class="text-slate-300">/</span>
+<li aria-current="step" class="flex items-center gap-1 font-semibold px-2 py-1 bg-teal-50 text-primary-container rounded border border-teal-200">
+<span class="flex items-center justify-center w-4 h-4 rounded-full bg-primary-container text-white text-[10px] font-bold">2</span>
+<span class="font-label-sm text-label-sm">열 연결·검토</span>
+</li>
+<span class="text-slate-300">/</span>
+<li class="flex items-center gap-1 text-slate-400 font-normal px-2 py-1">
+<span class="flex items-center justify-center w-4 h-4 rounded-full bg-slate-200 text-slate-600 text-[10px]">3</span>
+<span class="font-label-sm text-label-sm">저장 결과</span>
+</li>
+</ol>
+</nav>
+</div></header>
+<!-- 2. File Meta & Controls Bar -->
+<section class="bg-surface-container-lowest border border-slate-200 rounded-xl p-space-lg shadow-sm flex flex-col gap-4"><!-- File Metadata & Actions -->
+<div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-2xl">description</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm font-bold text-slate-800 tabular-nums">DEMO.csv</span>
+<span class="bg-slate-100 text-slate-600 text-[11px] font-medium px-2 py-0.5 rounded border border-slate-200">기타 직접 설정</span>
+</div>
+<div class="flex items-center gap-2 text-slate-500 font-label-sm text-label-sm mt-0.5">
+<span class="tabular-nums font-mono text-slate-700 font-medium">DEMO-ACC-****-891</span>
+<span class="text-slate-300">•</span>
+<span class="tabular-nums text-slate-700 font-medium">총 3행 데이터 감지됨</span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-2">
+<label class="flex items-center gap-1.5 text-xs text-slate-700 mr-2 cursor-pointer" for="acc-owner-confirm">
+<input checked="" class="rounded border-slate-300 text-primary-container focus:ring-primary-container h-4 w-4" disabled="" id="acc-owner-confirm" type="checkbox"/>
+<span class="font-medium">계좌 및 소유자 확인</span>
+</label>
+<button class="h-9 px-3 text-xs font-semibold rounded-lg bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 active:scale-95 transition flex items-center gap-1.5 shadow-2xs" type="button">
+<span class="material-symbols-outlined text-[16px] text-slate-500">refresh</span>
+      열 연결 설정 불러오기
+    </button>
+<button aria-disabled="true" class="h-9 px-3 text-xs font-semibold rounded-lg bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed flex items-center gap-1.5 shadow-2xs opacity-60" disabled="" type="button">
+<span class="material-symbols-outlined text-[16px] text-slate-400">bookmark_add</span>
+      열 연결 설정 저장
+    </button>
+</div>
+</div>
+<!-- File Config Options Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+<!-- Encoding -->
+<div class="flex flex-col gap-1.5">
+<label class="text-slate-600 font-label-md text-label-md" for="csv-encoding">인코딩</label>
+<div class="relative">
+<select aria-label="CSV 인코딩" class="w-full h-11 pl-3 pr-8 rounded-lg bg-white border border-slate-300 text-slate-800 font-body-md text-body-md focus:border-primary-container focus:ring-2 focus:ring-teal-100 focus:outline-none appearance-none" id="csv-encoding">
+<option selected="" value="utf-8">UTF-8</option>
+<option value="utf-8-sig">UTF-8-sig</option>
+<option value="cp949">CP949</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- Header Start Row -->
+<div class="flex flex-col gap-1.5">
+<label class="text-slate-600 font-label-md text-label-md" for="header-start-row">헤더 시작 행 (1-20행)</label>
+<input aria-label="헤더 시작 행" class="w-full h-11 px-3 rounded-lg bg-white border border-slate-300 text-slate-800 font-body-md text-body-md focus:border-primary-container focus:ring-2 focus:ring-teal-100 focus:outline-none tabular-nums" id="header-start-row" max="20" min="1" type="number" value="1"/>
+</div>
+<!-- Data Kind Toggle -->
+<div class="flex flex-col gap-1.5">
+<span class="text-slate-600 font-label-md text-label-md">데이터 종류</span>
+<div class="flex items-center h-11 bg-slate-100 p-1 rounded-lg border border-slate-200">
+<button class="flex-1 h-full rounded-md bg-white text-primary-container font-semibold text-xs shadow-xs transition flex items-center justify-center" type="button">
+        거래 내역
+      </button>
+<button class="flex-1 h-full rounded-md text-slate-500 font-medium text-xs hover:text-slate-800 transition flex items-center justify-center" type="button">
+        전체 잔고
+      </button>
+</div>
+</div>
+</div>
+<!-- CSV Sheet Notice -->
+<p class="text-xs text-slate-500 font-label-sm text-label-sm">
+  ※ CSV 파일은 시트 선택을 지원하지 않습니다.
+</p></section>
+<!-- 3. Header Mismatch Warning (Message Banner) -->
+<div class="bg-[#fefce8] border border-[#fef08a] rounded-xl p-4 flex items-start gap-3 shadow-xs"><div class="w-8 h-8 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0 text-amber-800 mt-0.5">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="flex-1 text-slate-800">
+<h2 class="font-headline-sm text-[15px] font-bold text-amber-900 leading-tight">
+    헤더 지문 불일치 안내
+  </h2>
+<p class="font-body-md text-body-md text-amber-950 mt-1 leading-normal whitespace-pre-line">
+    기존 저장된 설정과 업로드된 파일의 헤더 구조가 일치하지 않아 자동 연결이 해제되었습니다. 각 항목의 열 연결을 직접 확인해 주세요.
+이 브라우저에 열 위치 설정만 저장하며 파일·계좌·시트 이름은 저장하지 않습니다.
+  </p>
+</div></div>
+<!-- 4. Main Content Grid (Tablet Balanced 2-Column: Left 490px / Right 320px equivalent flex layout) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+<!-- LEFT COLUMN: Standard Fields Mapping (7 cols in desktop-tablet grid) -->
+<section class="lg:col-span-7 bg-surface-container-lowest border border-slate-200 rounded-xl p-space-lg shadow-sm flex flex-col gap-4"><!-- Header & Summary Badge -->
+<div class="flex items-center justify-between pb-3 border-b border-slate-100">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#382418]">표준 항목 열 매핑 (14개 규격)</h2>
+<p class="text-slate-500 font-label-sm text-label-sm mt-0.5">원장 저장이 아니며, 표준 서식과의 연결 단계입니다.</p>
+</div>
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-900 border border-amber-300 tabular-nums">
+    필수 3/4 연결 · 거래 유형 확인 필요
+  </span>
+</div>
+<div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-600 leading-normal">
+  동일한 원본 열을 두 개 이상의 항목에 중복 매핑할 수 없습니다. 필수 항목 4개를 모두 지정해야 데이터 검토 단계로 이동할 수 있습니다.
+</div>
+<!-- Mapping Rows -->
+<div class="flex flex-col divide-y divide-slate-100">
+<!-- 1. 거래일 (date) [필수] -->
+<div class="py-3 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-1.5 cursor-pointer" for="mapping-col-date">
+<span class="font-label-md text-label-md text-slate-900 font-bold">거래일</span>
+<span class="text-red-600 font-label-sm text-label-sm font-bold">*필수</span>
+<span class="text-slate-400 font-label-sm text-label-sm font-mono">date</span>
+</label>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> 매핑 완료
+      </span>
+</div>
+<div class="relative">
+<select aria-label="거래일 연결 열" class="w-full h-11 pl-3 pr-8 rounded-lg bg-white border border-slate-300 text-slate-800 font-body-md text-body-md focus:border-primary-container focus:ring-2 focus:ring-teal-100 focus:outline-none appearance-none" id="mapping-col-date">
+<option selected="" value="date">거래일자 / Date</option>
+<option value="symbol">종목코드 / Symbol</option>
+<option value="rawtype">거래구분 / Type</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- 2. 종목 코드 (symbol) [필수] -->
+<div class="py-3 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-1.5 cursor-pointer" for="mapping-col-symbol">
+<span class="font-label-md text-label-md text-slate-900 font-bold">종목 코드</span>
+<span class="text-red-600 font-label-sm text-label-sm font-bold">*필수</span>
+<span class="text-slate-400 font-label-sm text-label-sm font-mono">symbol</span>
+</label>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> 매핑 완료
+      </span>
+</div>
+<div class="relative">
+<select aria-label="종목 코드 연결 열" class="w-full h-11 pl-3 pr-8 rounded-lg bg-white border border-slate-300 text-slate-800 font-body-md text-body-md focus:border-primary-container focus:ring-2 focus:ring-teal-100 focus:outline-none appearance-none" id="mapping-col-symbol">
+<option selected="" value="symbol">종목코드 / Symbol</option>
+<option value="date">거래일자 / Date</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- 3. 거래 유형 (type) [필수 미지정] -->
+<div class="py-3 flex flex-col gap-1.5 bg-red-50/40 p-3 -mx-2 rounded-lg border border-red-200">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-1.5 cursor-pointer" for="mapping-col-type">
+<span class="font-label-md text-label-md text-red-900 font-bold">거래 유형</span>
+<span class="text-red-700 font-label-sm text-label-sm font-bold">*필수 미지정</span>
+<span class="text-red-600 font-label-sm text-label-sm font-mono">type</span>
+</label>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-red-100 text-red-700 border border-red-300 animate-pulse">
+<span class="material-symbols-outlined text-[13px]">warning</span> 선택 필요
+      </span>
+</div>
+<div class="relative">
+<select aria-label="거래 유형 연결 열" class="w-full h-11 pl-3 pr-8 rounded-lg bg-white border-2 border-red-500 text-red-900 font-body-md text-body-md font-semibold focus:border-red-600 focus:ring-2 focus:ring-red-100 focus:outline-none appearance-none shadow-xs" id="mapping-col-type">
+<option selected="" value="">-- [열을 선택하세요 (미지정)] --</option>
+<option value="rawtype">거래구분(원본) (권장: 배당금/매수/입금)</option>
+<option value="note">적요 / 비고</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-red-500 pointer-events-none text-[18px]">error</span>
+</div>
+<p class="text-xs text-red-700 font-medium flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[15px]">info</span>
+      거래구분(매수/매도/배당/입출금 등) 식별 열을 반드시 지정하세요.
+    </p>
+</div>
+<!-- 4. 거래 고유번호 (externalId) [필수] -->
+<div class="py-3 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-1.5 cursor-pointer" for="mapping-col-external-id">
+<span class="font-label-md text-label-md text-slate-900 font-bold">거래 고유번호</span>
+<span class="text-red-600 font-label-sm text-label-sm font-bold">*필수</span>
+<span class="text-slate-400 font-label-sm text-label-sm font-mono">externalId</span>
+</label>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> 매핑 완료
+      </span>
+</div>
+<div class="relative">
+<select aria-label="거래 고유번호 연결 열" class="w-full h-11 pl-3 pr-8 rounded-lg bg-white border border-slate-300 text-slate-800 font-body-md text-body-md focus:border-primary-container focus:ring-2 focus:ring-teal-100 focus:outline-none appearance-none" id="mapping-col-external-id">
+<option selected="" value="externalId">거래번호 / externalId</option>
+<option value="date">거래일자 / Date</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- 5. 수량 (quantity) [선택] -->
+<div class="py-3 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-1.5 cursor-pointer" for="mapping-col-quantity">
+<span class="font-label-md text-label-md text-slate-800 font-bold">수량</span>
+<span class="text-slate-500 font-label-sm text-label-sm font-medium">(선택)</span>
+<span class="text-slate-400 font-label-sm text-label-sm font-mono">quantity</span>
+</label>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> 매핑 완료
+      </span>
+</div>
+<div class="relative">
+<select aria-label="수량 연결 열" class="w-full h-11 pl-3 pr-8 rounded-lg bg-white border border-slate-300 text-slate-800 font-body-md text-body-md focus:border-primary-container focus:ring-2 focus:ring-teal-100 focus:outline-none appearance-none" id="mapping-col-quantity">
+<option selected="" value="qty">체결수량 / Qty</option>
+<option value="none">선택 안 함</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-[18px]">expand_more</span>
+</div>
+<p class="text-[11px] text-slate-500 font-normal">
+      ※ 거래행 수량 또는 거래금액 중 최소 하나가 필요합니다.
+    </p>
+</div>
+<!-- 6. 거래금액 (amount) [선택] -->
+<div class="py-3 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-1.5 cursor-pointer" for="mapping-col-amount">
+<span class="font-label-md text-label-md text-slate-800 font-bold">거래금액</span>
+<span class="text-slate-500 font-label-sm text-label-sm font-medium">(선택)</span>
+<span class="text-slate-400 font-label-sm text-label-sm font-mono">amount</span>
+</label>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> 매핑 완료
+      </span>
+</div>
+<div class="relative">
+<select aria-label="거래금액 연결 열" class="w-full h-11 pl-3 pr-8 rounded-lg bg-white border border-slate-300 text-slate-800 font-body-md text-body-md focus:border-primary-container focus:ring-2 focus:ring-teal-100 focus:outline-none appearance-none" id="mapping-col-amount">
+<option selected="" value="amount">거래금액 / Amount</option>
+<option value="none">선택 안 함</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- 7. 통화 (currency) [필수 설정] -->
+<div class="py-3 flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-1.5 cursor-pointer" for="mapping-col-currency">
+<span class="font-label-md text-label-md text-slate-900 font-bold">통화</span>
+<span class="text-primary-container font-label-sm text-label-sm font-bold">[필수 설정]</span>
+<span class="text-slate-400 font-label-sm text-label-sm font-mono">currency</span>
+</label>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> 매핑 완료
+      </span>
+</div>
+<div class="relative">
+<select aria-label="통화 연결 열" class="w-full h-11 pl-3 pr-8 rounded-lg bg-white border border-slate-300 text-slate-800 font-body-md text-body-md focus:border-primary-container focus:ring-2 focus:ring-teal-100 focus:outline-none appearance-none" id="mapping-col-currency">
+<option selected="" value="currency">열 매핑: 통화 / Currency</option>
+<option value="fixed_usd">고정 통화: USD</option>
+<option value="fixed_krw">고정 통화: KRW</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-slate-400 pointer-events-none text-[18px]">expand_more</span>
+</div>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="px-2 py-1 bg-teal-50 text-primary-container border border-teal-200 rounded text-xs font-semibold">파일 내 통화 열 사용</span>
+<span class="px-2 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded text-xs">USD로 확인</span>
+<span class="px-2 py-1 bg-slate-100 text-slate-600 border border-slate-200 rounded text-xs">KRW로 확인</span>
+</div>
+</div>
+</div>
+<!-- Foldable Accordion: 7 Optional Detailed Mappings -->
+<details class="border border-slate-200 rounded-lg p-3 bg-slate-50/50 mt-1 group">
+<summary class="font-label-md text-label-md font-bold text-slate-700 cursor-pointer flex items-center justify-between list-none">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-slate-500">tune</span>
+      상세 항목 매핑 (7개 선택 항목)
+    </span>
+<span class="material-symbols-outlined text-[18px] text-slate-400 group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs border-t border-slate-200 mt-2">
+<div>
+<label class="text-slate-600 font-medium" for="mapping-col-settlement-amount">원화정산액 (settlementAmount)</label>
+<select aria-label="원화 정산액 연결 열" class="w-full h-9 mt-1 px-2 rounded bg-white border border-slate-300 text-slate-700 text-xs" id="mapping-col-settlement-amount">
+<option selected="">선택 안 함</option>
+<option>원화정산액</option>
+</select>
+</div>
+<div>
+<label class="text-slate-600 font-medium" for="mapping-col-native-settlement-amount">달러정산액 (nativeSettlementAmount)</label>
+<select aria-label="달러 정산액 연결 열" class="w-full h-9 mt-1 px-2 rounded bg-white border border-slate-300 text-slate-700 text-xs" id="mapping-col-native-settlement-amount">
+<option selected="">선택 안 함</option>
+</select>
+</div>
+<div>
+<label class="text-slate-600 font-medium" for="mapping-col-native-amount">달러거래금액 (nativeAmount)</label>
+<select aria-label="달러 거래금액 연결 열" class="w-full h-9 mt-1 px-2 rounded bg-white border border-slate-300 text-slate-700 text-xs" id="mapping-col-native-amount">
+<option selected="">선택 안 함</option>
+</select>
+</div>
+<div>
+<label class="text-slate-600 font-medium" for="mapping-col-native-commission">달러수수료 (nativeCommission)</label>
+<select aria-label="달러 수수료 연결 열" class="w-full h-9 mt-1 px-2 rounded bg-white border border-slate-300 text-slate-700 text-xs" id="mapping-col-native-commission">
+<option selected="">선택 안 함</option>
+</select>
+</div>
+<div>
+<label class="text-slate-600 font-medium" for="mapping-col-native-tax">달러세금 (nativeTax)</label>
+<select aria-label="달러 세금 연결 열" class="w-full h-9 mt-1 px-2 rounded bg-white border border-slate-300 text-slate-700 text-xs" id="mapping-col-native-tax">
+<option selected="">선택 안 함</option>
+</select>
+</div>
+<div>
+<label class="text-slate-600 font-medium" for="mapping-col-exchange-rate">환율 (exchangeRate)</label>
+<select aria-label="환율 연결 열" class="w-full h-9 mt-1 px-2 rounded bg-white border border-slate-300 text-slate-700 text-xs" id="mapping-col-exchange-rate">
+<option selected="">선택 안 함</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<label class="text-slate-600 font-medium" for="mapping-col-cash-kind">현금분류 (cashKind)</label>
+<select aria-label="현금분류 연결 열" class="w-full h-9 mt-1 px-2 rounded bg-white border border-slate-300 text-slate-700 text-xs" id="mapping-col-cash-kind">
+<option selected="">선택 안 함</option>
+</select>
+</div>
+</div>
+</details></section>
+<!-- RIGHT COLUMN: Raw Preview & Action Summary (5 cols in desktop-tablet grid) -->
+<aside class="lg:col-span-5 flex flex-col gap-5"><!-- Card 1: 원본 파일 미리보기 (상위 3행) -->
+<div class="bg-surface-container-lowest border border-slate-200 rounded-xl p-space-lg shadow-sm flex flex-col gap-3">
+<div class="flex items-start justify-between">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm font-bold text-slate-800">원본 파일 미리보기 (상위 3행)</span>
+<span class="text-xs bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded border border-slate-200 tabular-nums">Top 3 Rows / 총 3행</span>
+</div>
+<p class="text-slate-500 font-label-sm text-label-sm mt-0.5">미리보기는 원본 파일 확인용이며 실제 원장 반영(저장)이 아닙니다.</p>
+</div>
+<span class="text-[11px] text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded font-medium shrink-0">
+      좌우 스크롤 ↔
+    </span>
+</div>
+<!-- Raw Data Table Horizontal Scroller -->
+<div class="w-full border border-slate-200 rounded-lg overflow-x-auto custom-scroll bg-slate-50/50">
+<table class="w-full text-left border-collapse text-xs whitespace-nowrap">
+<thead>
+<tr class="bg-slate-100 border-b border-slate-200 text-slate-600 font-label-md text-label-md">
+<th class="py-2.5 px-3 font-semibold">거래일</th>
+<th class="py-2.5 px-3 font-semibold">종목코드</th>
+<th class="py-2.5 px-3 font-semibold text-red-700 bg-red-50/70">거래유형(rawtype)</th>
+<th class="py-2.5 px-3 font-semibold text-right">수량</th>
+<th class="py-2.5 px-3 font-semibold text-right">거래금액</th>
+<th class="py-2.5 px-3 font-semibold text-center">통화</th>
+<th class="py-2.5 px-3 font-semibold">거래번호</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200/70 font-metric-num-md text-body-md text-slate-800 tabular-nums bg-white">
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-2 px-3 text-slate-700">2026-11-01</td>
+<td class="py-2 px-3 font-medium text-slate-900 font-mono">DEMO-K</td>
+<td class="py-2 px-3 text-red-800 font-semibold bg-red-50/40">매수</td>
+<td class="py-2 px-3 text-right">10</td>
+<td class="py-2 px-3 text-right font-medium">100,000</td>
+<td class="py-2 px-3 text-center font-mono">KRW</td>
+<td class="py-2 px-3 font-mono text-slate-600 text-[11px]">DEMO-001</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-2 px-3 text-slate-700">2026-11-02</td>
+<td class="py-2 px-3 font-medium text-slate-900 font-mono">DEMO-A</td>
+<td class="py-2 px-3 text-red-800 font-semibold bg-red-50/40">배당금</td>
+<td class="py-2 px-3 text-right text-slate-400">-</td>
+<td class="py-2 px-3 text-right font-medium">10.00</td>
+<td class="py-2 px-3 text-center font-mono">USD</td>
+<td class="py-2 px-3 font-mono text-slate-600 text-[11px]">DEMO-002</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-2 px-3 text-slate-700">2026-11-03</td>
+<td class="py-2 px-3 font-medium text-slate-900 font-mono">CASH</td>
+<td class="py-2 px-3 text-red-800 font-semibold bg-red-50/40">입금</td>
+<td class="py-2 px-3 text-right text-slate-400">-</td>
+<td class="py-2 px-3 text-right font-medium">500.00</td>
+<td class="py-2 px-3 text-center font-mono">USD</td>
+<td class="py-2 px-3 font-mono text-slate-600 text-[11px]">DEMO-003</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Row Notes -->
+<div class="bg-slate-50 rounded-lg p-2.5 border border-slate-200 flex flex-col gap-1 text-[11px] text-slate-600">
+<div>• <strong>1행 (2026-11-01)</strong>: 체결금액 100,000 KRW</div>
+<div>• <strong>2행 (2026-11-02)</strong>: 세전 배당금 총액 10.00 USD (주당 단가가 아닌 배당 입금 총액)</div>
+<div>• <strong>3행 (2026-11-03)</strong>: 예수금 입금 500.00 USD</div>
+</div>
+</div>
+<!-- Card 2: 확인 및 다음 단계 (Confirmation & Next Steps Card) -->
+<div class="bg-surface-container-lowest border border-slate-200 rounded-xl p-space-lg shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm font-bold text-[#382418]">확인 및 다음 단계</h2>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 tabular-nums">
+<span class="material-symbols-outlined text-[14px]">pending</span>
+      미완료 (거래 유형 미지정)
+    </span>
+</div>
+<!-- Checkbox Requirement -->
+<label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 bg-slate-50/70 text-xs text-slate-400 cursor-not-allowed" for="next-step-confirm-terms">
+<input class="rounded border-slate-300 text-slate-300 h-4 w-4 cursor-not-allowed" disabled="" id="next-step-confirm-terms" type="checkbox"/>
+<span class="font-medium">[필수] 열 연결 및 기본 통화 확인</span>
+</label>
+<!-- Alert Banner -->
+<div class="bg-red-50 border border-red-200 rounded-lg p-3 text-red-900 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-red-600 text-[18px] shrink-0 mt-0.5" style="font-variation-settings: 'FILL' 1;">error</span>
+<p class="font-body-md text-xs leading-normal">
+      필수 항목 <strong>'거래 유형'</strong> 열을 지정해야 활성화됩니다.
+    </p>
+</div>
+<!-- Action Buttons (Min 44px tap targets) -->
+<div class="flex flex-col gap-2 pt-1">
+<!-- Preview Button (Disabled) -->
+<button aria-disabled="true" class="w-full h-11 px-4 rounded-lg bg-primary-container text-white font-headline-sm text-[15px] font-bold opacity-50 cursor-not-allowed flex items-center justify-center gap-2 shadow-xs transition" disabled="" type="button">
+<span>연결 자료 미리보기</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<!-- Save Settings Button (Disabled) -->
+<button aria-disabled="true" class="w-full h-11 px-4 rounded-lg bg-slate-100 border border-slate-300 text-slate-400 font-headline-sm text-body-md font-semibold cursor-not-allowed flex items-center justify-center gap-1.5 shadow-2xs opacity-70" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px] text-slate-400">bookmark_add</span>
+<span>열 연결 설정 저장</span>
+</button>
+</div>
+<!-- Privacy Notice -->
+<p class="text-[11px] text-slate-500 text-center leading-normal">
+    이 브라우저에 열 위치 설정만 저장하며 파일·계좌·시트 이름은 저장하지 않습니다.
+  </p>
+</div></aside>
+</div>
+</main>
+</body></html>

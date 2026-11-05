@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>V6 REVIEWED / Tax Comparison / PC / source-0c64cbee</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Pretendard:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed": "#ffdf9a",
+            "inverse-surface": "#2d3133",
+            "on-tertiary-fixed-variant": "#5a4300",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#7dd6c8",
+            "surface": "#f7f9fb",
+            "surface-container": "#eceef0",
+            "on-tertiary-container": "#ffedcb",
+            "primary-fixed": "#99f3e4",
+            "outline": "#6e7977",
+            "surface-tint": "#006b60",
+            "secondary-fixed-dim": "#e1c0ae",
+            "surface-bright": "#f7f9fb",
+            "primary-container": "#0d7a6e",
+            "on-surface-variant": "#3e4947",
+            "on-secondary-container": "#795f50",
+            "on-primary": "#ffffff",
+            "tertiary-fixed-dim": "#f7be1d",
+            "surface-dim": "#d8dadc",
+            "surface-container-high": "#e6e8ea",
+            "error": "#ba1a1a",
+            "on-secondary": "#ffffff",
+            "on-secondary-fixed": "#29170c",
+            "on-surface": "#191c1e",
+            "primary": "#005f55",
+            "outline-variant": "#bdc9c6",
+            "error-container": "#ffdad6",
+            "on-primary-fixed-variant": "#005048",
+            "tertiary-container": "#896700",
+            "secondary-fixed": "#ffdbc9",
+            "on-primary-fixed": "#00201c",
+            "background": "#f7f9fb",
+            "tertiary": "#6b5000",
+            "surface-container-lowest": "#ffffff",
+            "secondary-container": "#ffdbc9",
+            "on-tertiary-fixed": "#251a00",
+            "inverse-on-surface": "#eff1f3",
+            "on-error": "#ffffff",
+            "primary-fixed-dim": "#7dd6c8",
+            "on-error-container": "#93000a",
+            "on-background": "#191c1e",
+            "surface-container-low": "#f2f4f6",
+            "on-primary-container": "#abfff0",
+            "secondary": "#73594a",
+            "on-secondary-fixed-variant": "#594234",
+            "surface-variant": "#e0e3e5",
+            "surface-container-highest": "#e0e3e5"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "margin": "2rem",
+            "gutter": "1.5rem",
+            "space-xl": "2rem"
+          },
+          "fontFamily": {
+            "metric-num-lg": ["\"Inter, 'Pretendard', sans-serif\""],
+            "body-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "label-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "body-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "label-sm": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-sm": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "display-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "metric-num-md": ["\"Inter, 'Pretendard', sans-serif\""]
+          },
+          "fontSize": {
+            "metric-num-lg": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "metric-num-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen">
+<!-- Standalone Content Canvas (No Header, No Footer, No Sidebar) -->
+<main class="w-full max-w-[1440px] mx-auto px-margin py-margin">
+<!-- Badges & Header Section -->
+<header class="mb-space-lg"><div class="flex flex-wrap items-center gap-space-sm mb-space-sm">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-tertiary-fixed text-on-tertiary-fixed-variant font-semibold">
+    예시 시뮬레이션 환경
+  </span>
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-label-sm font-label-sm bg-surface-container-high text-on-surface-variant font-medium">
+    단일 과세연도(12개월) 단순 보유 가정
+  </span>
+</div>
+<div class="flex flex-col md:flex-row md:items-baseline md:justify-between gap-space-sm">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-secondary tracking-tight">
+      배당소득 원천징수율 비교 시뮬레이션
+    </h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">
+      동일한 투자 원금 및 배당 정책 조건에서 가상 원천징수율(시나리오 A vs 시나리오 B) 차이에 따른 단순 세후 배당금 및 기말 예상 자산 변동을 대조합니다.
+    </p>
+</div>
+<div class="text-label-sm font-label-sm text-outline flex items-center gap-1 shrink-0">
+<span class="material-symbols-outlined text-sm">schedule</span>
+    기준: 단일 과세연도(연 1회 연말 지급 가정)
+  </div>
+</div></header>
+<!-- Assumption & Disclaimer Notice Box (PrimeVue Style Message) -->
+<section class="mb-space-lg bg-surface-container-lowest border border-outline-variant/60 rounded-xl p-space-md shadow-sm"><div class="flex items-start gap-space-md"><span class="material-symbols-outlined text-primary-container text-xl mt-0.5" data-icon="info">info</span><div class="space-y-1"><p class="font-body-md text-body-md text-secondary font-medium">시뮬레이션 전제조건 및 산출 유의사항 (가정 예시)</p><p class="font-body-md text-body-md text-on-surface-variant text-xs sm:text-sm leading-relaxed">본 화면은 단순 단일 과세연도(12개월) 말 배당 1회 지급 가정을 적용하며, 수수료·주가변동(시세차익)·환율변동(FX)·세법 적격성은 배제되었습니다. 주가불변가정 기준, 시나리오 A(가정 원천징수율 0%) 및 시나리오 B(가정 원천징수율 15%)의 1년 후 총 평가자산 및 세후 배당금을 대조합니다.</p></div></div></section>
+<!-- Main Two-Column Layout (1440px target, ~420px Left / Remainder Right) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Column: Parameters Panel (~420px on desktop) -->
+<aside class="lg:col-span-4 w-full"><div class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-space-lg shadow-sm"><div class="flex items-center justify-between pb-space-sm mb-space-md border-b border-surface-container-high"><div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary-container" data-icon="tune">tune</span><h2 class="font-headline-sm text-headline-sm text-secondary">시나리오 가정 설정</h2></div><span class="px-2 py-0.5 bg-surface-container text-outline font-label-sm text-label-sm rounded">USD ($) 독립 산출</span></div><form class="space-y-space-md" id="simulationForm" onsubmit="event.preventDefault(); recalculate();"><div class="space-y-3"><div class="text-xs font-semibold text-secondary tracking-wider uppercase flex items-center gap-1.5 pb-1 border-b border-outline-variant/30"><span class="material-symbols-outlined text-sm text-primary">settings</span> 공통 기본 가정 (Common)</div><div class="space-y-2.5"><div class="space-y-1"><label class="block font-label-sm text-label-sm text-secondary font-medium" for="baseCurrency">기준 통화 (Base Currency)</label><select class="w-full h-10 px-3 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition" id="baseCurrency" name="baseCurrency"><option selected="" value="USD">USD ($)</option><option value="KRW">KRW (원)</option></select></div><div class="grid grid-cols-2 gap-2"><div><label class="block font-label-sm text-label-sm text-secondary font-medium mb-1" for="simPeriod">시뮬레이션 기간</label><div class="relative"><input class="w-full h-10 pl-3 pr-10 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary font-mono text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-right tabular-nums transition" id="simPeriod" max="360" min="0" name="simPeriod" type="number" value="12"/><span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-outline text-xs">개월</span></div></div><div><label class="block font-label-sm text-label-sm text-secondary font-medium mb-1" for="priceChangeRate">연간 주가 변동률</label><div class="relative"><input class="w-full h-10 pl-3 pr-8 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary font-mono text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-right tabular-nums transition" id="priceChangeRate" max="100" min="-95" name="priceChangeRate" step="0.1" type="number" value="0.0"/><span class="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-outline text-xs">%</span></div></div></div></div></div><div class="p-space-sm rounded-lg bg-surface-container-low/40 border border-outline-variant/40 space-y-2.5"><div class="flex justify-between items-center pb-1 border-b border-outline-variant/30"><div class="flex items-center gap-1.5 font-label-sm text-label-sm font-semibold text-primary"><span class="w-2 h-2 rounded-full bg-primary-container inline-block"></span> 시나리오 A (기준 · 편집 가능)</div><span class="text-xs text-outline font-mono">100주 자동 도출</span></div><div class="space-y-2"><div><div class="flex justify-between items-center mb-1"><label class="block font-label-sm text-label-sm text-secondary font-medium" for="initialPrincipal">초기 투자 원금 ($)</label></div><div class="relative"><span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline text-sm font-mono">$</span><input class="w-full h-10 pl-8 pr-14 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary font-mono text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-right tabular-nums transition" id="initialPrincipal" max="1000000000" min="0" name="initialPrincipal" step="100" type="number" value="1000.00"/><span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-outline text-xs">USD</span></div></div><div class="grid grid-cols-2 gap-2"><div><label class="block font-label-sm text-label-sm text-secondary font-medium mb-1" for="monthlyContrib">월 추가 납입 ($)</label><div class="relative"><span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline text-xs font-mono">$</span><input class="w-full h-10 pl-6 pr-2 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary font-mono text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-right tabular-nums transition" id="monthlyContrib" max="10000000" min="0" name="monthlyContrib" step="10" type="number" value="0.00"/></div></div><div><label class="block font-label-sm text-label-sm text-secondary font-medium mb-1" for="basePrice">기준 주가 ($)</label><div class="relative"><span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline text-xs font-mono">$</span><input class="w-full h-10 pl-6 pr-2 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary font-mono text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-right tabular-nums transition" id="basePrice" max="10000000" min="0.000001" name="basePrice" step="0.01" type="number" value="10.00"/></div></div></div><div class="grid grid-cols-2 gap-2"><div><div class="flex justify-between items-center mb-1"><label class="block font-label-sm text-label-sm text-secondary font-medium" for="dpsInput">주당 배당금(DPS)</label></div><div class="relative"><span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline text-xs font-mono">$</span><input class="w-full h-10 pl-6 pr-2 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary font-mono text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-right tabular-nums transition" id="dpsInput" max="10000000" min="0" name="dpsInput" step="0.01" type="number" value="0.40"/></div><p class="text-[11px] text-primary font-medium mt-0.5" id="yieldHelperText">연 4.0% 고정 배당률</p></div><div><label class="block font-label-sm text-label-sm text-secondary font-medium mb-1" for="taxRateA">A 원천징수율 (%)</label><div class="relative"><input class="w-full h-10 pl-2 pr-7 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary font-mono text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-right tabular-nums transition" id="taxRateA" max="100" min="0" name="taxRateA" step="0.1" type="number" value="0.0"/><span class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none text-outline text-xs">%</span></div><p class="text-[11px] text-outline mt-0.5">가정 세율 0.0%</p></div></div><div class="grid grid-cols-2 gap-2"><div><label class="block font-label-sm text-label-sm text-secondary font-medium mb-1" for="purchaseFee">1회 매수 수수료 ($)</label><div class="relative"><span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-outline text-xs font-mono">$</span><input class="w-full h-10 pl-6 pr-2 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary font-mono text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-right tabular-nums transition" id="purchaseFee" max="10000" min="0" name="purchaseFee" step="0.01" type="number" value="0.00"/></div></div><div><label class="block font-label-sm text-label-sm text-secondary font-medium mb-1" for="dividendFreq">배당 주기</label><select class="w-full h-10 px-2 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary text-xs focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition" id="dividendFreq" name="dividendFreq"><option value="weekly">매주</option><option value="monthly">매월</option><option value="quarterly">분기</option><option value="semiannual">반기</option><option selected="" value="annual">매년 (연말 1회)</option></select></div></div><div class="pt-1 space-y-1.5 border-t border-outline-variant/30"><label class="flex items-center gap-2 cursor-pointer text-xs text-on-surface-variant"><input class="rounded border-outline-variant text-primary-container focus:ring-primary-container" id="reinvestCheck" type="checkbox"/><span>배당금 재투자 (미체크 시 현금 수령)</span></label><label class="flex items-center gap-2 cursor-pointer text-xs text-on-surface-variant"><input checked="" class="rounded border-outline-variant text-primary-container focus:ring-primary-container" id="fractionalCheck" type="checkbox"/><span>소수점 주식(단주) 재투자 허용 ON</span></label></div></div></div><div class="p-space-sm rounded-lg bg-surface-container-low/40 border border-outline-variant/40 space-y-2.5"><div class="flex justify-between items-center pb-1 border-b border-outline-variant/30"><div class="flex items-center gap-1.5 font-label-sm text-label-sm font-semibold text-secondary"><span class="w-2 h-2 rounded-full bg-secondary inline-block"></span> 시나리오 B (세율 차이 비교)</div><span class="text-xs text-outline">원천징수율 변수</span></div><div><label class="block font-label-sm text-label-sm text-secondary font-medium mb-1" for="tax-rate-b">B 원천징수율 가정 (%)</label><div class="relative"><input class="w-full h-10 pl-3 pr-10 bg-surface-container-lowest border border-outline-variant/80 rounded-lg text-secondary font-mono text-sm focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 text-right tabular-nums transition" id="tax-rate-b" max="100" min="0" name="taxRateB" step="0.1" type="number" value="15.0"/><span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-outline text-sm font-semibold">%</span></div><p class="text-xs text-outline mt-1" id="taxDiffHelper">시나리오 A 대비 세율 격차: +15.0%p</p></div><div class="p-2.5 rounded-lg bg-surface-container-lowest border border-outline-variant/40 text-[11px] text-outline space-y-1"><div class="font-medium text-secondary mb-1 flex items-center gap-1"><span class="material-symbols-outlined text-xs text-outline">link</span> 동일 연동 항목 요약 (Readonly)</div><div class="grid grid-cols-2 gap-x-2 gap-y-0.5 text-on-surface-variant"><div>원금: $1,000.00</div><div>월 납입: $0.00</div><div>주가: $10.00</div><div>DPS: $0.40</div><div>수수료: $0.00</div><div>주기: 매년(연말)</div><div>재투자: OFF</div><div>소수점: ON</div></div><p class="text-[10px] text-outline pt-1 border-t border-outline-variant/20">원천징수율(15.0%) 외 모든 변수는 시나리오 A와 동일하게 고정 연동됩니다.</p></div></div><div class="pt-1 space-y-2"><button class="w-full h-11 px-5 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-label-md text-label-md font-semibold transition active:scale-[0.99] flex items-center justify-center gap-2 shadow-sm" onclick="recalculate()" type="button"><span class="material-symbols-outlined text-lg" data-icon="refresh">refresh</span> 가정치 재계산</button><button class="w-full h-11 px-5 rounded-lg bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low text-secondary font-label-md text-label-md font-medium transition active:scale-[0.99] flex items-center justify-center gap-1.5" onclick="resetDefaults()" type="button">기본 가정으로 초기화</button></div></form></div></aside>
+<!-- Right Column: Results & Comparisons Workspace -->
+<section class="lg:col-span-8 w-full space-y-space-lg">
+<!-- Top KPI Cards Grid (4 items) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- KPI 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-space-md shadow-sm">
+<span class="font-label-md text-label-md text-outline block mb-1">
+              초기 원금 (공통)
+            </span>
+<div class="font-metric-num-md text-metric-num-md text-secondary tabular-nums" id="kpiPrincipal">
+              $1,000.00
+            </div>
+<div class="text-label-sm text-label-sm text-outline mt-1 font-mono">
+              USD 기준 고정
+            </div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-space-md shadow-sm border-l-4 border-l-primary-container">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-md text-label-md text-outline">
+                시나리오 A 세후 배당
+              </span>
+<span class="font-label-sm text-label-sm text-primary font-semibold" id="kpiRateABadge">0.0%</span>
+</div>
+<div class="font-metric-num-md text-metric-num-md text-primary font-bold tabular-nums" id="kpiNetA">
+              $40.00
+            </div>
+<div class="text-label-sm text-label-sm text-outline mt-1 tabular-nums" id="kpiWithheldA">
+              예상 원천징수: $0.00
+            </div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-space-md shadow-sm border-l-4 border-l-secondary">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-md text-label-md text-outline">
+                시나리오 B 세후 배당
+              </span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold" id="kpiRateBBadge">15.0%</span>
+</div>
+<div class="font-metric-num-md text-metric-num-md text-secondary font-bold tabular-nums" id="kpiNetB">
+              $34.00
+            </div>
+<div class="text-label-sm text-label-sm text-outline mt-1 tabular-nums" id="kpiWithheldB">
+              예상 원천징수: $6.00
+            </div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-space-md shadow-sm bg-gradient-to-br from-surface-container-lowest to-surface-container-low">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-md text-label-md text-outline">
+                연간 세후 배당 격차
+              </span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">1년 기준</span>
+</div>
+<div class="font-metric-num-md text-metric-num-md text-primary font-bold tabular-nums" id="kpiDiff">
+              +$6.00
+            </div>
+<div class="text-label-sm text-label-sm text-primary font-medium mt-1">
+              시나리오 A 우위
+            </div>
+</div>
+</div>
+<!-- 1-Year Projected Terminal Asset Comparison Card -->
+<div class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl p-space-lg shadow-sm"><div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-sm mb-space-md border-b border-surface-container-high gap-2"><div><h2 class="font-headline-sm text-headline-sm text-secondary">1년 후 예상 기말 자산 비교</h2><p class="font-label-sm text-label-sm text-outline">산출 공식: 기말 자산 = 주식 평가액 ($1,000.00, 주가불변가정 100주 × $10.00) + 세후 배당금 현금</p></div><span class="px-2.5 py-1 rounded bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm font-semibold self-start sm:self-auto">산술 시뮬레이션</span></div><div class="grid grid-cols-1 md:grid-cols-3 gap-space-md items-center mb-space-md"><div class="p-space-md rounded-lg bg-surface-container-low border border-outline-variant/50"><div class="flex items-center justify-between mb-2"><span class="font-label-md text-label-md font-semibold text-primary">시나리오 A (0.0%)</span><span class="text-xs text-outline">세후 배당 합산</span></div><div class="font-metric-num-lg text-metric-num-lg text-primary tabular-nums" id="terminalAssetA">$1,040.00</div><div class="text-xs text-outline mt-1.5 tabular-nums" id="terminalDescA">주식 평가액 $1,000.00 + 세후 배당 $40.00</div></div><div class="p-space-md rounded-lg bg-surface-container-low border border-outline-variant/50"><div class="flex items-center justify-between mb-2"><span class="font-label-md text-label-md font-semibold text-secondary">시나리오 B (15.0%)</span><span class="text-xs text-outline">세후 배당 합산</span></div><div class="font-metric-num-lg text-metric-num-lg text-secondary tabular-nums" id="terminalAssetB">$1,034.00</div><div class="text-xs text-outline mt-1.5 tabular-nums" id="terminalDescB">주식 평가액 $1,000.00 + 세후 배당 $34.00</div></div><div class="p-space-md rounded-lg bg-surface-container-high/40 border border-outline-variant/60 flex flex-col justify-center"><div class="text-xs font-semibold text-outline uppercase tracking-wider mb-1">기말 자산 차이 (A - B)</div><div class="font-metric-num-lg text-metric-num-lg text-primary tabular-nums" id="terminalDelta">+$6.00 USD</div><div class="text-xs text-on-surface-variant font-medium mt-1.5 tabular-nums" id="terminalDeltaPercent">세후 배당금 기준 15.0% 감액 격차</div></div></div><div class="p-space-sm rounded-lg bg-surface-container-low/40 border border-outline-variant/30 space-y-2"><div class="flex justify-between items-center text-xs text-outline"><span class="font-medium text-secondary">기말 총자산 시각화 대조</span><span class="font-mono">격차: +$6.00 USD</span></div><div class="space-y-1.5"><div class="flex items-center gap-2 text-xs"><span class="w-20 font-medium text-primary shrink-0">시나리오 A</span><div class="flex-1 bg-surface-container h-3.5 rounded-full overflow-hidden"><div class="bg-primary-container h-full rounded-full transition-all" id="progressBarA" style="width: 100%;"></div></div><span class="w-20 text-right font-mono font-semibold text-primary" id="barLabelA">$1,040.00</span></div><div class="flex items-center gap-2 text-xs"><span class="w-20 font-medium text-secondary shrink-0">시나리오 B</span><div class="flex-1 bg-surface-container h-3.5 rounded-full overflow-hidden"><div class="bg-secondary h-full rounded-full transition-all" id="progressBarB" style="width: 99.4%;"></div></div><span class="w-20 text-right font-mono font-semibold text-secondary" id="barLabelB">$1,034.00</span></div></div></div></div>
+<!-- Detailed Comparison Table (PrimeVue DataTable Structure) -->
+<div class="bg-surface-container-lowest border border-outline-variant/70 rounded-xl overflow-hidden shadow-sm"><div class="px-space-lg py-space-md border-b border-surface-container-high flex items-center justify-between"><h2 class="font-headline-sm text-headline-sm text-secondary">상세 항목별 대조 명세</h2><span class="text-label-sm font-label-sm text-outline">단위: USD ($)</span></div><div class="overflow-x-auto"><table class="w-full text-left border-collapse" id="comparisonTable"><thead><tr class="bg-surface-container-low text-on-surface-variant border-b border-outline-variant/80 text-label-md font-label-md"><th class="py-3 px-4 font-semibold text-secondary" scope="col">비교 항목</th><th class="py-3 px-4 text-right font-semibold text-primary" scope="col">시나리오 A (0.0% 가정)</th><th class="py-3 px-4 text-right font-semibold text-secondary" scope="col">시나리오 B (15.0% 가정)</th><th class="py-3 px-4 text-right font-semibold text-on-surface" scope="col">격차 (A - B)</th><th class="py-3 px-4 text-left font-semibold text-outline" scope="col">산출 기준 및 비고</th></tr></thead><tbody class="divide-y divide-outline-variant/40 text-body-md font-body-md text-on-surface"><tr class="hover:bg-surface-container-low/50 transition-colors"><td class="py-3.5 px-4 font-medium text-secondary">투자 원금</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-secondary" id="tablePrincipalA">$1,000.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-secondary" id="tablePrincipalB">$1,000.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-outline" id="tablePrincipalDiff">$0.00</td><td class="py-3.5 px-4 text-outline text-xs">초기 100주 @ $10.00 (동일 적용)</td></tr><tr class="hover:bg-surface-container-low/50 transition-colors"><td class="py-3.5 px-4 font-medium text-secondary">연간 세전 총 배당금</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-secondary" id="tableGrossA">$40.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-secondary" id="tableGrossB">$40.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-outline" id="tableGrossDiff">$0.00</td><td class="py-3.5 px-4 text-outline text-xs">100주 × $0.40 (연 4.0% 고정 배당)</td></tr><tr class="hover:bg-surface-container-low/50 transition-colors"><td class="py-3.5 px-4 font-medium text-secondary">적용 원천징수율 (가정)</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-primary font-semibold" id="tableRateA">0.0%</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-secondary font-semibold" id="tableRateB">15.0%</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-error font-semibold" id="tableRateDiff">-15.0%p</td><td class="py-3.5 px-4 text-outline text-xs">가상 비교 입력치 (0~100%)</td></tr><tr class="hover:bg-surface-container-low/50 transition-colors"><td class="py-3.5 px-4 font-medium text-secondary">예상 원천징수세액</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-primary" id="tableWithheldA">$0.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-secondary" id="tableWithheldB">$6.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-error font-medium" id="tableWithheldDiff">-$6.00</td><td class="py-3.5 px-4 text-outline text-xs">세전 배당금 × 적용 원천징수율</td></tr><tr class="bg-surface-container-low/30 hover:bg-surface-container-low/60 transition-colors font-semibold"><td class="py-3.5 px-4 text-secondary">세후 수령 배당금</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-primary text-base" id="tableNetA">$40.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-secondary text-base" id="tableNetB">$34.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-primary text-base" id="tableNetDiff">+$6.00</td><td class="py-3.5 px-4 text-primary text-xs font-medium">현금 입금액 (미재투자)</td></tr><tr class="hover:bg-surface-container-low/50 transition-colors"><td class="py-3.5 px-4 font-medium text-secondary">1년 후 기말 주식 평가액</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-secondary font-mono" id="tableStockValA">$1,000.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-secondary font-mono" id="tableStockValB">$1,000.00</td><td class="py-3.5 px-4 text-right font-mono tabular-nums text-outline font-mono" id="tableStockValDiff">$0.00</td><td class="py-3.5 px-4 text-outline text-xs">주가 불변 가정 ($10.00 유지)</td></tr><tr class="bg-surface-container-low/70 hover:bg-surface-container-low transition-colors font-bold"><td class="py-4 px-4 text-secondary">1년 후 최종 총자산</td><td class="py-4 px-4 text-right font-mono tabular-nums text-primary text-base" id="tableTerminalA">$1,040.00</td><td class="py-4 px-4 text-right font-mono tabular-nums text-secondary text-base" id="tableTerminalB">$1,034.00</td><td class="py-4 px-4 text-right font-mono tabular-nums text-primary text-base" id="tableTerminalDiff">+$6.00</td><td class="py-4 px-4 text-outline text-xs font-normal">주식 평가액($1,000) + 세후 배당금</td></tr></tbody></table></div><div class="px-space-lg py-2.5 bg-surface-container-low/30 border-t border-outline-variant/40 flex items-center justify-between text-xs text-outline"><span>* 소수점 둘째 자리 반올림 표기 기준</span><span class="font-medium text-secondary">주가불변가정 기준</span></div></div>
+<!-- Synthetic Demo Stock Connection Section (NO REAL TICKERS) -->
+</section>
+</div>
+</main>
+<!-- Interactive Recalculation Script -->
+<script>
+    function formatUSD(value) {
+      return '$' + Number(value).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    function recalculate() {
+      const principal = parseFloat(document.getElementById('initialPrincipal').value) || 0;
+      const grossDividend = parseFloat(document.getElementById('annualDividend').value) || 0;
+      const rateA = parseFloat(document.getElementById('taxRateA').value) || 0;
+      const rateB = parseFloat(document.getElementById('taxRateB').value) || 0;
+
+      // Yield display update
+      const yieldPct = principal > 0 ? ((grossDividend / principal) * 100).toFixed(1) : '0.0';
+      document.getElementById('dividendYieldBadge').innerText = `연 ${yieldPct}% 기준`;
+
+      // Calculation Scenario A
+      const taxAmountA = grossDividend * (rateA / 100);
+      const netDividendA = grossDividend - taxAmountA;
+      const terminalA = principal + netDividendA;
+
+      // Calculation Scenario B
+      const taxAmountB = grossDividend * (rateB / 100);
+      const netDividendB = grossDividend - taxAmountB;
+      const terminalB = principal + netDividendB;
+
+      // Differentials
+      const netDiff = netDividendA - netDividendB;
+      const terminalDiff = terminalA - terminalB;
+      const rateDiff = rateA - rateB;
+      const withheldDiff = taxAmountA - taxAmountB;
+
+      // Update KPI
+      document.getElementById('kpiPrincipal').innerText = formatUSD(principal);
+      
+      document.getElementById('kpiRateABadge').innerText = `${rateA.toFixed(1)}%`;
+      document.getElementById('kpiNetA').innerText = formatUSD(netDividendA);
+      document.getElementById('kpiWithheldA').innerText = `예상 원천징수: ${formatUSD(taxAmountA)}`;
+
+      document.getElementById('kpiRateBBadge').innerText = `${rateB.toFixed(1)}%`;
+      document.getElementById('kpiNetB').innerText = formatUSD(netDividendB);
+      document.getElementById('kpiWithheldB').innerText = `예상 원천징수: ${formatUSD(taxAmountB)}`;
+
+      const sign = netDiff >= 0 ? '+' : '';
+      document.getElementById('kpiDiff').innerText = `${sign}${formatUSD(netDiff)}`;
+
+      // Update Terminal Asset Cards
+      document.getElementById('terminalAssetA').innerText = formatUSD(terminalA);
+      document.getElementById('terminalDescA').innerText = `원금 ${formatUSD(principal)} + 세후 배당 ${formatUSD(netDividendA)}`;
+
+      document.getElementById('terminalAssetB').innerText = formatUSD(terminalB);
+      document.getElementById('terminalDescB').innerText = `원금 ${formatUSD(principal)} + 세후 배당 ${formatUSD(netDividendB)}`;
+
+      document.getElementById('terminalDelta').innerText = `${sign}${formatUSD(terminalDiff)} USD`;
+      
+      const reductionRatio = grossDividend > 0 ? ((taxAmountB / grossDividend) * 100).toFixed(1) : '0.0';
+      document.getElementById('terminalDeltaPercent').innerText = `세후 배당금 기준 ${reductionRatio}% 감액 격차`;
+
+      // Update Detailed Table
+      document.getElementById('tablePrincipalA').innerText = formatUSD(principal);
+      document.getElementById('tablePrincipalB').innerText = formatUSD(principal);
+      document.getElementById('tablePrincipalDiff').innerText = formatUSD(0);
+
+      document.getElementById('tableGrossA').innerText = formatUSD(grossDividend);
+      document.getElementById('tableGrossB').innerText = formatUSD(grossDividend);
+      document.getElementById('tableGrossDiff').innerText = formatUSD(0);
+
+      document.getElementById('tableRateA').innerText = `${rateA.toFixed(1)}%`;
+      document.getElementById('tableRateB').innerText = `${rateB.toFixed(1)}%`;
+      document.getElementById('tableRateDiff').innerText = `${rateDiff >= 0 ? '+' : ''}${rateDiff.toFixed(1)}%p`;
+
+      document.getElementById('tableWithheldA').innerText = formatUSD(taxAmountA);
+      document.getElementById('tableWithheldB').innerText = formatUSD(taxAmountB);
+      document.getElementById('tableWithheldDiff').innerText = `${withheldDiff >= 0 ? '+' : '-'}${formatUSD(Math.abs(withheldDiff))}`;
+
+      document.getElementById('tableNetA').innerText = formatUSD(netDividendA);
+      document.getElementById('tableNetB').innerText = formatUSD(netDividendB);
+      document.getElementById('tableNetDiff').innerText = `${sign}${formatUSD(netDiff)}`;
+
+      document.getElementById('tableTerminalA').innerText = formatUSD(terminalA);
+      document.getElementById('tableTerminalB').innerText = formatUSD(terminalB);
+      document.getElementById('tableTerminalDiff').innerText = `${sign}${formatUSD(terminalDiff)}`;
+    }
+
+    function resetDefaults() {
+      document.getElementById('initialPrincipal').value = '1000.00';
+      document.getElementById('annualDividend').value = '40.00';
+      document.getElementById('taxRateA').value = '0.0';
+      document.getElementById('taxRateB').value = '15.0';
+      recalculate();
+    }
+  </script>
+</body></html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>V6 REVIEWED / Compare Theme / Mobile / source-91e2ffab</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary-fixed": "#ffdbc9",
+            "secondary-fixed-dim": "#e1c0ae",
+            "on-tertiary": "#ffffff",
+            "outline-variant": "#bdc9c6",
+            "surface-container-low": "#f2f4f6",
+            "tertiary-fixed-dim": "#f7be1d",
+            "tertiary": "#6b5000",
+            "on-tertiary-fixed": "#251a00",
+            "on-tertiary-fixed-variant": "#5a4300",
+            "tertiary-container": "#896700",
+            "surface-container-lowest": "#ffffff",
+            "on-surface-variant": "#3e4947",
+            "on-error-container": "#93000a",
+            "tertiary-fixed": "#ffdf9a",
+            "surface-container": "#eceef0",
+            "surface": "#f7f9fb",
+            "on-primary-fixed-variant": "#005048",
+            "primary": "#005f55",
+            "secondary": "#73594a",
+            "on-error": "#ffffff",
+            "surface-dim": "#d8dadc",
+            "background": "#f7f9fb",
+            "surface-container-highest": "#e0e3e5",
+            "primary-fixed": "#99f3e4",
+            "on-secondary-container": "#795f50",
+            "error": "#ba1a1a",
+            "inverse-surface": "#2d3133",
+            "inverse-primary": "#7dd6c8",
+            "outline": "#6e7977",
+            "secondary-container": "#ffdbc9",
+            "primary-container": "#0d7a6e",
+            "on-surface": "#191c1e",
+            "on-primary-fixed": "#00201c",
+            "on-tertiary-container": "#ffedcb",
+            "inverse-on-surface": "#eff1f3",
+            "on-secondary-fixed": "#29170c",
+            "on-primary-container": "#abfff0",
+            "on-secondary": "#ffffff",
+            "surface-bright": "#f7f9fb",
+            "surface-container-high": "#e6e8ea",
+            "error-container": "#ffdad6",
+            "on-background": "#191c1e",
+            "primary-fixed-dim": "#7dd6c8",
+            "on-primary": "#ffffff",
+            "surface-tint": "#006b60",
+            "on-secondary-fixed-variant": "#594234",
+            "surface-variant": "#e0e3e5",
+            "espresso-ink": "#382418"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "gutter": "1.5rem",
+            "margin": "2rem"
+          },
+          fontFamily: {
+            "headline-sm": ["Inter", "Pretendard", "Apple SD Gothic Neo", "sans-serif"],
+            "headline-md": ["Inter", "Pretendard", "Apple SD Gothic Neo", "sans-serif"],
+            "headline-lg": ["Inter", "Pretendard", "Apple SD Gothic Neo", "sans-serif"],
+            "display-lg": ["Inter", "Pretendard", "Apple SD Gothic Neo", "sans-serif"],
+            "body-md": ["Inter", "Pretendard", "Apple SD Gothic Neo", "sans-serif"],
+            "body-lg": ["Inter", "Pretendard", "Apple SD Gothic Neo", "sans-serif"],
+            "label-sm": ["Inter", "Pretendard", "Apple SD Gothic Neo", "sans-serif"],
+            "label-md": ["Inter", "Pretendard", "Apple SD Gothic Neo", "sans-serif"],
+            "metric-num-md": ["Inter", "Pretendard", "monospace", "sans-serif"],
+            "metric-num-lg": ["Inter", "Pretendard", "monospace", "sans-serif"]
+          },
+          fontSize: {
+            "headline-sm": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-md": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "headline-lg": ["30px", { lineHeight: "38px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "display-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "700" }],
+            "body-md": ["14px", { lineHeight: "20px", letterSpacing: "-0.005em", fontWeight: "400" }],
+            "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "400" }],
+            "label-sm": ["11px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "500" }],
+            "label-md": ["13px", { lineHeight: "18px", letterSpacing: "0em", fontWeight: "600" }],
+            "metric-num-md": ["22px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }],
+            "metric-num-lg": ["32px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .tabular-nums {
+      font-feature-settings: "tnum" 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 20px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased overflow-x-hidden">
+<!-- Main Mobile Container (Strict 390px Max Width Centered Flow) -->
+<main class="w-full max-w-[390px] mx-auto px-4 pt-5 pb-6 flex flex-col gap-4 overflow-x-hidden"><header class="flex flex-col gap-3">
+<div class="flex items-center gap-2 flex-wrap"><span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/40">예시 데이터</span><span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm border border-outline-variant/40 tabular-nums">기준: 2026-03-31</span><span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-medium">표시 통화: USD ($) 단일 기준</span></div>
+<div class="flex flex-col gap-1.5">
+<h1 class="font-headline-md text-headline-md font-bold text-espresso-ink tracking-tight">
+      테마별 배당 ETF 및 구성종목 비교
+    </h1>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+      가상 테마를 탐색하고 대표 기초자산 종목군과 관련 배당 ETF의 운용 지표 및 분배금 성격을 대조 분석합니다.
+    </p>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="h-[44px] rounded-lg bg-surface-container-lowest border border-outline-variant text-espresso-ink font-label-md text-label-md flex items-center justify-center gap-1.5 hover:bg-surface-container-low transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span>공유</span>
+</button>
+<button class="h-[44px] rounded-lg bg-surface-container-lowest border border-outline-variant text-espresso-ink font-label-md text-label-md flex items-center justify-center gap-1.5 hover:bg-surface-container-low transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">bookmark_border</span>
+<span>저장</span>
+</button>
+</div>
+</header>
+<section class="flex flex-col gap-2.5"><div class="relative w-full"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined pointer-events-none text-[20px]">search</span><input aria-label="테마 검색" class="w-full h-[44px] pl-10 pr-3 rounded-lg border border-outline-variant bg-surface-container-lowest text-espresso-ink font-body-md text-body-md focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all select-none" id="theme-search-input" readonly="" type="text" value="인공지능(AI) 인프라 &amp; 반도체 전력"/></div><div class="grid grid-cols-2 gap-2"><div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant font-medium">1. 전략 (Strategy)</label><div class="h-[44px] px-3 rounded-lg bg-surface-container-lowest border border-outline-variant flex items-center justify-between text-espresso-ink font-label-sm text-label-sm"><span class="truncate">모든 전략 (기본값)</span><span class="material-symbols-outlined text-outline text-[18px]">expand_more</span></div></div><div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant font-medium">2. 방향 (Direction)</label><div class="h-[44px] px-3 rounded-lg bg-surface-container-lowest border border-outline-variant flex items-center justify-between text-espresso-ink font-label-sm text-label-sm"><span class="truncate">모든 방향 (기본값)</span><span class="material-symbols-outlined text-outline text-[18px]">expand_more</span></div></div><div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant font-medium">3. 배당 여부</label><div class="h-[44px] px-3 rounded-lg bg-surface-container-lowest border border-outline-variant flex items-center justify-between text-espresso-ink font-label-sm text-label-sm"><span class="truncate">모두 (기본값)</span><span class="material-symbols-outlined text-outline text-[18px]">expand_more</span></div></div><div class="flex flex-col gap-1"><label class="font-label-sm text-label-sm text-on-surface-variant font-medium">4. 지급 주기</label><div class="h-[44px] px-3 rounded-lg bg-surface-container-lowest border border-outline-variant flex items-center justify-between text-espresso-ink font-label-sm text-label-sm"><span class="truncate">모든 지급 주기 (기본값)</span><span class="material-symbols-outlined text-outline text-[18px]">expand_more</span></div></div></div><p class="font-label-sm text-label-sm text-on-surface-variant text-[11px] leading-snug pt-0.5">※ 상위 전략·방향 변경 시 하위 조건이 자동 재설정되는 종속 필터입니다. | 단일 통화: USD</p></section>
+<section class="bg-surface-container-lowest rounded-xl border border-outline-variant/60 p-space-md shadow-xs flex flex-col gap-3"><div class="flex items-center gap-2 flex-wrap"><span class="px-2 py-0.5 rounded-full bg-surface-container-low text-espresso-ink font-label-sm text-label-sm font-medium border border-outline-variant/30">가상 시뮬레이션 테마</span><span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-sm text-label-sm font-semibold">공식 연관 정보 미확인</span></div><div><h2 class="font-headline-sm text-headline-sm font-bold text-espresso-ink leading-tight">인공지능(AI) 인프라 &amp; 반도체 전력 테마</h2></div><div class="p-2.5 rounded-lg bg-surface-container-low border border-outline-variant/50 text-on-surface-variant font-body-md text-body-md text-xs leading-relaxed flex items-start gap-1.5"><span class="material-symbols-outlined text-outline text-[16px] mt-0.5 shrink-0">info</span><span>본 테마 편입 관계는 가상 시뮬레이션 예시이며, 실제 지수 편입 및 연관 관계는 공식 공시 메타데이터 확인이 필요하며 본 화면에서 공적으로 보증하지 않습니다.</span></div><div class="flex items-center justify-between pt-1 border-t border-outline-variant/30 text-xs text-on-surface-variant"><span class="font-label-sm text-label-sm font-medium text-espresso-ink">연계 가상 시뮬레이션 종목군:</span><span class="tabular-nums font-mono text-[11px]">기준일: 2026-03-31</span></div><div class="flex flex-wrap gap-1.5"><span class="px-2.5 py-1 rounded-md bg-surface-container text-espresso-ink font-mono text-xs font-semibold tabular-nums border border-outline-variant/40">DEMO-CHIP (USD)</span><span class="px-2.5 py-1 rounded-md bg-surface-container text-espresso-ink font-mono text-xs font-semibold tabular-nums border border-outline-variant/40">DEMO-GRID (USD)</span><span class="px-2.5 py-1 rounded-md bg-surface-container text-espresso-ink font-mono text-xs font-semibold tabular-nums border border-outline-variant/40">DEMO-ETF (USD ETF)</span></div></section>
+<nav aria-label="비교 분석 하위 탭" class="flex border-b border-outline-variant/60 -mx-4 px-4 overflow-x-auto no-scrollbar">
+<button class="pb-2.5 border-b-2 border-primary-container text-primary-container font-label-md text-label-md font-semibold whitespace-nowrap px-1" type="button">
+    테마 대표 종목 및 연관 ETF 매트릭스
+  </button>
+<button class="pb-2.5 border-b-2 border-transparent text-on-surface-variant font-label-md text-label-md font-medium whitespace-nowrap px-3 hover:text-on-surface" type="button">
+    기초자산 비중 및 섹터 분배
+  </button>
+<button class="pb-2.5 border-b-2 border-transparent text-on-surface-variant font-label-md text-label-md font-medium whitespace-nowrap px-3 hover:text-on-surface" type="button">
+    배당 지급 주기 및 현금흐름 대조
+  </button>
+</nav>
+<div class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/70 flex items-start gap-2">
+<span class="material-symbols-outlined text-primary-container text-[18px] shrink-0 mt-0.5">balance</span>
+<div class="flex flex-col gap-0.5">
+<p class="font-label-sm text-label-sm font-semibold text-espresso-ink">통화 독립 표기 원칙 (USD 전용 모드)</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant leading-snug">
+      환율 변동성 노출 주의 • 달러 자산 독립 표기 • <span class="tabular-nums font-mono text-espresso-ink">예시 데이터 / 기준일: 2026-03-31</span>
+</p>
+</div>
+</div>
+<section aria-label="종목별 지표 대조 카드" class="flex flex-col gap-3.5"><!-- Card 1: DEMO-CHIP (대표 기초자산 1) --><article class="bg-surface-container-lowest rounded-xl border border-outline-variant/80 p-space-md shadow-xs flex flex-col gap-3"><div class="flex items-start justify-between border-b border-outline-variant/40 pb-2.5"><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-mono font-bold text-base text-espresso-ink tracking-tight tabular-nums">DEMO-CHIP</span><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-tertiary-fixed/60 text-on-tertiary-fixed-variant">USD 달러</span></div><span class="font-label-sm text-label-sm text-on-surface-variant">가상 반도체·가속기 대표주 (대표 기초자산 1)</span></div><span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm font-semibold">대표 기초자산</span></div><dl class="flex flex-col gap-2 font-body-md text-body-md"><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">기초자산 분류</dt><dd class="text-right text-espresso-ink font-medium text-xs">반도체 인프라 설계·제조</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">총보수율 (TER)</dt><dd class="text-right font-mono tabular-nums text-outline text-xs">— (개별주식 비적용)</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">분배/배당 주기</dt><dd class="text-right text-espresso-ink font-medium text-xs">분기 (1/4/7/10월)</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">예시 주당 배당금</dt><dd class="text-right font-mono font-bold tabular-nums text-espresso-ink text-sm">$ 0.12 USD / 주</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">추정 분배율 (세전 연환산)</dt><dd class="text-right text-on-surface-variant text-xs">산출 보류 · 기준 주가 미제공</dd></div><div class="flex items-center justify-between py-1"><dt class="text-on-surface-variant font-label-sm text-label-sm">배당 이력 연속성</dt><dd class="text-right text-outline text-xs">자료 미확인</dd></div></dl></article><!-- Card 2: DEMO-GRID (대표 기초자산 2) --><article class="bg-surface-container-lowest rounded-xl border border-outline-variant/80 p-space-md shadow-xs flex flex-col gap-3"><div class="flex items-start justify-between border-b border-outline-variant/40 pb-2.5"><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-mono font-bold text-base text-espresso-ink tracking-tight tabular-nums">DEMO-GRID</span><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-tertiary-fixed/60 text-on-tertiary-fixed-variant">USD 달러</span></div><span class="font-label-sm text-label-sm text-on-surface-variant">가상 송배전·전력인프라 대표주 (대표 기초자산 2)</span></div><span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm font-semibold">대표 기초자산</span></div><dl class="flex flex-col gap-2 font-body-md text-body-md"><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">기초자산 분류</dt><dd class="text-right text-espresso-ink font-medium text-xs">송배전 그리드 장비 및 변압기</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">총보수율 (TER)</dt><dd class="text-right font-mono tabular-nums text-outline text-xs">— (개별주식 비적용)</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">분배/배당 주기</dt><dd class="text-right text-espresso-ink font-medium text-xs">분기 (3/6/9/12월)</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">예시 주당 배당금</dt><dd class="text-right font-mono font-bold tabular-nums text-espresso-ink text-sm">$ 0.45 USD / 주</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">추정 분배율 (세전 연환산)</dt><dd class="text-right text-on-surface-variant text-xs">산출 보류 · 기준 주가 미제공</dd></div><div class="flex items-center justify-between py-1"><dt class="text-on-surface-variant font-label-sm text-label-sm">배당 이력 연속성</dt><dd class="text-right text-outline text-xs">자료 미확인</dd></div></dl></article><!-- Card 3: DEMO-ETF (연관 ETF - THIRD) --><article class="bg-surface-container-lowest rounded-xl border border-outline-variant/80 p-space-md shadow-xs flex flex-col gap-3"><div class="flex items-start justify-between border-b border-outline-variant/40 pb-2.5"><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-mono font-bold text-base text-espresso-ink tracking-tight tabular-nums">DEMO-ETF</span><span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-tertiary-fixed/60 text-on-tertiary-fixed-variant">USD 달러</span></div><span class="font-label-sm text-label-sm text-on-surface-variant">글로벌 AI 전력 및 파생 결합 배당 ETF (연관 ETF)</span></div><span class="px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-label-sm text-label-sm font-semibold">관련 ETF</span></div><dl class="flex flex-col gap-2 font-body-md text-body-md"><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">기초자산 분류</dt><dd class="text-right text-espresso-ink font-medium text-xs">글로벌 AI 전력 &amp; 옵션 혼합</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">총보수율 (TER)</dt><dd class="text-right font-mono font-semibold tabular-nums text-primary-container text-sm">연 0.19% (ETF 운용보수 가정)</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">분배/배당 주기</dt><dd class="text-right text-espresso-ink font-medium text-xs">월지급 (매월 말일)</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">예시 주당 분배금</dt><dd class="text-right font-mono font-bold tabular-nums text-espresso-ink text-sm">$ 0.08 USD / 주</dd></div><div class="flex items-center justify-between py-1 border-b border-surface-container-low"><dt class="text-on-surface-variant font-label-sm text-label-sm">추정 분배율 (세전 연환산)</dt><dd class="text-right text-on-surface-variant text-xs">산출 보류 · 기준 주가 미제공</dd></div><div class="flex items-center justify-between py-1"><dt class="text-on-surface-variant font-label-sm text-label-sm">배당 이력 연속성</dt><dd class="text-right text-outline text-xs">자료 미확인</dd></div></dl></article></section>
+<section class="flex flex-col gap-3 pt-2"><div class="flex items-center justify-between"><h3 class="font-headline-sm text-headline-sm font-bold text-espresso-ink text-lg">테마 비교 분석 인사이트</h3><span class="font-label-sm text-label-sm text-on-surface-variant">3건 요약</span></div><!-- Insight Card 1: 가정보수 대조 --><div class="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/70 flex gap-3 shadow-xs"><div class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center shrink-0 text-on-primary-fixed-variant"><span class="material-symbols-outlined text-[20px]">percent</span></div><div class="flex flex-col gap-1"><span class="font-label-md text-label-md font-semibold text-espresso-ink">가정보수 대조</span><p class="font-body-md text-body-md text-xs text-on-surface-variant leading-relaxed"><strong class="text-espresso-ink font-semibold">DEMO-ETF</strong>의 가정 운용보수는 연 0.19% 수준이며, 개별 주식 종목(<strong class="text-espresso-ink font-semibold">DEMO-CHIP</strong>, <strong class="text-espresso-ink font-semibold">DEMO-GRID</strong>)은 운용보수가 비적용(—)됩니다.</p></div></div><!-- Insight Card 2: 배당 주기 점검 --><div class="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/70 flex gap-3 shadow-xs"><div class="w-8 h-8 rounded-lg bg-tertiary-fixed flex items-center justify-center shrink-0 text-on-tertiary-fixed-variant"><span class="material-symbols-outlined text-[20px]">history</span></div><div class="flex flex-col gap-1"><span class="font-label-md text-label-md font-semibold text-espresso-ink">배당 주기 점검</span><p class="font-body-md text-body-md text-xs text-on-surface-variant leading-relaxed">대표 종목 <strong class="text-espresso-ink font-semibold">DEMO-CHIP</strong>(1/4/7/10월), <strong class="text-espresso-ink font-semibold">DEMO-GRID</strong>(3/6/9/12월)은 분기 지급, <strong class="text-espresso-ink font-semibold">DEMO-ETF</strong>는 월지급 구조입니다.</p></div></div><!-- Insight Card 3: 분배율 산출 안내 --><div class="p-3.5 rounded-xl bg-surface-container-lowest border border-outline-variant/70 flex gap-3 shadow-xs"><div class="w-8 h-8 rounded-lg bg-secondary-fixed flex items-center justify-center shrink-0 text-on-secondary-fixed"><span class="material-symbols-outlined text-[20px]">calculate</span></div><div class="flex flex-col gap-1"><span class="font-label-md text-label-md font-semibold text-espresso-ink">분배율 산출 안내</span><p class="font-body-md text-body-md text-xs text-on-surface-variant leading-relaxed">시장 기준 주가 미제공으로 인해 세전 연환산 분배율 산출이 보류되었습니다.</p></div></div><!-- Caution Box: 시뮬레이션 데이터 주의사항 --><div class="p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/80 flex flex-col gap-1.5"><div class="flex items-center gap-1.5 text-espresso-ink font-label-md text-label-md font-semibold"><span class="material-symbols-outlined text-outline text-[18px]">gavel</span><span>시뮬레이션 데이터 주의사항</span></div><p class="font-body-md text-body-md text-xs text-on-surface-variant leading-relaxed">본 화면의 수치는 2026-03-31 기준 가상 예시 데이터이며 특정 종목의 수익률이나 절세를 보증하지 않습니다.</p></div></section><section aria-label="비교 트레이 섹션" class="bg-surface-container-lowest rounded-xl border border-outline-variant/80 p-3.5 shadow-xs flex flex-col gap-3 mt-1"><div class="flex items-center justify-between"><div class="flex items-center gap-2 overflow-x-auto no-scrollbar"><span class="font-label-md text-label-md font-semibold text-espresso-ink flex items-center gap-1 shrink-0"><span class="w-2 h-2 rounded-full bg-primary-container"></span>비교 트레이 3/3</span><div class="flex items-center gap-1 shrink-0"><span class="px-1.5 py-0.5 rounded bg-surface-container text-espresso-ink font-mono text-[10px] font-semibold flex items-center gap-0.5">DEMO-CHIP <span class="text-[10px] text-outline">×</span></span><span class="px-1.5 py-0.5 rounded bg-surface-container text-espresso-ink font-mono text-[10px] font-semibold flex items-center gap-0.5">DEMO-GRID <span class="text-[10px] text-outline">×</span></span><span class="px-1.5 py-0.5 rounded bg-surface-container text-espresso-ink font-mono text-[10px] font-semibold flex items-center gap-0.5">DEMO-ETF <span class="text-[10px] text-outline">×</span></span></div></div><button class="text-on-surface-variant hover:text-espresso-ink font-label-sm text-label-sm underline active:scale-95 transition-all shrink-0 ml-1" type="button">선택 초기화</button></div><button class="w-full h-[44px] rounded-lg bg-primary-container text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center gap-2 hover:bg-[#0b665c] transition-colors active:scale-[0.99] shadow-xs" type="button"><span class="material-symbols-outlined text-[20px]">table_chart</span><span>선택 항목 정밀 비교 실행 (3/3)</span></button><div class="flex items-center justify-center gap-1.5 text-center"><p class="font-label-sm text-label-sm text-on-surface-variant text-[11px]">※ USD 단일 통화 기준 • 공식 연관 정보 미확인 예시 모델</p></div></section></main>
+<!-- 7. Fixed Bottom Sticky Bar / Floating Action Bar (390px Clamped Container) -->
+</body></html>

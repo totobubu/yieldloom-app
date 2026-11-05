@@ -1,0 +1,2325 @@
+{
+    "schemaVersion": 1,
+    "checkedAt": "2026-11-05T04:15:40.197719+00:00",
+    "source": "actual Stitch MCP list_screens/download_file",
+    "projectId": "17382728461495959991",
+    "logicalDeviceTargets": 20,
+    "families": 9,
+    "testFramesExcluded": 1,
+    "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
+    "currentCodeBase": "f2dba7ecf2048bdb16bf18552e7f0cafc8d4b58a",
+    "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
+    "frames": [
+        {
+            "name": "projects/17382728461495959991/screens/c1d933616dbf47518347234b26b5d69e",
+            "title": "V3 CONTENT / Import Review / Mobile / Cloud Continuation",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "6514",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/dc61af6e17764aada9c5434ab92eb3ac",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/65648107190e442294ff5164fe7061ff",
+                "mimeType": "png"
+            },
+            "family": "Import Review",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/b640738daaf5434d9af72530fe150006",
+            "title": "V6 REVIEWED / Tax Comparison / Mobile / source-f7fe46e6",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "6400",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/1a6d4233f4904ae5abb6d5dec35e105d",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/c2067560ce8c4291bb297d597885561e",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "Mobile",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/063bc2cd40ff4b55b3fdb5625afff199",
+            "title": "V3 CONTENT / Simulator / Tablet / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "3096",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/6794181c38c649b891db3791b05f3d09",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/7c0c4af410234549aa8b3c3040e1fd7e",
+                "mimeType": "png"
+            },
+            "family": "Simulator",
+            "deviceLabel": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/9af613d58d3d490387bff8f2f5aa3958",
+            "title": "V3 CONTENT / Compare Similar / Mobile / Cloud Continuation",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4586",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/26239891e44f450782c78a5ecde73940",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/599ae0778de5410dbdcff54ba63a5b5b",
+                "mimeType": "png"
+            },
+            "family": "Compare Similar",
+            "deviceLabel": "Mobile",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/e39cb7a8aeaa4532b446d2680c64cbee",
+            "title": "V3 CONTENT / Tax Comparison / PC / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2980",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/343f36d6f2a143db89726af9ad9f6495",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/394f9b4aa17644f8a1388521489d8c44",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "PC",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/7a7f75ab55b64d38a618e21bcf4aa237",
+            "title": "V6 REVIEWED / Compare Theme / Mobile / source-91e2ffab",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5156",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/afbfef2684b54646bf19486229499371",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/10f981cf258249e884d088e07a69eab6",
+                "mimeType": "png"
+            },
+            "family": "Compare Theme",
+            "deviceLabel": "Mobile",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/2b58504f7e3f41579e0843a1619c87d8",
+            "title": "V3 CONTENT / Column Mapping / Mobile / Cloud Continuation",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "6234",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/9901c21b42374fe18fa6ebf3911df719",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/c3cd4d9216bb45538ec82562e51ae94a",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/9179972a24bb485a8f2549a2f03c8bcd",
+            "title": "V4 SUPPLEMENT / Data Upload / Tablet / source-5a09e7d3",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "5054",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/27428cb013a5492a8863b375500d814f",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/e93bff01382541e990aa30f2a4358214",
+                "mimeType": "png"
+            },
+            "family": "Data Upload",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=file,review absent",
+            "component": "src/components/portfolio/PortfolioFileImportForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/8f761cd835bf43fd8645bb22df1387b2",
+            "title": "V5 CORRECTED / Simulator / Mobile / source-d6588413",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "6112",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/fdc90f8d45f646bc9c1f75fc6291715f",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/2dee6abfc8434cbcace0e13368f4bcb9",
+                "mimeType": "png"
+            },
+            "family": "Simulator",
+            "deviceLabel": "Mobile",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/ad290aa53be84fe89c3c7e6cd583939b",
+            "title": "V4 SUPPLEMENT / Tax Comparison / Tablet / source-4b63bd4e",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "4082",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/c0af2a9c0ec64d1589f0d154b5e9887c",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/5bad0bc560124385bd48692ca40ae803",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33",
+            "title": "V5 CORRECTED / Data Upload / Tablet / source-5a09e7d3",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2048",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/28817db7c71641dfac03d1d4703ca167",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/09f910bc9c0c4676aa97f3ba96dc84a5",
+                "mimeType": "png"
+            },
+            "family": "Data Upload",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=file,review absent",
+            "component": "src/components/portfolio/PortfolioFileImportForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/b0da17ef287e443b8aa781cd1771e33a",
+            "title": "V4 SUPPLEMENT / Compare Theme / Mobile / source-91e2ffab",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5064",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/06fb49bc4f4d4b1ab479ff9162651789",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/d92c0e287e5649a8b6678ab127bd08bc",
+                "mimeType": "png"
+            },
+            "family": "Compare Theme",
+            "deviceLabel": "Mobile",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/c4f19b1c965840e8adc2fbe5056fe473",
+            "title": "V5 CORRECTED / Compare Theme / Tablet / source-94409554",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "3150",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/5d2bb711402c45ca86b2f9d835c2ab4d",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/89a4b2de5e3c4103b5401e08227225ee",
+                "mimeType": "png"
+            },
+            "family": "Compare Theme",
+            "deviceLabel": "Tablet",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/1b227a5b79784aa9b8e13ba0513b8d3e",
+            "title": "V5 CORRECTED / Compare Similar / Mobile / source-f5aa3958",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4512",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/e4000dda39864c80a5efac9bbbcd4377",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/0e767222d12a441185884d112e0c593b",
+                "mimeType": "png"
+            },
+            "family": "Compare Similar",
+            "deviceLabel": "Mobile",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/63247c7189054c4db2c298e59095cfe5",
+            "title": "V5 CORRECTED / Ledger Analysis / Mobile / source-49b47c2d",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4880",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/3ab86e8e4e08460a8fff426f123862b2",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/ca40815554bf4fdd8e66c5247f9bd5d7",
+                "mimeType": "png"
+            },
+            "family": "Ledger Analysis",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/900abff340f84b47b05fc10ef1da05aa",
+            "title": "V4 SUPPLEMENT / Import Result / Tablet / source-5694fa4d",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2380",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/dcef6ebc64ae4d5c9ab88e52ec67bdfa",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/724018b77eb64b628b2528ca64d3cd98",
+                "mimeType": "png"
+            },
+            "family": "Import Result",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,importReceipt present",
+            "component": "src/components/portfolio/PortfolioImportResult.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/ad4ae8d524504cef9c82424822ebb24b",
+            "title": "V4 SUPPLEMENT / Column Mapping / Tablet / source-635b763d",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "3370",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/26d3eacad1844e76bbf7aacf181808fc",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/10713a52e1e94c1f840ea316d343b230",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/f5a2132c4e234e648269220f0e889387",
+            "title": "V5 CORRECTED / Import Result / Mobile / source-b8337d51",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4912",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/df836ffb1d5a4d389244f7b172d0a419",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/12c9ea1db5c74f7bb8e54d047f401ca0",
+                "mimeType": "png"
+            },
+            "family": "Import Result",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,importReceipt present",
+            "component": "src/components/portfolio/PortfolioImportResult.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/b7be4fa2034e4e2ea5585be95f85528e",
+            "title": "V6 REVIEWED / Import Review / Tablet / source-2aba9ae8",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2264",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/dbdb28e510a740ccb50363174fdcdf9f",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/7fed8c59ac8a4d36b87db117d58f6392",
+                "mimeType": "png"
+            },
+            "family": "Import Review",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/cf7686fbb620465f93418fde1572a6cc",
+            "title": "V5 CORRECTED / Import Result / Tablet / source-5694fa4d",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2244",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/cd861ba1042b460490c2de94246c5c28",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/6e1021a40f4449359d592dc775b0d5ef",
+                "mimeType": "png"
+            },
+            "family": "Import Result",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,importReceipt present",
+            "component": "src/components/portfolio/PortfolioImportResult.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/78d0205e431640bda54419b70969c9c5",
+            "title": "V4 SUPPLEMENT / Tax Comparison / Mobile / source-f7fe46e6",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5100",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/4410a3c9d84f4ec1945854c60907fa97",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/e9156a635b124b44a2ffd1c651236b8a",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "Mobile",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/db2cc5f608bf4e26bd5f27996dca055a",
+            "title": "V4 SUPPLEMENT / Compare Similar / Tablet / source-4f1fa494",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2768",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/0bb0aa4dc0364059b03c223deefacefd",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/39c8e2063b3644b88a201f2d23bc5145",
+                "mimeType": "png"
+            },
+            "family": "Compare Similar",
+            "deviceLabel": "Tablet",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/a3527858fcd748e384a70f1037018dd7",
+            "title": "V4 SUPPLEMENT / Column Mapping / PC / source-698b942e",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2838",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/c0521b852fd94d92a61c50e680af4dca",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/3524715982e144f086063d4c8d8a58e4",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "PC",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/a163a9cc046d4663891135abfcc98c00",
+            "title": "V5 CORRECTED / Ledger Analysis / Mobile / source-49b47c2d",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "6210",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/83b8a98269fb4563b753d53d7fe08091",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/77c2f18e05af4ed18616beb6dd7bcd3d",
+                "mimeType": "png"
+            },
+            "family": "Ledger Analysis",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/b75ab241b1834955b579f2862fd881ca",
+            "title": "V4 SUPPLEMENT / Simulator / Mobile / source-d6588413",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "6144",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/5737f85ca3a544598b7995f557a0df29",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/0327cfbd2f484c138ab362efd03493d9",
+                "mimeType": "png"
+            },
+            "family": "Simulator",
+            "deviceLabel": "Mobile",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/5cf9e9f7e1e24cffb578973c326e898a",
+            "title": "V4 SUPPLEMENT / Ledger Analysis / Mobile / source-49b47c2d",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "6220",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/73c300f523404745be82af9ed9274062",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/16c4d9ebe63246f3ab7a0fef833b3f44",
+                "mimeType": "png"
+            },
+            "family": "Ledger Analysis",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/36b701cb88c84a91a4ed9edab8229755",
+            "title": "V7 REFINED / Import Review / Mobile / source-26b5d69e",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5416",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/5c851254073d4df0b7995abebc1e8718",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/ac294d2797df447193da8986eb1e4ced",
+                "mimeType": "png"
+            },
+            "family": "Import Review",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/a2f6ff6e0900459fb63f88b6698b942e",
+            "title": "V3 CONTENT / Column Mapping / PC / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2788",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/1d6040840a6a47e5a8b3c71422ca09e3",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/7ad214c2b8064fb9a03cc72ea7276f9a",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "PC",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/85f567e48c3c4dbdad938b7e210c22ed",
+            "title": "V6 REVIEWED / Simulator / Tablet / source-5afff199",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "4164",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/b67d44ddd78e456ba8190d3849cecf9b",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/ae818d4e70c44050b18afb8b7670bb6e",
+                "mimeType": "png"
+            },
+            "family": "Simulator",
+            "deviceLabel": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/d8dc32e7671c40b4b49115524f1fa494",
+            "title": "V3 CONTENT / Compare Similar / Tablet / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2584",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/8d45b9c549da44898fc9c80fdc8f0192",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/6113987807e9465d830f985652d45c0a",
+                "mimeType": "png"
+            },
+            "family": "Compare Similar",
+            "deviceLabel": "Tablet",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/6a1a0813b8754057a3d4810091e2ffab",
+            "title": "V3 CONTENT / Compare Theme / Mobile / Cloud Continuation",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4958",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/fb5d64e0abd64abd8c6626f30f833863",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/f596e0631d49427dbd810dd05cf2b34d",
+                "mimeType": "png"
+            },
+            "family": "Compare Theme",
+            "deviceLabel": "Mobile",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/50277f2bdfce4312a6a18ee84355c5b5",
+            "title": "V3 CONTENT / Data Upload / Mobile / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "4318",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/b024084b361f47478a4097ca017cf023",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/5df1ac4fb6894c1090b37c7bf23c251f",
+                "mimeType": "png"
+            },
+            "family": "Data Upload",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=file,review absent",
+            "component": "src/components/portfolio/PortfolioFileImportForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/b9808a7feb4c4a7aa7589c2244bc4b1e",
+            "title": "V4 SUPPLEMENT / Ledger Analysis / Tablet / source-644db83b",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2824",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/d20fdc4b2c9342da843dc13039f56886",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/7165d04f86f641c38f937711d8984d02",
+                "mimeType": "png"
+            },
+            "family": "Ledger Analysis",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/62de6af16ced46e5b79741df6afeb49f",
+            "title": "V4 SUPPLEMENT / Simulator / Tablet / source-5afff199",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "4078",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/04dc4d8606034ff29556ac7d38b25337",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/648cff36c82547e8bc4e5a8866f5140b",
+                "mimeType": "png"
+            },
+            "family": "Simulator",
+            "deviceLabel": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/b3efde20a5bb4a98b300a9fef9453083",
+            "title": "V4 SUPPLEMENT / Data Upload / Mobile / source-4355c5b5",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4488",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/0876939c4db64ab5a2429ae5f7466e3b",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/9c138137032e458493ae97fd87603670",
+                "mimeType": "png"
+            },
+            "family": "Data Upload",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=file,review absent",
+            "component": "src/components/portfolio/PortfolioFileImportForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/9edaa1fbc8674f99bcf5c439bc3e87af",
+            "title": "V4 SUPPLEMENT / Import Review / Tablet / source-2aba9ae8",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2358",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/3fa5c422fa6f46c59bbcd6e2c2b51d0e",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/ab23afd037f3474abd5581ce31efffbf",
+                "mimeType": "png"
+            },
+            "family": "Import Review",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/d5664258822d4342bc776a71441f66ab",
+            "title": "V6 REVIEWED / Import Review / Mobile / source-26b5d69e",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5416",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/79f8998f190c427085075f1c7ebfb35d",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/a77291477115487d981c09eb5d1be9bc",
+                "mimeType": "png"
+            },
+            "family": "Import Review",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/4332fef1030840159907fdc490cf27ce",
+            "title": "V4 SUPPLEMENT / Compare Similar / Mobile / source-f5aa3958",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4810",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/037cf5576eee4d0593e21825177694ac",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/34887a2359b44f9d9f5072d3e18e7a9b",
+                "mimeType": "png"
+            },
+            "family": "Compare Similar",
+            "deviceLabel": "Mobile",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/d0b43e9660994824a136c6255694fa4d",
+            "title": "V3 CONTENT / Import Result / Tablet / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2356",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/d604e4ab56934b89ac57f795254bd48c",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/05b46fccc2fc42e18b45017acddf4c02",
+                "mimeType": "png"
+            },
+            "family": "Import Result",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,importReceipt present",
+            "component": "src/components/portfolio/PortfolioImportResult.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/c89ab0fe4dd14abb835c2605f7fe46e6",
+            "title": "V3 CONTENT / Tax Comparison / Mobile / Cloud Continuation",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5678",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/aae01da759a341c992cc898f983c5c05",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/2661dd77803249b58530ea40ada1b4f2",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "Mobile",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/aaf9e2eccd44491d8abd39cbb8337d51",
+            "title": "V3 CONTENT / Import Result / Mobile / Cloud Continuation",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5120",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/82bd29d5de8841a8982578dd5e08b705",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/949165bfb73f4d5a944a40ddc697754c",
+                "mimeType": "png"
+            },
+            "family": "Import Result",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,importReceipt present",
+            "component": "src/components/portfolio/PortfolioImportResult.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/9b158ce10929480d884b8aac644db83b",
+            "title": "V3 CONTENT / Ledger Analysis / Tablet / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2722",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/ac71bf9f35894c019f0a3d2504287a9a",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/84bd7fde0e98429d9ed10288bc205b0b",
+                "mimeType": "png"
+            },
+            "family": "Ledger Analysis",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/dd10765a06594fcfb629914194409554",
+            "title": "V3 CONTENT / Compare Theme / Tablet / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2850",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/be97c55a16684374b9d880b1ab64518d",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/76f376b0b8fc4704b419caefc448c25d",
+                "mimeType": "png"
+            },
+            "family": "Compare Theme",
+            "deviceLabel": "Tablet",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/9065fa5b3f88419885e612781d97e8d0",
+            "title": "V3 CONTENT / Column Mapping / PC / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2838",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/b4c089f95cbf4985be6eb61dbd77963a",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/e3ea911527844d1dbd147d04a2260504",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "PC",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/024baf1eaf014ff29b5de3c9e6abeae7",
+            "title": "V5 CORRECTED / Simulator / Tablet / source-5afff199",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "4074",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/700d2c6e2f5e4f359b118a5739a1eeb2",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/c901aa6ee377414faeadaef25991c088",
+                "mimeType": "png"
+            },
+            "family": "Simulator",
+            "deviceLabel": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/f16ac2deecfb41a7a08ee40ad6588413",
+            "title": "V3 CONTENT / Simulator / Mobile / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "5498",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/b62aa96f331e467cb47e76bc12e35287",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/e3843385bfb5470ba9553c743fa1dd11",
+                "mimeType": "png"
+            },
+            "family": "Simulator",
+            "deviceLabel": "Mobile",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/bc0e9697acfe435ebcb5c4355a09e7d3",
+            "title": "V3 CONTENT / Data Upload / Tablet / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2410",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/1c12bca9272a47c6857782862bfdc60a",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/b3689110d9f148df9db02af030ef8b12",
+                "mimeType": "png"
+            },
+            "family": "Data Upload",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=file,review absent",
+            "component": "src/components/portfolio/PortfolioFileImportForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6",
+            "title": "V5 CORRECTED / Data Upload / Mobile / source-4355c5b5",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4152",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/8f2658c5adbb41dab16139e14d73d783",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/397feaf3c7ba4b77b67b94984f17df88",
+                "mimeType": "png"
+            },
+            "family": "Data Upload",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=file,review absent",
+            "component": "src/components/portfolio/PortfolioFileImportForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/12982c4c330e4791ae020668c8495b4e",
+            "title": "V4 SUPPLEMENT / Column Mapping / Mobile / source-619c87d8",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5476",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/428a04a73bad4364ba6e591b8e02edc9",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/905b9ab2d69a44eca9d7d2905df6efb6",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/083e425973324555808c33bd49b47c2d",
+            "title": "V3 CONTENT / Ledger Analysis / Mobile / Cloud Continuation",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4866",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/7d73c847f5eb4738aa17a3bf0a0aebc9",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/ea7d92750836497ab10e3254e238d080",
+                "mimeType": "png"
+            },
+            "family": "Ledger Analysis",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/9894cb459e0240319d588a86635b763d",
+            "title": "V3 CONTENT / Column Mapping / Tablet / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "3262",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/cf3fc2c8d2fe4abb9085bed92085a433",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/590d653661c54dbeb4b2f42b79cdfb8a",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/578e7e0faee243f8b6fe14ee2aba9ae8",
+            "title": "V3 CONTENT / Import Review / Tablet / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2526",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/91e58e94945e4abc8c90ff4f5e097256",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/2252b816560141b39b15aba719901b77",
+                "mimeType": "png"
+            },
+            "family": "Import Review",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/388202e7721941e98095ae02b264b1b1",
+            "title": "V7 REFINED / Tax Comparison / Tablet / source-4b63bd4e",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "3340",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/9df0073fc7c547dcb053d77e8639c0fa",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/679cd48efa4847bf92cba47663653b16",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/43f4418eb5f1463bbab888e5eb807cda",
+            "title": "V4 SUPPLEMENT / Compare Theme / Tablet / source-94409554",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2854",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/b1e3e9c4dc734c2c9f70dbe9c03ca209",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/524589da762d403daaaaa846197fd6c2",
+                "mimeType": "png"
+            },
+            "family": "Compare Theme",
+            "deviceLabel": "Tablet",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/e4d43d2ae13a4799900130e5e5de8fc4",
+            "title": "V4 SUPPLEMENT / Import Result / Mobile / source-b8337d51",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5312",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/21613bbcaf4043db86cecb7727e09b60",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/9a8daffadfbf4a68b67f141f7cd1ecdf",
+                "mimeType": "png"
+            },
+            "family": "Import Result",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,importReceipt present",
+            "component": "src/components/portfolio/PortfolioImportResult.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/678e97a05dc14fec9c77e971bd5ef960",
+            "title": "V6 REVIEWED / Tax Comparison / PC / source-0c64cbee",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2792",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/f454c7a77fd9406db98ebf104aa72e66",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/a1a8d3d33dcb45db81c45fde8b0cebe5",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "PC",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/20329b97bb0d486688a78cda179acca6",
+            "title": "V4 SUPPLEMENT / Import Review / Mobile / source-26b5d69e",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5472",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/123a39ad5ae84305a63da32fec8a81f5",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/27ec797530ad40069caf1c99e4c654f3",
+                "mimeType": "png"
+            },
+            "family": "Import Review",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/bfb9cabe99bb456f9b6453234422c3ac",
+            "title": "V6 REVIEWED / Tax Comparison / Tablet / source-4b63bd4e",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "4082",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/51331801176944388ed14a9792a3e682",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/7f4f9cbbc9c149cc9d165df7b45e7503",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/600b56a5b6e7429fae79025f3346b930",
+            "title": "V4 SUPPLEMENT / Tax Comparison / PC / source-0c64cbee",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2932",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/42694795b03b43f9927b78d832e6835a",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/546747a515124cf0a313fc8c803e633f",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "PC",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/65c1b225397746ada071cf14ae4f687c",
+            "title": "V6 REVIEWED / Ledger Analysis / Tablet / source-644db83b",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2824",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/612b66486419429183983a3dea000b1e",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/5a8dd43ab340438fa9161095922f376e",
+                "mimeType": "png"
+            },
+            "family": "Ledger Analysis",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/fbb16724366740e1ab9d8fce50db986a",
+            "title": "V6 REVIEWED / Simulator / Mobile / source-d6588413",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "6198",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/c576631141f84abca44412f425477654",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/dec2e16b5de8471ca43c3b7ee7e5ed5b",
+                "mimeType": "png"
+            },
+            "family": "Simulator",
+            "deviceLabel": "Mobile",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/a60465754952449dbb96cd164b63bd4e",
+            "title": "V3 CONTENT / Tax Comparison / Tablet / Cloud Continuation",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "3868",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/42c5c96abc3349628035abe8734f9c67",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/ef58d7f34f0e484da6377e610a1fa9e3",
+                "mimeType": "png"
+            },
+            "family": "Tax Comparison",
+            "deviceLabel": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/e64931e753ca4625b32d9124c3ac8208",
+            "title": "V5 CORRECTED / Compare Similar / Tablet / source-4f1fa494",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2620",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/749ca26351f44b42a819171b5c437ac7",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/275a9bca948e444ca3b7abddddecd13f",
+                "mimeType": "png"
+            },
+            "family": "Compare Similar",
+            "deviceLabel": "Tablet",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/9ae2f0f1253a41b1839e792d36996900",
+            "title": "V10 A11Y REVIEW / Column Mapping / PC / from-37018dd7",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2838",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/b943de49270745b3a6b04cf1d83aa852",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/3f52645c84df4fa9a9a96620f70caaa7",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "PC",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/0bb2ab1d8197472f910b73ed175c4448",
+            "title": "V10 A11Y REVIEW / Column Mapping / Tablet / from-22ebb24b",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "3370",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/7677ba58aaf5488fbfbe74de0d97b2d1",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/281d7249ed44489f8bf90fdc8d96c951",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/e0fb1368a1684edaa56c1a506e806530",
+            "title": "V10 A11Y REVIEW / Column Mapping / Mobile / from-c8495b4e",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5476",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/752b51e21f004edbb405d87a891b1b4b",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/38c7b8cf0d9e40b197f0d38d174ada42",
+                "mimeType": "png"
+            },
+            "family": "Column Mapping",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/5aa7a573854a46db9b106f89c09c4f23",
+            "title": "V10 A11Y REVIEW / Import Review / Tablet / from-5f85528e",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2264",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/ec079d11aa044744b30f35836d7bdd18",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/b72326c485434c62be4ca0da7dbd83d1",
+                "mimeType": "png"
+            },
+            "family": "Import Review",
+            "deviceLabel": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/6bd9777b8bea43b98aea8397a29f809a",
+            "title": "V10 A11Y REVIEW / Import Review / Mobile / from-b8229755",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5416",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/f217159ca10043c7bb5f57efa2e9541f",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/7d648ae7542544028579c8ee3e03c95e",
+                "mimeType": "png"
+            },
+            "family": "Import Review",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/986013fd6b61404f82b4eeda2b643cd6",
+            "title": "V10 A11Y REVIEW / Ledger Analysis / Mobile / from-9095cfe5",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4880",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/a78c20dee9cd4b47a2d728fc9bf937a5",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/779d4e5aa26c439ab3c36097951e6759",
+                "mimeType": "png"
+            },
+            "family": "Ledger Analysis",
+            "deviceLabel": "Mobile",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/77fdbd798a3941c68f098120a210c44d",
+            "title": "V10 A11Y REVIEW / Compare Similar / Tablet / from-c3ac8208",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "2620",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/9da3d741f69f415981d005f86300579d",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/8627cbbeb9b74a338378f6355a59ae48",
+                "mimeType": "png"
+            },
+            "family": "Compare Similar",
+            "deviceLabel": "Tablet",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/2476bb94e3174e6182500d8f520a6424",
+            "title": "V10 A11Y REVIEW / Compare Similar / Mobile / from-513b8d3e",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "4512",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/2ee9cf61320e4573ab519e39cb76a0d0",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/45649660d58a4cb28f153ed65ce317e9",
+                "mimeType": "png"
+            },
+            "family": "Compare Similar",
+            "deviceLabel": "Mobile",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/12bcd42390bb468eb1700a909aec3f5d",
+            "title": "V9 FINAL REVIEW / Compare Theme / Tablet / source-94409554",
+            "deviceType": "DESKTOP",
+            "width": "2560",
+            "height": "3574",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/22f23d618eea4de88cd7cb9b3a2ac8ac",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/c8910db12d3e4f5fb8e7ae415562b908",
+                "mimeType": "png"
+            },
+            "family": "Compare Theme",
+            "deviceLabel": "Tablet",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        },
+        {
+            "name": "projects/17382728461495959991/screens/4dbfbf717c75483e88e6d1186ecbdb2b",
+            "title": "V10 A11Y REVIEW / Compare Theme / Mobile / from-cf4aa237",
+            "deviceType": "MOBILE",
+            "width": "780",
+            "height": "5156",
+            "htmlCode": {
+                "name": "projects/17382728461495959991/files/8fa5467855784f39b1f249168a87ab50",
+                "mimeType": "text/html"
+            },
+            "screenshot": {
+                "name": "projects/17382728461495959991/files/6d2122fd69b54698aa3c9985683bf70a",
+                "mimeType": "png"
+            },
+            "family": "Compare Theme",
+            "deviceLabel": "Mobile",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue"
+        }
+    ],
+    "targets": [
+        {
+            "family": "Column Mapping",
+            "device": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "component implemented; local synthetic flow passed; not deployed",
+            "visualAcceptance": "partial: heading tokens verified; whole-frame spacing/state review remains",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/e0fb1368a1684edaa56c1a506e806530",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/e0fb1368a1684edaa56c1a506e806530.html",
+                    "bytes": 33752,
+                    "sha256": "0d422a7319ddaa7a4ff267b186078f25a6b151cfc95b53eb8312383b6a08c085",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 553770,
+                    "sha256": "a164b53a3bda22a80b7da2e94b751f730cfb87e7e058005021335c2737694bf3",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/e0fb1368a1684edaa56c1a506e806530.png",
+                    "resourceName": "projects/17382728461495959991/files/38c7b8cf0d9e40b197f0d38d174ada42",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "780",
+                "height": "5476"
+            },
+            "sourceTitle": "V10 A11Y REVIEW / Column Mapping / Mobile / from-c8495b4e",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/12982c4c330e4791ae020668c8495b4e"
+            ],
+            "evidence": "PHASE32_COLUMN_MAPPING.md"
+        },
+        {
+            "family": "Column Mapping",
+            "device": "PC",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "component implemented; local synthetic flow passed; not deployed",
+            "visualAcceptance": "partial: heading tokens verified; whole-frame spacing/state review remains",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/9ae2f0f1253a41b1839e792d36996900",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/9ae2f0f1253a41b1839e792d36996900.html",
+                    "bytes": 35185,
+                    "sha256": "a2f37c699c53e1552447ab66ac7bf071c60f31904165141a917fbf3aeb23d98c",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 615853,
+                    "sha256": "12dea35e60afb22191bd1af248877dac330b9873ad8cffb17cdf8881e7f03f4e",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/9ae2f0f1253a41b1839e792d36996900.png",
+                    "resourceName": "projects/17382728461495959991/files/3f52645c84df4fa9a9a96620f70caaa7",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "2838"
+            },
+            "sourceTitle": "V10 A11Y REVIEW / Column Mapping / PC / from-37018dd7",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/a3527858fcd748e384a70f1037018dd7"
+            ],
+            "evidence": "PHASE32_COLUMN_MAPPING.md"
+        },
+        {
+            "family": "Column Mapping",
+            "device": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=broker,info present",
+            "component": "src/components/portfolio/BrokerSpreadsheetForm.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "component implemented; local synthetic flow passed; not deployed",
+            "visualAcceptance": "partial: heading tokens verified; whole-frame spacing/state review remains",
+            "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
+            "selectedScreen": "projects/17382728461495959991/screens/0bb2ab1d8197472f910b73ed175c4448",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/0bb2ab1d8197472f910b73ed175c4448.html",
+                    "bytes": 35493,
+                    "sha256": "b8892a94d76e345a29607cc4f63bc84832bc67f57410474462c924523166dd41",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 633949,
+                    "sha256": "4eacad1ef583e3d8770a5989c3c084ec4eff56ddf40f8b8445a9e0bab01cf8d3",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/0bb2ab1d8197472f910b73ed175c4448.png",
+                    "resourceName": "projects/17382728461495959991/files/281d7249ed44489f8bf90fdc8d96c951",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "3370"
+            },
+            "sourceTitle": "V10 A11Y REVIEW / Column Mapping / Tablet / from-22ebb24b",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/ad4ae8d524504cef9c82424822ebb24b"
+            ],
+            "evidence": "PHASE32_COLUMN_MAPPING.md"
+        },
+        {
+            "family": "Compare Similar",
+            "device": "Mobile",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue",
+            "overlapWithExisting14": true,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/2476bb94e3174e6182500d8f520a6424",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/2476bb94e3174e6182500d8f520a6424.html",
+                    "bytes": 27633,
+                    "sha256": "abe067baf66892adb794551e3d0b69aaca17e13cafb1efd6a5275dc4015a538e",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 457744,
+                    "sha256": "001b68485794d66595578b6ed0184c7c2c80b15a0894dbe750b9d2872325b594",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/2476bb94e3174e6182500d8f520a6424.png",
+                    "resourceName": "projects/17382728461495959991/files/45649660d58a4cb28f153ed65ce317e9",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "780",
+                "height": "4512"
+            },
+            "sourceTitle": "V10 A11Y REVIEW / Compare Similar / Mobile / from-513b8d3e",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/1b227a5b79784aa9b8e13ba0513b8d3e"
+            ]
+        },
+        {
+            "family": "Compare Similar",
+            "device": "Tablet",
+            "route": "/compare?view=similar",
+            "uiState": "existing similar comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue",
+            "overlapWithExisting14": true,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
+            "selectedScreen": "projects/17382728461495959991/screens/77fdbd798a3941c68f098120a210c44d",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/77fdbd798a3941c68f098120a210c44d.html",
+                    "bytes": 34229,
+                    "sha256": "618705db215d08ec61084b19dc7cfffe2754745b619a9a6f57203dc6bd2504d2",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 500244,
+                    "sha256": "94ccc26108c54c5bd8e082e25a189ffe79126bcb15828c1528794b4069268139",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/77fdbd798a3941c68f098120a210c44d.png",
+                    "resourceName": "projects/17382728461495959991/files/8627cbbeb9b74a338378f6355a59ae48",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "2620"
+            },
+            "sourceTitle": "V10 A11Y REVIEW / Compare Similar / Tablet / from-c3ac8208",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/e64931e753ca4625b32d9124c3ac8208"
+            ]
+        },
+        {
+            "family": "Compare Theme",
+            "device": "Mobile",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue",
+            "overlapWithExisting14": true,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/4dbfbf717c75483e88e6d1186ecbdb2b",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/4dbfbf717c75483e88e6d1186ecbdb2b.html",
+                    "bytes": 27957,
+                    "sha256": "b5b474c438c4b060a9cbb6f9f3f95c6e9139ced8e27fa6cc99c9cd4d34b4a1fd",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 529668,
+                    "sha256": "effcfd0c2b2aba9f7336d16838de318760e3d2082129c7b84c93518b08d3ff0f",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/4dbfbf717c75483e88e6d1186ecbdb2b.png",
+                    "resourceName": "projects/17382728461495959991/files/6d2122fd69b54698aa3c9985683bf70a",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "780",
+                "height": "5156"
+            },
+            "sourceTitle": "V10 A11Y REVIEW / Compare Theme / Mobile / from-cf4aa237",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/7a7f75ab55b64d38a618e21bcf4aa237"
+            ]
+        },
+        {
+            "family": "Compare Theme",
+            "device": "Tablet",
+            "route": "/compare?view=theme",
+            "uiState": "existing theme comparison view",
+            "component": "src/pages/UnderlyingExplorerView.vue",
+            "overlapWithExisting14": true,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
+            "selectedScreen": "projects/17382728461495959991/screens/12bcd42390bb468eb1700a909aec3f5d",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/12bcd42390bb468eb1700a909aec3f5d.html",
+                    "bytes": 35231,
+                    "sha256": "425bb68dca03a88b3cb077409bf4c70cc30c7eea5ce522823000a3d06c1af146",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 756415,
+                    "sha256": "226bf8002262ffb038bd24fa87410b12dc89726c9553bd5e495f4599eae3bcab",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/12bcd42390bb468eb1700a909aec3f5d.png",
+                    "resourceName": "projects/17382728461495959991/files/c8910db12d3e4f5fb8e7ae415562b908",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "3574"
+            },
+            "sourceTitle": "V9 FINAL REVIEW / Compare Theme / Tablet / source-94409554",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/c4f19b1c965840e8adc2fbe5056fe473"
+            ]
+        },
+        {
+            "family": "Data Upload",
+            "device": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=file,review absent",
+            "component": "src/components/portfolio/PortfolioFileImportForm.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/80b06442816e4d1baebc96cb520b19d6.html",
+                    "bytes": 17428,
+                    "sha256": "e090b6b5cabf0400adf6c0582dfc8e8474535283b5a94309b1c3c29f2aa5f358",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 442388,
+                    "sha256": "78a699ac0fd3c2917a9171806e0cb53eacef8b11de75acbbc47e94b6867c3287",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/80b06442816e4d1baebc96cb520b19d6.png",
+                    "resourceName": "projects/17382728461495959991/files/397feaf3c7ba4b77b67b94984f17df88",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "780",
+                "height": "4152"
+            },
+            "sourceTitle": "V5 CORRECTED / Data Upload / Mobile / source-4355c5b5",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6"
+            ]
+        },
+        {
+            "family": "Data Upload",
+            "device": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,inputMethod=file,review absent",
+            "component": "src/components/portfolio/PortfolioFileImportForm.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
+            "selectedScreen": "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/3c2a0d37b5f54a63b3a633f01f0d2b33.html",
+                    "bytes": 18056,
+                    "sha256": "6be160abd9a7a5520e4c9c9fb9aec0986de0b96f4735aa84bca42afa8b87fa83",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 471025,
+                    "sha256": "3cceeeea3f65269923d338f0b6d5c616b4901f00ccf9efd005ad6246d778174b",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/3c2a0d37b5f54a63b3a633f01f0d2b33.png",
+                    "resourceName": "projects/17382728461495959991/files/09f910bc9c0c4676aa97f3ba96dc84a5",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "2048"
+            },
+            "sourceTitle": "V5 CORRECTED / Data Upload / Tablet / source-5a09e7d3",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33"
+            ]
+        },
+        {
+            "family": "Import Result",
+            "device": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,importReceipt present",
+            "component": "src/components/portfolio/PortfolioImportResult.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/f5a2132c4e234e648269220f0e889387",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/f5a2132c4e234e648269220f0e889387.html",
+                    "bytes": 26628,
+                    "sha256": "15b93469be5e6bc043fb834dd491efbd3abb9cb6cdc3c9dc84dc31d2ba29e491",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 550320,
+                    "sha256": "f575284a7cdff1fdd06b99070123541adcd24e2454ff9e09a48f1cef1755c267",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/f5a2132c4e234e648269220f0e889387.png",
+                    "resourceName": "projects/17382728461495959991/files/12c9ea1db5c74f7bb8e54d047f401ca0",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "780",
+                "height": "4912"
+            },
+            "sourceTitle": "V5 CORRECTED / Import Result / Mobile / source-b8337d51",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/f5a2132c4e234e648269220f0e889387"
+            ]
+        },
+        {
+            "family": "Import Result",
+            "device": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,importReceipt present",
+            "component": "src/components/portfolio/PortfolioImportResult.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
+            "selectedScreen": "projects/17382728461495959991/screens/cf7686fbb620465f93418fde1572a6cc",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/cf7686fbb620465f93418fde1572a6cc.html",
+                    "bytes": 26366,
+                    "sha256": "91c500b272930134ed2e4b60d5039250c1ec9fbb2ecaea18ce9e1d8c9248ff6b",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 677328,
+                    "sha256": "142b2819fdbcefc33d7adff0404bbbc1515fef3bdda7991086762e48a1b60b83",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/cf7686fbb620465f93418fde1572a6cc.png",
+                    "resourceName": "projects/17382728461495959991/files/6e1021a40f4449359d592dc775b0d5ef",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "2244"
+            },
+            "sourceTitle": "V5 CORRECTED / Import Result / Tablet / source-5694fa4d",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/cf7686fbb620465f93418fde1572a6cc"
+            ]
+        },
+        {
+            "family": "Import Review",
+            "device": "Mobile",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/6bd9777b8bea43b98aea8397a29f809a",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/6bd9777b8bea43b98aea8397a29f809a.html",
+                    "bytes": 26176,
+                    "sha256": "b6a33ce0171c8914e02a5242c430e0c479b986e949def8cfbe62998ff62829a6",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 475344,
+                    "sha256": "c15ea5f4ecdce7e3ff814095e8724151bd78798caf3b2354b7b00ba1ce975bc0",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/6bd9777b8bea43b98aea8397a29f809a.png",
+                    "resourceName": "projects/17382728461495959991/files/7d648ae7542544028579c8ee3e03c95e",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "780",
+                "height": "5416"
+            },
+            "sourceTitle": "V10 A11Y REVIEW / Import Review / Mobile / from-b8229755",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/36b701cb88c84a91a4ed9edab8229755"
+            ]
+        },
+        {
+            "family": "Import Review",
+            "device": "Tablet",
+            "route": "/mypage?tab=assets",
+            "uiState": "uploadDialog,review present",
+            "component": "src/components/portfolio/PortfolioImportReview.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
+            "selectedScreen": "projects/17382728461495959991/screens/5aa7a573854a46db9b106f89c09c4f23",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/5aa7a573854a46db9b106f89c09c4f23.html",
+                    "bytes": 28919,
+                    "sha256": "4cc79e9816c31ab765467b38698e2551fb8a3a89533e7416ef7311ea0644d0ac",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 531534,
+                    "sha256": "b7446a248d0a4891d093a58464a9cdeb617fd6123f27eb0074b3e365b6d8f184",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/5aa7a573854a46db9b106f89c09c4f23.png",
+                    "resourceName": "projects/17382728461495959991/files/b72326c485434c62be4ca0da7dbd83d1",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "2264"
+            },
+            "sourceTitle": "V10 A11Y REVIEW / Import Review / Tablet / from-5f85528e",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/b7be4fa2034e4e2ea5585be95f85528e"
+            ]
+        },
+        {
+            "family": "Ledger Analysis",
+            "device": "Mobile",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/986013fd6b61404f82b4eeda2b643cd6",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/986013fd6b61404f82b4eeda2b643cd6.html",
+                    "bytes": 29466,
+                    "sha256": "ad3c3a6af709a947e3ff174322aaff8a44be259336d7d9854255f05e9497399d",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 575544,
+                    "sha256": "724002f4c458f8b9b39c85d5a2b6b332bea80e670f0144a71634de465c080f72",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/986013fd6b61404f82b4eeda2b643cd6.png",
+                    "resourceName": "projects/17382728461495959991/files/779d4e5aa26c439ab3c36097951e6759",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "780",
+                "height": "4880"
+            },
+            "sourceTitle": "V10 A11Y REVIEW / Ledger Analysis / Mobile / from-9095cfe5",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/63247c7189054c4db2c298e59095cfe5",
+                "projects/17382728461495959991/screens/a163a9cc046d4663891135abfcc98c00"
+            ]
+        },
+        {
+            "family": "Ledger Analysis",
+            "device": "Tablet",
+            "route": "/mypage?tab=insights",
+            "uiState": "AdvancedPortfolioInsights subsection",
+            "component": "src/components/portfolio/AdvancedPortfolioInsights.vue",
+            "overlapWithExisting14": false,
+            "owner": "redesign integration",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "legacy feature exists;new reference not applied",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
+            "selectedScreen": "projects/17382728461495959991/screens/65c1b225397746ada071cf14ae4f687c",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/65c1b225397746ada071cf14ae4f687c.html",
+                    "bytes": 29609,
+                    "sha256": "2c849ed4242cce0159529cf0bd4e8b484677d1715909812a1a56a0296e74fdf5",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 672269,
+                    "sha256": "d1da906f29b18fdcc64c00502166af267860594ae4ff7aa5bac438b98418af54",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/65c1b225397746ada071cf14ae4f687c.png",
+                    "resourceName": "projects/17382728461495959991/files/5a8dd43ab340438fa9161095922f376e",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "2824"
+            },
+            "sourceTitle": "V6 REVIEWED / Ledger Analysis / Tablet / source-644db83b",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/65c1b225397746ada071cf14ae4f687c"
+            ]
+        },
+        {
+            "family": "Simulator",
+            "device": "Mobile",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue",
+            "overlapWithExisting14": false,
+            "owner": "parallel simulator task",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "parallel work",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/fbb16724366740e1ab9d8fce50db986a",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/fbb16724366740e1ab9d8fce50db986a.html",
+                    "bytes": 35238,
+                    "sha256": "354e1eb864eaea71969479bf877d83468809ecac8547b976ed5ccdb0df9e77b3",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 666792,
+                    "sha256": "b9d4e197d1d1c2b0fd922807752f7fc4af854d5e4f726a3fa05059a131929f2a",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/fbb16724366740e1ab9d8fce50db986a.png",
+                    "resourceName": "projects/17382728461495959991/files/dec2e16b5de8471ca43c3b7ee7e5ed5b",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "780",
+                "height": "6198"
+            },
+            "sourceTitle": "V6 REVIEWED / Simulator / Mobile / source-d6588413",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/fbb16724366740e1ab9d8fce50db986a"
+            ]
+        },
+        {
+            "family": "Simulator",
+            "device": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=strategy",
+            "component": "src/pages/DividendSimulatorView.vue",
+            "overlapWithExisting14": false,
+            "owner": "parallel simulator task",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "parallel work",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
+            "selectedScreen": "projects/17382728461495959991/screens/85f567e48c3c4dbdad938b7e210c22ed",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/85f567e48c3c4dbdad938b7e210c22ed.html",
+                    "bytes": 32390,
+                    "sha256": "28be9039fed80243e37f8c19ba298400e1523c93b57de54608f99d5d804a3792",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 765106,
+                    "sha256": "6e54f9c249788175ea850abb5485942b7099752285b48c117e5f2b6b32de37a3",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/85f567e48c3c4dbdad938b7e210c22ed.png",
+                    "resourceName": "projects/17382728461495959991/files/ae818d4e70c44050b18afb8b7670bb6e",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "4164"
+            },
+            "sourceTitle": "V6 REVIEWED / Simulator / Tablet / source-5afff199",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/85f567e48c3c4dbdad938b7e210c22ed"
+            ]
+        },
+        {
+            "family": "Tax Comparison",
+            "device": "Mobile",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue",
+            "overlapWithExisting14": false,
+            "owner": "parallel simulator task",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "parallel work",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/b640738daaf5434d9af72530fe150006",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/b640738daaf5434d9af72530fe150006.html",
+                    "bytes": 34238,
+                    "sha256": "35a0094c9617e5ac6d72566b92a82f976be55ef6d191e02377e18a8835649409",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 667492,
+                    "sha256": "4f617a09e5680eaa0dd72695787d7557d817d4ee8181a560ece902ba75652bff",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/b640738daaf5434d9af72530fe150006.png",
+                    "resourceName": "projects/17382728461495959991/files/c2067560ce8c4291bb297d597885561e",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "780",
+                "height": "6400"
+            },
+            "sourceTitle": "V6 REVIEWED / Tax Comparison / Mobile / source-f7fe46e6",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/b640738daaf5434d9af72530fe150006"
+            ]
+        },
+        {
+            "family": "Tax Comparison",
+            "device": "PC",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue",
+            "overlapWithExisting14": false,
+            "owner": "parallel simulator task",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "parallel work",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": null,
+            "selectedScreen": "projects/17382728461495959991/screens/678e97a05dc14fec9c77e971bd5ef960",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/678e97a05dc14fec9c77e971bd5ef960.html",
+                    "bytes": 37458,
+                    "sha256": "46d69b7f6e5fe682c5c047667c781de7f0542ce8ce7edd1afc8a979250474cbb",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 811618,
+                    "sha256": "18b35806c0eccb8a6d3dcc3ff8c1ab9fd582c51db9c1d96019d405fae302e80c",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/678e97a05dc14fec9c77e971bd5ef960.png",
+                    "resourceName": "projects/17382728461495959991/files/a1a8d3d33dcb45db81c45fde8b0cebe5",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "2792"
+            },
+            "sourceTitle": "V6 REVIEWED / Tax Comparison / PC / source-0c64cbee",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/678e97a05dc14fec9c77e971bd5ef960"
+            ]
+        },
+        {
+            "family": "Tax Comparison",
+            "device": "Tablet",
+            "route": "/simulator",
+            "uiState": "comparison=tax",
+            "component": "src/pages/DividendSimulatorView.vue",
+            "overlapWithExisting14": false,
+            "owner": "parallel simulator task",
+            "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
+            "implementation": "parallel work",
+            "visualAcceptance": "not accepted",
+            "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
+            "selectedScreen": "projects/17382728461495959991/screens/388202e7721941e98095ae02b264b1b1",
+            "sourceFiles": [
+                {
+                    "kind": "htmlCode",
+                    "path": "originals/17382728461495959991/388202e7721941e98095ae02b264b1b1.html",
+                    "bytes": 32556,
+                    "sha256": "b0800c8c3d680b3970506a97ccd616db36832c29b17b6ac6e954c5e0967c4143",
+                    "metadata": null
+                },
+                {
+                    "kind": "screenshot",
+                    "bytes": 783443,
+                    "sha256": "0ba88e508d61fd8d9fcd82560d6be6caa4ed47daef72f12a7ce42ae90267f87d",
+                    "metadata": {
+                        "mimeType": "png"
+                    },
+                    "localCapturePath": "/workspace/stitch-v2-evidence/checks/phase32/final-originals/388202e7721941e98095ae02b264b1b1.png",
+                    "resourceName": "projects/17382728461495959991/files/679cd48efa4847bf92cba47663653b16",
+                    "durability": "Original PNG is retrievable by immutable Stitch MCP resourceName; localCapturePath is ephemeral and is not a repository file."
+                }
+            ],
+            "nativePixels": {
+                "width": "2560",
+                "height": "3340"
+            },
+            "sourceTitle": "V7 REFINED / Tax Comparison / Tablet / source-4b63bd4e",
+            "supersededCandidates": [
+                "projects/17382728461495959991/screens/388202e7721941e98095ae02b264b1b1"
+            ]
+        }
+    ],
+    "finalReviewedTargets": 20,
+    "candidateInventoryQualification": "Initial MCP listing:64 frames. Final20 IDs supplied later are authoritative; only selectedScreen is adopted. Older latestCandidates are superseded inventory hints, not implementation targets.",
+    "projectFrameCountAtInitialRead": 64,
+    "registeredFrameCount": 73,
+    "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f"
+}

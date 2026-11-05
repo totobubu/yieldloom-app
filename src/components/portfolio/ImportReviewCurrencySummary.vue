@@ -18,7 +18,7 @@
                 ><small>{{ group.count }}건 집계</small>
             </h4>
             <dl>
-                <template v-for="line in group.lines" :key="line.type"
+                <div v-for="line in group.lines" :key="line.type" class="import-currency-line"
                     ><dt>{{ line.label }}</dt>
                     <dd :data-type="line.type">
                         {{
@@ -26,7 +26,7 @@
                                 ? `금액 확인 ${line.unknown}건 · 합계 보류`
                                 : `${reviewRawAmount(line.amount, group.currency)} ${group.currency}`
                         }}
-                    </dd></template
+                    </dd></div
                 >
             </dl>
             <div v-if="group.netCash" class="import-currency-net">
@@ -107,11 +107,28 @@
     }
     .import-currency-group dl {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 8px;
         margin: 0;
         font-size: 12px;
         line-height: 18px;
+    }
+    .import-currency-line {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px;
+    }
+    @media (max-width: 640px) {
+        .import-currency-group dl {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px 10px;
+        }
+        .import-currency-line {
+            display: block;
+        }
+        .import-currency-group .import-currency-line dd {
+            margin-top: 4px;
+            text-align: left;
+        }
     }
     .import-currency-group dt {
         color: var(--app-muted);

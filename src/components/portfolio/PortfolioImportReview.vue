@@ -323,6 +323,7 @@
             aria-label="검토 현황 요약">
             <h3>검토 현황 요약</h3>
             <div class="review-verification-body">
+                <div class="review-verification-track" aria-hidden="true" />
                 <div class="review-verification-ring">
                     {{ busy ? '처리 중' : '대기' }}
                 </div>
@@ -335,11 +336,11 @@
                     <small>수정 후 전체 자료를 검증하고 저장합니다.</small>
                 </div>
             </div>
+            <ImportReviewCurrencySummary
+                v-if="compactReview"
+                :summary="currencyBreakdown"
+                class="review-top-currency" />
         </section>
-        <ImportReviewCurrencySummary
-            v-if="genericTransactions && compactReview"
-            :summary="currencyBreakdown"
-            class="review-top-currency" />
         <details class="review-extra-metrics" :open="!genericTransactions">
             <summary>
                 {{ isHoldings ? '잔고 상세 요약' : '추출 배당·거래 상세 요약' }}
@@ -2238,8 +2239,44 @@
         color: var(--app-muted);
         margin-top: 4px;
     }
-    .review-top-currency {
-        margin-bottom: 16px;
+    .review-verification-track {
+        display: none;
+    }
+    @media (max-width: 640px) {
+        .review-verification-summary {
+            position: relative;
+        }
+        .review-verification-summary > h3 {
+            padding-right: 130px;
+        }
+        .review-verification-body {
+            display: block;
+        }
+        .review-verification-ring {
+            display: none;
+        }
+        .review-verification-body strong {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 13px;
+            line-height: 20px;
+        }
+        .review-verification-track {
+            display: block;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--app-border);
+            margin: 12px 0;
+        }
+        .review-top-currency {
+            margin-top: 16px;
+            padding: 16px 0 0;
+            border: 0;
+            border-top: 1px solid var(--app-border);
+            border-radius: 0;
+            box-shadow: none;
+        }
     }
     .review-extra-metrics {
         margin-bottom: 16px;

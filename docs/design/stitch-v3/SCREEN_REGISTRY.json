@@ -7,7 +7,7 @@
   "families": 9,
   "testFramesExcluded": 1,
   "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-  "currentCodeBase": "90f0673287ab318f524f9e995b33919561da204f",
+  "currentCodeBase": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
   "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
   "frames": [
     {
@@ -1518,9 +1518,10 @@
         "environment": "production",
         "pr": 249,
         "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-        "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
-        "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
-        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -1569,9 +1570,10 @@
         "environment": "production",
         "pr": 249,
         "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-        "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
-        "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
-        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -1620,9 +1622,10 @@
         "environment": "production",
         "pr": 249,
         "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-        "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
-        "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
-        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -1634,7 +1637,7 @@
       "overlapWithExisting14": true,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#258 fcf2d48 and phase58 combined synthetic tests passed; final integration CI/production pending",
+      "implementation": "PR#265/#266 production13fefac; feature/work/promotion CI4 each passed; real deployed artifacts verified; authenticated customer flow not exercised; whole visual acceptance incomplete",
       "visualAcceptance": "not accepted",
       "referenceCaveat": null,
       "selectedScreen": "projects/17382728461495959991/screens/2476bb94e3174e6182500d8f520a6424",
@@ -1667,14 +1670,14 @@
         "projects/17382728461495959991/screens/1b227a5b79784aa9b8e13ba0513b8d3e"
       ],
       "rollout": {
-        "environment": "draft implementation; not production",
-        "branch": "feat/stitch-comparison-integration-phase44",
-        "sha": "91b81ab727a23414cc643aa21cc3417801d3d611",
-        "pr": 258,
-        "codeCheckpoint": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
-        "lastPassingCiHead": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
-        "evidence": "PHASE44_COMPARISON_INTEGRATION.md",
-        "qualification": "integrated in draft branch; not production; source-backed visual differences remain"
+        "environment": "production",
+        "pr": 266,
+        "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
+        "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -1686,7 +1689,7 @@
       "overlapWithExisting14": true,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#258 fcf2d48 and phase58 combined synthetic tests passed; final integration CI/production pending",
+      "implementation": "PR#265/#266 production13fefac; feature/work/promotion CI4 each passed; real deployed artifacts verified; authenticated customer flow not exercised; whole visual acceptance incomplete",
       "visualAcceptance": "not accepted",
       "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
       "selectedScreen": "projects/17382728461495959991/screens/77fdbd798a3941c68f098120a210c44d",
@@ -1719,14 +1722,14 @@
         "projects/17382728461495959991/screens/e64931e753ca4625b32d9124c3ac8208"
       ],
       "rollout": {
-        "environment": "draft implementation; not production",
-        "branch": "feat/stitch-comparison-integration-phase44",
-        "sha": "91b81ab727a23414cc643aa21cc3417801d3d611",
-        "pr": 258,
-        "codeCheckpoint": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
-        "lastPassingCiHead": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
-        "evidence": "PHASE44_COMPARISON_INTEGRATION.md",
-        "qualification": "integrated in draft branch; not production; source-backed visual differences remain"
+        "environment": "production",
+        "pr": 266,
+        "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
+        "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -1738,7 +1741,7 @@
       "overlapWithExisting14": true,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#258 fcf2d48 and phase58 combined synthetic tests passed; final integration CI/production pending",
+      "implementation": "PR#265/#266 production13fefac; feature/work/promotion CI4 each passed; real deployed artifacts verified; authenticated customer flow not exercised; whole visual acceptance incomplete",
       "visualAcceptance": "not accepted",
       "referenceCaveat": null,
       "selectedScreen": "projects/17382728461495959991/screens/4dbfbf717c75483e88e6d1186ecbdb2b",
@@ -1771,14 +1774,14 @@
         "projects/17382728461495959991/screens/7a7f75ab55b64d38a618e21bcf4aa237"
       ],
       "rollout": {
-        "environment": "draft implementation; not production",
-        "branch": "feat/stitch-comparison-integration-phase44",
-        "sha": "91b81ab727a23414cc643aa21cc3417801d3d611",
-        "pr": 258,
-        "codeCheckpoint": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
-        "lastPassingCiHead": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
-        "evidence": "PHASE44_COMPARISON_INTEGRATION.md",
-        "qualification": "integrated in draft branch; not production; source-backed visual differences remain"
+        "environment": "production",
+        "pr": 266,
+        "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
+        "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -1790,7 +1793,7 @@
       "overlapWithExisting14": true,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#258 fcf2d48 and phase58 combined synthetic tests passed; final integration CI/production pending",
+      "implementation": "PR#265/#266 production13fefac; feature/work/promotion CI4 each passed; real deployed artifacts verified; authenticated customer flow not exercised; whole visual acceptance incomplete",
       "visualAcceptance": "not accepted",
       "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
       "selectedScreen": "projects/17382728461495959991/screens/12bcd42390bb468eb1700a909aec3f5d",
@@ -1823,14 +1826,14 @@
         "projects/17382728461495959991/screens/c4f19b1c965840e8adc2fbe5056fe473"
       ],
       "rollout": {
-        "environment": "draft implementation; not production",
-        "branch": "feat/stitch-comparison-integration-phase44",
-        "sha": "91b81ab727a23414cc643aa21cc3417801d3d611",
-        "pr": 258,
-        "codeCheckpoint": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
-        "lastPassingCiHead": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
-        "evidence": "PHASE44_COMPARISON_INTEGRATION.md",
-        "qualification": "integrated in draft branch; not production; source-backed visual differences remain"
+        "environment": "production",
+        "pr": 266,
+        "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
+        "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -1878,9 +1881,10 @@
         "pr": 253,
         "mergeSha": "4b78ccc418270279aa42328bbb7c33454d165b02",
         "productionPromotion": 259,
-        "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
-        "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
-        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       },
       "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
       "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
@@ -1930,9 +1934,10 @@
         "pr": 253,
         "mergeSha": "4b78ccc418270279aa42328bbb7c33454d165b02",
         "productionPromotion": 259,
-        "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
-        "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
-        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       },
       "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
       "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
@@ -1980,9 +1985,10 @@
         "environment": "production",
         "pr": 257,
         "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
-        "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
-        "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
-        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -2028,9 +2034,10 @@
         "environment": "production",
         "pr": 257,
         "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
-        "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
-        "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
-        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -2042,8 +2049,8 @@
       "overlapWithExisting14": false,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#256 merged work543748e; feature CI4 and actual Preview passed; promotion PR#264 pending; no production claim",
-      "visualAcceptance": "not accepted",
+      "implementation": "PR#256/#264 production3b5dd96; premerge CI4 each and public deployed artifacts verified; authenticated customer flow not exercised",
+      "visualAcceptance": "not accepted; source font, measured detail differences and unavailable original-row API remain",
       "referenceCaveat": null,
       "selectedScreen": "projects/17382728461495959991/screens/6bd9777b8bea43b98aea8397a29f809a",
       "sourceFiles": [
@@ -2075,12 +2082,13 @@
         "projects/17382728461495959991/screens/36b701cb88c84a91a4ed9edab8229755"
       ],
       "rollout": {
-        "environment": "draft implementation; not production",
-        "pr": 256,
-        "branch": "feat/stitch-review-phase39",
-        "codeCheckpoint": "e8d9ff3",
-        "lastPassingCiHead": "1ad4abcbab8e6b56dff0afb5ee763c67a852f665",
-        "qualification": "newer draft head requires separate CI; authenticated account/PDF unverified"
+        "environment": "production",
+        "pr": 264,
+        "mergeSha": "3b5dd96e2dce6474f644ab1b3b81536ae789b300",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE61_REVIEW_PRODUCTION_AND_STATUS.md",
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -2092,8 +2100,8 @@
       "overlapWithExisting14": false,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#256 merged work543748e; feature CI4 and actual Preview passed; promotion PR#264 pending; no production claim",
-      "visualAcceptance": "not accepted",
+      "implementation": "PR#256/#264 production3b5dd96; premerge CI4 each and public deployed artifacts verified; authenticated customer flow not exercised",
+      "visualAcceptance": "not accepted; source font, measured detail differences and unavailable original-row API remain",
       "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
       "selectedScreen": "projects/17382728461495959991/screens/5aa7a573854a46db9b106f89c09c4f23",
       "sourceFiles": [
@@ -2125,12 +2133,13 @@
         "projects/17382728461495959991/screens/b7be4fa2034e4e2ea5585be95f85528e"
       ],
       "rollout": {
-        "environment": "draft implementation; not production",
-        "pr": 256,
-        "branch": "feat/stitch-review-phase39",
-        "codeCheckpoint": "e8d9ff3",
-        "lastPassingCiHead": "1ad4abcbab8e6b56dff0afb5ee763c67a852f665",
-        "qualification": "newer draft head requires separate CI; authenticated account/PDF unverified"
+        "environment": "production",
+        "pr": 264,
+        "mergeSha": "3b5dd96e2dce6474f644ab1b3b81536ae789b300",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE61_REVIEW_PRODUCTION_AND_STATUS.md",
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       }
     },
     {
@@ -2142,7 +2151,7 @@
       "overlapWithExisting14": false,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#260 4d0c625 and phase58 combined synthetic tests passed; final integration CI/production pending",
+      "implementation": "PR#265/#266 production13fefac; feature/work/promotion CI4 each passed; real deployed artifacts verified; authenticated customer flow not exercised; whole visual acceptance incomplete",
       "visualAcceptance": "not accepted; definitions/controls/detail layout remain",
       "referenceCaveat": null,
       "selectedScreen": "projects/17382728461495959991/screens/986013fd6b61404f82b4eeda2b643cd6",
@@ -2176,8 +2185,14 @@
         "projects/17382728461495959991/screens/a163a9cc046d4663891135abfcc98c00"
       ],
       "rollout": {
-        "environment": "not verified against final selected ID",
-        "qualification": "existing production feature is not final-reference acceptance"
+        "environment": "production",
+        "pr": 266,
+        "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
+        "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       },
       "implementationEvidence": "PHASE57_LEDGER_MOBILE_TITLE.md"
     },
@@ -2190,7 +2205,7 @@
       "overlapWithExisting14": false,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#260 4d0c625 and phase58 combined synthetic tests passed; final integration CI/production pending",
+      "implementation": "PR#265/#266 production13fefac; feature/work/promotion CI4 each passed; real deployed artifacts verified; authenticated customer flow not exercised; whole visual acceptance incomplete",
       "visualAcceptance": "not accepted; definitions/controls/detail layout remain",
       "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
       "selectedScreen": "projects/17382728461495959991/screens/65c1b225397746ada071cf14ae4f687c",
@@ -2221,8 +2236,14 @@
       "sourceTitle": "V6 REVIEWED / Ledger Analysis / Tablet / source-644db83b",
       "supersededCandidates": [],
       "rollout": {
-        "environment": "not verified against final selected ID",
-        "qualification": "existing production feature is not final-reference acceptance"
+        "environment": "production",
+        "pr": 266,
+        "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedProductionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
+        "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
+        "preservedBy": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+        "lastVerifiedEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md"
       },
       "implementationEvidence": "PHASE57_LEDGER_MOBILE_TITLE.md"
     },
@@ -2452,17 +2473,17 @@
   "projectFrameCountAtInitialRead": 64,
   "registeredFrameCount": 73,
   "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-  "latestImplementationBase": "90f0673287ab318f524f9e995b33919561da204f",
+  "latestImplementationBase": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
   "rolloutSnapshot": {
-    "recordedAt": "2026-11-05T13:00:21.797226+00:00",
+    "recordedAt": "2026-11-05T16:08:00Z",
     "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
-    "productionMergeSha": "90f0673287ab318f524f9e995b33919561da204f",
-    "productionTargets": 7,
-    "localWorkTargets": 4,
-    "parallelDeliveredDraftTargets": 4,
+    "productionMergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+    "productionTargets": 15,
+    "localWorkTargets": 0,
+    "parallelDeliveredDraftTargets": 0,
     "externalUnverifiedTargets": 5,
     "visualAcceptance": "whole-frame acceptance remains incomplete",
-    "evidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-    "qualification": "7 production-connected /8 draft /5 external handoff unverified"
+    "evidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
+    "qualification": "15 production-connected /5 external handoff unverified; not whole-frame visual acceptance or real-account verification"
   }
 }

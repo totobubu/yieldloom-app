@@ -1,0 +1,22 @@
+{
+  "productionSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
+  "workSha": "d379844af2db08e2ac10fb6c6e94f73c770ed379",
+  "featureSha": "2299dd0f44cebaa269b3ea136a516d29f903978e",
+  "promotionPR": 266,
+  "featureCI": 42054585348,
+  "workCI": 42057463487,
+  "promotionCI": 42057533017,
+  "premergeCI": "each four jobs SUCCESS",
+  "pagesCI": 42060495908,
+  "pagesState": "success",
+  "vercelDeployment": "dpl_Erqb4Jwyonv4pCwYiptaqc6zfD6v",
+  "vercelState": "READY",
+  "metadataSha256": "b54bc1cca63cb303a8b1e982b42a7238e1741013d3ce3908616c5dcd206827b7",
+  "postMainCI": {
+    "run": 42060495817,
+    "status": "SUCCESS; application/portfolio-api/browser/registration-browser all passed"
+  },
+  "renderScope": "public comparison at1440/834/390; no authenticated account/PDF",
+  "pagesDeepLink": "HTTP404 SPA fallback rendered correctly; not HTTP200",
+  "transitionQualification": "250ms sample detected tablet horizontal overflow; settled fonts+1200ms sample width834 equals viewport834, mobile has12 cards, no errors or writes"
+}

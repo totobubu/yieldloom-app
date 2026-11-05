@@ -1,0 +1,1 @@
+PASS Pages comparison: native HTML200, view/query preservation, refresh200, unknown route404, no writes.

@@ -1,0 +1,15 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: {"view":"similar","width":834,"metrics":{"viewport":834,"widths":[868,868,868,868,868,868,868,868,868,868,868,868],"icons":[195.5625,195.5625,195.5625,195.5625]}}
+    at file:///workspace/yieldloom-redesign-integration-phase58/tests/comparison-cold-icons.browser.mjs:25:20 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

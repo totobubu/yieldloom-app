@@ -167,3 +167,42 @@ jobs:
                       /tmp/yieldloom-enhancements-*.png
                       /tmp/yieldloom-fifo-*.png
                   retention-days: 5
+
+    registration-browser:
+        runs-on: ubuntu-24.04
+        timeout-minutes: 12
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '24'
+                  cache: npm
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: '3.12'
+                  cache: pip
+                  cache-dependency-path: requirements.txt
+            - run: npm ci --no-audit --no-fund
+            - run: python -m pip install -r requirements.txt
+            - run: npx playwright install --with-deps chromium
+            - name: Existing registration flows with an opt-in synthetic PDF and memory API
+              env:
+                  VITE_API_PROXY_TARGET: http://127.0.0.1:5011
+                  VITE_API_BASE_URL: ''
+                  FAMILY_TEST_SYNTHETIC_PDF: '1'
+              run: |
+                  python tests/family_portfolio_test_server.py > /tmp/registration-api.log 2>&1 &
+                  env -u GITHUB_ACTIONS npm run dev -- --host 127.0.0.1 --port 5175 --strictPort > /tmp/registration-vite.log 2>&1 &
+                  trap 'kill $(jobs -pr) 2>/dev/null || true' EXIT
+                  node scripts/utils/wait-test-servers.mjs
+                  export CHROMIUM_PATH="$(node --input-type=module -e "import { chromium } from 'playwright'; process.stdout.write(chromium.executablePath());")"
+                  FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/asset-management.browser.mjs
+            - uses: actions/upload-artifact@v4
+              if: failure()
+              with:
+                  name: registration-browser-diagnostics
+                  path: |
+                      /tmp/registration-api.log
+                      /tmp/registration-vite.log
+                      /tmp/yieldloom-asset-management-review/
+                  retention-days: 5

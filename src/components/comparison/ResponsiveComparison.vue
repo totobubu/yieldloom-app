@@ -308,7 +308,15 @@
                     option-label="displayLabel"
                     option-value="value"
                     filter
-                    @update:model-value="emit('theme', $event)" />
+                    @update:model-value="emit('theme', $event)">
+                    <template #dropdownicon
+                        ><span
+                            class="comparison-filter-arrow"
+                            aria-hidden="true"
+                            >keyboard_arrow_down</span
+                        ></template
+                    >
+                </Select>
             </label>
             <div v-else class="responsive-filter-heading">
                 <h2>종속 필터 설정</h2>
@@ -331,9 +339,15 @@
                         option-label="label"
                         option-value="value"
                         :disabled="loading || !options[field.key]?.length"
-                        @update:model-value="
-                            models[field.key].value = $event
-                        " />
+                        @update:model-value="models[field.key].value = $event">
+                        <template #dropdownicon
+                            ><span
+                                class="comparison-filter-arrow"
+                                aria-hidden="true"
+                                >keyboard_arrow_down</span
+                            ></template
+                        >
+                    </Select>
                 </label>
             </div>
             <div class="filter-search-row">
@@ -2330,5 +2344,15 @@
         .responsive-comparison {
             width: calc(100% - 16px);
         }
+    }
+    .comparison-filter-arrow {
+        font-family: 'Comparison Material Symbols';
+        font-size: 18px;
+        line-height: 1;
+        font-weight: 400;
+        font-style: normal;
+        font-feature-settings: 'liga';
+        color: var(--app-muted);
+        pointer-events: none;
     }
 </style>

@@ -1,0 +1,1 @@
+Responsive comparison: 14 viewport/view states passed; /workspace/scratch/compare-stitch/verification

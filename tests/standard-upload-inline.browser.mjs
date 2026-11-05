@@ -191,9 +191,15 @@ try {
         0,
         'inline preview and next do not commit ledger rows'
     );
-    await page.getByText('2행 수정', { exact: true }).click();
-    if (!(await page.locator('#generic-row-edit-2').evaluate((el) => el.open)))
-        await page.getByText('3행 수정', { exact: true }).click();
+    await page.getByRole('button', { name: '2행 수정', exact: true }).click();
+    if (
+        (await page
+            .getByRole('button', { name: '3행 수정', exact: true })
+            .getAttribute('aria-expanded')) !== 'true'
+    )
+        await page
+            .getByRole('button', { name: '3행 수정', exact: true })
+            .click();
     await page.getByLabel('2행 amount', { exact: true }).fill('200');
     await page.getByLabel('3행 amount', { exact: true }).fill('24000');
     await page
@@ -304,13 +310,11 @@ try {
                 `2026-03-10,PAGE-K,1,${index + 1},KRW,buy,PAGE-${String(index + 1).padStart(4, '0')}`
         ).join('\n') +
         '\n';
-    await page
-        .getByLabel('파일', { exact: true })
-        .setInputFiles({
-            name: 'DEMO_101_ROWS.csv',
-            mimeType: 'text/csv',
-            buffer: Buffer.from(pageCsv),
-        });
+    await page.getByLabel('파일', { exact: true }).setInputFiles({
+        name: 'DEMO_101_ROWS.csv',
+        mimeType: 'text/csv',
+        buffer: Buffer.from(pageCsv),
+    });
     await page.locator('#import-confirmed').check();
     await extract();
     assert.equal(count('preview'), 6);
@@ -323,16 +327,21 @@ try {
     assert.equal(await page.locator('.generic-review-card').count(), 50);
     const beforeCardEdits = requests.length;
     await button('다음 페이지').click();
-    await page.getByText('51행 수정', { exact: true }).click();
+    await page.getByRole('button', { name: '51행 수정', exact: true }).click();
     await page.getByLabel('51행 quantity', { exact: true }).fill('2');
     await page.getByLabel('추출 결과 검색', { exact: true }).fill('PAGE-0099');
     assert.equal(await page.locator('.generic-review-card').count(), 1);
-    await page.getByText('99행 수정', { exact: true }).click();
+    await page.getByRole('button', { name: '99행 수정', exact: true }).click();
     await page.getByLabel('99행 amount', { exact: true }).fill('9999');
+    await page.setViewportSize({ width: 834, height: 1100 });
+    await page.locator('.generic-review-table').waitFor();
+    assert.equal(await page.locator('.generic-review-card').count(), 0);
+    await page.getByRole('button', { name: '99행 수정', exact: true }).click();
+    await page.getByLabel('99행 quantity', { exact: true }).fill('4');
     assert.equal(
         requests.length,
         beforeCardEdits,
-        'pagination/filter/card edits stay local'
+        'pagination/filter/Mobile and Tablet edits stay local'
     );
     await page
         .getByLabel(
@@ -351,9 +360,10 @@ try {
     assert.equal(Number(committed[50].quantity), 2);
     assert.equal(committed[98].externalId, 'PAGE-0099');
     assert.equal(Number(committed[98].amount), 9999);
+    assert.equal(Number(committed[98].quantity), 4);
     assert.deepEqual(errors, []);
     console.log(
-        'PASS actual CSV/XLSX (first sheet)/holdings → one explicit preview per extraction → three rows/zero/missing values → scope invalidation → next without API → Mobile edits/full six-row commit and filtered101-row commit with original row identity; four widths, no page overflow, no production writes.'
+        'PASS actual CSV/XLSX (first sheet)/holdings → one explicit preview per extraction → three rows/zero/missing values → scope invalidation → next without API → Mobile edits/full six-row commit and Mobile→Tablet filtered101-row commit with original row identity; four widths, no page overflow, no production writes.'
     );
 } catch (error) {
     console.error(

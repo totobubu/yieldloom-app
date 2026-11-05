@@ -9,7 +9,8 @@
     import StitchSymbol from './StitchSymbol.vue';
     import TossPdfImportReview from './TossPdfImportReview.vue';
     import GenericImportReviewCards from './GenericImportReviewCards.vue';
-    import ImportReviewCurrencySummary from './ImportReviewCurrencySummary.vue';
+    import ImportReviewStatusSummary from './ImportReviewStatusSummary.vue';
+    import GenericImportReviewTable from './GenericImportReviewTable.vue';
     import { reviewCurrencyBreakdown } from '@/services/importReviewCurrency.js';
     import { validCalendarDate } from '@/services/portfolioCalendar.js';
     import { importReviewGroups } from '@/services/tossImportReview.js';
@@ -193,6 +194,18 @@
             ? `${dates[0]} ~ ${dates.at(-1)}`
             : '날짜를 확인해 주세요';
     });
+    const sortCaption = computed(() => {
+        const [begin, end] = period.value.split(' ~ ');
+        const context =
+            props.review.rows.every((row) => validCalendarDate(row.date)) &&
+            begin &&
+            end
+                ? begin.slice(0, 7) === end.slice(0, 7)
+                    ? begin.slice(0, 7)
+                    : period.value
+                : '날짜 확인 필요';
+        return `정렬: ${sortOptions.find((option) => option.value === sortOrder.value)?.label} (${context})`;
+    });
     const currencies = computed(
         () =>
             [
@@ -263,7 +276,10 @@
 </script>
 
 <template>
-    <div id="portfolio-import-review" class="import-review">
+    <div
+        id="portfolio-import-review"
+        class="import-review"
+        :class="{ 'import-review--generic': genericTransactions }">
         <header class="review-heading">
             <div class="review-heading-copy">
                 <div class="review-meta">
@@ -278,7 +294,7 @@
                     <span class="review-kind-badge">{{
                         isHoldings ? '보유 잔고' : '거래 내역'
                     }}</span>
-                    <span class="account-capsule"
+                    <span v-if="!genericTransactions" class="account-capsule"
                         ><span />{{ accountLabel }}</span
                     >
                 </div>
@@ -296,7 +312,11 @@
                         }}</span
                     >
                 </div>
-                <p>
+                <p v-if="genericTransactions">
+                    업로드된 데이터 파싱 결과를 최종 확인하고 배당달력
+                    포트폴리오에 안전하게 반영합니다.
+                </p>
+                <p v-else>
                     업로드된 자료 {{ counts.all.toLocaleString() }}건을 최종
                     확인하고 포트폴리오에 반영합니다. 확인이 필요한 내용은 저장
                     전에 수정하세요.
@@ -317,30 +337,12 @@
                 </li>
             </ol>
         </header>
-        <section
-            v-if="genericTransactions"
-            class="review-verification-summary"
-            aria-label="검토 현황 요약">
-            <h3>검토 현황 요약</h3>
-            <div class="review-verification-body">
-                <div class="review-verification-track" aria-hidden="true" />
-                <div class="review-verification-ring">
-                    {{ busy ? '처리 중' : '대기' }}
-                </div>
-                <div>
-                    <strong>최종 검증 {{ busy ? '진행 중' : '대기' }}</strong>
-                    <p>
-                        추출 {{ counts.all }}건 · 확인 필요
-                        {{ counts.unresolved }}건
-                    </p>
-                    <small>수정 후 전체 자료를 검증하고 저장합니다.</small>
-                </div>
-            </div>
-            <ImportReviewCurrencySummary
-                v-if="compactReview"
-                :summary="currencyBreakdown"
-                class="review-top-currency" />
-        </section>
+        <ImportReviewStatusSummary
+            v-if="genericTransactions && compactReview"
+            :counts="counts"
+            :summary="currencyBreakdown"
+            :busy="busy"
+            class="review-mobile-summary" />
         <details class="review-extra-metrics" :open="!genericTransactions">
             <summary>
                 {{ isHoldings ? '잔고 상세 요약' : '추출 배당·거래 상세 요약' }}
@@ -440,8 +442,13 @@
                     </p>
                 </article>
             </div>
+            <p v-if="genericTransactions" class="review-extra-note">
+                추출 결과와 원문을 확인한 뒤 저장해 주세요. 필터와 관계없이 전체
+                행을 검증하며 오류가 남으면 저장되지 않습니다. 추출 후 1시간
+                이내 검토해 주세요.
+            </p>
         </details>
-        <div class="review-assurance">
+        <div v-if="!genericTransactions" class="review-assurance">
             <span class="assurance-icon"
                 ><i class="pi pi-verified" aria-hidden="true"
             /></span>
@@ -467,7 +474,9 @@
             <slot name="identity-review" />
         </details>
         <slot name="holdings-warning" />
-        <div class="review-grid">
+        <div
+            class="review-grid"
+            :class="{ 'review-grid--generic': genericTransactions }">
             <div class="review-main">
                 <article
                     class="review-toolbar"
@@ -490,8 +499,21 @@
                                 :aria-label="`${filter.label} ${counts[filter.value]}`"
                                 :disabled="busy"
                                 @click="category = filter.value">
-                                {{ filter.label
-                                }}<b>{{ counts[filter.value] }}</b>
+                                {{
+                                    genericTransactions
+                                        ? {
+                                              dividend: '배당/배당취소',
+                                              buy: '매수',
+                                              sell: '매도',
+                                              cash: '현금',
+                                              unresolved: '확인 필요 이슈',
+                                          }[filter.value] || filter.label
+                                        : filter.label
+                                }}<b>{{
+                                    genericTransactions
+                                        ? `(${counts[filter.value]})`
+                                        : counts[filter.value]
+                                }}</b>
                             </button>
                         </div>
                         <label v-if="!genericTransactions" class="issues-toggle"
@@ -673,7 +695,11 @@
                 </p>
                 <div class="review-table-card">
                     <div
-                        v-if="review.source !== 'toss-pdf' && !compactReview"
+                        v-if="
+                            review.source !== 'toss-pdf' &&
+                            !compactReview &&
+                            !genericTransactions
+                        "
                         class="table-caption">
                         <strong>{{
                             isHoldings ? '보유 잔고 검토' : '거래 내역 검토'
@@ -703,7 +729,19 @@
                         :rows="filteredRows"
                         :columns="columns"
                         :issue-indices="issueIndices"
+                        :scope-key="review.reviewId"
+                        :sort-label="genericTransactions ? sortCaption : ''"
                         :is-holdings="isHoldings"
+                        :busy="busy"
+                        @update-row="updateRow" />
+                    <GenericImportReviewTable
+                        v-else-if="genericTransactions"
+                        v-model:first="first"
+                        v-model:page-size="pageSize"
+                        :rows="filteredRows"
+                        :columns="columns"
+                        :issue-indices="issueIndices"
+                        :scope-key="review.reviewId"
                         :busy="busy"
                         @update-row="updateRow" />
                     <DataTable
@@ -785,11 +823,28 @@
                         ></Column>
                     </DataTable>
                 </div>
+                <article
+                    v-if="genericTransactions"
+                    class="review-example-guide">
+                    <h3>예시 검토 결과 안내</h3>
+                    <p v-if="!compactReview" class="review-original-note">
+                        행별 파일 원문 미지원 · 업로드 파일을 직접 대조해
+                        주세요.
+                    </p>
+                    <p>
+                        현재 검토 자료와 별개인 참고 예시입니다. 미등록
+                        종목·누락 통화는 원문을 대조하고 수정하세요.
+                    </p>
+                    <code>20260307, 신규미식별종목, 매수, 10, , 100000</code
+                    ><small>예시: 통화 누락 시 원문 확인 후 수정</small>
+                </article>
             </div>
             <aside class="review-sidebar" aria-label="추출 자료 확인 안내">
-                <ImportReviewCurrencySummary
+                <ImportReviewStatusSummary
                     v-if="genericTransactions && !compactReview"
-                    :summary="currencyBreakdown" />
+                    :counts="counts"
+                    :summary="currencyBreakdown"
+                    :busy="busy" />
                 <details
                     class="review-existing-guidance"
                     :open="!genericTransactions">
@@ -934,19 +989,20 @@
                         </ul>
                     </article>
                 </details>
+
                 <article
-                    v-if="genericTransactions"
-                    class="review-example-guide">
-                    <h3>예시 검토 결과 안내</h3>
+                    v-if="genericTransactions && !compactReview"
+                    class="review-pending-guide">
+                    <h3>저장 전 상태 안내</h3>
                     <p>
-                        현재 검토 자료와 별개인 참고 예시입니다. 미등록
-                        종목·누락 통화는 원문을 대조하고 수정하세요.
+                        추출 {{ counts.all }}건의 원문과 거래 유형을 확인해
+                        주세요. 최종 반영 동의 후 전체 자료를 검증합니다.
                     </p>
-                    <code>20260307, 신규미식별종목, 매수, 10, , 100000</code
-                    ><small>예시: 통화 누락 시 원문 확인 후 수정</small>
                 </article>
                 <article class="review-side-card review-save-bar">
-                    <h3>최종 반영 동의 및 저장</h3>
+                    <h3 v-if="!genericTransactions || !compactReview">
+                        최종 반영 동의 및 저장
+                    </h3>
                     <div class="review-save-account">
                         <span>대상 계좌</span
                         ><strong>{{ accountLabel }}</strong>
@@ -983,7 +1039,7 @@
                         text
                         :disabled="busy"
                         @click="emit('cancel')" />
-                    <p>
+                    <p v-if="!genericTransactions">
                         <i class="pi pi-info-circle" aria-hidden="true" />검토
                         필요 <strong>{{ counts.unresolved }}건</strong> · 저장
                         시 전체 {{ counts.all.toLocaleString() }}건을 다시
@@ -991,6 +1047,7 @@
                     </p>
                     <div class="review-save-actions">
                         <Button
+                            v-if="!genericTransactions"
                             type="button"
                             label="취소"
                             severity="secondary"
@@ -2198,84 +2255,62 @@
         border: 0;
         box-shadow: none;
     }
-    .review-verification-summary {
-        padding: 14px;
-        border: 1px solid var(--app-border);
-        border-radius: 12px;
-        background: var(--app-surface);
-        margin-bottom: 16px;
+    .import-review--generic .review-existing-guidance {
+        order: 10;
     }
-    .review-verification-summary h3 {
-        font-size: 13px;
-        line-height: 20px;
-        margin: 0 0 12px;
-    }
-    .review-verification-body {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-    }
-    .review-verification-ring {
-        display: grid;
-        place-items: center;
-        flex: 0 0 72px;
-        width: 72px;
-        height: 72px;
-        border: 6px solid var(--app-border);
-        border-radius: 50%;
-        font-size: 14px;
-        line-height: 20px;
-        font-weight: 700;
-        color: var(--app-muted);
-    }
-    .review-verification-body strong {
-        font-size: 14px;
-        line-height: 20px;
-    }
-    .review-verification-body p,
-    .review-verification-body small {
+    .review-extra-note {
+        padding: 12px;
         font-size: 11px;
         line-height: 18px;
         color: var(--app-muted);
-        margin-top: 4px;
     }
-    .review-verification-track {
-        display: none;
+    .review-mobile-summary {
+        margin-bottom: 16px;
+    }
+    .import-review--generic {
+        display: flex;
+        flex-direction: column;
+    }
+    .import-review--generic > .review-extra-metrics {
+        order: 2;
+        margin-top: 16px;
+    }
+    .review-pending-guide {
+        padding: 16px;
+        border-radius: 12px;
+        background: var(--app-warning-light);
+        border: 1px solid
+            color-mix(in srgb, var(--app-warning-text) 25%, var(--app-border));
+    }
+    .review-pending-guide h3 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .review-pending-guide p {
+        font-size: 12px;
+        line-height: 20px;
+        color: var(--app-muted);
+    }
+    .review-grid--generic {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    @media (min-width: 1024px) {
+        .review-grid--generic {
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+        }
+        .review-grid--generic > .review-main {
+            grid-column: span 7;
+        }
+        .review-grid--generic > .review-sidebar {
+            grid-column: span 5;
+        }
     }
     @media (max-width: 640px) {
-        .review-verification-summary {
-            position: relative;
-        }
-        .review-verification-summary > h3 {
-            padding-right: 130px;
-        }
-        .review-verification-body {
-            display: block;
-        }
-        .review-verification-ring {
-            display: none;
-        }
-        .review-verification-body strong {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            font-size: 13px;
-            line-height: 20px;
-        }
-        .review-verification-track {
-            display: block;
-            height: 8px;
-            border-radius: 999px;
-            background: var(--app-border);
-            margin: 12px 0;
-        }
-        .review-top-currency {
-            margin-top: 16px;
-            padding: 16px 0 0;
+        .import-review--generic .review-toolbar--generic {
+            padding: 0;
             border: 0;
-            border-top: 1px solid var(--app-border);
-            border-radius: 0;
-            box-shadow: none;
+            background: transparent;
         }
     }
     .review-extra-metrics {
@@ -2401,5 +2436,220 @@
     .review-advanced-controls :deep(.p-select) {
         max-width: 100%;
         font-size: 11px;
+    }
+    .import-review--generic {
+        font-family:
+            ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+            'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    }
+    html:not(.p-dark) .import-review--generic .review-heading p {
+        color: #3e4947;
+    }
+    .import-review--generic .review-toolbar--generic .search-field {
+        display: block;
+        position: relative;
+        background: transparent;
+    }
+    .import-review--generic .review-toolbar--generic .search-field i {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+    }
+    .import-review--generic
+        .review-toolbar--generic
+        .search-field
+        .p-inputtext {
+        padding-left: 32px;
+        width: 100%;
+    }
+    .import-review--generic .review-save-bar {
+        gap: 14px;
+    }
+    .import-review--generic .review-save-bar h3 {
+        margin: 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--app-border);
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .import-review--generic .review-save-actions .p-button {
+        min-height: 44px;
+    }
+    @media (min-width: 641px) {
+        .import-review--generic .review-toolbar--generic {
+            display: grid;
+            grid-template-columns: 192px max-content minmax(0, 1fr);
+            gap: 10px 8px;
+        }
+        .import-review--generic .filter-top-line {
+            grid-column: 1/-1;
+        }
+        .import-review--generic .review-search {
+            display: block;
+            margin: 0;
+            padding-top: 8px;
+            border-top: 1px solid var(--app-border);
+        }
+        .import-review--generic .review-sort-line {
+            margin: 0;
+            gap: 4px;
+            align-self: end;
+            min-height: 32px;
+            font-size: 12px;
+        }
+        .import-review--generic .review-sort-line :deep(.p-select) {
+            height: 32px;
+            min-width: 0;
+            font-size: 12px;
+        }
+        .import-review--generic .review-sort-line :deep(.p-select-label) {
+            padding: 4px 8px;
+        }
+        .import-review--generic .review-sort-line :deep(.p-select-dropdown) {
+            width: 24px;
+        }
+        .import-review--generic .review-advanced-filters {
+            margin: 0;
+            border: 0;
+            justify-self: end;
+            align-self: end;
+            min-width: 0;
+        }
+        .import-review--generic .review-advanced-filters[open] {
+            grid-column: 1/-1;
+            justify-self: stretch;
+        }
+        .import-review--generic .review-advanced-filters > summary {
+            padding: 6px 0;
+        }
+        .import-review--generic
+            .review-toolbar--generic
+            .search-field
+            .p-inputtext {
+            height: 32px;
+            font-size: 12px;
+        }
+        .import-review--generic .filter-categories {
+            gap: 6px;
+        }
+        .import-review--generic .filter-categories button {
+            white-space: normal;
+            flex-shrink: 1;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 18px;
+            padding: 6px 10px;
+        }
+    }
+    @media (max-width: 640px) {
+        .import-review--generic .review-toolbar--generic {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+        }
+        .import-review--generic .filter-top-line,
+        .import-review--generic .review-search {
+            grid-column: 1/-1;
+        }
+        .import-review--generic .review-search {
+            margin: 0;
+        }
+        .import-review--generic .review-sort-line {
+            margin: 0;
+        }
+        .import-review--generic .review-advanced-filters {
+            margin: 0;
+            border: 0;
+            align-self: center;
+        }
+        .import-review--generic .review-advanced-filters[open] {
+            grid-column: 1/-1;
+        }
+        .import-review--generic .review-advanced-filters > summary {
+            padding: 0;
+        }
+        .import-review--generic
+            .review-toolbar--generic
+            .search-field
+            .p-inputtext {
+            height: 44px;
+        }
+        .import-review--generic .review-save-account {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 12px;
+            padding: 0 0 16px;
+            border-bottom: 1px solid var(--app-border);
+            border-radius: 0;
+            background: transparent;
+            font-size: 13px;
+            line-height: 20px;
+        }
+        .import-review--generic .review-save-account strong {
+            text-align: right;
+        }
+    }
+    .import-review--generic .filter-categories button {
+        display: block;
+    }
+    .import-review--generic .filter-categories b {
+        margin-left: 4px;
+        font: inherit;
+    }
+    .import-review--generic .review-toolbar--generic .search-field {
+        padding-left: 0;
+    }
+    @media (max-width: 640px) {
+        .review-mobile-summary {
+            margin-bottom: 20px;
+        }
+        .review-grid--generic,
+        .review-grid--generic .review-main,
+        .review-grid--generic .review-sidebar {
+            gap: 20px;
+        }
+    }
+    .import-review--generic .review-scroll-cue {
+        margin: 0;
+    }
+    @media (min-width: 641px) {
+        .review-grid--generic .review-main,
+        .review-grid--generic .review-sidebar {
+            gap: 14px;
+        }
+        .import-review--generic .filter-categories {
+            padding-bottom: 2px;
+        }
+        .import-review--generic
+            .review-toolbar--generic
+            .search-field
+            .p-inputtext,
+        .import-review--generic .review-sort-line :deep(.p-select) {
+            min-height: 32px;
+        }
+    }
+    @media (max-width: 640px) {
+        .import-review--generic .filter-categories {
+            padding: 2px 0;
+            gap: 6px;
+        }
+        .import-review--generic .filter-categories button {
+            font-size: 12px;
+            line-height: 20px;
+            padding: 6px 12px;
+            border: 1px solid var(--app-border);
+        }
+        .import-review--generic .filter-categories button.active {
+            border: 0;
+        }
+        .import-review--generic .review-sort-line {
+            padding: 2px 4px;
+        }
+        .import-review--generic .review-sort-label {
+            line-height: 20px;
+        }
     }
 </style>

@@ -1,0 +1,2706 @@
+[
+  {
+    "viewport": 1280,
+    "implementation": {
+      "width": 834,
+      "height": 1244.1875,
+      "header": 217,
+      "headerParts": [
+        {
+          "class": "review-meta",
+          "pieces": [
+            {
+              "tag": "SPAN",
+              "class": "review-import-badge",
+              "height": 24,
+              "y": 45,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SPAN",
+              "class": "review-kind-badge",
+              "height": 24,
+              "y": 45,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            }
+          ],
+          "width": 792,
+          "height": 24
+        },
+        {
+          "class": "review-title-line",
+          "pieces": [
+            {
+              "tag": "H2",
+              "class": "",
+              "height": 32,
+              "y": 79,
+              "font": "700 24px / 32px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 792,
+          "height": 32
+        },
+        {
+          "class": "",
+          "pieces": [],
+          "width": 760,
+          "height": 20
+        },
+        {
+          "class": "review-steps",
+          "pieces": [
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 48,
+              "y": 172,
+              "font": "13px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 48,
+              "y": 172,
+              "font": "650 13px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 48,
+              "y": 172,
+              "font": "13px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 792,
+          "height": 65
+        }
+      ],
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "panels": [
+        {
+          "class": "review-main",
+          "pieces": [
+            {
+              "tag": "ARTICLE",
+              "class": "review-toolbar review-toolbar--generic",
+              "height": 127,
+              "y": 261,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "P",
+              "class": "review-scroll-cue",
+              "height": 30,
+              "y": 402,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-table-card",
+              "height": 444,
+              "y": 446,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-example-guide",
+              "height": 182,
+              "y": 904,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "14px",
+              "margin": "0px"
+            }
+          ],
+          "x": 223,
+          "y": 261,
+          "width": 479.828125,
+          "height": 825
+        },
+        {
+          "class": "review-toolbar review-toolbar--generic",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "filter-top-line",
+              "height": 50,
+              "y": 274,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-search",
+              "height": 41,
+              "y": 334,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 0px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-sort-line",
+              "height": 32,
+              "y": 343,
+              "font": "12px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DETAILS",
+              "class": "review-advanced-filters",
+              "height": 30,
+              "y": 345,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 223,
+          "y": 261,
+          "width": 479.828125,
+          "height": 127
+        },
+        {
+          "class": "review-table-card",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "p-datatable p-component p-datatable-scrollable generic-review-table",
+              "height": 444,
+              "y": 446,
+              "font": "12px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 223,
+          "y": 446,
+          "width": 479.828125,
+          "height": 444
+        },
+        {
+          "class": "review-example-guide",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 20,
+              "y": 919,
+              "font": "700 13px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "P",
+              "class": "review-original-note",
+              "height": 18,
+              "y": 949,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "P",
+              "class": "",
+              "height": 18,
+              "y": 977,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "CODE",
+              "class": "",
+              "height": 38,
+              "y": 1005,
+              "font": "11px / 18px monospace",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SMALL",
+              "class": "",
+              "height": 18,
+              "y": 1053,
+              "font": "9.16667px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "10px 0px 0px"
+            }
+          ],
+          "x": 223,
+          "y": 904,
+          "width": 479.828125,
+          "height": 182
+        },
+        {
+          "class": "review-sidebar",
+          "pieces": [
+            {
+              "tag": "SECTION",
+              "class": "review-verification-summary",
+              "height": 383,
+              "y": 261,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DETAILS",
+              "class": "review-existing-guidance",
+              "height": 40,
+              "y": 1156.1875,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-pending-guide",
+              "height": 102,
+              "y": 658,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-side-card review-save-bar",
+              "height": 368.1875,
+              "y": 774,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 718.828125,
+          "y": 261,
+          "width": 338.15625,
+          "height": 935.1875
+        },
+        {
+          "class": "review-verification-summary",
+          "pieces": [
+            {
+              "tag": "HEADER",
+              "class": "",
+              "height": 20,
+              "y": 278,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-counts",
+              "height": 20,
+              "y": 312,
+              "font": "12px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "14px 0px 0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-track",
+              "height": 8,
+              "y": 340,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "8px 0px 16px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "import-currency-summary review-summary-currency",
+              "height": 263,
+              "y": 364,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 718.828125,
+          "y": 261,
+          "width": 338.15625,
+          "height": 383
+        },
+        {
+          "class": "review-pending-guide",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 20,
+              "y": 675,
+              "font": "700 14px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 8px"
+            },
+            {
+              "tag": "P",
+              "class": "",
+              "height": 40,
+              "y": 703,
+              "font": "12px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 718.828125,
+          "y": 658,
+          "width": 338.15625,
+          "height": 102
+        },
+        {
+          "class": "review-side-card review-save-bar",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 29,
+              "y": 791,
+              "font": "700 14px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px 0px 8px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-save-account",
+              "height": 59.1875,
+              "y": 834,
+              "font": "11px / 17.6px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-agreement",
+              "height": 54,
+              "y": 907.1875,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px",
+              "margin": "0px"
+            },
+            {
+              "tag": "P",
+              "class": "review-agreement-required",
+              "height": 34,
+              "y": 975.1875,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "BUTTON",
+              "class": "p-button p-component p-button-secondary p-button-text",
+              "height": 44,
+              "y": 1081.1875,
+              "font": "11px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-save-actions",
+              "height": 44,
+              "y": 1023.1875,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 718.828125,
+          "y": 774,
+          "width": 338.15625,
+          "height": 368.1875
+        }
+      ],
+      "steps": 65,
+      "overflow": false
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted: body cards and currency summaries implemented; source font, controls and panel geometry differences remain",
+    "sourceId": "5aa7a573854a46db9b106f89c09c4f23",
+    "source": {
+      "width": 834,
+      "height": 217,
+      "parts": [
+        {
+          "tag": "DIV",
+          "width": 792,
+          "height": 24
+        },
+        {
+          "tag": "DIV",
+          "width": 792,
+          "height": 56
+        },
+        {
+          "tag": "NAV",
+          "width": 792,
+          "height": 65
+        }
+      ],
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "panels": [
+        {
+          "tag": "SECTION",
+          "class": "col-span-12 lg:col-span-7 flex flex-col gap-3.5",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-3 shadow-sm flex flex-col gap-2.5",
+              "height": 127,
+              "y": 261,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "flex items-center justify-between px-3.5 py-1.5 bg-[#f0fdfa] border border-[#99f3e4] rounded-lg text-[#005048] font-label-sm text-label-sm",
+              "height": 30,
+              "y": 402,
+              "font": "500 11px / 16px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "6px 14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl shadow-sm overflow-hidden flex flex-col",
+              "height": 427.5,
+              "y": 446,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "bg-surface-container-lowest border border-[#fca5a5] rounded-xl p-4 shadow-sm relative overflow-hidden bg-gradient-to-b from-white to-[#fff8f8]",
+              "height": 202.75,
+              "y": 887.5,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 223,
+          "y": 261,
+          "width": 479.828125,
+          "height": 829.25
+        },
+        {
+          "tag": "ASIDE",
+          "class": "col-span-12 lg:col-span-5 flex flex-col gap-3.5",
+          "pieces": [
+            {
+              "tag": "SECTION",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-4 shadow-sm flex flex-col gap-3",
+              "height": 386.5,
+              "y": 261,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "bg-[#fffbeb] border border-[#fef08a] rounded-xl p-3.5 shadow-sm flex flex-col gap-2.5",
+              "height": 91,
+              "y": 661.5,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-4 shadow-sm flex flex-col gap-3.5",
+              "height": 341.5,
+              "y": 766.5,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 718.828125,
+          "y": 261,
+          "width": 338.15625,
+          "height": 847
+        }
+      ],
+      "layoutWidth": 834
+    },
+    "sourceAssetFailures": [
+      {
+        "host": "fonts.googleapis.com",
+        "status": "asset-fetch-failed"
+      }
+    ]
+  },
+  {
+    "viewport": 834,
+    "implementation": {
+      "width": 786,
+      "height": 2035.1875,
+      "header": 217,
+      "headerParts": [
+        {
+          "class": "review-meta",
+          "pieces": [
+            {
+              "tag": "SPAN",
+              "class": "review-import-badge",
+              "height": 24,
+              "y": 45,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SPAN",
+              "class": "review-kind-badge",
+              "height": 24,
+              "y": 45,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            }
+          ],
+          "width": 744,
+          "height": 24
+        },
+        {
+          "class": "review-title-line",
+          "pieces": [
+            {
+              "tag": "H2",
+              "class": "",
+              "height": 32,
+              "y": 79,
+              "font": "700 24px / 32px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 744,
+          "height": 32
+        },
+        {
+          "class": "",
+          "pieces": [],
+          "width": 744,
+          "height": 20
+        },
+        {
+          "class": "review-steps",
+          "pieces": [
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 48,
+              "y": 172,
+              "font": "13px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 48,
+              "y": 172,
+              "font": "650 13px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 48,
+              "y": 172,
+              "font": "13px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 744,
+          "height": 65
+        }
+      ],
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "panels": [
+        {
+          "class": "review-main",
+          "pieces": [
+            {
+              "tag": "ARTICLE",
+              "class": "review-toolbar review-toolbar--generic",
+              "height": 109,
+              "y": 261,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "P",
+              "class": "review-scroll-cue",
+              "height": 30,
+              "y": 384,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-table-card",
+              "height": 444,
+              "y": 428,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-example-guide",
+              "height": 182,
+              "y": 886,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "14px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 261,
+          "width": 786,
+          "height": 807
+        },
+        {
+          "class": "review-toolbar review-toolbar--generic",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "filter-top-line",
+              "height": 32,
+              "y": 274,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-search",
+              "height": 41,
+              "y": 316,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 0px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-sort-line",
+              "height": 32,
+              "y": 325,
+              "font": "12px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DETAILS",
+              "class": "review-advanced-filters",
+              "height": 30,
+              "y": 327,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 261,
+          "width": 786,
+          "height": 109
+        },
+        {
+          "class": "review-table-card",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "p-datatable p-component p-datatable-scrollable generic-review-table",
+              "height": 444,
+              "y": 428,
+              "font": "12px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 428,
+          "width": 786,
+          "height": 444
+        },
+        {
+          "class": "review-example-guide",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 20,
+              "y": 901,
+              "font": "700 13px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "P",
+              "class": "review-original-note",
+              "height": 18,
+              "y": 931,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "P",
+              "class": "",
+              "height": 18,
+              "y": 959,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "CODE",
+              "class": "",
+              "height": 38,
+              "y": 987,
+              "font": "11px / 18px monospace",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SMALL",
+              "class": "",
+              "height": 18,
+              "y": 1035,
+              "font": "9.16667px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "10px 0px 0px"
+            }
+          ],
+          "x": 24,
+          "y": 886,
+          "width": 786,
+          "height": 182
+        },
+        {
+          "class": "review-sidebar",
+          "pieces": [
+            {
+              "tag": "SECTION",
+              "class": "review-verification-summary",
+              "height": 383,
+              "y": 1084,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DETAILS",
+              "class": "review-existing-guidance",
+              "height": 40,
+              "y": 1947.1875,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-pending-guide",
+              "height": 82,
+              "y": 1481,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-side-card review-save-bar",
+              "height": 356.1875,
+              "y": 1577,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1084,
+          "width": 786,
+          "height": 903.1875
+        },
+        {
+          "class": "review-verification-summary",
+          "pieces": [
+            {
+              "tag": "HEADER",
+              "class": "",
+              "height": 20,
+              "y": 1101,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-counts",
+              "height": 20,
+              "y": 1135,
+              "font": "12px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "14px 0px 0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-track",
+              "height": 8,
+              "y": 1163,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "8px 0px 16px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "import-currency-summary review-summary-currency",
+              "height": 263,
+              "y": 1187,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1084,
+          "width": 786,
+          "height": 383
+        },
+        {
+          "class": "review-pending-guide",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 20,
+              "y": 1498,
+              "font": "700 14px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 8px"
+            },
+            {
+              "tag": "P",
+              "class": "",
+              "height": 20,
+              "y": 1526,
+              "font": "12px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1481,
+          "width": 786,
+          "height": 82
+        },
+        {
+          "class": "review-side-card review-save-bar",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 29,
+              "y": 1594,
+              "font": "700 14px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px 0px 8px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-save-account",
+              "height": 59.1875,
+              "y": 1637,
+              "font": "11px / 17.6px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-agreement",
+              "height": 42,
+              "y": 1710.1875,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px",
+              "margin": "0px"
+            },
+            {
+              "tag": "P",
+              "class": "review-agreement-required",
+              "height": 34,
+              "y": 1766.1875,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "BUTTON",
+              "class": "p-button p-component p-button-secondary p-button-text",
+              "height": 44,
+              "y": 1872.1875,
+              "font": "11px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-save-actions",
+              "height": 44,
+              "y": 1814.1875,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1577,
+          "width": 786,
+          "height": 356.1875
+        }
+      ],
+      "steps": 65,
+      "overflow": false
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted: body cards and currency summaries implemented; source font, controls and panel geometry differences remain",
+    "sourceId": "5aa7a573854a46db9b106f89c09c4f23",
+    "source": {
+      "width": 786,
+      "height": 217,
+      "parts": [
+        {
+          "tag": "DIV",
+          "width": 744,
+          "height": 24
+        },
+        {
+          "tag": "DIV",
+          "width": 744,
+          "height": 56
+        },
+        {
+          "tag": "NAV",
+          "width": 744,
+          "height": 65
+        }
+      ],
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "panels": [
+        {
+          "tag": "SECTION",
+          "class": "col-span-12 lg:col-span-7 flex flex-col gap-3.5",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-3 shadow-sm flex flex-col gap-2.5",
+              "height": 109,
+              "y": 261,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "flex items-center justify-between px-3.5 py-1.5 bg-[#f0fdfa] border border-[#99f3e4] rounded-lg text-[#005048] font-label-sm text-label-sm",
+              "height": 30,
+              "y": 384,
+              "font": "500 11px / 16px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "6px 14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl shadow-sm overflow-hidden flex flex-col",
+              "height": 427.5,
+              "y": 428,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "bg-surface-container-lowest border border-[#fca5a5] rounded-xl p-4 shadow-sm relative overflow-hidden bg-gradient-to-b from-white to-[#fff8f8]",
+              "height": 149.375,
+              "y": 869.5,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 261,
+          "width": 786,
+          "height": 757.875
+        },
+        {
+          "tag": "ASIDE",
+          "class": "col-span-12 lg:col-span-5 flex flex-col gap-3.5",
+          "pieces": [
+            {
+              "tag": "SECTION",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-4 shadow-sm flex flex-col gap-3",
+              "height": 386.5,
+              "y": 1034.875,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "bg-[#fffbeb] border border-[#fef08a] rounded-xl p-3.5 shadow-sm flex flex-col gap-2.5",
+              "height": 71.5,
+              "y": 1435.375,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-4 shadow-sm flex flex-col gap-3.5",
+              "height": 329.5,
+              "y": 1520.875,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1034.875,
+          "width": 786,
+          "height": 815.5
+        }
+      ],
+      "layoutWidth": 786
+    },
+    "sourceAssetFailures": [
+      {
+        "host": "fonts.googleapis.com",
+        "status": "asset-fetch-failed"
+      }
+    ]
+  },
+  {
+    "viewport": 768,
+    "implementation": {
+      "width": 720,
+      "height": 2035.1875,
+      "header": 217,
+      "headerParts": [
+        {
+          "class": "review-meta",
+          "pieces": [
+            {
+              "tag": "SPAN",
+              "class": "review-import-badge",
+              "height": 24,
+              "y": 45,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SPAN",
+              "class": "review-kind-badge",
+              "height": 24,
+              "y": 45,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            }
+          ],
+          "width": 678,
+          "height": 24
+        },
+        {
+          "class": "review-title-line",
+          "pieces": [
+            {
+              "tag": "H2",
+              "class": "",
+              "height": 32,
+              "y": 79,
+              "font": "700 24px / 32px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 678,
+          "height": 32
+        },
+        {
+          "class": "",
+          "pieces": [],
+          "width": 678,
+          "height": 20
+        },
+        {
+          "class": "review-steps",
+          "pieces": [
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 48,
+              "y": 172,
+              "font": "13px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 48,
+              "y": 172,
+              "font": "650 13px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 48,
+              "y": 172,
+              "font": "13px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 678,
+          "height": 65
+        }
+      ],
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "panels": [
+        {
+          "class": "review-main",
+          "pieces": [
+            {
+              "tag": "ARTICLE",
+              "class": "review-toolbar review-toolbar--generic",
+              "height": 109,
+              "y": 261,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "P",
+              "class": "review-scroll-cue",
+              "height": 30,
+              "y": 384,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "6px 14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-table-card",
+              "height": 444,
+              "y": 428,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-example-guide",
+              "height": 182,
+              "y": 886,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "14px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 261,
+          "width": 720,
+          "height": 807
+        },
+        {
+          "class": "review-toolbar review-toolbar--generic",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "filter-top-line",
+              "height": 32,
+              "y": 274,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-search",
+              "height": 41,
+              "y": 316,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 0px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-sort-line",
+              "height": 32,
+              "y": 325,
+              "font": "12px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DETAILS",
+              "class": "review-advanced-filters",
+              "height": 30,
+              "y": 327,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 261,
+          "width": 720,
+          "height": 109
+        },
+        {
+          "class": "review-table-card",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "p-datatable p-component p-datatable-scrollable generic-review-table",
+              "height": 444,
+              "y": 428,
+              "font": "12px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 428,
+          "width": 720,
+          "height": 444
+        },
+        {
+          "class": "review-example-guide",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 20,
+              "y": 901,
+              "font": "700 13px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "P",
+              "class": "review-original-note",
+              "height": 18,
+              "y": 931,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "P",
+              "class": "",
+              "height": 18,
+              "y": 959,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "CODE",
+              "class": "",
+              "height": 38,
+              "y": 987,
+              "font": "11px / 18px monospace",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SMALL",
+              "class": "",
+              "height": 18,
+              "y": 1035,
+              "font": "9.16667px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "10px 0px 0px"
+            }
+          ],
+          "x": 24,
+          "y": 886,
+          "width": 720,
+          "height": 182
+        },
+        {
+          "class": "review-sidebar",
+          "pieces": [
+            {
+              "tag": "SECTION",
+              "class": "review-verification-summary",
+              "height": 383,
+              "y": 1084,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DETAILS",
+              "class": "review-existing-guidance",
+              "height": 40,
+              "y": 1947.1875,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-pending-guide",
+              "height": 82,
+              "y": 1481,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-side-card review-save-bar",
+              "height": 356.1875,
+              "y": 1577,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1084,
+          "width": 720,
+          "height": 903.1875
+        },
+        {
+          "class": "review-verification-summary",
+          "pieces": [
+            {
+              "tag": "HEADER",
+              "class": "",
+              "height": 20,
+              "y": 1101,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-counts",
+              "height": 20,
+              "y": 1135,
+              "font": "12px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "14px 0px 0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-track",
+              "height": 8,
+              "y": 1163,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "8px 0px 16px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "import-currency-summary review-summary-currency",
+              "height": 263,
+              "y": 1187,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1084,
+          "width": 720,
+          "height": 383
+        },
+        {
+          "class": "review-pending-guide",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 20,
+              "y": 1498,
+              "font": "700 14px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 8px"
+            },
+            {
+              "tag": "P",
+              "class": "",
+              "height": 20,
+              "y": 1526,
+              "font": "12px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1481,
+          "width": 720,
+          "height": 82
+        },
+        {
+          "class": "review-side-card review-save-bar",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 29,
+              "y": 1594,
+              "font": "700 14px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px 0px 8px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-save-account",
+              "height": 59.1875,
+              "y": 1637,
+              "font": "11px / 17.6px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-agreement",
+              "height": 42,
+              "y": 1710.1875,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px",
+              "margin": "0px"
+            },
+            {
+              "tag": "P",
+              "class": "review-agreement-required",
+              "height": 34,
+              "y": 1766.1875,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "BUTTON",
+              "class": "p-button p-component p-button-secondary p-button-text",
+              "height": 44,
+              "y": 1872.1875,
+              "font": "11px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-save-actions",
+              "height": 44,
+              "y": 1814.1875,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1577,
+          "width": 720,
+          "height": 356.1875
+        }
+      ],
+      "steps": 65,
+      "overflow": false
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted: body cards and currency summaries implemented; source font, controls and panel geometry differences remain",
+    "sourceId": "5aa7a573854a46db9b106f89c09c4f23",
+    "source": {
+      "width": 720,
+      "height": 217,
+      "parts": [
+        {
+          "tag": "DIV",
+          "width": 678,
+          "height": 24
+        },
+        {
+          "tag": "DIV",
+          "width": 678,
+          "height": 56
+        },
+        {
+          "tag": "NAV",
+          "width": 678,
+          "height": 65
+        }
+      ],
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "panels": [
+        {
+          "tag": "SECTION",
+          "class": "col-span-12 lg:col-span-7 flex flex-col gap-3.5",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-3 shadow-sm flex flex-col gap-2.5",
+              "height": 109,
+              "y": 261,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "flex items-center justify-between px-3.5 py-1.5 bg-[#f0fdfa] border border-[#99f3e4] rounded-lg text-[#005048] font-label-sm text-label-sm",
+              "height": 30,
+              "y": 384,
+              "font": "500 11px / 16px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "6px 14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl shadow-sm overflow-hidden flex flex-col",
+              "height": 427.5,
+              "y": 428,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "bg-surface-container-lowest border border-[#fca5a5] rounded-xl p-4 shadow-sm relative overflow-hidden bg-gradient-to-b from-white to-[#fff8f8]",
+              "height": 149.375,
+              "y": 869.5,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 261,
+          "width": 720,
+          "height": 757.875
+        },
+        {
+          "tag": "ASIDE",
+          "class": "col-span-12 lg:col-span-5 flex flex-col gap-3.5",
+          "pieces": [
+            {
+              "tag": "SECTION",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-4 shadow-sm flex flex-col gap-3",
+              "height": 386.5,
+              "y": 1034.875,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "bg-[#fffbeb] border border-[#fef08a] rounded-xl p-3.5 shadow-sm flex flex-col gap-2.5",
+              "height": 71.5,
+              "y": 1435.375,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-4 shadow-sm flex flex-col gap-3.5",
+              "height": 329.5,
+              "y": 1520.875,
+              "font": "16px / 24px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 24,
+          "y": 1034.875,
+          "width": 720,
+          "height": 815.5
+        }
+      ],
+      "layoutWidth": 720
+    },
+    "sourceAssetFailures": [
+      {
+        "host": "fonts.googleapis.com",
+        "status": "asset-fetch-failed"
+      }
+    ]
+  },
+  {
+    "viewport": 390,
+    "implementation": {
+      "width": 358,
+      "height": 2703.5,
+      "header": 181.5,
+      "headerParts": [
+        {
+          "class": "review-meta",
+          "pieces": [
+            {
+              "tag": "SPAN",
+              "class": "review-import-badge",
+              "height": 30,
+              "y": 20,
+              "font": "11px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SPAN",
+              "class": "review-kind-badge",
+              "height": 24,
+              "y": 23,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            }
+          ],
+          "width": 358,
+          "height": 30
+        },
+        {
+          "class": "review-title-line",
+          "pieces": [
+            {
+              "tag": "H2",
+              "class": "",
+              "height": 28,
+              "y": 62,
+              "font": "700 20px / 28px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 358,
+          "height": 28
+        },
+        {
+          "class": "",
+          "pieces": [],
+          "width": 358,
+          "height": 45.5
+        },
+        {
+          "class": "review-steps",
+          "pieces": [
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 24,
+              "y": 164.5,
+              "font": "12px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 24,
+              "y": 164.5,
+              "font": "650 12px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 24,
+              "y": 164.5,
+              "font": "12px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 358,
+          "height": 50
+        }
+      ],
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "panels": [
+        {
+          "class": "review-verification-summary review-mobile-summary",
+          "pieces": [
+            {
+              "tag": "HEADER",
+              "class": "",
+              "height": 20,
+              "y": 238.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-counts",
+              "height": 22,
+              "y": 282.5,
+              "font": "12px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "2px 0px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-track",
+              "height": 8,
+              "y": 266.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "8px 0px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "import-currency-summary review-summary-currency",
+              "height": 329,
+              "y": 320.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "12px 0px 0px",
+              "margin": "16px 0px 0px"
+            }
+          ],
+          "x": 16,
+          "y": 221.5,
+          "width": 358,
+          "height": 445
+        },
+        {
+          "class": "review-main",
+          "pieces": [
+            {
+              "tag": "ARTICLE",
+              "class": "review-toolbar review-toolbar--generic",
+              "height": 130,
+              "y": 686.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-table-card",
+              "height": 1238,
+              "y": 836.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-example-guide",
+              "height": 172,
+              "y": 2094.5,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "14px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 686.5,
+          "width": 358,
+          "height": 1580
+        },
+        {
+          "class": "review-toolbar review-toolbar--generic",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "filter-top-line",
+              "height": 38,
+              "y": 686.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-search",
+              "height": 44,
+              "y": 734.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-sort-line",
+              "height": 28,
+              "y": 788.5,
+              "font": "12px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "2px 4px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DETAILS",
+              "class": "review-advanced-filters",
+              "height": 19,
+              "y": 793,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 686.5,
+          "width": 358,
+          "height": 130
+        },
+        {
+          "class": "review-table-card",
+          "pieces": [
+            {
+              "tag": "SECTION",
+              "class": "generic-review-cards",
+              "height": 1238,
+              "y": 836.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 836.5,
+          "width": 358,
+          "height": 1238
+        },
+        {
+          "class": "review-example-guide",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 20,
+              "y": 2109.5,
+              "font": "700 13px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "P",
+              "class": "",
+              "height": 36,
+              "y": 2139.5,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "CODE",
+              "class": "",
+              "height": 38,
+              "y": 2185.5,
+              "font": "11px / 18px monospace",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SMALL",
+              "class": "",
+              "height": 18,
+              "y": 2233.5,
+              "font": "9.16667px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "10px 0px 0px"
+            }
+          ],
+          "x": 16,
+          "y": 2094.5,
+          "width": 358,
+          "height": 172
+        },
+        {
+          "class": "review-sidebar",
+          "pieces": [
+            {
+              "tag": "DETAILS",
+              "class": "review-existing-guidance",
+              "height": 41,
+              "y": 2609.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-side-card review-save-bar",
+              "height": 303,
+              "y": 2286.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 2286.5,
+          "width": 358,
+          "height": 364
+        },
+        {
+          "class": "review-side-card review-save-bar",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "review-save-account",
+              "height": 37,
+              "y": 2303.5,
+              "font": "13px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px 0px 16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-agreement",
+              "height": 54,
+              "y": 2354.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px",
+              "margin": "0px"
+            },
+            {
+              "tag": "P",
+              "class": "review-agreement-required",
+              "height": 34,
+              "y": 2422.5,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "BUTTON",
+              "class": "p-button p-component p-button-secondary p-button-text",
+              "height": 44,
+              "y": 2528.5,
+              "font": "11px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-save-actions",
+              "height": 44,
+              "y": 2470.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 2286.5,
+          "width": 358,
+          "height": 303
+        }
+      ],
+      "steps": 50,
+      "overflow": false
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted: body cards and currency summaries implemented; source font, controls and panel geometry differences remain",
+    "sourceId": "6bd9777b8bea43b98aea8397a29f809a",
+    "source": {
+      "width": 358,
+      "height": 181.5,
+      "parts": [
+        {
+          "tag": "DIV",
+          "width": 358,
+          "height": 30
+        },
+        {
+          "tag": "DIV",
+          "width": 358,
+          "height": 77.5
+        },
+        {
+          "tag": "DIV",
+          "width": 358,
+          "height": 50
+        }
+      ],
+      "bodyFont": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+      "panels": [
+        {
+          "tag": "HEADER",
+          "class": "flex flex-col gap-3",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "flex items-center gap-2 flex-wrap",
+              "height": 30,
+              "y": 20,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "flex flex-col gap-1",
+              "height": 77.5,
+              "y": 62,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3 shadow-sm",
+              "height": 50,
+              "y": 151.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "12px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 20,
+          "width": 358,
+          "height": 181.5
+        },
+        {
+          "tag": "SECTION",
+          "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-4 shadow-sm flex flex-col gap-4",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "flex flex-col gap-2",
+              "height": 66,
+              "y": 238.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "border-t border-[#f1f5f9] pt-3 flex flex-col gap-3",
+              "height": 328,
+              "y": 320.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "12px 0px 0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 221.5,
+          "width": 358,
+          "height": 444
+        },
+        {
+          "tag": "SECTION",
+          "class": "flex flex-col gap-2.5",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5",
+              "height": 38,
+              "y": 685.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "2px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "flex flex-col gap-2",
+              "height": 80,
+              "y": 733.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 685.5,
+          "width": 358,
+          "height": 128
+        },
+        {
+          "tag": "SECTION",
+          "class": "flex flex-col gap-3",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "flex items-center justify-between px-0.5",
+              "height": 20,
+              "y": 833.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px 2px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5",
+              "height": 183,
+              "y": 865.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5",
+              "height": 183,
+              "y": 1060.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5",
+              "height": 183,
+              "y": 1255.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5",
+              "height": 183,
+              "y": 1450.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5",
+              "height": 183,
+              "y": 1645.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5",
+              "height": 183,
+              "y": 1840.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "14px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "flex items-center justify-center p-2 rounded-[8px] bg-[#f1f5f9] text-[11px] text-[#64748b] font-medium",
+              "height": 36,
+              "y": 2035.5,
+              "font": "500 11px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "8px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 833.5,
+          "width": 358,
+          "height": 1238
+        },
+        {
+          "tag": "SECTION",
+          "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-3.5 shadow-sm flex flex-col gap-2.5",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "flex items-center justify-between",
+              "height": 24,
+              "y": 2106.5,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "text-[12px] text-[#475569] leading-snug bg-[#fff7ed] border border-[#fed7aa] p-2.5 rounded-[8px]",
+              "height": 71.5,
+              "y": 2140.5,
+              "font": "12px / 16.5px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "bg-[#1e293b] rounded-[8px] p-2.5 overflow-x-auto text-[11px] font-mono text-[#94a3b8] leading-relaxed",
+              "height": 58.125,
+              "y": 2222,
+              "font": "11px / 17.875px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "flex items-start gap-2 text-[12px] bg-[#f8fafc] border border-[#e2e8f0] p-2 rounded-[8px]",
+              "height": 36,
+              "y": 2290.125,
+              "font": "12px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "8px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 2091.5,
+          "width": 358,
+          "height": 249.625
+        },
+        {
+          "tag": "SECTION",
+          "class": "bg-surface-container-lowest border border-[#e2e8f0] rounded-[12px] p-4 shadow-sm flex flex-col gap-4",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "flex items-center justify-between text-[12px] border-b border-[#f1f5f9] pb-3",
+              "height": 33,
+              "y": 2378.125,
+              "font": "12px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px 0px 12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LABEL",
+              "class": "flex items-start gap-2.5 cursor-pointer select-none",
+              "height": 33,
+              "y": 2427.125,
+              "font": "14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "bg-[#fff7ed] border border-[#fed7aa] rounded-[8px] p-2.5 flex items-center gap-2 text-[11px] text-[#9a3412]",
+              "height": 42,
+              "y": 2476.125,
+              "font": "11px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "BUTTON",
+              "class": "w-full h-12 rounded-[8px] bg-[#0d7a6e] text-white font-bold text-[14px] flex items-center justify-center gap-2 opacity-50 cursor-not-allowed shadow-none",
+              "height": 48,
+              "y": 2534.125,
+              "font": "700 14px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "BUTTON",
+              "class": "w-full h-11 rounded-[8px] border border-[#cbd5e1] bg-white text-[#382418] font-medium text-[13px] flex items-center justify-center gap-1 active:bg-[#f8fafc]",
+              "height": 44,
+              "y": 2598.125,
+              "font": "500 13px / 20px \"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 2361.125,
+          "width": 358,
+          "height": 298
+        }
+      ],
+      "layoutWidth": null
+    },
+    "sourceAssetFailures": []
+  },
+  {
+    "viewport": 360,
+    "implementation": {
+      "width": 328,
+      "height": 2703.5,
+      "header": 181.5,
+      "headerParts": [
+        {
+          "class": "review-meta",
+          "pieces": [
+            {
+              "tag": "SPAN",
+              "class": "review-import-badge",
+              "height": 30,
+              "y": 20,
+              "font": "11px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SPAN",
+              "class": "review-kind-badge",
+              "height": 24,
+              "y": 23,
+              "font": "11px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "4px 10px",
+              "margin": "0px"
+            }
+          ],
+          "width": 328,
+          "height": 30
+        },
+        {
+          "class": "review-title-line",
+          "pieces": [
+            {
+              "tag": "H2",
+              "class": "",
+              "height": 28,
+              "y": 62,
+              "font": "700 20px / 28px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 328,
+          "height": 28
+        },
+        {
+          "class": "",
+          "pieces": [],
+          "width": 328,
+          "height": 45.5
+        },
+        {
+          "class": "review-steps",
+          "pieces": [
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 24,
+              "y": 164.5,
+              "font": "12px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 24,
+              "y": 164.5,
+              "font": "650 12px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "LI",
+              "class": "",
+              "height": 24,
+              "y": 164.5,
+              "font": "12px / 16px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "width": 328,
+          "height": 50
+        }
+      ],
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "panels": [
+        {
+          "class": "review-verification-summary review-mobile-summary",
+          "pieces": [
+            {
+              "tag": "HEADER",
+              "class": "",
+              "height": 20,
+              "y": 238.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-counts",
+              "height": 22,
+              "y": 282.5,
+              "font": "12px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "2px 0px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-verification-track",
+              "height": 8,
+              "y": 266.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "8px 0px"
+            },
+            {
+              "tag": "SECTION",
+              "class": "import-currency-summary review-summary-currency",
+              "height": 329,
+              "y": 320.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "12px 0px 0px",
+              "margin": "16px 0px 0px"
+            }
+          ],
+          "x": 16,
+          "y": 221.5,
+          "width": 328,
+          "height": 445
+        },
+        {
+          "class": "review-main",
+          "pieces": [
+            {
+              "tag": "ARTICLE",
+              "class": "review-toolbar review-toolbar--generic",
+              "height": 130,
+              "y": 686.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-table-card",
+              "height": 1238,
+              "y": 836.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-example-guide",
+              "height": 172,
+              "y": 2094.5,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "14px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 686.5,
+          "width": 328,
+          "height": 1580
+        },
+        {
+          "class": "review-toolbar review-toolbar--generic",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "filter-top-line",
+              "height": 38,
+              "y": 686.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-search",
+              "height": 44,
+              "y": 734.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-sort-line",
+              "height": 28,
+              "y": 788.5,
+              "font": "12px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "2px 4px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DETAILS",
+              "class": "review-advanced-filters",
+              "height": 19,
+              "y": 793,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 686.5,
+          "width": 328,
+          "height": 130
+        },
+        {
+          "class": "review-table-card",
+          "pieces": [
+            {
+              "tag": "SECTION",
+              "class": "generic-review-cards",
+              "height": 1238,
+              "y": 836.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 836.5,
+          "width": 328,
+          "height": 1238
+        },
+        {
+          "class": "review-example-guide",
+          "pieces": [
+            {
+              "tag": "H3",
+              "class": "",
+              "height": 20,
+              "y": 2109.5,
+              "font": "700 13px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "P",
+              "class": "",
+              "height": 36,
+              "y": 2139.5,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px 0px 10px"
+            },
+            {
+              "tag": "CODE",
+              "class": "",
+              "height": 38,
+              "y": 2185.5,
+              "font": "11px / 18px monospace",
+              "padding": "10px",
+              "margin": "0px"
+            },
+            {
+              "tag": "SMALL",
+              "class": "",
+              "height": 18,
+              "y": 2233.5,
+              "font": "9.16667px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "10px 0px 0px"
+            }
+          ],
+          "x": 16,
+          "y": 2094.5,
+          "width": 328,
+          "height": 172
+        },
+        {
+          "class": "review-sidebar",
+          "pieces": [
+            {
+              "tag": "DETAILS",
+              "class": "review-existing-guidance",
+              "height": 41,
+              "y": 2609.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "ARTICLE",
+              "class": "review-side-card review-save-bar",
+              "height": 303,
+              "y": 2286.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "16px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 2286.5,
+          "width": 328,
+          "height": 364
+        },
+        {
+          "class": "review-side-card review-save-bar",
+          "pieces": [
+            {
+              "tag": "DIV",
+              "class": "review-save-account",
+              "height": 37,
+              "y": 2303.5,
+              "font": "13px / 20px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px 0px 16px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-agreement",
+              "height": 54,
+              "y": 2354.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px",
+              "margin": "0px"
+            },
+            {
+              "tag": "P",
+              "class": "review-agreement-required",
+              "height": 34,
+              "y": 2422.5,
+              "font": "11px / 18px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 12px",
+              "margin": "0px"
+            },
+            {
+              "tag": "BUTTON",
+              "class": "p-button p-component p-button-secondary p-button-text",
+              "height": 44,
+              "y": 2528.5,
+              "font": "11px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "8px 0px",
+              "margin": "0px"
+            },
+            {
+              "tag": "DIV",
+              "class": "review-save-actions",
+              "height": 44,
+              "y": 2470.5,
+              "font": "13px / 20.8px ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+              "padding": "0px",
+              "margin": "0px"
+            }
+          ],
+          "x": 16,
+          "y": 2286.5,
+          "width": 328,
+          "height": 303
+        }
+      ],
+      "steps": 50,
+      "overflow": false
+    },
+    "apiCalls": 0,
+    "visualAcceptance": "not accepted: body cards and currency summaries implemented; source font, controls and panel geometry differences remain"
+  }
+]

@@ -6,7 +6,14 @@
     <section class="import-currency-summary" aria-label="통화별 추출 금액 합계">
         <header>
             <h3>통화별 합계</h3>
-            <span>통화별 독립 표시</span>
+            <details class="import-currency-explanation">
+                <summary>교차합산 금지</summary>
+                <p class="import-currency-note">
+                    필터와 관계없이 전체 추출 자료의 거래 금액을 집계합니다.
+                    원문과 최종 저장 결과를 확인하세요. 입출금 차액과 외부 투자
+                    원금은 별도 기준입니다.
+                </p>
+            </details>
         </header>
         <article
             v-for="group in summary.currencies"
@@ -18,16 +25,19 @@
                 ><small>{{ group.count }}건 집계</small>
             </h4>
             <dl>
-                <div v-for="line in group.lines" :key="line.type" class="import-currency-line"
-                    ><dt>{{ line.label }}</dt>
+                <div
+                    v-for="line in group.lines"
+                    :key="line.type"
+                    class="import-currency-line">
+                    <dt>{{ line.label }}</dt>
                     <dd :data-type="line.type">
                         {{
                             line.amount === null
                                 ? `금액 확인 ${line.unknown}건 · 합계 보류`
                                 : `${reviewRawAmount(line.amount, group.currency)} ${group.currency}`
                         }}
-                    </dd></div
-                >
+                    </dd>
+                </div>
             </dl>
             <div v-if="group.netCash" class="import-currency-net">
                 <span>순입출금 (검토 합계)</span
@@ -49,11 +59,6 @@
             통화 확인 필요 {{ summary.unknownCurrencyCount }}건 · 통화별 합계에
             포함하지 않습니다.
         </p>
-        <p class="import-currency-note">
-            필터와 관계없이 전체 추출 자료의 거래 금액을 집계합니다. 원문과 최종
-            저장 결과를 확인하세요. 입출금 차액과 외부 투자 원금은 별도
-            기준입니다.
-        </p>
     </section>
 </template>
 <style scoped>
@@ -70,11 +75,11 @@
         justify-content: space-between;
         align-items: center;
         gap: 8px;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
     .import-currency-summary h3 {
-        font-size: 13px;
-        line-height: 20px;
+        font-size: 11px;
+        line-height: 16px;
         margin: 0;
     }
     .import-currency-summary header > span {
@@ -84,8 +89,8 @@
         white-space: nowrap;
     }
     .import-currency-group {
-        padding: 12px;
-        margin-top: 12px;
+        padding: 10px;
+        margin-top: 8px;
         border: 1px solid var(--app-border);
         border-radius: 8px;
         background: var(--app-bg);
@@ -96,8 +101,8 @@
         align-items: center;
         gap: 8px;
         font-size: 12px;
-        line-height: 18px;
-        margin: 0 0 8px;
+        line-height: 16px;
+        margin: 0 0 4px;
     }
     .import-currency-group h4 small {
         font-size: 11px;
@@ -107,10 +112,12 @@
     }
     .import-currency-group dl {
         display: grid;
-        gap: 8px;
+        gap: 4px;
+        border-top: 1px solid rgb(255 255 255 / 80%);
+        padding-top: 4px;
         margin: 0;
         font-size: 12px;
-        line-height: 18px;
+        line-height: 16px;
     }
     .import-currency-line {
         display: grid;
@@ -120,18 +127,50 @@
     @media (max-width: 640px) {
         .import-currency-group dl {
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px 10px;
+            gap: 8px;
         }
         .import-currency-line {
             display: block;
         }
         .import-currency-group .import-currency-line dd {
-            margin-top: 4px;
+            margin-top: 0;
             text-align: left;
+            font-size: 12px;
+            line-height: 18px;
         }
     }
     .import-currency-group dt {
         color: var(--app-muted);
+    }
+    @media (max-width: 640px) {
+        .import-currency-group dt {
+            font-size: 11px;
+            line-height: 16px;
+        }
+    }
+    @media (min-width: 641px) {
+        .import-currency-group dd,
+        .import-currency-net strong {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+        html:not(.p-dark) .import-currency-group {
+            background: #f2f4f6;
+        }
+        html:not(.p-dark) .import-currency-group dt {
+            color: #3e4947;
+        }
+        html:not(.p-dark) .import-currency-group dd {
+            color: #382418;
+        }
+    }
+    .import-currency-explanation {
+        margin-top: 8px;
+        font-size: 11px;
+        line-height: 16px;
+        color: var(--app-muted);
+    }
+    .import-currency-explanation summary {
+        cursor: pointer;
     }
     .import-currency-group dd {
         margin: 0;
@@ -144,11 +183,11 @@
         display: flex;
         justify-content: space-between;
         gap: 12px;
-        padding-top: 10px;
+        padding-top: 4px;
         border-top: 1px solid var(--app-border);
-        margin-top: 10px;
+        margin-top: 4px;
         font-size: 12px;
-        line-height: 18px;
+        line-height: 16px;
     }
     .import-currency-net strong {
         text-align: right;
@@ -173,5 +212,58 @@
     html:not(.p-dark) .import-currency-group {
         background: #f8fafc;
         border-color: #e2e8f0;
+    }
+    @media (min-width: 641px) {
+        html:not(.p-dark) .import-currency-group {
+            background: #f2f4f6;
+        }
+    }
+    header {
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 0;
+    }
+    .import-currency-explanation {
+        margin: 0;
+    }
+    .import-currency-explanation[open] {
+        flex-basis: 100%;
+    }
+    .import-currency-explanation summary {
+        padding: 0;
+        font-size: 10px;
+        line-height: 16px;
+    }
+    @media (max-width: 640px) {
+        .import-currency-summary h3 {
+            font-size: 12px;
+            line-height: 20px;
+        }
+        .import-currency-explanation summary {
+            font-size: 11px;
+            line-height: 20px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--app-accent-light);
+            color: var(--app-accent);
+        }
+        .import-currency-group {
+            margin-top: 12px;
+        }
+        .import-currency-group h4 {
+            line-height: 20px;
+            margin-bottom: 6px;
+        }
+        .import-currency-group dl {
+            border-top-color: var(--app-border);
+        }
+        .import-currency-group dt,
+        .import-currency-group .import-currency-line dd {
+            line-height: 20px;
+        }
+        .import-currency-net {
+            margin-top: 8px;
+            line-height: 20px;
+        }
     }
 </style>

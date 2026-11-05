@@ -1,4 +1,4 @@
-/* global document, innerWidth, window */
+/* global document, innerWidth, window, getComputedStyle */
 // Synthetic component fixture only; no account or database access.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -78,6 +78,36 @@ try {
                     ),
                 ].map((part) => ({
                     class: part.className,
+                    pieces: [...part.children].map((c) => ({
+                        tag: c.tagName,
+                        class: c.className,
+                        height: c.getBoundingClientRect().height,
+                        y: c.getBoundingClientRect().y,
+                        font: getComputedStyle(c).font,
+                        padding: getComputedStyle(c).padding,
+                        margin: getComputedStyle(c).margin,
+                    })),
+                    width: part.getBoundingClientRect().width,
+                    height: part.getBoundingClientRect().height,
+                })),
+                bodyFont: getComputedStyle(el).fontFamily,
+                panels: [
+                    ...el.querySelectorAll(
+                        '.review-main,.review-sidebar,.review-verification-summary,.review-toolbar,.review-table-card,.review-example-guide,.review-save-bar,.review-pending-guide'
+                    ),
+                ].map((part) => ({
+                    class: part.className,
+                    pieces: [...part.children].map((c) => ({
+                        tag: c.tagName,
+                        class: c.className,
+                        height: c.getBoundingClientRect().height,
+                        y: c.getBoundingClientRect().y,
+                        font: getComputedStyle(c).font,
+                        padding: getComputedStyle(c).padding,
+                        margin: getComputedStyle(c).margin,
+                    })),
+                    x: part.getBoundingClientRect().x,
+                    y: part.getBoundingClientRect().y,
                     width: part.getBoundingClientRect().width,
                     height: part.getBoundingClientRect().height,
                 })),
@@ -86,13 +116,64 @@ try {
                 overflow: document.documentElement.scrollWidth > innerWidth,
             }));
         if (measured.overflow) {
-            console.error(JSON.stringify({ width, measured, overflowing: await page.locator('*').evaluateAll(nodes => nodes.filter(node => node.getBoundingClientRect().right > innerWidth + 1).map(node => ({ tag: node.tagName, class: String(node.className), right: node.getBoundingClientRect().right, width: node.getBoundingClientRect().width })).slice(0, 20)) }));
+            console.error(
+                JSON.stringify({
+                    width,
+                    measured,
+                    overflowing: await page.locator('*').evaluateAll((nodes) =>
+                        nodes
+                            .filter(
+                                (node) =>
+                                    node.getBoundingClientRect().right >
+                                    innerWidth + 1
+                            )
+                            .map((node) => ({
+                                tag: node.tagName,
+                                class: String(node.className),
+                                right: node.getBoundingClientRect().right,
+                                width: node.getBoundingClientRect().width,
+                            }))
+                            .slice(0, 20)
+                    ),
+                })
+            );
         }
         assert.equal(measured.overflow, false);
         await page.screenshot({
             path: resolve(out, `implementation-${width}.png`),
             fullPage: true,
         });
+        if (width > 640)
+            assert.equal(
+                await page
+                    .getByRole('button', {
+                        name: '1행 원문 보기 (미지원)',
+                        exact: true,
+                    })
+                    .isDisabled(),
+                true
+            );
+        if (width <= 640)
+            assert.match(
+                await page.locator('.generic-cards-heading').innerText(),
+                /정렬: 오래된 순.*2026-03/
+            );
+        await page.locator('.import-currency-explanation > summary').click();
+        assert.equal(
+            await page
+                .locator('.import-currency-explanation')
+                .evaluate((el) => el.open),
+            true
+        );
+        assert.equal(
+            await page.evaluate(
+                () => document.documentElement.scrollWidth > innerWidth
+            ),
+            false,
+            'help disclosure does not overflow'
+        );
+        await page.locator('.import-currency-explanation > summary').click();
+
         await page.evaluate(() =>
             window.reviewFixture.component.value.focusHeading()
         );
@@ -139,20 +220,61 @@ try {
             ),
             6
         );
-        assert.match(await page.locator('[aria-label="KRW 추출 금액 합계"]').innerText(), /950,000 KRW/);
+        assert.match(
+            await page.locator('[aria-label="KRW 추출 금액 합계"]').innerText(),
+            /950,000 KRW/
+        );
         await page.locator('.review-advanced-filters summary').click();
         await page
             .getByRole('button', { name: '필터 초기화', exact: true })
             .click();
         if (width <= 640) {
-            await page.getByRole('combobox', { name: '거래 내역 정렬', exact: true }).click();
-            await page.getByRole('option', { name: '최신 순', exact: true }).click();
-            assert.equal(await page.locator('.generic-review-card').first().getAttribute('aria-label'), '6행 추출 자료');
-            assert.equal(await page.evaluate(() => window.reviewFixture.review.value.rows[0].externalId), 'DEMO-001');
-            await page.getByRole('button', { name: '필터 초기화', exact: true }).click();
-            await page.getByText('1행 수정', { exact: true }).click();
+            await page
+                .getByRole('combobox', { name: '거래 내역 정렬', exact: true })
+                .click();
+            await page
+                .getByRole('option', { name: '최신 순', exact: true })
+                .click();
+            assert.equal(
+                await page
+                    .locator('.generic-review-card')
+                    .first()
+                    .getAttribute('aria-label'),
+                '6행 추출 자료'
+            );
+            assert.equal(
+                await page.evaluate(
+                    () => window.reviewFixture.review.value.rows[0].externalId
+                ),
+                'DEMO-001'
+            );
+            await page
+                .getByRole('button', { name: '필터 초기화', exact: true })
+                .click();
+            await page
+                .getByRole('button', { name: '1행 수정', exact: true })
+                .click();
         }
+        if (width > 640)
+            await page
+                .getByRole('button', { name: '1행 수정', exact: true })
+                .press('Enter');
         await page.getByLabel('1행 quantity', { exact: true }).fill('11');
+        await page
+            .getByRole('button', { name: '1행 수정', exact: true })
+            .press('Enter');
+        await page
+            .getByLabel('1행 quantity', { exact: true })
+            .waitFor({ state: 'hidden' });
+        await page
+            .getByRole('button', { name: '1행 수정', exact: true })
+            .press('Enter');
+        assert.equal(
+            await page.getByLabel('1행 quantity', { exact: true }).inputValue(),
+            '11',
+            'closing/reopening an editor preserves the original row edit'
+        );
+
         assert.equal(
             await page
                 .getByLabel(
@@ -186,7 +308,9 @@ try {
                 0,
                 'Mobile uses cards'
             );
-            await page.getByText('2행 수정', { exact: true }).click();
+            await page
+                .getByRole('button', { name: '2행 수정', exact: true })
+                .click();
             await page.getByLabel('2행 amount', { exact: true }).fill('0');
             assert.match(
                 await page
@@ -317,6 +441,28 @@ try {
                 height: el.getBoundingClientRect().height,
                 parts: [...el.children].map((part) => ({
                     tag: part.tagName,
+                    width: part.getBoundingClientRect().width,
+                    height: part.getBoundingClientRect().height,
+                })),
+                bodyFont: getComputedStyle(document.body).fontFamily,
+                panels: [
+                    ...(document.querySelector('main > .grid')?.children ||
+                        document.querySelector('main')?.children ||
+                        []),
+                ].map((part) => ({
+                    tag: part.tagName,
+                    class: part.className,
+                    pieces: [...part.children].map((c) => ({
+                        tag: c.tagName,
+                        class: c.className,
+                        height: c.getBoundingClientRect().height,
+                        y: c.getBoundingClientRect().y,
+                        font: getComputedStyle(c).font,
+                        padding: getComputedStyle(c).padding,
+                        margin: getComputedStyle(c).margin,
+                    })),
+                    x: part.getBoundingClientRect().x,
+                    y: part.getBoundingClientRect().y,
                     width: part.getBoundingClientRect().width,
                     height: part.getBoundingClientRect().height,
                 })),

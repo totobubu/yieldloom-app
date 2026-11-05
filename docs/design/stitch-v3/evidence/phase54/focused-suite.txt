@@ -1,0 +1,13 @@
+START standard-upload-inline
+PASS standard-upload-inline
+START manual-holdings
+PASS manual-holdings
+START broker-spreadsheet
+PASS broker-spreadsheet
+START portfolio-import-review
+PASS portfolio-import-review
+START mobile-import-feedback
+PASS mobile-import-feedback
+START scoped-theme-styles
+PASS scoped-theme-styles
+PASS focused synthetic suite; no production writes

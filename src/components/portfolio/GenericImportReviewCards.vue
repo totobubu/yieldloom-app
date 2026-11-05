@@ -1,8 +1,8 @@
 <script setup>
-    import { computed, watch } from 'vue';
+    import { computed, ref, watch } from 'vue';
     import Button from 'primevue/button';
-    import InputText from 'primevue/inputtext';
     import Select from 'primevue/select';
+    import GenericImportReviewFields from './GenericImportReviewFields.vue';
     import { reviewRawAmount } from '@/services/importReviewPresentation.js';
     import { transactionTypeLabel } from '@/services/tossImportReview.js';
     const props = defineProps({
@@ -11,10 +11,24 @@
         issueIndices: { type: Set, required: true },
         isHoldings: Boolean,
         busy: Boolean,
+        scopeKey: { type: String, default: '' },
+        sortLabel: { type: String, default: '' },
     });
     const first = defineModel('first', { type: Number, default: 0 });
     const pageSize = defineModel('pageSize', { type: Number, default: 50 });
     const emit = defineEmits(['update-row']);
+    const expanded = ref({});
+    watch(
+        () => props.scopeKey,
+        () => {
+            expanded.value = {};
+        }
+    );
+    const isExpanded = (index) =>
+        expanded.value[index] ?? props.issueIndices.has(index);
+    function toggleEditor(index) {
+        expanded.value = { ...expanded.value, [index]: !isExpanded(index) };
+    }
     const pageRows = computed(() =>
         props.rows.slice(first.value, first.value + pageSize.value)
     );
@@ -49,7 +63,7 @@
                     rows.length
                 }}건)
             </h3>
-            <span>저장 전 전체 검증</span>
+            <span>{{ sortLabel || '저장 전 전체 검증' }}</span>
         </header>
         <article
             v-for="item in pageRows"
@@ -61,13 +75,23 @@
                 <span class="generic-review-status">{{
                     issueIndices.has(item.index) ? '확인 필요' : '검증 전'
                 }}</span
-                ><span class="generic-row-number">No. {{ item.index + 1 }}</span
+                ><button
+                    type="button"
+                    class="generic-row-number"
+                    :aria-label="`${item.index + 1}행 수정`"
+                    :aria-expanded="isExpanded(item.index)"
+                    :aria-controls="`generic-row-edit-${item.index}`"
+                    :disabled="busy"
+                    @click="toggleEditor(item.index)">
+                    No. {{ item.index + 1 }}</button
                 ><time>{{ raw(item.row.date) }}</time>
             </div>
             <div class="generic-card-identity">
                 <div>
                     <strong>{{ raw(item.row.symbol) }}</strong
-                    ><small v-if="item.row.securityName">{{ item.row.securityName }}</small
+                    ><small v-if="item.row.securityName">{{
+                        item.row.securityName
+                    }}</small
                     ><small>고유번호: {{ raw(item.row.externalId) }}</small>
                 </div>
                 <span
@@ -96,63 +120,17 @@
                     >
                 </div>
             </div>
-            <details
+            <section
+                v-if="isExpanded(item.index)"
                 :id="`generic-row-edit-${item.index}`"
                 class="generic-card-editor"
-                :open="issueIndices.has(item.index)">
-                <summary>{{ item.index + 1 }}행 수정</summary>
-                <div class="generic-card-fields">
-                    <div
-                        v-for="column in columns"
-                        :key="column.field"
-                        class="generic-card-field"
-                        role="group"
-                        :aria-label="`${item.index + 1}행 ${column.label}`">
-                        <span>{{ column.label }}</span
-                        ><template v-if="column.field === 'amount'"
-                            ><Select
-                                :model-value="item.row.currency"
-                                :options="[
-                                    { label: 'USD', value: 'USD' },
-                                    { label: 'KRW', value: 'KRW' },
-                                ]"
-                                option-label="label"
-                                option-value="value"
-                                placeholder="통화 선택"
-                                :aria-label="`${item.index + 1}행 currency`"
-                                :disabled="busy"
-                                @update:model-value="
-                                    emit('update-row', {
-                                        index: item.index,
-                                        field: 'currency',
-                                        value: $event,
-                                    })
-                                " /><InputText
-                                :model-value="item.row.amount"
-                                :aria-label="`${item.index + 1}행 amount`"
-                                :disabled="busy"
-                                @update:model-value="
-                                    emit('update-row', {
-                                        index: item.index,
-                                        field: 'amount',
-                                        value: $event,
-                                    })
-                                " /></template
-                        ><InputText
-                            v-else
-                            :model-value="item.row[column.field]"
-                            :aria-label="`${item.index + 1}행 ${column.field}`"
-                            :disabled="busy"
-                            @update:model-value="
-                                emit('update-row', {
-                                    index: item.index,
-                                    field: column.field,
-                                    value: $event,
-                                })
-                            " />
-                    </div>
-                </div>
-            </details>
+                :aria-label="`${item.index + 1}행 수정 입력`">
+                <GenericImportReviewFields
+                    :item="item"
+                    :columns="columns"
+                    :busy="busy"
+                    @update-row="emit('update-row', $event)" />
+            </section>
         </article>
         <p v-if="!rows.length" class="generic-empty">
             표시할 자료가 없습니다. 검색어와 필터를 확인하세요.
@@ -222,9 +200,11 @@
         border-bottom: 1px solid var(--app-border);
         padding-bottom: 8px;
         font-size: 11px;
-        line-height: 16px;
+        line-height: 20px;
     }
     .generic-card-top time {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-weight: 600;
         margin-left: auto;
         color: var(--app-muted);
         font-variant-numeric: tabular-nums;
@@ -269,8 +249,9 @@
     }
     .generic-card-identity small {
         display: block;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-size: 11px;
-        line-height: 16px;
+        line-height: 20px;
         color: var(--app-muted);
         overflow-wrap: anywhere;
     }
@@ -294,10 +275,11 @@
     .generic-card-values > div > span {
         display: block;
         font-size: 11px;
-        line-height: 16px;
+        line-height: 20px;
         color: var(--app-muted);
     }
     .generic-card-values strong {
+        display: block;
         font-size: 12px;
         line-height: 20px;
         overflow-wrap: anywhere;
@@ -307,30 +289,32 @@
         font-size: 11px;
         line-height: 18px;
     }
+    .generic-row-number {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        font: inherit;
+    }
+    .generic-row-number {
+        cursor: pointer;
+        text-decoration: underline dotted;
+        text-underline-offset: 3px;
+    }
+    .generic-row-number:focus-visible {
+        outline: 2px solid var(--app-accent);
+        outline-offset: 3px;
+    }
     .generic-card-editor summary {
         cursor: pointer;
         color: var(--app-accent);
         font-weight: 600;
     }
-    .generic-card-fields {
-        display: grid;
-        gap: 10px;
-        margin-top: 10px;
-    }
-    .generic-card-fields .generic-card-field {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 4px;
-    }
-    .generic-card-fields :deep(.p-inputtext),
-    .generic-card-fields :deep(.p-select) {
-        width: 100%;
-        min-width: 0;
-        font-size: 12px;
-    }
     .generic-cards-pagination {
+        padding: 8px;
+        border-radius: 8px;
+        background: var(--app-bg);
         font-size: 11px;
-        line-height: 18px;
+        line-height: 20px;
         color: var(--app-muted);
         text-align: center;
     }
@@ -359,15 +343,31 @@
         background: #eff6ff;
     }
     html:not(.p-dark) .generic-type[data-kind='sell'] {
-        color: #be123c;
-        background: #fff1f2;
+        color: #7e22ce;
+        background: #faf5ff;
     }
     html:not(.p-dark) .generic-type[data-kind='dividend'] {
-        color: #047857;
-        background: #ecfdf5;
+        color: #b45309;
+        background: #fffbeb;
+    }
+    html:not(.p-dark) .generic-type[data-kind='cash_in'] {
+        color: #0f766e;
+        background: #ccfbf1;
+    }
+    html:not(.p-dark) .generic-type[data-kind='cash_out'] {
+        color: #b91c1c;
+        background: #fee2e2;
     }
     .p-dark .generic-cards-heading h3,
     .p-dark .generic-card-identity strong {
         color: var(--app-text);
+    }
+    .generic-row-number {
+        position: relative;
+    }
+    .generic-row-number::before {
+        content: '';
+        position: absolute;
+        inset: -12px -8px;
     }
 </style>

@@ -1,0 +1,34 @@
+[
+  {
+    "viewportCssWidth": 390,
+    "sourceId": "6bd9777b8bea43b98aea8397a29f809a",
+    "native": [
+      780,
+      5416
+    ],
+    "htmlRender": [
+      780,
+      5414
+    ],
+    "comparison": "unscaled top-left common extent; extra bottom rows excluded",
+    "rgbMeanAbsoluteError": 7.087301282840625,
+    "fractionLumaDifferenceAbove16": 0.07313233497200988,
+    "qualification": "diagnostic only; no visual acceptance threshold applied"
+  },
+  {
+    "viewportCssWidth": 1280,
+    "sourceId": "5aa7a573854a46db9b106f89c09c4f23",
+    "native": [
+      2560,
+      2264
+    ],
+    "htmlRender": [
+      2560,
+      2264
+    ],
+    "comparison": "unscaled top-left common extent; extra bottom rows excluded",
+    "rgbMeanAbsoluteError": 5.45069187555212,
+    "fractionLumaDifferenceAbove16": 0.04454056702738516,
+    "qualification": "diagnostic only; no visual acceptance threshold applied"
+  }
+]

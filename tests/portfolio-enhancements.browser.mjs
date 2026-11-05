@@ -306,7 +306,11 @@ try {
         })
         .waitFor();
     await chooseFile('quantity,symbol,amount,currency\n2,AAPL,100,USD\n');
-    await broker.getByText(/저장된 양식과 파일의 열 구성이 다릅니다/).waitFor();
+    await broker
+        .getByText(
+            /헤더 구조가 일치하지 않아 저장된 열 연결을 적용하지 않았습니다/
+        )
+        .waitFor();
     const workbook = execFileSync(process.env.FAMILY_TEST_PYTHON || 'python3', [
         '-c',
         "from openpyxl import Workbook; import io,sys; b=Workbook(); b.active.title='First'; b.active.append(['symbol','quantity','amount','currency']); b.active.append(['AAPL',1,100,'USD']); s=b.create_sheet('Saved'); s.append(['symbol','quantity','amount','currency']); s.append(['AAPL',2,100,'USD']); out=io.BytesIO(); b.save(out); b.close(); sys.stdout.buffer.write(out.getvalue())",

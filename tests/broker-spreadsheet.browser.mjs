@@ -126,6 +126,19 @@ try {
             .isVisible(),
         true
     );
+    await form
+        .getByRole('button', {
+            name: '파일·계좌 확인 및 업로드 설정 열기',
+            exact: true,
+        })
+        .click();
+    assert.equal(
+        (await form.locator('.broker-upload-settings').getAttribute('open')) !==
+            null,
+        true,
+        'file settings remain accessible from the file icon'
+    );
+    await form.locator('.broker-upload-settings>summary').click();
     assert.deepEqual(requests.slice(before), [
         { method: 'POST', action: 'inspectSpreadsheet' },
     ]);
@@ -141,6 +154,29 @@ try {
         before + 1,
         'column selections add no requests'
     );
+    assert.match(
+        await form.locator('.broker-preview-notes').innerText(),
+        /amount 250 · currency USD/,
+        'raw mapped values remain quoted without financial inference'
+    );
+    for (const width of [1440, 1280, 834, 768, 390, 360]) {
+        await page.setViewportSize({ width, height: 1000 });
+        const box = await form.boundingBox();
+        const expected = Math.min(width, 1280) - (width <= 640 ? 32 : 48);
+        assert.ok(
+            Math.abs(box.width - expected) < 1,
+            `mapping content width ${width}: ${box.width} vs ${expected}`
+        );
+        assert.equal(
+            await form.evaluate((e) => e.scrollWidth > e.clientWidth + 1),
+            false,
+            `mapping overflow ${width}`
+        );
+        await page.screenshot({
+            path: `/tmp/yieldloom-broker-dialog-${width}.png`,
+        });
+    }
+    await page.setViewportSize({ width: 1280, height: 900 });
     await form
         .getByRole('button', { name: '연결 자료 미리보기', exact: true })
         .click();
@@ -261,7 +297,7 @@ try {
     });
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: real XLSX/CSV → explicit broker columns → review → in-memory commit and account statement save/read/delete; typing/mapping zero requests; four widths'
+        'PASS: real XLSX/CSV → explicit broker columns → review → in-memory commit and account statement save/read/delete; typing/mapping zero requests; six mapping-dialog widths and four portfolio widths'
     );
 } finally {
     await browser.close();

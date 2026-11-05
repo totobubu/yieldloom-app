@@ -31,6 +31,14 @@
         error = ref(''),
         inspecting = ref(false);
     const defaultCurrency = ref('');
+    const uploadSettings = ref(null);
+    function openUploadSettings() {
+        const panel = uploadSettings.value;
+        if (!panel) return;
+        panel.open = true;
+        panel.scrollIntoView({ block: 'center' });
+        panel.querySelector('summary')?.focus();
+    }
     const presetStatus = ref(''),
         mappingConfirmed = ref(false);
     const presetApplied = ref(false);
@@ -204,6 +212,20 @@
             hasCurrency.value &&
             !duplicateKeys.value.size
     );
+    const rawPreviewNotes = computed(() =>
+        (info.value?.previewRows || []).slice(0, 3).map((row, index) => ({
+            row: index + 1,
+            date: Number.isInteger(mapping.value.date)
+                ? (row[mapping.value.date] ?? '')
+                : null,
+            amount: Number.isInteger(mapping.value.amount)
+                ? (row[mapping.value.amount] ?? '')
+                : null,
+            currency: Number.isInteger(mapping.value.currency)
+                ? (row[mapping.value.currency] ?? '')
+                : null,
+        }))
+    );
     const columns = computed(() => [
         { label: '연결 안 함', value: null },
         ...(info.value?.headers || []).map((name, value) => ({
@@ -333,21 +355,39 @@
                 </p>
                 <h3>증권사 파일 열 연결 (컬럼 매핑)</h3>
                 <p>
-                    업로드된 증권사 거래내역 파일의 열을 표준 항목에 연결합니다.
-                    필수 항목이 모두 연결되면 검토 단계로 진행할 수 있습니다.
+                    업로드된 증권사
+                    {{ kind === 'transactions' ? '거래내역' : '잔고' }} 파일의
+                    열을 표준 항목에 연결합니다. 필수 항목이 모두 연결되면 검토
+                    단계로 진행할 수 있습니다.
                 </p>
             </div>
             <ol class="broker-steps" aria-label="가져오기 진행 단계">
-                <li>
+                <li class="broker-step">
                     <b class="completed"
                         ><i class="pi pi-check" aria-hidden="true" /></b
-                    ><span><small>Step 1</small>파일 업로드</span>
+                    ><span
+                        ><small>Step 1</small
+                        ><span class="broker-step-prefix">1. </span>파일
+                        업로드</span
+                    >
                 </li>
-                <li aria-current="step">
-                    <b>2</b><span><small>진행중</small>열 연결·검토</span>
+                <li class="broker-step-separator" aria-hidden="true" />
+                <li class="broker-step" aria-current="step">
+                    <b>2</b
+                    ><span
+                        ><small>진행중</small
+                        ><span class="broker-step-prefix">2. </span>열
+                        연결·검토</span
+                    ><em class="broker-progress-badge">진행중</em>
                 </li>
-                <li>
-                    <b>3</b><span><small>대기</small>저장 결과</span>
+                <li class="broker-step-separator" aria-hidden="true" />
+                <li class="broker-step">
+                    <b>3</b
+                    ><span
+                        ><small>대기</small
+                        ><span class="broker-step-prefix">3. </span>저장
+                        결과</span
+                    >
                 </li>
             </ol>
         </header>
@@ -357,15 +397,25 @@
                 <section class="broker-file-card">
                     <div class="broker-file-toolbar">
                         <div class="broker-file-meta">
-                            <i class="pi pi-file" aria-hidden="true" />
+                            <button
+                                type="button"
+                                class="broker-file-settings"
+                                aria-label="파일·계좌 확인 및 업로드 설정 열기"
+                                title="파일·계좌 확인 및 업로드 설정"
+                                :disabled="busy || inspecting"
+                                @click="openUploadSettings">
+                                <i class="pi pi-file" aria-hidden="true" />
+                            </button>
                             <div>
-                                <strong>{{
-                                    file?.name || 'CSV·XLSX 파일 선택'
-                                }}</strong
-                                ><span class="broker-file-badge">{{
-                                    account.institution
-                                }}</span
-                                ><small
+                                <div class="broker-file-name">
+                                    <strong>{{
+                                        file?.name || 'CSV·XLSX 파일 선택'
+                                    }}</strong
+                                    ><span class="broker-file-badge">{{
+                                        account.institution
+                                    }}</span>
+                                </div>
+                                <small
                                     ><span
                                         v-if="info"
                                         class="broker-tablet-account"
@@ -467,103 +517,44 @@
                                 </label>
                             </div>
                         </div>
+                        <p
+                            v-if="
+                                file &&
+                                !file.name.toLowerCase().endsWith('.xlsx')
+                            "
+                            class="broker-file-note">
+                            ※ CSV 파일은 시트 선택을 지원하지 않습니다.
+                        </p>
+                        <p v-if="info?.sheets.length" class="broker-file-note">
+                            시트 {{ info.sheet }} · 사용 가능 시트
+                            {{ info.sheets.join(', ') }}
+                        </p>
                     </div>
-                    <details class="broker-upload-settings" :open="!info">
-                        <summary>파일·계좌 확인 및 업로드 설정</summary>
-                        <div class="broker-settings-grid">
-                            <label
-                                >증권사<Select
-                                    v-model="broker"
-                                    :disabled="busy || inspecting"
-                                    :options="brokers"
-                                    option-label="label"
-                                    option-value="value"
-                                    aria-label="파일 증권사"
-                            /></label>
-                            <label
-                                >{{
-                                    kind === 'transactions'
-                                        ? '조회 종료일'
-                                        : '잔고 기준일'
-                                }}<InputText
-                                    v-model="asOf"
-                                    type="date"
-                                    required
-                            /></label>
-                            <label class="broker-source-file"
-                                >CSV 또는 XLSX 파일<input
-                                    type="file"
-                                    accept=".csv,.xlsx"
-                                    required
-                                    @change="
-                                        file = $event.target.files?.[0] || null;
-                                        sheet = '';
-                                    "
-                            /></label>
-                            <label
-                                v-if="
-                                    file?.name.toLowerCase().endsWith('.xlsx')
-                                "
-                                >워크시트 (선택)<InputText
-                                    v-model="sheet"
-                                    placeholder="비우면 첫 번째 시트"
-                            /></label>
-                        </div>
-                        <label class="broker-check"
-                            ><input
-                                v-model="confirmed"
-                                type="checkbox"
-                                required />{{ account.institution }} ·
-                            {{ account.alias }}의 명의와 계좌에 속하는 자료임을
-                            확인했습니다.</label
-                        >
-                        <div class="broker-setup-actions">
-                            <Button
-                                type="button"
-                                label="파일 열 확인"
-                                icon="pi pi-search"
-                                :disabled="!confirmed || !file"
-                                @click="inspect" />
-                            <Button
-                                type="button"
-                                label="저장된 열 연결 삭제"
-                                severity="secondary"
-                                text
-                                @click="deletePreset" />
-                            <Button
-                                v-if="presetSheet"
-                                type="button"
-                                label="저장된 시트 선택"
-                                severity="secondary"
-                                outlined
-                                @click="sheet = presetSheet" />
-                        </div>
-                    </details>
-                    <p
-                        v-if="
-                            file && !file.name.toLowerCase().endsWith('.xlsx')
-                        "
-                        class="broker-file-note">
-                        ※ CSV 파일은 시트 선택을 지원하지 않습니다.
-                    </p>
-                    <p v-if="info?.sheets.length" class="broker-file-note">
-                        시트 {{ info.sheet }} · 사용 가능 시트
-                        {{ info.sheets.join(', ') }}
-                    </p>
                 </section>
+                <div
+                    v-if="presetStatus.includes('열 구성이 다릅니다')"
+                    class="broker-mismatch"
+                    role="status">
+                    <i class="pi pi-exclamation-triangle" aria-hidden="true" />
+                    <div>
+                        <strong>헤더 지문 불일치 안내</strong>
+                        <p>
+                            기존 저장된 설정과 업로드된 파일의 헤더 구조가
+                            일치하지 않아 저장된 열 연결을 적용하지 않았습니다.
+                            각 항목의 열 연결을 직접 확인해 주세요.
+                        </p>
+                        <p>
+                            이 브라우저에 열 위치 설정만 저장하며 파일·계좌·시트
+                            이름은 저장하지 않습니다.
+                        </p>
+                    </div>
+                </div>
                 <Message
-                    v-if="presetStatus"
-                    :severity="
-                        presetStatus.includes('열 구성이 다릅니다')
-                            ? 'warn'
-                            : 'info'
-                    "
+                    v-else-if="presetStatus"
+                    severity="info"
                     :closable="false"
                     class="broker-preset-status"
-                    ><strong v-if="presetStatus.includes('열 구성이 다릅니다')"
-                        >헤더 지문 불일치 안내</strong
-                    >
-                    <p>{{ presetStatus }}</p>
+                    ><p>{{ presetStatus }}</p>
                     <p>
                         이 브라우저에 열 위치 설정만 저장하며 파일·계좌·시트
                         이름은 저장하지 않습니다.
@@ -574,7 +565,16 @@
                         <section class="broker-mapping-card">
                             <header class="broker-card-heading">
                                 <div>
-                                    <h4>표준 항목 열 연결</h4>
+                                    <h4>
+                                        <span class="broker-mapping-title-main"
+                                            >표준 항목 열 연결</span
+                                        ><span
+                                            class="broker-mapping-title-tablet"
+                                            >표준 항목 열 매핑 ({{
+                                                fields.length
+                                            }}개 규격)</span
+                                        >
+                                    </h4>
                                     <p>
                                         원장 저장이 아닌 표준 항목 연결
                                         단계입니다.
@@ -586,15 +586,24 @@
                                     >필수 {{ requiredConnected }}/{{
                                         requiredFields.length
                                     }}
-                                    연결<template v-if="!hasCurrency">
+                                    연결<template
+                                        v-if="
+                                            kind === 'transactions' &&
+                                            !Number.isInteger(mapping.type)
+                                        ">
+                                        · 거래 유형 확인 필요</template
+                                    ><template v-if="duplicateKeys.size">
+                                        · 중복 연결 확인 필요</template
+                                    ><template v-if="!hasCurrency">
                                         · 통화 확인 필요</template
                                     ></span
                                 >
                             </header>
                             <p class="broker-mapping-guide">
                                 동일한 원본 열을 두 개 이상의 항목에 중복 매핑할
-                                수 없습니다. 필수 열과 통화를 지정한 뒤 검토
-                                단계로 이동하세요.
+                                수 없습니다. 필수 항목
+                                {{ requiredFields.length }}개를 모두 지정해야
+                                데이터 검토 단계로 이동할 수 있습니다.
                             </p>
                             <div class="broker-basic-fields">
                                 <div
@@ -611,7 +620,9 @@
                                     }">
                                     <div class="broker-mapping-label">
                                         <label :for="`broker-map-${key}`"
-                                            >{{ index + 1 }}. {{ label }}
+                                            ><span class="broker-field-index"
+                                                >{{ index + 1 }}. </span
+                                            >{{ label }}
                                             <small
                                                 v-if="
                                                     requiredFields.includes(key)
@@ -641,7 +652,28 @@
                                                             mapping[key]
                                                         )),
                                             }"
-                                            >{{
+                                            ><i
+                                                v-if="
+                                                    requiredFields.includes(
+                                                        key
+                                                    ) ||
+                                                    Number.isInteger(
+                                                        mapping[key]
+                                                    ) ||
+                                                    (key === 'currency' &&
+                                                        hasCurrency)
+                                                "
+                                                :class="
+                                                    !duplicateKeys.has(key) &&
+                                                    (Number.isInteger(
+                                                        mapping[key]
+                                                    ) ||
+                                                        (key === 'currency' &&
+                                                            hasCurrency))
+                                                        ? 'pi pi-check-circle'
+                                                        : 'pi pi-exclamation-triangle'
+                                                "
+                                                aria-hidden="true" />{{
                                                 duplicateKeys.has(key)
                                                     ? '중복 연결'
                                                     : Number.isInteger(
@@ -690,8 +722,7 @@
                                         "
                                         class="broker-field-note">
                                         거래행은 수량 또는 거래 금액 중 최소
-                                        하나가 필요합니다. 값은 다음 검토
-                                        단계에서 확인합니다.
+                                        하나가 필요합니다.
                                     </p>
                                     <div
                                         v-if="key === 'currency'"
@@ -745,22 +776,24 @@
                                         detailFields.length
                                     }}개 선택 항목)
                                 </summary>
-                                <div
-                                    v-for="[key, label] in detailFields"
-                                    :key="key"
-                                    class="broker-optional-row">
-                                    <label :for="`broker-map-${key}`"
-                                        >{{ label
-                                        }}<code>{{ key }}</code></label
-                                    ><Select
-                                        v-model="mapping[key]"
-                                        :disabled="busy || inspecting"
-                                        :options="columns"
-                                        option-label="label"
-                                        option-value="value"
-                                        :input-id="`broker-map-${key}`"
-                                        :aria-label="`연결 ${label}`"
-                                        :invalid="duplicateKeys.has(key)" />
+                                <div class="broker-optional-grid">
+                                    <div
+                                        v-for="[key, label] in detailFields"
+                                        :key="key"
+                                        class="broker-optional-row">
+                                        <label :for="`broker-map-${key}`"
+                                            >{{ label
+                                            }}<code>{{ key }}</code></label
+                                        ><Select
+                                            v-model="mapping[key]"
+                                            :disabled="busy || inspecting"
+                                            :options="columns"
+                                            option-label="label"
+                                            option-value="value"
+                                            :input-id="`broker-map-${key}`"
+                                            :aria-label="`연결 ${label}`"
+                                            :invalid="duplicateKeys.has(key)" />
+                                    </div>
                                 </div>
                             </details>
                         </section>
@@ -781,6 +814,11 @@
                                     </div>
                                     <span>총 {{ info.rowCount }}행</span>
                                 </header>
+                                <p
+                                    v-if="info.previewRows?.length"
+                                    class="broker-preview-scroll">
+                                    <span>좌우 스크롤 ↔</span>
+                                </p>
                                 <div
                                     v-if="Array.isArray(info.previewRows)"
                                     class="broker-raw-preview"
@@ -823,6 +861,46 @@
                                     이 응답에는 원본 미리보기 자료가 없습니다.
                                     예시 값으로 대체하지 않습니다.
                                 </p>
+                                <div
+                                    v-if="rawPreviewNotes.length"
+                                    class="broker-preview-notes">
+                                    <p>
+                                        선택한 열의 원문 · 미확정 (세전·세후
+                                        미판정)
+                                    </p>
+                                    <ul>
+                                        <li
+                                            v-for="note in rawPreviewNotes"
+                                            :key="note.row">
+                                            <strong
+                                                >{{ note.row }}행<template
+                                                    v-if="note.date !== null">
+                                                    ({{
+                                                        note.date === ''
+                                                            ? '빈 값'
+                                                            : note.date
+                                                    }})</template
+                                                >:</strong
+                                            >
+                                            amount
+                                            {{
+                                                note.amount === null
+                                                    ? '열 미지정'
+                                                    : note.amount === ''
+                                                      ? '빈 값'
+                                                      : note.amount
+                                            }}
+                                            · currency
+                                            {{
+                                                note.currency === null
+                                                    ? '열 미지정'
+                                                    : note.currency === ''
+                                                      ? '빈 값'
+                                                      : note.currency
+                                            }}
+                                        </li>
+                                    </ul>
+                                </div>
                             </section>
                             <section class="broker-confirm-card">
                                 <header class="broker-card-heading">
@@ -833,7 +911,12 @@
                                         >{{
                                             mappingReady
                                                 ? '필수 연결 확인'
-                                                : '연결 미완료'
+                                                : kind === 'transactions' &&
+                                                    !Number.isInteger(
+                                                        mapping.type
+                                                    )
+                                                  ? '미완료 (거래 유형 미지정)'
+                                                  : '연결 미완료'
                                         }}</span
                                     >
                                 </header>
@@ -894,6 +977,74 @@
                         </aside>
                     </div>
                 </template>
+                <details
+                    ref="uploadSettings"
+                    class="broker-upload-settings"
+                    :open="!info">
+                    <summary>파일·계좌 확인 및 업로드 설정</summary>
+                    <div class="broker-settings-grid">
+                        <label
+                            >증권사<Select
+                                v-model="broker"
+                                :disabled="busy || inspecting"
+                                :options="brokers"
+                                option-label="label"
+                                option-value="value"
+                                aria-label="파일 증권사"
+                        /></label>
+                        <label
+                            >{{
+                                kind === 'transactions'
+                                    ? '조회 종료일'
+                                    : '잔고 기준일'
+                            }}<InputText v-model="asOf" type="date" required
+                        /></label>
+                        <label class="broker-source-file"
+                            >CSV 또는 XLSX 파일<input
+                                type="file"
+                                accept=".csv,.xlsx"
+                                required
+                                @change="
+                                    file = $event.target.files?.[0] || null;
+                                    sheet = '';
+                                "
+                        /></label>
+                        <label v-if="file?.name.toLowerCase().endsWith('.xlsx')"
+                            >워크시트 (선택)<InputText
+                                v-model="sheet"
+                                placeholder="비우면 첫 번째 시트"
+                        /></label>
+                    </div>
+                    <label class="broker-check"
+                        ><input
+                            v-model="confirmed"
+                            type="checkbox"
+                            required />{{ account.institution }} ·
+                        {{ account.alias }}의 명의와 계좌에 속하는 자료임을
+                        확인했습니다.</label
+                    >
+                    <div class="broker-setup-actions">
+                        <Button
+                            type="button"
+                            label="파일 열 확인"
+                            icon="pi pi-search"
+                            :disabled="!confirmed || !file"
+                            @click="inspect" />
+                        <Button
+                            type="button"
+                            label="저장된 열 연결 삭제"
+                            severity="secondary"
+                            text
+                            @click="deletePreset" />
+                        <Button
+                            v-if="presetSheet"
+                            type="button"
+                            label="저장된 시트 선택"
+                            severity="secondary"
+                            outlined
+                            @click="sheet = presetSheet" />
+                    </div>
+                </details>
             </fieldset>
         </form>
         <details class="broker-format-help">
@@ -1874,5 +2025,694 @@
             font-size: 11px;
             line-height: 16px;
         }
+    }
+
+    /* Final source geometry; extra upload controls remain accessible below the mapping. */
+    .broker-file-settings {
+        display: grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        padding: 0;
+        border: 1px solid #d1fae5;
+        border-radius: 8px;
+        background: var(--app-accent-light);
+        color: var(--app-accent);
+        font-size: 22px;
+        cursor: pointer;
+    }
+    .broker-file-settings:focus-visible {
+        outline: 2px solid var(--app-accent);
+        outline-offset: 3px;
+    }
+    .broker-file-note {
+        margin: 0;
+    }
+    .broker-file-options > .broker-file-note {
+        grid-column: 1 / -1;
+    }
+    .broker-upload-settings {
+        margin-top: 20px;
+    }
+    .broker-step-separator {
+        flex: none !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        background: none !important;
+    }
+    .broker-step-separator::before {
+        content: '';
+        display: block;
+        width: 20px;
+        height: 1px;
+        background: var(--app-border);
+    }
+    .broker-progress-badge {
+        font-size: 10px;
+        line-height: 15px;
+        font-weight: 600;
+        font-style: normal;
+        padding: 2px 6px;
+        border: 1px solid #a7f3d0;
+        border-radius: 999px;
+        background: var(--app-accent-light);
+        color: var(--app-accent);
+        white-space: nowrap;
+    }
+    @media (min-width: 1024px) {
+        .broker-eyebrow {
+            border: 0;
+            border-radius: 0;
+            padding: 0;
+            background: none;
+            font-size: 12px !important;
+            line-height: 18px;
+        }
+        .broker-eyebrow i {
+            display: none;
+        }
+        .broker-steps {
+            gap: 10px;
+        }
+        .broker-steps .broker-step {
+            gap: 8px;
+        }
+        .broker-file-options > .broker-file-note {
+            margin-left: auto;
+        }
+    }
+    @media (min-width: 641px) and (max-width: 1023px) {
+        .broker-file-card {
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .broker-file-options {
+            gap: 12px;
+            padding-top: 0;
+            border: 0;
+        }
+        .broker-file-toolbar {
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--app-border-subtle);
+            gap: 12px;
+        }
+        .broker-steps {
+            gap: 6px;
+            background: var(--app-bg);
+            border-radius: 8px;
+        }
+        .broker-steps .broker-step {
+            gap: 4px;
+            padding: 4px 8px;
+        }
+        .broker-steps .broker-step:first-child {
+            background: var(--app-surface);
+            border: 1px solid var(--app-border);
+            border-radius: 4px;
+        }
+        .broker-steps .broker-step[aria-current] {
+            background: var(--app-accent-light);
+            border: 1px solid #99f6e4;
+            border-radius: 4px;
+        }
+        .broker-step-prefix,
+        .broker-progress-badge {
+            display: none;
+        }
+        .broker-step:first-child .broker-step-prefix {
+            display: inline;
+        }
+        .broker-step-separator::before {
+            content: '/';
+            height: auto;
+            width: auto;
+            background: none;
+            color: var(--app-border);
+        }
+    }
+    @media (max-width: 640px) {
+        .broker-steps {
+            gap: 4px;
+        }
+        .broker-step-prefix,
+        .broker-progress-badge {
+            display: none;
+        }
+        .broker-step-separator::before {
+            width: 12px;
+        }
+        .broker-file-toolbar {
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--app-border-subtle);
+            gap: 10px;
+        }
+        .broker-file-options {
+            border: 0;
+            padding-top: 0;
+            margin-top: 14px;
+            gap: 12px;
+        }
+        .broker-file-options > .broker-file-note {
+            font-size: 11px;
+            line-height: 16.5px;
+        }
+    }
+
+    .broker-eyebrow {
+        display: flex;
+        width: fit-content;
+    }
+    .broker-file-meta strong {
+        line-height: 20px;
+    }
+    .broker-file-meta small {
+        line-height: 16px;
+    }
+    .broker-file-badge {
+        line-height: 16px;
+    }
+    .broker-kind-toggle {
+        flex-shrink: 0;
+    }
+    .broker-kind-toggle label {
+        white-space: nowrap;
+        line-height: 16px;
+    }
+    @media (min-width: 1024px) {
+        .broker-eyebrow {
+            line-height: 16px;
+        }
+        .broker-heading p:not(.broker-eyebrow) {
+            line-height: 22.75px;
+        }
+        .broker-kind-toggle {
+            height: 32px;
+        }
+        .broker-file-options > label,
+        .broker-kind-control {
+            line-height: 16px;
+        }
+        .broker-file-note {
+            line-height: 16px;
+        }
+    }
+    @media (min-width: 641px) and (max-width: 1023px) {
+        .broker-heading > div {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .broker-heading .broker-eyebrow {
+            margin: 0 !important;
+        }
+        .broker-heading h3 {
+            margin: 0;
+        }
+        .broker-heading p:not(.broker-eyebrow) {
+            line-height: 22.75px;
+        }
+        .broker-file-meta strong {
+            line-height: 28px;
+        }
+        .broker-file-options > label,
+        .broker-kind-control {
+            font-size: 13px;
+            line-height: 18px;
+            gap: 6px;
+        }
+        .broker-kind-toggle {
+            height: 44px;
+        }
+        .broker-file-options {
+            row-gap: 16px;
+        }
+        .broker-file-note {
+            font-size: 12px;
+            line-height: 16px;
+        }
+    }
+    @media (max-width: 640px) {
+        .broker-file-toolbar {
+            gap: 8px;
+        }
+        .broker-preset-actions {
+            row-gap: 12px;
+        }
+        .broker-account-context {
+            line-height: 16.5px;
+        }
+        .broker-file-options > label,
+        .broker-kind-control {
+            line-height: 18px;
+            gap: 4px;
+            font-weight: 600;
+        }
+        .broker-kind-toggle {
+            height: 44px;
+        }
+        .broker-file-options > .broker-file-note {
+            padding-top: 2px;
+        }
+    }
+
+    .broker-mismatch {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px;
+        margin-bottom: 24px;
+        border: 1px solid #fcd34d;
+        border-radius: 12px;
+        background: #fffbeb;
+        color: #78350f;
+    }
+    .broker-mismatch > i {
+        flex-shrink: 0;
+        font-size: 22px;
+        line-height: 22px;
+        color: #eab308;
+        margin-top: 2px;
+    }
+    .broker-mismatch > div {
+        min-width: 0;
+    }
+    .broker-mismatch strong {
+        display: block;
+        font-size: 13px;
+        line-height: 19.5px;
+        color: #451a03;
+        margin-bottom: 4px;
+    }
+    .broker-mismatch p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 19.5px;
+    }
+    .broker-mismatch p + p {
+        margin-top: 6px;
+        font-size: 11px;
+        line-height: 16.5px;
+    }
+    :global(.p-dark .broker-mismatch) {
+        background: var(--app-warning-light);
+        border-color: var(--app-warning);
+        color: var(--app-warning-text);
+    }
+    :global(.p-dark .broker-mismatch strong) {
+        color: var(--app-warning-text);
+    }
+    .broker-field-index {
+        display: none;
+    }
+    @media (min-width: 1280px) {
+        .broker-mapping-workspace {
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+        }
+        .broker-mapping-card {
+            grid-column: span 7;
+        }
+        .broker-mapping-aside {
+            grid-column: span 5;
+        }
+    }
+    @media (min-width: 1024px) and (max-width: 1279px) {
+        .broker-mapping-workspace {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (min-width: 1024px) {
+        .broker-mapping-card > .broker-card-heading {
+            padding: 20px 20px 6px;
+            border-bottom: 0;
+            gap: 8px;
+        }
+        .broker-mapping-card > .broker-card-heading p {
+            display: none;
+        }
+        .broker-mapping-card > .broker-card-heading h4 {
+            line-height: 28px;
+        }
+        .broker-mapping-card > .broker-mapping-guide {
+            padding: 0 20px 20px;
+            margin: 0;
+            border: 0;
+            border-bottom: 1px solid var(--app-border-subtle);
+            border-radius: 0;
+            background: none;
+            line-height: 19.5px;
+        }
+        .broker-basic-fields {
+            gap: 14px;
+            padding: 20px;
+        }
+        .broker-mapping-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) auto;
+            align-items: center;
+            gap: 12px;
+        }
+        .broker-mapping-label {
+            display: contents;
+        }
+        .broker-mapping-label > label {
+            grid-column: 1;
+            grid-row: 1;
+            line-height: 20px;
+        }
+        .broker-mapping-label code {
+            display: block;
+            margin: 2px 0 0;
+            line-height: 16.5px;
+        }
+        .broker-field-state {
+            grid-column: 3;
+            grid-row: 1;
+            white-space: nowrap;
+        }
+        .broker-mapping-row > :deep(.p-select) {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .broker-mapping-row > .broker-field-note,
+        .broker-currency-choice {
+            grid-column: 1 / -1;
+        }
+    }
+    @media (min-width: 641px) and (max-width: 1023px) {
+        .broker-mismatch {
+            margin-bottom: 20px;
+            background: #fefce8;
+            border-color: #fef08a;
+        }
+        .broker-mismatch > i {
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            font-size: 20px;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .broker-mismatch strong {
+            font-size: 15px;
+            line-height: 18.75px;
+        }
+        .broker-mismatch p,
+        .broker-mismatch p + p {
+            font-size: 14px;
+            line-height: 21px;
+            margin-top: 0;
+        }
+        .broker-mapping-card {
+            padding: 24px;
+        }
+        .broker-mapping-card > .broker-card-heading {
+            padding: 0 0 12px;
+            margin-bottom: 16px;
+        }
+        .broker-mapping-card > .broker-card-heading h4 {
+            font-size: 20px;
+            line-height: 28px;
+        }
+        .broker-mapping-card > .broker-mapping-guide {
+            margin: 0 0 16px;
+            padding: 10px;
+            font-size: 12px;
+            line-height: 18px;
+        }
+        .broker-basic-fields {
+            padding: 0;
+            gap: 0;
+        }
+        .broker-mapping-row {
+            padding: 12px 0;
+            border: 0;
+            border-bottom: 1px solid var(--app-border-subtle);
+            border-radius: 0;
+        }
+        .broker-mapping-row.needs-mapping {
+            margin: 8px 0;
+            padding: 12px;
+            border: 1px solid #fca5a5;
+            border-radius: 12px;
+        }
+        .broker-mapping-label {
+            margin-bottom: 6px;
+        }
+        .broker-mapping-label > label {
+            font-size: 13px;
+            line-height: 18px;
+        }
+        .broker-detail-fields {
+            margin: 16px 0 0;
+        }
+    }
+    @media (max-width: 640px) {
+        .broker-mismatch {
+            padding: 14px;
+            background: #fefce8;
+            border-color: #fde68a;
+            margin-bottom: 16px;
+        }
+        .broker-mismatch > i {
+            display: grid;
+            place-items: center;
+            width: 28px;
+            height: 28px;
+            font-size: 20px;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .broker-mismatch strong {
+            font-size: 14px;
+            line-height: 21px;
+        }
+        .broker-mismatch p {
+            font-size: 13px;
+            line-height: 19.5px;
+        }
+        .broker-field-index {
+            display: inline;
+        }
+        .broker-mapping-label > label {
+            font-size: 13px;
+            line-height: 19.5px;
+            font-weight: 700;
+        }
+        .broker-mapping-label {
+            margin-bottom: 8px;
+        }
+        .broker-mapping-card > .broker-card-heading p {
+            display: none;
+        }
+        .broker-mapping-card > .broker-card-heading {
+            border-bottom: 0;
+            padding-bottom: 0;
+            gap: 8px;
+        }
+        .broker-mapping-card > .broker-card-heading > .broker-state {
+            font-size: 11px;
+            line-height: 16.5px;
+            padding: 2px 8px;
+        }
+        .broker-mapping-guide {
+            font-size: 11px;
+            line-height: 16.5px;
+            padding: 10px;
+        }
+    }
+
+    .broker-file-name {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .broker-file-name .broker-file-badge {
+        margin: 0;
+    }
+    @media (min-width: 1024px) {
+        .broker-heading .broker-eyebrow {
+            line-height: 16px;
+        }
+        .broker-file-name {
+            gap: 8px;
+        }
+    }
+    @media (min-width: 641px) and (max-width: 1023px) {
+        .broker-heading .broker-eyebrow {
+            line-height: 16px;
+        }
+        .broker-steps {
+            line-height: 16px;
+        }
+    }
+    @media (max-width: 640px) {
+        .broker-heading .broker-eyebrow {
+            line-height: 16.5px;
+            margin-bottom: 12px !important;
+        }
+    }
+
+    :deep(.p-select-label) {
+        font-size: inherit;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+    }
+    @media (min-width: 1024px) {
+        :deep(.p-select-label) {
+            line-height: 16px;
+        }
+    }
+    @media (min-width: 641px) and (max-width: 1023px) {
+        :deep(.p-select-label) {
+            line-height: 20px;
+        }
+    }
+    @media (max-width: 640px) {
+        :deep(.p-select-label) {
+            line-height: 19.5px;
+        }
+    }
+
+    .broker-preview-notes {
+        padding: 12px;
+        margin-top: 12px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-bg);
+        font-size: 11px;
+        line-height: 16.5px;
+        color: var(--app-muted);
+        overflow-wrap: anywhere;
+    }
+    .broker-preview-notes p {
+        font-size: 10px;
+        margin: 0 0 6px;
+        line-height: 15px;
+    }
+    .broker-preview-notes ul {
+        padding: 0 0 0 14px;
+        margin: 0;
+        display: grid;
+        gap: 6px;
+    }
+
+    .broker-optional-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding-top: 12px;
+        margin-top: 8px;
+        border-top: 1px solid var(--app-border-subtle);
+    }
+    .broker-optional-row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 0;
+    }
+    .broker-optional-row:last-child {
+        grid-column: 1 / -1;
+    }
+    .broker-optional-row label {
+        font-size: 12px;
+        line-height: 16px;
+    }
+    .broker-optional-row :deep(.p-select) {
+        font-size: 12px;
+        height: 36px;
+    }
+    @media (max-width: 640px) {
+        .broker-optional-grid {
+            grid-template-columns: 1fr;
+        }
+        .broker-optional-row :deep(.p-select) {
+            height: 40px;
+        }
+    }
+
+    .broker-mapping-title-tablet {
+        display: none;
+    }
+    @media (min-width: 641px) and (max-width: 1023px) {
+        .broker-mapping-title-main {
+            display: none;
+        }
+        .broker-mapping-title-tablet {
+            display: inline;
+        }
+        .broker-mapping-card > .broker-card-heading p {
+            font-size: 11px;
+            line-height: 16px;
+            margin-top: 2px;
+        }
+        .broker-mapping-row {
+            border-bottom: 0;
+        }
+        .broker-mapping-row + .broker-mapping-row {
+            border-top: 1px solid var(--app-border-subtle);
+        }
+        .broker-mapping-row.needs-mapping {
+            margin: 0 -8px;
+            border-radius: 8px;
+        }
+        .broker-mapping-label > label {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 6px;
+        }
+        .broker-mapping-label small {
+            padding: 0;
+            background: none;
+            line-height: 16px;
+        }
+        .broker-mapping-label code {
+            margin: 0;
+            line-height: 16px;
+        }
+        .broker-field-state {
+            line-height: 16.5px;
+        }
+        .broker-field-note {
+            line-height: 16.5px;
+        }
+        .broker-required-note {
+            font-size: 12px;
+            line-height: 16px;
+            margin-top: 8px;
+        }
+    }
+
+    .broker-field-state {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .broker-field-state i {
+        font-size: 13px;
+        line-height: 13px;
+    }
+    .broker-preview-scroll {
+        margin: 8px 0 0;
+        text-align: right;
+        font-size: 10px;
+        line-height: 15px;
+        color: var(--app-accent);
+    }
+    .broker-preview-scroll > span {
+        display: inline-block;
+        padding: 2px 6px;
+        border: 1px solid var(--app-border);
+        border-radius: 4px;
+        background: var(--app-accent-light);
     }
 </style>

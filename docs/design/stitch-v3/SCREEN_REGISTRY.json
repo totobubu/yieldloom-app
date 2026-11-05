@@ -1481,8 +1481,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "component implemented; local synthetic flow passed; not deployed",
-            "visualAcceptance": "partial: heading tokens verified; whole-frame spacing/state review remains",
+            "implementation": "main header/file-card and dialog width verified; existing flows passed; release result tracked separately",
+            "visualAcceptance": "measured header/file card dimensions match four viewports; full-frame differences documented",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/e0fb1368a1684edaa56c1a506e806530",
             "sourceFiles": [
@@ -1513,7 +1513,7 @@
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/12982c4c330e4791ae020668c8495b4e"
             ],
-            "evidence": "PHASE32_COLUMN_MAPPING.md"
+            "evidence": "PHASE33_MAPPING_LAYOUT.md"
         },
         {
             "family": "Column Mapping",
@@ -1524,8 +1524,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "component implemented; local synthetic flow passed; not deployed",
-            "visualAcceptance": "partial: heading tokens verified; whole-frame spacing/state review remains",
+            "implementation": "main header/file-card and dialog width verified; existing flows passed; release result tracked separately",
+            "visualAcceptance": "measured header/file card dimensions match four viewports; full-frame differences documented",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/9ae2f0f1253a41b1839e792d36996900",
             "sourceFiles": [
@@ -1556,7 +1556,7 @@
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/a3527858fcd748e384a70f1037018dd7"
             ],
-            "evidence": "PHASE32_COLUMN_MAPPING.md"
+            "evidence": "PHASE33_MAPPING_LAYOUT.md"
         },
         {
             "family": "Column Mapping",
@@ -1567,8 +1567,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "component implemented; local synthetic flow passed; not deployed",
-            "visualAcceptance": "partial: heading tokens verified; whole-frame spacing/state review remains",
+            "implementation": "main header/file-card and dialog width verified; existing flows passed; release result tracked separately",
+            "visualAcceptance": "measured header/file card dimensions match four viewports; full-frame differences documented",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/0bb2ab1d8197472f910b73ed175c4448",
             "sourceFiles": [
@@ -1599,7 +1599,7 @@
             "supersededCandidates": [
                 "projects/17382728461495959991/screens/ad4ae8d524504cef9c82424822ebb24b"
             ],
-            "evidence": "PHASE32_COLUMN_MAPPING.md"
+            "evidence": "PHASE33_MAPPING_LAYOUT.md"
         },
         {
             "family": "Compare Similar",
@@ -2321,5 +2321,6 @@
     "candidateInventoryQualification": "Initial MCP listing:64 frames. Final20 IDs supplied later are authoritative; only selectedScreen is adopted. Older latestCandidates are superseded inventory hints, not implementation targets.",
     "projectFrameCountAtInitialRead": 64,
     "registeredFrameCount": 73,
-    "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f"
+    "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
+    "latestImplementationBase": "c48d049d258c2773fe58948a14e005f8af04578a"
 }

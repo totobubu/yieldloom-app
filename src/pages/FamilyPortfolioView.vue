@@ -2664,6 +2664,7 @@
         <AssetUploadDialog
             v-model:visible="uploadDialog"
             :title="`자료 업로드 · ${activeAccount?.alias || ''}`"
+            :mapping="inputMethod === 'broker' && !review && !importReceipt"
             :busy="busy">
             <p v-if="busy" role="status" aria-live="polite">
                 {{ operationProgress?.detail || '자료를 처리하고 있습니다.' }}

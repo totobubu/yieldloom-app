@@ -200,6 +200,14 @@ try {
         })
         .waitFor();
     assert.equal(await form.isVisible(), false);
+    const savedRow = page.locator('.receipt-table tbody tr').first();
+    assert.match(await savedRow.innerText(), /AAPL/);
+    assert.match(await savedRow.innerText(), /250 USD/);
+    assert.match(await savedRow.innerText(), /1\.25/);
+    assert.match(
+        await page.locator('.receipt-overview').innerText(),
+        /broker\.xlsx/
+    );
     await page.getByRole('button', { name: '추가 등록', exact: true }).click();
     await choose('연결 자료 종류', '거래 내역');
     await form.getByLabel('조회 종료일', { exact: true }).fill('2026-10-18');

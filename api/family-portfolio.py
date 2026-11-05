@@ -547,6 +547,18 @@ def mutate_entry(db, uid, body):
     return result
 
 
+def import_row_results(rows, existing=None):
+    """Describe this commit's already validated rows without additional reads.
+
+    File receipt replays intentionally do not use submitted rows as stored facts.
+    They return counts only because historical receipts do not retain row details.
+    """
+    fields = ('date', 'symbol', 'type', 'quantity', 'amount', 'currency', 'externalId', 'cashKind')
+    return [{'status': 'duplicate' if existing is not None and existing[index].exists else 'inserted',
+             'row': {key: row[key] for key in fields if key in row}}
+            for index, row in enumerate(rows)]
+
+
 def commit(db, uid, body):
     ref, _ = account(db, body.get('accountId'), uid, True)
     session = ref.collection('reviews').document(identifier(body.get('reviewId')))
@@ -581,6 +593,7 @@ def commit(db, uid, body):
                 existing = [read_snapshot(item, tx) for item in refs]
             for row, old in zip(rows, existing):
                 require(not old.exists or old.to_dict()['row'] == row, '같은 거래 고유번호의 내용이 다릅니다. 원장을 확인하세요.', 409)
+            row_results = import_row_results(rows, existing)
             inserted = sum(not old.exists for old in existing)
             if inserted:
                 previous_revision = data.get('entriesRevision', 0)
@@ -619,13 +632,14 @@ def commit(db, uid, body):
                 'previousAsOf': old.get('asOf') if old and replaces_current else None,
                 'changedBy': uid, 'replacedCurrent': replaces_current})
             inserted = len(rows)
+            row_results = import_row_results(rows)
         if not data.get('asOf') or data['asOf'] <= review['asOf']:
             data.update({'asOf': review['asOf'], 'source': review['source']})
         tx.set(ref, data)
         tx.set(receipt, {'source': review['source'], 'asOf': review['asOf'], 'importedAt': now(), 'count': len(rows)})
         # Retain the expiring review so a partially completed multi-batch import
         # can retry completed batches through their existing receipts.
-        return {'inserted': inserted, 'duplicates': len(rows) - inserted}
+        return {'inserted': inserted, 'duplicates': len(rows) - inserted, 'rowResults': row_results}
     result = apply(db.transaction())
     if not result.get('alreadyImported'):
         current = load(ref)

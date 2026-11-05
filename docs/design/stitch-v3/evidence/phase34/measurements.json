@@ -1,0 +1,75 @@
+[
+  {
+    "width": 1280,
+    "implementation": {
+      "width": 786,
+      "height": 1120.6875,
+      "header": 186.75,
+      "titleFont": "24px"
+    },
+    "apiRequests": 0,
+    "sourceComparison": "No final source at this viewport"
+  },
+  {
+    "width": 834,
+    "implementation": {
+      "width": 786,
+      "height": 1120.6875,
+      "header": 186.75,
+      "titleFont": "24px"
+    },
+    "apiRequests": 0,
+    "sourceComparison": "content width and title font match; full visual acceptance pending",
+    "source": {
+      "width": 786,
+      "height": 1074.25,
+      "titleFont": "24px"
+    },
+    "heightDifference": 46.4375
+  },
+  {
+    "width": 768,
+    "implementation": {
+      "width": 720,
+      "height": 1120.6875,
+      "header": 186.75,
+      "titleFont": "24px"
+    },
+    "apiRequests": 0,
+    "sourceComparison": "content width and title font match; full visual acceptance pending",
+    "source": {
+      "width": 720,
+      "height": 1074.25,
+      "titleFont": "24px"
+    },
+    "heightDifference": 46.4375
+  },
+  {
+    "width": 390,
+    "implementation": {
+      "width": 374,
+      "height": 2374,
+      "header": 227.5,
+      "titleFont": "20px"
+    },
+    "apiRequests": 0,
+    "sourceComparison": "content width and title font match; full visual acceptance pending",
+    "source": {
+      "width": 374,
+      "height": 2423.875,
+      "titleFont": "20px"
+    },
+    "heightDifference": -49.875
+  },
+  {
+    "width": 360,
+    "implementation": {
+      "width": 344,
+      "height": 2410,
+      "header": 243.5,
+      "titleFont": "20px"
+    },
+    "apiRequests": 0,
+    "sourceComparison": "No final source at this viewport"
+  }
+]

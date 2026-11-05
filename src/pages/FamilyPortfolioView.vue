@@ -944,6 +944,7 @@
                         kind: importKind,
                         asOf: result.asOf || asOf.value,
                         accountAlias: a.alias,
+                        fileNames: files.map((file) => file.name),
                     };
                 if (format.value === 'toss-pdf' && result.asOf)
                     asOf.value = result.asOf;
@@ -1014,6 +1015,9 @@
                     kind: importKind,
                     asOf: importAsOf,
                     accountAlias: a.alias,
+                    fileNames: form.get('file')?.name
+                        ? [form.get('file').name]
+                        : [],
                 };
             }
         });
@@ -1038,7 +1042,12 @@
                     count: current.rows.length,
                 },
             ];
-            const result = { inserted: 0, duplicates: 0 };
+            const result = {
+                inserted: 0,
+                duplicates: 0,
+                rowResults: [],
+                rowResultsComplete: true,
+            };
             operationProgress.value = {
                 stage: 'validate',
                 completed: 0,
@@ -1073,6 +1082,29 @@
                         batch.start + batch.count
                     ),
                 });
+                if (
+                    Array.isArray(saved.rowResults) &&
+                    saved.rowResults.length === batch.count &&
+                    saved.rowResults.filter(
+                        (item) => item.status === 'inserted'
+                    ).length === saved.inserted &&
+                    saved.rowResults.filter(
+                        (item) => item.status === 'duplicate'
+                    ).length === saved.duplicates &&
+                    saved.rowResults.every(
+                        (item) =>
+                            ['inserted', 'duplicate'].includes(item.status) &&
+                            item.row &&
+                            typeof item.row === 'object'
+                    )
+                ) {
+                    result.rowResults.push(
+                        ...saved.rowResults.map((item, rowIndex) => ({
+                            ...item,
+                            position: batch.start + rowIndex,
+                        }))
+                    );
+                } else result.rowResultsComplete = false;
                 result.inserted += saved.inserted;
                 result.duplicates += saved.duplicates;
                 operationProgress.value.completed = index + 1;
@@ -1098,9 +1130,11 @@
                 return;
             review.value = null;
             message.value = `저장 ${result.inserted}행 · 중복 ${result.duplicates}행${funding.saved + funding.inferred ? ` · 환전 결제 ${funding.saved + funding.inferred}건 연결` : ''}${funding.failed ? ` · 환전 결제 ${funding.failed}건은 원장에서 확인 필요` : ''}`;
+            if (!result.rowResultsComplete) result.rowResults = [];
             importReceipt.value = {
                 ...result,
                 accountAlias: current.accountAlias,
+                fileNames: current.fileNames || [],
                 kind: current.kind,
                 asOf: current.asOf,
             };
@@ -2690,6 +2724,7 @@
                         uploadDialog = false;
                         portfolioTab = 'calendar';
                     "
+                    @retry="refresh"
                     @another="anotherFile" />
                 <Message
                     v-if="

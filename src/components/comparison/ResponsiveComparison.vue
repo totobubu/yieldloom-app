@@ -2346,6 +2346,14 @@
         }
     }
     .comparison-filter-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        width: 18px;
+        height: 18px;
+        overflow: hidden;
+        white-space: nowrap;
         font-family: 'Comparison Material Symbols';
         font-size: 18px;
         line-height: 1;

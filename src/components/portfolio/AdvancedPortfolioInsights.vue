@@ -483,8 +483,8 @@
     }
     .ledger-heading p {
         color: var(--app-muted);
-        font-size: 12px;
-        line-height: 20px;
+        font-size: 14px;
+        line-height: 22.75px;
     }
     .ledger-badges {
         display: flex;
@@ -638,8 +638,15 @@
     }
     @media (max-width: 640px) {
         .ledger-heading h3 {
-            font-size: 28px;
-            line-height: 1.375;
+            font-size: 20px;
+            line-height: 28px;
+            letter-spacing: -0.5px;
+        }
+        .ledger-heading > p:not(.ledger-notice) {
+            line-height: 19.25px;
+        }
+        .ledger-kpis {
+            gap: 10px;
         }
         .ledger-scope {
             grid-template-columns: minmax(0, 1fr);

@@ -1,4 +1,4 @@
-/* global document, window, innerWidth */
+/* global document, window, innerWidth, getComputedStyle */
 // Synthetic component and immutable Stitch references only; no customer/API access.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -71,6 +71,15 @@ try {
             })
             .waitFor();
         await page.evaluate(() => document.fonts.ready);
+        const titleStyle = await page
+            .locator('.ledger-heading h3')
+            .evaluate((el) => ({
+                size: getComputedStyle(el).fontSize,
+                line: getComputedStyle(el).lineHeight,
+            }));
+        if (width <= 640)
+            assert.deepEqual(titleStyle, { size: '20px', line: '28px' });
+
         const table = page.getByRole('table', {
             name: '원장 트랜잭션 기록',
             exact: true,

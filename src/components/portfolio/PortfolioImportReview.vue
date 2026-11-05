@@ -1,6 +1,7 @@
 <script setup>
     import { computed, ref, watch } from 'vue';
     import Button from 'primevue/button';
+    import Checkbox from 'primevue/checkbox';
     import Column from 'primevue/column';
     import DataTable from 'primevue/datatable';
     import InputText from 'primevue/inputtext';
@@ -21,6 +22,26 @@
         saveDisabled: Boolean,
     });
     const emit = defineEmits(['update-row', 'commit', 'cancel']);
+    const agreement = ref(false);
+    watch(
+        () => [props.review.reviewId, props.accountLabel],
+        () => {
+            agreement.value = false;
+        }
+    );
+    function updateRow(change) {
+        agreement.value = false;
+        emit('update-row', change);
+    }
+    function commitReview() {
+        if (
+            agreement.value &&
+            !props.busy &&
+            !props.saveDisabled &&
+            props.review.rows.length
+        )
+            emit('commit');
+    }
     const heading = ref(null);
     function focusHeading() {
         heading.value?.focus({ preventScroll: true });
@@ -499,7 +520,7 @@
                         :filter-key="filterKey"
                         :selected-symbol="symbol"
                         :cash-only="category === 'cash' || symbol === 'CASH'"
-                        @update-row="emit('update-row', $event)" />
+                        @update-row="updateRow($event)" />
                     <DataTable
                         v-else
                         v-model:first="first"
@@ -546,7 +567,7 @@
                                         :aria-label="`${data.index + 1}행 currency`"
                                         :disabled="busy"
                                         @update:model-value="
-                                            emit('update-row', {
+                                            updateRow({
                                                 index: data.index,
                                                 field: 'currency',
                                                 value: $event,
@@ -557,7 +578,7 @@
                                         :aria-label="`${data.index + 1}행 amount`"
                                         :disabled="busy"
                                         @update:model-value="
-                                            emit('update-row', {
+                                            updateRow({
                                                 index: data.index,
                                                 field: 'amount',
                                                 value: $event,
@@ -570,7 +591,7 @@
                                     :aria-label="`${data.index + 1}행 ${column.field}`"
                                     :disabled="busy"
                                     @update:model-value="
-                                        emit('update-row', {
+                                        updateRow({
                                             index: data.index,
                                             field: column.field,
                                             value: $event,
@@ -711,42 +732,73 @@
                         </li>
                     </ul>
                 </article>
+                <article class="review-side-card review-save-bar">
+                    <h3>최종 반영 동의 및 저장</h3>
+                    <div class="review-save-account">
+                        <span>대상 계좌</span
+                        ><strong>{{ accountLabel }}</strong>
+                    </div>
+                    <div class="review-agreement">
+                        <Checkbox
+                            v-model="agreement"
+                            input-id="import-review-agreement"
+                            binary
+                            :disabled="busy" />
+                        <label for="import-review-agreement"
+                            ><strong>[필수]</strong> 원본 파일 대조 및 선택 계좌
+                            거래·잔고 반영에 동의합니다.</label
+                        >
+                    </div>
+                    <p
+                        v-if="!agreement || saveDisabled"
+                        class="review-agreement-required">
+                        {{
+                            saveDisabled
+                                ? '자료의 명의 확인과 반영 동의가 필요합니다.'
+                                : '원본 대조 및 반영 동의를 확인해 주세요.'
+                        }}
+                    </p>
+                    <Button
+                        type="button"
+                        :label="
+                            review.source === 'manual-holdings-v1'
+                                ? '입력 다시 작성'
+                                : '1단계: 파일 다시 선택하기'
+                        "
+                        icon="pi pi-arrow-left"
+                        severity="secondary"
+                        text
+                        :disabled="busy"
+                        @click="emit('cancel')" />
+                    <p>
+                        <i class="pi pi-info-circle" aria-hidden="true" />검토
+                        필요 <strong>{{ counts.unresolved }}건</strong> · 저장
+                        시 전체 {{ counts.all.toLocaleString() }}건을 다시
+                        검증합니다.
+                    </p>
+                    <div class="review-save-actions">
+                        <Button
+                            type="button"
+                            label="취소"
+                            severity="secondary"
+                            :disabled="busy"
+                            @click="emit('cancel')" /><Button
+                            type="button"
+                            label="수정 내용 검증·저장"
+                            :aria-label="'수정 내용 검증·저장'"
+                            icon="pi pi-arrow-right"
+                            icon-pos="right"
+                            :loading="busy"
+                            :disabled="
+                                busy ||
+                                saveDisabled ||
+                                !counts.all ||
+                                !agreement
+                            "
+                            @click="commitReview" />
+                    </div>
+                </article>
             </aside>
-        </div>
-        <div class="review-save-bar">
-            <Button
-                type="button"
-                :label="
-                    review.source === 'manual-holdings-v1'
-                        ? '입력 다시 작성'
-                        : '1단계: 파일 다시 선택하기'
-                "
-                icon="pi pi-arrow-left"
-                severity="secondary"
-                text
-                :disabled="busy"
-                @click="emit('cancel')" />
-            <p>
-                <i class="pi pi-info-circle" aria-hidden="true" />검토 필요
-                <strong>{{ counts.unresolved }}건</strong> · 저장 시 전체
-                {{ counts.all.toLocaleString() }}건을 다시 검증합니다.
-            </p>
-            <div class="review-save-actions">
-                <Button
-                    type="button"
-                    label="취소"
-                    severity="secondary"
-                    :disabled="busy"
-                    @click="emit('cancel')" /><Button
-                    type="button"
-                    label="수정 내용 검증·저장"
-                    :aria-label="'수정 내용 검증·저장'"
-                    icon="pi pi-arrow-right"
-                    icon-pos="right"
-                    :loading="busy"
-                    :disabled="busy || saveDisabled || !counts.all"
-                    @click="emit('commit')" />
-            </div>
         </div>
     </div>
 </template>
@@ -1561,10 +1613,10 @@
         outline: 2px solid var(--app-accent);
         outline-offset: 3px;
     }
-    :global(.p-dark) .issue-metric {
+    .p-dark .issue-metric {
         color: #fcd34d;
     }
-    :global(.p-dark) .preview-badge {
+    .p-dark .preview-badge {
         color: #6ee7b7;
     }
     @media (max-width: 1200px) {
@@ -1858,5 +1910,73 @@
             width: 24px;
             height: 24px;
         }
+    }
+    .review-sidebar .review-save-bar {
+        display: grid;
+        align-items: stretch;
+        justify-content: stretch;
+        grid-template-columns: minmax(0, 1fr);
+        position: static;
+        margin-top: 0;
+        padding: 16px;
+        gap: 14px;
+        box-shadow: 0 1px 2px rgb(23 32 51 / 6%);
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+    }
+    .review-save-account {
+        display: grid;
+        gap: 4px;
+        padding: 10px;
+        border-radius: 8px;
+        background: var(--app-bg);
+        font-size: 11px;
+        overflow-wrap: anywhere;
+    }
+    .review-save-account span {
+        color: var(--app-muted);
+    }
+    .review-agreement {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 8px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-bg);
+    }
+    .review-agreement label {
+        font-size: 12px;
+        line-height: 18px;
+        cursor: pointer;
+    }
+    .review-agreement label strong {
+        color: var(--app-danger, #ba1a1a);
+    }
+    .review-sidebar .review-agreement-required {
+        font-size: 11px;
+        line-height: 18px;
+        border-radius: 8px;
+        justify-content: flex-start;
+    }
+    .review-sidebar .review-save-bar > p {
+        order: initial;
+        margin: 0;
+        border-radius: 8px;
+        justify-content: flex-start;
+    }
+    .review-save-bar > .p-button {
+        order: 4;
+    }
+    .review-save-bar .review-save-actions {
+        width: 100%;
+        margin-left: 0;
+        order: 3;
+        display: grid;
+        gap: 8px;
+    }
+    .review-save-bar .review-save-actions .p-button {
+        width: 100%;
+        min-height: 36px;
     }
 </style>

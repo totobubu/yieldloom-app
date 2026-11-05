@@ -87,6 +87,12 @@ try {
             .waitFor();
         await page.getByLabel('1행 quantity', { exact: true }).fill('2');
         await page
+            .getByLabel(
+                '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+                { exact: true }
+            )
+            .check();
+        await page
             .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
             .click();
     };

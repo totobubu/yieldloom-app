@@ -238,6 +238,12 @@ try {
         assert.equal(await save.isDisabled(), true);
         assert.equal(writes, 0);
         await page.getByLabel(/첨부한 모든 거래내역서/).check();
+        await page
+            .getByLabel(
+                '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+                { exact: true }
+            )
+            .check();
         await save.click();
         for (let i = 0; i < 4; i++)
             await (

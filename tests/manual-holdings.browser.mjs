@@ -92,6 +92,12 @@ try {
         { method: 'POST', action: 'previewManualHoldings' },
     ]);
     await page
+        .getByLabel(
+            '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+            { exact: true }
+        )
+        .check();
+    await page
         .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
         .click();
     await page
@@ -153,6 +159,12 @@ try {
         await page.getByLabel('2행 symbol', { exact: true }).inputValue(),
         'MSFT'
     );
+    await page
+        .getByLabel(
+            '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+            { exact: true }
+        )
+        .check();
     await page
         .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
         .click();

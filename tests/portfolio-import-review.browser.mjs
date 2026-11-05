@@ -202,6 +202,12 @@ try {
         false
     );
     await review.getByLabel(/첨부한 모든 거래내역서의 성명/).check();
+    await page
+        .getByLabel(
+            '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+            { exact: true }
+        )
+        .check();
     const baseline = calls.length;
     assert.equal(
         await review
@@ -506,6 +512,12 @@ try {
     await review
         .getByLabel('추출 결과 검색', { exact: true })
         .fill('edit-target-99');
+    await page
+        .getByLabel(
+            '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+            { exact: true }
+        )
+        .check();
     await review
         .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
         .click();

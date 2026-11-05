@@ -11,3 +11,5 @@ sync_alt/cloud_sync/swipe는 기존과 같은 Google Material Symbols commit10ec
 **전체 화면 시각 승인은 미완료다.** 통화별 매수/매도/입금/출금·순입출금 패널, 검토 요약 진행률, 일반 CSV의 모바일 거래 카드와 원문 인스펙터/예시 가이드, 최종 동의·저장 카드 배치가 남아 있다. 기존4개 요약·배당 차트와 작동하는 입력/필터는 보존했다. 시안의 정상100%·가상 수치/고유번호·누락통화를 실제 검토 결과로 만들지 않는다. `amount`의 원문 거래금액을 세전/세후/실지급 배당으로 바꾸지 않았고 새 금융 합계를 추가하지 않았다. 실제 지원 상태/원문이 없는 기능을 동작한다고 표시하지 않는다.
 
 검증:5개 폭·다크·헤더 포커스·검색/필터 중 전체6행 유지·busy/저장 차단·긴 계좌명·API0회. 실제 Memory API의 portfolio-import-review는4716행/24분할 및 화면 밖 수정까지 전체 검증/저장하며 편집 요청0·8개 폭 밝음/어두움 검사가 통과했다. mobile-import-feedback 밝음/어두움 오류 보존/재시도(원장 쓰기0), manual-holdings, broker-spreadsheet, portfolio-enhancements, asset-management도 통과했다. lint오류0/기존경고54,Vue타입 검사·빌드 통과. 실제 로그인 계좌/PDF는 실행하지 않았다. 원격CI·Preview·운영은 별도 확인하며 이 부분 구현을 전체2종 완료로 세지 않는다.
+
+최종 동의·저장 카드의 후속 구현은 [phase45](PHASE45_REVIEW_CONSENT.md)를 기준으로 한다. 다른 본문 차이는 여전히 미완료다.

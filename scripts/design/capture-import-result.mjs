@@ -29,6 +29,7 @@ const fixture = {
             row: {
                 date: '2026-03-01',
                 symbol: 'DEMO-K',
+                securityName: '가상 한국주식',
                 type: 'buy',
                 quantity: 10,
                 amount: 100000,
@@ -42,6 +43,7 @@ const fixture = {
             row: {
                 date: '2026-03-02',
                 symbol: 'DEMO-A',
+                securityName: '가상 미국주식',
                 type: 'buy',
                 quantity: 2,
                 amount: 200,
@@ -55,6 +57,7 @@ const fixture = {
             row: {
                 date: '2026-03-03',
                 symbol: 'DEMO-K',
+                securityName: '가상 한국주식',
                 type: 'sell',
                 quantity: 2,
                 amount: 24000,
@@ -68,6 +71,7 @@ const fixture = {
             row: {
                 date: '2026-03-04',
                 symbol: 'DEMO-A',
+                securityName: '가상 미국주식',
                 type: 'dividend',
                 quantity: null,
                 amount: 10,
@@ -81,7 +85,7 @@ const fixture = {
             row: {
                 date: '2026-03-05',
                 symbol: 'CASH',
-                type: 'deposit',
+                type: 'cash_in',
                 quantity: null,
                 amount: 1000000,
                 currency: 'KRW',
@@ -94,7 +98,7 @@ const fixture = {
             row: {
                 date: '2026-03-06',
                 symbol: 'CASH',
-                type: 'withdrawal',
+                type: 'cash_out',
                 quantity: null,
                 amount: 50000,
                 currency: 'KRW',
@@ -202,6 +206,22 @@ try {
             .waitFor();
         await page.evaluate(() => document.fonts.ready);
         assert.equal(await page.locator('.receipt-row').count(), 6);
+        assert.match(
+            await page.locator('.receipt-row').nth(4).innerText(),
+            /입금/
+        );
+        assert.match(
+            await page.locator('.receipt-row').nth(5).innerText(),
+            /출금/
+        );
+        assert.match(
+            await page.locator('.receipt-currencies').innerText(),
+            /입출금 순액/
+        );
+        assert.match(
+            await page.locator('.receipt-row').first().innerText(),
+            /가상 한국주식/
+        );
         for (const name of [
             '저장 거래 확인',
             '배당 캘린더 확인',

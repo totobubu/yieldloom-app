@@ -37,7 +37,10 @@ export function fxLinkFixture(uid = 'owner', ambiguous = false) {
     }
     f.read = async () => {
         const r = await f.call(undefined, 'GET', { accountId: 'AC' });
-        if (r.status !== 200) throw Error('fixture read denied');
+        if (r.status !== 200)
+            throw Error(
+                `fixture read failed (${r.status}, ${r.data?.code || 'no-code'})`
+            );
         return r.data;
     };
     return f;

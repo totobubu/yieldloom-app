@@ -96,7 +96,7 @@ jobs:
                   node scripts/utils/wait-test-servers.mjs
                   export CHROMIUM_PATH="$(node --input-type=module -e "import { chromium } from 'playwright'; process.stdout.write(chromium.executablePath());")"
                   FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/manual-holdings.browser.mjs
-                  FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/broker-spreadsheet.browser.mjs
+                  BROKER_SLOW_ANALYSIS=5000 FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/broker-spreadsheet.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-ledger.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-ledger-list.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/toss-trial-ledger.browser.mjs
@@ -132,6 +132,7 @@ jobs:
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-dividend-navigation.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/security-insights.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/browser-harness-isolation.browser.mjs
+                  node tests/scoped-theme-styles.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-priority-panels.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-shell.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-data-contracts.browser.mjs

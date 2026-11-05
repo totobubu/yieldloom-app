@@ -926,7 +926,7 @@
     .insights :deep(.p-selectbutton) {
         flex-wrap: wrap;
     }
-    :global(.p-dark) .insights input[type='month'] {
+    .p-dark .insights input[type='month'] {
         color-scheme: dark;
     }
 

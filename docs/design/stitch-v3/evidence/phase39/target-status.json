@@ -1,0 +1,20 @@
+{
+  "scope": "final selected Import Review IDs only",
+  "status": "local partial; not deployed; full body fidelity incomplete",
+  "targets": [
+    {
+      "id": "5aa7a573854a46db9b106f89c09c4f23",
+      "device": "Tablet",
+      "route": "/mypage?tab=assets",
+      "state": "review present",
+      "component": "src/components/portfolio/PortfolioImportReview.vue"
+    },
+    {
+      "id": "6bd9777b8bea43b98aea8397a29f809a",
+      "device": "Mobile",
+      "route": "/mypage?tab=assets",
+      "state": "review present",
+      "component": "src/components/portfolio/PortfolioImportReview.vue"
+    }
+  ]
+}

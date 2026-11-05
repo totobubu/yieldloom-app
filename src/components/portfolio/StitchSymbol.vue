@@ -13,18 +13,41 @@
     import arrow_forward from '@/assets/icons/material-symbols/arrow_forward.svg';
     import download from '@/assets/icons/material-symbols/download.svg';
     import calendar_month from '@/assets/icons/material-symbols/calendar_month.svg';
+    import sync_alt from '@/assets/icons/material-symbols/sync_alt.svg';
+    import cloud_sync from '@/assets/icons/material-symbols/cloud_sync.svg';
+    import swipe from '@/assets/icons/material-symbols/swipe.svg';
     import inventory_2 from '@/assets/icons/material-symbols/inventory_2.svg';
     import edit_note from '@/assets/icons/material-symbols/edit_note.svg';
     import preview from '@/assets/icons/material-symbols/preview.svg';
     import lock_open from '@/assets/icons/material-symbols/lock_open.svg';
     import verified_user from '@/assets/icons/material-symbols/verified_user.svg';
+    import visibility from '@/assets/icons/material-symbols/visibility.svg';
+    import verified from '@/assets/icons/material-symbols/verified.svg';
+    import task_alt from '@/assets/icons/material-symbols/task_alt.svg';
+    import help_outline from '@/assets/icons/material-symbols/help_outline.svg';
+    import info from '@/assets/icons/material-symbols/info.svg';
+    import cloud_done from '@/assets/icons/material-symbols/cloud_done.svg';
+    import cloud_upload from '@/assets/icons/material-symbols/cloud_upload.svg';
+    import sort from '@/assets/icons/material-symbols/sort.svg';
     const icons = {
+        visibility,
+        verified,
+        task_alt,
+        help_outline,
+        info,
+        cloud_done,
+        cloud_upload,
+        sort,
+
         inventory_2,
         edit_note,
         preview,
         lock_open,
         verified_user,
 
+        sync_alt,
+        cloud_sync,
+        swipe,
         check,
         done_all,
         receipt_long,

@@ -1,0 +1,2 @@
+PASS mobile light: visible password/network errors, preserved file, retry and focused review; 3 previews, 0 ledger writes
+PASS mobile dark: visible password/network errors, preserved file, retry and focused review; 3 previews, 0 ledger writes

@@ -7,7 +7,7 @@
     "families": 9,
     "testFramesExcluded": 1,
     "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-    "currentCodeBase": "8a95a0219665dd81851d6790620f41b8b31fb0e4",
+    "currentCodeBase": "90f0673287ab318f524f9e995b33919561da204f",
     "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
     "frames": [
         {
@@ -1518,7 +1518,9 @@
                 "environment": "production",
                 "pr": 249,
                 "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-                "preservedBy": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+                "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
+                "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
+                "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
             }
         },
         {
@@ -1567,7 +1569,9 @@
                 "environment": "production",
                 "pr": 249,
                 "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-                "preservedBy": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+                "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
+                "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
+                "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
             }
         },
         {
@@ -1616,7 +1620,9 @@
                 "environment": "production",
                 "pr": 249,
                 "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-                "preservedBy": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+                "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
+                "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
+                "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
             }
         },
         {
@@ -1661,9 +1667,14 @@
                 "projects/17382728461495959991/screens/1b227a5b79784aa9b8e13ba0513b8d3e"
             ],
             "rollout": {
-                "environment": "parallel implementation; not integrated",
-                "branch": "feat/stitch-comparison-responsive-20261105",
-                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
+                "environment": "draft implementation; not production",
+                "branch": "feat/stitch-comparison-integration-phase44",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611",
+                "pr": 258,
+                "codeCheckpoint": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
+                "lastPassingCiHead": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
+                "evidence": "PHASE44_COMPARISON_INTEGRATION.md",
+                "qualification": "integrated in draft branch; not production; source-backed visual differences remain"
             }
         },
         {
@@ -1708,9 +1719,14 @@
                 "projects/17382728461495959991/screens/e64931e753ca4625b32d9124c3ac8208"
             ],
             "rollout": {
-                "environment": "parallel implementation; not integrated",
-                "branch": "feat/stitch-comparison-responsive-20261105",
-                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
+                "environment": "draft implementation; not production",
+                "branch": "feat/stitch-comparison-integration-phase44",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611",
+                "pr": 258,
+                "codeCheckpoint": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
+                "lastPassingCiHead": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
+                "evidence": "PHASE44_COMPARISON_INTEGRATION.md",
+                "qualification": "integrated in draft branch; not production; source-backed visual differences remain"
             }
         },
         {
@@ -1755,9 +1771,14 @@
                 "projects/17382728461495959991/screens/7a7f75ab55b64d38a618e21bcf4aa237"
             ],
             "rollout": {
-                "environment": "parallel implementation; not integrated",
-                "branch": "feat/stitch-comparison-responsive-20261105",
-                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
+                "environment": "draft implementation; not production",
+                "branch": "feat/stitch-comparison-integration-phase44",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611",
+                "pr": 258,
+                "codeCheckpoint": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
+                "lastPassingCiHead": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
+                "evidence": "PHASE44_COMPARISON_INTEGRATION.md",
+                "qualification": "integrated in draft branch; not production; source-backed visual differences remain"
             }
         },
         {
@@ -1802,9 +1823,14 @@
                 "projects/17382728461495959991/screens/c4f19b1c965840e8adc2fbe5056fe473"
             ],
             "rollout": {
-                "environment": "parallel implementation; not integrated",
-                "branch": "feat/stitch-comparison-responsive-20261105",
-                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
+                "environment": "draft implementation; not production",
+                "branch": "feat/stitch-comparison-integration-phase44",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611",
+                "pr": 258,
+                "codeCheckpoint": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
+                "lastPassingCiHead": "70f0f42d4dd3bfdbbd28bb89be52ae0334178933",
+                "evidence": "PHASE44_COMPARISON_INTEGRATION.md",
+                "qualification": "integrated in draft branch; not production; source-backed visual differences remain"
             }
         },
         {
@@ -1816,7 +1842,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "production via #253/#259 at main8a95a02; actual extracted preview; remaining visual differences recorded",
+            "implementation": "production: upload body, raw preview, responsive file picker and required settings retained; whole-frame fidelity incomplete",
             "visualAcceptance": "not accepted as whole frame; required settings and real financial metadata differ",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6",
@@ -1847,8 +1873,14 @@
             "sourceTitle": "V5 CORRECTED / Data Upload / Mobile / source-4355c5b5",
             "supersededCandidates": [],
             "rollout": {
-                "environment": "local only",
-                "branch": "feat/stitch-upload-phase36"
+                "environment": "production",
+                "branch": "feat/stitch-upload-phase36",
+                "pr": 253,
+                "mergeSha": "4b78ccc418270279aa42328bbb7c33454d165b02",
+                "productionPromotion": 259,
+                "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
+                "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
+                "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
             },
             "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
             "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
@@ -1862,7 +1894,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "production via #253/#259 at main8a95a02; actual extracted preview; remaining visual differences recorded",
+            "implementation": "production: upload body, raw preview, responsive file picker and required settings retained; whole-frame fidelity incomplete",
             "visualAcceptance": "not accepted as whole frame; required settings and real financial metadata differ",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33",
@@ -1893,8 +1925,14 @@
             "sourceTitle": "V5 CORRECTED / Data Upload / Tablet / source-5a09e7d3",
             "supersededCandidates": [],
             "rollout": {
-                "environment": "local only",
-                "branch": "feat/stitch-upload-phase36"
+                "environment": "production",
+                "branch": "feat/stitch-upload-phase36",
+                "pr": 253,
+                "mergeSha": "4b78ccc418270279aa42328bbb7c33454d165b02",
+                "productionPromotion": 259,
+                "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
+                "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
+                "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
             },
             "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
             "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
@@ -1941,7 +1979,10 @@
             "rollout": {
                 "environment": "production",
                 "pr": 257,
-                "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+                "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
+                "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
+                "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
+                "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
             }
         },
         {
@@ -1986,7 +2027,10 @@
             "rollout": {
                 "environment": "production",
                 "pr": 257,
-                "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
+                "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
+                "preservedBy": "90f0673287ab318f524f9e995b33919561da204f",
+                "lastVerifiedProductionSha": "90f0673287ab318f524f9e995b33919561da204f",
+                "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md"
             }
         },
         {
@@ -1998,7 +2042,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "draft PR#256 head2e61f4f; header/width/consent and integrated preview verified; remote CI4 pass; not production",
+            "implementation": "draft: consent, mobile raw cards, currency-separated preview sums and responsive summary; whole-frame fidelity incomplete",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/6bd9777b8bea43b98aea8397a29f809a",
@@ -2031,9 +2075,12 @@
                 "projects/17382728461495959991/screens/36b701cb88c84a91a4ed9edab8229755"
             ],
             "rollout": {
-                "environment": "local partial only",
+                "environment": "draft implementation; not production",
                 "pr": 256,
-                "branch": "feat/stitch-review-phase39"
+                "branch": "feat/stitch-review-phase39",
+                "codeCheckpoint": "e8d9ff3",
+                "lastPassingCiHead": "1ad4abcbab8e6b56dff0afb5ee763c67a852f665",
+                "qualification": "newer draft head requires separate CI; authenticated account/PDF unverified"
             }
         },
         {
@@ -2045,7 +2092,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "draft PR#256 head2e61f4f; header/width/consent and integrated preview verified; remote CI4 pass; not production",
+            "implementation": "draft: consent, mobile raw cards, currency-separated preview sums and responsive summary; whole-frame fidelity incomplete",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/5aa7a573854a46db9b106f89c09c4f23",
@@ -2078,9 +2125,12 @@
                 "projects/17382728461495959991/screens/b7be4fa2034e4e2ea5585be95f85528e"
             ],
             "rollout": {
-                "environment": "local partial only",
+                "environment": "draft implementation; not production",
                 "pr": 256,
-                "branch": "feat/stitch-review-phase39"
+                "branch": "feat/stitch-review-phase39",
+                "codeCheckpoint": "e8d9ff3",
+                "lastPassingCiHead": "1ad4abcbab8e6b56dff0afb5ee763c67a852f665",
+                "qualification": "newer draft head requires separate CI; authenticated account/PDF unverified"
             }
         },
         {
@@ -2092,7 +2142,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "draft PR#260 head47a29bf; structure/stored records; local and remote CI4 pass; not production",
+            "implementation": "draft: reference-backed responsive analysis, read-only account/month rows, original calculation gates retained; whole-frame fidelity incomplete",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/986013fd6b61404f82b4eeda2b643cd6",
@@ -2126,8 +2176,13 @@
                 "projects/17382728461495959991/screens/a163a9cc046d4663891135abfcc98c00"
             ],
             "rollout": {
-                "environment": "not verified against final selected ID",
-                "qualification": "existing production feature is not final-reference acceptance"
+                "environment": "draft implementation; not production",
+                "qualification": "synthetic checks and exact Preview verified; live account/PDF and whole-frame acceptance incomplete",
+                "pr": 260,
+                "branch": "feat/stitch-ledger-analysis-phase46",
+                "codeCheckpoint": "47a29bf88f44ef73747284666b539f76057a8973",
+                "lastPassingCiHead": "47a29bf88f44ef73747284666b539f76057a8973",
+                "evidence": "PHASE46_LEDGER_ANALYSIS.md"
             }
         },
         {
@@ -2139,7 +2194,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "draft PR#260 head47a29bf; structure/stored records; local and remote CI4 pass; not production",
+            "implementation": "draft: reference-backed responsive analysis, read-only account/month rows, original calculation gates retained; whole-frame fidelity incomplete",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/65c1b225397746ada071cf14ae4f687c",
@@ -2170,8 +2225,13 @@
             "sourceTitle": "V6 REVIEWED / Ledger Analysis / Tablet / source-644db83b",
             "supersededCandidates": [],
             "rollout": {
-                "environment": "not verified against final selected ID",
-                "qualification": "existing production feature is not final-reference acceptance"
+                "environment": "draft implementation; not production",
+                "qualification": "synthetic checks and exact Preview verified; live account/PDF and whole-frame acceptance incomplete",
+                "pr": 260,
+                "branch": "feat/stitch-ledger-analysis-phase46",
+                "codeCheckpoint": "47a29bf88f44ef73747284666b539f76057a8973",
+                "lastPassingCiHead": "47a29bf88f44ef73747284666b539f76057a8973",
+                "evidence": "PHASE46_LEDGER_ANALYSIS.md"
             }
         },
         {
@@ -2400,17 +2460,17 @@
     "projectFrameCountAtInitialRead": 64,
     "registeredFrameCount": 73,
     "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-    "latestImplementationBase": "8a95a0219665dd81851d6790620f41b8b31fb0e4",
+    "latestImplementationBase": "90f0673287ab318f524f9e995b33919561da204f",
     "rolloutSnapshot": {
-        "recordedAt": "2026-11-05T11:28:26.907547+00:00",
+        "recordedAt": "2026-11-05T13:00:21.797226+00:00",
         "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
-        "productionMergeSha": "8a95a0219665dd81851d6790620f41b8b31fb0e4",
+        "productionMergeSha": "90f0673287ab318f524f9e995b33919561da204f",
         "productionTargets": 7,
         "localWorkTargets": 4,
         "parallelDeliveredDraftTargets": 4,
         "externalUnverifiedTargets": 5,
         "visualAcceptance": "whole-frame acceptance remains incomplete",
-        "evidence": "PHASE47_UPLOAD_PRODUCTION.md",
+        "evidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
         "qualification": "7 production-connected /8 draft /5 external handoff unverified"
     }
 }

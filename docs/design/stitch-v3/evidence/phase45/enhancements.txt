@@ -1,0 +1,1 @@
+PASS: corrections/history, layout reuse/change detection, account XIRR, reconciliation, logout, mobile/themes; inputs/presets/calculations add zero API calls; correction preview/commit read 2/5 documents.

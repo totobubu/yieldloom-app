@@ -1,0 +1,20 @@
+{
+  "main": "90f0673287ab318f524f9e995b33919561da204f",
+  "work": "0d3def3bb890fde7848a170d0722e975ab803190",
+  "tree": "a15b604bd57246c7ec03ead47b105c64b4a17b8c",
+  "metadataSha256": "b54bc1cca63cb303a8b1e982b42a7238e1741013d3ce3908616c5dcd206827b7",
+  "promotion": 262,
+  "testFixPr": 263,
+  "vercel": {
+    "id": "dpl_8MJnZv2Y2xgqYepcDFpmW7vK9mNb",
+    "url": "https://yieldloom-7lgpnaihu-totobubus-projects.vercel.app",
+    "state": "READY",
+    "target": "production"
+  },
+  "pagesRun": 42030090181,
+  "featureCi": 42025910885,
+  "workCi": 42028081479,
+  "promotionCi": 42028091869,
+  "postMainCi": 42030090218,
+  "qualification": "feature/work/promotion/post-main CI each passed all four jobs; exact public release and metadata verified; authenticated account/PDF writes not exercised"
+}

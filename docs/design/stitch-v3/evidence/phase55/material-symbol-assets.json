@@ -1,0 +1,50 @@
+[
+  {
+    "name": "visibility",
+    "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/visibility/default/24px.svg",
+    "sha256": "1458ebf0973813d75d3fcc1dc9105521cf09170423b1eb9b34a3652dc66decd1",
+    "bytes": 595
+  },
+  {
+    "name": "verified",
+    "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/verified/default/24px.svg",
+    "sha256": "aeb7ee64f84b62923cfccf4bce0c04f8e89b0f8013bf8e7a805144e67bb9869c",
+    "bytes": 454
+  },
+  {
+    "name": "task_alt",
+    "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/task_alt/default/24px.svg",
+    "sha256": "ac591138170daa88019cfe1eba5f3e67c7b03e9db192ff016817602d6bf2bcf7",
+    "bytes": 467
+  },
+  {
+    "name": "help_outline",
+    "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/help_outline/default/24px.svg",
+    "sha256": "bad6ba4cb57dcf37758c8bf3abc6eb860a0a6a01be3ffb0f63133f9df7e26fb3",
+    "bytes": 693
+  },
+  {
+    "name": "info",
+    "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/info/default/24px.svg",
+    "sha256": "44c9766237887382099640f1f8b9587d37312ca9ade22e40c6425c23b6f594fa",
+    "bytes": 534
+  },
+  {
+    "name": "cloud_done",
+    "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/cloud_done/default/24px.svg",
+    "sha256": "3bfb8ceef808b240c99551387805844171abb3d56702db4ecc8d6fafe94b6ba1",
+    "bytes": 456
+  },
+  {
+    "name": "cloud_upload",
+    "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/cloud_upload/default/24px.svg",
+    "sha256": "397dddd8bac8711d39ed7f21f26593659404ca4cba1f7a0d67f845b248f5836f",
+    "bytes": 484
+  },
+  {
+    "name": "sort",
+    "url": "https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/sort/default/24px.svg",
+    "sha256": "b34d5b965a9998f6acfafe2cf1943a575e41ca4b799ea034df58321fbfc69e5f",
+    "bytes": 174
+  }
+]

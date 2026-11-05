@@ -238,6 +238,12 @@ try {
         '1.25'
     );
     await page
+        .getByLabel(
+            '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+            { exact: true }
+        )
+        .check();
+    await page
         .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
         .click();
     await page
@@ -309,7 +315,16 @@ try {
         })
         .waitFor();
     await page
-        .getByRole('button', { name: '수정 내용 검증·저장', exact: true })
+        .getByLabel(
+            '[필수] 원본 파일 대조 및 선택 계좌 거래·잔고 반영에 동의합니다.',
+            { exact: true }
+        )
+        .check();
+    await page
+        .getByRole('button', {
+            name: '배당달력 포트폴리오에 저장 및 반영',
+            exact: true,
+        })
         .click();
     await page
         .getByRole('heading', {

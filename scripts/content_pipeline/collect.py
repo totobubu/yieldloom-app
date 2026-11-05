@@ -175,8 +175,9 @@ def main() -> int:
     def outcomes():
         yield from adapter.fetch_many(selected_candidates)
         if selected_candidates and target_tickers and declared_dates:
-            collected = {key[1] for key in seen_events if key[2] in declared_values}
-            missing = sorted(target_tickers - collected)
+            collected = {(key[1], key[2]) for key in seen_events}
+            missing = sorted(ticker for ticker in target_tickers
+                             if any((ticker, day) not in collected for day in declared_values))
             if args.provider == "roundhill" and missing:
                 yield from adapter.fetch_many([adapter.issuer_candidate(ticker) for ticker in missing])
             elif args.provider == "yieldmax" and missing:

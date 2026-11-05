@@ -28,10 +28,13 @@ jobs:
             - uses: actions/setup-python@v5
               with:
                   python-version: '3.12'
-            - run: python -m pip install beautifulsoup4==4.14.3 lxml
+            - run: python -m pip install beautifulsoup4==4.14.3 lxml boto3
             - run: python -m unittest discover -s tests/metadata -p 'test_underlyings.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_providers.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_yieldmax_publication_date.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_yieldmax_monthly.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_reviewed_correction.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_content_state_store.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_globalx_precision.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_ticker_collection.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_providers.py'
@@ -39,6 +42,7 @@ jobs:
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_publish_public_snapshots.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_validate_refresh_outputs.py'
             - run: python -m unittest discover -s tests/content_pipeline -p 'test_stock_collection.py'
+            - run: python -m unittest discover -s tests/content_pipeline -p 'test_dividend_enrichment.py'
             - run: npm run lint:check
             # build includes the Vue/TypeScript check and prerender validation.
             # Asset contract tests below read the generated dist/ticker-index.json.

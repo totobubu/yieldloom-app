@@ -1,7 +1,7 @@
 """Accumulate external evidence and audit dividends without overwriting the ledger.
 
 Search results are discovery candidates, never financial facts. Provider-specific
-parsers supply official observations; Yahoo supplies independent amount evidence.
+parsers supply official observations; licensed references remain auxiliary evidence.
 """
 from __future__ import annotations
 
@@ -17,6 +17,7 @@ from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from urllib.parse import quote, urlencode, urlparse
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 from zoneinfo import ZoneInfo
 
 if __package__ in {None, ""}:
@@ -27,9 +28,21 @@ from scripts.content_pipeline.models import SourceDocument, utc_now_iso
 from scripts.content_pipeline.providers import PROVIDERS, SourceCandidate
 from scripts.content_pipeline.investing_evidence import parse_investing
 from scripts.content_pipeline.seekingalpha_evidence import parse_seekingalpha
+from scripts.content_pipeline.reference_access import DEFAULT_ACCESS_PATH, load_access, permits
 
 RULE_VERSION = "dividend-evidence-v1"
 USER_AGENT = "YieldloomDividendAudit/1.0"
+
+
+class ReferenceAccessRequired(Exception):
+    pass
+
+
+def source_error(source, error):
+    result = {'source': source, 'type': type(error).__name__}
+    if isinstance(error, HTTPError):
+        result['httpStatus'] = error.code
+    return result
 
 
 def read_url(url, headers=None):
@@ -138,34 +151,51 @@ def record_audit(database, ticker, event, source_id, result, observation_id=None
 
 
 def enrich(database, nav_path, raw_dir, *, tickers=None, provider=None, limit=50, search_limit=5, fetch=read_url,
-           sources_path=Path("data-v2/verification-sources.json"), reference_limit=5):
+           sources_path=Path("data-v2/verification-sources.json"), reference_limit=5,
+           access_path=DEFAULT_ACCESS_PATH, official_refresh_outcome=None):
     database.initialize()
     nav = json.loads(nav_path.read_text(encoding="utf-8"))["nav"]
     metadata = {row["symbol"].upper(): row for row in nav}
     sources = json.loads(sources_path.read_text(encoding="utf-8")) if sources_path.exists() else {}
+    access = load_access(access_path)
     with database.connect() as connection:
         events = [dict(row) for row in connection.execute("SELECT * FROM distribution_events WHERE verification_status != 'rejected'")]
         last = {row["ticker"]: row["last_checked_at"] for row in connection.execute("SELECT * FROM dividend_verification_targets")}
+        stored = {row['ticker']: row['count'] for row in connection.execute(
+            'SELECT ticker, COUNT(*) AS count FROM distribution_observations WHERE canonical_event_id IS NULL GROUP BY ticker')}
     by_ticker = {}
     for event in events:
         by_ticker.setdefault(event["ticker"], []).append(event)
     universe = set(metadata) | set(by_ticker)
     if provider:
-        universe &= {row["ticker"] for row in events if row["provider_slug"] == provider}
+        # A failed first official collection may leave no canonical events.
+        universe &= ({row["ticker"] for row in events if row["provider_slug"] == provider}
+                     | {symbol for symbol, row in metadata.items()
+                        if str(row.get('company', '')).lower() == provider})
     if tickers:
         universe &= {ticker.upper() for ticker in tickers}
     selected = sorted(universe, key=lambda ticker: (last.get(ticker, ""), ticker))[:limit]
     report = {"ruleVersion": RULE_VERSION, "checkedAt": utc_now_iso(), "universeCount": len(universe),
               "selectedCount": len(selected), "searchConfigured": bool(os.environ.get("BRAVE_SEARCH_API_KEY")), "tickers": []}
+    report['officialRefreshStepOutcome'] = official_refresh_outcome
     searches = 0
     reference_fetches = 0
     for ticker in selected:
         row = metadata.get(ticker, {})
         canonical = by_ticker.get(ticker, [])
         result = {"ticker": ticker, "comparisons": [], "officialCandidates": [], "errors": []}
+        result['canonicalEventCount'] = len(canonical)
+        result['previouslyStoredReferenceCount'] = stored.get(ticker, 0)
+        result['referenceAccess'] = {}
+        def authorized(source, url):
+            allowed = permits(access, source, ticker, url)
+            result['referenceAccess'][source] = 'authorized' if allowed else 'supplier_connection_required'
+            if not allowed:
+                raise ReferenceAccessRequired('Reviewed free dividend source grant required')
         try:
             symbol = row.get("yfSymbol", ticker)
             url = f"https://query1.finance.yahoo.com/v8/finance/chart/{quote(symbol, safe='')}?" + urlencode({"range": "5y", "interval": "1d", "events": "div,splits"})
+            authorized('yahoo', url)
             content = fetch(url)
             observations, splits = parse_yahoo(json.loads(content), ticker, symbol, row.get("currency"))
             # Keep evidence even when no matching official event exists.
@@ -188,14 +218,17 @@ def enrich(database, nav_path, raw_dir, *, tickers=None, provider=None, limit=50
             result["observationCount"] = len(observations)
             result["missingOfficialCount"] = len({ob["ex_date"] for ob in observations} - official_dates)
             # Yahoo is evidence, not a replacement for a missing official ledger.
+        except ReferenceAccessRequired:
+            result['yahooStatus'] = 'supplier_connection_required'
         except Exception as error:
-            result["errors"].append({"source": "yahoo", "type": type(error).__name__})
+            result["errors"].append(source_error('yahoo', error))
 
         investing = sources.get("investing", {}).get(ticker)
         if investing:
             try:
                 if row.get("currency") and row["currency"] != investing["currency"]:
                     raise ValueError("Registry currency mismatch")
+                authorized('investing', investing['url'])
                 content = fetch(investing["url"])
                 investing_rows = parse_investing(content, ticker, investing)
                 database.upsert_provider("investing-evidence", "Investing comparison evidence", "https://kr.investing.com")
@@ -215,8 +248,10 @@ def enrich(database, nav_path, raw_dir, *, tickers=None, provider=None, limit=50
                         result["comparisons"].append({"source": "investing", "eventId": event["id"], **compared})
                         record_audit(database, ticker, event, source_id, compared, observation_id)
                 result["investingObservationCount"] = len(investing_rows)
+            except ReferenceAccessRequired:
+                result['investingStatus'] = 'supplier_connection_required'
             except Exception as error:
-                result["errors"].append({"source": "investing", "type": type(error).__name__})
+                result["errors"].append(source_error('investing', error))
         else:
             result["investingStatus"] = "unmapped_security"
 
@@ -224,9 +259,10 @@ def enrich(database, nav_path, raw_dir, *, tickers=None, provider=None, limit=50
         # securities; never infer identity for overseas listings from a ticker.
         seeking_url = f"https://seekingalpha.com/symbol/{quote(ticker, safe='')}/dividends/history"
         if row.get('currency') == 'USD' and row.get('market') in {'NYSE', 'NASDAQ', 'NYSEARCA', 'NYSEAMERICAN', 'AMEX'} and reference_fetches < reference_limit:
-            reference_fetches += 1
             result['seekingAlphaUrl'] = seeking_url
             try:
+                authorized('seekingalpha', seeking_url)
+                reference_fetches += 1
                 content = fetch(seeking_url)
                 seeking_rows = parse_seekingalpha(content, ticker, seeking_url, row['currency'])
                 database.upsert_provider('seekingalpha-evidence', 'Seeking Alpha comparison evidence', 'https://seekingalpha.com')
@@ -246,13 +282,16 @@ def enrich(database, nav_path, raw_dir, *, tickers=None, provider=None, limit=50
                         result['comparisons'].append({'source': 'seekingalpha', 'eventId': event['id'], **compared})
                         record_audit(database, ticker, event, source_id, compared, observation_id)
                 result['seekingAlphaObservationCount'] = len(seeking_rows)
+            except ReferenceAccessRequired:
+                result['seekingAlphaStatus'] = 'supplier_connection_required'
             except Exception as error:
-                result['errors'].append({'source': 'seekingalpha', 'type': type(error).__name__})
+                result['errors'].append(source_error('seekingalpha', error))
         else:
             result['seekingAlphaStatus'] = 'ineligible_or_budget_exhausted'
 
-        needs_supplement = bool(result["errors"] or result.get("missingOfficialCount") or any(item["status"] != "matched" for item in result["comparisons"]) or any(event["verification_status"] == "needs_review" for event in canonical))
-        adapters = {event["provider_slug"] for event in canonical} & set(PROVIDERS)
+        needs_supplement = bool(not canonical or result["errors"] or result.get("missingOfficialCount") or any(item["status"] != "matched" for item in result["comparisons"]) or any(event["verification_status"] == "needs_review" for event in canonical))
+        adapters = ({event["provider_slug"] for event in canonical}
+                    | {str(row.get('company', '')).lower()}) & set(PROVIDERS)
         for slug in sorted(adapters):
             if not needs_supplement or searches >= search_limit:
                 break
@@ -287,8 +326,16 @@ def enrich(database, nav_path, raw_dir, *, tickers=None, provider=None, limit=50
                                 compared["independentSource"] = url != target["official_url"]
                                 record_audit(database, ticker, target, source_id, compared, observation_id)
             except Exception as error:
-                result["errors"].append({"source": slug, "type": type(error).__name__})
+                result["errors"].append(source_error(slug, error))
         result["officialDiscoveryStatus"] = result.get("searchStatus", "no_official_adapter" if not adapters else "not_needed_or_budget_exhausted")
+        reference_count = sum(result.get(key, 0) for key in
+                              ('observationCount', 'investingObservationCount', 'seekingAlphaObservationCount'))
+        if not any(value == 'authorized' for value in result['referenceAccess'].values()):
+            result['referenceStatus'] = 'supplier_connection_required'
+        elif result['errors']:
+            result['referenceStatus'] = 'partial' if reference_count else 'collection_failed'
+        else:
+            result['referenceStatus'] = 'collected' if reference_count else 'no_data'
         with database.connect() as connection:
             connection.execute("""INSERT INTO dividend_verification_targets(ticker, last_checked_at, report_json)
                 VALUES (?, ?, ?) ON CONFLICT(ticker) DO UPDATE SET last_checked_at=excluded.last_checked_at, report_json=excluded.report_json""",
@@ -310,14 +357,18 @@ def main():
     parser.add_argument("--search-limit", type=int, default=5)
     parser.add_argument("--sources", type=Path, default=Path("data-v2/verification-sources.json"))
     parser.add_argument("--reference-limit", type=int, default=5)
+    parser.add_argument("--access", type=Path, default=DEFAULT_ACCESS_PATH)
+    parser.add_argument("--official-refresh-outcome", choices=['success', 'failure', 'skipped', 'cancelled'])
     args = parser.parse_args()
     if args.limit < 1 or args.search_limit < 0 or args.reference_limit < 0:
         parser.error("limit must be positive and search-limit nonnegative")
     report = enrich(ContentDatabase(args.db), args.nav, args.raw_dir, tickers=args.ticker, provider=args.provider,
-                    limit=args.limit, search_limit=args.search_limit, sources_path=args.sources, reference_limit=args.reference_limit)
+                    limit=args.limit, search_limit=args.search_limit, sources_path=args.sources, reference_limit=args.reference_limit,
+                    access_path=args.access, official_refresh_outcome=args.official_refresh_outcome)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({"selected": report["selectedCount"], "universe": report["universeCount"],
+                      "supplierConnectionRequired": sum(row['referenceStatus'] == 'supplier_connection_required' for row in report['tickers']),
                       "errors": sum(len(row["errors"]) for row in report["tickers"]), "output": str(args.output)}))
     return 0
 

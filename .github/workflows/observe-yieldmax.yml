@@ -16,7 +16,7 @@ on:
         description: Group to recover; auto checks pending and upcoming cycles
         type: choice
         default: auto
-        options: [auto, group-3, group-1, group-2]
+        options: [auto, group-3, group-1, group-2, monthly]
       declarationDate:
         description: Optional actual official declaration date (YYYY-MM-DD); requires a specific group
         type: string
@@ -25,6 +25,11 @@ on:
         description: Optional nominal cycle date to resolve with that official declaration date
         type: string
         required: false
+      correction:
+        description: Explicitly reviewed correction; ignores group/date inputs
+        type: choice
+        options: [none, yieldmax-monthly-2026-11]
+        default: none
       dryRun:
         description: Inspect restored ledger only; skip collection, state save and publication
         type: boolean
@@ -54,10 +59,15 @@ jobs:
           OBSERVATION_GROUP: ${{ inputs.group || 'auto' }}
           DECLARATION_DATE: ${{ inputs.declarationDate }}
           CYCLE_DATE: ${{ inputs.cycleDate }}
+          REVIEWED_CORRECTION: ${{ inputs.correction || 'none' }}
         shell: bash
         run: |
           created_at=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .created_at)
           echo "createdAt=$created_at" >> "$GITHUB_OUTPUT"
+          if [[ "$REVIEWED_CORRECTION" != 'none' ]]; then
+            echo 'enabled=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           args=(--plan-only --event-schedule "$EVENT_SCHEDULE" --scheduled-at "$created_at" --group "$OBSERVATION_GROUP" --github-output "$GITHUB_OUTPUT")
           if [[ -n "$DECLARATION_DATE" ]]; then args+=(--declaration-date "$DECLARATION_DATE"); fi
           if [[ -n "$CYCLE_DATE" ]]; then args+=(--cycle-date "$CYCLE_DATE"); fi
@@ -85,6 +95,7 @@ jobs:
       DECLARATION_DATE: ${{ inputs.declarationDate }}
       CYCLE_DATE: ${{ inputs.cycleDate }}
       DRY_RUN: ${{ inputs.dryRun || false }}
+      REVIEWED_CORRECTION: ${{ inputs.correction || 'none' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -106,12 +117,18 @@ jobs:
           echo "CONTENT_STATE_KEY=$state_key" >> "$GITHUB_ENV"
       - name: Restore durable Content Studio state
         id: restore
-        run: python scripts/content_pipeline/content_state_store.py restore --key "$CONTENT_STATE_KEY"
+        run: python scripts/content_pipeline/content_state_store.py restore --key "$CONTENT_STATE_KEY" --require-existing
       - name: Observe selected and pending YieldMax cycles
         id: observation
         continue-on-error: true
         shell: bash
         run: |
+          if [[ "$REVIEWED_CORRECTION" != 'none' ]]; then
+            args=(--correction "$REVIEWED_CORRECTION" --github-output "$GITHUB_OUTPUT")
+            if [[ "$DRY_RUN" != 'true' ]]; then args+=(--apply); fi
+            python scripts/content_pipeline/reviewed_correction.py "${args[@]}"
+            exit 0
+          fi
           args=(--event-schedule "$EVENT_SCHEDULE" --scheduled-at "$RUN_CREATED_AT" --group "$OBSERVATION_GROUP" --github-output "$GITHUB_OUTPUT")
           if [[ -n "$DECLARATION_DATE" ]]; then args+=(--declaration-date "$DECLARATION_DATE"); fi
           if [[ -n "$CYCLE_DATE" ]]; then args+=(--cycle-date "$CYCLE_DATE"); fi

@@ -141,7 +141,9 @@ export function toBacktestData(events) {
                 amount,
                 amountFixed: amount,
                 ...(declared ? { declaredDate: declared } : {}),
-                ...(['official', 'cross_checked'].includes(status) ? { dividendVerified: true } : {}),
+                ...(['official', 'cross_checked'].includes(status)
+                    ? { dividendVerified: true }
+                    : {}),
                 ...(status === 'needs_review'
                     ? {
                           verificationStatus: 'needs_review',
@@ -335,10 +337,10 @@ async function fetchTicker(symbol, origin, options = {}) {
         ]);
     const evidence =
         evidenceResult.status === 'fulfilled' ? evidenceResult.value : null;
-    const history =
-        historyResult.status === 'fulfilled'
-            ? mergeStockReference(historyResult.value, evidence?.history)
-            : [];
+    const history = mergeStockReference(
+        historyResult.status === 'fulfilled' ? historyResult.value : [],
+        evidence?.history
+    );
     let priceHistory =
         priceResult.status === 'fulfilled' ? priceResult.value : null;
     if (priceResult.status === 'rejected') priceError = priceResult.reason;
@@ -415,6 +417,8 @@ async function fetchTicker(symbol, origin, options = {}) {
         stockReferenceHistory: evidence?.history ?? null,
         stockCollection: evidence?.result ?? null,
         sourceStatus: {
+            officialDividends:
+                historyResult.status === 'rejected' ? 'unavailable' : 'loaded',
             dividends:
                 historyResult.status === 'rejected' ||
                 evidenceResult.status === 'rejected'

@@ -1,0 +1,1 @@
+PASS five widths, heading focus, filter/commit preserves six input rows, busy/blocked guard, dark, zero API calls. Full visual acceptance pending.

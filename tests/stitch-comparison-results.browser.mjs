@@ -62,12 +62,26 @@ try {
             );
             page.on('pageerror', (e) => errors.push(e.message));
             await page.goto(base + '/compare?view=' + view + query);
+            const compact = width <= 1024 && view !== 'underlying';
+            const tablet = compact && width > 640;
             const products = page.locator(
-                width > 1024
-                    ? '.comparison-summary tbody tr'
-                    : '.product-grid article'
+                tablet
+                    ? '.matrix-product'
+                    : width > 1024
+                      ? '.comparison-summary tbody tr'
+                      : '.product-grid article'
             );
             await products.first().waitFor();
+            if (compact) {
+                await page.locator('.filter-details > summary').click();
+                if (!tablet)
+                    await page.locator('.product-extra').evaluateAll((nodes) =>
+                        nodes.forEach((node) => {
+                            node.open = true;
+                        })
+                    );
+                else await page.locator('.tablet-extra > summary').click();
+            }
             const a = products.filter({
                 has: page.getByRole('link', {
                     name: view === 'theme' ? 'DEMO-E' : 'DEMO-A',
@@ -79,7 +93,12 @@ try {
             });
             assert.equal(await a.count(), 1);
             assert.equal(await b.count(), view === 'theme' ? 0 : 1);
-            assert.match(await a.innerText(), /조회 전/);
+            assert.match(
+                await (
+                    tablet ? page.locator('.responsive-matrix') : a
+                ).innerText(),
+                /조회 전/
+            );
             assert.equal(
                 requests.filter(
                     (r) =>
@@ -103,8 +122,11 @@ try {
                         .getAttribute('tabindex'),
                     '0'
                 );
-            } else {
-                assert.equal(await a.locator('.product-fields dt').count(), 4);
+            } else if (!tablet && !compact) {
+                assert.equal(
+                    await a.locator('.product-fields dt').count(),
+                    compact ? 3 : 4
+                );
                 assert.equal(
                     await a.locator('.product-metrics > div').count(),
                     3
@@ -161,6 +183,54 @@ try {
                         true,
                         'Existing comparable-value highlight remains bold'
                     );
+            } else if (tablet) {
+                const symbol = view === 'theme' ? 'DEMO-E' : 'DEMO-A';
+                const index = await products.evaluateAll(
+                    (nodes, symbol) =>
+                        nodes.findIndex((node) =>
+                            node.textContent.includes(symbol)
+                        ),
+                    symbol
+                );
+                assert.match(
+                    await page.locator('.matrix-fee').nth(index).innerText(),
+                    /0%/
+                );
+                const extra = page
+                    .locator('.tablet-extra tbody tr')
+                    .filter({ hasText: symbol });
+                assert.match(await extra.innerText(), /0%/);
+            } else if (compact) {
+                await a.locator('.product-detail-trigger').click();
+                const dialog = page.getByRole('dialog');
+                await dialog.waitFor();
+                assert.match(
+                    await dialog
+                        .locator('.product-metrics > div')
+                        .nth(0)
+                        .innerText(),
+                    /0%/
+                );
+                assert.match(
+                    await dialog
+                        .locator('.product-metrics > div')
+                        .nth(1)
+                        .innerText(),
+                    /0%/
+                );
+                assert.match(await dialog.innerText(), /2026-11-03/);
+                assert.match(
+                    await dialog.locator('.product-meta').innerText(),
+                    /재검증 대기/
+                );
+                assert.equal(
+                    await dialog
+                        .getByRole('link', { name: '종목 상세', exact: true })
+                        .getAttribute('href'),
+                    view === 'theme' ? '/stock/DEMO-E' : '/stock/DEMO-A'
+                );
+                await page.keyboard.press('Escape');
+                await dialog.waitFor({ state: 'hidden' });
             } else {
                 assert.match(
                     await a
@@ -178,8 +248,14 @@ try {
                 );
             }
             if (view !== 'theme') {
-                assert.doesNotMatch(await b.innerText(), /99%|조회 전/);
-                assert.match(await b.innerText(), /미확인/);
+                const unavailable = tablet
+                    ? page.locator('.matrix-fee').nth(1)
+                    : b;
+                assert.doesNotMatch(
+                    await unavailable.innerText(),
+                    /99%|조회 전/
+                );
+                assert.match(await unavailable.innerText(), /미확인/);
             }
             assert.equal(
                 requests.filter((r) => r.url.includes('/stock-prices')).length,

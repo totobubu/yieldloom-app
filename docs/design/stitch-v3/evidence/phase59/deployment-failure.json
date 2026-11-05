@@ -1,0 +1,11 @@
+{
+  "commit": "39e9b6798211238a1943c24d7c8af98b06ce9874",
+  "deployment": "dpl_3LHVzaVHN99FbLtX66qv8YF9B5NC",
+  "state": "ERROR",
+  "errorCode": "LAMBDA_SIZE_EXCEEDED",
+  "reportedBundleMB": 228.11,
+  "reportedMaximumMB": 225,
+  "runtimeReferenceScan": "No docs filesystem references in api Python handlers",
+  "localDocsSize": "54M including53M docs/design",
+  "verification": "exclude hypothesis must be confirmed by actual new Vercel build"
+}

@@ -87,6 +87,7 @@ declare module 'vue' {
     PortfolioNavigation: typeof import('./src/components/navigation/PortfolioNavigation.vue')['default']
     PortfolioValuation: typeof import('./src/components/portfolio/PortfolioValuation.vue')['default']
     PurchaseFundingEditor: typeof import('./src/components/portfolio/PurchaseFundingEditor.vue')['default']
+    ResponsiveComparison: typeof import('./src/components/comparison/ResponsiveComparison.vue')['default']
     RivalThumbnail: typeof import('./src/components/thumbnail/RivalThumbnail.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

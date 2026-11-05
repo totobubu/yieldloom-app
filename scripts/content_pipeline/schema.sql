@@ -339,3 +339,24 @@ CREATE TABLE IF NOT EXISTS stock_market_snapshots (
     payload_json TEXT NOT NULL,
     UNIQUE(ticker, source_document_id)
 );
+
+-- Explicitly reviewed corrections keep the canonical ID and retire its old key.
+CREATE TABLE IF NOT EXISTS reviewed_distribution_corrections (
+    correction_id TEXT NOT NULL,
+    event_id INTEGER NOT NULL REFERENCES distribution_events(id),
+    prior_event_key TEXT NOT NULL UNIQUE,
+    corrected_event_key TEXT NOT NULL UNIQUE,
+    prior_snapshot_json TEXT NOT NULL,
+    corrected_snapshot_json TEXT NOT NULL,
+    source_document_id INTEGER NOT NULL REFERENCES source_documents(id),
+    applied_at TEXT NOT NULL,
+    PRIMARY KEY (correction_id,event_id)
+);
+CREATE TABLE IF NOT EXISTS reviewed_correction_observations (
+    correction_id TEXT NOT NULL,
+    event_id INTEGER NOT NULL REFERENCES distribution_events(id),
+    source_document_id INTEGER NOT NULL REFERENCES source_documents(id),
+    snapshot_json TEXT NOT NULL,
+    observed_at TEXT NOT NULL,
+    UNIQUE (correction_id,event_id,source_document_id,snapshot_json)
+);

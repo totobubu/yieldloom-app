@@ -171,6 +171,23 @@ class ContentDatabase:
         self, event: DistributionEvent, source_document_id: int,
         *, source_class: str | None = None,
     ) -> int | None:
+        # A reviewed date correction retires the prior event key. Keep later
+        # source observations (including disagreements) without resurrecting a
+        # duplicate or silently reverting the reviewed canonical facts.
+        with self.connect() as connection:
+            correction = connection.execute("""SELECT correction_id,event_id
+                FROM reviewed_distribution_corrections
+                WHERE prior_event_key=? OR corrected_event_key=?""",
+                (event.event_key,event.event_key)).fetchone()
+            if correction:
+                from dataclasses import asdict
+                snapshot = asdict(event)
+                snapshot.pop('collected_at', None)
+                connection.execute("""INSERT OR IGNORE INTO reviewed_correction_observations
+                    (correction_id,event_id,source_document_id,snapshot_json,observed_at)
+                    VALUES (?,?,?,?,?)""", (correction['correction_id'],correction['event_id'],
+                        source_document_id,json.dumps(snapshot,sort_keys=True),utc_now_iso()))
+                return int(correction['event_id'])
         # Global X's current table is display-only. Keep its source observation
         # outside the canonical table, including direct calls and refresh.py.
         if (event.provider_slug == "globalx" and event.verification_status == "needs_review"

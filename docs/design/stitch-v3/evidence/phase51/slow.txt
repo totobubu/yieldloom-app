@@ -1,0 +1,3 @@
+{"scope":"before month edit","busy":"true","loadingMask":true}
+{"scope":"ready for month edit","busy":"false","loadingMask":false}
+PASS: real XLSX/CSV → explicit broker columns → review → in-memory commit and account statement save/read/delete; typing/mapping zero requests; six mapping-dialog widths and four portfolio widths

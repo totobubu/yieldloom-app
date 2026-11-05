@@ -110,6 +110,13 @@ try {
             );
             assert.equal(await page.locator('#comparison-title').count(), 1);
             assert.equal(
+                await component
+                    .locator('.responsive-results-heading')
+                    .isVisible(),
+                view === 'theme' ? !mobile : mobile,
+                'Source result-count heading must remain visible on the similar mobile view'
+            );
+            assert.equal(
                 await component.locator('.explorer-filters .p-select').count(),
                 4
             );

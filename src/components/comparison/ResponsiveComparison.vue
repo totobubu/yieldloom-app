@@ -580,6 +580,7 @@
         <template v-if="analysisView === 'matrix'">
             <div class="responsive-results-heading comparison-result-count">
                 <h2>
+                    <i v-if="!isTheme" class="pi pi-clone" aria-hidden="true" />
                     {{ isTheme ? '지표별 상세 대조표' : '비교 대상' }}
                     <span>{{ total }}개 항목</span>
                 </h2>
@@ -1175,6 +1176,9 @@
     .responsive-comparison :deep(.pi-sliders-h) {
         --comparison-symbol: 'balance';
     }
+    .responsive-comparison :deep(.pi-clone) {
+        --comparison-symbol: 'layers';
+    }
     .tray-compare-button :deep(.pi-chart-bar) {
         --comparison-symbol: 'compare_arrows';
     }
@@ -1650,8 +1654,16 @@
         gap: 12px;
     }
     .responsive-results-heading h2 {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         font-size: 13px;
         line-height: 18px;
+    }
+    .responsive-results-heading h2 .pi {
+        font-size: 18px;
+        line-height: 18px;
+        color: var(--app-accent);
     }
     .responsive-results-heading > span {
         color: var(--app-muted);
@@ -2187,15 +2199,14 @@
         }
         .responsive-comparison:not(.theme-comparison)
             .responsive-results-heading {
+            display: flex;
+        }
+        .theme-comparison .responsive-results-heading {
             display: none;
         }
         .heading-actions :deep(.pi) {
-            font-size: 18px;
-            line-height: 18px;
-        }
-        .tray-compare-button :deep(.pi) {
-            font-size: 18px;
-            line-height: 18px;
+            font-size: 16px;
+            line-height: 16px;
         }
         .responsive-results-heading {
             margin: 0;

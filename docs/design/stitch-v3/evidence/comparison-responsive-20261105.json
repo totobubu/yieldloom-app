@@ -410,7 +410,7 @@
             "appGeometry": {
                 "root": {
                     "width": 358,
-                    "height": 2638,
+                    "height": 2673,
                     "padding": "0px",
                     "gap": "16px",
                     "radius": "0px",
@@ -421,7 +421,7 @@
                     "border": "rgb(25, 28, 30)"
                 },
                 "title": {
-                    "width": 207.96875,
+                    "width": 211.96875,
                     "height": 28,
                     "padding": "0px",
                     "gap": "normal",
@@ -831,7 +831,7 @@
             "appGeometry": {
                 "root": {
                     "width": 358,
-                    "height": 1988,
+                    "height": 1954,
                     "padding": "0px",
                     "gap": "16px",
                     "radius": "0px",
@@ -2278,5 +2278,7 @@
         "sha256": "b499b3b2d26f67c13f8e017815a5200591711946c64677ff2f5259272e0646d3",
         "sourceCss": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
         "license": "src/assets/fonts/MaterialSymbols-LICENSE.txt"
-    }
+    },
+    "sourceResultCountHeadingVisibilityChecked": true,
+    "responsiveComponentSha256": "54ca6dcd292e9cc67c4d95a54e2efbde83c52d4352dfb0b82962aac1d21750c3"
 }

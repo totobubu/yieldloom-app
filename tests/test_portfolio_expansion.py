@@ -71,6 +71,7 @@ class PortfolioExpansionTest(unittest.TestCase):
         self.assertEqual(inspect.status_code, 200, inspect.json)
         self.assertEqual(inspect.json['rowCount'], 1)
         self.assertNotIn('rows', inspect.json)
+        self.assertEqual(inspect.json['previewRows'], [['001234', '1,000', '']])
         self.assertFalse(any('/reviews/' in path for path in self.db.data))
         mapping = json.dumps({'symbol': 0, 'quantity': 1, 'amount': 2})
         response = self.sheet(csv, 'broker.csv', format='broker-spreadsheet', broker='kiwoom', encoding='cp949', mapping=mapping, defaultCurrency='KRW')
@@ -78,8 +79,27 @@ class PortfolioExpansionTest(unittest.TestCase):
         self.assertEqual(response.json['source'], 'broker-mapped-v1:kiwoom')
         self.assertEqual(self.commit(response.json).json['inserted'], 1)
         self.assertEqual(self.db.data[f'investmentAccounts/{self.account}']['snapshot']['rows'][0]['symbol'], '001234')
+
         self.assertEqual(self.sheet(csv, 'broker.csv', format='broker-spreadsheet', encoding='cp949', mapping='{}').status_code, 400)
         self.assertEqual(self.sheet(csv, 'broker.csv', action='inspectSpreadsheet', identityConfirmed='false').status_code, 400)
+
+    def test_spreadsheet_inspection_preview_is_bounded_raw_and_does_not_write(self):
+        content = ('symbol,quantity,amount,currency\n'
+                   '001234,"1,000",,KRW\n'
+                   'DEMO-A,1.25000000,0.0000,USD\n'
+                   'DEMO-B,,"<script>not executed</script>",USD\n'
+                   'NOT-IN-PREVIEW,9,999,USD\n').encode()
+        before = copy.deepcopy(self.db.data)
+        response = self.sheet(content, 'preview.csv', 'inspectSpreadsheet')
+        self.assertEqual(response.status_code, 200, response.json)
+        self.assertEqual(response.json['rowCount'], 4)
+        self.assertEqual(response.json['previewRows'], [
+            ['001234', '1,000', '', 'KRW'],
+            ['DEMO-A', '1.25000000', '0.0000', 'USD'],
+            ['DEMO-B', '', '<script>not executed</script>', 'USD'],
+        ])
+        self.assertNotIn('rows', response.json)
+        self.assertEqual(self.db.data, before)
 
     def test_broker_xlsx_transaction_mapping_dates_types_and_duplicates(self):
         file = xlsx([['거래일','코드','유형','고유번호','수량','금액','통화'], [20261018,'AAPL','매수','id-1',1,100,'USD']])

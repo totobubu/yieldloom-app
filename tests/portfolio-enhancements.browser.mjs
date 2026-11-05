@@ -277,6 +277,7 @@ try {
         })
         .check();
     await broker
+        .locator('.broker-preset-actions')
         .getByRole('button', { name: '열 연결 설정 저장', exact: true })
         .click();
     await broker
@@ -292,21 +293,30 @@ try {
     );
     await chooseFile(layout);
     await broker.getByText(/저장된 열 연결을 불러왔습니다/).waitFor();
-    await broker
-        .getByRole('button', { name: '연결 자료 미리보기', exact: true })
-        .click();
+    assert.equal(
+        await broker
+            .getByRole('button', { name: '연결 자료 미리보기', exact: true })
+            .isDisabled(),
+        true,
+        'restored mapping requires explicit confirmation'
+    );
     await broker
         .getByText('불러온 열 연결과 통화를 확인한 뒤 확인란을 선택하세요.', {
             exact: true,
         })
         .waitFor();
     await chooseFile('quantity,symbol,amount,currency\n2,AAPL,100,USD\n');
-    await broker.getByText(/저장된 양식과 파일의 열 구성이 다릅니다/).waitFor();
+    await broker
+        .getByText(
+            /헤더 구조가 일치하지 않아 저장된 열 연결을 적용하지 않았습니다/
+        )
+        .waitFor();
     const workbook = execFileSync(process.env.FAMILY_TEST_PYTHON || 'python3', [
         '-c',
         "from openpyxl import Workbook; import io,sys; b=Workbook(); b.active.title='First'; b.active.append(['symbol','quantity','amount','currency']); b.active.append(['AAPL',1,100,'USD']); s=b.create_sheet('Saved'); s.append(['symbol','quantity','amount','currency']); s.append(['AAPL',2,100,'USD']); out=io.BytesIO(); b.save(out); b.close(); sys.stdout.buffer.write(out.getvalue())",
     ]);
     await chooseFile(workbook, 'layout.xlsx');
+    await broker.locator('.broker-upload-settings > summary').click();
     await broker.getByLabel('워크시트 (선택)', { exact: true }).fill('Saved');
     await broker
         .getByRole('button', { name: '파일 열 확인', exact: true })
@@ -318,6 +328,7 @@ try {
         })
         .check();
     await broker
+        .locator('.broker-preset-actions')
         .getByRole('button', { name: '열 연결 설정 저장', exact: true })
         .click();
     await broker
@@ -328,6 +339,7 @@ try {
         .click();
     await chooseFile(workbook, 'layout.xlsx');
     await broker.getByText(/저장된 설정은 2번째 시트입니다/).waitFor();
+    await broker.locator('.broker-upload-settings > summary').click();
     await broker
         .getByRole('button', { name: '저장된 시트 선택', exact: true })
         .click();
@@ -341,6 +353,7 @@ try {
             .inputValue(),
         'Saved'
     );
+    await broker.locator('.broker-upload-settings > summary').click();
     await broker
         .getByRole('button', { name: '저장된 열 연결 삭제', exact: true })
         .click();

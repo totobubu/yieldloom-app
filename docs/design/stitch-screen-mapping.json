@@ -671,5 +671,7 @@
       "implementationStatus": "functional",
       "implementationNotes": "로그인·회원가입·재설정의 웹/모바일 배치, 비밀번호 확인, 로그인 유지, 요청·검증·만료·재시도·완료 상태 구현. 새 재설정 화면으로 메일을 연결하려면 Firebase 이메일 템플릿 작업 URL을 정식 웹앱 /login으로 설정해야 함. 실제 메일·계정 생성은 테스트에서 수행하지 않음."
     }
-  ]
+  ],
+  "currentRegistry": "stitch-v3/SCREEN_REGISTRY.json",
+  "inventoryQualification": "Historical63-screen mapping retained;current14 deployed families and new20 device targets/9 families tracked in currentRegistry. Not20 new routes."
 }

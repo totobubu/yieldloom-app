@@ -65,6 +65,20 @@ try {
         exact: true,
     });
     const choose = async (label, option) => {
+        if (label === '연결 자료 종류') {
+            const group = form.getByRole('radiogroup', {
+                name: label,
+                exact: true,
+            });
+            await group.getByText(option, { exact: true }).click();
+            assert.equal(
+                await group
+                    .getByRole('radio', { name: option, exact: true })
+                    .isChecked(),
+                true
+            );
+            return;
+        }
         await form.getByLabel(label, { exact: true }).click();
         await page
             .getByRole('option', { name: option, exact: true })
@@ -85,6 +99,46 @@ try {
         .getByRole('button', { name: '파일 열 확인', exact: true })
         .click();
     await form.getByLabel('연결 종목 코드', { exact: true }).waitFor();
+    assert.equal(await form.locator('.broker-raw-preview tbody tr').count(), 1);
+    assert.equal(
+        await form
+            .locator('.broker-raw-preview tbody tr')
+            .textContent()
+            .then((text) => text.includes('1.25')),
+        true,
+        'raw inspection preserves uploaded values'
+    );
+    // Duplicate columns must not enable a review that the server would reject.
+    await choose('연결 종목 코드', '1열 · 종목코드');
+    await choose('연결 수량', '1열 · 종목코드');
+    assert.equal(
+        await form
+            .getByRole('button', { name: '연결 자료 미리보기', exact: true })
+            .isDisabled(),
+        true
+    );
+    assert.equal(
+        await form
+            .getByText(
+                '같은 열을 여러 항목에 연결할 수 없습니다. 중복 연결을 해제하세요.',
+                { exact: true }
+            )
+            .isVisible(),
+        true
+    );
+    await form
+        .getByRole('button', {
+            name: '파일·계좌 확인 및 업로드 설정 열기',
+            exact: true,
+        })
+        .click();
+    assert.equal(
+        (await form.locator('.broker-upload-settings').getAttribute('open')) !==
+            null,
+        true,
+        'file settings remain accessible from the file icon'
+    );
+    await form.locator('.broker-upload-settings>summary').click();
     assert.deepEqual(requests.slice(before), [
         { method: 'POST', action: 'inspectSpreadsheet' },
     ]);
@@ -100,6 +154,29 @@ try {
         before + 1,
         'column selections add no requests'
     );
+    assert.match(
+        await form.locator('.broker-preview-notes').innerText(),
+        /amount 250 · currency USD/,
+        'raw mapped values remain quoted without financial inference'
+    );
+    for (const width of [1440, 1280, 834, 768, 390, 360]) {
+        await page.setViewportSize({ width, height: 1000 });
+        const box = await form.boundingBox();
+        const expected = Math.min(width, 1280) - (width <= 640 ? 32 : 48);
+        assert.ok(
+            Math.abs(box.width - expected) < 1,
+            `mapping content width ${width}: ${box.width} vs ${expected}`
+        );
+        assert.equal(
+            await form.evaluate((e) => e.scrollWidth > e.clientWidth + 1),
+            false,
+            `mapping overflow ${width}`
+        );
+        await page.screenshot({
+            path: `/tmp/yieldloom-broker-dialog-${width}.png`,
+        });
+    }
+    await page.setViewportSize({ width: 1280, height: 900 });
     await form
         .getByRole('button', { name: '연결 자료 미리보기', exact: true })
         .click();
@@ -220,7 +297,7 @@ try {
     });
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: real XLSX/CSV → explicit broker columns → review → in-memory commit and account statement save/read/delete; typing/mapping zero requests; four widths'
+        'PASS: real XLSX/CSV → explicit broker columns → review → in-memory commit and account statement save/read/delete; typing/mapping zero requests; six mapping-dialog widths and four portfolio widths'
     );
 } finally {
     await browser.close();

@@ -142,6 +142,7 @@ jobs:
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-share-metrics.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-portfolio-controls.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-analysis-records.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 STITCH_SKIP_SOURCE=1 STITCH_CAPTURE_DIR=/tmp/ledger-analysis-ci node scripts/design/capture-ledger-analysis.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-comparison-results.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 COMPARISON_EVIDENCE_DIR=/tmp/comparison-responsive-ci node tests/comparison-responsive.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-ttm-card.browser.mjs
@@ -174,6 +175,7 @@ jobs:
                       /tmp/yieldloom-enhancements-*.png
                       /tmp/yieldloom-fifo-*.png
                       /tmp/comparison-responsive-ci/
+                      /tmp/ledger-analysis-ci/
                   retention-days: 5
 
     registration-browser:

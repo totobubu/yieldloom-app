@@ -1,0 +1,15 @@
+{
+  "componentSha256": "d112f8333e7def3d7f18090dffe5152b116e9e41465087c9f5eafadc367c5b43",
+  "localCapture": "five widths passed with authoritative source comparisons",
+  "ciCaptureMode": "five widths passed; source network capture skipped",
+  "existingChecks": [
+    "portfolio-enhancements: passed",
+    "stitch-analysis-records: six states passed"
+  ],
+  "lint": "0 errors, existing54 warnings",
+  "typeAndBuild": "passed",
+  "apiCallsFromComponentCapture": 0,
+  "liveAccount": "not verified",
+  "visualAcceptance": "not accepted; see remaining differences",
+  "production": "not deployed"
+}

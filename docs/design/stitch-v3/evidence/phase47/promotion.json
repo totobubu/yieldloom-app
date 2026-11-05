@@ -1,0 +1,11 @@
+{
+  "pr": 259,
+  "mainSha": "8a95a0219665dd81851d6790620f41b8b31fb0e4",
+  "workSha": "4b78ccc418270279aa42328bbb7c33454d165b02",
+  "reviewedTree": "2c513be20d85d1e2f6f81a3994bb2db15b70f88c",
+  "featureCi": 42013193576,
+  "workCi": 42015382239,
+  "promotionCi": 42015516737,
+  "checks": "all four jobs passed for each",
+  "production": "awaiting actual verification"
+}

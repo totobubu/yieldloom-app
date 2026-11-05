@@ -1,0 +1,12 @@
+{
+  "id": "dpl_2WeEUZ3CPKm5airzNWztpCUoYC6X",
+  "url": "yieldloom-h2f7oa08m-totobubus-projects.vercel.app",
+  "state": "READY",
+  "sha": "4b78ccc418270279aa42328bbb7c33454d165b02",
+  "status": 200,
+  "release": {
+    "schemaVersion": 1,
+    "commit": "4b78ccc418270279aa42328bbb7c33454d165b02",
+    "metadataSha256": "b54bc1cca63cb303a8b1e982b42a7238e1741013d3ce3908616c5dcd206827b7"
+  }
+}

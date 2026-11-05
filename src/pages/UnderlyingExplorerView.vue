@@ -6,6 +6,7 @@
     import Tag from 'primevue/tag';
     import Message from 'primevue/message';
     import InfoHelp from '@/components/common/InfoHelp.vue';
+    import ResponsiveComparison from '@/components/comparison/ResponsiveComparison.vue';
     import Paginator from 'primevue/paginator';
     import { inferSecurityType } from '../../lib/security-filters.js';
     import {
@@ -28,6 +29,18 @@
     } from '../../lib/underlying-comparison.js';
     const route = useRoute(),
         router = useRouter();
+    const compactMedia =
+        typeof window === 'undefined'
+            ? null
+            : window.matchMedia('(max-width: 1024px)');
+    const compactViewport = ref(compactMedia?.matches ?? false);
+    const updateCompactViewport = (event) => {
+        compactViewport.value = event.matches;
+    };
+    compactMedia?.addEventListener('change', updateCompactViewport);
+    onScopeDispose(() =>
+        compactMedia?.removeEventListener('change', updateCompactViewport)
+    );
     const underlying = computed(() =>
         String(route.params.symbol || route.query.symbol || '').toUpperCase()
     );
@@ -41,6 +54,9 @@
         () =>
             comparisonThemes.find((item) => item.value === route.query.theme) ??
             comparisonThemes[0]
+    );
+    const responsiveComparison = computed(
+        () => compactViewport.value && section.value.value !== 'underlying'
     );
     function sectionLink(view) {
         return {
@@ -82,6 +98,7 @@
         dividend = ref(''),
         frequency = ref('');
     const page = ref(1);
+    const productSearch = ref('');
     const pageSize = 12;
     const dividendNames = {
         available: '배당 이력 있음',
@@ -234,7 +251,16 @@
     );
     const visible = computed(() =>
         dividendProducts.value.filter(
-            (row) => !frequency.value || row.frequency === frequency.value
+            (row) =>
+                (!frequency.value || row.frequency === frequency.value) &&
+                (!productSearch.value.trim() ||
+                    [row.symbol, row.koName, row.longName, row.company]
+                        .filter(Boolean)
+                        .join(' ')
+                        .toLocaleLowerCase()
+                        .includes(
+                            productSearch.value.trim().toLocaleLowerCase()
+                        ))
         )
     );
     const pageProducts = computed(() =>
@@ -308,7 +334,7 @@
         { flush: 'sync' }
     );
     watch(
-        [selectionKey, strategy, direction, dividend, frequency],
+        [selectionKey, strategy, direction, dividend, frequency, productSearch],
         () => {
             page.value = 1;
         },
@@ -371,6 +397,21 @@
             maxDrawdown: risks.value[row.symbol]?.maxDrawdown ?? null,
         }))
     );
+    const responsiveRows = computed(() =>
+        comparisonRows.value.map((row) => ({
+            ...row,
+            totalReturnInfo: metric(row.symbol, 'totalReturn1Y'),
+            expenseInfo: metric(row.symbol, 'expenseRatio'),
+            risk: risks.value[row.symbol],
+            detailsRequested: Object.hasOwn(risks.value, row.symbol),
+            strategyLabel: strategyNames[row.strategy] || row.strategy,
+            directionLabel: directionNames[row.direction] || row.direction,
+            themeReason:
+                section.value.value === 'theme'
+                    ? themeMatch(row, theme.value)?.label || '분류 근거 미확인'
+                    : '',
+        }))
+    );
     const bestValue = (key, direction = 'max') => {
         const candidates = comparisonRows.value.filter((row) =>
             Number.isFinite(row[key])
@@ -403,6 +444,7 @@
         direction.value = '';
         dividend.value = '';
         frequency.value = '';
+        productSearch.value = '';
     };
     let generation = 0,
         detailsGeneration = 0,
@@ -420,13 +462,17 @@
             if (request === generation) loading.value = false;
         }
     }
-    async function loadDetails() {
+    async function loadDetails(symbols) {
         if (pending.value) return;
         controller?.abort();
         controller = new AbortController();
         const request = ++detailsGeneration;
         const signal = controller.signal,
-            selected = pageProducts.value;
+            selected = Array.isArray(symbols)
+                ? pageProducts.value.filter((row) =>
+                      symbols.includes(row.symbol)
+                  )
+                : pageProducts.value;
         pending.value = true;
         detailsError.value = '';
         try {
@@ -469,7 +515,9 @@
                     insights.value[result.value.symbol] = result.value.info;
                     risks.value[result.value.symbol] = result.value.risk;
                 }
-            detailed.value = true;
+            detailed.value = pageProducts.value.every((row) =>
+                Object.hasOwn(risks.value, row.symbol)
+            );
             if (
                 results.some(
                     (row) => row.status === 'rejected' || row.value.partial
@@ -495,7 +543,10 @@
         clearDetails();
         help.value?.hide();
     });
-    watch([strategy, direction, dividend, frequency, page], clearDetails);
+    watch(
+        [strategy, direction, dividend, frequency, page, productSearch],
+        clearDetails
+    );
     onScopeDispose(() => {
         generation++;
         detailsGeneration++;
@@ -508,822 +559,930 @@
         class="underlying-explorer"
         :data-stitch-view="section.value"
         aria-labelledby="comparison-title">
-        <router-link to="/" class="comparison-back-link"
-            ><i class="pi pi-arrow-left" aria-hidden="true" />검색으로
-            돌아가기</router-link
-        >
-        <header class="comparison-page-heading">
-            <div class="comparison-main-title">
-                <h1 id="comparison-title">종목 비교</h1>
-                <InfoHelp ref="help" label="비교 안내" :text="helpText" />
-            </div>
-            <p>{{ section.description }}</p>
-        </header>
-        <nav class="comparison-navigation" aria-label="종목 비교 하위 메뉴">
-            <router-link
-                v-for="item in comparisonSections"
-                :key="item.value"
-                :to="sectionLink(item.value)"
-                :class="{ active: section.value === item.value }"
-                :aria-current="
-                    section.value === item.value ? 'page' : undefined
-                ">
-                <i :class="item.icon" aria-hidden="true" />{{ item.label }}
-            </router-link>
-        </nav>
-        <Message v-if="error" severity="error" role="alert"
-            >{{ error }} <Button label="다시 시도" @click="load"
-        /></Message>
-        <p v-if="loading" role="status">공용 종목 목록을 불러오고 있습니다.</p>
-        <template v-if="directory">
-            <div
-                v-if="section.value !== 'similar'"
-                class="comparison-basis-card">
-                <div class="comparison-basis-context">
-                    <span>{{
-                        section.value === 'theme'
-                            ? '선택 테마'
-                            : '선택 기초자산'
-                    }}</span
-                    ><strong>{{
-                        section.value === 'theme'
-                            ? theme.label
-                            : underlying || '선택 대기'
-                    }}</strong>
-                    <p>
-                        {{
-                            section.value === 'theme'
-                                ? theme.description
-                                : '연결된 파생·인컴·레버리지 상품군 비교'
-                        }}
-                    </p>
+        <ResponsiveComparison
+            v-if="responsiveComparison"
+            v-model:strategy="strategy"
+            v-model:direction="direction"
+            v-model:dividend="dividend"
+            v-model:frequency="frequency"
+            v-model:search="productSearch"
+            v-model:reference="referenceValue"
+            :view="section.value"
+            :theme="theme"
+            :theme-options="themeOptions"
+            :rows="responsiveRows"
+            :total="visible.length"
+            :references="allProducts"
+            :options="{
+                strategy: strategyOptions,
+                direction: directionOptions,
+                dividend: dividendOptions,
+                frequency: frequencies,
+            }"
+            :conditions="displayedConditions"
+            :loading="loading"
+            :pending="pending"
+            :detailed="detailed"
+            :error="error"
+            :details-error="detailsError"
+            :dividend-unavailable="directory?.dividendUnavailable ?? false"
+            :page="page"
+            :page-size="pageSize"
+            @page="page = $event"
+            @theme="updateSelection('theme', $event)"
+            @load-details="loadDetails"
+            @reset="resetFilters"
+            @clear-condition="clearCondition"
+            @retry="load" />
+        <template v-else>
+            <router-link to="/" class="comparison-back-link"
+                ><i class="pi pi-arrow-left" aria-hidden="true" />검색으로
+                돌아가기</router-link
+            >
+            <header class="comparison-page-heading">
+                <div class="comparison-main-title">
+                    <h1 id="comparison-title">종목 비교</h1>
+                    <InfoHelp ref="help" label="비교 안내" :text="helpText" />
                 </div>
-                <div class="comparison-basis-select">
-                    <label
-                        v-if="section.value === 'underlying'"
-                        for="explorer-asset"
-                        ><span id="explorer-asset-label"
-                            ><span class="filter-step" aria-hidden="true"
-                                >1</span
-                            >
-                            기초자산</span
-                        ><Select
-                            :model-value="underlying"
-                            input-id="explorer-asset"
-                            aria-labelledby="explorer-asset-label"
-                            :options="assets"
-                            @update:model-value="selectUnderlying"
-                    /></label>
-                    <label
-                        v-if="section.value === 'theme'"
-                        for="explorer-theme">
-                        <span
-                            ><span class="filter-step" aria-hidden="true"
-                                >1</span
-                            >
-                            테마</span
-                        ><Select
-                            :model-value="theme.value"
-                            input-id="explorer-theme"
-                            :options="themeOptions"
-                            option-group-label="label"
-                            option-group-children="items"
-                            option-disabled="disabled"
-                            filter
-                            option-label="displayLabel"
-                            option-value="value"
-                            @update:model-value="
-                                updateSelection('theme', $event)
-                            " />
-                    </label>
-                </div>
-            </div>
-            <template v-if="section.value === 'similar'">
-                <section
-                    class="comparison-basis-card similar-reference-card"
-                    aria-label="비교 기준 ETF">
+                <p>{{ section.description }}</p>
+            </header>
+            <nav class="comparison-navigation" aria-label="종목 비교 하위 메뉴">
+                <router-link
+                    v-for="item in comparisonSections"
+                    :key="item.value"
+                    :to="sectionLink(item.value)"
+                    :class="{ active: section.value === item.value }"
+                    :aria-current="
+                        section.value === item.value ? 'page' : undefined
+                    ">
+                    <i :class="item.icon" aria-hidden="true" />{{ item.label }}
+                </router-link>
+            </nav>
+            <Message v-if="error" severity="error" role="alert"
+                >{{ error }} <Button label="다시 시도" @click="load"
+            /></Message>
+            <p v-if="loading" role="status">
+                공용 종목 목록을 불러오고 있습니다.
+            </p>
+            <template v-if="directory">
+                <div
+                    v-if="section.value !== 'similar'"
+                    class="comparison-basis-card">
                     <div class="comparison-basis-context">
-                        <span>비교 기준 ETF</span
+                        <span>{{
+                            section.value === 'theme'
+                                ? '선택 테마'
+                                : '선택 기초자산'
+                        }}</span
                         ><strong>{{
-                            selectedReference?.symbol || '선택 대기'
+                            section.value === 'theme'
+                                ? theme.label
+                                : underlying || '선택 대기'
                         }}</strong>
                         <p>
                             {{
-                                selectedReference?.koName ||
-                                selectedReference?.longName ||
-                                '연결된 ETF 목록에서 선택하세요.'
+                                section.value === 'theme'
+                                    ? theme.description
+                                    : '연결된 파생·인컴·레버리지 상품군 비교'
                             }}
                         </p>
-                        <small
-                            >기준 종목은 비교 맥락으로 표시하며 결과 필터 범위를
-                            바꾸지 않습니다.</small
+                    </div>
+                    <div class="comparison-basis-select">
+                        <label
+                            v-if="section.value === 'underlying'"
+                            for="explorer-asset"
+                            ><span id="explorer-asset-label"
+                                ><span class="filter-step" aria-hidden="true"
+                                    >1</span
+                                >
+                                기초자산</span
+                            ><Select
+                                :model-value="underlying"
+                                input-id="explorer-asset"
+                                aria-labelledby="explorer-asset-label"
+                                :options="assets"
+                                @update:model-value="selectUnderlying"
+                        /></label>
+                        <label
+                            v-if="section.value === 'theme'"
+                            for="explorer-theme">
+                            <span
+                                ><span class="filter-step" aria-hidden="true"
+                                    >1</span
+                                >
+                                테마</span
+                            ><Select
+                                :model-value="theme.value"
+                                input-id="explorer-theme"
+                                :options="themeOptions"
+                                option-group-label="label"
+                                option-group-children="items"
+                                option-disabled="disabled"
+                                filter
+                                option-label="displayLabel"
+                                option-value="value"
+                                @update:model-value="
+                                    updateSelection('theme', $event)
+                                " />
+                        </label>
+                    </div>
+                </div>
+                <template v-if="section.value === 'similar'">
+                    <section
+                        class="comparison-basis-card similar-reference-card"
+                        aria-label="비교 기준 ETF">
+                        <div class="comparison-basis-context">
+                            <span>비교 기준 ETF</span
+                            ><strong>{{
+                                selectedReference?.symbol || '선택 대기'
+                            }}</strong>
+                            <p>
+                                {{
+                                    selectedReference?.koName ||
+                                    selectedReference?.longName ||
+                                    '연결된 ETF 목록에서 선택하세요.'
+                                }}
+                            </p>
+                            <small
+                                >기준 종목은 비교 맥락으로 표시하며 결과 필터
+                                범위를 바꾸지 않습니다.</small
+                            >
+                        </div>
+                        <div class="reference-choice">
+                            <label for="comparison-reference"
+                                >기준 종목 변경</label
+                            >
+                            <div>
+                                <select
+                                    id="comparison-reference"
+                                    ref="referenceSelect"
+                                    v-model="referenceValue"
+                                    :disabled="!allProducts.length">
+                                    <option
+                                        v-for="row in allProducts"
+                                        :key="row.symbol"
+                                        :value="row.symbol">
+                                        {{ row.symbol }} ·
+                                        {{
+                                            row.koName ||
+                                            row.longName ||
+                                            row.symbol
+                                        }}
+                                    </option></select
+                                ><Button
+                                    label="변경"
+                                    severity="secondary"
+                                    outlined
+                                    @click="referenceSelect?.focus()" />
+                            </div>
+                        </div>
+                    </section>
+                    <p class="similar-reference-notice">
+                        유사 ETF 분류는 운용 전략 및 기초자산 특성 대조이며,
+                        동일한 투자 위험이나 수익률을 보장하지 않습니다.
+                    </p>
+                </template>
+                <div class="comparison-filter-card">
+                    <div class="comparison-filter-header">
+                        <div>
+                            <h2>단계적 비교 필터</h2>
+                            <p>
+                                전략 변경 시 하위 단계(방향, 배당 상태, 배당
+                                주기)가 순차적으로 초기화됩니다.
+                            </p>
+                        </div>
+                        <Button
+                            label="필터 전체 초기화"
+                            text
+                            severity="secondary"
+                            @click="resetFilters" />
+                    </div>
+                    <div
+                        class="explorer-filters"
+                        :class="{ 'has-basis': section.value !== 'similar' }">
+                        <label v-if="hasSelection" for="explorer-strategy"
+                            ><span id="explorer-strategy-label"
+                                ><span class="filter-step" aria-hidden="true">{{
+                                    1
+                                }}</span>
+                                전략</span
+                            ><Select
+                                v-model="strategy"
+                                placeholder="모든 전략"
+                                input-id="explorer-strategy"
+                                aria-labelledby="explorer-strategy-label"
+                                :options="strategyOptions"
+                                :disabled="loading || !products.length"
+                                option-label="label"
+                                option-value="value" /></label
+                        ><label v-if="hasSelection" for="explorer-direction"
+                            ><span id="explorer-direction-label"
+                                ><span class="filter-step" aria-hidden="true">{{
+                                    2
+                                }}</span>
+                                방향</span
+                            ><Select
+                                v-model="direction"
+                                placeholder="모든 방향"
+                                input-id="explorer-direction"
+                                aria-labelledby="explorer-direction-label"
+                                :options="directionOptions"
+                                :disabled="loading || !strategyProducts.length"
+                                option-label="label"
+                                option-value="value" /></label
+                        ><label v-if="hasSelection" for="explorer-dividend">
+                            <span id="explorer-dividend-label"
+                                ><span class="filter-step" aria-hidden="true">{{
+                                    3
+                                }}</span>
+                                배당 여부</span
+                            >
+                            <Select
+                                v-model="dividend"
+                                input-id="explorer-dividend"
+                                aria-labelledby="explorer-dividend-label"
+                                :options="dividendOptions"
+                                option-label="label"
+                                option-value="value"
+                                placeholder="모든 배당 여부"
+                                :disabled="
+                                    loading || !directionProducts.length
+                                " /> </label
+                        ><label v-if="hasSelection" for="explorer-frequency"
+                            ><span id="explorer-frequency-label"
+                                ><span class="filter-step" aria-hidden="true">{{
+                                    4
+                                }}</span>
+                                지급 주기</span
+                            ><Select
+                                v-model="frequency"
+                                placeholder="모든 지급 주기"
+                                input-id="explorer-frequency"
+                                aria-labelledby="explorer-frequency-label"
+                                :options="frequencies"
+                                :disabled="loading || !dividendProducts.length"
+                                option-label="label"
+                                option-value="value"
+                        /></label>
+                    </div>
+                    <div
+                        class="comparison-applied-conditions"
+                        aria-label="적용된 비교 조건">
+                        <span>적용된 조건:</span
+                        ><span
+                            v-for="condition in displayedConditions"
+                            :key="condition.key"
+                            class="comparison-condition-chip"
+                            ><span
+                                >{{ condition.label }}:
+                                {{ condition.value }}</span
+                            ><Button
+                                v-if="condition.active"
+                                :aria-label="`${condition.label} 조건 해제`"
+                                icon="pi pi-times"
+                                text
+                                rounded
+                                size="small"
+                                @click="clearCondition(condition.key)" /></span
+                        ><span
+                            v-if="
+                                section.value === 'similar' && selectedReference
+                            "
+                            class="comparison-condition-chip"
+                            >참고 기준: {{ selectedReference.symbol }}</span
                         >
                     </div>
-                    <div class="reference-choice">
-                        <label for="comparison-reference">기준 종목 변경</label>
+                    <div v-if="hasSelection" class="comparison-action-banner">
+                        <Button
+                            v-if="hasSelection"
+                            class="comparison-load-button"
+                            label="수익률·수수료·가격 하락 조회"
+                            icon="pi pi-search"
+                            :loading="pending"
+                            :disabled="loading || !pageProducts.length"
+                            @click="loadDetails" />
+                        <p>
+                            자료를 조회하기 전에는 수익률·수수료·가격 하락을
+                            확인되지 않은 값으로 표시합니다. 기준일과 기간이
+                            같은 자료만 상대 비교합니다. 가격 하락은 배당을
+                            제외한 가격 기준입니다.
+                        </p>
+                    </div>
+                </div>
+                <div
+                    v-if="section.value === 'theme'"
+                    class="comparison-context">
+                    <strong>{{ theme.label }}</strong>
+                    <p>{{ theme.description }}</p>
+                    <small
+                        >등록된 테마 구성 주식을 먼저 표시하고, 관련 ETF는
+                        기초자산 목록 또는 상품명 키워드로 분류합니다. 여러
+                        테마에 중복될 수 있으며, 상품별 분류 근거를 함께
+                        표시합니다. 보유 비중 분석은 포함하지 않습니다.</small
+                    >
+                </div>
+                <p
+                    v-if="section.value === 'similar'"
+                    class="comparison-context">
+                    전체 ETF에서 앞선 조건에 맞는 다음 옵션만 표시합니다. 상위
+                    조건을 바꾸면 하위 선택을 초기화합니다. 배당 이력과 미확인
+                    정보는 구분합니다.
+                </p>
+                <div v-if="hasSelection" class="comparison-results-toolbar">
+                    <h3 class="comparison-result-count">
+                        {{ resultLabel }} · {{ visible.length }}개
+                    </h3>
+                    <Button
+                        v-if="strategy || direction || dividend || frequency"
+                        label="필터 초기화"
+                        icon="pi pi-refresh"
+                        severity="secondary"
+                        text
+                        size="small"
+                        @click="resetFilters" />
+                </div>
+                <Message v-else severity="info" :closable="false"
+                    >비교할 기초자산을 선택해 주세요.</Message
+                >
+                <Message
+                    v-if="hasSelection && directory.dividendUnavailable"
+                    severity="warn"
+                    >배당 자료를 불러오지 못했습니다. 연결 정보만 확인할 수
+                    있습니다.</Message
+                >
+                <Message v-if="detailsError" severity="warn">{{
+                    detailsError
+                }}</Message>
+                <section v-if="hasSelection" class="comparison-summary">
+                    <div class="comparison-summary-heading">
                         <div>
-                            <select
-                                id="comparison-reference"
-                                ref="referenceSelect"
-                                v-model="referenceValue"
-                                :disabled="!allProducts.length">
-                                <option
-                                    v-for="row in allProducts"
-                                    :key="row.symbol"
-                                    :value="row.symbol">
-                                    {{ row.symbol }} ·
+                            <h3>한눈에 비교</h3>
+                            <p>현재 필터의 종목을 같은 기준으로 비교합니다.</p>
+                        </div>
+                        <span>동일 기준일·기간일 때 상대 우위 표시</span>
+                    </div>
+                    <div
+                        class="comparison-table-wrap"
+                        tabindex="0"
+                        role="region"
+                        aria-label="종목 비교 결과표">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">티커 · 종목명</th>
+                                    <th scope="col">
+                                        {{
+                                            section.value === 'theme'
+                                                ? '테마 분류 근거'
+                                                : '기초자산 (차이점)'
+                                        }}
+                                    </th>
+                                    <th scope="col">전략 · 방향</th>
+                                    <th scope="col">배당 상태 · 주기</th>
+                                    <th scope="col">1년 총수익률</th>
+                                    <th scope="col">운용 보수</th>
+                                    <th scope="col">최대 하락</th>
+                                    <th scope="col">자료 출처 · 기준일</th>
+                                    <th scope="col">상세</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="row in comparisonRows"
+                                    :key="row.symbol">
+                                    <th scope="row">
+                                        <router-link
+                                            :to="'/stock/' + row.symbol"
+                                            >{{ row.symbol }}</router-link
+                                        ><small>{{
+                                            row.koName ||
+                                            row.longName ||
+                                            row.symbol
+                                        }}</small>
+                                    </th>
+                                    <td>
+                                        <span class="comparison-badge">{{
+                                            section.value === 'theme'
+                                                ? themeMatch(row, theme)
+                                                      ?.label ||
+                                                  '분류 근거 미확인'
+                                                : row.underlying ||
+                                                  (row.kind ===
+                                                  'underlying-stock'
+                                                      ? row.symbol
+                                                      : '미확인')
+                                        }}</span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="comparison-badge"
+                                            :class="{
+                                                'badge-income':
+                                                    row.strategy === 'income',
+                                                'badge-leveraged':
+                                                    row.strategy ===
+                                                    'leveraged',
+                                            }"
+                                            >{{
+                                                strategyNames[row.strategy]
+                                            }}</span
+                                        >
+                                        <span
+                                            class="comparison-badge"
+                                            :class="{
+                                                'badge-inverse':
+                                                    row.direction === 'inverse',
+                                            }"
+                                            >{{
+                                                directionNames[row.direction]
+                                            }}</span
+                                        ><small
+                                            v-if="
+                                                row.kind !== 'underlying-stock'
+                                            "
+                                            >{{
+                                                row.leverage == null
+                                                    ? '배수 미확인'
+                                                    : `${row.leverage}배`
+                                            }}</small
+                                        >
+                                    </td>
+                                    <td>
+                                        <span
+                                            class="comparison-badge"
+                                            :class="{
+                                                'badge-dividend':
+                                                    row.dividendStatus ===
+                                                    'available',
+                                            }"
+                                            >{{
+                                                dividendNames[
+                                                    row.dividendStatus
+                                                ] || '배당 정보 미확인'
+                                            }}</span
+                                        >
+                                        <span class="comparison-frequency">{{
+                                            row.frequency
+                                        }}</span
+                                        ><small
+                                            >{{
+                                                row.dividendStatus === 'none'
+                                                    ? '무배당'
+                                                    : number(row.dividend)
+                                            }}
+                                            {{
+                                                row.dividend == null
+                                                    ? ''
+                                                    : row.currency
+                                            }}</small
+                                        ><small
+                                            v-if="row.dividendStatus !== 'none'"
+                                            >{{
+                                                row.exDate || '배당락일 미확인'
+                                            }}</small
+                                        >
+                                    </td>
+                                    <td
+                                        :class="{
+                                            'is-best': isBest(
+                                                row,
+                                                'totalReturn'
+                                            ),
+                                        }">
+                                        <span
+                                            :class="{
+                                                'query-before':
+                                                    row.totalReturn == null &&
+                                                    !detailed,
+                                                'query-missing':
+                                                    row.totalReturn == null &&
+                                                    detailed,
+                                            }"
+                                            >{{ detailNumber(row.totalReturn)
+                                            }}{{
+                                                row.totalReturn == null
+                                                    ? ''
+                                                    : '%'
+                                            }}</span
+                                        >
+                                        <small
+                                            v-if="
+                                                metric(
+                                                    row.symbol,
+                                                    'totalReturn1Y'
+                                                )
+                                            "
+                                            >{{
+                                                metric(
+                                                    row.symbol,
+                                                    'totalReturn1Y'
+                                                ).startDate || '시작일 미확인'
+                                            }}
+                                            ~
+                                            {{
+                                                metric(
+                                                    row.symbol,
+                                                    'totalReturn1Y'
+                                                ).asOfDate || '기준일 미확인'
+                                            }}</small
+                                        >
+                                        <small v-if="isBest(row, 'totalReturn')"
+                                            >상대 우위</small
+                                        >
+                                    </td>
+                                    <td
+                                        :class="{
+                                            'is-best': isBest(
+                                                row,
+                                                'expenseRatio',
+                                                'min'
+                                            ),
+                                        }">
+                                        <span
+                                            :class="{
+                                                'query-before':
+                                                    row.kind !==
+                                                        'underlying-stock' &&
+                                                    row.expenseRatio == null &&
+                                                    !detailed,
+                                                'query-missing':
+                                                    row.kind !==
+                                                        'underlying-stock' &&
+                                                    row.expenseRatio == null &&
+                                                    detailed,
+                                            }">
+                                            {{
+                                                row.kind === 'underlying-stock'
+                                                    ? '해당 없음'
+                                                    : detailNumber(
+                                                          row.expenseRatio
+                                                      )
+                                            }}{{
+                                                row.expenseRatio == null
+                                                    ? ''
+                                                    : '%'
+                                            }}</span
+                                        >
+                                        <small
+                                            v-if="
+                                                metric(
+                                                    row.symbol,
+                                                    'expenseRatio'
+                                                )
+                                            "
+                                            >기준일
+                                            {{
+                                                metric(
+                                                    row.symbol,
+                                                    'expenseRatio'
+                                                ).asOfDate || '미확인'
+                                            }}</small
+                                        >
+                                        <small
+                                            v-if="
+                                                isBest(
+                                                    row,
+                                                    'expenseRatio',
+                                                    'min'
+                                                )
+                                            "
+                                            >낮은 보수</small
+                                        >
+                                    </td>
+                                    <td
+                                        :class="{
+                                            'is-best': isBest(
+                                                row,
+                                                'maxDrawdown'
+                                            ),
+                                        }">
+                                        <span
+                                            :class="{
+                                                'query-before':
+                                                    row.maxDrawdown == null &&
+                                                    !detailed,
+                                                'query-missing':
+                                                    row.maxDrawdown == null &&
+                                                    detailed,
+                                            }"
+                                            >{{ detailNumber(row.maxDrawdown)
+                                            }}{{
+                                                row.maxDrawdown == null
+                                                    ? ''
+                                                    : '%'
+                                            }}</span
+                                        >
+                                        <small
+                                            v-if="risks[row.symbol]?.startDate"
+                                            >{{ risks[row.symbol].startDate }} ~
+                                            {{
+                                                risks[row.symbol].endDate
+                                            }}</small
+                                        >
+                                        <small v-if="isBest(row, 'maxDrawdown')"
+                                            >낮은 하락</small
+                                        >
+                                    </td>
+                                    <td>
+                                        <a
+                                            v-if="row.source?.url"
+                                            :href="row.source.url"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            >{{
+                                                row.verified
+                                                    ? '공식 연결 근거'
+                                                    : '등록 연결 근거'
+                                            }}</a
+                                        ><span v-else>{{
+                                            row.kind === 'underlying-stock'
+                                                ? '등록 종목'
+                                                : '연결 근거 재검증 대기'
+                                        }}</span
+                                        ><small>{{
+                                            metric(row.symbol, 'totalReturn1Y')
+                                                ?.asOfDate ||
+                                            '지표 기준일 미확인'
+                                        }}</small>
+                                    </td>
+                                    <td>
+                                        <router-link
+                                            :to="`/stock/${row.symbol}`"
+                                            >종목 상세 →</router-link
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="comparison-caution">
+                        상대 우위 표시는 조회된 동일 기간 값만 비교하며 투자
+                        추천을 의미하지 않습니다.
+                    </p>
+                </section>
+                <div v-if="hasSelection" class="product-grid">
+                    <article v-for="row in pageProducts" :key="row.symbol">
+                        <header>
+                            <div class="product-identity">
+                                <router-link :to="`/stock/${row.symbol}`"
+                                    ><h3>{{ row.symbol }}</h3></router-link
+                                >
+                                <p>
                                     {{
                                         row.koName || row.longName || row.symbol
                                     }}
-                                </option></select
-                            ><Button
-                                label="변경"
-                                severity="secondary"
-                                outlined
-                                @click="referenceSelect?.focus()" />
-                        </div>
-                    </div>
-                </section>
-                <p class="similar-reference-notice">
-                    유사 ETF 분류는 운용 전략 및 기초자산 특성 대조이며, 동일한
-                    투자 위험이나 수익률을 보장하지 않습니다.
-                </p>
-            </template>
-            <div class="comparison-filter-card">
-                <div class="comparison-filter-header">
-                    <div>
-                        <h2>단계적 비교 필터</h2>
-                        <p>
-                            전략 변경 시 하위 단계(방향, 배당 상태, 배당 주기)가
-                            순차적으로 초기화됩니다.
+                                </p>
+                            </div>
+                            <router-link
+                                class="comparison-detail-link"
+                                :to="`/stock/${row.symbol}`"
+                                >종목 상세</router-link
+                            >
+                        </header>
+                        <p class="product-company">
+                            {{
+                                row.kind === 'underlying-stock'
+                                    ? '일반 주식'
+                                    : row.company || '운용사 미확인'
+                            }}
                         </p>
-                    </div>
-                    <Button
-                        label="필터 전체 초기화"
-                        text
-                        severity="secondary"
-                        @click="resetFilters" />
-                </div>
-                <div
-                    class="explorer-filters"
-                    :class="{ 'has-basis': section.value !== 'similar' }">
-                    <label v-if="hasSelection" for="explorer-strategy"
-                        ><span id="explorer-strategy-label"
-                            ><span class="filter-step" aria-hidden="true">{{
-                                1
-                            }}</span>
-                            전략</span
-                        ><Select
-                            v-model="strategy"
-                            placeholder="모든 전략"
-                            input-id="explorer-strategy"
-                            aria-labelledby="explorer-strategy-label"
-                            :options="strategyOptions"
-                            :disabled="loading || !products.length"
-                            option-label="label"
-                            option-value="value" /></label
-                    ><label v-if="hasSelection" for="explorer-direction"
-                        ><span id="explorer-direction-label"
-                            ><span class="filter-step" aria-hidden="true">{{
-                                2
-                            }}</span>
-                            방향</span
-                        ><Select
-                            v-model="direction"
-                            placeholder="모든 방향"
-                            input-id="explorer-direction"
-                            aria-labelledby="explorer-direction-label"
-                            :options="directionOptions"
-                            :disabled="loading || !strategyProducts.length"
-                            option-label="label"
-                            option-value="value" /></label
-                    ><label v-if="hasSelection" for="explorer-dividend">
-                        <span id="explorer-dividend-label"
-                            ><span class="filter-step" aria-hidden="true">{{
-                                3
-                            }}</span>
-                            배당 여부</span
-                        >
-                        <Select
-                            v-model="dividend"
-                            input-id="explorer-dividend"
-                            aria-labelledby="explorer-dividend-label"
-                            :options="dividendOptions"
-                            option-label="label"
-                            option-value="value"
-                            placeholder="모든 배당 여부"
-                            :disabled="
-                                loading || !directionProducts.length
-                            " /> </label
-                    ><label v-if="hasSelection" for="explorer-frequency"
-                        ><span id="explorer-frequency-label"
-                            ><span class="filter-step" aria-hidden="true">{{
-                                4
-                            }}</span>
-                            지급 주기</span
-                        ><Select
-                            v-model="frequency"
-                            placeholder="모든 지급 주기"
-                            input-id="explorer-frequency"
-                            aria-labelledby="explorer-frequency-label"
-                            :options="frequencies"
-                            :disabled="loading || !dividendProducts.length"
-                            option-label="label"
-                            option-value="value"
-                    /></label>
-                </div>
-                <div
-                    class="comparison-applied-conditions"
-                    aria-label="적용된 비교 조건">
-                    <span>적용된 조건:</span
-                    ><span
-                        v-for="condition in displayedConditions"
-                        :key="condition.key"
-                        class="comparison-condition-chip"
-                        ><span
-                            >{{ condition.label }}: {{ condition.value }}</span
-                        ><Button
-                            v-if="condition.active"
-                            :aria-label="`${condition.label} 조건 해제`"
-                            icon="pi pi-times"
-                            text
-                            rounded
-                            size="small"
-                            @click="clearCondition(condition.key)" /></span
-                    ><span
-                        v-if="section.value === 'similar' && selectedReference"
-                        class="comparison-condition-chip"
-                        >참고 기준: {{ selectedReference.symbol }}</span
-                    >
-                </div>
-                <div v-if="hasSelection" class="comparison-action-banner">
-                    <Button
-                        v-if="hasSelection"
-                        class="comparison-load-button"
-                        label="수익률·수수료·가격 하락 조회"
-                        icon="pi pi-search"
-                        :loading="pending"
-                        :disabled="loading || !pageProducts.length"
-                        @click="loadDetails" />
-                    <p>
-                        자료를 조회하기 전에는 수익률·수수료·가격 하락을
-                        확인되지 않은 값으로 표시합니다. 기준일과 기간이 같은
-                        자료만 상대 비교합니다. 가격 하락은 배당을 제외한 가격
-                        기준입니다.
-                    </p>
-                </div>
-            </div>
-            <div v-if="section.value === 'theme'" class="comparison-context">
-                <strong>{{ theme.label }}</strong>
-                <p>{{ theme.description }}</p>
-                <small
-                    >등록된 테마 구성 주식을 먼저 표시하고, 관련 ETF는 기초자산
-                    목록 또는 상품명 키워드로 분류합니다. 여러 테마에 중복될 수
-                    있으며, 상품별 분류 근거를 함께 표시합니다. 보유 비중 분석은
-                    포함하지 않습니다.</small
-                >
-            </div>
-            <p v-if="section.value === 'similar'" class="comparison-context">
-                전체 ETF에서 앞선 조건에 맞는 다음 옵션만 표시합니다. 상위
-                조건을 바꾸면 하위 선택을 초기화합니다. 배당 이력과 미확인
-                정보는 구분합니다.
-            </p>
-            <div v-if="hasSelection" class="comparison-results-toolbar">
-                <h3 class="comparison-result-count">
-                    {{ resultLabel }} · {{ visible.length }}개
-                </h3>
-                <Button
-                    v-if="strategy || direction || dividend || frequency"
-                    label="필터 초기화"
-                    icon="pi pi-refresh"
-                    severity="secondary"
-                    text
-                    size="small"
-                    @click="resetFilters" />
-            </div>
-            <Message v-else severity="info" :closable="false"
-                >비교할 기초자산을 선택해 주세요.</Message
-            >
-            <Message
-                v-if="hasSelection && directory.dividendUnavailable"
-                severity="warn"
-                >배당 자료를 불러오지 못했습니다. 연결 정보만 확인할 수
-                있습니다.</Message
-            >
-            <Message v-if="detailsError" severity="warn">{{
-                detailsError
-            }}</Message>
-            <section v-if="hasSelection" class="comparison-summary">
-                <div class="comparison-summary-heading">
-                    <div>
-                        <h3>한눈에 비교</h3>
-                        <p>현재 필터의 종목을 같은 기준으로 비교합니다.</p>
-                    </div>
-                    <span>동일 기준일·기간일 때 상대 우위 표시</span>
-                </div>
-                <div
-                    class="comparison-table-wrap"
-                    tabindex="0"
-                    role="region"
-                    aria-label="종목 비교 결과표">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th scope="col">티커 · 종목명</th>
-                                <th scope="col">
+                        <dl class="product-fields">
+                            <div>
+                                <dt>
                                     {{
                                         section.value === 'theme'
                                             ? '테마 분류 근거'
-                                            : '기초자산 (차이점)'
+                                            : '기초자산'
                                     }}
-                                </th>
-                                <th scope="col">전략 · 방향</th>
-                                <th scope="col">배당 상태 · 주기</th>
-                                <th scope="col">1년 총수익률</th>
-                                <th scope="col">운용 보수</th>
-                                <th scope="col">최대 하락</th>
-                                <th scope="col">자료 출처 · 기준일</th>
-                                <th scope="col">상세</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="row in comparisonRows" :key="row.symbol">
-                                <th scope="row">
-                                    <router-link :to="'/stock/' + row.symbol">{{
-                                        row.symbol
-                                    }}</router-link
-                                    ><small>{{
-                                        row.koName || row.longName || row.symbol
-                                    }}</small>
-                                </th>
-                                <td>
-                                    <span class="comparison-badge">{{
-                                        section.value === 'theme'
-                                            ? themeMatch(row, theme)?.label ||
-                                              '분류 근거 미확인'
-                                            : row.underlying ||
-                                              (row.kind === 'underlying-stock'
-                                                  ? row.symbol
-                                                  : '미확인')
-                                    }}</span>
-                                </td>
-                                <td>
-                                    <span
-                                        class="comparison-badge"
-                                        :class="{
-                                            'badge-income':
-                                                row.strategy === 'income',
-                                            'badge-leveraged':
-                                                row.strategy === 'leveraged',
-                                        }"
-                                        >{{ strategyNames[row.strategy] }}</span
+                                </dt>
+                                <dd>
+                                    <template
+                                        v-if="section.value === 'theme'"
+                                        >{{
+                                            themeMatch(row, theme)?.label ||
+                                            '분류 근거 미확인'
+                                        }}</template
                                     >
-                                    <span
-                                        class="comparison-badge"
-                                        :class="{
-                                            'badge-inverse':
-                                                row.direction === 'inverse',
-                                        }"
-                                        >{{
-                                            directionNames[row.direction]
-                                        }}</span
-                                    ><small
-                                        v-if="row.kind !== 'underlying-stock'"
-                                        >{{
+                                    <router-link
+                                        v-else-if="
+                                            row.kind !== 'underlying-stock' &&
+                                            row.underlying
+                                        "
+                                        :to="`/underlying/${row.underlying}`"
+                                        >{{ row.underlying }} 기반</router-link
+                                    >
+                                    <template v-else>{{
+                                        row.kind === 'underlying-stock'
+                                            ? row.symbol
+                                            : '미확인'
+                                    }}</template>
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>전략 · 방향</dt>
+                                <dd>
+                                    <template
+                                        v-if="row.kind === 'underlying-stock'"
+                                        >직접 보유 주식</template
+                                    >
+                                    <template v-else
+                                        >{{ strategyNames[row.strategy] }} ·
+                                        {{ directionNames[row.direction] }} ·
+                                        {{
                                             row.leverage == null
                                                 ? '배수 미확인'
                                                 : `${row.leverage}배`
-                                        }}</small
+                                        }}</template
                                     >
-                                </td>
-                                <td>
-                                    <span
-                                        class="comparison-badge"
-                                        :class="{
-                                            'badge-dividend':
-                                                row.dividendStatus ===
-                                                'available',
-                                        }"
-                                        >{{
-                                            dividendNames[row.dividendStatus] ||
-                                            '배당 정보 미확인'
-                                        }}</span
-                                    >
-                                    <span class="comparison-frequency">{{
-                                        row.frequency
-                                    }}</span
-                                    ><small
-                                        >{{
-                                            row.dividendStatus === 'none'
-                                                ? '무배당'
-                                                : number(row.dividend)
-                                        }}
-                                        {{
-                                            row.dividend == null
-                                                ? ''
-                                                : row.currency
-                                        }}</small
-                                    ><small
-                                        v-if="row.dividendStatus !== 'none'"
-                                        >{{
-                                            row.exDate || '배당락일 미확인'
-                                        }}</small
-                                    >
-                                </td>
-                                <td
-                                    :class="{
-                                        'is-best': isBest(row, 'totalReturn'),
-                                    }">
-                                    <span
-                                        :class="{
-                                            'query-before':
-                                                row.totalReturn == null &&
-                                                !detailed,
-                                            'query-missing':
-                                                row.totalReturn == null &&
-                                                detailed,
-                                        }"
-                                        >{{ detailNumber(row.totalReturn)
-                                        }}{{
-                                            row.totalReturn == null ? '' : '%'
-                                        }}</span
-                                    >
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>배당 상태</dt>
+                                <dd>
+                                    {{
+                                        dividendNames[row.dividendStatus] ||
+                                        '배당 정보 미확인'
+                                    }}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>배당 주기</dt>
+                                <dd>{{ row.frequency }}</dd>
+                            </div>
+                        </dl>
+                        <dl class="product-dividend">
+                            <div class="product-metric">
+                                <dt>최근 주당 배당금</dt>
+                                <dd>
+                                    {{
+                                        row.dividendStatus === 'none'
+                                            ? '무배당'
+                                            : number(row.dividend)
+                                    }}
+                                    {{
+                                        row.dividendStatus === 'none' ||
+                                        row.dividend == null
+                                            ? ''
+                                            : row.currency
+                                    }}
+                                    <small>{{
+                                        row.dividendStatus === 'none'
+                                            ? '지급 주기 해당 없음'
+                                            : row.exDate || '배당락일 미확인'
+                                    }}</small>
+                                </dd>
+                            </div>
+                        </dl>
+                        <dl class="product-metrics">
+                            <div class="product-metric">
+                                <dt>1년 총수익률</dt>
+                                <dd>
+                                    {{
+                                        detailNumber(
+                                            metric(row.symbol, 'totalReturn1Y')
+                                                ?.value
+                                        )
+                                    }}{{
+                                        metric(row.symbol, 'totalReturn1Y')
+                                            ? '%'
+                                            : ''
+                                    }}
                                     <small
                                         v-if="
                                             metric(row.symbol, 'totalReturn1Y')
                                         "
                                         >{{
                                             metric(row.symbol, 'totalReturn1Y')
-                                                .startDate || '시작일 미확인'
+                                                .estimated
+                                                ? '제공처 조정 종가 추정 · '
+                                                : ''
+                                        }}{{
+                                            metric(row.symbol, 'totalReturn1Y')
+                                                .startDate
                                         }}
                                         ~
                                         {{
                                             metric(row.symbol, 'totalReturn1Y')
-                                                .asOfDate || '기준일 미확인'
+                                                .asOfDate
                                         }}</small
                                     >
-                                    <small v-if="isBest(row, 'totalReturn')"
-                                        >상대 우위</small
-                                    >
-                                </td>
-                                <td
-                                    :class="{
-                                        'is-best': isBest(
-                                            row,
-                                            'expenseRatio',
-                                            'min'
-                                        ),
-                                    }">
-                                    <span
-                                        :class="{
-                                            'query-before':
-                                                row.kind !==
-                                                    'underlying-stock' &&
-                                                row.expenseRatio == null &&
-                                                !detailed,
-                                            'query-missing':
-                                                row.kind !==
-                                                    'underlying-stock' &&
-                                                row.expenseRatio == null &&
-                                                detailed,
-                                        }">
-                                        {{
-                                            row.kind === 'underlying-stock'
-                                                ? '해당 없음'
-                                                : detailNumber(
-                                                      row.expenseRatio
-                                                  )
-                                        }}{{
-                                            row.expenseRatio == null ? '' : '%'
-                                        }}</span
-                                    >
-                                    <small
-                                        v-if="
+                                </dd>
+                            </div>
+                            <div class="product-metric">
+                                <dt>운용 보수</dt>
+                                <dd v-if="row.kind === 'underlying-stock'">
+                                    해당 없음
+                                </dd>
+                                <dd v-else>
+                                    {{
+                                        detailNumber(
                                             metric(row.symbol, 'expenseRatio')
-                                        "
+                                                ?.value
+                                        )
+                                    }}{{
+                                        metric(row.symbol, 'expenseRatio')
+                                            ? '%'
+                                            : ''
+                                    }}
+                                    <small
                                         >기준일
                                         {{
                                             metric(row.symbol, 'expenseRatio')
-                                                .asOfDate || '미확인'
+                                                ?.asOfDate || '미확인'
                                         }}</small
                                     >
+                                </dd>
+                            </div>
+                            <div class="product-metric">
+                                <dt>기간 가격 변화 / 최대 하락</dt>
+                                <dd v-if="risks[row.symbol]?.startDate">
+                                    {{ number(risks[row.symbol].priceReturn) }}%
+                                    /
+                                    {{ number(risks[row.symbol].maxDrawdown) }}%
                                     <small
-                                        v-if="
-                                            isBest(row, 'expenseRatio', 'min')
-                                        "
-                                        >낮은 보수</small
-                                    >
-                                </td>
-                                <td
-                                    :class="{
-                                        'is-best': isBest(row, 'maxDrawdown'),
-                                    }">
-                                    <span
-                                        :class="{
-                                            'query-before':
-                                                row.maxDrawdown == null &&
-                                                !detailed,
-                                            'query-missing':
-                                                row.maxDrawdown == null &&
-                                                detailed,
-                                        }"
-                                        >{{ detailNumber(row.maxDrawdown)
-                                        }}{{
-                                            row.maxDrawdown == null ? '' : '%'
-                                        }}</span
-                                    >
-                                    <small v-if="risks[row.symbol]?.startDate"
                                         >{{ risks[row.symbol].startDate }} ~
-                                        {{ risks[row.symbol].endDate }}</small
+                                        {{ risks[row.symbol].endDate }} · 배당
+                                        제외</small
                                     >
-                                    <small v-if="isBest(row, 'maxDrawdown')"
-                                        >낮은 하락</small
-                                    >
-                                </td>
-                                <td>
-                                    <a
-                                        v-if="row.source?.url"
-                                        :href="row.source.url"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        >{{
-                                            row.verified
-                                                ? '공식 연결 근거'
-                                                : '등록 연결 근거'
-                                        }}</a
-                                    ><span v-else>{{
-                                        row.kind === 'underlying-stock'
-                                            ? '등록 종목'
-                                            : '연결 근거 재검증 대기'
-                                    }}</span
-                                    ><small>{{
-                                        metric(row.symbol, 'totalReturn1Y')
-                                            ?.asOfDate || '지표 기준일 미확인'
-                                    }}</small>
-                                </td>
-                                <td>
-                                    <router-link :to="`/stock/${row.symbol}`"
-                                        >종목 상세 →</router-link
-                                    >
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p class="comparison-caution">
-                    상대 우위 표시는 조회된 동일 기간 값만 비교하며 투자 추천을
-                    의미하지 않습니다.
-                </p>
-            </section>
-            <div v-if="hasSelection" class="product-grid">
-                <article v-for="row in pageProducts" :key="row.symbol">
-                    <header>
-                        <div class="product-identity">
-                            <router-link :to="`/stock/${row.symbol}`"
-                                ><h3>{{ row.symbol }}</h3></router-link
-                            >
-                            <p>
-                                {{ row.koName || row.longName || row.symbol }}
-                            </p>
-                        </div>
-                        <router-link
-                            class="comparison-detail-link"
-                            :to="`/stock/${row.symbol}`"
-                            >종목 상세</router-link
-                        >
-                    </header>
-                    <p class="product-company">
-                        {{
-                            row.kind === 'underlying-stock'
-                                ? '일반 주식'
-                                : row.company || '운용사 미확인'
-                        }}
-                    </p>
-                    <dl class="product-fields">
-                        <div>
-                            <dt>
-                                {{
-                                    section.value === 'theme'
-                                        ? '테마 분류 근거'
-                                        : '기초자산'
-                                }}
-                            </dt>
-                            <dd>
-                                <template v-if="section.value === 'theme'">{{
-                                    themeMatch(row, theme)?.label ||
-                                    '분류 근거 미확인'
-                                }}</template>
-                                <router-link
-                                    v-else-if="
-                                        row.kind !== 'underlying-stock' &&
-                                        row.underlying
-                                    "
-                                    :to="`/underlying/${row.underlying}`"
-                                    >{{ row.underlying }} 기반</router-link
-                                >
-                                <template v-else>{{
-                                    row.kind === 'underlying-stock'
-                                        ? row.symbol
-                                        : '미확인'
-                                }}</template>
-                            </dd>
-                        </div>
-                        <div>
-                            <dt>전략 · 방향</dt>
-                            <dd>
-                                <template v-if="row.kind === 'underlying-stock'"
-                                    >직접 보유 주식</template
-                                >
-                                <template v-else
-                                    >{{ strategyNames[row.strategy] }} ·
-                                    {{ directionNames[row.direction] }} ·
+                                </dd>
+                                <dd v-else>
                                     {{
-                                        row.leverage == null
-                                            ? '배수 미확인'
-                                            : `${row.leverage}배`
-                                    }}</template
-                                >
-                            </dd>
-                        </div>
-                        <div>
-                            <dt>배당 상태</dt>
-                            <dd>
-                                {{
-                                    dividendNames[row.dividendStatus] ||
-                                    '배당 정보 미확인'
-                                }}
-                            </dd>
-                        </div>
-                        <div>
-                            <dt>배당 주기</dt>
-                            <dd>{{ row.frequency }}</dd>
-                        </div>
-                    </dl>
-                    <dl class="product-dividend">
-                        <div class="product-metric">
-                            <dt>최근 주당 배당금</dt>
-                            <dd>
-                                {{
-                                    row.dividendStatus === 'none'
-                                        ? '무배당'
-                                        : number(row.dividend)
-                                }}
-                                {{
-                                    row.dividendStatus === 'none' ||
-                                    row.dividend == null
-                                        ? ''
-                                        : row.currency
-                                }}
-                                <small>{{
-                                    row.dividendStatus === 'none'
-                                        ? '지급 주기 해당 없음'
-                                        : row.exDate || '배당락일 미확인'
-                                }}</small>
-                            </dd>
-                        </div>
-                    </dl>
-                    <dl class="product-metrics">
-                        <div class="product-metric">
-                            <dt>1년 총수익률</dt>
-                            <dd>
-                                {{
-                                    detailNumber(
-                                        metric(row.symbol, 'totalReturn1Y')
-                                            ?.value
-                                    )
-                                }}{{
-                                    metric(row.symbol, 'totalReturn1Y')
-                                        ? '%'
-                                        : ''
-                                }}
-                                <small
-                                    v-if="metric(row.symbol, 'totalReturn1Y')"
-                                    >{{
-                                        metric(row.symbol, 'totalReturn1Y')
-                                            .estimated
-                                            ? '제공처 조정 종가 추정 · '
-                                            : ''
-                                    }}{{
-                                        metric(row.symbol, 'totalReturn1Y')
-                                            .startDate
+                                        risks[row.symbol]?.unavailable ||
+                                        (pending
+                                            ? '조회 중'
+                                            : detailed
+                                              ? '미확인'
+                                              : '조회 전')
                                     }}
-                                    ~
-                                    {{
-                                        metric(row.symbol, 'totalReturn1Y')
-                                            .asOfDate
-                                    }}</small
-                                >
-                            </dd>
-                        </div>
-                        <div class="product-metric">
-                            <dt>운용 보수</dt>
-                            <dd v-if="row.kind === 'underlying-stock'">
-                                해당 없음
-                            </dd>
-                            <dd v-else>
+                                </dd>
+                            </div>
+                        </dl>
+                        <footer class="product-meta">
+                            <div class="product-verification">
+                                <Tag
+                                    v-if="row.kind === 'underlying-stock'"
+                                    value="본주"
+                                    severity="secondary" /><a
+                                    v-else-if="row.verified && row.source?.url"
+                                    class="verification-link"
+                                    :href="row.source.url"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    :aria-label="`${row.symbol} 공식 연결 근거 보기`"
+                                    ><Tag value="공식 검증" severity="success"
+                                /></a>
+                                <Tag
+                                    v-else
+                                    :value="
+                                        row.verified
+                                            ? '공식 검증'
+                                            : '기존 연결·재검증 대기'
+                                    "
+                                    :severity="
+                                        row.verified ? 'success' : 'warn'
+                                    "
+                                    :title="
+                                        row.verified
+                                            ? undefined
+                                            : '기존 목록에는 연결되어 있지만 운용사 공식 근거가 검증 레지스트리에 등록되지 않았습니다.'
+                                    " />
+                            </div>
+                            <span
+                                >지표 기준일:
                                 {{
-                                    detailNumber(
-                                        metric(row.symbol, 'expenseRatio')
-                                            ?.value
-                                    )
-                                }}{{
-                                    metric(row.symbol, 'expenseRatio')
-                                        ? '%'
-                                        : ''
-                                }}
-                                <small
-                                    >기준일
-                                    {{
-                                        metric(row.symbol, 'expenseRatio')
-                                            ?.asOfDate || '미확인'
-                                    }}</small
-                                >
-                            </dd>
-                        </div>
-                        <div class="product-metric">
-                            <dt>기간 가격 변화 / 최대 하락</dt>
-                            <dd v-if="risks[row.symbol]?.startDate">
-                                {{ number(risks[row.symbol].priceReturn) }}% /
-                                {{ number(risks[row.symbol].maxDrawdown) }}%
-                                <small
-                                    >{{ risks[row.symbol].startDate }} ~
-                                    {{ risks[row.symbol].endDate }} · 배당
-                                    제외</small
-                                >
-                            </dd>
-                            <dd v-else>
-                                {{
-                                    risks[row.symbol]?.unavailable ||
-                                    (pending
-                                        ? '조회 중'
-                                        : detailed
-                                          ? '미확인'
-                                          : '조회 전')
-                                }}
-                            </dd>
-                        </div>
-                    </dl>
-                    <footer class="product-meta">
-                        <div class="product-verification">
-                            <Tag
-                                v-if="row.kind === 'underlying-stock'"
-                                value="본주"
-                                severity="secondary" /><a
-                                v-else-if="row.verified && row.source?.url"
-                                class="verification-link"
-                                :href="row.source.url"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                :aria-label="`${row.symbol} 공식 연결 근거 보기`"
-                                ><Tag value="공식 검증" severity="success"
-                            /></a>
-                            <Tag
-                                v-else
-                                :value="
-                                    row.verified
-                                        ? '공식 검증'
-                                        : '기존 연결·재검증 대기'
-                                "
-                                :severity="row.verified ? 'success' : 'warn'"
-                                :title="
-                                    row.verified
-                                        ? undefined
-                                        : '기존 목록에는 연결되어 있지만 운용사 공식 근거가 검증 레지스트리에 등록되지 않았습니다.'
-                                " />
-                        </div>
-                        <span
-                            >지표 기준일:
-                            {{
-                                metric(row.symbol, 'totalReturn1Y')?.asOfDate ||
-                                '미확인'
-                            }}</span
-                        >
-                    </footer>
-                </article>
-            </div>
-            <Paginator
-                v-if="hasSelection && visible.length > pageSize"
-                :first="(page - 1) * pageSize"
-                :rows="pageSize"
-                :total-records="visible.length"
-                :page-link-size="3"
-                template="PrevPageLink PageLinks NextPageLink"
-                aria-label="종목 비교 결과 페이지"
-                @page="page = $event.page + 1" />
-            <section
-                v-if="hasSelection && !visible.length"
-                class="explorer-empty"
-                role="status">
-                <i class="pi pi-filter-slash" aria-hidden="true" />
-                <h3>조건에 맞는 종목이 없습니다</h3>
-                <p>필터 조건을 줄이거나 전체 조건으로 다시 확인해 보세요.</p>
-                <Button
-                    label="필터 초기화"
-                    icon="pi pi-refresh"
-                    severity="secondary"
-                    outlined
-                    @click="resetFilters" /></section
-        ></template>
+                                    metric(row.symbol, 'totalReturn1Y')
+                                        ?.asOfDate || '미확인'
+                                }}</span
+                            >
+                        </footer>
+                    </article>
+                </div>
+                <Paginator
+                    v-if="hasSelection && visible.length > pageSize"
+                    :first="(page - 1) * pageSize"
+                    :rows="pageSize"
+                    :total-records="visible.length"
+                    :page-link-size="3"
+                    template="PrevPageLink PageLinks NextPageLink"
+                    aria-label="종목 비교 결과 페이지"
+                    @page="page = $event.page + 1" />
+                <section
+                    v-if="hasSelection && !visible.length"
+                    class="explorer-empty"
+                    role="status">
+                    <i class="pi pi-filter-slash" aria-hidden="true" />
+                    <h3>조건에 맞는 종목이 없습니다</h3>
+                    <p>
+                        필터 조건을 줄이거나 전체 조건으로 다시 확인해 보세요.
+                    </p>
+                    <Button
+                        label="필터 초기화"
+                        icon="pi pi-refresh"
+                        severity="secondary"
+                        outlined
+                        @click="resetFilters" /></section
+            ></template>
+        </template>
     </section>
 </template>
 <style scoped>

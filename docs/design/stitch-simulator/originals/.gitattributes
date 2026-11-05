@@ -1,0 +1,2 @@
+# Preserve official MCP originals byte-for-byte, including their trailing spaces.
+*.html -text whitespace=-blank-at-eol

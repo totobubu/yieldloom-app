@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { chromium } from 'playwright';
-const out = 'design-review/dividend-simulator';
+import { installStitchFixtures } from './stitch-fixtures.mjs';
+const out =
+    process.env.SIMULATOR_EVIDENCE_DIR ||
+    '/tmp/stitch-simulator/implementation';
 await fs.mkdir(out, { recursive: true });
 const browser = await chromium.launch({
     executablePath: '/usr/bin/chromium',
@@ -11,13 +14,23 @@ try {
     const page = await browser.newPage({
         viewport: { width: 1440, height: 1000 },
     });
+    await installStitchFixtures(page, { admin: true });
     page.setDefaultTimeout(15000);
+    const apiWrites = [];
+    page.on('request', (request) => {
+        if (request.url().includes('/api/') && request.method() !== 'GET')
+            apiWrites.push(request.url());
+    });
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
-    page.on('console', (m) => {
-        if (m.type() === 'error') errors.push(m.text());
+    const localFailures = [];
+    page.on('requestfailed', (request) => {
+        if (new URL(request.url()).hostname === '127.0.0.1')
+            localFailures.push(request.url());
     });
-    await page.goto('http://127.0.0.1:5173/simulator');
+    await page.goto(
+        (process.env.UI_BASE_URL || 'http://127.0.0.1:5173') + '/simulator'
+    );
     await page
         .getByRole('heading', { name: '배당 시뮬레이터', exact: true })
         .waitFor();
@@ -45,9 +58,13 @@ try {
     await page
         .getByRole('button', { name: '원천징수율만 비교', exact: true })
         .click();
-    assert.ok(
-        await page.getByLabel('B 최초 투자액 USD', { exact: true }).isDisabled()
+    assert.equal(
+        await page.getByLabel('B 최초 투자액 USD', { exact: true }).count(),
+        0
     );
+    await page
+        .getByRole('heading', { name: '시나리오 A 설정값 상속' })
+        .waitFor();
     await page.getByLabel('B 원천징수 가정 (%)', { exact: true }).fill('30');
     await page.getByLabel('B 원천징수 가정 (%)', { exact: true }).press('Tab');
     await page.getByLabel('A 최초 투자액 USD', { exact: true }).fill('1000');
@@ -56,11 +73,17 @@ try {
     await page.getByLabel('A 월 추가 납입 USD', { exact: true }).press('Tab');
     await page.getByText('1,102 USD', { exact: true }).first().waitFor();
     await page.getByText('1,084 USD', { exact: true }).first().waitFor();
+    await page
+        .getByRole('button', { name: '가정치 저장/불러오기', exact: true })
+        .click();
     await page.getByRole('button', { name: '가정 저장', exact: true }).click();
     await page
         .getByText('입력한 가정을 이 브라우저에 저장했습니다.', { exact: true })
         .waitFor();
     await page.reload();
+    await page
+        .getByRole('button', { name: '가정치 저장/불러오기', exact: true })
+        .click();
     await page
         .getByRole('button', { name: '저장된 가정 불러오기', exact: true })
         .click();
@@ -69,15 +92,16 @@ try {
         .getByRole('combobox', { name: 'A 배당 지급 주기', exact: true })
         .getByText('매주', { exact: true })
         .waitFor();
-    assert.equal(
-        await page
-            .getByLabel('B 최초 투자액 USD', { exact: true })
-            .inputValue(),
-        '1,000'
-    );
+    await page
+        .locator('.inherited-summary')
+        .getByText('1,000 USD', { exact: true })
+        .waitFor();
     await page.getByLabel('연간 주가 변화율 (%)', { exact: true }).fill('-50');
     await page.getByLabel('연간 주가 변화율 (%)', { exact: true }).press('Tab');
-    await resultA.getByText('-398 USD', { exact: true }).waitFor();
+    await page
+        .locator('.tax-breakdown-table')
+        .getByText('-398 USD', { exact: true })
+        .waitFor();
     await page
         .getByLabel('투자 기간 (개월 · 0~360)', { exact: true })
         .fill('0');
@@ -85,6 +109,7 @@ try {
         .getByLabel('투자 기간 (개월 · 0~360)', { exact: true })
         .press('Tab');
     await page
+        .locator('.monthly-desktop')
         .getByText('기간이 0개월이면 시작 시점의 매수·현금만 표시합니다.', {
             exact: true,
         })
@@ -107,7 +132,7 @@ try {
         .click();
     await page.getByRole('option', { name: 'KRW · 원화', exact: true }).click();
     await resultA.getByText(/KRW/).first().waitFor();
-    for (const width of [1440, 768, 390, 360]) {
+    for (const width of [1440, 834, 768, 390, 360, 320]) {
         await page.setViewportSize({ width, height: 1000 });
         assert.ok(
             await page.evaluate(
@@ -120,7 +145,67 @@ try {
             window.scrollTo(0, 0);
         });
         await page.screenshot({ path: `${out}/${width}.png`, fullPage: true });
+        await page
+            .getByRole('button', { name: '원천징수율만 비교', exact: true })
+            .click();
+        assert.ok(
+            await page.evaluate(
+                () => document.documentElement.scrollWidth <= innerWidth + 1
+            ),
+            `tax overflow ${width}`
+        );
+        await page.screenshot({
+            path: `${out}/tax-${width}.png`,
+            fullPage: true,
+        });
+        await page
+            .getByRole('button', { name: '투자·재투자 A/B', exact: true })
+            .click();
     }
+    await page
+        .getByLabel('투자 기간 (개월 · 0~360)', { exact: true })
+        .fill('24');
+    await page
+        .getByLabel('투자 기간 (개월 · 0~360)', { exact: true })
+        .press('Tab');
+    assert.equal(await page.locator('.month-card').count(), 12);
+    await page
+        .getByRole('button', { name: '다음 12개월 더 보기', exact: true })
+        .click();
+    assert.equal(await page.locator('.month-card').count(), 24);
+    await page
+        .getByRole('heading', { name: '24개월차', exact: true })
+        .waitFor();
+    await page
+        .getByRole('button', { name: '원천징수율만 비교', exact: true })
+        .click();
+    assert.equal(
+        await page.getByLabel('B 최초 투자액 KRW', { exact: true }).count(),
+        0
+    );
+    await page
+        .getByRole('heading', { name: '시나리오 A 설정값 상속' })
+        .waitFor();
+    await page
+        .getByRole('button', { name: '투자·재투자 A/B', exact: true })
+        .click();
+    assert.equal(
+        await page
+            .getByLabel('B 최초 투자액 KRW', { exact: true })
+            .inputValue(),
+        '10,000'
+    );
+    await page
+        .getByRole('button', { name: '가정치 저장/불러오기', exact: true })
+        .focus();
+    await page.keyboard.press('Enter');
+    await page
+        .getByRole('button', { name: '가정 저장', exact: true })
+        .waitFor();
+    await page.keyboard.press('Escape');
+    await page
+        .getByRole('button', { name: '가정 저장', exact: true })
+        .waitFor({ state: 'hidden' });
     await page.getByRole('button', { name: '다크 모드', exact: true }).click();
     await page.screenshot({ path: `${out}/360-dark.png`, fullPage: true });
     await page.evaluate(() =>
@@ -130,12 +215,17 @@ try {
         )
     );
     await page
+        .getByRole('button', { name: '가정치 저장/불러오기', exact: true })
+        .click();
+    await page
         .getByRole('button', { name: '저장된 가정 불러오기', exact: true })
         .click();
     await page.getByText(/저장된 가정을 불러오지 못했습니다/).waitFor();
+    assert.deepEqual(localFailures, []);
+    assert.deepEqual(apiWrites, []);
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: weekly selection by mouse/keyboard, A/B reinvestment, tax-only synchronization, weekly save/restore, negative price, zero period, validation, currency, 4 widths and dark mode'
+        'PASS: weekly selection by mouse/keyboard, A/B reinvestment, tax-only synchronization, weekly save/restore, negative price, zero period, validation, currency, 6 widths, dark mode, mobile continuation and keyboard storage menu'
     );
 } finally {
     await browser.close();

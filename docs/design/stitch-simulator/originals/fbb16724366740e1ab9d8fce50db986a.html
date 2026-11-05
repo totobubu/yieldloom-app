@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>V6 REVIEWED / Simulator / Mobile / source-d6588413</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              teal: '#0d7a6e',
+              tealDark: '#095c53',
+              tealLight: '#f0fdf4',
+              yellow: '#eab308',
+              espresso: '#382418',
+            },
+            surface: {
+              canvas: '#f8fafc',
+              card: '#ffffff',
+              subtle: '#f1f5f9',
+            },
+            line: {
+              border: '#e2e8f0',
+              subtle: '#edf2f7',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .tnum { font-variant-numeric: tabular-nums; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  </style>
+</head>
+<body class="bg-surface-canvas text-slate-800 font-sans antialiased min-h-screen py-4 px-3 selection:bg-brand-teal/10">
+<!-- Mobile Container (Max 390px, Strict Single Column, No horizontal overflow) -->
+<main class="w-full max-w-[390px] mx-auto space-y-4">
+<!-- Top Badge Row & Action Header (No shared app header / No duplicate nav shell) -->
+<header class="space-y-2 pt-1"><div class="flex items-center justify-between gap-1"><div class="flex items-center gap-1.5 flex-wrap"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>가상 시뮬레이션 환경</span><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200">예시 데이터</span><span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">가정 예시 모델</span></div></div><div class="flex items-center justify-between gap-2 pt-1"><h1 class="text-xl font-bold tracking-tight text-brand-espresso">배당 시뮬레이터</h1><div class="flex items-center gap-1.5 shrink-0"><button class="h-9 px-2.5 rounded-lg border border-line-border bg-white text-slate-700 text-xs font-medium flex items-center gap-1 shadow-sm active:bg-slate-50 min-h-[36px]" type="button"><span class="material-symbols-outlined text-sm text-slate-500">bookmark</span><span>가정치 저장/불러오기</span></button><button aria-label="기본값 리셋" class="h-9 w-9 rounded-lg border border-line-border bg-white text-slate-700 flex items-center justify-center shadow-sm active:bg-slate-50 min-h-[36px]" type="button"><span class="material-symbols-outlined text-sm text-slate-500">restart_alt</span></button></div></div><div class="space-y-1 pt-1"><div class="text-[11px] font-semibold text-slate-600">대조 모드 선택</div><div class="grid grid-cols-2 p-1 bg-surface-subtle rounded-lg border border-line-border gap-1 text-xs"><button class="py-1.5 px-2 rounded-md bg-white text-brand-teal font-bold shadow-xs border border-line-border/60 text-center truncate" type="button">일반 A/B 대조 (재투자 대조)</button><button class="py-1.5 px-2 rounded-md text-slate-500 font-medium hover:text-slate-700 text-center truncate" type="button">세율 차이 전용 (Tax-Only B)</button></div></div><p class="text-xs text-slate-500 leading-relaxed">초기 투자금 및 배당 정책을 바탕으로 단순 현금 수령(시나리오 A)과 기말 재투자(시나리오 B)의 자산 및 주식 수를 대조합니다. ※ 세율 차이 전용 모드 선택 시 시나리오 B의 원금·배당 조건은 시나리오 A와 동일하게 연동됩니다.</p></header>
+<!-- Caution Callout Banner (PrimeVue Message styled) -->
+<section class="rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs leading-relaxed text-amber-900 space-y-1.5 shadow-sm"><div class="flex items-start gap-2"><span class="material-symbols-outlined text-amber-600 text-base shrink-0 mt-0.5">info</span><div class="space-y-1"><p class="font-bold text-amber-950">시뮬레이션 전제조건 및 산출 안내</p><p class="text-amber-900/90 text-[11px] leading-normal">단일 과세연도(12개월) 말 1회 배당 기준이며, 시세차익·환율변동(FX)·매매수수료는 배제되었습니다. 원천징수율 0% 기준 시나리오 A(현금보유: 100주 + 현금 $40.00)와 시나리오 B(연말재투자: 104주 + 현금 $0.00)의 1년 후 총 평가자산은 $1,040.00으로 산출됩니다.</p></div></div></section>
+<!-- Section 1: 시뮬레이션 가정 설정 (Accordion/Card) -->
+<section class="bg-surface-card rounded-xl border border-line-border p-3.5 space-y-3.5 shadow-sm"><div class="flex items-center justify-between pb-2 border-b border-line-border"><div class="flex items-center gap-2"><span class="w-5 h-5 rounded-md bg-brand-teal/10 text-brand-teal text-[11px] font-bold flex items-center justify-center">01</span><h2 class="text-sm font-bold text-slate-900">시뮬레이션 가정 설정</h2></div><span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-brand-teal border border-emerald-200">USD ($) 독립 산출</span></div><div class="space-y-3"><div class="p-2.5 rounded-lg bg-surface-subtle border border-line-border/60 space-y-2.5"><div class="flex items-center justify-between"><span class="text-xs font-bold text-slate-800">공통 기본 가정</span><span class="text-[10px] font-medium text-slate-400">모든 시나리오 적용</span></div><div class="grid grid-cols-2 gap-2"><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block">기준 통화 설정</label><div class="grid grid-cols-2 p-0.5 bg-white rounded-lg border border-line-border text-[11px]"><span class="py-1 text-brand-teal font-bold bg-emerald-50/50 rounded text-center">USD</span><span class="py-1 text-slate-400 font-medium text-center">KRW</span></div></div><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="common-duration">시뮬레이션 기간 (개월)</label><div class="relative"><input class="w-full px-2.5 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="common-duration" max="360" min="0" step="1" type="number" value="12"/><span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-normal pointer-events-none pr-1">개월</span></div><span class="text-[10px] text-slate-400 block">범위: 0 ~ 360개월</span></div></div><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="common-growth-rate">연간 주가 변동률 (%)</label><div class="relative"><input class="w-full px-2.5 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="common-growth-rate" max="100" min="-95" step="0.1" type="number" value="0.0"/><span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-normal pointer-events-none pr-1">%</span></div><span class="text-[10px] text-slate-400 block">범위: -95 ~ 100%</span></div></div><div class="p-2.5 rounded-lg border border-emerald-200/80 bg-emerald-50/20 space-y-2"><div class="flex items-center justify-between pb-1 border-b border-emerald-100"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-brand-teal"></span><span class="text-xs font-bold text-brand-teal">시나리오 A 설정 (현금 수령 / 미재투자)</span></div><span class="text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded">단순 보유</span></div><div class="grid grid-cols-2 gap-2"><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="a-initial-principal">초기 투자원금 <span class="text-rose-500">*</span></label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="a-initial-principal" max="1000000000" min="0" step="any" type="number" value="1000.00"/></div></div><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="a-monthly-contribution">월 추가 적립금</label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="a-monthly-contribution" max="10000000" min="0" step="any" type="number" value="0.00"/></div></div></div><div class="grid grid-cols-2 gap-2"><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="a-unit-price">기준 1주당 단가 <span class="text-rose-500">*</span></label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="a-unit-price" max="10000000" min="0.000001" step="any" type="number" value="10.00"/></div><span class="text-[10px] text-slate-400 block">초기 100주 산출</span></div><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="a-annual-dps">연간 DPS (주당배당)</label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="a-annual-dps" max="10000000" min="0" step="any" type="number" value="0.40"/></div><span class="text-[10px] text-brand-teal font-medium block">연 4.0% 고정 배당률</span></div></div><div class="grid grid-cols-2 gap-2"><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="a-withholding-tax">적용 원천징수율 (%)</label><div class="relative"><input class="w-full px-2.5 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="a-withholding-tax" max="100" min="0" step="0.1" type="number" value="0.0"/><span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-normal pointer-events-none pr-1">%</span></div><span class="text-[10px] text-slate-400 block">범위: 0 ~ 100%</span></div><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="a-trade-fee">1회 매수 수수료 (USD)</label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="a-trade-fee" max="10000" min="0" step="any" type="number" value="0.00"/></div><span class="text-[10px] text-slate-400 block">정액 고정 수수료</span></div></div><div class="space-y-1 pt-1"><label class="text-[11px] font-medium text-slate-600 block" for="a-dividend-frequency">배당 지급 주기</label><div class="relative"><select class="w-full px-2 py-2 rounded-lg border border-line-border bg-white text-xs font-medium text-slate-700 appearance-none min-h-[44px]" id="a-dividend-frequency"><option>매주</option><option>매월</option><option>분기</option><option>반기</option><option selected="">매년 (연말 지급)</option></select><span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">expand_more</span></div></div><div class="pt-1.5 space-y-2.5 text-[11px]"><div class="flex items-center justify-between"><label class="flex items-center gap-1 text-slate-700 font-medium cursor-pointer" for="a-reinvest"><span class="material-symbols-outlined text-xs text-slate-400">sync</span>배당금 재투자</label><div class="flex items-center gap-1.5"><span class="text-[10px] text-slate-500 font-medium">OFF (현금 수령)</span><label class="relative inline-flex items-center cursor-pointer min-h-[20px]"><input class="sr-only peer" id="a-reinvest" type="checkbox"/><div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-teal"></div></label></div></div><div class="flex items-center justify-between"><label class="flex items-center gap-1 text-slate-700 font-medium cursor-pointer" for="a-fractional"><span class="material-symbols-outlined text-xs text-slate-400">pie_chart</span>소수점 주식(단주) 재투자</label><div class="flex items-center gap-1.5"><span class="text-[10px] text-brand-teal font-semibold">ON (소수주 허용)</span><label class="relative inline-flex items-center cursor-pointer min-h-[20px]"><input checked="" class="sr-only peer" id="a-fractional" type="checkbox"/><div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-teal"></div></label></div></div></div></div><div class="p-2.5 rounded-lg border border-amber-200/80 bg-amber-50/20 space-y-2"><div class="flex items-center justify-between pb-1 border-b border-amber-100"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-brand-yellow"></span><span class="text-xs font-bold text-amber-900">시나리오 B 설정 (기말 재투자 / 세금 비교)</span></div><span class="text-[10px] font-semibold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">복리 재투자</span></div><div class="grid grid-cols-2 gap-2"><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="b-initial-principal">초기 투자원금 <span class="text-rose-500">*</span></label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="b-initial-principal" max="1000000000" min="0" step="any" type="number" value="1000.00"/></div></div><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="b-monthly-contribution">월 추가 적립금</label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="b-monthly-contribution" max="10000000" min="0" step="any" type="number" value="0.00"/></div></div></div><div class="grid grid-cols-2 gap-2"><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="b-unit-price">기준 1주당 단가 <span class="text-rose-500">*</span></label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="b-unit-price" max="10000000" min="0.000001" step="any" type="number" value="10.00"/></div></div><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="b-annual-dps">연간 DPS (주당배당)</label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="b-annual-dps" max="10000000" min="0" step="any" type="number" value="0.40"/></div></div></div><div class="grid grid-cols-2 gap-2"><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="b-withholding-tax">적용 원천징수율 (%)</label><div class="relative"><input class="w-full px-2.5 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="b-withholding-tax" max="100" min="0" step="0.1" type="number" value="0.0"/><span class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-normal pointer-events-none pr-1">%</span></div><span class="text-[10px] text-slate-400 block">범위: 0 ~ 100%</span></div><div class="space-y-1"><label class="text-[11px] font-medium text-slate-600 block" for="b-trade-fee">1회 매수 수수료 (USD)</label><div class="relative"><span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 font-semibold">$</span><input class="w-full pl-6 pr-2 py-2 rounded-lg border border-line-border bg-white text-xs font-bold text-slate-800 text-right tnum min-h-[44px] focus:outline-none" id="b-trade-fee" max="10000" min="0" step="any" type="number" value="0.00"/></div><span class="text-[10px] text-slate-400 block">정액 고정 수수료</span></div></div><div class="space-y-1 pt-1"><label class="text-[11px] font-medium text-slate-600 block" for="b-dividend-frequency">배당 지급 주기</label><div class="relative"><select class="w-full px-2 py-2 rounded-lg border border-line-border bg-white text-xs font-medium text-slate-700 appearance-none min-h-[44px]" id="b-dividend-frequency"><option>매주</option><option>매월</option><option>분기</option><option>반기</option><option selected="">매년 (연말 지급)</option></select><span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-sm text-slate-400 pointer-events-none">expand_more</span></div></div><div class="pt-1.5 space-y-2.5 text-[11px]"><div class="flex items-center justify-between"><label class="flex items-center gap-1 text-slate-700 font-medium cursor-pointer" for="b-reinvest"><span class="material-symbols-outlined text-xs text-brand-yellow">sync</span>배당금 재투자</label><div class="flex items-center gap-1.5"><span class="text-[10px] text-amber-900 font-semibold">ON (연말 전액 재투자)</span><label class="relative inline-flex items-center cursor-pointer min-h-[20px]"><input checked="" class="sr-only peer" id="b-reinvest" type="checkbox"/><div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-teal"></div></label></div></div><div class="flex items-center justify-between"><label class="flex items-center gap-1 text-slate-700 font-medium cursor-pointer" for="b-fractional"><span class="material-symbols-outlined text-xs text-slate-400">pie_chart</span>소수점 주식(단주) 재투자</label><div class="flex items-center gap-1.5"><span class="text-[10px] text-brand-teal font-semibold">ON (소수주 허용)</span><label class="relative inline-flex items-center cursor-pointer min-h-[20px]"><input checked="" class="sr-only peer" id="b-fractional" type="checkbox"/><div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-teal"></div></label></div></div></div></div><button class="w-full h-11 rounded-lg bg-brand-teal text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm active:bg-brand-tealDark transition-colors" type="button"><span class="material-symbols-outlined text-base">calculate</span><span>가정치 시뮬레이션 계산 적용</span></button></div></section>
+<!-- Section 2: 시나리오 핵심 비교 카드 (A vs B) -->
+<section class="space-y-2.5">
+<!-- 3-Way Quick Metric Cards (Prime Card stacked on mobile) -->
+<div class="grid grid-cols-3 gap-2">
+<!-- 공통 원금 -->
+<div class="bg-surface-card rounded-xl border border-line-border p-2.5 space-y-1 shadow-sm">
+<span class="text-[10px] font-medium text-slate-500 block truncate">초기 원금(공통)</span>
+<p class="text-sm font-bold text-slate-900 tnum">$1,000.00</p>
+<span class="text-[9px] text-slate-400 block tnum">100주 @ $10.00</span>
+</div>
+<!-- 시나리오 A -->
+<div class="bg-surface-card rounded-xl border border-line-border p-2.5 space-y-1 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-8 h-8 bg-emerald-500/10 rounded-bl-full flex items-start justify-end p-1">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-teal"></span>
+</div>
+<span class="text-[10px] font-semibold text-brand-teal block truncate">시나리오 A(현금)</span>
+<p class="text-sm font-bold text-brand-teal tnum">$1,040.00</p>
+<span class="text-[9px] text-slate-500 block tnum">100주+현금 $40</span>
+</div>
+<!-- 시나리오 B -->
+<div class="bg-surface-card rounded-xl border border-line-border p-2.5 space-y-1 shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-8 h-8 bg-amber-500/10 rounded-bl-full flex items-start justify-end p-1">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-yellow"></span>
+</div>
+<span class="text-[10px] font-semibold text-amber-800 block truncate">시나리오 B(재투자)</span>
+<p class="text-sm font-bold text-brand-espresso tnum">$1,040.00</p>
+<span class="text-[9px] text-slate-500 block tnum">104주+현금 $0</span>
+</div>
+</div>
+<!-- 1년 후 예상 기말 자산 및 주식 수 대조 상세 카드 -->
+<div class="bg-surface-card rounded-xl border border-line-border p-3.5 space-y-3 shadow-sm">
+<div class="flex items-center justify-between pb-2 border-b border-line-border">
+<div>
+<h3 class="text-xs font-bold text-slate-900">1년 후 예상 기말 자산 및 주식 수 대조</h3>
+<p class="text-[10px] text-slate-400">주가 불변 가정 및 단순 1차년도 말 배당 수령/재투자 직후 결과 비교</p>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 tnum">
+            총 자산 격차 $0.00
+          </span>
+</div>
+<!-- 시나리오 A 상세 바 -->
+<div class="p-2.5 rounded-lg bg-emerald-50/50 border border-emerald-100 space-y-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-brand-teal"></span>
+<span class="text-xs font-bold text-brand-teal">시나리오 A: 현금 보유 모델 (미재투자)</span>
+</div>
+<span class="text-xs font-bold text-brand-teal tnum">$1,040.00</span>
+</div>
+<!-- 진행 바 -->
+<div class="w-full h-1.5 bg-emerald-100 rounded-full overflow-hidden">
+<div class="h-full bg-brand-teal rounded-full" style="width: 100%;"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-600 pt-0.5">
+<span>보유 주식: <strong class="text-slate-800 tnum">100주</strong> ($1,000.00)</span>
+<span>수령 현금: <strong class="text-brand-teal font-bold tnum">+$40.00</strong></span>
+</div>
+</div>
+<!-- 시나리오 B 상세 바 -->
+<div class="p-2.5 rounded-lg bg-amber-50/50 border border-amber-100 space-y-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-sm bg-brand-yellow"></span>
+<span class="text-xs font-bold text-amber-900">시나리오 B: 연말 전액 재투자 모델 (주식 매수)</span>
+</div>
+<span class="text-xs font-bold text-brand-espresso tnum">$1,040.00</span>
+</div>
+<!-- 진행 바 -->
+<div class="w-full h-1.5 bg-amber-100 rounded-full overflow-hidden">
+<div class="h-full bg-brand-yellow rounded-full" style="width: 100%;"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-600 pt-0.5">
+<span>보유 주식: <strong class="text-amber-900 font-bold tnum">104주 (+4주)</strong> ($1,040.00)</span>
+<span>잔여 현금: <strong class="text-slate-600 font-medium tnum">$0.00</strong></span>
+</div>
+</div>
+<!-- 산출 일관성 검증 안내 -->
+<div class="flex items-start gap-1.5 p-2 rounded bg-slate-50 border border-slate-200 text-[11px] text-slate-600"><span class="material-symbols-outlined text-xs text-brand-teal shrink-0 mt-0.5">info</span><p class="leading-tight"><strong>산출 안내 (단일 과세연도 1년차 말 기준 주가불변가정):</strong> 동일한 연말 1회 배당 직후 시점에서 두 시나리오의 총 자산은 $1,040.00으로 산출됩니다. 재투자로 추가 취득한 4주는 차기 과세연도부터 복리 배당 원천으로 작용합니다.</p></div>
+</div>
+</section>
+<!-- Section 3: 세부 항목별 산출 대조 명세 (2x2 Cards Grid on Mobile) -->
+<section class="bg-surface-card rounded-xl border border-line-border p-3.5 space-y-2.5 shadow-sm">
+<div class="flex items-center justify-between pb-1.5 border-b border-line-border">
+<h3 class="text-xs font-bold text-slate-900">세부 항목별 산출 대조 명세</h3>
+<span class="text-[10px] text-slate-400">가정 예시 대조</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<!-- 01. 연간 세전 배당금 -->
+<div class="p-2.5 rounded-lg bg-surface-subtle border border-line-border/70 space-y-1">
+<span class="text-[10px] font-medium text-slate-500 block truncate">01. 연간 세전 배당금(공통)</span>
+<div class="flex items-baseline justify-between">
+<span class="text-xs font-bold text-slate-900 tnum">$40.00</span>
+<span class="text-[9px] text-slate-400 tnum">격차 $0.00</span>
+</div>
+</div>
+<!-- 02. 적용 원천징수세액 -->
+<div class="p-2.5 rounded-lg bg-surface-subtle border border-line-border/70 space-y-1">
+<span class="text-[10px] font-medium text-slate-500 block truncate">02. 적용 원천징수세액</span>
+<div class="flex items-baseline justify-between">
+<span class="text-xs font-bold text-slate-900 tnum">$0.00</span>
+<span class="text-[9px] text-slate-400">원천징수율 0% 가정</span>
+</div>
+</div>
+<!-- 03. 1년 후 보유 주식 수 -->
+<div class="p-2.5 rounded-lg bg-surface-subtle border border-line-border/70 space-y-1">
+<span class="text-[10px] font-medium text-slate-500 block truncate">03. 1년 후 보유 주식 수</span>
+<div class="flex items-center justify-between text-[11px] tnum">
+<span class="text-slate-600">A: <strong class="text-slate-900">100주</strong></span>
+<span class="text-amber-800 font-bold">B: 104주 (+4)</span>
+</div>
+</div>
+<!-- 04. 1년 후 보유 현금 잔고 -->
+<div class="p-2.5 rounded-lg bg-surface-subtle border border-line-border/70 space-y-1">
+<span class="text-[10px] font-medium text-slate-500 block truncate">04. 1년 후 보유 현금 잔고</span>
+<div class="flex items-center justify-between text-[11px] tnum">
+<span class="text-brand-teal font-bold">A: $40.00</span>
+<span class="text-slate-500">B: $0.00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: 월별 현금흐름 및 누적 배당 대조표 (Cards layout for Mobile) -->
+<section class="bg-surface-card rounded-xl border border-line-border p-3.5 space-y-3 shadow-sm">
+<div class="flex items-center justify-between pb-1.5 border-b border-line-border">
+<div>
+<h3 class="text-xs font-bold text-slate-900">월별 현금흐름 및 누적 상세 대조</h3>
+<p class="text-[10px] text-slate-400">단일 과세연도(12개월) 주요 분기별 타임라인</p>
+</div>
+</div>
+<!-- Timeline Stacked Cards (Converting wide table to mobile labeled cards) -->
+<div class="space-y-2">
+<!-- 1개월차 -->
+<div class="p-2.5 rounded-lg border border-line-border bg-white space-y-1.5">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-slate-800 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+              1개월차 (초기 시작)
+            </span>
+<span class="text-[11px] text-slate-400 tnum">원금 $1,000.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1 border-t border-dashed border-line-border text-[11px]">
+<div class="space-y-0.5">
+<div class="text-[10px] text-slate-500 font-medium">시나리오 A (현금)</div>
+<div class="text-slate-700 tnum">100주 / 배당 $0.00</div>
+<div class="text-[10px] text-slate-400 tnum">총자산 $1,000.00</div>
+</div>
+<div class="space-y-0.5">
+<div class="text-[10px] text-slate-500 font-medium">시나리오 B (재투자)</div>
+<div class="text-slate-700 tnum">100주 / 배당 $0.00</div>
+<div class="text-[10px] text-slate-400 tnum">총자산 $1,000.00</div>
+</div>
+</div>
+</div>
+<!-- 3개월차 -->
+<div class="p-2.5 rounded-lg border border-line-border bg-white space-y-1.5">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-slate-800 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+              3개월차 (1분기 경과)
+            </span>
+<span class="text-[11px] text-slate-400 tnum">원금 $1,000.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1 border-t border-dashed border-line-border text-[11px]">
+<div class="space-y-0.5">
+<div class="text-[10px] text-slate-500 font-medium">시나리오 A</div>
+<div class="text-slate-700 tnum">100주 / 배당 $0.00</div>
+<div class="text-[10px] text-slate-400 tnum">총자산 $1,000.00</div>
+</div>
+<div class="space-y-0.5">
+<div class="text-[10px] text-slate-500 font-medium">시나리오 B</div>
+<div class="text-slate-700 tnum">100주 / 배당 $0.00</div>
+<div class="text-[10px] text-slate-400 tnum">총자산 $1,000.00</div>
+</div>
+</div>
+</div>
+<!-- 6개월차 -->
+<div class="p-2.5 rounded-lg border border-line-border bg-white space-y-1.5">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-slate-800 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+              6개월차 (반기 경과)
+            </span>
+<span class="text-[11px] text-slate-400 tnum">원금 $1,000.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1 border-t border-dashed border-line-border text-[11px]">
+<div class="space-y-0.5">
+<div class="text-[10px] text-slate-500 font-medium">시나리오 A</div>
+<div class="text-slate-700 tnum">100주 / 배당 $0.00</div>
+<div class="text-[10px] text-slate-400 tnum">총자산 $1,000.00</div>
+</div>
+<div class="space-y-0.5">
+<div class="text-[10px] text-slate-500 font-medium">시나리오 B</div>
+<div class="text-slate-700 tnum">100주 / 배당 $0.00</div>
+<div class="text-[10px] text-slate-400 tnum">총자산 $1,000.00</div>
+</div>
+</div>
+</div>
+<!-- 9개월차 -->
+<div class="p-2.5 rounded-lg border border-line-border bg-white space-y-1.5">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-slate-800 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+              9개월차 (3분기 경과)
+            </span>
+<span class="text-[11px] text-slate-400 tnum">원금 $1,000.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1 border-t border-dashed border-line-border text-[11px]">
+<div class="space-y-0.5">
+<div class="text-[10px] text-slate-500 font-medium">시나리오 A</div>
+<div class="text-slate-700 tnum">100주 / 배당 $0.00</div>
+<div class="text-[10px] text-slate-400 tnum">총자산 $1,000.00</div>
+</div>
+<div class="space-y-0.5">
+<div class="text-[10px] text-slate-500 font-medium">시나리오 B</div>
+<div class="text-slate-700 tnum">100주 / 배당 $0.00</div>
+<div class="text-[10px] text-slate-400 tnum">총자산 $1,000.00</div>
+</div>
+</div>
+</div>
+<!-- 12개월차 (연말 배당 및 재투자 이벤트 강조) -->
+<div class="p-3 rounded-lg border-2 border-brand-teal/40 bg-emerald-50/30 space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-brand-teal flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-brand-teal animate-pulse"></span>
+              12개월차 (연말 배당 지급)
+            </span>
+<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-brand-teal">
+              이벤트 완료
+            </span>
+</div>
+<div class="space-y-2 pt-1.5 border-t border-emerald-200/60 text-xs">
+<!-- A 결과 -->
+<div class="flex items-center justify-between p-2 rounded bg-white border border-emerald-100">
+<div>
+<div class="text-[10px] font-bold text-brand-teal">시나리오 A (현금 수령)</div>
+<div class="text-[11px] text-slate-700 tnum">100주 유지 + <span class="font-bold text-brand-teal">+$40.00 현금</span></div>
+</div>
+<div class="text-right">
+<span class="text-[10px] text-slate-400 block">총 평가자산</span>
+<span class="text-xs font-bold text-slate-900 tnum">$1,040.00</span>
+</div>
+</div>
+<!-- B 결과 -->
+<div class="flex items-center justify-between p-2 rounded bg-white border border-amber-200">
+<div>
+<div class="text-[10px] font-bold text-amber-900">시나리오 B (기말 재투자)</div>
+<div class="text-[11px] text-slate-700 tnum"><span class="font-bold text-amber-900">104주 (+4주)</span> + 잔여현금 $0</div>
+</div>
+<div class="text-right">
+<span class="text-[10px] text-slate-400 block">총 평가자산</span>
+<span class="text-xs font-bold text-slate-900 tnum">$1,040.00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-2 rounded bg-slate-50 border border-slate-200 text-[10px] text-slate-500 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-xs text-slate-400">lock</span>
+<span>원천징수 0% 단순 비교 모델: 동일 연말 기준 기말 총평가액은 $1,040.00으로 오차 없이 일치합니다.</span>
+</div>
+</section>
+<!-- Section 5: 가상 종목 시뮬레이션 매핑 예시 (Synthetic Demo Only) -->
+<!-- Section 6: 데이터 보안 및 통화 독립 관리 정책 (Prime Message Card style) -->
+</main>
+</body>
+</html>

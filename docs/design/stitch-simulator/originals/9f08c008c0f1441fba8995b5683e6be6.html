@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+
+<html lang="ko"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CLOUD MCP TEST / Dividend Simulator / PC / 2026-11-04</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter,+'Pretendard',+'Apple+SD+Gothic+Neo',+sans-serif:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration matching Style Guidance -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "error-container": "#ffdad6",
+            "on-surface": "#191c1e",
+            "surface-container-low": "#f2f4f6",
+            "surface-container-highest": "#e0e3e5",
+            "surface-variant": "#e0e3e5",
+            "on-tertiary-fixed-variant": "#5a4300",
+            "inverse-surface": "#2d3133",
+            "primary": "#005f55",
+            "surface-tint": "#006b60",
+            "on-secondary-fixed-variant": "#594234",
+            "on-surface-variant": "#3e4947",
+            "inverse-on-surface": "#eff1f3",
+            "surface-dim": "#d8dadc",
+            "surface-container": "#eceef0",
+            "primary-fixed": "#99f3e4",
+            "secondary-container": "#ffdbc9",
+            "secondary": "#73594a",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-fixed": "#ffdf9a",
+            "background": "#f7f9fb",
+            "error": "#ba1a1a",
+            "tertiary-fixed-dim": "#f7be1d",
+            "on-secondary-container": "#795f50",
+            "primary-container": "#0d7a6e",
+            "secondary-fixed-dim": "#e1c0ae",
+            "on-secondary-fixed": "#29170c",
+            "tertiary": "#6b5000",
+            "on-primary-fixed": "#00201c",
+            "surface-bright": "#f7f9fb",
+            "on-error-container": "#93000a",
+            "on-primary": "#ffffff",
+            "on-tertiary-fixed": "#251a00",
+            "on-error": "#ffffff",
+            "outline": "#6e7977",
+            "inverse-primary": "#7dd6c8",
+            "on-background": "#191c1e",
+            "on-tertiary-container": "#ffedcb",
+            "on-primary-container": "#abfff0",
+            "secondary-fixed": "#ffdbc9",
+            "tertiary-container": "#896700",
+            "on-primary-fixed-variant": "#005048",
+            "on-secondary": "#ffffff",
+            "surface-container-high": "#e6e8ea",
+            "on-tertiary": "#ffffff",
+            "primary-fixed-dim": "#7dd6c8",
+            "surface": "#f7f9fb",
+            "outline-variant": "#bdc9c6"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem",
+            "space-xl": "2rem",
+            "margin": "2rem",
+            "space-lg": "1.5rem",
+            "gutter": "1.5rem"
+          },
+          "fontFamily": {
+            "label-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "metric-num-lg": ["\"Inter, 'Pretendard', sans-serif\""],
+            "body-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-md": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "display-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "body-lg": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "label-sm": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "headline-sm": ["\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\""],
+            "metric-num-md": ["\"Inter, 'Pretendard', sans-serif\""]
+          },
+          "fontSize": {
+            "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "600" }],
+            "metric-num-lg": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.015em", "fontWeight": "700" }],
+            "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "metric-num-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* PrimeVue Styled Tokens & Financial Ledger Precision */
+    body {
+      background-color: #f8fafc;
+      color: #382418;
+      font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'tnum';
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .custom-slider-thumb::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 2px solid #0d7a6e;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      transition: transform 0.15s ease;
+    }
+    .custom-slider-thumb::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .custom-slider-thumb::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 2px solid #0d7a6e;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#f8fafc] text-[#382418] antialiased selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Content-Only Container (1440px Desktop Max Width, Ample Padding) -->
+<main class="max-w-[1440px] mx-auto px-6 lg:px-10 py-10">
+<!-- Page Header Section -->
+<header class="mb-8">
+<!-- Visible Badge -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-primary-container text-xs font-semibold mb-3">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>클라우드 MCP 생성 테스트</span>
+</div>
+<!-- Main Title -->
+<h1 class="text-[32px] leading-tight font-bold tracking-tight text-[#382418]">
+        배당 시뮬레이터
+      </h1>
+<!-- Concise Subtitle -->
+<p class="mt-2 text-sm text-[#64748b] font-body-md text-body-md max-w-3xl leading-relaxed">
+        초기 투자금과 적립액, 배당 수익률을 바탕으로 장기 복리 효과와 연간 예상 배당금을 시뮬레이션합니다.
+      </p>
+</header>
+<!-- 12-Column Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- ================= Left Column (4 cols): Simulation Assumptions ================= -->
+<section class="lg:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between pb-4 border-b border-[#f1f5f9] mb-5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-xl" data-icon="tune">tune</span>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-[#382418]">시뮬레이션 가정 설정</h2>
+</div>
+<button class="text-xs text-[#64748b] hover:text-primary-container transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-sm" data-icon="restart_alt">restart_alt</span>
+              기본값 초기화
+            </button>
+</div>
+<form class="space-y-4" onsubmit="event.preventDefault();">
+<!-- 1. 초기 투자 원금 -->
+<div>
+<label class="block font-label-md text-label-md text-[#475569] mb-1.5" for="initial-investment">
+                초기 투자 원금
+              </label>
+<div class="relative">
+<input class="w-full h-11 px-3.5 pr-10 text-right tabular-nums text-sm font-medium border border-[#cbd5e1] rounded-lg bg-surface-container-lowest text-[#382418] focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none" id="initial-investment" type="text" value="10,000,000"/>
+<span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#64748b]">원</span>
+</div>
+</div>
+<!-- 2. 월 추가 적립액 -->
+<div>
+<label class="block font-label-md text-label-md text-[#475569] mb-1.5" for="monthly-deposit">
+                월 추가 적립액
+              </label>
+<div class="relative">
+<input class="w-full h-11 px-3.5 pr-10 text-right tabular-nums text-sm font-medium border border-[#cbd5e1] rounded-lg bg-surface-container-lowest text-[#382418] focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none" id="monthly-deposit" type="text" value="300,000"/>
+<span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#64748b]">원</span>
+</div>
+</div>
+<!-- 3. 투자 기간 (Slider + Input) -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="font-label-md text-label-md text-[#475569]" for="invest-horizon">투자 기간</label>
+<span class="text-xs font-semibold text-primary-container bg-teal-50 px-2 py-0.5 rounded tabular-nums" id="horizon-display">10년</span>
+</div>
+<div class="space-y-2">
+<input class="custom-slider-thumb w-full h-1.5 bg-[#e2e8f0] rounded-lg appearance-none cursor-pointer accent-[#0d7a6e]" id="invest-horizon" max="30" min="5" oninput="document.getElementById('horizon-display').textContent = this.value + '년'; document.getElementById('horizon-text').value = this.value;" type="range" value="10"/>
+<div class="flex justify-between items-center text-[11px] text-[#94a3b8] px-0.5">
+<span>5년</span>
+<span>10년</span>
+<span>20년</span>
+<span>30년</span>
+</div>
+<div class="relative mt-1">
+<input class="w-full h-11 px-3.5 pr-10 text-right tabular-nums text-sm font-medium border border-[#cbd5e1] rounded-lg bg-surface-container-lowest text-[#382418] focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none" id="horizon-text" max="30" min="5" oninput="document.getElementById('invest-horizon').value = this.value; document.getElementById('horizon-display').textContent = this.value + '년';" type="number" value="10"/>
+<span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#64748b]">년</span>
+</div>
+</div>
+</div>
+<!-- 4. 예상 연간 배당률 -->
+<div>
+<label class="block font-label-md text-label-md text-[#475569] mb-1.5" for="dividend-yield">
+                예상 연간 배당률
+              </label>
+<div class="relative">
+<input class="w-full h-11 px-3.5 pr-10 text-right tabular-nums text-sm font-medium border border-[#cbd5e1] rounded-lg bg-surface-container-lowest text-[#382418] focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none" id="dividend-yield" step="0.1" type="number" value="4.0"/>
+<span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#64748b]">%</span>
+</div>
+</div>
+<!-- 5. 연간 배당 성장률 -->
+<div>
+<label class="block font-label-md text-label-md text-[#475569] mb-1.5" for="dividend-growth">
+                연간 배당 성장률
+              </label>
+<div class="relative">
+<input class="w-full h-11 px-3.5 pr-10 text-right tabular-nums text-sm font-medium border border-[#cbd5e1] rounded-lg bg-surface-container-lowest text-[#382418] focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all outline-none" id="dividend-growth" step="0.1" type="number" value="3.0"/>
+<span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#64748b]">%</span>
+</div>
+</div>
+<!-- 6. 배당금 재투자 ToggleSwitch -->
+<div class="pt-2 pb-1">
+<div class="p-3 bg-surface-container-low rounded-lg border border-[#e2e8f0]/80 flex items-center justify-between">
+<div>
+<span class="font-label-md text-label-md text-[#382418] block">배당금 재투자</span>
+<span class="text-xs text-[#64748b]">세후 배당금 전액 복리 재투자</span>
+</div>
+<!-- PrimeVue ToggleSwitch style active -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-[#cbd5e1] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+<!-- 7. Primary Action Button -->
+<button class="w-full h-11 mt-4 bg-primary-container hover:bg-[#0b645a] text-white font-bold rounded-lg flex items-center justify-center gap-2 shadow-sm transition-all duration-150 active:scale-[0.98]" type="submit">
+<span class="material-symbols-outlined text-lg" data-icon="calculate">calculate</span>
+<span class="font-label-md text-label-md">시뮬레이션 계산하기</span>
+</button>
+</form>
+<!-- 8. Helper Note -->
+<div class="mt-4 pt-3 border-t border-[#f1f5f9] flex items-center gap-1.5 text-xs text-[#64748b]">
+<span class="material-symbols-outlined text-sm text-[#0d7a6e]" data-icon="verified_user">verified_user</span>
+<span>입력 파라미터는 즉시 복리 모델에 반영됩니다.</span>
+</div>
+</div>
+<!-- Investment Philosophy Mini Card -->
+<div class="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-4 text-xs text-[#64748b] leading-relaxed flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary-container text-lg shrink-0 mt-0.5" data-icon="auto_graph">auto_graph</span>
+<p>
+            배당 재투자는 시간이 지날수록 보유 주식 수량을 기하급수적으로 늘려 배당금의 '스노우볼 효과'를 극대화합니다.
+          </p>
+</div>
+</section>
+<!-- ================= Right Column (8 cols): KPIs, Chart & Flow Table ================= -->
+<section class="lg:col-span-8 flex flex-col gap-6">
+<!-- 4 Grid KPI Summary Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- KPI 1: 총 예상 자산 -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-5 shadow-sm">
+<span class="text-xs font-semibold text-[#64748b] block mb-1">총 예상 자산</span>
+<div class="text-[22px] font-bold text-[#382418] tabular-nums tracking-tight">
+              72,481,200<span class="text-sm font-semibold ml-0.5">원</span>
+</div>
+<div class="mt-2 flex items-center gap-1 text-xs font-medium text-primary-container">
+<span class="material-symbols-outlined text-xs" data-icon="trending_up">trending_up</span>
+<span>원금 대비 +57.6%</span>
+</div>
+</div>
+<!-- KPI 2: 누적 투자 원금 -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-5 shadow-sm">
+<span class="text-xs font-semibold text-[#64748b] block mb-1">누적 투자 원금</span>
+<div class="text-[22px] font-bold text-[#382418] tabular-nums tracking-tight">
+              46,000,000<span class="text-sm font-semibold ml-0.5">원</span>
+</div>
+<div class="mt-2 text-xs text-[#64748b]">
+              초기 1,000만 + 10년 적립
+            </div>
+</div>
+<!-- KPI 3: 10년차 예상 연간 배당 -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-5 shadow-sm">
+<span class="text-xs font-semibold text-[#64748b] block mb-1">10년차 예상 연간 배당</span>
+<div class="text-[22px] font-bold text-[#382418] tabular-nums tracking-tight">
+              3,892,500<span class="text-sm font-semibold ml-0.5">원</span>
+</div>
+<div class="mt-2 inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-medium bg-[#fefce8] text-[#854d0e] border border-[#fef08a]">
+              세전 기준 (연 4.0%+)
+            </div>
+</div>
+<!-- KPI 4: 10년차 예상 월 배당 -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-5 shadow-sm">
+<span class="text-xs font-semibold text-[#64748b] block mb-1">10년차 예상 월 배당</span>
+<div class="text-[22px] font-bold text-primary-container tabular-nums tracking-tight">
+              324,375<span class="text-sm font-semibold ml-0.5">원</span>
+</div>
+<div class="mt-2 text-xs text-[#64748b]">
+              월 평균 현금 흐름 환산
+            </div>
+</div>
+</div>
+<!-- Asset Growth Line/Area Chart Card -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-6 shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#f1f5f9] mb-5 gap-3">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-[#382418]">자산 성장 및 누적 배당 추이</h2>
+<p class="text-xs text-[#64748b] mt-0.5">납입 원금과 재투자 복리 효과의 누적 비교 시각화</p>
+</div>
+<!-- Chart Legend -->
+<div class="flex flex-wrap items-center gap-4 text-xs font-medium">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-primary-container"></span>
+<span class="text-[#382418]">총 평가 자산</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-full bg-[#eab308]"></span>
+<span class="text-[#382418]">누적 배당금 합계</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 border-t border-dashed border-[#94a3b8]"></span>
+<span class="text-[#64748b]">누적 납입 원금</span>
+</div>
+</div>
+</div>
+<!-- Chart Area with Precision SVG Vector Graphic -->
+<div class="relative w-full h-[260px] select-none">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 740 240">
+<defs>
+<!-- Teal Gradient Area -->
+<lineargradient id="tealAreaGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#0d7a6e" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#0d7a6e" stop-opacity="0.0"></stop>
+</lineargradient>
+<!-- Gold Gradient Area -->
+<lineargradient id="goldAreaGrad" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#eab308" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#eab308" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Horizontal Grid Lines & Y-Axis Labels -->
+<!-- 8,000만원 line (y=20) -->
+<line stroke="#f1f5f9" stroke-width="1" x1="55" x2="735" y1="20" y2="20"></line>
+<text fill="#94a3b8" font-family="Inter, sans-serif" font-size="10" text-anchor="end" x="45" y="24">8,000만</text>
+<!-- 6,000만원 line (y=65) -->
+<line stroke="#f1f5f9" stroke-width="1" x1="55" x2="735" y1="65" y2="65"></line>
+<text fill="#94a3b8" font-family="Inter, sans-serif" font-size="10" text-anchor="end" x="45" y="69">6,000만</text>
+<!-- 4,000만원 line (y=110) -->
+<line stroke="#f1f5f9" stroke-width="1" x1="55" x2="735" y1="110" y2="110"></line>
+<text fill="#94a3b8" font-family="Inter, sans-serif" font-size="10" text-anchor="end" x="45" y="114">4,000만</text>
+<!-- 2,000만원 line (y=155) -->
+<line stroke="#f1f5f9" stroke-width="1" x1="55" x2="735" y1="155" y2="155"></line>
+<text fill="#94a3b8" font-family="Inter, sans-serif" font-size="10" text-anchor="end" x="45" y="159">2,000만</text>
+<!-- 0원 baseline (y=200) -->
+<line stroke="#e2e8f0" stroke-width="1.5" x1="55" x2="735" y1="200" y2="200"></line>
+<text fill="#94a3b8" font-family="Inter, sans-serif" font-size="10" text-anchor="end" x="45" y="204">0원</text>
+<!-- X-Axis Labels (1년 ~ 10년) -->
+<!-- X positions: 1yr=70, 3yr=215, 5yr=360, 7yr=505, 10yr=725 -->
+<text fill="#64748b" font-size="11" font-weight="500" text-anchor="middle" x="70" y="222">1년</text>
+<text fill="#64748b" font-size="11" font-weight="500" text-anchor="middle" x="215" y="222">3년</text>
+<text fill="#64748b" font-size="11" font-weight="500" text-anchor="middle" x="360" y="222">5년</text>
+<text fill="#64748b" font-size="11" font-weight="500" text-anchor="middle" x="505" y="222">7년</text>
+<text fill="#64748b" font-size="11" font-weight="500" text-anchor="middle" x="725" y="222">10년</text>
+<!-- Area Fill: Total Asset -->
+<path d="M 70 168 L 142 153 L 215 137 L 287 119 L 360 101 L 432 82 L 505 61 L 578 50 L 651 40 L 725 36 L 725 200 L 70 200 Z" fill="url(#tealAreaGrad)"></path>
+<!-- Area Fill: Cumulative Dividends -->
+<path d="M 70 188 L 142 181 L 215 174 L 287 165 L 360 156 L 432 147 L 505 137 L 578 126 L 651 115 L 725 104 L 725 200 L 70 200 Z" fill="url(#goldAreaGrad)"></path>
+<!-- Line 3: 누적 납입 원금 (Neutral Dashed Slate) -->
+<!-- Starts at 1,360만원 (~y=169), ends at 4,600만원 (~y=96) -->
+<path d="M 70 169 L 142 161 L 215 153 L 287 145 L 360 137 L 432 129 L 505 121 L 578 113 L 651 105 L 725 96" fill="none" stroke="#94a3b8" stroke-dasharray="4,4" stroke-width="2"></path>
+<!-- Line 2: 누적 배당금 합계 (Gold / Yellow #eab308) -->
+<path d="M 70 188 L 142 181 L 215 174 L 287 165 L 360 156 L 432 147 L 505 137 L 578 126 L 651 115 L 725 104" fill="none" stroke="#eab308" stroke-linecap="round" stroke-width="2.5"></path>
+<!-- Line 1: 총 평가 자산 (Teal #0d7a6e) -->
+<path d="M 70 168 L 142 153 L 215 137 L 287 119 L 360 101 L 432 82 L 505 61 L 578 50 L 651 40 L 725 36" fill="none" stroke="#0d7a6e" stroke-linecap="round" stroke-width="3"></path>
+<!-- Highlight Key Milestone Dots (10년차) -->
+<circle cx="725" cy="36" fill="#ffffff" r="4.5" stroke="#0d7a6e" stroke-width="2.5"></circle>
+<circle cx="725" cy="104" fill="#ffffff" r="4" stroke="#eab308" stroke-width="2"></circle>
+<circle cx="725" cy="96" fill="#ffffff" r="3.5" stroke="#94a3b8" stroke-width="2"></circle>
+</svg>
+<!-- Subtle Interactive Data Flag (10년차) -->
+<div class="absolute right-0 top-1 bg-surface-container-lowest/95 border border-[#cbd5e1] rounded px-2.5 py-1 text-[11px] shadow-sm tabular-nums">
+<span class="font-bold text-primary-container">10년차 72,481,200원</span>
+<span class="text-[#64748b] ml-1">(배당 26,481,200원 포함)</span>
+</div>
+</div>
+</div>
+<!-- Detailed Financial Flow Table Card -->
+<div class="bg-surface-container-lowest border border-[#e2e8f0] rounded-xl p-6 shadow-sm overflow-hidden">
+<div class="flex items-center justify-between pb-4 border-b border-[#f1f5f9] mb-4">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-[#382418]">연도별 예상 재무 흐름</h2>
+<p class="text-xs text-[#64748b] mt-0.5">1년차부터 10년차까지 연도별 배당금 및 자산 적립 장부</p>
+</div>
+<span class="text-xs text-[#64748b] bg-surface-container-low px-2.5 py-1 rounded border border-[#e2e8f0]">단위: 대한민국 원(KRW)</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm border-collapse">
+<thead>
+<tr class="bg-[#f8fafc] border-y border-[#e2e8f0] text-xs font-semibold text-[#475569]">
+<th class="py-3 px-3.5 text-center" scope="col">연차</th>
+<th class="py-3 px-3.5 text-right" scope="col">누적 투자원금</th>
+<th class="py-3 px-3.5 text-right text-yellow-700" scope="col">예상 연간 배당금</th>
+<th class="py-3 px-3.5 text-right" scope="col">누적 배당금</th>
+<th class="py-3 px-3.5 text-right text-primary-container" scope="col">기말 예상 총자산</th>
+<th class="py-3 px-3.5 text-center" scope="col">예상 배당수익률</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#f1f5f9] tabular-nums text-xs">
+<!-- 1년차 -->
+<tr class="hover:bg-[#f8fafc] transition-colors">
+<td class="py-3 px-3.5 text-center font-medium text-[#382418]">1년차</td>
+<td class="py-3 px-3.5 text-right text-[#475569]">13,600,000원</td>
+<td class="py-3 px-3.5 text-right font-medium text-[#854d0e]">544,000원</td>
+<td class="py-3 px-3.5 text-right text-[#64748b]">544,000원</td>
+<td class="py-3 px-3.5 text-right font-semibold text-[#382418]">14,144,000원</td>
+<td class="py-3 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-[#475569] text-[11px]">4.00%</span></td>
+</tr>
+<!-- 2년차 -->
+<tr class="hover:bg-[#f8fafc] transition-colors">
+<td class="py-3 px-3.5 text-center font-medium text-[#382418]">2년차</td>
+<td class="py-3 px-3.5 text-right text-[#475569]">17,200,000원</td>
+<td class="py-3 px-3.5 text-right font-medium text-[#854d0e]">731,000원</td>
+<td class="py-3 px-3.5 text-right text-[#64748b]">1,275,000원</td>
+<td class="py-3 px-3.5 text-right font-semibold text-[#382418]">18,475,000원</td>
+<td class="py-3 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-[#475569] text-[11px]">4.12%</span></td>
+</tr>
+<!-- 3년차 -->
+<tr class="hover:bg-[#f8fafc] transition-colors">
+<td class="py-3 px-3.5 text-center font-medium text-[#382418]">3년차</td>
+<td class="py-3 px-3.5 text-right text-[#475569]">20,800,000원</td>
+<td class="py-3 px-3.5 text-right font-medium text-[#854d0e]">948,000원</td>
+<td class="py-3 px-3.5 text-right text-[#64748b]">2,223,000원</td>
+<td class="py-3 px-3.5 text-right font-semibold text-[#382418]">23,023,000원</td>
+<td class="py-3 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-[#475569] text-[11px]">4.24%</span></td>
+</tr>
+<!-- 4년차 -->
+<tr class="hover:bg-[#f8fafc] transition-colors">
+<td class="py-3 px-3.5 text-center font-medium text-[#382418]">4년차</td>
+<td class="py-3 px-3.5 text-right text-[#475569]">24,400,000원</td>
+<td class="py-3 px-3.5 text-right font-medium text-[#854d0e]">1,200,000원</td>
+<td class="py-3 px-3.5 text-right text-[#64748b]">3,423,000원</td>
+<td class="py-3 px-3.5 text-right font-semibold text-[#382418]">27,823,000원</td>
+<td class="py-3 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-[#475569] text-[11px]">4.37%</span></td>
+</tr>
+<!-- 5년차 -->
+<tr class="hover:bg-[#f8fafc] transition-colors">
+<td class="py-3 px-3.5 text-center font-medium text-[#382418]">5년차</td>
+<td class="py-3 px-3.5 text-right text-[#475569]">28,000,000원</td>
+<td class="py-3 px-3.5 text-right font-medium text-[#854d0e]">1,492,000원</td>
+<td class="py-3 px-3.5 text-right text-[#64748b]">4,915,000원</td>
+<td class="py-3 px-3.5 text-right font-semibold text-[#382418]">32,915,000원</td>
+<td class="py-3 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 text-[11px] font-semibold border border-teal-200">4.50%</span></td>
+</tr>
+<!-- 6년차 -->
+<tr class="hover:bg-[#f8fafc] transition-colors">
+<td class="py-3 px-3.5 text-center font-medium text-[#382418]">6년차</td>
+<td class="py-3 px-3.5 text-right text-[#475569]">31,600,000원</td>
+<td class="py-3 px-3.5 text-right font-medium text-[#854d0e]">1,830,000원</td>
+<td class="py-3 px-3.5 text-right text-[#64748b]">6,745,000원</td>
+<td class="py-3 px-3.5 text-right font-semibold text-[#382418]">38,345,000원</td>
+<td class="py-3 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-[#475569] text-[11px]">4.63%</span></td>
+</tr>
+<!-- 7년차 -->
+<tr class="hover:bg-[#f8fafc] transition-colors">
+<td class="py-3 px-3.5 text-center font-medium text-[#382418]">7년차</td>
+<td class="py-3 px-3.5 text-right text-[#475569]">35,200,000원</td>
+<td class="py-3 px-3.5 text-right font-medium text-[#854d0e]">2,223,000원</td>
+<td class="py-3 px-3.5 text-right text-[#64748b]">8,968,000원</td>
+<td class="py-3 px-3.5 text-right font-semibold text-[#382418]">44,168,000원</td>
+<td class="py-3 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-[#475569] text-[11px]">4.77%</span></td>
+</tr>
+<!-- 8년차 -->
+<tr class="hover:bg-[#f8fafc] transition-colors">
+<td class="py-3 px-3.5 text-center font-medium text-[#382418]">8년차</td>
+<td class="py-3 px-3.5 text-right text-[#475569]">38,800,000원</td>
+<td class="py-3 px-3.5 text-right font-medium text-[#854d0e]">2,680,000원</td>
+<td class="py-3 px-3.5 text-right text-[#64748b]">11,648,000원</td>
+<td class="py-3 px-3.5 text-right font-semibold text-[#382418]">50,448,000원</td>
+<td class="py-3 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-[#475569] text-[11px]">4.91%</span></td>
+</tr>
+<!-- 9년차 -->
+<tr class="hover:bg-[#f8fafc] transition-colors">
+<td class="py-3 px-3.5 text-center font-medium text-[#382418]">9년차</td>
+<td class="py-3 px-3.5 text-right text-[#475569]">42,400,000원</td>
+<td class="py-3 px-3.5 text-right font-medium text-[#854d0e]">3,215,000원</td>
+<td class="py-3 px-3.5 text-right text-[#64748b]">14,863,000원</td>
+<td class="py-3 px-3.5 text-right font-semibold text-[#382418]">57,263,000원</td>
+<td class="py-3 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-slate-100 text-[#475569] text-[11px]">5.06%</span></td>
+</tr>
+<!-- 10년차 (Final Highlighted Row) -->
+<tr class="bg-teal-50/50 hover:bg-teal-50 transition-colors font-semibold">
+<td class="py-3.5 px-3.5 text-center text-primary-container font-bold">10년차</td>
+<td class="py-3.5 px-3.5 text-right text-[#382418]">46,000,000원</td>
+<td class="py-3.5 px-3.5 text-right text-[#854d0e] font-bold">3,892,500원</td>
+<td class="py-3.5 px-3.5 text-right text-[#382418]">26,481,200원</td>
+<td class="py-3.5 px-3.5 text-right text-primary-container text-sm font-bold">72,481,200원</td>
+<td class="py-3.5 px-3.5 text-center"><span class="px-2 py-0.5 rounded-full bg-primary-container text-white text-[11px] font-bold">5.37%</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- In-content Assumptions & Disclaimer Notice (PrimeVue Message Style) -->
+<div class="bg-surface-container-lowest border border-[#cbd5e1] rounded-xl p-5 shadow-sm">
+<div class="flex items-start gap-3.5">
+<span class="material-symbols-outlined text-primary-container text-xl shrink-0 mt-0.5" data-icon="info">info</span>
+<div class="space-y-1">
+<h3 class="text-xs font-semibold text-[#382418]">
+                시뮬레이션 유의사항 및 산출 기준
+              </h3>
+<p class="text-xs text-[#64748b] leading-relaxed">
+                배당소득세(15.4%), 주가 변동 및 환율 변동은 고려되지 않은 단순 복리 가정 시뮬레이션입니다. 과거 수익률이나 배당 성향이 미래 성과를 보장하지 않으며, 실제 투자 결과와 차이가 발생할 수 있습니다.
+              </p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

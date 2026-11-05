@@ -1,0 +1,66 @@
+{
+    "projectId": "17382728461495959991",
+    "retrieval": "Official Stitch MCP tools/list, list_screens, get_screen, download_file; 2026-11-05 UTC",
+    "screens": [
+        {
+            "screenId": "388202e7721941e98095ae02b264b1b1",
+            "title": "V7 REFINED / Tax Comparison / Tablet / source-4b63bd4e",
+            "mcpDeviceType": "DESKTOP",
+            "width": 2560,
+            "height": 3340,
+            "htmlSha256": "b0800c8c3d680b3970506a97ccd616db36832c29b17b6ac6e954c5e0967c4143",
+            "screenshotSha256": "0ba88e508d61fd8d9fcd82560d6be6caa4ed47daef72f12a7ce42ae90267f87d",
+            "html": "originals/388202e7721941e98095ae02b264b1b1.html"
+        },
+        {
+            "screenId": "b640738daaf5434d9af72530fe150006",
+            "title": "V6 REVIEWED / Tax Comparison / Mobile / source-f7fe46e6",
+            "mcpDeviceType": "MOBILE",
+            "width": 780,
+            "height": 6400,
+            "htmlSha256": "35a0094c9617e5ac6d72566b92a82f976be55ef6d191e02377e18a8835649409",
+            "screenshotSha256": "4f617a09e5680eaa0dd72695787d7557d817d4ee8181a560ece902ba75652bff",
+            "html": "originals/b640738daaf5434d9af72530fe150006.html"
+        },
+        {
+            "screenId": "678e97a05dc14fec9c77e971bd5ef960",
+            "title": "V6 REVIEWED / Tax Comparison / PC / source-0c64cbee",
+            "mcpDeviceType": "DESKTOP",
+            "width": 2560,
+            "height": 2792,
+            "htmlSha256": "46d69b7f6e5fe682c5c047667c781de7f0542ce8ce7edd1afc8a979250474cbb",
+            "screenshotSha256": "18b35806c0eccb8a6d3dcc3ff8c1ab9fd582c51db9c1d96019d405fae302e80c",
+            "html": "originals/678e97a05dc14fec9c77e971bd5ef960.html"
+        },
+        {
+            "screenId": "fbb16724366740e1ab9d8fce50db986a",
+            "title": "V6 REVIEWED / Simulator / Mobile / source-d6588413",
+            "mcpDeviceType": "MOBILE",
+            "width": 780,
+            "height": 6198,
+            "htmlSha256": "354e1eb864eaea71969479bf877d83468809ecac8547b976ed5ccdb0df9e77b3",
+            "screenshotSha256": "b9d4e197d1d1c2b0fd922807752f7fc4af854d5e4f726a3fa05059a131929f2a",
+            "html": "originals/fbb16724366740e1ab9d8fce50db986a.html"
+        },
+        {
+            "screenId": "9f08c008c0f1441fba8995b5683e6be6",
+            "title": "CLOUD MCP TEST / Dividend Simulator / PC / 2026-11-04",
+            "mcpDeviceType": "DESKTOP",
+            "width": 2560,
+            "height": 3002,
+            "htmlSha256": "45e608aa2f1ca9e56dfc0392c4285c1319cc61f6f278e80c9f185f1f3cd872a7",
+            "screenshotSha256": "b568645665eebfc7c732cd1d38b36688caadf3100c8eaa1fdda0c17d513d8ff0",
+            "html": "originals/9f08c008c0f1441fba8995b5683e6be6.html"
+        },
+        {
+            "screenId": "85f567e48c3c4dbdad938b7e210c22ed",
+            "title": "V6 REVIEWED / Simulator / Tablet / source-5afff199",
+            "mcpDeviceType": "DESKTOP",
+            "width": 2560,
+            "height": 4164,
+            "htmlSha256": "28be9039fed80243e37f8c19ba298400e1523c93b57de54608f99d5d804a3792",
+            "screenshotSha256": "6e54f9c249788175ea850abb5485942b7099752285b48c117e5f2b6b32de37a3",
+            "html": "originals/85f567e48c3c4dbdad938b7e210c22ed.html"
+        }
+    ]
+}

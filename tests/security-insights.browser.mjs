@@ -1,6 +1,14 @@
 import { chromium } from 'playwright';
 import assert from 'node:assert/strict';
 
+// Diagnostics preserve the original assertions and failure exit status.
+const reloadDiagnostics = [];
+process.on('uncaughtExceptionMonitor', () => {
+    console.error(
+        'Vite sibling-tab diagnostics:',
+        JSON.stringify(reloadDiagnostics)
+    );
+});
 const base = process.env.UI_BASE_URL || 'http://127.0.0.1:5173';
 const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
@@ -52,6 +60,23 @@ try {
         });
         const errors = [],
             requests = [];
+        page.on('websocket', (socket) =>
+            socket.on('framereceived', (frame) => {
+                try {
+                    const message = JSON.parse(String(frame.payload));
+                    if (message.type === 'full-reload')
+                        reloadDiagnostics.push({
+                            width,
+                            type: message.type,
+                            path: message.path || null,
+                            at: new Date().toISOString(),
+                        });
+                } catch {
+                    /* Ignore unrelated non-JSON frames. */
+                }
+            })
+        );
+
         page.on('pageerror', (error) => errors.push(error.message));
         page.on('request', (r) => {
             if (r.url().includes('/security-insights/')) requests.push(r.url());
@@ -60,7 +85,7 @@ try {
         await mockQuote(page);
         await page.goto(base + '/stock/QLDY?tab=details');
         await page
-            .getByRole('heading', { name: 'QLDY 종목 개요', exact: true })
+            .getByRole('heading', { name: 'QLDY', exact: true })
             .waitFor();
         assert.equal(await page.locator('.security-insights').count(), 0);
         assert.equal(requests.length, 0);
@@ -68,10 +93,40 @@ try {
         const panel = page.locator('.security-insights');
         const ledger = page.locator('.dividend-roc-history');
         await ledger.locator('.history-sources a').first().waitFor();
+        await ledger
+            .getByRole('button', { name: '2026년 10월 상세 보기', exact: true })
+            .click();
+        const monthDetail = page.getByRole('dialog', {
+            name: '달 상세',
+            exact: true,
+        });
+        await monthDetail.waitFor();
+        const octoberPayment = monthDetail
+            .locator('tbody tr')
+            .filter({ hasText: '2026-10-15' });
+        assert.equal(await octoberPayment.count(), 1);
+        assert.match(await octoberPayment.innerText(), /0\.1570/);
+        assert.equal(
+            await octoberPayment.locator('td').nth(2).innerText(),
+            '—'
+        );
+        assert.equal(
+            await monthDetail
+                .getByRole('link', { name: '공시 원문', exact: true })
+                .first()
+                .getAttribute('href'),
+            'https://www.defianceetfs.com/explore-our-etfs/'
+        );
+        await page.keyboard.press('Escape');
+        await monthDetail.waitFor({ state: 'hidden' });
+
+        await ledger
+            .getByRole('button', { name: '회차별 이력', exact: true })
+            .click();
         await ledger.locator('.history-table tbody tr').first().waitFor();
         assert.equal(
-            await panel.locator('.metric-grid.core article').count(),
-            3
+            await page.locator('.dividend-core-grid .insight-metric').count(),
+            9
         );
         assert.equal(
             await ledger.locator('.history-table tbody tr').count(),
@@ -169,7 +224,9 @@ try {
         await ledger.screenshot({
             path: `/tmp/dividend-roc-chart-${width}.png`,
         });
-        await ledger.getByRole('button', { name: '표', exact: true }).click();
+        await ledger
+            .getByRole('button', { name: '회차별 이력', exact: true })
+            .click();
         assert.equal(
             await ledger.locator('.history-table tbody tr').count(),
             12
@@ -178,6 +235,9 @@ try {
         await page.getByRole('tab', { name: '상세정보', exact: true }).click();
         assert.equal(await panel.count(), 0);
         await page.getByRole('tab', { name: '배당정보', exact: true }).click();
+        await ledger
+            .getByRole('button', { name: '회차별 이력', exact: true })
+            .click();
         await ledger.locator('.history-table tbody tr').first().waitFor();
         assert.equal(requests.length, before);
         assert.ok(
@@ -207,6 +267,9 @@ try {
     await page.goto(base + '/stock/SPYI?tab=dividends');
     const panel = page.locator('.security-insights');
     const ledger = page.locator('.dividend-roc-history');
+    await ledger
+        .getByRole('button', { name: '회차별 이력', exact: true })
+        .click();
     await ledger.locator('.annual-history').waitFor();
     await ledger.locator('.annual-history summary').click();
     let content = await ledger.innerText();
@@ -243,6 +306,9 @@ try {
     await ledger
         .getByText('ROC 자료를 불러오지 못했습니다.', { exact: false })
         .waitFor();
+    await ledger
+        .getByRole('button', { name: '회차별 이력', exact: true })
+        .click();
     assert.ok((await ledger.locator('.history-table tbody tr').count()) > 0);
     await ledger.getByRole('button', { name: '차트', exact: true }).click();
     assert.equal(await ledger.locator('.ratio-point').count(), 0);

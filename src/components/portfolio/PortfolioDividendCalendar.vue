@@ -2,11 +2,13 @@
     import { computed, onScopeDispose, ref, watch } from 'vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
+    import DatePicker from 'primevue/datepicker';
     import SelectButton from 'primevue/selectbutton';
     import Message from 'primevue/message';
     import Tag from 'primevue/tag';
     import Dialog from 'primevue/dialog';
     import DividendCalendarExport from './DividendCalendarExport.vue';
+    import PortfolioCalendarDetail from './PortfolioCalendarDetail.vue';
     import DividendReconciliation from './DividendReconciliation.vue';
     import { firebaseUser } from '@/services/firebaseClient';
     import { loadFamilyLedger } from '@/services/familyPortfolio';
@@ -23,13 +25,49 @@
         accounts: { type: Array, default: () => [] },
         positions: { type: Array, default: () => [] },
         familyId: { type: String, default: '' },
+        dateBasis: { type: String, default: 'payable' },
     });
+    const reconciliationConfirmed = ref(false);
+    const showMonthList = ref(false);
+    const inlineEventId = ref(''),
+        inlineDate = ref('');
     const mode = ref('schedule'),
         view = ref('month'),
-        basis = ref('payable'),
+        basis = ref(props.dateBasis === 'ex' ? 'ex' : 'payable'),
         period = ref(calendarToday().slice(0, 7)),
         accountId = ref(''),
         currency = ref('');
+    // Keep the existing ledger period string; the picker uses local calendar fields.
+    const periodDate = computed({
+        get: () =>
+            new Date(
+                Number(period.value.slice(0, 4)),
+                Number(period.value.slice(5, 7)) - 1,
+                1
+            ),
+        set: (date) => {
+            if (date instanceof Date && Number.isFinite(date.getTime()))
+                period.value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        },
+    });
+    const compactPeriodQuery =
+        typeof window === 'undefined'
+            ? null
+            : window.matchMedia('(max-width: 640px)');
+    const compactPeriod = ref(compactPeriodQuery?.matches || false);
+    const updateCompactPeriod = (event) => {
+        compactPeriod.value = event.matches;
+    };
+    compactPeriodQuery?.addEventListener('change', updateCompactPeriod);
+    onScopeDispose(() =>
+        compactPeriodQuery?.removeEventListener('change', updateCompactPeriod)
+    );
+    const periodLabel = computed(
+        () =>
+            `${period.value.slice(0, 4)}년 ${Number(period.value.slice(5, 7))}월`
+    );
+    const minimumPeriod = new Date(1900, 0, 1);
+    const maximumPeriod = new Date(2100, 11, 1);
     const schedules = ref({}),
         scheduleErrors = ref({}),
         scheduleLoading = ref(false),
@@ -40,6 +78,9 @@
         ledgerError = ref(''),
         detailDate = ref(''),
         visibleCount = ref(50);
+    watch(detailDate, (date) => {
+        if (date) inlineDate.value = date;
+    });
     watch(period, (value) => {
         if (!validCalendarDate(`${value}-01`))
             period.value = calendarToday().slice(0, 7);
@@ -54,8 +95,8 @@
         { label: '연간', value: 'year' },
     ];
     const basisOptions = [
-        { label: '지급일', value: 'payable' },
         { label: '배당락일', value: 'ex' },
+        { label: '지급일', value: 'payable' },
     ];
     const selectedAccounts = computed(() =>
         props.accounts.filter(
@@ -107,6 +148,18 @@
         )
     );
     const totals = computed(() => calendarTotals(rangeRows.value));
+    const inlineEvents = computed(() => {
+        const exact = rangeRows.value.find(
+            (row) => row.id === inlineEventId.value
+        );
+        if (exact) return [exact];
+        const selected = rangeRows.value.filter(
+            (row) => row.date === inlineDate.value
+        );
+        return selected.length
+            ? selected.slice(0, 1)
+            : rangeRows.value.slice(0, 1);
+    });
     const days = computed(() => monthDays(period.value));
     const rowsByDate = computed(() => {
         const dates = new Map();
@@ -119,6 +172,11 @@
     const onDate = (date) => rowsByDate.value.get(date) || [];
     watch([mode, view, period, accountId, currency], () => {
         visibleCount.value = 50;
+    });
+    watch([period, accountId, currency, basis], () => {
+        reconciliationConfirmed.value = false;
+        inlineEventId.value = '';
+        inlineDate.value = '';
     });
     const yearMonths = computed(() =>
         Array.from({ length: 12 }, (_, i) => {
@@ -309,14 +367,20 @@
         detailDate.value = '';
     }
     const safeSource = (url) => (/^https?:\/\//.test(url || '') ? url : null);
+    // Shell links choose the existing local date basis; no additional schedule request is needed.
+    watch(
+        () => props.dateBasis,
+        (value) => {
+            if (value === 'ex' || value === 'payable') basis.value = value;
+        }
+    );
 </script>
 
 <template>
     <section class="dividend-calendar" aria-label="개인 배당 캘린더">
         <header class="calendar-heading">
             <div>
-                <span class="studio-eyebrow">DIVIDEND CALENDAR</span>
-                <h2>내 배당 캘린더</h2>
+                <h2>배당 캘린더</h2>
                 <p>공시 일정은 계획으로, 배당 거래는 기록으로 확인하세요.</p>
             </div>
             <Button
@@ -328,6 +392,49 @@
                 @click="refreshData()" />
         </header>
         <div class="calendar-toolbar">
+            <label class="calendar-control"
+                ><span>대상 계좌</span
+                ><Select
+                    v-model="accountId"
+                    :options="accountOptions"
+                    option-label="label"
+                    option-value="value"
+                    placeholder="모든 계좌"
+                    aria-label="배당 계좌 필터"
+            /></label>
+            <div class="calendar-control">
+                <span>통화 선택 (독립 집계)</span
+                ><SelectButton
+                    v-model="currency"
+                    :allow-empty="false"
+                    :options="currencyOptions"
+                    option-label="label"
+                    option-value="value"
+                    placeholder="모든 통화"
+                    aria-label="배당 통화 필터" />
+            </div>
+            <div v-if="mode === 'schedule'" class="calendar-control">
+                <span>날짜 기준</span
+                ><SelectButton
+                    v-model="basis"
+                    :allow-empty="false"
+                    :options="basisOptions"
+                    option-label="label"
+                    option-value="value"
+                    aria-label="배당 일정 날짜 기준" />
+            </div>
+            <div class="calendar-control">
+                <span>보기 방식</span
+                ><SelectButton
+                    v-model="view"
+                    :options="viewOptions"
+                    option-label="label"
+                    option-value="value"
+                    :allow-empty="false"
+                    aria-label="배당 달력 보기" />
+            </div>
+        </div>
+        <div class="calendar-navigation">
             <SelectButton
                 v-model="mode"
                 :options="modeOptions"
@@ -335,27 +442,46 @@
                 option-value="value"
                 :allow-empty="false"
                 aria-label="배당 자료 종류" />
-            <div class="calendar-filters">
-                <Select
-                    v-model="accountId"
-                    :options="accountOptions"
-                    option-label="label"
-                    option-value="value"
-                    placeholder="모든 계좌"
-                    aria-label="배당 계좌 필터" /><Select
-                    v-model="currency"
-                    :options="currencyOptions"
-                    option-label="label"
-                    option-value="value"
-                    placeholder="모든 통화"
-                    aria-label="배당 통화 필터" />
+            <div class="period-picker">
+                <Button
+                    aria-label="이전 배당 기간"
+                    label="‹ 이전"
+                    outlined
+                    severity="secondary"
+                    @click="move(-1)" /><Button
+                    :label="`오늘 (${calendarToday().slice(5).replace('-', '.')})`"
+                    :aria-label="`오늘 배당 기간 (${calendarToday().slice(5).replace('-', '.')})`"
+                    outlined
+                    severity="secondary"
+                    @click="period = calendarToday().slice(0, 7)" /><label
+                    for="dividend-period"
+                    class="sr-only"
+                    >배당 조회 월</label
+                ><DatePicker
+                    v-model="periodDate"
+                    input-id="dividend-period"
+                    required
+                    view="month"
+                    :date-format="compactPeriod ? 'yy.mm' : 'yy년 mm월'"
+                    :title="periodLabel"
+                    :min-date="minimumPeriod"
+                    :max-date="maximumPeriod"
+                    append-to="self"
+                    :pt="{
+                        panel: { style: { maxWidth: 'calc(100vw - 24px)' } },
+                    }" /><Button
+                    aria-label="다음 배당 기간"
+                    label="다음 ›"
+                    outlined
+                    severity="secondary"
+                    @click="move(1)" />
             </div>
         </div>
         <Message severity="info" :closable="false"
             ><template v-if="mode === 'schedule'"
-                >예상액은 배당락일 잔고 × 공시 배당금의 <b>세전 참고액</b>입니다.
-                과거 잔고는 거래 내역으로 복원하며, 실제 배당 입금액이 있으면
-                이를 우선 사용합니다.</template
+                >예상액은 배당락일 잔고 × 공시 배당금의
+                <b>세전 참고액</b>입니다. 과거 잔고는 거래 내역으로 복원하며,
+                실제 배당 입금액이 있으면 이를 우선 사용합니다.</template
             ><template v-else
                 >업로드해 저장한 배당 거래만 표시합니다. 세전·세후 실수령액이나
                 모든 지급 내역이 완전하다는 뜻은 아닙니다. 배당 취소는 음수로
@@ -399,42 +525,6 @@
             지급일 미확인 일정 {{ projection.undated.length }}건은 제외했습니다.
             배당락일 기준으로 바꾸어 확인하세요.
         </p>
-        <div class="calendar-navigation">
-            <div class="period-picker">
-                <Button
-                    icon="pi pi-chevron-left"
-                    aria-label="이전 배당 기간"
-                    text
-                    @click="move(-1)" /><label
-                    for="dividend-period"
-                    class="sr-only"
-                    >배당 조회 월</label
-                ><input
-                    id="dividend-period"
-                    v-model="period"
-                    type="month"
-                    min="1900-01"
-                    max="2100-12"
-                    required /><Button
-                    icon="pi pi-chevron-right"
-                    aria-label="다음 배당 기간"
-                    text
-                    @click="move(1)" />
-            </div>
-            <SelectButton
-                v-model="view"
-                :options="viewOptions"
-                option-label="label"
-                option-value="value"
-                :allow-empty="false"
-                aria-label="배당 달력 보기" /><Select
-                v-if="mode === 'schedule'"
-                v-model="basis"
-                :options="basisOptions"
-                option-label="label"
-                option-value="value"
-                aria-label="배당 일정 날짜 기준" />
-        </div>
         <DividendReconciliation
             v-if="mode === 'reconcile' && !busy && !error"
             :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${currency}:${period}:${view}:${scheduleSequence}:${ledgerSequence}`"
@@ -447,17 +537,6 @@
             배당 대조 자료를 확인하고 있습니다.
         </p>
         <template v-if="mode !== 'reconcile'">
-            <DividendCalendarExport
-                v-if="
-                    mode === 'schedule' &&
-                    !busy &&
-                    !error &&
-                    selectedAccounts.length
-                "
-                :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${currency}:${period}:${view}:${basis}`"
-                :rows="rangeRows"
-                :basis="basis"
-                :period="view === 'year' ? period.slice(0, 4) : period" />
             <p v-if="busy" role="status">배당 자료를 확인하고 있습니다.</p>
             <div v-else class="calendar-totals">
                 <article v-for="total in totals" :key="total.currency">
@@ -511,84 +590,199 @@
                     </button>
                 </div>
                 <div v-else class="calendar-body">
-                    <div class="month-grid" aria-label="배당 월간 달력">
-                        <div
-                            v-for="weekday in [
-                                '일',
-                                '월',
-                                '화',
-                                '수',
-                                '목',
-                                '금',
-                                '토',
-                            ]"
-                            :key="weekday"
-                            class="weekday">
-                            {{ weekday }}
-                        </div>
-                        <button
-                            v-for="day in days"
-                            :key="day.date"
-                            class="day-cell"
-                            :class="{
-                                'outside-month': !day.inMonth,
-                                today: day.date === calendarToday(),
-                            }"
-                            :aria-label="`${day.date} 배당 일정 ${onDate(day.date).length}건`"
-                            @click="detailDate = day.date">
-                            <b>{{ day.day }}</b
-                            ><span
-                                v-for="event in onDate(day.date).slice(0, 2)"
-                                :key="event.id"
-                                class="day-event"
-                                :class="event.status"
-                                >{{ event.symbol
-                                }}<small>{{
-                                    stateNames[event.status]
-                                }}</small></span
-                            ><small v-if="onDate(day.date).length > 2"
-                                >+{{ onDate(day.date).length - 2 }}건 더
-                                보기</small
-                            >
-                        </button>
-                    </div>
-                    <section class="month-events" aria-label="월간 배당 목록">
-                        <h3>이번 달 일정 {{ rangeRows.length }}건</h3>
-                        <button
-                            v-for="event in rangeRows.slice(0, visibleCount)"
-                            :key="event.id"
-                            class="event-row"
-                            @click="detailDate = event.date">
+                    <div class="calendar-left">
+                        <header class="calendar-left-heading">
                             <div>
-                                <b>{{ event.symbol }}</b
-                                ><Tag
-                                    :value="stateNames[event.status]"
-                                    :severity="
-                                        event.status === 'forecast' ||
-                                        event.status === 'review'
-                                            ? 'warn'
-                                            : 'info'
-                                    " />
+                                <strong>{{ periodLabel }} 배당 달력</strong
+                                ><small
+                                    >{{
+                                        basis === 'ex' ? '배당락일' : '지급일'
+                                    }}
+                                    기준 · 확인된 목록 기준</small
+                                >
                             </div>
-                            <span
-                                >{{ event.date }} ·
-                                {{ accountLabel(event.accountId) }}</span
-                            ><strong>{{
-                                money(event.amount, event.currency)
-                            }}</strong>
-                        </button>
-                        <Button
-                            v-if="rangeRows.length > visibleCount"
-                            :label="`배당 목록 더 보기 (${visibleCount}/${rangeRows.length})`"
-                            severity="secondary"
-                            outlined
-                            @click="visibleCount += 50" />
-                        <p v-if="!rangeRows.length" class="calendar-meta">
-                            계좌·통화·조회 기간을 확인해 주세요.
-                        </p>
-                    </section>
+                            <span v-if="mode === 'schedule'"
+                                >공시 일정
+                                {{
+                                    rangeRows.filter(
+                                        (row) => row.status === 'announced'
+                                    ).length
+                                }}건 · 주기 추정
+                                {{
+                                    rangeRows.filter(
+                                        (row) => row.status === 'forecast'
+                                    ).length
+                                }}건</span
+                            ><Button
+                                class="calendar-list-toggle"
+                                :label="
+                                    showMonthList
+                                        ? '월간 목록 접기'
+                                        : '월간 목록 보기'
+                                "
+                                severity="secondary"
+                                text
+                                size="small"
+                                :aria-expanded="showMonthList"
+                                @click="showMonthList = !showMonthList" />
+                        </header>
+                        <div class="month-grid" aria-label="배당 월간 달력">
+                            <div
+                                v-for="weekday in [
+                                    '일',
+                                    '월',
+                                    '화',
+                                    '수',
+                                    '목',
+                                    '금',
+                                    '토',
+                                ]"
+                                :key="weekday"
+                                class="weekday">
+                                {{ weekday }}
+                            </div>
+                            <button
+                                v-for="day in days"
+                                :key="day.date"
+                                class="day-cell"
+                                :class="{
+                                    'outside-month': !day.inMonth,
+                                    today: day.date === calendarToday(),
+                                }"
+                                :aria-label="`${day.date} 배당 일정 ${onDate(day.date).length}건`"
+                                @click="
+                                    inlineEventId = '';
+                                    detailDate = day.date;
+                                ">
+                                <b>{{ day.day }}</b
+                                ><span
+                                    v-for="event in onDate(day.date).slice(
+                                        0,
+                                        2
+                                    )"
+                                    :key="event.id"
+                                    class="day-event"
+                                    :class="event.status"
+                                    >{{ event.symbol
+                                    }}<small>{{
+                                        stateNames[event.status]
+                                    }}</small></span
+                                ><small v-if="onDate(day.date).length > 2"
+                                    >+{{ onDate(day.date).length - 2 }}건 더
+                                    보기</small
+                                >
+                            </button>
+                        </div>
+                        <section
+                            class="month-events"
+                            :class="{ expanded: showMonthList }"
+                            aria-label="월간 배당 목록">
+                            <h3>이번 달 일정 {{ rangeRows.length }}건</h3>
+                            <button
+                                v-for="event in rangeRows.slice(
+                                    0,
+                                    visibleCount
+                                )"
+                                :key="event.id"
+                                class="event-row"
+                                @click="
+                                    inlineEventId = event.id;
+                                    detailDate = event.date;
+                                ">
+                                <div>
+                                    <b>{{ event.date }}</b
+                                    ><Tag
+                                        :value="stateNames[event.status]"
+                                        :severity="
+                                            event.status === 'forecast' ||
+                                            event.status === 'review'
+                                                ? 'warn'
+                                                : 'info'
+                                        " />
+                                </div>
+                                <b class="calendar-event-symbol">{{
+                                    event.symbol
+                                }}</b>
+                                <span
+                                    >{{ accountLabel(event.accountId) }} · 수량
+                                    {{
+                                        event.quantity == null
+                                            ? '미확인'
+                                            : event.quantity
+                                    }}</span
+                                ><strong>{{
+                                    money(event.amount, event.currency)
+                                }}</strong>
+                            </button>
+                            <Button
+                                v-if="rangeRows.length > visibleCount"
+                                :label="`배당 목록 더 보기 (${visibleCount}/${rangeRows.length})`"
+                                severity="secondary"
+                                outlined
+                                @click="visibleCount += 50" />
+                            <p v-if="!rangeRows.length" class="calendar-meta">
+                                계좌·통화·조회 기간을 확인해 주세요.
+                            </p>
+                        </section>
+                        <div class="calendar-reconciliation-entry">
+                            <label
+                                ><input
+                                    v-model="reconciliationConfirmed"
+                                    type="checkbox" />대조
+                                기준(수량·주당금액·지급일자·통화) 일치 여부를
+                                확인했습니다.</label
+                            >
+                            <p>
+                                미확인 내역을 미수령으로 단정하거나 자동
+                                정산하지 않습니다.
+                            </p>
+                            <Button
+                                label="대조 상세 진입"
+                                severity="secondary"
+                                outlined
+                                :disabled="!reconciliationConfirmed"
+                                @click="mode = 'reconcile'" />
+                        </div>
+                    </div>
+                    <aside
+                        class="calendar-side"
+                        aria-label="일정 상세 및 내보내기">
+                        <PortfolioCalendarDetail
+                            :events="inlineEvents"
+                            :basis="basis"
+                            :account-label="accountLabel"
+                            :money="money"
+                            :state-names="stateNames"
+                            :safe-source="safeSource"
+                            @open="detailDate = $event" />
+                        <DividendCalendarExport
+                            v-if="
+                                mode === 'schedule' &&
+                                !busy &&
+                                !error &&
+                                selectedAccounts.length
+                            "
+                            :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${currency}:${period}:${view}:${basis}`"
+                            :rows="rangeRows"
+                            :basis="basis"
+                            :period="
+                                view === 'year' ? period.slice(0, 4) : period
+                            " />
+                    </aside>
                 </div>
             </template>
+            <DividendCalendarExport
+                v-if="
+                    view === 'year' &&
+                    mode === 'schedule' &&
+                    !busy &&
+                    !error &&
+                    selectedAccounts.length
+                "
+                :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${currency}:${period}:${view}:${basis}`"
+                :rows="rangeRows"
+                :basis="basis"
+                :period="view === 'year' ? period.slice(0, 4) : period" />
             <Dialog
                 :visible="!!detailDate"
                 modal
@@ -687,7 +881,7 @@
         justify-content: flex-start;
         gap: 4px;
     }
-    .period-picker input {
+    .period-picker :deep(input) {
         color: var(--app-text);
         background: var(--app-surface);
         border: 1px solid var(--app-border);
@@ -921,6 +1115,326 @@
         }
         .calendar-navigation {
             justify-content: flex-start;
+        }
+    }
+
+    /* CONTENT / Portfolio Calendar / Reviewed: source filter cards and 1fr + 380px workspace. */
+    .dividend-calendar {
+        gap: 20px;
+        padding-top: 0;
+    }
+    .calendar-heading h2 {
+        font-size: 20px;
+        margin: 0 0 6px;
+    }
+    .calendar-toolbar {
+        padding: 20px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+        gap: 16px;
+    }
+    .calendar-navigation {
+        padding: 14px 20px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+    }
+    .calendar-filters :deep(.p-select) {
+        min-height: 44px;
+        border-radius: 8px;
+    }
+    .calendar-totals {
+        gap: 20px;
+    }
+    .calendar-totals article {
+        border-radius: 12px;
+        gap: 8px;
+        padding: 20px;
+    }
+    .calendar-body {
+        grid-template-columns: minmax(0, 1fr) 380px;
+        gap: 20px;
+    }
+    .day-cell {
+        min-height: 90px;
+        padding: 6px;
+    }
+    .weekday {
+        padding: 10px 6px;
+        font-size: 12px;
+    }
+    .day-event {
+        padding: 4px 6px;
+        line-height: 1.3;
+        border-radius: 4px;
+    }
+    .month-events {
+        padding: 20px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+    }
+    .month-events h3 {
+        font-size: 16px;
+    }
+    .event-row {
+        padding: 12px;
+        gap: 8px;
+        border-radius: 8px;
+    }
+    @media (max-width: 1024px) {
+        .calendar-body {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 640px) {
+        .calendar-toolbar,
+        .calendar-navigation,
+        .month-events {
+            padding: 16px;
+        }
+        .calendar-filters {
+            width: 100%;
+        }
+        .calendar-filters :deep(.p-select) {
+            width: 100%;
+        }
+        .day-cell {
+            min-height: 76px;
+        }
+    }
+
+    /* Reviewed original fc276e: four labelled controls, then mode + period. */
+    .calendar-toolbar {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1.2fr 1.2fr;
+        align-items: end;
+    }
+    .calendar-control {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 0;
+    }
+    .calendar-control > span {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--app-muted);
+    }
+    .calendar-control :deep(.p-select) {
+        width: 100%;
+        min-height: 44px;
+    }
+    .calendar-control :deep(.p-selectbutton) {
+        display: flex;
+        min-height: 44px;
+    }
+    .calendar-control :deep(.p-togglebutton) {
+        flex: 1;
+    }
+    .calendar-navigation > :deep(.p-selectbutton) {
+        display: flex;
+        flex: 1 1 auto;
+    }
+    .calendar-navigation > :deep(.p-selectbutton .p-togglebutton) {
+        flex: 1;
+        border-radius: 999px;
+    }
+    @media (max-width: 1024px) {
+        .calendar-toolbar {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 640px) {
+        .calendar-toolbar {
+            grid-template-columns: 1fr;
+        }
+        .calendar-navigation > :deep(.p-selectbutton) {
+            width: 100%;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .period-picker {
+            justify-content: center;
+            width: 100%;
+        }
+    }
+    .calendar-left,
+    .calendar-side {
+        display: grid;
+        gap: 20px;
+        min-width: 0;
+    }
+    .calendar-body {
+        align-items: start;
+    }
+    .calendar-side :deep(.calendar-export) {
+        margin: 0;
+    }
+    @media (max-width: 1024px) {
+        .month-grid {
+            display: none;
+        }
+        .month-events {
+            grid-template-columns: 1fr;
+        }
+    }
+    .calendar-reconciliation-entry {
+        padding: 12px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-bg);
+        font-size: 12px;
+    }
+    .calendar-reconciliation-entry label {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .calendar-reconciliation-entry p {
+        font-size: 11px;
+        color: var(--app-muted);
+        margin: 12px 0;
+    }
+    .calendar-event-symbol {
+        font-size: 14px;
+    }
+    .calendar-left {
+        padding: 20px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+    }
+    .calendar-left-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 14px;
+    }
+    .calendar-left-heading > div {
+        display: grid;
+        gap: 4px;
+    }
+    .calendar-left-heading small,
+    .calendar-left-heading > span {
+        font-size: 11px;
+        color: var(--app-muted);
+    }
+    .calendar-left .month-events {
+        padding: 0;
+        border: 0;
+        margin: 0;
+        background: transparent;
+    }
+    @media (min-width: 1025px) {
+        .calendar-left .month-events:not(.expanded) {
+            display: none;
+        }
+    }
+    @media (max-width: 1024px) {
+        .calendar-list-toggle {
+            display: none;
+        }
+    }
+    @media (max-width: 640px) {
+        .calendar-left {
+            padding: 16px;
+        }
+    }
+    .calendar-control :deep(.p-selectbutton) {
+        padding: 3px;
+        background: var(--app-surface-muted);
+        border-radius: 8px;
+        gap: 2px;
+        flex-wrap: wrap;
+    }
+    .calendar-control :deep(.p-togglebutton) {
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--app-muted);
+        font-size: 14px;
+        white-space: nowrap;
+        min-width: 0;
+    }
+    .calendar-control :deep(.p-togglebutton-checked) {
+        background: var(--app-surface);
+        color: var(--app-accent);
+    }
+
+    /* fc276e: mode40px, pager38px; mobile source pager45px. */
+    .calendar-heading h2 {
+        font-size: 20px;
+        line-height: 30px;
+        letter-spacing: -0.02em;
+    }
+    .calendar-navigation > :deep(.p-selectbutton) {
+        gap: 8px;
+        padding-bottom: 2px;
+    }
+    .calendar-navigation {
+        padding-bottom: 18px;
+    }
+    .calendar-navigation > :deep(.p-selectbutton .p-togglebutton) {
+        height: 40px;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .period-picker {
+        gap: 8px;
+        flex-wrap: nowrap;
+    }
+    .period-picker :deep(.p-datepicker) {
+        width: 128px;
+        min-width: 0;
+    }
+    .period-picker > :deep(.p-button) {
+        height: 38px;
+        min-height: 38px;
+        padding: 0 12px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .period-picker > :deep(.p-button .p-button-label) {
+        font-weight: 600;
+    }
+    .period-picker :deep(input) {
+        box-sizing: border-box;
+        min-width: 0;
+        width: 100%;
+        height: 38px;
+        min-height: 38px;
+        padding: 0 8px;
+        font-size: 15px;
+        font-weight: 700;
+    }
+    @media (max-width: 640px) {
+        .period-picker {
+            gap: 8px;
+            justify-content: space-between;
+        }
+        .calendar-navigation {
+            padding-bottom: 16px;
+        }
+        .period-picker :deep(.p-datepicker) {
+            flex: 1;
+            width: 0;
+        }
+        .period-picker :deep(input) {
+            height: 45px;
+            padding: 0 4px;
+            text-align: center;
+        }
+        .period-picker > :deep(.p-button) {
+            padding: 0 12px;
         }
     }
 </style>

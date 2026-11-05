@@ -49,10 +49,23 @@ export function createCardShareText(
 ) {
     const prefix = tonePrefix(tone);
     const date = asOfDate ? ` · 기준일 ${asOfDate}` : '';
+    if (kind === 'ttm-summary') {
+        const amount =
+            data.amount == null
+                ? '미확인'
+                : `${data.amount.toLocaleString('en-US', { maximumFractionDigits: 8 })} ${data.currency}`;
+        const rate =
+            data.yieldPercent == null
+                ? '미확인'
+                : data.yieldPercent > 0 && data.yieldPercent < 0.005
+                  ? '<0.01%'
+                  : `${data.yieldPercent.toFixed(2)}%`;
+        return `${prefix ? prefix + ' ' : ''}${data.symbol} 최근 12개월 배당 요약 · ${data.start || '미확인'} ~ ${data.end || '미확인'} · ${data.complete ? `세전 주당 합계 ${amount} · 세전 연 배당률 ${rate}` : '12개월 전체 이력 미확인 · 합계·연 배당률 산출 보류'} · 최신 배당 1건의 연율화나 실제 수령액이 아닙니다.${date}${statusSuffix(sourceStatus)}`;
+    }
     const current = formatShareAmount(data.currentDividendAmount);
     const copy =
         {
-            summary: `${data.symbol} 최신 ${data.referenceData ? '참고' : '확정'} 배당 ${current} · 배당락일 ${formatShareDate(data.exDate)}`,
+            summary: `${data.symbol} 최신 ${data.referenceData ? '참고 ' : ''}배당 이력 1건 ${current} · 배당락일 ${formatShareDate(data.exDate)}`,
             comparison: `${data.symbol} ${data.referenceData ? '참고 ' : ''}직전 대비 배당 ${formatDividendDifference(data.dividendDifference)}`,
             rival: `${data.symbol} 동일 기초자산 ETF 비교 결과`,
             calendar: `${data.symbol} 다음 배당 일정과 국내 영업일 기준 입금 예상`,

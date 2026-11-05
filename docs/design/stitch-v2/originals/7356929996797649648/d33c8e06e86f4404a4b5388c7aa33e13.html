@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTENT / Stock Details</title>
+  <style>
+    /* CSS Reset & Core Tokens */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --color-primary: #0d7a6e;
+      --color-primary-hover: #0a5f56;
+      --color-primary-light: #e6f4f2;
+      --color-warning: #eab308;
+      --color-warning-light: #fef9c3;
+      --color-mint: #2dd4bf;
+      --color-mint-light: #f0fdfa;
+      --color-brown: #382418;
+      --color-up: #dc2626;
+      --color-bg: #f8fafc;
+      --color-surface: #ffffff;
+      --color-border: #e2e8f0;
+      --color-text-main: #1e293b;
+      --color-text-muted: #64748b;
+      --color-text-subtle: #94a3b8;
+      --radius-card: 12px;
+      --radius-sm: 8px;
+      --radius-full: 9999px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Pretendard Variable", Pretendard, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--color-bg);
+      color: var(--color-text-main);
+      font-size: 15px;
+      line-height: 1.5;
+      padding: 24px 20px 48px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Top Navigation Action (Back to Search) */
+    .top-action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 44px;
+      padding: 0 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-text-main);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .back-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      background-color: var(--color-mint-light);
+      border: 1px solid var(--color-mint);
+      color: var(--color-primary);
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 22px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Common Stock Header Summary Card (DEMO-A) */
+    .stock-summary-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .stock-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .stock-title-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stock-badge-ticker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .ticker-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--color-text-main);
+      letter-spacing: -0.02em;
+    }
+    .etf-tag {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      border: 1px solid rgba(13, 122, 110, 0.2);
+      border-radius: var(--radius-sm);
+    }
+    .currency-tag {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: #f1f5f9;
+      color: #475569;
+      border-radius: var(--radius-sm);
+    }
+    .stock-subtitle {
+      font-size: 14px;
+      color: var(--color-text-muted);
+    }
+    .share-btn {
+      height: 44px;
+      padding: 0 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-main);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .share-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    /* Key Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+    }
+    .metric-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .metric-label {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .metric-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text-main);
+    }
+    .metric-val.change {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-up);
+    }
+    .metric-sub {
+      font-size: 11px;
+      color: var(--color-text-subtle);
+    }
+
+    /* Disclaimers & As-Of Dates */
+    .as-of-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      border-top: 1px solid var(--color-border);
+      padding-top: 10px;
+    }
+    .as-of-tag {
+      background: #f1f5f9;
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: #475569;
+      font-weight: 500;
+    }
+
+    /* Local 4 Tabs (상세정보, 시세정보, 배당정보, 공유정보) */
+    .tab-bar-container {
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      padding-bottom: 2px;
+    }
+    .tab-bar {
+      display: inline-flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--color-border);
+      width: 100%;
+      min-width: 480px;
+    }
+    .tab-item {
+      height: 44px;
+      padding: 0 20px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border: none;
+      background: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      bottom: -2px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .tab-item:hover {
+      color: var(--color-primary);
+    }
+    .tab-item.active {
+      color: var(--color-primary);
+      border-bottom: 2px solid var(--color-primary);
+    }
+
+    /* Main Content Sections */
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    /* Section Headers */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text-main);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Key Info Table */
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .info-table th {
+      width: 32%;
+      text-align: left;
+      padding: 12px 14px;
+      background: #f8fafc;
+      color: var(--color-text-muted);
+      font-weight: 500;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .info-table td {
+      padding: 12px 14px;
+      color: var(--color-text-main);
+      font-weight: 500;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .val-unknown {
+      color: var(--color-text-subtle);
+      font-style: normal;
+    }
+
+    /* Status State Box (Disclosure & Official Docs) */
+    .notice-card {
+      background: #f8fafc;
+      border: 1px dashed var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .notice-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-main);
+    }
+    .notice-body {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+    .link-action {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .link-action:hover {
+      text-decoration: underline;
+    }
+
+    /* Anonymous Request / Feedback Box */
+    .feedback-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-main);
+    }
+    .select-input, .textarea-input {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .select-input {
+      height: 44px;
+      padding: 0 12px;
+      background: var(--color-surface);
+    }
+    .textarea-input {
+      padding: 10px 12px;
+      resize: vertical;
+      min-height: 100px;
+    }
+    .select-input:focus, .textarea-input:focus {
+      border-color: var(--color-primary);
+    }
+    .char-count {
+      font-size: 11px;
+      color: var(--color-text-subtle);
+      text-align: right;
+    }
+    .privacy-notice {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.35;
+    }
+    .submit-btn {
+      height: 44px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--color-primary);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .submit-btn:hover {
+      background: var(--color-primary-hover);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      /* Convert table to labelled cards below 1024px */
+      .info-table, .info-table tbody, .info-table tr, .info-table th, .info-table td {
+        display: block;
+        width: 100%;
+      }
+      .info-table tr {
+        margin-bottom: 12px;
+        background: #f8fafc;
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+      }
+      .info-table th {
+        background: none;
+        padding: 0 0 4px 0;
+        border-bottom: none;
+        font-size: 12px;
+        color: var(--color-text-muted);
+      }
+      .info-table td {
+        padding: 0;
+        border-bottom: none;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px 12px 32px;
+      }
+      .card {
+        padding: 16px;
+      }
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+      .stock-title-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .share-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      .as-of-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Top Action Bar (Back to Search) -->
+  <div class="top-action-bar">
+    <a href="#" class="back-btn" title="검색 결과 목록으로 돌아가기">
+      ← 검색으로 돌아가기
+    </a>
+    <span class="demo-badge">예시 데이터</span>
+  </div>
+
+  <!-- Common Stock Header Summary Card (DEMO-A) -->
+  <div class="card stock-summary-card">
+    <div class="stock-title-row">
+      <div class="stock-title-left">
+        <div class="stock-badge-ticker">
+          <span class="ticker-title">DEMO-A</span>
+          <span class="etf-tag">예시 배당 ETF</span>
+          <span class="currency-tag">USD ($)</span>
+        </div>
+        <div class="stock-subtitle">가상 고배당 인덱스 ETF · 예시 운용사 (ETF)</div>
+      </div>
+      <button type="button" class="share-btn">
+        <span>공유 카드 만들기</span>
+      </button>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="metrics-grid">
+      <div class="metric-item">
+        <span class="metric-label">현재 가격</span>
+        <span class="metric-val">$50.00</span>
+        <span class="metric-sub">전일 $49.50</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">전일 대비 변동</span>
+        <span class="metric-val change">+0.50 (+1.01%)</span>
+        <span class="metric-sub">종가 기준 반영</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">최근 12개월 주당 배당금</span>
+        <span class="metric-val">$2.00</span>
+        <span class="metric-sub">완전한 12개월 집계치 (단회 연율화 아님)</span>
+      </div>
+      <div class="metric-item">
+        <span class="metric-label">최근 시세 대비 세전 배당률</span>
+        <span class="metric-val" style="color: var(--color-primary);">4.00%</span>
+        <span class="metric-sub">연율화 추정치 아닌 실적 기준</span>
+      </div>
+    </div>
+
+    <!-- As-Of Dates & Disclaimer -->
+    <div class="as-of-bar">
+      <div>
+        <span class="as-of-tag">시세 기준: 2026.11.03</span>
+        <span class="as-of-tag" style="margin-left: 6px;">배당 기준: 2026.10.20</span>
+        <span class="as-of-tag" style="margin-left: 6px; background: var(--color-warning-light); color: var(--color-brown);">다음 배당락: 11.15 (주기 추정)</span>
+      </div>
+      <div style="font-size: 11px; color: var(--color-text-subtle);">
+        ※ 실시간 시세가 아닐 수 있으며 미확인 데이터는 0원이 아닙니다. 다음 배당락은 확정 지급일이 아닙니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- Local 4 Tabs (상세정보 활성) -->
+  <div class="tab-bar-container">
+    <div class="tab-bar">
+      <button type="button" class="tab-item active">상세정보</button>
+      <button type="button" class="tab-item">시세정보</button>
+      <button type="button" class="tab-item">배당정보</button>
+      <button type="button" class="tab-item">공유정보</button>
+    </div>
+  </div>
+
+  <!-- Main Content Layout (2 columns: Detail Table + Side Modules) -->
+  <div class="detail-grid">
+
+    <!-- Left Column: Overview & Fundamentals -->
+    <div class="card" style="display: flex; flex-direction: column; gap: 20px;">
+      <div>
+        <h2 class="section-title">
+          <span>개요 및 기본 정보</span>
+          <span style="font-size: 12px; font-weight: 500; color: var(--color-text-muted);">종목 메타데이터</span>
+        </h2>
+        
+        <table class="info-table">
+          <tbody>
+            <tr>
+              <th>종목명 / 티커</th>
+              <td>가상 고배당 인덱스 ETF (DEMO-A)</td>
+            </tr>
+            <tr>
+              <th>운용사</th>
+              <td>예시 운용사 (ETF 부문)</td>
+            </tr>
+            <tr>
+              <th>시장 및 통화</th>
+              <td>미국 주요 거래소 / USD ($)</td>
+            </tr>
+            <tr>
+              <th>기초자산 (추종 지수)</th>
+              <td>가상 고배당 기업 인덱스 (DEMO-DIV-INDEX)</td>
+            </tr>
+            <tr>
+              <th>수집 시세 기간</th>
+              <td>2024.11.01 ~ 2026.11.03 <span style="font-size: 12px; color: var(--color-text-subtle);">(※ 실제 보유 기간이 아닙니다)</span></td>
+            </tr>
+            <tr>
+              <th>시가총액</th>
+              <td><span class="val-unknown">미확인 (자료 확인 중)</span></td>
+            </tr>
+            <tr>
+              <th>순자산가치 (NAV)</th>
+              <td><span class="val-unknown">미확인</span></td>
+            </tr>
+            <tr>
+              <th>총보수 (운용수수료)</th>
+              <td><span class="val-unknown">미확인</span></td>
+            </tr>
+            <tr>
+              <th>총 운용자산 (AUM)</th>
+              <td><span class="val-unknown">미확인 (근거 없는 추정치 배제)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Official Disclosures & Holdings Status -->
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <h3 class="section-title" style="font-size: 15px; margin-bottom: 0;">공식 공시 및 운용 보고서</h3>
+        
+        <div class="notice-card">
+          <div class="notice-header">발행사 공식 공시 자료</div>
+          <div class="notice-body">
+            현재 종목의 최신 공식 공시 자료 스냅샷이 수집 대기 상태입니다. 임의의 외부 링크나 허위 공시 내역을 생성하지 않습니다.
+          </div>
+          <a class="link-action">공식 공시 원문 확인 진입 →</a>
+        </div>
+
+        <div class="notice-card">
+          <div class="notice-header">ETF 포트폴리오 구성 및 보유 자산</div>
+          <div class="notice-body">
+            설정된 공식 ETF 운용 정보 및 상위 구성 종목 요약 데이터가 아직 등록되지 않았습니다.
+          </div>
+          <a class="link-action">보유자산 요약 정보 보기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Anonymous Request & Feedback -->
+    <div class="card feedback-section">
+      <h2 class="section-title">익명 요청 및 한마디</h2>
+      <div style="font-size: 13px; color: var(--color-text-muted); margin-top: -6px;">
+        종목 정보의 오류 수정 요청이나 추가 요청사항을 전달할 수 있습니다.
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">요청 유형</label>
+        <select class="select-input">
+          <option selected>정보 오류</option>
+          <option>추가 정보 요청</option>
+          <option>질문</option>
+          <option>기타</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">내용 (10자 ~ 1,000자)</label>
+        <textarea 
+          class="textarea-input" 
+          placeholder="정보 수정 요청 내용이나 의견을 입력하세요 (최소 10자 이상)"
+        ></textarea>
+        <div class="char-count">0 / 1,000자</div>
+      </div>
+
+      <div class="privacy-notice">
+        ※ 이름, 주민등록번호, 연락처 등 일체의 개인정보 입력을 금지합니다. 입력된 내용은 공개 카탈로그 품질 검토 목적으로만 참조됩니다.
+      </div>
+
+      <button type="button" class="submit-btn">요청 전송하기</button>
+
+      <div style="font-size: 12px; color: var(--color-text-subtle); text-align: center;">
+        전송 실패 시 오류 상태 안내가 유지됩니다.
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

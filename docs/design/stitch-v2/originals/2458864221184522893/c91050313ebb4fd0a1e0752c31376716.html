@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V2 SHELL / Mobile / Submenu Open</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/primeicons@6.0.1/primeicons.css">
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", sans-serif; width: 390px; margin: 0 auto; overflow-x: hidden; }
+</style>
+</head>
+<body class="bg-[#f8fafc] text-slate-800 min-h-screen flex flex-col relative antialiased">
+
+  <!-- Mobile Header (390px, h-56px) -->
+  <header class="h-14 bg-white border-b border-slate-200 sticky top-0 z-10 px-4 flex items-center justify-between shadow-2xs">
+    <a href="#" class="flex items-center gap-2">
+      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXRy9GykKwoROEy5WitiSyUynNVweqrxpMPDIdfjbvJoHhXOsh2xuPLT2vHbkpvr_H9mhAdAH0wK1jaKd52AZYl3eMgPb5NrTLnWFbUjoyzxQiYYeK4XLomVeqy_kde6uv67J0gGwb941ODx2JFXhJVRmFq8qyUe52y4ESABD9u2Zx3XNFhQxQip1iQpX7kU3lG7NX02kdoE6nlUBuaqUhGDxirK6SZtI4qGJAC4rfKTZalWpsX0QB" alt="모으멍 심볼" class="w-6 h-6 object-contain">
+      <span class="font-bold text-sm tracking-tight text-slate-900">모으멍 <span class="text-[#0d7a6e]">배당달력</span></span>
+    </a>
+
+    <!-- Submenu Trigger in Header -->
+    <div class="flex items-center gap-1.5">
+      <button type="button" class="h-9 px-2.5 rounded-lg bg-[#0d7a6e] text-white flex items-center gap-1.5 text-xs font-bold">
+        <span>개요 · 원금</span>
+        <i class="pi pi-chevron-down text-[10px]"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Empty Main Slot (358px boundary) -->
+  <main class="flex-1 w-full px-4 py-4 mb-16">
+    <div class="w-full h-full min-h-[420px] border-2 border-dashed border-slate-300 rounded-xl bg-white/60 p-6 flex flex-col items-center justify-center text-center">
+      <div class="w-10 h-10 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-[#0d7a6e] mb-2">
+        <i class="pi pi-box text-lg"></i>
+      </div>
+      <h2 class="text-xs font-bold text-slate-700 mb-1">콘텐츠 영역 · 별도 콘텐츠 프레임 삽입</h2>
+      <p class="text-[11px] text-slate-400 max-w-[280px] leading-relaxed">
+        모바일 폭(390px, 안쪽 358px) 전역 셸입니다. 하단에 서브메뉴 바텀시트가 오버레이되어 있습니다.
+      </p>
+    </div>
+  </main>
+
+  <!-- Mobile Bottom Tab Navigation (Under Bottom Sheet z-index) -->
+  <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-[390px] h-16 bg-white border-t border-slate-200 grid grid-cols-4 z-20 text-[10px] font-medium text-slate-500">
+    <a href="#" class="flex flex-col items-center justify-center gap-1 hover:text-[#0d7a6e]">
+      <i class="pi pi-search text-base"></i>
+      <span>종목 검색</span>
+    </a>
+    <a href="#" class="flex flex-col items-center justify-center gap-1 hover:text-[#0d7a6e]">
+      <i class="pi pi-sync text-base"></i>
+      <span>종목 비교</span>
+    </a>
+    <a href="#" class="flex flex-col items-center justify-center gap-1 hover:text-[#0d7a6e]">
+      <i class="pi pi-plus-circle text-base"></i>
+      <span>신규 상장</span>
+    </a>
+    <a href="#" class="flex flex-col items-center justify-center gap-1 hover:text-[#0d7a6e]">
+      <i class="pi pi-question-circle text-base"></i>
+      <span>이용 안내</span>
+    </a>
+  </nav>
+
+  <!-- Backdrop Dim for Submenu Bottom Sheet -->
+  <div class="fixed inset-0 bg-slate-900/40 z-30 transition-opacity"></div>
+
+  <!-- Submenu Bottom Sheet (z-40, Above Navigation & Content) -->
+  <div class="fixed bottom-0 left-1/2 -translate-x-1/2 w-[390px] bg-white rounded-t-2xl shadow-xl z-40 max-h-[82vh] flex flex-col border-t border-slate-200">
+    <!-- Sheet Drag Handle & Header -->
+    <div class="pt-3 pb-2 px-5 border-b border-slate-100 flex flex-col items-center relative">
+      <div class="w-10 h-1 bg-slate-300 rounded-full mb-3"></div>
+      <div class="w-full flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#0d7a6e]"></span>
+          <h3 class="text-sm font-bold text-slate-900">포트폴리오 메뉴 탐색</h3>
+        </div>
+        <!-- Close Button (44px touch target) -->
+        <button type="button" aria-label="서브메뉴 닫기" class="w-11 h-11 -mr-2 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <i class="pi pi-times text-sm"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable Sheet Content -->
+    <div class="p-5 overflow-y-auto space-y-4">
+      <!-- 1. 포트폴리오 > 개요 (Expanded) -->
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2">
+        <div class="flex items-center justify-between text-xs font-bold text-[#0d7a6e]">
+          <span class="flex items-center gap-2">
+            <i class="pi pi-chart-pie text-sm"></i>
+            포트폴리오 &gt; 개요
+          </span>
+          <span class="text-[10px] font-semibold px-2 py-0.5 bg-[#0d7a6e]/10 rounded-full">현재 그룹</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 pt-1">
+          <a href="#" class="h-11 px-2 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs text-slate-700 font-medium hover:border-[#0d7a6e]">요약</a>
+          <a href="#" class="h-11 px-2 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-xs text-slate-700 font-medium hover:border-[#0d7a6e]">보유 종목</a>
+          <!-- Selected: 원금 -->
+          <a href="#" aria-current="page" class="h-11 px-2 rounded-lg bg-[#0d7a6e] text-white flex items-center justify-center text-xs font-bold shadow-2xs gap-1">
+            <span>원금</span>
+            <i class="pi pi-check text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. 캘린더 -->
+      <a href="#" class="h-12 px-4 rounded-xl border border-slate-200 bg-white flex items-center justify-between text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
+        <span class="flex items-center gap-2.5">
+          <i class="pi pi-calendar text-slate-400 text-sm"></i>
+          캘린더 (배당 일정 및 배당락)
+        </span>
+        <i class="pi pi-chevron-right text-xs text-slate-400"></i>
+      </a>
+
+      <!-- 3. 분석 -->
+      <a href="#" class="h-12 px-4 rounded-xl border border-slate-200 bg-white flex items-center justify-between text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
+        <span class="flex items-center gap-2.5">
+          <i class="pi pi-chart-line text-slate-400 text-sm"></i>
+          포트폴리오 분석 (다차원 집중도)
+        </span>
+        <i class="pi pi-chevron-right text-xs text-slate-400"></i>
+      </a>
+
+      <!-- 4. 자산 관리 (자금 및 계좌) -->
+      <a href="#" class="h-12 px-4 rounded-xl border border-slate-200 bg-white flex items-center justify-between text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
+        <span class="flex items-center gap-2.5">
+          <i class="pi pi-wallet text-slate-400 text-sm"></i>
+          자산 관리 (명의자/계좌/자금흐름)
+        </span>
+        <i class="pi pi-chevron-right text-xs text-slate-400"></i>
+      </a>
+    </div>
+
+    <!-- Sheet Action Footer -->
+    <div class="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
+      <span class="text-[11px] text-slate-400">선택됨: 포트폴리오 &gt; 개요 &gt; 원금</span>
+      <button type="button" class="h-11 px-4 rounded-lg bg-slate-200 text-slate-700 font-semibold hover:bg-slate-300">
+        닫기
+      </button>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -129,7 +129,13 @@
         data-thumbnail-kind="calendar">
         <section v-if="data.current" class="lifecycle">
             <div class="section-heading">
-                <h2><i />차기 배당 일정 라이프사이클</h2>
+                <h2>
+                    <i />{{
+                        data.current.exDate >= today
+                            ? '공시 배당 일정'
+                            : '최근 확인 배당 일정'
+                    }}
+                </h2>
                 <span>공식 공시 확정 일정</span>
             </div>
             <div class="steps">
@@ -139,7 +145,15 @@
                         <h3>배당락일</h3>
                     </div>
                     <b>{{ dateWithDay(data.current.exDate) }}</b>
-                    <p>매수 마감 완료</p>
+                    <p>
+                        {{
+                            data.current.exDate > today
+                                ? '공시 배당락 예정'
+                                : data.current.exDate === today
+                                  ? '배당락일 당일'
+                                  : '배당락일 경과'
+                        }}
+                    </p>
                 </article>
                 <article class="record">
                     <div>
@@ -954,5 +968,23 @@
         border-top: 1px solid #e2e8f0;
         color: #64748b;
         font-size: 11px;
+    }
+    /* Shared surfaces from the verified schedule artwork; keep all four actual
+       lifecycle fields, weekly controls and annual/history states. */
+    .schedule-artboard {
+        font-family: 'Hanken Grotesk', sans-serif;
+        border-radius: 12px;
+    }
+    .lifecycle,
+    .weekly-cycle,
+    .annual-roadmap {
+        border: 0;
+        border-radius: 12px;
+        background: #f2f4f6;
+        box-shadow: none;
+    }
+    .cycle-navigation button {
+        border-color: #e2e8f0;
+        color: #0d7a6e;
     }
 </style>

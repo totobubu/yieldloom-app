@@ -27,7 +27,7 @@
     const data = ref(null),
         loading = ref(false),
         error = ref(''),
-        period = ref(3),
+        period = ref(1),
         selected = ref(null);
     useFullscreenLoading(loading, '일봉 데이터를 불러오고 있습니다.');
     const interval = ref('day'),
@@ -206,7 +206,7 @@
     const y = (value) =>
         24 +
         ((bounds.value.high - value) / (bounds.value.high - bounds.value.low)) *
-            276;
+            232;
     const step = computed(
         () => (chartWidth.value - 84) / Math.max(1, candles.value.length)
     );
@@ -261,72 +261,75 @@
         ref="chartHost"
         class="stock-candlestick"
         aria-label="일봉 캔들 차트">
-        <header class="chart-heading">
-            <div>
-                <h2>
-                    주가 차트 <span>{{ intervalLabels[interval] }}</span>
-                </h2>
-                <p>시가·고가·저가·종가 · {{ data?.currency || currency }}</p>
-            </div>
-            <div class="periods" aria-label="차트 기간">
-                <Button
-                    severity="secondary"
-                    outlined
-                    v-for="item in periods"
-                    :key="item.months"
-                    :aria-pressed="period === item.months"
-                    :class="{ active: period === item.months }"
-                    @click="period = item.months">
-                    {{ item.label }}
-                </Button>
-            </div>
-        </header>
-        <div class="chart-navigation">
-            <div class="interval-controls" aria-label="봉 주기">
-                <Button
-                    severity="secondary"
-                    outlined
-                    v-for="(label, key) in intervalLabels"
-                    :key="key"
-                    :aria-pressed="interval === key"
-                    @click="interval = key">
-                    {{ label }}
-                </Button>
-            </div>
-            <div class="zoom-controls" aria-label="차트 확대와 이동">
-                <Button
-                    severity="secondary"
-                    outlined
-                    aria-label="차트 왼쪽 이동"
-                    :disabled="endIndex <= (visibleCount ?? aggregated.length)"
-                    @click="pan(-1)">
-                    ←</Button
-                ><Button
-                    severity="secondary"
-                    outlined
-                    aria-label="차트 축소"
-                    :disabled="
-                        !candles.length || candles.length >= aggregated.length
-                    "
-                    @click="zoom(1.5)">
-                    −</Button
-                ><Button
-                    severity="secondary"
-                    outlined
-                    aria-label="차트 확대"
-                    :disabled="candles.length <= 10"
-                    @click="zoom(0.65)">
-                    ＋</Button
-                ><Button
-                    severity="secondary"
-                    outlined
-                    aria-label="차트 오른쪽 이동"
-                    :disabled="endIndex >= aggregated.length"
-                    @click="pan(1)">
-                    →</Button
-                ><Button severity="secondary" outlined @click="resetWindow"
-                    >전체 보기</Button
-                >
+        <h2 class="chart-accessible-title">
+            주가 차트 · {{ intervalLabels[interval] }} ·
+            {{ data?.currency || currency }}
+        </h2>
+        <div class="chart-controls">
+            <header class="chart-heading">
+                <div class="periods" aria-label="차트 기간">
+                    <Button
+                        severity="secondary"
+                        outlined
+                        v-for="item in periods"
+                        :key="item.months"
+                        :aria-pressed="period === item.months"
+                        :class="{ active: period === item.months }"
+                        @click="period = item.months">
+                        {{ item.label }}
+                    </Button>
+                </div>
+            </header>
+            <div class="chart-navigation">
+                <div class="interval-controls" aria-label="봉 주기">
+                    <Button
+                        severity="secondary"
+                        outlined
+                        v-for="(label, key) in intervalLabels"
+                        :key="key"
+                        :aria-pressed="interval === key"
+                        @click="interval = key">
+                        {{ label }}
+                    </Button>
+                </div>
+                <div class="zoom-controls" aria-label="차트 확대와 이동">
+                    <Button
+                        severity="secondary"
+                        outlined
+                        aria-label="차트 왼쪽 이동"
+                        :disabled="
+                            endIndex <= (visibleCount ?? aggregated.length)
+                        "
+                        @click="pan(-1)">
+                        ←</Button
+                    ><Button
+                        severity="secondary"
+                        outlined
+                        aria-label="차트 축소"
+                        :disabled="
+                            !candles.length ||
+                            candles.length >= aggregated.length
+                        "
+                        @click="zoom(1.5)">
+                        −</Button
+                    ><Button
+                        severity="secondary"
+                        outlined
+                        aria-label="차트 확대"
+                        :disabled="candles.length <= 10"
+                        @click="zoom(0.65)">
+                        ＋</Button
+                    ><Button
+                        severity="secondary"
+                        outlined
+                        aria-label="차트 오른쪽 이동"
+                        :disabled="endIndex >= aggregated.length"
+                        @click="pan(1)">
+                        →</Button
+                    ><Button severity="secondary" outlined @click="resetWindow"
+                        >전체 보기</Button
+                    >
+                </div>
             </div>
         </div>
         <div v-if="loading" class="chart-state" role="status">
@@ -339,150 +342,201 @@
             >
         </div>
         <template v-else-if="current">
-            <div class="quote-summary">
-                <div>
-                    <span
-                        >{{ current.date
-                        }}{{
-                            current.endDate !== current.date
-                                ? ` ~ ${current.endDate}`
-                                : ''
-                        }}</span
-                    ><strong
-                        :class="{
-                            up: current.close >= current.open,
-                            down: current.close < current.open,
-                        }"
-                        >{{ format(current.close) }}
-                        <small>{{ data.currency || currency }}</small></strong
-                    ><span
-                        v-if="change != null"
-                        :class="change >= 0 ? 'up' : 'down'"
-                        >{{ change >= 0 ? '+' : '' }}{{ format(change) }}%
-                        <small>{{
-                            interval === 'day'
-                                ? '전일 종가 대비'
-                                : '직전 봉 종가 대비'
-                        }}</small></span
-                    >
-                </div>
-                <dl>
-                    <div
-                        v-for="[label, value] in [
-                            ['시가', current.open],
-                            ['고가', current.high],
-                            ['저가', current.low],
-                            ['종가', current.close],
-                        ]"
-                        :key="label">
-                        <dt>{{ label }}</dt>
-                        <dd>{{ format(value, 4) }}</dd>
-                    </div>
+            <div class="chart-frame">
+                <div class="quote-summary">
                     <div>
-                        <dt>거래량</dt>
-                        <dd>{{ format(current.volume, 0) }}</dd>
+                        <span
+                            >{{ current.date
+                            }}{{
+                                current.endDate !== current.date
+                                    ? ` ~ ${current.endDate}`
+                                    : ''
+                            }}</span
+                        ><strong
+                            :class="{
+                                up: current.close >= current.open,
+                                down: current.close < current.open,
+                            }"
+                            >{{ format(current.close) }}
+                            <small>{{
+                                data.currency || currency
+                            }}</small></strong
+                        ><span
+                            v-if="change != null"
+                            :class="change >= 0 ? 'up' : 'down'"
+                            >{{ change >= 0 ? '+' : '' }}{{ format(change) }}%
+                            <small>{{
+                                interval === 'day'
+                                    ? '전일 종가 대비'
+                                    : '직전 봉 종가 대비'
+                            }}</small></span
+                        >
                     </div>
-                </dl>
-            </div>
-            <svg
-                class="candle-plot"
-                :viewBox="`0 0 ${chartWidth} 410`"
-                preserveAspectRatio="none"
-                role="img"
-                tabindex="0"
-                :aria-label="`${symbol} ${period}개월 ${intervalLabels[interval]} 캔들 차트. 좌우 방향키로 날짜별 가격 확인`"
-                @pointermove="selectAt"
-                @pointerdown="selectAt"
-                @pointerleave="selected = null"
-                @keydown.left.prevent="move(-1)"
-                @keydown.right.prevent="move(1)"
-                @keydown.home.prevent="selected = 0"
-                @keydown.end.prevent="selected = candles.length - 1">
-                <g v-for="tick in ticks" :key="tick">
+                    <dl>
+                        <div
+                            v-for="[label, value] in [
+                                ['시가', current.open],
+                                ['고가', current.high],
+                                ['저가', current.low],
+                                ['종가', current.close],
+                            ]"
+                            :key="label">
+                            <dt>{{ label }}</dt>
+                            <dd>{{ format(value, 4) }}</dd>
+                        </div>
+                        <div>
+                            <dt>거래량</dt>
+                            <dd>{{ format(current.volume, 0) }}</dd>
+                        </div>
+                    </dl>
+                </div>
+                <svg
+                    class="candle-plot"
+                    :viewBox="`0 0 ${chartWidth} 280`"
+                    preserveAspectRatio="none"
+                    role="img"
+                    tabindex="0"
+                    :aria-label="`${symbol} ${period}개월 ${intervalLabels[interval]} 캔들 차트. 좌우 방향키로 날짜별 가격 확인`"
+                    @pointermove="selectAt"
+                    @pointerdown="selectAt"
+                    @pointerleave="selected = null"
+                    @keydown.left.prevent="move(-1)"
+                    @keydown.right.prevent="move(1)"
+                    @keydown.home.prevent="selected = 0"
+                    @keydown.end.prevent="selected = candles.length - 1">
+                    <g v-for="tick in ticks" :key="tick">
+                        <line
+                            x1="16"
+                            :x2="chartWidth - 68"
+                            :y1="y(tick)"
+                            :y2="y(tick)"
+                            class="grid-line" />
+                        <text
+                            :x="chartWidth - 56"
+                            :y="y(tick) + 4"
+                            class="axis">
+                            {{ format(tick) }}
+                        </text>
+                    </g>
+                    <g
+                        v-for="(row, index) in candles"
+                        :key="row.date"
+                        :class="
+                            row.close >= row.open ? 'candle-up' : 'candle-down'
+                        "
+                        class="candle">
+                        <title>
+                            {{ row.date }} · 시가 {{ row.open }} · 고가
+                            {{ row.high }} · 저가 {{ row.low }} · 종가
+                            {{ row.close }}
+                        </title>
+                        <line
+                            :x1="x(index)"
+                            :x2="x(index)"
+                            :y1="y(row.high)"
+                            :y2="y(row.low)"
+                            stroke-width="1" />
+                        <rect
+                            :x="x(index) - bodyWidth / 2"
+                            :y="Math.min(y(row.open), y(row.close))"
+                            :width="bodyWidth"
+                            :height="
+                                Math.max(
+                                    1,
+                                    Math.abs(y(row.open) - y(row.close))
+                                )
+                            " />
+                    </g>
+                    <g
+                        v-for="event in chartEvents"
+                        :key="event.key"
+                        class="chart-event">
+                        <title>{{ event.date }} · {{ event.label }}</title>
+                        <circle
+                            :cx="x(event.index)"
+                            :cy="
+                                Math.max(12, y(candles[event.index].high) - 18)
+                            "
+                            r="8"
+                            :class="event.kind" />
+                        <text
+                            :x="x(event.index)"
+                            :y="
+                                Math.max(
+                                    12,
+                                    y(candles[event.index].high) - 18
+                                ) + 4
+                            "
+                            text-anchor="middle">
+                            {{
+                                event.kind === 'split'
+                                    ? 'S'
+                                    : event.kind === 'dividend'
+                                      ? 'D'
+                                      : '?'
+                            }}
+                        </text>
+                    </g>
+
+                    <line
+                        :x1="x(currentIndex)"
+                        :x2="x(currentIndex)"
+                        y1="24"
+                        y2="256"
+                        class="crosshair" />
                     <line
                         x1="16"
                         :x2="chartWidth - 68"
-                        :y1="y(tick)"
-                        :y2="y(tick)"
-                        class="grid-line" />
-                    <text :x="chartWidth - 56" :y="y(tick) + 4" class="axis">
-                        {{ format(tick) }}
+                        :y1="y(current.close)"
+                        :y2="y(current.close)"
+                        class="crosshair" />
+                </svg>
+                <svg
+                    class="volume-plot"
+                    :viewBox="`0 0 ${chartWidth} 80`"
+                    preserveAspectRatio="none"
+                    role="img"
+                    :aria-label="`${symbol} ${intervalLabels[interval]} 거래량. 미제공은 막대 미표시`"
+                    @pointermove="selectAt"
+                    @pointerdown="selectAt"
+                    @pointerleave="selected = null">
+                    <g
+                        v-for="(row, index) in candles"
+                        :key="row.date"
+                        class="volume-bar"
+                        :class="
+                            row.close >= row.open ? 'candle-up' : 'candle-down'
+                        ">
+                        <title>
+                            {{ row.date }} · 거래량
+                            {{ row.volume == null ? '미제공' : row.volume }}
+                        </title>
+                        <rect
+                            v-if="row.volume != null"
+                            :x="x(index) - bodyWidth / 2"
+                            :y="56 - (row.volume / maxVolume) * 48"
+                            :width="bodyWidth"
+                            :height="(row.volume / maxVolume) * 48"
+                            opacity=".35" />
+                    </g>
+                    <text x="16" y="12" class="axis">거래량</text>
+                    <text
+                        v-for="index in dateLabels"
+                        :key="index"
+                        :x="x(index)"
+                        y="76"
+                        :text-anchor="
+                            index === 0
+                                ? 'start'
+                                : index === candles.length - 1
+                                  ? 'end'
+                                  : 'middle'
+                        "
+                        class="axis">
+                        {{ candles[index].date }}
                     </text>
-                </g>
-                <g
-                    v-for="(row, index) in candles"
-                    :key="row.date"
-                    :class="row.close >= row.open ? 'candle-up' : 'candle-down'"
-                    class="candle">
-                    <title>
-                        {{ row.date }} · 시가 {{ row.open }} · 고가
-                        {{ row.high }} · 저가 {{ row.low }} · 종가
-                        {{ row.close }}
-                    </title>
-                    <line
-                        :x1="x(index)"
-                        :x2="x(index)"
-                        :y1="y(row.high)"
-                        :y2="y(row.low)"
-                        stroke-width="1" />
-                    <rect
-                        :x="x(index) - bodyWidth / 2"
-                        :y="Math.min(y(row.open), y(row.close))"
-                        :width="bodyWidth"
-                        :height="
-                            Math.max(1, Math.abs(y(row.open) - y(row.close)))
-                        " />
-                    <rect
-                        v-if="row.volume != null"
-                        :x="x(index) - bodyWidth / 2"
-                        :y="378 - (row.volume / maxVolume) * 40"
-                        :width="bodyWidth"
-                        :height="(row.volume / maxVolume) * 40"
-                        opacity=".35" />
-                </g>
-                <g
-                    v-for="event in chartEvents"
-                    :key="event.key"
-                    class="chart-event">
-                    <title>{{ event.date }} · {{ event.label }}</title>
-                    <circle
-                        :cx="x(event.index)"
-                        cy="313"
-                        r="8"
-                        :class="event.kind" />
-                    <text :x="x(event.index)" y="317" text-anchor="middle">
-                        {{ event.kind === 'split' ? 'S' : 'D' }}
-                    </text>
-                </g>
-                <text x="16" y="334" class="axis">거래량</text>
-                <line
-                    :x1="x(currentIndex)"
-                    :x2="x(currentIndex)"
-                    y1="24"
-                    y2="378"
-                    class="crosshair" />
-                <line
-                    x1="16"
-                    :x2="chartWidth - 68"
-                    :y1="y(current.close)"
-                    :y2="y(current.close)"
-                    class="crosshair" />
-                <text
-                    v-for="index in dateLabels"
-                    :key="index"
-                    :x="x(index)"
-                    y="402"
-                    :text-anchor="
-                        index === 0
-                            ? 'start'
-                            : index === candles.length - 1
-                              ? 'end'
-                              : 'middle'
-                    "
-                    class="axis">
-                    {{ candles[index].date }}
-                </text>
-            </svg>
+                </svg>
+            </div>
             <footer class="chart-note">
                 <span
                     ><i class="red" />상승 <i class="blue" />하락 ·
@@ -537,7 +591,7 @@
         fill: var(--app-accent);
     }
     .chart-event circle.split {
-        fill: #a855f7;
+        fill: var(--app-warning);
     }
     .chart-event text {
         fill: white;
@@ -647,7 +701,7 @@
     .candle-plot {
         display: block;
         width: 100%;
-        height: 410px;
+        height: 280px;
         touch-action: pan-y;
     }
     .candle-plot:focus-visible {
@@ -714,7 +768,7 @@
             font-size: 16px;
         }
         .candle-plot {
-            height: 320px;
+            height: 280px;
         }
         .quote-summary {
             gap: 16px;
@@ -735,5 +789,137 @@
         .chart-note {
             line-height: 1.6;
         }
+    }
+
+    /* 87cd200... source: three tool groups in one wrapping toolbar. */
+    .chart-accessible-title {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+    .chart-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .chart-heading,
+    .chart-navigation {
+        display: contents;
+    }
+    .periods,
+    .interval-controls {
+        display: inline-flex;
+        flex-wrap: nowrap;
+        padding: 4px;
+        gap: 4px;
+        border-radius: 8px;
+        background: var(--app-surface-muted);
+        width: auto;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+    .periods button,
+    .interval-controls button {
+        flex: 0 0 auto;
+        height: 36px;
+        min-height: 36px;
+        padding: 0 12px;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--app-muted);
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .periods button.active,
+    .interval-controls button[aria-pressed='true'] {
+        background: var(--app-surface);
+        color: var(--app-accent);
+        box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+    }
+    .zoom-controls {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .zoom-controls button {
+        height: 36px;
+        min-height: 36px;
+        padding: 0 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+    .chart-frame {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 16px;
+        padding: 18px 16px 12px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-surface);
+    }
+    .quote-summary {
+        margin: 0;
+        padding: 8px 12px;
+        gap: 8px;
+        border: 1px solid var(--app-border);
+        border-radius: 6px;
+        background: var(--app-bg);
+        font-size: 12px;
+    }
+    .quote-summary > div {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+    .quote-summary strong,
+    .quote-summary span,
+    .quote-summary dd,
+    .quote-summary dt {
+        font-size: 12px;
+    }
+    .quote-summary dl {
+        gap: 8px 16px;
+    }
+    .quote-summary dl > div {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .quote-summary dt {
+        margin: 0;
+    }
+    @media (max-width: 768px) {
+        .chart-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .periods,
+        .interval-controls {
+            width: 100%;
+        }
+    }
+    .volume-plot {
+        display: block;
+        width: 100%;
+        height: 80px;
+        box-sizing: border-box;
+        padding-top: 8px;
+        border-top: 1px dashed var(--app-border);
+        touch-action: pan-y;
+    }
+    .volume-bar rect {
+        stroke: none;
+    }
+    .chart-event circle:not(.split):not(.dividend) {
+        fill: var(--app-muted);
     }
 </style>

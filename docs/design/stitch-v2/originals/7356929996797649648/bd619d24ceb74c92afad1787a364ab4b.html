@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_blank" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-secondary-fixed-variant":"#5a4300","primary":"#005f55","surface":"#f7f9fb","surface-container-low":"#f2f4f6","on-surface-variant":"#3e4947","primary-fixed-dim":"#7dd6c8","on-primary-container":"#abfff0","on-surface":"#191c1e","on-tertiary-fixed-variant":"#005047","tertiary-fixed-dim":"#3cddc7","tertiary-fixed":"#62fae3","secondary-fixed":"#ffdf9a","tertiary":"#005f54","surface-container-lowest":"#ffffff","surface-bright":"#f7f9fb","tertiary-container":"#007a6d","on-secondary":"#ffffff","on-primary":"#ffffff","outline":"#6e7977","inverse-primary":"#7dd6c8","outline-variant":"#bdc9c6","on-tertiary-container":"#a8ffef","secondary":"#785a00","error":"#ba1a1a","primary-container":"#0d7a6e","inverse-on-surface":"#eff1f3","on-tertiary":"#ffffff","surface-variant":"#e0e3e5","on-tertiary-fixed":"#00201c","surface-container-highest":"#e0e3e5","surface-tint":"#006b60","on-primary-fixed-variant":"#005048","secondary-container":"#fdc425","primary-fixed":"#99f3e4","secondary-fixed-dim":"#f7be1d","background":"#f7f9fb","surface-container":"#eceef0","on-secondary-container":"#6d5200","surface-dim":"#d8dadc","inverse-surface":"#2d3133","on-error":"#ffffff","on-secondary-fixed":"#251a00","surface-container-high":"#e6e8ea","on-background":"#191c1e","on-primary-fixed":"#00201c","error-container":"#ffdad6","on-error-container":"#93000a"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-lg":"1rem",gutter:"1rem","gutter-lg":"1.5rem","margin-md":"1.5rem",margin:"1rem","space-xs":"0.25rem","space-md":"0.75rem","space-xl":"1.5rem","margin-lg":"2rem","space-sm":"0.5rem"},fontFamily:{"label-sm":["JetBrains Mono"],"body-md":["Hanken Grotesk"],"body-lg":["Hanken Grotesk"],"display-lg":["Hanken Grotesk"],"label-md":["JetBrains Mono"],"headline-lg":["Hanken Grotesk"],"display-lg-mobile":["Hanken Grotesk"],"body-sm":["Hanken Grotesk"],"headline-sm":["Hanken Grotesk"],"title-md":["Hanken Grotesk"]},fontSize:{"label-sm":["11px",{lineHeight:"14px",fontWeight:"500"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"display-lg":["36px",{lineHeight:"44px",fontWeight:"700"}],"label-md":["13px",{lineHeight:"16px",fontWeight:"500"}],"headline-lg":["24px",{lineHeight:"32px",fontWeight:"600"}],"display-lg-mobile":["28px",{lineHeight:"36px",fontWeight:"700"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"headline-sm":["20px",{lineHeight:"28px",fontWeight:"600"}],"title-md":["16px",{lineHeight:"24px",fontWeight:"600"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface min-h-screen antialiased selection:bg-primary-fixed selection:text-on-primary-fixed"><main class="w-full min-h-screen bg-surface px-margin md:px-margin-md lg:px-margin-lg py-margin md:py-margin-md lg:py-margin-lg"><div class="w-full max-w-[1440px] mx-auto"><div class="flex flex-col w-full text-on-surface [word-break:keep-all]">
+<div class="w-full pb-12 flex flex-col gap-6">
+<!-- Top Breadcrumb / Status Header -->
+<div class="flex items-center justify-between gap-4 py-1">
+<button class="h-11 px-4 inline-flex items-center gap-2 rounded-lg bg-surface-container-lowest text-on-surface font-title-md hover:bg-surface-container transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px] text-primary">arrow_back</span>
+<span class="font-body-md text-on-surface font-medium">검색으로 돌아가기</span>
+</button>
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/10 text-secondary">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm font-semibold tracking-wide">예시 데이터</span>
+</div>
+</div>
+<!-- Common Stock Summary Card -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-6">
+<!-- Title & Action Bar -->
+<div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+<div class="flex flex-col gap-1.5">
+<div class="flex flex-wrap items-center gap-2.5">
+<h1 class="font-display-lg text-display-lg font-bold text-on-surface tracking-tight">DEMO-A</h1>
+<span class="px-2.5 py-1 rounded-md bg-primary/10 text-primary font-label-sm font-semibold">예시 배당 ETF</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm">USD ($)</span>
+</div>
+<p class="font-body-md text-on-surface-variant">가상 고배당 인덱스 ETF · 예시 운용사 (ETF)</p>
+</div>
+<button class="h-11 px-5 inline-flex items-center justify-center gap-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-title-md transition-colors self-start md:self-auto" type="button">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span>공유 카드 만들기</span>
+</button>
+</div>
+<!-- 4 Key Metrics Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+<!-- 1. 현재 가격 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-1">
+<div class="font-label-md text-on-surface-variant">현재 가격</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-2xl font-bold font-label-md text-on-surface">$50.00</span>
+</div>
+<div class="font-label-sm text-outline">전일 $49.50</div>
+</div>
+<!-- 2. 전일 대비 변동 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-1">
+<div class="font-label-md text-on-surface-variant">전일 대비 변동</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-2xl font-bold font-label-md text-primary">+0.50</span>
+<span class="font-label-md font-semibold text-primary">(+1.01%)</span>
+</div>
+<div class="font-body-sm text-outline">종가 기준 반영</div>
+</div>
+<!-- 3. 최근 12개월 주당 배당금 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-1">
+<div class="font-label-md text-on-surface-variant">최근 12개월 주당 배당금</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-2xl font-bold font-label-md text-on-surface">$2.00</span>
+</div>
+<div class="font-body-sm text-outline">완전한 12개월 집계치 (단회 연율화 아님)</div>
+</div>
+<!-- 4. 최근 시세 대비 세전 배당률 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-1">
+<div class="font-label-md text-on-surface-variant">최근 시세 대비 세전 배당률</div>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-display-lg text-2xl font-bold font-label-md text-primary">4.00%</span>
+</div>
+<div class="font-body-sm text-outline">연율화 추정치 아닌 실적 기준</div>
+</div>
+</div>
+<!-- Sub Info Metadata Strip -->
+<div class="pt-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 text-body-sm text-on-surface-variant">
+<div class="flex flex-wrap items-center gap-3 md:gap-4 font-label-sm">
+<span>시세 기준: <strong class="text-on-surface font-semibold">2026.11.03</strong></span>
+<span class="text-outline-variant">·</span>
+<span>배당 기준: <strong class="text-on-surface font-semibold">2026.10.20</strong></span>
+<span class="px-2.5 py-1 rounded-full bg-secondary-fixed/40 text-on-secondary-fixed-variant font-label-sm font-semibold">다음 배당락: 11.15 (주기 추정)</span>
+</div>
+<p class="font-body-sm text-outline">※ 실시간 시세가 아닐 수 있으며 미확인 데이터는 0원이 아닙니다.</p>
+</div>
+</div>
+<!-- Local Navigation Tabs (Single Instance) -->
+<div class="w-full bg-surface-container-lowest rounded-xl px-4 shadow-sm flex items-center gap-2 overflow-x-auto">
+<button class="h-11 px-4 inline-flex items-center justify-center font-title-md text-on-surface-variant hover:text-on-surface transition-colors whitespace-nowrap" type="button">
+        상세정보
+      </button>
+<button class="h-11 px-4 inline-flex items-center justify-center font-title-md text-on-surface-variant hover:text-on-surface transition-colors whitespace-nowrap" type="button">
+        시세정보
+      </button>
+<button class="h-11 px-4 inline-flex items-center justify-center font-title-md font-bold text-primary relative whitespace-nowrap" type="button">
+        배당정보
+        <span class="absolute bottom-0 inset-x-0 h-0.5 bg-primary rounded-t-full"></span>
+</button>
+<button class="h-11 px-4 inline-flex items-center justify-center font-title-md text-on-surface-variant hover:text-on-surface transition-colors whitespace-nowrap" type="button">
+        공유정보
+      </button>
+</div>
+<!-- SECTION 1: 배당 일정 (Dividend Schedule) -->
+<section class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-5">
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-6 rounded-sm bg-primary"></span>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">1. 배당 일정</h2>
+</div>
+<span class="font-label-sm text-outline">예시 시뮬레이션 일정</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Recent Dividend Record -->
+<div class="bg-surface-container-low rounded-xl p-4 md:p-5 flex flex-col justify-between gap-4">
+<div class="flex items-center justify-between">
+<span class="px-2.5 py-1 rounded bg-primary/10 text-primary font-label-sm font-semibold">최근 공시 배당</span>
+<span class="font-label-sm text-on-surface-variant">월배당 회차 (예시)</span>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-baseline justify-between py-1">
+<span class="font-body-md text-on-surface-variant">공시 배당락일</span>
+<span class="font-label-md text-on-surface font-semibold">2026.10.15</span>
+</div>
+<div class="flex items-baseline justify-between py-1">
+<span class="font-body-md text-on-surface-variant">주당 배당금</span>
+<span class="font-display-lg text-xl font-bold font-label-md text-primary">$0.18</span>
+</div>
+<div class="flex items-baseline justify-between py-1">
+<span class="font-body-md text-on-surface-variant">지급일</span>
+<span class="font-label-md text-on-surface font-semibold">2026.10.24 (예시)</span>
+</div>
+</div>
+</div>
+<!-- Next Estimated Ex-Dividend Date -->
+<div class="bg-surface-container-low rounded-xl p-4 md:p-5 flex flex-col justify-between gap-4">
+<div class="flex items-center justify-between">
+<span class="px-2.5 py-1 rounded bg-secondary-fixed/40 text-on-secondary-fixed-variant font-label-sm font-semibold">다음 주기 추정</span>
+<span class="font-label-sm text-outline">미확정 예측치</span>
+</div>
+<div class="flex flex-col gap-3 py-2">
+<div class="font-body-md text-on-surface-variant">다음 배당락일 (주기 추정)</div>
+<div class="font-display-lg text-2xl font-bold font-label-md text-on-surface">2026.11.15</div>
+<p class="font-body-sm text-on-surface-variant">공시 전 직전 주기 기준 예상 일자이며 확정된 지급일이 아닙니다.</p>
+</div>
+</div>
+</div>
+<!-- Schedule Notice -->
+<div class="p-3.5 rounded-lg bg-surface-container flex items-start gap-2.5 text-on-surface-variant font-body-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">info</span>
+<span>공시 지급일과 증권사 입금 처리 시점은 다를 수 있습니다.</span>
+</div>
+</section>
+<!-- SECTION 2: 월별 배당 추이 (Monthly Dividend Trend) -->
+<section class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-6 rounded-sm bg-primary"></span>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">2. 월별 배당 추이</h2>
+</div>
+<!-- Legend and Toggle (Always visible at all screen widths) -->
+<div class="flex flex-wrap items-center gap-4">
+<div class="flex items-center gap-3 font-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-sm bg-[#94a3b8]"></span>
+<span class="text-on-surface-variant">2025년</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-3 rounded-sm bg-[#0d7a6e]"></span>
+<span class="text-primary font-semibold">2026년</span>
+</div>
+</div>
+<div class="inline-flex rounded-lg bg-surface-container p-0.5" id="year-toggle-group">
+<button class="h-8 px-2.5 rounded-md font-label-sm font-semibold bg-surface-container-lowest text-primary shadow-sm" onclick="setChartYear('all')" type="button">전체 비교</button>
+<button class="h-8 px-2.5 rounded-md font-label-sm text-on-surface-variant hover:text-on-surface" onclick="setChartYear('2026')" type="button">2026</button>
+<button class="h-8 px-2.5 rounded-md font-label-sm text-on-surface-variant hover:text-on-surface" onclick="setChartYear('2025')" type="button">2025</button>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-outline">단위: 주당 USD ($) · 배당락일 기준</span>
+<span class="font-body-sm text-outline">※ 기록 없음은 0원이 아닙니다. (11월: 부분 집계, 12월: 미래 미확인 (-))</span>
+</div>
+<!-- Visual Graphic Chart -->
+<div class="w-full overflow-x-auto pb-2">
+<div class="min-w-[620px] flex flex-col gap-3">
+<!-- Chart Grid Container -->
+<div class="h-56 relative flex items-end justify-between pt-6 px-4 bg-surface-container-low rounded-xl">
+<!-- Y-Axis Reference lines -->
+<div class="absolute inset-x-0 top-6 h-px bg-outline-variant/30"></div>
+<div class="absolute inset-x-0 top-24 h-px bg-outline-variant/20"></div>
+<div class="absolute inset-x-0 top-40 h-px bg-outline-variant/20"></div>
+<!-- Month 1 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 60%;" title="2025 1월: $0.15"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 65%;" title="2026 1월: $0.16"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">1월</span>
+</div>
+<!-- Month 2 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 62%;" title="2025 2월: $0.15"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 67%;" title="2026 2월: $0.16"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">2월</span>
+</div>
+<!-- Month 3 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 65%;" title="2025 3월: $0.16"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 70%;" title="2026 3월: $0.17"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">3월</span>
+</div>
+<!-- Month 4 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 63%;" title="2025 4월: $0.15"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 68%;" title="2026 4월: $0.16"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">4월</span>
+</div>
+<!-- Month 5 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 66%;" title="2025 5월: $0.16"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 72%;" title="2026 5월: $0.17"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">5월</span>
+</div>
+<!-- Month 6 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 68%;" title="2025 6월: $0.16"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 75%;" title="2026 6월: $0.18"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">6월</span>
+</div>
+<!-- Month 7 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 65%;" title="2025 7월: $0.16"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 72%;" title="2026 7월: $0.17"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">7월</span>
+</div>
+<!-- Month 8 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 68%;" title="2025 8월: $0.16"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 74%;" title="2026 8월: $0.17"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">8월</span>
+</div>
+<!-- Month 9 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 70%;" title="2025 9월: $0.17"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 76%;" title="2026 9월: $0.18"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">9월</span>
+</div>
+<!-- Month 10 -->
+<div class="flex flex-col items-center gap-2 z-10 w-11 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 70%;" title="2025 10월: $0.17"></div>
+<div class="w-3.5 bg-[#0d7a6e] rounded-t transition-all" style="height: 78%;" title="2026 10월: $0.18"></div>
+</div>
+<span class="font-label-sm text-on-surface-variant">10월</span>
+</div>
+<!-- Month 11 (Partial) -->
+<div class="flex flex-col items-center gap-2 z-10 w-12 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 68%;" title="2025 11월: $0.16"></div>
+<div class="w-3.5 bg-[#0d7a6e]/50 rounded-t border-t-2 border-[#0d7a6e] border-dashed" style="height: 38%;" title="2026 11월: 부분 집계 (예상 $0.09)"></div>
+</div>
+<div class="flex flex-col items-center leading-none">
+<span class="font-label-sm text-on-surface-variant">11월</span>
+<span class="text-[9px] text-secondary font-semibold">부분</span>
+</div>
+</div>
+<!-- Month 12 (Future / Unconfirmed) -->
+<div class="flex flex-col items-center gap-2 z-10 w-12 group">
+<div class="flex items-end gap-1.5 h-36">
+<div class="w-3.5 bg-[#94a3b8] rounded-t transition-all" style="height: 72%;" title="2025 12월: $0.17"></div>
+<div class="w-3.5 h-2 bg-surface-container-highest rounded text-center text-outline font-label-sm leading-none flex items-center justify-center" title="2026 12월: 미래 미확인">-</div>
+</div>
+<div class="flex flex-col items-center leading-none">
+<span class="font-label-sm text-on-surface-variant">12월</span>
+<span class="text-[9px] text-outline">미확인</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: 지표 9개 (9 Key Financial & Dividend Indicators) -->
+<section class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-5">
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-6 rounded-sm bg-primary"></span>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">3. 핵심 재무 &amp; 배당 지표</h2>
+</div>
+<span class="px-2.5 py-1 rounded bg-surface-container text-on-surface-variant font-label-sm">9개 지표</span>
+</div>
+<!-- 9 Indicator Cells Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+<!-- 1 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-2">
+<span class="font-body-md text-on-surface-variant">1. 1년 조정 종가 총수익률</span>
+<span class="font-label-md font-semibold text-outline">미확인</span>
+</div>
+<!-- 2 (Known) -->
+<div class="bg-primary/5 rounded-lg p-4 flex flex-col justify-between gap-2">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-on-surface font-medium">2. TTM 배당금</span>
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-label-sm font-semibold">실적</span>
+</div>
+<span class="font-display-lg text-2xl font-bold font-label-md text-primary">$2.00</span>
+</div>
+<!-- 3 (Known) -->
+<div class="bg-primary/5 rounded-lg p-4 flex flex-col justify-between gap-2">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-on-surface font-medium">3. TTM 세전 배당수익률</span>
+<span class="px-2 py-0.5 rounded bg-primary/10 text-primary font-label-sm font-semibold">실적</span>
+</div>
+<span class="font-display-lg text-2xl font-bold font-label-md text-primary">4.00%</span>
+</div>
+<!-- 4 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-2">
+<span class="font-body-md text-on-surface-variant">4. 총보수 (운용수수료)</span>
+<span class="font-label-md font-semibold text-outline">미확인</span>
+</div>
+<!-- 5 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-2">
+<span class="font-body-md text-on-surface-variant">5. 순자산가치 (NAV)</span>
+<span class="font-label-md font-semibold text-outline">미확인</span>
+</div>
+<!-- 6 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-2">
+<span class="font-body-md text-on-surface-variant">6. 총 운용자산 (AUM)</span>
+<span class="font-label-md font-semibold text-outline">미확인</span>
+</div>
+<!-- 7 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-2">
+<span class="font-body-md text-on-surface-variant">7. 매수·매도 스프레드</span>
+<span class="font-label-md font-semibold text-outline">미확인</span>
+</div>
+<!-- 8 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-2">
+<span class="font-body-md text-on-surface-variant">8. 30일 평균 거래량</span>
+<span class="font-label-md font-semibold text-outline">미확인</span>
+</div>
+<!-- 9 -->
+<div class="bg-surface-container-low rounded-lg p-4 flex flex-col justify-between gap-2">
+<span class="font-body-md text-on-surface-variant">9. 시가총액</span>
+<span class="font-label-md font-semibold text-outline">미확인</span>
+</div>
+</div>
+<!-- Explanatory Footnote -->
+<div class="p-3.5 rounded-lg bg-surface-container text-on-surface-variant font-body-sm leading-relaxed">
+        자료 출처: 가상 시장 데이터 스냅샷 · 기준일: 2026.10.20. 알려진 TTM 실적 배당 지표 외 항목은 공식 공시 또는 검증 데이터 미확인 상태이며 임의 추정치를 산출하지 않습니다.
+      </div>
+</section>
+<!-- SECTION 4: 배당·ROC 이력 (Single unified section) -->
+<section class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-6">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-6 rounded-sm bg-primary"></span>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">4. 배당·ROC 이력</h2>
+</div>
+<!-- Segmented Controls & Primary Action Button -->
+<div class="flex flex-wrap items-center gap-2.5">
+<div class="inline-flex rounded-lg bg-surface-container p-1">
+<button class="h-9 px-3 rounded-md bg-surface-container-lowest font-body-md font-medium text-primary shadow-sm" type="button">월별 요약 (기본)</button>
+<button class="h-9 px-3 rounded-md font-body-md text-on-surface-variant hover:text-on-surface" type="button">회차별 이력</button>
+<button class="h-9 px-3 rounded-md font-body-md text-on-surface-variant hover:text-on-surface" type="button">차트 전환</button>
+</div>
+<button class="h-11 px-4 inline-flex items-center gap-2 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-title-md transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">description</span>
+<span>원문 공시 확인 진입</span>
+</button>
+</div>
+</div>
+<!-- Detail Modal/Drawer Trigger Banner -->
+<div class="p-4 rounded-xl bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[24px]">calendar_month</span>
+<div class="flex flex-col">
+<span class="font-title-md font-semibold text-on-surface">달 상세 진입</span>
+<span class="font-body-sm text-on-surface-variant">회차별 배당락일 · 지급일 · 배당액 · ROC액 · ROC 비율 · 출처 조회</span>
+</div>
+</div>
+<button class="h-10 px-4 inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary text-on-primary font-body-md font-semibold hover:bg-primary/90 transition-colors shrink-0" type="button">
+<span>상세 조회</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+<!-- Primary Monthly Summary Table -->
+<div class="w-full overflow-x-auto rounded-lg">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low font-label-md text-on-surface-variant uppercase">
+<th class="py-3 px-4 text-left font-semibold">월 (Month)</th>
+<th class="py-3 px-4 text-right font-semibold">2025년 (USD)</th>
+<th class="py-3 px-4 text-right font-semibold">2026년 (USD)</th>
+</tr>
+</thead>
+<tbody class="font-body-md divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">1월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1500</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1600</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">2월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1500</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1600</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">3월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1600</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1700</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">4월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1500</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1600</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">5월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1600</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1700</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">6월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1600</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1800</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">7월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1600</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1700</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">8월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1600</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1700</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">9월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1700</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1800</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">10월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1700</td>
+<td class="py-3 px-4 text-right font-label-md text-primary font-semibold">$0.1800</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">11월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1600</td>
+<td class="py-3 px-4 text-right font-label-md text-secondary font-semibold">부분 집계</td>
+</tr>
+<tr class="hover:bg-surface-container-low/60 transition-colors">
+<td class="py-3 px-4 font-semibold text-on-surface">12월</td>
+<td class="py-3 px-4 text-right font-label-md text-on-surface">$0.1700</td>
+<td class="py-3 px-4 text-right font-label-md text-outline">미래 미확인 (-)</td>
+</tr>
+<!-- Annual Total Row -->
+<tr class="bg-surface-container-high font-semibold">
+<td class="py-3.5 px-4 text-on-surface">연도 합계 (Annual Total)</td>
+<td class="py-3.5 px-4 text-right font-label-md text-on-surface">$1.9200</td>
+<td class="py-3.5 px-4 text-right font-label-md text-primary">$1.7000 (10월 누적)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Critical ROC Notice -->
+<div class="p-3.5 rounded-lg bg-surface-container text-on-surface-variant font-body-sm leading-relaxed">
+        ※ ROC(자본반환) 미확인은 0%가 아니며, 0%를 순이익 전액으로 추론하지 않습니다. 본 자료는 세무 확정 내역이 아닌 공시 관측 정보입니다.
+      </div>
+<!-- Pagination (Exactly 1 page, disabled prev/next) -->
+<div class="flex items-center justify-between pt-2">
+<span class="font-label-sm text-outline">총 1페이지 중 1페이지</span>
+<div class="inline-flex items-center gap-1.5">
+<button class="w-9 h-9 rounded-lg bg-surface-container text-outline opacity-50 cursor-not-allowed inline-flex items-center justify-center" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-9 h-9 rounded-lg bg-primary text-on-primary font-label-sm font-semibold inline-flex items-center justify-center" type="button">
+            1
+          </button>
+<button class="w-9 h-9 rounded-lg bg-surface-container text-outline opacity-50 cursor-not-allowed inline-flex items-center justify-center" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- SECTION 5: 익명 요청 및 한마디 (Anonymous Feedback & Request) -->
+<section class="w-full bg-surface-container-lowest rounded-xl p-5 md:p-6 shadow-sm flex flex-col gap-5">
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="w-2.5 h-6 rounded-sm bg-primary"></span>
+<h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">5. 익명 요청 및 한마디</h2>
+</div>
+<span class="font-label-sm text-outline">비회원 전송 가능</span>
+</div>
+<form class="flex flex-col gap-4" id="feedback-form" onsubmit="event.preventDefault(); submitFeedback();">
+<!-- Category Selection -->
+<div class="flex flex-col gap-1.5">
+<label class="font-body-md font-medium text-on-surface" for="feedback-category">문의 및 요청 유형</label>
+<div class="relative w-full max-w-xs">
+<select class="w-full h-11 px-3.5 pr-10 rounded-lg bg-surface-container-lowest text-on-surface font-body-md border-0 bg-surface-container focus:bg-surface-container-lowest transition-colors appearance-none" id="feedback-category">
+<option value="error">정보 오류</option>
+<option value="request">추가 정보 요청</option>
+<option value="question">질문</option>
+<option value="etc">기타</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">expand_more</span>
+</div>
+</div>
+<!-- Textarea with Live Counter -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-body-md font-medium text-on-surface" for="feedback-content">내용 작성 (10 ~ 1,000자)</label>
+<span class="font-label-sm text-outline" id="char-counter">0 / 1,000자</span>
+</div>
+<textarea class="w-full p-3.5 rounded-lg bg-surface-container text-on-surface font-body-md focus:bg-surface-container-lowest transition-colors resize-none leading-relaxed" id="feedback-content" maxlength="1000" oninput="updateCharCount(this)" placeholder="오류 사항이나 필요한 배당 정보 요청을 자유롭게 입력해 주세요." rows="4"></textarea>
+</div>
+<!-- Disclaimer & Submit Button -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+<p class="font-body-sm text-outline leading-tight">개인정보는 수집되지 않으며 전송된 의견은 서비스 품질 향상에 활용됩니다.</p>
+<button class="h-11 px-6 rounded-lg bg-primary hover:bg-primary/90 text-on-primary font-title-md font-semibold inline-flex items-center justify-center gap-2 transition-colors shrink-0" id="submit-btn" type="submit">
+<span class="material-symbols-outlined text-[18px]">send</span>
+<span>요청 전송하기</span>
+</button>
+</div>
+</form>
+</section>
+</div>
+</div>
+<script>
+  function updateCharCount(textarea) {
+    var count = textarea.value.length;
+    var counterEl = document.getElementById('char-counter');
+    if (counterEl) {
+      counterEl.textContent = count + ' / 1,000자';
+      if (count < 10) {
+        counterEl.className = 'font-label-sm text-outline';
+      } else {
+        counterEl.className = 'font-label-sm text-primary font-semibold';
+      }
+    }
+  }
+
+  function submitFeedback() {
+    var textarea = document.getElementById('feedback-content');
+    var val = textarea ? textarea.value.trim() : '';
+    if (val.length < 10) {
+      alert('10자 이상 내용을 입력해 주세요.');
+      return;
+    }
+    alert('요청이 정상적으로 접수되었습니다. (가상 전송)');
+    if (textarea) textarea.value = '';
+    updateCharCount({ value: '' });
+  }
+
+  function setChartYear(mode) {
+    var buttons = document.querySelectorAll('#year-toggle-group button');
+    buttons.forEach(function(btn) {
+      btn.className = 'h-8 px-2.5 rounded-md font-label-sm text-on-surface-variant hover:text-on-surface';
+    });
+    if (event && event.currentTarget) {
+      event.currentTarget.className = 'h-8 px-2.5 rounded-md font-label-sm font-semibold bg-surface-container-lowest text-primary shadow-sm';
+    }
+  }
+</script></div></main></body></html>

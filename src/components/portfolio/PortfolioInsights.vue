@@ -7,6 +7,7 @@
     import HoldingDividendCapitalChart from './HoldingDividendCapitalChart.vue';
     import Button from 'primevue/button';
     import Select from 'primevue/select';
+    import DatePicker from 'primevue/datepicker';
     import SelectButton from 'primevue/selectbutton';
     import InputNumber from 'primevue/inputnumber';
     import Message from 'primevue/message';
@@ -39,6 +40,33 @@
     const month = ref(today.value.slice(0, 7)),
         accountId = ref(''),
         currency = ref('USD');
+    // DatePicker uses local calendar fields; ledger periods remain YYYY-MM.
+    const analysisMonthDate = computed({
+        get: () =>
+            validCalendarDate(`${month.value}-01`)
+                ? new Date(
+                      Number(month.value.slice(0, 4)),
+                      Number(month.value.slice(5, 7)) - 1,
+                      1
+                  )
+                : null,
+        set: (value) => {
+            month.value =
+                value instanceof Date && Number.isFinite(value.getTime())
+                    ? `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}`
+                    : '';
+        },
+    });
+    const minimumAnalysisMonth = new Date(1900, 0, 1);
+    const maximumAnalysisMonth = computed(
+        () =>
+            new Date(
+                Number(today.value.slice(0, 4)),
+                Number(today.value.slice(5, 7)) - 1,
+                1
+            )
+    );
+
     const entries = ref([]),
         loading = ref(false),
         issue = ref(null),
@@ -250,6 +278,20 @@
         },
         { immediate: true, flush: 'sync' }
     );
+    // Pixel scaling only; values, cancellation handling and missing-data states come from dividendInsights.
+    const monthlyChartScale = computed(() =>
+        Math.max(
+            1,
+            ...(dividends.value?.months || [])
+                .filter(
+                    (row) =>
+                        !row.afterRange &&
+                        row.count > 0 &&
+                        Number.isFinite(row.amount)
+                )
+                .map((row) => Math.abs(row.amount))
+        )
+    );
 </script>
 
 <template>
@@ -258,34 +300,22 @@
         aria-labelledby="insights-title"
         :aria-busy="loading">
         <div class="insights-heading">
-            <div>
-                <h2 id="insights-title">배당 성과·집중도 분석</h2>
-                <p>
-                    저장된 배당 기록과 자료 평가액으로 투자 구성을 살펴보세요.
-                </p>
-            </div>
-            <Button
-                label="분석 다시 조회"
-                icon="pi pi-refresh"
-                outlined
-                severity="secondary"
-                :loading="loading"
-                :disabled="coolingDown || !accounts.length"
-                @click="refresh++" />
+            <h1 id="insights-title">배당 성과·집중도 분석</h1>
+            <p>
+                기준월:
+                {{
+                    month
+                        ? `${month.slice(0, 4)}년 ${Number(month.slice(5, 7))}월`
+                        : '미선택'
+                }}
+                · 취소 내역이 차감 반영된 저장 배당 자료 기준
+            </p>
         </div>
         <div class="insights-filters">
-            <label for="insights-month"
-                >분석 월<input
-                    id="insights-month"
-                    v-model="month"
-                    type="month"
-                    min="1900-01"
-                    :max="today.slice(0, 7)"
-            /></label>
             <label for="insights-account"
-                >계좌<Select
+                >분석 대상 계좌<Select
                     input-id="insights-account"
-                    aria-label="계좌"
+                    aria-label="분석 대상 계좌"
                     placeholder="모든 계좌"
                     v-model="accountId"
                     :options="accountOptions"
@@ -293,15 +323,35 @@
                     option-value="value"
             /></label>
             <label for="insights-currency"
-                >통화<Select
+                >기준 통화<Select
                     input-id="insights-currency"
-                    aria-label="통화"
+                    aria-label="기준 통화"
                     v-model="selectedCurrency"
                     :options="currencyOptions"
                     option-label="label"
                     option-value="value"
                     placeholder="기록 없음"
             /></label>
+            <label for="insights-month"
+                >분석 월 선택 (현재월 이하)<DatePicker
+                    v-model="analysisMonthDate"
+                    input-id="insights-month"
+                    view="month"
+                    date-format="yy년 mm월"
+                    :min-date="minimumAnalysisMonth"
+                    :max-date="maximumAnalysisMonth"
+                    show-icon
+                    icon-display="input"
+                    append-to="self"
+                    :pt="{
+                        panel: { style: { maxWidth: 'calc(100vw - 24px)' } },
+                    }"
+            /></label>
+            <Button
+                label="분석 다시 조회"
+                :loading="loading"
+                :disabled="coolingDown || !accounts.length"
+                @click="refresh++" />
         </div>
         <p class="insights-note">
             배당 취소를 차감한 저장 기록입니다. 실제 지급 내역의 완전성이나
@@ -318,79 +368,6 @@
             ></Message
         >
         <template v-else>
-            <AdvancedPortfolioInsights
-                v-if="
-                    selectedAccounts.length &&
-                    ['USD', 'KRW'].includes(selectedCurrency)
-                "
-                :key="`advanced:${firebaseUser?.uid}:${familyId}:${accountId}:${selectedCurrency}:${month}`"
-                :entries="entries"
-                :positions="selectedPositions"
-                :accounts="selectedAccounts"
-                :month="month"
-                :currency="selectedCurrency"
-                :today="today" />
-            <HoldingDividendCapitalChart
-                v-if="
-                    selectedAccounts.length &&
-                    ['USD', 'KRW'].includes(selectedCurrency)
-                "
-                :accounts="selectedAccounts"
-                :positions="selectedPositions"
-                :currency="selectedCurrency"
-                :today="today" />
-            <MonthlyStatement
-                v-if="
-                    dividends &&
-                    selectedAccounts.length &&
-                    selectedCurrency !== 'UNKNOWN'
-                "
-                :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${selectedCurrency}:${month}`"
-                :group="dividends"
-                :month="month"
-                :today="today"
-                :user-id="firebaseUser?.uid || ''"
-                :family-id="
-                    selectedAccounts.length &&
-                    selectedAccounts.every(
-                        (a) => a.familyId === selectedAccounts[0].familyId
-                    )
-                        ? selectedAccounts[0].familyId || familyId
-                        : familyId
-                "
-                :account-ids="selectedAccounts.map((account) => account.id)"
-                :account-revisions="
-                    Object.fromEntries(
-                        selectedAccounts.map((account) => [
-                            account.id,
-                            account.entriesRevision ?? 0,
-                        ])
-                    )
-                "
-                :rejected="report.rejected" />
-            <HoldingScenarioComparison
-                v-if="
-                    ['USD', 'KRW'].includes(selectedCurrency) &&
-                    selectedAccounts.length
-                "
-                :key="`holding:${familyId}:${accountId}:${selectedCurrency}:${month}`"
-                :positions="selectedPositions"
-                :entries="entries"
-                :currency="selectedCurrency"
-                :month="month" />
-            <InvestmentWorkbench
-                v-if="
-                    ['USD', 'KRW'].includes(selectedCurrency) &&
-                    selectedAccounts.length
-                "
-                :key="`${familyId}:${accountId}:${selectedCurrency}:${month}`"
-                :entries="entries"
-                :positions="selectedPositions"
-                :accounts="selectedAccounts"
-                :family-id="familyId"
-                :currency="selectedCurrency"
-                :month="month"
-                :largest-share="asset?.symbols.rows[0]?.share ?? null" />
             <Message v-if="report.rejected" severity="warn" :closable="false"
                 >날짜가 없거나 유효하지 않은 날짜·미래 날짜의 배당
                 {{ report.rejected }}건은 분석에서 제외했습니다.</Message
@@ -448,7 +425,13 @@
                     </article>
                     <article>
                         <h3>저장 기록 전년 동월 대비</h3>
-                        <strong>{{ percent(dividends.yearOverYear) }}</strong>
+                        <strong
+                            :class="{
+                                'insights-comparison-unavailable':
+                                    dividends.yearOverYear == null,
+                            }"
+                            >{{ percent(dividends.yearOverYear) }}</strong
+                        >
                         <p>
                             전년 동월
                             {{
@@ -464,199 +447,402 @@
                             않습니다.</small
                         >
                     </article>
-                </div>
-                <h3>월별 배당 기록</h3>
-                <p>기록 없음은 배당 0원을 의미하지 않습니다.</p>
-                <DataTable
-                    :value="dividends.months"
-                    :table-props="{ 'aria-label': '월별 저장 배당 기록' }"
-                    scrollable>
-                    <Column field="month" header="월" />
-                    <Column :header="`저장 금액 (${selectedCurrency})`"
-                        ><template #body="{ data }">{{
-                            data.afterRange
-                                ? '분석 범위 밖'
-                                : money(data.amount, data.count > 0)
-                        }}</template></Column
-                    >
-                    <Column header="자료 상태"
-                        ><template #body="{ data }">{{
-                            data.afterRange
-                                ? '—'
-                                : `${data.count}건${data.unknown ? ` · 금액 미확인 ${data.unknown}건` : ''}`
-                        }}</template></Column
-                    >
-                </DataTable>
-                <div class="insights-tools">
-                    <article>
-                        <h3>월 배당 목표</h3>
-                        <label for="dividend-goal"
-                            >{{ selectedCurrency }} 목표 금액<InputNumber
-                                input-id="dividend-goal"
-                                v-model="goal"
-                                :min="0"
-                                :max-fraction-digits="2"
-                                :use-grouping="true"
-                                :disabled="selectedCurrency === 'UNKNOWN'"
-                        /></label>
-                        <p>
-                            선택 월의 기록 기준 달성률
-                            {{ percent(goalPercent) }}
-                        </p>
-                        <ProgressBar
-                            v-if="goalPercent != null"
-                            :value="Math.min(100, Math.max(0, goalPercent))"
-                            :show-value="false"
-                            aria-label="기록 기준 월 배당 목표 달성률" /><small
-                            >목표는 현재 화면에서만 사용합니다.</small
-                        >
-                    </article>
-                    <article>
-                        <h3>배당 감소 가정</h3>
-                        <label for="stress-symbol"
-                            >대상 종목<Select
-                                input-id="stress-symbol"
-                                aria-label="대상 종목"
-                                v-model="selectedStress"
-                                :options="stressOptions"
-                                placeholder="선택 월 양수 기록 없음" /></label
-                        ><label for="stress-reduction"
-                            >감소율 (%)<InputNumber
-                                input-id="stress-reduction"
-                                v-model="reduction"
-                                :min="0"
-                                :max="100"
-                                :max-fraction-digits="1"
-                        /></label>
-                        <p v-if="stress">
-                            감소액 {{ money(stress.decrease) }}
-                            {{ selectedCurrency }} · 적용 후
-                            {{ money(stress.after) }} {{ selectedCurrency }}
-                        </p>
-                        <p v-else>
-                            선택 월의 종목·금액·통화를 확인하면 비교할 수
-                            있습니다.
-                        </p>
+                    <article class="insight-basis-card">
+                        <h3>자료 기준 안내</h3>
+                        <strong>통화별 독립 보존</strong>
+                        <p>환산·합산 없음 · 저장 기록 기준</p>
                         <small
-                            >선택 월 저장 기록에 감소율을 적용한 가정이며 미래
-                            배당 예측이 아닙니다.</small
+                            >선택 통화 {{ selectedCurrency }} · 취소 내역
+                            차감</small
                         >
                     </article>
                 </div>
-                <h3>누적 배당 기여도</h3>
-                <p>
-                    상위 3종목 비중
-                    {{ percent(dividends.contributions.topThree) }} · 취소 차감
-                    후 양수인 종목별 금액의 합계가 기준입니다.
-                </p>
-                <Message
-                    v-if="dividends.contributions.negativeGroups"
-                    severity="warn"
-                    :closable="false"
-                    >취소가 더 큰 {{ dividends.contributions.negativeGroups }}개
-                    종목은 금액에 표시하고 양수 합계 비중에서
-                    제외했습니다.</Message
-                >
-                <DataTable
-                    :value="dividends.contributions.rows"
-                    paginator
-                    :rows="10"
-                    :table-props="{ 'aria-label': '종목별 누적 배당 기여도' }"
-                    scrollable>
-                    <Column field="label" header="종목" /><Column
-                        :header="`누적 기록 (${selectedCurrency})`"
-                        ><template #body="{ data }"
-                            >{{ money(data.amount)
-                            }}<small v-if="data.unknown">
-                                · 미확인 {{ data.unknown }}건</small
-                            ></template
-                        ></Column
-                    >
-                    <Column header="양수 금액 기준 비중"
-                        ><template #body="{ data }"
-                            ><div class="insights-share">
-                                {{ percent(data.share)
-                                }}<ProgressBar
-                                    v-if="data.share != null"
-                                    :value="data.share"
-                                    :show-value="false" /></div></template
-                    ></Column>
-                </DataTable>
             </template>
-            <p v-else-if="accounts.length">
-                선택한 통화·연도의 저장된 배당 기록이 없습니다. 배당 캘린더의
-                공시 예상액과는 별개입니다.
-            </p>
-            <h3 v-if="accounts.length">자료 평가액 기준 자산 집중도</h3>
-            <Message v-if="metadataError" severity="warn" :closable="false">{{
-                metadataError
-            }}</Message>
-            <Message v-if="missingAccounts" severity="warn" :closable="false"
-                >잔고 자료가 없는 {{ missingAccounts }}개 계좌는 자산 분석에서
-                제외했습니다.</Message
-            >
-            <template v-if="asset">
-                <p>
-                    현금 제외 · 확인된 자료 평가액 {{ money(asset.total) }}
-                    {{ selectedCurrency }} · 종목 상위 3개 비중
-                    {{ percent(asset.symbols.topThree) }}
-                </p>
-                <p>
-                    잔고 기준일 {{ asset.dates.join(' / ') || '미확인'
-                    }}{{
-                        asset.dates.length > 1
-                            ? ' · 기준일이 서로 다릅니다.'
-                            : ''
-                    }}
-                </p>
-                <p v-if="asset.excluded">
-                    평가액 미확인·음수 항목 {{ asset.excluded }}개 제외 · 일부
-                    금액 기준입니다.
-                </p>
-                <SelectButton
-                    v-model="assetDimension"
-                    :options="assetOptions"
-                    option-label="label"
-                    option-value="value"
-                    :allow-empty="false"
-                    aria-label="자산 집중도 분류" />
-                <p class="insights-note">
-                    운용사·기초자산·업종·국가는 앱 분류 자료 기준입니다. 확인된
-                    분류가 없으면 종목별 미분류로 표시합니다. 기초자산 연결은
-                    롱·인버스·레버리지 방향과 배수를 반영한 실질 노출도가
-                    아닙니다. 미분류는 종목별로 구분합니다.
-                </p>
-                <p>
-                    운용사 미분류 {{ asset.unknownProvider }}개 항목 · 기초자산
-                    미분류 {{ asset.unknownUnderlying }}개 항목
-                </p>
-                <DataTable
-                    :value="asset[assetDimension].rows"
-                    paginator
-                    :rows="10"
-                    :table-props="{ 'aria-label': '자산 집중도 내역' }"
-                    scrollable>
-                    <Column field="label" header="분류" /><Column
-                        :header="`자료 평가액 (${selectedCurrency})`"
-                        ><template #body="{ data }">{{
-                            money(data.amount)
-                        }}</template></Column
+            <div v-if="accounts.length" class="insights-workspace">
+                <section
+                    class="insights-records"
+                    aria-label="월별 배당 기록과 계산 도구">
+                    <template v-if="dividends">
+                        <header class="insights-records-heading">
+                            <h3>
+                                {{ month.slice(0, 4) }}년 월별 저장 기록
+                                (12개월)
+                            </h3>
+                            <p>기록 없음은 배당 0원을 의미하지 않습니다.</p>
+                        </header>
+                        <DataTable
+                            class="insights-month-table"
+                            :row-class="
+                                (data) =>
+                                    data.month === month
+                                        ? 'insights-selected-month'
+                                        : ''
+                            "
+                            :value="dividends.months"
+                            :table-props="{
+                                'aria-label': '월별 저장 배당 기록',
+                            }"
+                            scrollable>
+                            <Column field="month" header="월"
+                                ><template #body="{ data }"
+                                    >{{ data.month.slice(0, 4) }}년
+                                    {{ data.month.slice(5, 7) }}월</template
+                                ></Column
+                            >
+                            <Column :header="`저장 금액 (${selectedCurrency})`"
+                                ><template #body="{ data }">{{
+                                    data.afterRange || data.count === 0
+                                        ? '-'
+                                        : money(data.amount, true)
+                                }}</template></Column
+                            >
+                            <Column header="자료 상태"
+                                ><template #body="{ data }"
+                                    ><span
+                                        class="insights-record-status"
+                                        :class="
+                                            data.afterRange
+                                                ? 'status-outside'
+                                                : data.unknown
+                                                  ? 'status-missing'
+                                                  : data.count
+                                                    ? 'status-recorded'
+                                                    : 'status-none'
+                                        "
+                                        >{{
+                                            data.afterRange
+                                                ? '분석 범위 밖 (—)'
+                                                : data.count === 0
+                                                  ? '기록 없음 (0건)'
+                                                  : `저장 기록 (${data.count}건)${data.unknown ? ` · 금액 미확인 ${data.unknown}건` : ''}`
+                                        }}</span
+                                    ></template
+                                ></Column
+                            >
+                        </DataTable>
+                        <div class="insights-tools">
+                            <article>
+                                <h3>월 배당 목표</h3>
+                                <label for="dividend-goal"
+                                    >{{ selectedCurrency }} 목표
+                                    금액<InputNumber
+                                        input-id="dividend-goal"
+                                        v-model="goal"
+                                        :min="0"
+                                        :max-fraction-digits="2"
+                                        :use-grouping="true"
+                                        :disabled="
+                                            selectedCurrency === 'UNKNOWN'
+                                        "
+                                /></label>
+                                <p>
+                                    선택 월의 기록 기준 달성률
+                                    {{ percent(goalPercent) }}
+                                </p>
+                                <ProgressBar
+                                    v-if="goalPercent != null"
+                                    :value="
+                                        Math.min(100, Math.max(0, goalPercent))
+                                    "
+                                    :show-value="false"
+                                    aria-label="기록 기준 월 배당 목표 달성률" /><small
+                                    >목표는 현재 화면에서만 사용합니다.</small
+                                >
+                            </article>
+                            <article>
+                                <h3>배당 감소 가정</h3>
+                                <label for="stress-symbol"
+                                    >대상 종목<Select
+                                        input-id="stress-symbol"
+                                        aria-label="대상 종목"
+                                        v-model="selectedStress"
+                                        :options="stressOptions"
+                                        placeholder="선택 월 양수 기록 없음" /></label
+                                ><label for="stress-reduction"
+                                    >감소율 (%)<InputNumber
+                                        input-id="stress-reduction"
+                                        v-model="reduction"
+                                        :min="0"
+                                        :max="100"
+                                        :max-fraction-digits="1"
+                                /></label>
+                                <p v-if="stress">
+                                    감소액 {{ money(stress.decrease) }}
+                                    {{ selectedCurrency }} · 적용 후
+                                    {{ money(stress.after) }}
+                                    {{ selectedCurrency }}
+                                </p>
+                                <p v-else>
+                                    선택 월의 종목·금액·통화를 확인하면 비교할
+                                    수 있습니다.
+                                </p>
+                                <small
+                                    >선택 월 저장 기록에 감소율을 적용한
+                                    가정이며 미래 배당 예측이 아닙니다.</small
+                                >
+                            </article>
+                        </div>
+                        <div
+                            class="insights-month-chart"
+                            role="group"
+                            aria-label="월별 저장 배당 차트">
+                            <div
+                                v-for="row in dividends.months"
+                                :key="row.month"
+                                class="insights-month-column"
+                                :aria-label="`${row.month}: ${row.afterRange ? '분석 범위 밖' : money(row.amount, row.count > 0)}`">
+                                <span class="insights-month-value">{{
+                                    row.afterRange
+                                        ? '범위 밖'
+                                        : money(row.amount, row.count > 0)
+                                }}</span>
+                                <div class="insights-bar-track">
+                                    <i
+                                        v-if="
+                                            !row.afterRange &&
+                                            row.count > 0 &&
+                                            Number.isFinite(row.amount)
+                                        "
+                                        :class="{ negative: row.amount < 0 }"
+                                        :style="{
+                                            height: `${(Math.abs(row.amount) / monthlyChartScale) * 100}%`,
+                                            minHeight:
+                                                row.amount === 0 ? '0' : '2px',
+                                        }" /><span v-else>—</span>
+                                </div>
+                                <span>{{ row.month.slice(-2) }}월</span>
+                            </div>
+                        </div>
+                    </template>
+                    <p v-else-if="accounts.length">
+                        선택한 통화·연도의 저장된 배당 기록이 없습니다. 배당
+                        캘린더의 공시 예상액과는 별개입니다.
+                    </p>
+                </section>
+                <section
+                    class="insights-distribution"
+                    aria-label="배당 기여도와 자산 집중도">
+                    <template v-if="dividends">
+                        <h3>누적 배당 기여도</h3>
+                        <p>
+                            상위 3종목 비중
+                            {{ percent(dividends.contributions.topThree) }} ·
+                            취소 차감 후 양수인 종목별 금액의 합계가 기준입니다.
+                        </p>
+                        <Message
+                            v-if="dividends.contributions.negativeGroups"
+                            severity="warn"
+                            :closable="false"
+                            >취소가 더 큰
+                            {{ dividends.contributions.negativeGroups }}개
+                            종목은 금액에 표시하고 양수 합계 비중에서
+                            제외했습니다.</Message
+                        >
+                        <DataTable
+                            :value="dividends.contributions.rows"
+                            paginator
+                            :rows="10"
+                            :table-props="{
+                                'aria-label': '종목별 누적 배당 기여도',
+                            }"
+                            scrollable>
+                            <Column field="label" header="종목" /><Column
+                                :header="`누적 기록 (${selectedCurrency})`"
+                                ><template #body="{ data }"
+                                    >{{ money(data.amount)
+                                    }}<small v-if="data.unknown">
+                                        · 미확인 {{ data.unknown }}건</small
+                                    ></template
+                                ></Column
+                            >
+                            <Column header="양수 금액 기준 비중"
+                                ><template #body="{ data }"
+                                    ><div class="insights-share">
+                                        {{ percent(data.share)
+                                        }}<ProgressBar
+                                            v-if="data.share != null"
+                                            :value="data.share"
+                                            :show-value="
+                                                false
+                                            " /></div></template
+                            ></Column>
+                        </DataTable>
+                    </template>
+                    <h3
+                        v-if="accounts.length"
+                        id="asset-concentration"
+                        tabindex="-1">
+                        자료 평가액 기준 자산 집중도
+                    </h3>
+                    <Message
+                        v-if="metadataError"
+                        severity="warn"
+                        :closable="false"
+                        >{{ metadataError }}</Message
                     >
-                    <Column header="확인 금액 기준 비중"
-                        ><template #body="{ data }"
-                            ><div class="insights-share">
-                                {{ percent(data.share)
-                                }}<ProgressBar
-                                    v-if="data.share != null"
-                                    :value="data.share"
-                                    :show-value="false" /></div></template
-                    ></Column>
-                </DataTable>
-            </template>
-            <p v-else-if="accounts.length">
-                선택한 통화의 증권 잔고 자료가 없습니다.
-            </p>
+                    <Message
+                        v-if="missingAccounts"
+                        severity="warn"
+                        :closable="false"
+                        >잔고 자료가 없는 {{ missingAccounts }}개 계좌는 자산
+                        분석에서 제외했습니다.</Message
+                    >
+                    <template v-if="asset">
+                        <p>
+                            현금 제외 · 확인된 자료 평가액
+                            {{ money(asset.total) }} {{ selectedCurrency }} ·
+                            종목 상위 3개 비중
+                            {{ percent(asset.symbols.topThree) }}
+                        </p>
+                        <p>
+                            잔고 기준일 {{ asset.dates.join(' / ') || '미확인'
+                            }}{{
+                                asset.dates.length > 1
+                                    ? ' · 기준일이 서로 다릅니다.'
+                                    : ''
+                            }}
+                        </p>
+                        <p v-if="asset.excluded">
+                            평가액 미확인·음수 항목 {{ asset.excluded }}개 제외
+                            · 일부 금액 기준입니다.
+                        </p>
+                        <SelectButton
+                            v-model="assetDimension"
+                            :options="assetOptions"
+                            option-label="label"
+                            option-value="value"
+                            :allow-empty="false"
+                            aria-label="자산 집중도 분류" />
+                        <p class="insights-note">
+                            운용사·기초자산·업종·국가는 앱 분류 자료 기준입니다.
+                            확인된 분류가 없으면 종목별 미분류로 표시합니다.
+                            기초자산 연결은 롱·인버스·레버리지 방향과 배수를
+                            반영한 실질 노출도가 아닙니다. 미분류는 종목별로
+                            구분합니다.
+                        </p>
+                        <p>
+                            운용사 미분류 {{ asset.unknownProvider }}개 항목 ·
+                            기초자산 미분류 {{ asset.unknownUnderlying }}개 항목
+                        </p>
+                        <DataTable
+                            :value="asset[assetDimension].rows"
+                            paginator
+                            :rows="10"
+                            :table-props="{ 'aria-label': '자산 집중도 내역' }"
+                            scrollable>
+                            <Column field="label" header="분류" /><Column
+                                :header="`자료 평가액 (${selectedCurrency})`"
+                                ><template #body="{ data }">{{
+                                    money(data.amount)
+                                }}</template></Column
+                            >
+                            <Column header="확인 금액 기준 비중"
+                                ><template #body="{ data }"
+                                    ><div class="insights-share">
+                                        {{ percent(data.share)
+                                        }}<ProgressBar
+                                            v-if="data.share != null"
+                                            :value="data.share"
+                                            :show-value="
+                                                false
+                                            " /></div></template
+                            ></Column>
+                        </DataTable>
+                    </template>
+                    <p v-else-if="accounts.length">
+                        선택한 통화의 증권 잔고 자료가 없습니다.
+                    </p>
+                </section>
+            </div>
+            <section
+                class="additional-insights"
+                aria-labelledby="additional-insights-title">
+                <h3 id="additional-insights-title">
+                    현금흐름·원금·투자 가정 상세
+                </h3>
+                <AdvancedPortfolioInsights
+                    v-if="
+                        selectedAccounts.length &&
+                        ['USD', 'KRW'].includes(selectedCurrency)
+                    "
+                    :key="`advanced:${firebaseUser?.uid}:${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                    :entries="entries"
+                    :positions="selectedPositions"
+                    :accounts="selectedAccounts"
+                    :month="month"
+                    :currency="selectedCurrency"
+                    :today="today" />
+                <HoldingDividendCapitalChart
+                    v-if="
+                        selectedAccounts.length &&
+                        ['USD', 'KRW'].includes(selectedCurrency)
+                    "
+                    :accounts="selectedAccounts"
+                    :positions="selectedPositions"
+                    :currency="selectedCurrency"
+                    :today="today" />
+                <MonthlyStatement
+                    v-if="
+                        dividends &&
+                        selectedAccounts.length &&
+                        selectedCurrency !== 'UNKNOWN'
+                    "
+                    :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                    :group="dividends"
+                    :month="month"
+                    :today="today"
+                    :user-id="firebaseUser?.uid || ''"
+                    :family-id="
+                        selectedAccounts.length &&
+                        selectedAccounts.every(
+                            (a) => a.familyId === selectedAccounts[0].familyId
+                        )
+                            ? selectedAccounts[0].familyId || familyId
+                            : familyId
+                    "
+                    :account-ids="selectedAccounts.map((account) => account.id)"
+                    :account-revisions="
+                        Object.fromEntries(
+                            selectedAccounts.map((account) => [
+                                account.id,
+                                account.entriesRevision ?? 0,
+                            ])
+                        )
+                    "
+                    :rejected="report.rejected" />
+                <HoldingScenarioComparison
+                    v-if="
+                        ['USD', 'KRW'].includes(selectedCurrency) &&
+                        selectedAccounts.length
+                    "
+                    :key="`holding:${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                    :positions="selectedPositions"
+                    :entries="entries"
+                    :currency="selectedCurrency"
+                    :month="month" />
+                <InvestmentWorkbench
+                    v-if="
+                        ['USD', 'KRW'].includes(selectedCurrency) &&
+                        selectedAccounts.length
+                    "
+                    :key="`${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                    :entries="entries"
+                    :positions="selectedPositions"
+                    :accounts="selectedAccounts"
+                    :family-id="familyId"
+                    :currency="selectedCurrency"
+                    :month="month"
+                    :largest-share="asset?.symbols.rows[0]?.share ?? null" />
+            </section>
         </template>
+        <Message
+            id="dividend-growth"
+            severity="secondary"
+            :closable="false"
+            tabindex="-1">
+            배당 성장률은 준비 중입니다. 아래 월별 저장 배당은 입금 기록이며
+            종목의 배당 성장률과 다릅니다.
+        </Message>
     </section>
 </template>
 
@@ -742,5 +928,455 @@
     }
     :global(.p-dark) .insights input[type='month'] {
         color-scheme: dark;
+    }
+
+    /* CONTENT / Portfolio Analysis / Reviewed. Supplemental existing analysis tools remain below. */
+    .insights {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .insights-heading h2 {
+        font-size: 20px;
+        margin: 0 0 6px;
+    }
+    .insights-heading p {
+        margin: 0;
+        color: var(--app-muted);
+        font-size: 13px;
+    }
+    .insights-filters {
+        grid-template-columns: 2fr 1.2fr 1.2fr;
+        margin: 0;
+        padding: 20px;
+        gap: 16px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+    }
+    .insights-filters label {
+        margin: 0;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--app-muted);
+    }
+    .insights-summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 20px;
+        margin: 0;
+    }
+    .insights-summary article {
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgb(0 0 0 / 2%);
+    }
+    .insights-summary h3 {
+        font-size: 14px;
+        color: var(--app-muted);
+        margin-bottom: 12px;
+    }
+    .insights-summary strong {
+        font-size: 24px;
+        font-variant-numeric: tabular-nums;
+    }
+    .insights-summary p {
+        font-size: 12px;
+    }
+    .insights-month-chart {
+        display: flex;
+        gap: 12px;
+        min-width: 0;
+        overflow-x: auto;
+        padding: 20px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+    }
+    .insights-month-column {
+        display: flex;
+        flex: 1;
+        min-width: 52px;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        font-size: 11px;
+        color: var(--app-muted);
+    }
+    .insights-month-value {
+        white-space: nowrap;
+    }
+    .insights-bar-track {
+        height: 160px;
+        width: 28px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        border-bottom: 1px solid var(--app-border);
+    }
+    .insights-bar-track i {
+        display: block;
+        width: 100%;
+        min-height: 2px;
+        background: var(--app-accent);
+        border-radius: 4px 4px 0 0;
+    }
+    .insights-bar-track i.negative {
+        background: var(--app-up);
+    }
+    .insights > :deep(.p-datatable) {
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    @media (max-width: 1024px) {
+        .insights-filters {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 640px) {
+        .insights-filters,
+        .insights-summary {
+            grid-template-columns: 1fr;
+        }
+        .insights-filters,
+        .insights-summary article {
+            padding: 16px;
+        }
+    }
+    /* Reviewed 2e3c66: account/currency/month/refresh; four independent KPIs. */
+    .insights-filters {
+        grid-template-columns: 2fr 1.2fr 1.5fr auto;
+        align-items: end;
+    }
+    .insights-filters > :deep(.p-button) {
+        min-height: 44px;
+        white-space: nowrap;
+    }
+    .insights-summary {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+    }
+    .insights-summary article {
+        padding: 16px;
+    }
+    .insights-summary h3 {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    .insights-summary strong {
+        font-size: 22px;
+    }
+    .insight-basis-card strong {
+        font-size: 15px;
+        color: var(--app-accent);
+    }
+    @media (max-width: 1024px) {
+        .insights-filters,
+        .insights-summary {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 640px) {
+        .insights-filters,
+        .insights-summary {
+            grid-template-columns: 1fr;
+        }
+        .insights-filters > :deep(.p-button) {
+            width: 100%;
+        }
+    }
+    /* Reviewed source 2e3c66: equal 1fr columns, 20px gap; stack at1024. */
+    .insights-workspace {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+        align-items: start;
+    }
+    .insights-records,
+    .insights-distribution {
+        min-width: 0;
+        padding: 20px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+    }
+    .insights-workspace h3 {
+        margin: 0 0 12px;
+        font-size: 16px;
+    }
+    .insights-workspace p {
+        font-size: 13px;
+        margin: 0 0 14px;
+    }
+    .insights-workspace :deep(.p-select) {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    .insights-workspace :deep(.p-datatable) {
+        margin-bottom: 20px;
+    }
+    .insights-records .insights-tools {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+    .insights-records .insights-tools article {
+        min-width: 0;
+        padding: 16px;
+    }
+    .insights-records .insights-month-chart {
+        margin: 20px 0;
+    }
+    @media (max-width: 1024px) {
+        .insights-workspace {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 640px) {
+        .insights-records,
+        .insights-distribution {
+            padding: 16px;
+        }
+        .insights-records .insights-tools {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* 2e3c66 controls: preserve the4-column tablet layout and exact source ratios. */
+    .insights-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .insights-heading h1 {
+        margin: 0;
+        font-size: 20px;
+        line-height: 30px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+    }
+    .insights-heading p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 19.5px;
+    }
+    .insights-filters {
+        grid-template-columns: 2fr 1.2fr 1.2fr auto;
+        gap: 16px;
+    }
+    .insights-filters label {
+        min-width: 0;
+        font-size: 13px;
+        line-height: 19.5px;
+        font-weight: 600;
+        gap: 6px;
+    }
+    .insights-filters :deep(.p-select),
+    .insights-filters input[type='month'] {
+        min-width: 0;
+        width: 100%;
+        height: 44px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .insights-filters input[type='month'] {
+        box-sizing: border-box;
+        padding: 0 14px;
+    }
+    .insights-filters > :deep(.p-button) {
+        height: 44px;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    @media (max-width: 640px) {
+        .insights-filters {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .insights-filters :deep(.p-datepicker) {
+        min-width: 0;
+        width: 100%;
+    }
+    .insights-filters :deep(.p-datepicker-input) {
+        min-width: 0;
+        width: 100%;
+        height: 44px;
+        padding: 0 32px 0 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .insights-filters :deep(.p-select-label) {
+        padding: 0 14px;
+        line-height: 42px;
+    }
+
+    /* Actual 2e3c66 KPI and twelve-month table properties. Extra data notes remain visible. */
+    .insights-summary article {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        box-shadow: none;
+    }
+    .insights-summary h3 {
+        margin: 0;
+        font-size: 13px;
+        line-height: 19.5px;
+        font-weight: 500;
+    }
+    .insights-summary strong {
+        line-height: 33px;
+        font-weight: 700;
+    }
+    .insights-summary p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 18px;
+    }
+    .insights-summary small {
+        font-size: 11px;
+        line-height: 16.5px;
+    }
+    .insights-summary .insights-comparison-unavailable {
+        font-size: 18px;
+        line-height: 27px;
+        color: var(--app-muted);
+    }
+    .insight-basis-card strong {
+        font-size: 15px;
+        line-height: 22.5px;
+        font-weight: 600;
+    }
+    .insights-records-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .insights-records-heading h3 {
+        margin: 0;
+        font-size: 16px;
+        line-height: 24px;
+    }
+    .insights-records-heading p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 18px;
+        color: var(--app-muted);
+    }
+    .insights .insights-month-table {
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .insights .insights-records .insights-month-table :deep(th) {
+        padding: 10px 12px;
+        font-size: 13px;
+        line-height: 19.5px;
+        font-weight: 600;
+    }
+    .insights .insights-records .insights-month-table :deep(td) {
+        padding: 9px 12px;
+        font-size: 13px;
+        line-height: 19.5px;
+    }
+    .insights
+        .insights-records
+        .insights-month-table
+        :deep(tr:last-child > td) {
+        border-bottom: 0;
+    }
+    .insights
+        .insights-records
+        .insights-month-table
+        :deep(.insights-selected-month > td) {
+        background: var(--app-accent-light);
+    }
+    .insights
+        .insights-month-table
+        :deep(.insights-selected-month > td:first-child),
+    .insights
+        .insights-month-table
+        :deep(.insights-selected-month > td:nth-child(2)) {
+        font-weight: 700;
+    }
+    .insights
+        .insights-month-table
+        :deep(.insights-selected-month > td:nth-child(2)) {
+        color: var(--app-accent);
+    }
+    .insights-record-status {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        line-height: 16.5px;
+        font-weight: 600;
+        max-width: 100%;
+    }
+    .status-none {
+        color: var(--app-muted);
+        background: var(--app-surface-muted);
+    }
+    .status-outside {
+        color: var(--app-muted);
+        background: var(--app-bg);
+    }
+    .status-recorded {
+        color: var(--app-accent);
+        background: var(--app-accent-light);
+    }
+    .status-missing {
+        color: var(--app-warning-text);
+        background: var(--app-warning-light);
+    }
+    .insights-records,
+    .insights-distribution {
+        padding: 20px;
+    }
+
+    .insights-summary,
+    .insights-month-table {
+        font-family:
+            -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', Roboto,
+            'Helvetica Neue', Arial, sans-serif;
+    }
+
+    .insights .insights-records .insights-month-table :deep(th) {
+        background: var(--app-bg);
+        border-bottom: 1px solid var(--app-border);
+        color: var(--app-muted);
+    }
+    .insights .insights-records .insights-month-table :deep(td) {
+        border-bottom: 1px solid light-dark(#f1f5f9, var(--app-border-subtle));
+    }
+    .insights
+        .insights-records
+        .insights-month-table
+        :deep(tr:last-child > td) {
+        border-bottom: 0;
+    }
+    .insights
+        .insights-records
+        .insights-month-table
+        :deep(.insights-selected-month > td) {
+        background: light-dark(#f0fdfa, var(--app-accent-light));
+    }
+    .status-none {
+        background: light-dark(#f1f5f9, var(--app-surface-muted));
+    }
+    .status-outside {
+        color: light-dark(#94a3b8, var(--app-muted));
+    }
+    .status-recorded {
+        color: light-dark(#047857, var(--app-accent));
     }
 </style>

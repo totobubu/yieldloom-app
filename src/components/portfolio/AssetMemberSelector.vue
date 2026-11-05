@@ -1,65 +1,73 @@
 <script setup>
-    import Avatar from 'primevue/avatar';
+    import { computed } from 'vue';
+    import Select from 'primevue/select';
     import Button from 'primevue/button';
-    defineProps({
+    const props = defineProps({
         profiles: { type: Array, required: true },
         selected: { type: String, default: '' },
         busy: Boolean,
+        allowAll: Boolean,
+        allSelected: Boolean,
     });
-    defineEmits(['select', 'add']);
+    const emit = defineEmits(['select', 'select-all', 'add']);
+    const allOwnersKey = '__all_owners__';
+    const options = computed(() => [
+        ...(props.allowAll
+            ? [
+                  {
+                      key: allOwnersKey,
+                      name: `전체 명의자 (${props.profiles.map((p) => p.name).join(', ')})`,
+                  },
+              ]
+            : []),
+        ...props.profiles,
+    ]);
+    function choose(key) {
+        if (key === allOwnersKey && props.allowAll) emit('select-all');
+        else emit('select', key);
+    }
 </script>
-
 <template>
     <div class="members" aria-label="자산관리 가족 선택">
-        <button
-            v-for="person in profiles"
-            :key="person.key"
-            type="button"
-            class="member"
-            :aria-pressed="selected === person.key"
+        <Select
+            :model-value="allSelected ? allOwnersKey : selected"
+            :options="options"
+            option-label="name"
+            option-value="key"
+            aria-label="명의자 선택"
             :disabled="busy"
-            @click="$emit('select', person.key)">
-            <Avatar
-                :label="person.name.slice(0, 2)"
-                size="large"
-                shape="circle"
-                aria-hidden="true" />
-            <span>{{ person.name }}</span>
-        </button>
+            @update:model-value="choose" />
         <Button
             label="가족 추가"
             icon="pi pi-user-plus"
-            outlined
+            severity="secondary"
             :disabled="busy"
             @click="$emit('add')" />
+        <slot />
     </div>
 </template>
-
 <style scoped>
     .members {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 12px;
         flex-wrap: wrap;
+        min-width: 0;
     }
-    .member {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.7rem;
-        border: 2px solid transparent;
-        border-radius: 1rem;
-        background: transparent;
-        color: var(--p-text-color);
-        cursor: pointer;
+    .members :deep(.p-select.p-component) {
+        min-width: 180px;
+        max-width: 100%;
+        height: 44px;
+        font-size: 14px;
+        background: var(--app-surface);
     }
-    .member[aria-pressed='true'] {
-        border-color: var(--p-primary-color);
-        background: var(--p-content-background);
+    .members :deep(.p-button) {
+        height: 44px;
+        font-size: 14px;
+        white-space: nowrap;
     }
-    .member:focus-visible {
-        outline: 2px solid var(--p-primary-color);
-        outline-offset: 3px;
+    .members :deep(.p-select-label) {
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 </style>

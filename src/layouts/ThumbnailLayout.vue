@@ -1,6 +1,7 @@
 <script setup>
-    import { computed, ref, watch } from 'vue';
+    import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue';
     import brandSymbol from '@/assets/brand/stitch-symbol.png';
+    import PortfolioNavigation from '@/components/navigation/PortfolioNavigation.vue';
     import { useRoute, useRouter } from 'vue-router';
     import { signOut } from 'firebase/auth';
     import { auth, authLoading, firebaseUser } from '@/services/firebaseClient';
@@ -19,6 +20,19 @@
     const router = useRouter();
     const { isDarkMode, toggleDarkMode } = useLayout();
     const accountOpen = ref(false);
+    const submenuOpen = ref(true);
+    const mobileSubmenuOpen = ref(false);
+    const viewportWidth = ref(1280);
+    const isMobileViewport = computed(() => viewportWidth.value < 768);
+    const isCompactViewport = computed(() => viewportWidth.value < 1024);
+    function updateViewport() {
+        viewportWidth.value = window.innerWidth;
+    }
+    onMounted(() => {
+        updateViewport();
+        window.addEventListener('resize', updateViewport);
+    });
+    onBeforeUnmount(() => window.removeEventListener('resize', updateViewport));
     const signingOut = ref(false);
     const accountError = ref('');
     useFullscreenLoading(authLoading, '로그인 정보를 확인하고 있습니다.');
@@ -35,14 +49,53 @@
     const inComparison = computed(() =>
         ['security-compare', 'underlying-explorer'].includes(route.name)
     );
+    // Independent content frames have their own width/padding contract.
+    // The shell's 1120px header/footer grid does not constrain these frames.
+    const contentLayout = computed(() => {
+        if (route.path.startsWith('/mypage')) return 'portfolio';
+        if (inComparison.value) return 'comparison';
+        if (route.name === 'thumbnail-home') return 'catalog';
+        if (route.name === 'ticker-stock')
+            return ['dividends', 'share'].includes(route.query.tab)
+                ? 'editor'
+                : 'catalog';
+        return undefined;
+    });
     const inPortfolio = computed(() => route.path.startsWith('/mypage'));
     watch(
         () => route.fullPath,
         () => {
             accountOpen.value = false;
+            mobileSubmenuOpen.value = false;
             accountError.value = '';
         }
     );
+    // Loading dialogs restore focus when leaving; resolve a pending submenu
+    // destination after that restoration, once per route change.
+    let pendingAnchor = '';
+    watch(
+        () => route.hash,
+        (hash) => {
+            pendingAnchor = hash;
+        },
+        { immediate: true }
+    );
+    function focusPendingAnchor() {
+        if (
+            ![
+                '#asset-concentration',
+                '#dividend-growth',
+                '#manual-balance',
+                '#capital-details-heading',
+            ].includes(pendingAnchor)
+        )
+            return;
+        const target = document.getElementById(pendingAnchor.slice(1));
+        if (!target) return;
+        target.scrollIntoView({ block: 'start' });
+        target.focus({ preventScroll: true });
+        pendingAnchor = '';
+    }
     async function logout() {
         signingOut.value = true;
         accountError.value = '';
@@ -59,7 +112,13 @@
 </script>
 
 <template>
-    <div class="thumbnail-app studio-shell" :class="{ 'p-dark': isDarkMode }">
+    <div
+        class="thumbnail-app studio-shell"
+        :class="{
+            'p-dark': isDarkMode,
+            'portfolio-submenu-open': isAdmin && inPortfolio && submenuOpen,
+            'portfolio-submenu-closed': isAdmin && inPortfolio && !submenuOpen,
+        }">
         <a class="skip-link" href="#studio-main">본문으로 바로가기</a>
         <header class="studio-header">
             <div class="header-inner">
@@ -67,13 +126,8 @@
                     class="studio-brand"
                     to="/"
                     aria-label="모으멍 배당달력 홈"
-                    ><span class="brand-mark brand-mark--logo"
-                        ><img
-                            :src="brandSymbol"
-                            alt=""
-                            width="36"
-                            height="36" /></span
-                    ><span
+                    ><img class="brand-symbol" :src="brandSymbol" alt="" />
+                    <span
                         >모으멍
                         <span class="brand-secondary">배당달력</span></span
                     ></router-link
@@ -85,13 +139,15 @@
                         :class="{
                             active: inStocks,
                         }"
-                        >종목 검색</router-link
+                        ><i class="pi pi-search" aria-hidden="true" />종목
+                        검색</router-link
                     >
                     <router-link
                         to="/compare"
                         :class="{ active: inComparison }"
                         :aria-current="inComparison ? 'page' : undefined"
-                        >종목 비교</router-link
+                        ><i class="pi pi-clone" aria-hidden="true" />종목
+                        비교</router-link
                     >
                     <router-link
                         :to="{
@@ -100,35 +156,18 @@
                         }"
                         :class="{ active: inNewListings }"
                         :aria-current="inNewListings ? 'page' : undefined"
-                        >신규 상장</router-link
-                    >
-                    <router-link
-                        v-if="isAdmin"
-                        to="/mypage"
-                        :aria-current="inPortfolio ? 'page' : undefined"
-                        :class="{ active: inPortfolio }"
-                        >내 포트폴리오</router-link
-                    >
-                    <router-link
-                        v-if="isAdmin"
-                        to="/simulator"
-                        :class="{ active: route.name === 'dividend-simulator' }"
-                        :aria-current="
-                            route.name === 'dividend-simulator'
-                                ? 'page'
-                                : undefined
-                        "
-                        >배당 시뮬레이터</router-link
+                        ><i class="pi pi-sparkles" aria-hidden="true" />신규
+                        상장</router-link
                     >
                 </nav>
                 <div class="header-actions">
                     <router-link class="guide-link" to="/legal"
-                        >이용 안내</router-link
+                        ><i
+                            class="pi pi-question-circle"
+                            aria-hidden="true" /><span
+                            >이용 안내</span
+                        ></router-link
                     >
-                    <div
-                        v-if="inPortfolio"
-                        id="portfolio-header-actions"
-                        class="portfolio-header-actions" />
                     <Button
                         :icon="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"
                         :aria-label="isDarkMode ? '라이트 모드' : '다크 모드'"
@@ -150,15 +189,85 @@
                 </div>
             </div>
         </header>
-        <main id="studio-main" class="studio-main" tabindex="-1">
-            <router-view />
-        </main>
+        <div
+            class="shell-body"
+            :data-content-layout="contentLayout"
+            :class="{
+                'with-submenu': isAdmin && inPortfolio && submenuOpen,
+                'with-compact-submenu': isAdmin && inPortfolio && !submenuOpen,
+            }">
+            <aside
+                v-if="isAdmin && inPortfolio && submenuOpen"
+                id="portfolio-submenu"
+                class="shell-submenu">
+                <PortfolioNavigation />
+            </aside>
+            <aside
+                v-else-if="isAdmin && inPortfolio"
+                id="portfolio-submenu"
+                class="portfolio-compact-rail"
+                aria-label="서브메뉴 컴팩트 레일">
+                <PortfolioNavigation
+                    presentation="compact"
+                    @expand="submenuOpen = true" />
+            </aside>
+            <main
+                id="studio-main"
+                class="studio-main"
+                :data-content-layout="contentLayout"
+                tabindex="-1">
+                <div v-if="isAdmin && inPortfolio" class="submenu-controls">
+                    <div
+                        id="portfolio-header-actions"
+                        class="portfolio-header-actions" />
+                    <Button
+                        class="desktop-submenu-toggle"
+                        :label="submenuOpen ? '메뉴 접기' : '메뉴 펼치기'"
+                        icon="pi pi-bars"
+                        text
+                        severity="secondary"
+                        :aria-expanded="submenuOpen"
+                        aria-controls="portfolio-submenu"
+                        @click="submenuOpen = !submenuOpen" />
+                    <Button
+                        class="mobile-submenu-toggle"
+                        label="포트폴리오 메뉴"
+                        icon="pi pi-bars"
+                        text
+                        severity="secondary"
+                        :aria-expanded="mobileSubmenuOpen"
+                        aria-controls="portfolio-submenu-drawer"
+                        @click="mobileSubmenuOpen = !mobileSubmenuOpen" />
+                </div>
+                <div
+                    v-if="
+                        isAdmin &&
+                        inPortfolio &&
+                        !isMobileViewport &&
+                        isCompactViewport &&
+                        mobileSubmenuOpen
+                    "
+                    id="portfolio-submenu-drawer"
+                    class="tablet-submenu-panel">
+                    <PortfolioNavigation presentation="sections" />
+                </div>
+                <router-view />
+            </main>
+        </div>
         <footer class="studio-footer">
-            <span>모으멍 배당달력</span
-            ><router-link to="/legal">데이터 출처 · 이용 안내</router-link>
-            <p>
-                공개된 자료를 정리한 정보입니다. 기준일과 원문을 확인해 주세요.
-            </p>
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <img :src="brandSymbol" alt="" /><strong
+                        >모으멍 배당달력</strong
+                    ><router-link to="/legal"
+                        >데이터 출처 · 이용 안내</router-link
+                    >
+                </div>
+                <p>
+                    공개된 자료를 정리한 정보입니다. 기준일과 원문을 확인해
+                    주세요.
+                </p>
+            </div>
         </footer>
         <nav v-if="!isAuth" class="mobile-nav" aria-label="모바일 주요 메뉴">
             <router-link
@@ -193,33 +302,15 @@
                     >이용 안내</span
                 ></router-link
             >
-            <router-link
-                v-if="isAdmin"
-                to="/mypage"
-                :class="{ active: inPortfolio }"
-                :aria-current="inPortfolio ? 'page' : undefined"
-                ><i class="pi pi-wallet" aria-hidden="true" /><span
-                    >내 포트폴리오</span
-                ></router-link
-            >
-            <router-link
-                v-if="isAdmin"
-                to="/simulator"
-                :class="{ active: route.name === 'dividend-simulator' }"
-                :aria-current="
-                    route.name === 'dividend-simulator' ? 'page' : undefined
-                "
-                ><i class="pi pi-calculator" aria-hidden="true" /><span
-                    >시뮬레이터</span
-                ></router-link
-            >
         </nav>
         <Drawer
             id="account-drawer"
             v-model:visible="accountOpen"
-            header="계정 및 설정"
-            position="right"
-            :style="{ width: 'min(380px, 100vw)' }">
+            header="계정 및 관리"
+            :position="isCompactViewport ? 'left' : 'right'"
+            :style="{
+                width: `min(${isMobileViewport ? 340 : isCompactViewport ? 320 : 360}px, 100vw)`,
+            }">
             <div class="account-summary">
                 <span class="brand-mark"
                     ><i class="pi pi-user" aria-hidden="true"
@@ -239,6 +330,20 @@
             <Message v-if="accountError" severity="error" :closable="false">{{
                 accountError
             }}</Message>
+            <nav
+                v-if="isCompactViewport"
+                class="drawer-public-navigation"
+                aria-label="공개 메뉴">
+                <router-link to="/">종목 검색</router-link>
+                <router-link to="/compare">종목 비교</router-link>
+                <router-link
+                    :to="{ name: 'thumbnail-home', query: { sort: 'ipoDate' } }"
+                    >신규 상장</router-link
+                >
+                <router-link to="/legal">이용 안내</router-link>
+            </nav>
+            <PortfolioNavigation v-if="isAdmin" />
+            <Divider />
             <div class="account-links">
                 <Button
                     v-if="isAdmin"
@@ -262,34 +367,40 @@
                     severity="secondary"
                     text
                     @click="router.push('/legal')" />
-                <Button
+                <details
                     v-if="isAdmin"
-                    label="종목 의견함"
-                    icon="pi pi-inbox"
-                    severity="secondary"
-                    text
-                    @click="router.push('/admin/feedback')" />
-                <Button
-                    v-if="isAdmin"
-                    label="ETF 데이터 검토 · 수집 상태"
-                    icon="pi pi-check-square"
-                    severity="secondary"
-                    text
-                    @click="router.push('/admin/metadata')" />
-                <Button
-                    v-if="isAdmin"
-                    label="종목 식별 관리"
-                    icon="pi pi-cog"
-                    severity="secondary"
-                    text
-                    @click="router.push('/admin/portfolio-mappings')" />
-                <Button
-                    v-if="isAdmin"
-                    label="원금 기준안"
-                    icon="pi pi-chart-pie"
-                    severity="secondary"
-                    text
-                    @click="router.push('/admin/portfolio-example')" />
+                    class="account-admin-group"
+                    :open="!isCompactViewport">
+                    <summary>관리자 설정 그룹</summary>
+                    <Button
+                        v-if="isAdmin"
+                        label="종목 의견함"
+                        icon="pi pi-inbox"
+                        severity="secondary"
+                        text
+                        @click="router.push('/admin/feedback')" />
+                    <Button
+                        v-if="isAdmin"
+                        label="ETF 데이터 검토 · 수집 상태"
+                        icon="pi pi-check-square"
+                        severity="secondary"
+                        text
+                        @click="router.push('/admin/metadata')" />
+                    <Button
+                        v-if="isAdmin"
+                        label="종목 식별 관리"
+                        icon="pi pi-cog"
+                        severity="secondary"
+                        text
+                        @click="router.push('/admin/portfolio-mappings')" />
+                    <Button
+                        v-if="isAdmin"
+                        label="원금 기준안"
+                        icon="pi pi-chart-pie"
+                        severity="secondary"
+                        text
+                        @click="router.push('/admin/portfolio-example')" />
+                </details>
                 <Button
                     v-if="isAdmin"
                     label="로그아웃"
@@ -300,14 +411,30 @@
                     @click="logout" />
             </div>
         </Drawer>
+        <Drawer
+            v-if="isAdmin && isMobileViewport"
+            id="portfolio-submenu-drawer"
+            v-model:visible="mobileSubmenuOpen"
+            header="내 작업 공간"
+            position="bottom"
+            :style="{
+                width: '100%',
+                height: 'auto',
+                maxHeight: '82dvh',
+                borderRadius: '16px 16px 0 0',
+            }">
+            <PortfolioNavigation />
+        </Drawer>
         <Toast /><ConfirmDialog />
-        <FullscreenDataLoading />
+        <FullscreenDataLoading @after-hide="focusPendingAnchor" />
     </div>
 </template>
 
 <style scoped>
     .studio-shell {
-        --studio-header-height: 73px;
+        --studio-header-height: 64px;
+        display: flex;
+        flex-direction: column;
     }
     .studio-header {
         position: sticky;
@@ -317,110 +444,186 @@
         border-bottom: 1px solid var(--app-border);
     }
     .header-inner {
-        max-width: 1344px;
+        box-sizing: border-box;
+        max-width: 1120px;
         height: calc(var(--studio-header-height) - 1px);
-        padding: 0 32px;
+        padding: 0 24px;
         margin: auto;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 24px;
+        gap: 32px;
     }
     .studio-brand {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         text-decoration: none;
         color: var(--app-text);
-        font-size: 17px;
-        font-weight: 750;
+        font-size: 18px;
+        font-weight: 700;
         white-space: nowrap;
-        letter-spacing: -0.04em;
+        letter-spacing: -0.025em;
+        padding: 4px;
+    }
+    .brand-symbol {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+    }
+    .brand-secondary {
+        color: var(--app-accent);
     }
     .brand-mark {
         width: 36px;
         height: 36px;
-        background: var(--app-accent);
-        color: var(--app-accent-contrast);
-        border-radius: 10px;
+        background: var(--app-accent-light);
+        color: var(--app-accent);
+        border-radius: 50%;
         display: inline-grid;
         place-items: center;
         flex-shrink: 0;
     }
-    .brand-mark--logo {
-        background: transparent;
-    }
-    .brand-mark--logo img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
     .desktop-nav {
-        height: 100%;
-        display: flex;
-        gap: 28px;
-    }
-    .desktop-nav a {
-        height: 100%;
         display: flex;
         align-items: center;
+        gap: 4px;
+    }
+    .desktop-nav a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 8px;
         color: var(--app-muted);
         text-decoration: none;
-        border-bottom: 3px solid transparent;
-        font-weight: 600;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    .desktop-nav i {
+        font-size: 12px;
     }
     .desktop-nav a.active {
         color: var(--app-accent);
-        border-bottom-color: var(--app-accent);
+        background: var(--app-accent-light);
+        font-weight: 600;
+    }
+    .desktop-nav .pi-sparkles {
+        color: var(--app-warning);
     }
     .header-actions {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
+        margin-left: auto;
+    }
+    .header-actions :deep(.p-button) {
+        width: 36px;
+        height: 36px;
+        min-height: 36px;
+        min-width: 36px;
+        border-radius: 8px;
     }
     .portfolio-header-actions {
         display: flex;
         align-items: center;
     }
     .guide-link {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         color: var(--app-muted);
         text-decoration: none;
-        font-size: 13px;
-        padding: 12px 8px;
+        font-size: 14px;
+        padding: 6px 12px;
+        white-space: nowrap;
     }
-    .login-link {
-        background: var(--app-surface-muted);
-        color: var(--app-accent);
-        text-decoration: none;
-        padding: 10px 16px;
-        border-radius: 10px;
-        font-weight: 650;
+    .shell-body {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 1280px;
+        margin: 0 auto;
+        flex: 1;
     }
     .studio-main {
-        max-width: 1344px;
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 1120px;
         margin: auto;
-        padding: 32px;
-        min-height: calc(100dvh - 220px);
+        padding: 24px;
+        min-height: calc(100dvh - 180px);
         outline: none;
+        min-width: 0;
+    }
+    .with-submenu {
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
+        padding: 24px;
+    }
+    .with-submenu .studio-main {
+        padding: 0;
+    }
+    .shell-submenu {
+        position: sticky;
+        top: 88px;
+        box-sizing: border-box;
+        width: 224px;
+        flex-shrink: 0;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+        padding: 12px;
+    }
+    .submenu-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+    .mobile-submenu-toggle {
+        display: none;
     }
     .studio-footer {
-        max-width: 1280px;
-        margin: 24px auto 0;
-        padding: 24px 0 32px;
+        background: var(--app-surface);
         border-top: 1px solid var(--app-border);
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px 24px;
+        padding: 32px 0;
+        font-size: 12px;
         color: var(--app-muted);
-        font-size: 13px;
     }
-    .studio-footer a {
+    .footer-inner {
+        box-sizing: border-box;
+        max-width: 1120px;
+        margin: auto;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .footer-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        white-space: nowrap;
+    }
+    .footer-brand img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+    }
+    .footer-brand strong {
+        font-size: 14px;
+        color: var(--app-text);
+    }
+    .footer-brand a {
         color: inherit;
-        margin-left: auto;
+        padding-left: 12px;
+        border-left: 1px solid var(--app-border);
     }
     .studio-footer p {
-        width: 100%;
         margin: 0;
+        text-align: right;
     }
     .mobile-nav {
         display: none;
@@ -436,6 +639,27 @@
         color: var(--app-muted);
         overflow-wrap: anywhere;
         margin: 4px 0 0;
+    }
+    .drawer-public-navigation {
+        display: grid;
+        gap: 8px;
+        padding-bottom: 16px;
+        margin-bottom: 16px;
+        border-bottom: 1px solid var(--app-border);
+    }
+    .drawer-public-navigation a {
+        text-decoration: none;
+        color: var(--app-muted);
+        padding: 8px 12px;
+        font-size: 12px;
+        border-radius: 8px;
+    }
+    .tablet-submenu-panel {
+        margin-bottom: 24px;
+        padding: 16px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
     }
     .account-links {
         display: grid;
@@ -456,100 +680,296 @@
     .skip-link:focus {
         top: 8px;
     }
-    @media (max-width: 1000px) {
-        .brand-secondary {
-            display: none;
-        }
-        .desktop-nav {
+    @media (min-width: 768px) and (max-width: 1023px) {
+        .header-inner {
+            max-width: 720px;
+            padding: 0 16px;
             gap: 16px;
         }
-        .guide-link {
+        .studio-brand {
+            font-size: 16px;
+            gap: 8px;
+        }
+        .desktop-nav {
+            background: var(--app-surface-muted);
+            padding: 4px;
+            border-radius: 12px;
+        }
+        .desktop-nav a {
+            padding: 8px;
+            font-size: 12px;
+        }
+        .desktop-nav i {
             display: none;
+        }
+        .header-actions {
+            gap: 4px;
+        }
+        .guide-link {
+            padding: 6px;
+        }
+        .guide-link span {
+            display: none;
+        }
+        .studio-main,
+        .footer-inner {
+            max-width: 720px;
+        }
+        .shell-submenu,
+        .desktop-submenu-toggle {
+            display: none;
+        }
+        .mobile-submenu-toggle {
+            display: inline-flex;
+        }
+        .with-submenu {
+            display: block;
+            padding: 0;
+        }
+        .with-submenu .studio-main {
+            padding: 24px;
+        }
+        .footer-inner {
+            flex-direction: column;
         }
     }
     @media (max-width: 767px) {
         .studio-shell {
-            --studio-header-height: 61px;
+            --studio-header-height: 56px;
         }
         .header-inner {
             padding: 0 16px;
             gap: 8px;
         }
         .studio-brand {
-            font-size: 15px;
+            font-size: 14px;
             gap: 8px;
+            padding: 4px 0;
         }
-        .brand-mark {
-            width: 32px;
-            height: 32px;
+        .brand-symbol {
+            width: 28px;
+            height: 28px;
         }
-        .brand-secondary {
-            display: inline;
-        }
-        .desktop-nav,
-        .login-link {
+        .desktop-nav {
             display: none;
         }
         .header-actions {
-            gap: 0;
+            gap: 4px;
+        }
+        .guide-link {
+            width: 44px;
+            height: 44px;
+            justify-content: center;
+            padding: 0;
+        }
+        .guide-link span {
+            display: none;
         }
         .header-actions :deep(.p-button) {
             width: 44px;
             height: 44px;
         }
         .studio-main {
-            padding: 24px 16px;
+            padding: 16px;
+        }
+        .shell-submenu,
+        .desktop-submenu-toggle {
+            display: none;
+        }
+        .mobile-submenu-toggle {
+            display: inline-flex;
+        }
+        .with-submenu {
+            display: block;
+            padding: 0;
+        }
+        .with-submenu .studio-main {
+            padding: 16px;
         }
         .studio-footer {
-            margin: 16px 16px 0;
-            padding-bottom: calc(136px + env(safe-area-inset-bottom, 0px));
+            padding: 20px 0 calc(100px + env(safe-area-inset-bottom, 0px));
+        }
+        .footer-inner {
+            padding: 0 16px;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .footer-brand {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+        .footer-brand img {
+            width: 16px;
+            height: 16px;
+        }
+        .footer-brand strong {
+            font-size: 12px;
+        }
+        .footer-brand a {
+            width: 100%;
+            border: 0;
+            padding: 0;
+            text-align: center;
+            font-size: 11px;
+        }
+        .studio-footer p {
+            text-align: center;
+            font-size: 10px;
         }
         .mobile-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            max-width: 100vw;
             box-sizing: border-box;
             z-index: 30;
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             background: var(--app-surface);
             border-top: 1px solid var(--app-border);
-            padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+            height: calc(64px + env(safe-area-inset-bottom, 0px));
+            padding: 0 8px env(safe-area-inset-bottom, 0px);
         }
         .mobile-nav a {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 2px;
             min-width: 0;
-            min-height: 56px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 10px;
+            font-weight: 500;
             text-decoration: none;
             color: var(--app-muted);
-            border-radius: 10px;
             text-align: center;
         }
         .mobile-nav a.active {
             color: var(--app-accent);
-            background: var(--app-surface-muted);
+            font-weight: 600;
         }
         .mobile-nav i {
-            font-size: 18px;
+            display: grid;
+            place-items: center;
+            width: 28px;
+            height: 28px;
+            font-size: 12px;
+            border-radius: 8px;
+        }
+        .mobile-nav a.active i {
+            background: var(--app-accent-light);
         }
     }
     @media (max-width: 370px) {
-        .studio-brand {
-            font-size: 13px;
-        }
-        .brand-secondary {
-            display: none;
-        }
         .header-inner {
             padding-inline: 12px;
+        }
+        .studio-brand {
+            font-size: 12px;
+            gap: 4px;
+        }
+        .header-actions {
+            gap: 0;
+        }
+    }
+
+    .account-admin-group {
+        border-top: 1px solid var(--app-border);
+        padding-top: 12px;
+    }
+    .account-admin-group summary {
+        cursor: pointer;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--app-muted);
+    }
+    .account-admin-group :deep(.p-button) {
+        display: flex;
+        width: 100%;
+        justify-content: flex-start;
+        font-size: 12px;
+    }
+    .shell-body[data-content-layout='editor'] {
+        max-width: 1504px;
+    }
+    .studio-main[data-content-layout='catalog'] {
+        max-width: 1280px;
+        padding: 24px 20px 48px;
+    }
+    .studio-main[data-content-layout='comparison'] {
+        max-width: 1248px;
+        padding: 24px;
+    }
+    .studio-main[data-content-layout='editor'] {
+        max-width: 1504px;
+        padding: 32px;
+    }
+    @media (max-width: 768px) {
+        .studio-main[data-content-layout='catalog'] {
+            padding: 16px 12px 32px;
+        }
+        .studio-main[data-content-layout='comparison'] {
+            padding: 16px;
+        }
+        .studio-main[data-content-layout='editor'] {
+            padding: 16px;
+        }
+    }
+    @media (max-width: 390px) {
+        .studio-main[data-content-layout='comparison'] {
+            padding: 12px;
+        }
+    }
+    .studio-main[data-content-layout='editor'] > .studio-page {
+        max-width: 1440px;
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+        .studio-main[data-content-layout='editor'] {
+            padding: 24px;
+        }
+    }
+    .portfolio-compact-rail {
+        display: none;
+    }
+    @media (min-width: 1024px) {
+        .with-compact-submenu {
+            max-width: 1120px;
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            padding: 24px 16px;
+        }
+        .with-compact-submenu .studio-main {
+            padding: 0;
+        }
+        .portfolio-compact-rail {
+            display: block;
+            box-sizing: border-box;
+            width: 56px;
+            flex-shrink: 0;
+            border: 1px solid var(--app-border);
+            border-radius: 16px;
+            padding: 10px;
+            background: var(--app-surface);
+        }
+        .portfolio-submenu-closed .header-inner,
+        .portfolio-submenu-closed .footer-inner {
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+    }
+    /* PC submenu source 1170392357232825899 uses its 1280px shell frame. */
+    @media (min-width: 1024px) {
+        .portfolio-submenu-open .header-inner,
+        .portfolio-submenu-open .footer-inner {
+            max-width: 1280px;
+        }
+    }
+    /* Tablet content uses full-width main + 24px padding; header stays 720px. */
+    @media (min-width: 768px) and (max-width: 1023px) {
+        .studio-main[data-content-layout='portfolio'] {
+            max-width: none;
         }
     }
 </style>

@@ -119,6 +119,29 @@ jobs:
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/admin-stock-collection.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/general-stock-collection.browser.mjs
                   LISTING_STATUS_BASE_URL=http://127.0.0.1:5175 node tests/security-status.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-content-width.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-stock-layout.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-price-events.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-holdings-cards.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-dividend-metrics.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-dividend-navigation.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/security-insights.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/browser-harness-isolation.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-priority-panels.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-shell.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-data-contracts.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-registration-states.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-share-preview.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-share-tools.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-share-metrics.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-portfolio-controls.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-analysis-records.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-comparison-results.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-ttm-card.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-summary-scope.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-summary-details.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stitch-submenu-destinations.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/provider-filters.browser.mjs
             - name: Official fund projections with synthetic public data
               run: |
                   env -u GITHUB_ACTIONS VITE_DATA_PLATFORM_BASE_URL=/official-fixture npm run dev -- --host 127.0.0.1 --port 5178 --strictPort > /tmp/vite-official.log 2>&1 &

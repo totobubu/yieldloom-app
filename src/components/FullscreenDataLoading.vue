@@ -4,6 +4,7 @@
     import { useFullscreenLoadingState } from '@/composables/useFullscreenLoading.js';
 
     const { loading, message } = useFullscreenLoadingState();
+    defineEmits(['after-hide']);
 </script>
 
 <template>
@@ -33,7 +34,8 @@
                     background: 'var(--app-surface)',
                 },
             },
-        }">
+        }"
+        @after-hide="$emit('after-hide')">
         <div
             class="fullscreen-data-loading-status"
             role="status"

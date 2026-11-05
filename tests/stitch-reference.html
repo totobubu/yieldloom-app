@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Stitch 원본 검토</title>
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: #f8fafc;
+                color: #1e293b;
+                font:
+                    14px/1.5 system-ui,
+                    sans-serif;
+            }
+            header {
+                padding: 16px;
+                background: white;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            p {
+                margin: 4px 0 12px;
+            }
+            label {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin-right: 16px;
+            }
+            select {
+                max-width: 100%;
+                padding: 8px;
+                border: 1px solid #cbd5e1;
+                border-radius: 8px;
+            }
+            #status {
+                display: block;
+                margin-top: 12px;
+                color: #785a00;
+            }
+            main {
+                overflow: auto;
+                padding: 16px;
+            }
+            iframe {
+                display: block;
+                border: 1px solid #e2e8f0;
+                background: white;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <strong>Stitch 원본 검토 · 예시 화면</strong>
+            <p>
+                현재 확보한 원본 전체입니다. 금융 수치는 가상 예시이며 실제
+                계좌·서비스와 연결되지 않습니다. 디자인·상태 검수 미완료입니다.
+            </p>
+            <label
+                >원본 화면
+                <select id="screen" aria-label="원본 화면"></select
+            ></label>
+            <label
+                >뷰포트
+                <select id="viewport" aria-label="뷰포트">
+                    <option value="1280">PC · 1280px</option>
+                    <option value="768">Tablet · 768px</option>
+                    <option value="390">Mobile · 390px</option>
+                </select></label
+            >
+            <output id="status"></output>
+        </header>
+        <main>
+            <iframe
+                id="reference"
+                title="서비스 미연결 Stitch 원본"
+                sandbox="allow-scripts"
+                width="1280"
+                height="1024"></iframe>
+        </main>
+        <script type="module" src="./stitch-reference.mjs"></script>
+    </body>
+</html>

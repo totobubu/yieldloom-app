@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>V2 SHELL / Tablet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              primary: '#0d7a6e',
+              hover: '#005048',
+              light: '#ecfdf5',
+              surface: '#f7f9fb',
+              dark: '#2d1e18',
+              accent: '#eab308',
+              accentLight: '#fef3c7'
+            }
+          },
+          fontFamily: {
+            sans: ['"Noto Sans KR"', '"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', 'Plus Jakarta Sans', sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+      width: 768px;
+      min-height: 1024px;
+    }
+    .num-tabular {
+      font-variant-numeric: tabular-nums;
+    }
+    .header-inner, .footer-inner {
+      max-width: 720px;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen bg-slate-50 text-slate-800 antialiased">
+
+  <!-- V2 GLOBAL HEADER (Tablet: 64px, inner max 720px) -->
+  <header class="sticky top-0 z-50 h-16 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="header-inner mx-auto h-full px-6 flex items-center justify-between">
+      
+      <!-- Brand Logo & Name -->
+      <a href="#" class="flex items-center gap-2.5 group focus:outline-none focus:ring-2 focus:ring-teal-600 rounded-lg p-1">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzoU6pRRn00HSLNKZ2515AxrKYCH8Zwwcw80Xx0U-SudU8Qt5E8s1OfQRAf6oYozvbnDehL69iRcCD6Lz_EsYivyVmMjHS5Hq3gPq8J1-bDRvU0SrM9ghwViiX5vyvRMLPX7m0RQZRr10_g2cZtIpzlaG7EUG28xqUwsM557SzxxePDKyRV8GKi7_jxHmTgJ_8WTumMvQtmbiiRohtrINrHVNpG4CJRhsCJlARM9wpf6thLaqhS31N" alt="모으멍 심볼" class="w-8 h-8 object-contain" />
+        <span class="text-base font-bold tracking-tight text-slate-900 flex items-center gap-1">
+          모으멍 <span class="text-[#0d7a6e]">배당달력</span>
+        </span>
+      </a>
+
+      <!-- Tablet Compact Navigation (Space-optimized icon + text tags) -->
+      <div class="flex items-center gap-2">
+        <nav class="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl">
+          <a href="#" class="px-2.5 py-1.5 text-xs font-semibold text-[#0d7a6e] bg-white shadow-xs rounded-lg flex items-center gap-1">
+            <i class="fa-solid fa-magnifying-glass text-[11px]"></i>
+            <span>검색</span>
+          </a>
+          <a href="#" class="px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 rounded-lg flex items-center gap-1">
+            <i class="fa-solid fa-code-compare text-[11px]"></i>
+            <span>비교</span>
+          </a>
+          <a href="#" class="px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 rounded-lg flex items-center gap-1">
+            <i class="fa-solid fa-sparkles text-[11px] text-amber-500"></i>
+            <span>신규 상장</span>
+          </a>
+        </nav>
+
+        <!-- Guide & Theme Toggle Buttons -->
+        <a href="#" aria-label="이용 안내" class="w-9 h-9 min-w-[36px] flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+          <i class="fa-regular fa-circle-question text-base"></i>
+        </a>
+        <button type="button" aria-label="테마 전환" class="w-9 h-9 min-w-[36px] flex items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-600">
+          <i class="fa-regular fa-sun text-sm"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- V2 MAIN CONTENT SLOT (Tablet: Full-width frame, deliberately empty with dashed placeholder) -->
+  <main class="flex-1 w-full flex flex-col justify-center items-center py-12 px-6">
+    <div class="header-inner w-full flex-1 flex flex-col items-center justify-center min-h-[580px]">
+      
+      <!-- Empty Slot Wireframe Container -->
+      <div class="w-full flex-1 border-2 border-dashed border-slate-300 rounded-2xl bg-white/70 p-8 flex flex-col items-center justify-center text-center shadow-sm">
+        <div class="w-14 h-14 rounded-2xl bg-teal-50 border border-teal-100 flex items-center justify-center mb-4 text-[#0d7a6e]">
+          <i class="fa-solid fa-layer-group text-xl"></i>
+        </div>
+        <h2 class="text-lg font-bold text-slate-800 mb-2">콘텐츠 영역 · 별도 콘텐츠 프레임 삽입</h2>
+        <p class="text-xs text-slate-500 max-w-md mb-6 leading-relaxed">
+          본 프레임은 전역 헤더, 태블릿 맞춤 압축 내비게이션, 푸터가 조립된 <strong class="text-slate-700">V2 Tablet Shell(768px)</strong>입니다. 개별 화면의 계좌 필터, 탭, 세부 금융 지표는 이 영역 안쪽에 들어옵니다.
+        </p>
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-[11px] font-medium text-slate-600 border border-slate-200">
+          <span class="w-2 h-2 rounded-full bg-teal-600"></span>
+          <span>Tablet 그리드 사양: 좌우 24px 여백 대응 (최대 720px)</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- DESIGN NOTE & ACCESS RULE (Design spec banner) -->
+  <aside class="w-full bg-slate-100/80 border-t border-slate-200 py-3 px-6 text-[11px] text-slate-500">
+    <div class="header-inner mx-auto flex items-center justify-between gap-2">
+      <div class="flex items-center gap-1.5">
+        <span class="px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold text-[10px]">설계 사양</span>
+        <span>공개 기본 셸 통일 · 로그인/관리자 메뉴 비노출 · 터치 타깃 44px 준수</span>
+      </div>
+      <div class="text-slate-400">
+        V2 SHELL / Tablet (768px) · Inner max-720px
+      </div>
+    </div>
+  </aside>
+
+  <!-- V2 GLOBAL FOOTER (Tablet: max-width 720px) -->
+  <footer class="w-full bg-white border-t border-slate-200 py-6">
+    <div class="footer-inner mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzoU6pRRn00HSLNKZ2515AxrKYCH8Zwwcw80Xx0U-SudU8Qt5E8s1OfQRAf6oYozvbnDehL69iRcCD6Lz_EsYivyVmMjHS5Hq3gPq8J1-bDRvU0SrM9ghwViiX5vyvRMLPX7m0RQZRr10_g2cZtIpzlaG7EUG28xqUwsM557SzxxePDKyRV8GKi7_jxHmTgJ_8WTumMvQtmbiiRohtrINrHVNpG4CJRhsCJlARM9wpf6thLaqhS31N" alt="모으멍 심볼" class="w-5 h-5 object-contain opacity-80" />
+        <span class="text-xs font-bold text-slate-800">모으멍 배당달력</span>
+        <span class="text-slate-300">|</span>
+        <a href="#" class="text-[11px] text-slate-500 hover:text-slate-800">데이터 출처 · 이용 안내</a>
+      </div>
+      <p class="text-[11px] text-slate-400 text-center sm:text-right">
+        공개된 자료를 정리한 정보입니다. 기준일과 원문을 확인해 주세요.
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

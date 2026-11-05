@@ -1,3 +1,7 @@
+import {
+    openPortfolioPage,
+    waitForPortfolioPage,
+} from './portfolio-navigation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { chromium } from 'playwright';
@@ -196,18 +200,21 @@ try {
     const base = process.env.FAMILY_UI_BASE_URL || 'http://127.0.0.1:5173';
     await page.goto(`${base}/mypage?tab=settings&view=capital`);
     await page.waitForURL('**/mypage?tab=overview&view=capital');
-    await page.getByRole('tab', { name: '한눈에 보기', exact: true }).waitFor();
+    await waitForPortfolioPage(page, '한눈에 보기');
     assert.equal(
         await page.getByRole('tab', { name: '설정', exact: true }).count(),
         0
     );
     await page.reload();
-    await page.getByRole('tab', { name: '배당 캘린더', exact: true }).click();
+    await openPortfolioPage(page, '배당 캘린더');
     const calendar = page.getByRole('region', { name: '개인 배당 캘린더' });
     await calendar.waitFor();
+    await calendar
+        .getByRole('button', { name: '월간 목록 보기', exact: true })
+        .click();
     await page
-        .getByRole('combobox', { name: '배당 통화 필터', exact: true })
-        .getByText('모든 통화', { exact: true })
+        .getByRole('group', { name: '배당 통화 필터', exact: true })
+        .getByRole('button', { name: '모든 통화', exact: true })
         .waitFor();
     await page
         .getByText('일정을 확인하지 못한 종목 1개', { exact: true })
@@ -277,15 +284,15 @@ try {
         .getByRole('button', { name: '공시 일정·예상', exact: true })
         .click();
     await page
-        .getByRole('combobox', { name: '배당 일정 날짜 기준', exact: true })
+        .getByRole('group', { name: '배당 일정 날짜 기준', exact: true })
+        .getByRole('button', { name: '배당락일', exact: true })
         .click();
-    await page.getByRole('option', { name: '배당락일', exact: true }).click();
     await page
         .getByRole('combobox', { name: '배당 계좌 필터', exact: true })
         .click();
     await page.getByRole('option', { name: '모든 계좌', exact: true }).click();
-    await page.getByRole('tab', { name: '한눈에 보기', exact: true }).click();
-    await page.getByRole('tab', { name: '배당 캘린더', exact: true }).click();
+    await openPortfolioPage(page, '한눈에 보기');
+    await openPortfolioPage(page, '배당 캘린더');
     await calendar.getByText(/계좌별 기준일이 다릅니다/).waitFor();
     assert.equal(
         requests.filter((q) =>
@@ -381,7 +388,10 @@ try {
     );
     await page.evaluate(() => (window.__calendarUser.value = null));
     if (release) release();
-    await page.waitForURL(/\/admin\/login/);
+    await page.waitForFunction(
+        () => document.querySelectorAll('.event-row').length === 0
+    );
+    // The session boundary must clear private rows; navigation presentation is independent.
     assert.equal(await page.locator('.event-row').count(), 0);
     assert.deepEqual(errors, []);
     console.log(

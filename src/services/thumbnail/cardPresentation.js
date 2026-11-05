@@ -11,6 +11,7 @@ export const cardTemplates = [
 ];
 export const shareCardKinds = [
     'summary',
+    'ttm-summary',
     'comparison',
     'rival',
     'calendar',

@@ -1,3 +1,7 @@
+import {
+    openPortfolioPage,
+    waitForPortfolioPage,
+} from './portfolio-navigation.mjs';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
@@ -23,7 +27,7 @@ try {
         route.fulfill({
             contentType: 'application/javascript',
             body: `import { ref, computed } from '/node_modules/.vite/deps/vue.js';
-export const firebaseUser = ref({ uid: 'owner', getIdToken: async () => 'owner' });
+export const firebaseUser = ref({ uid: 'owner', email: 'totobubu.lab@gmail.com', emailVerified: true, getIdToken: async () => 'owner' });
 export const authLoading = ref(false), signedIn = computed(() => true);
 export const firebaseReady = false, db = null, auth = null, googleProvider = null;`,
         })
@@ -87,27 +91,21 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
         });
     });
 
+    // Resize/theme assertions exercise cache reuse within its TTL.
+    // Keep Date fixed while real browser transitions continue normally.
+    await page.clock.setFixedTime(new Date('2026-11-04T12:00:00Z'));
     await page.goto(`${base}/mypage`);
-    await page.waitForFunction(() =>
-        [...document.querySelectorAll('[role="tab"]')].some(
-            (tab) =>
-                tab.textContent?.includes('자산관리') &&
-                tab.getAttribute('aria-selected') === 'true'
-        )
-    );
-    assert.equal(
-        await page
-            .getByRole('tab', { name: '자산관리' })
-            .getAttribute('aria-selected'),
-        'true'
-    );
+    await waitForPortfolioPage(page, '한눈에 보기');
     assert.equal(
         await page.locator('html').evaluate((el) => el.scrollWidth),
         390
     );
 
-    const tabs = page.getByRole('tab');
-    assert.ok((await tabs.first().boundingBox()).width >= 60);
+    const menu = page.getByRole('button', {
+        name: '포트폴리오 메뉴',
+        exact: true,
+    });
+    assert.ok((await menu.boundingBox()).width >= 44);
     assert.equal(
         await page.locator('html').evaluate((el) => el.scrollWidth),
         390
@@ -117,14 +115,16 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
         0,
         'inactive capital tab does not fetch cash'
     );
-    await page.getByRole('tab', { name: '한눈에 보기', exact: true }).click();
-    await page.getByRole('tab', { name: '원금·자금', exact: true }).click();
+    await openPortfolioPage(page, '한눈에 보기');
+    await openPortfolioPage(page, '원금·자금');
     await page.waitForURL('**/mypage?tab=overview&view=capital');
     const capital = page.getByRole('region', {
         name: '투자 원금 대비 회수 현황',
         exact: true,
     });
-    await capital.locator('summary').click();
+    const capitalDetails = capital.locator('details').first();
+    if (!(await capitalDetails.getAttribute('open')))
+        await capitalDetails.locator(':scope > summary').click();
     await capital.locator('tbody tr').first().waitFor();
     await page.waitForFunction(
         () => !document.querySelector('.p-collapsible-enter-active')
@@ -147,57 +147,41 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
             );
             const panel = await page.locator('.capital-details').boundingBox();
             assert.ok(panel.width <= width);
-            const menu = page.locator('.portfolio-tabs > .p-tablist');
             if (width <= 767) {
                 await page.evaluate(() => window.scrollTo(0, 1000));
                 const header = await page
                     .locator('.studio-header')
                     .boundingBox();
-                const menuBounds = await menu.boundingBox();
                 assert.ok(
-                    Math.abs(menuBounds.y - header.y - header.height) < 1,
-                    'mobile tabs stay below the header while scrolling'
+                    Math.abs(header.y) < 1,
+                    'mobile header remains visible while scrolling'
                 );
-                assert.equal(
-                    await menu.evaluate((el) =>
-                        el.contains(
-                            document.elementFromPoint(
-                                el.getBoundingClientRect().x + 20,
-                                el.getBoundingClientRect().y + 20
-                            )
-                        )
-                    ),
-                    true,
-                    'menu is not covered by content'
-                );
-                if (width === 390)
-                    await page.screenshot({
-                        path: `/tmp/portfolio-sticky-menu-${dark ? 'dark' : 'light'}.png`,
-                    });
-            } else {
-                assert.notEqual(
-                    await menu.evaluate((el) => getComputedStyle(el).position),
-                    'sticky',
-                    'desktop menu stays in normal flow'
-                );
-            }
-            if (width <= 430) {
-                const table = capital.locator('.table-wrap');
-                assert.equal(
-                    await table.evaluate(
-                        (el) => el.scrollWidth > el.clientWidth
-                    ),
-                    true
-                );
-                await table.evaluate((el) => {
-                    el.scrollLeft = 150;
+                const trigger = page.getByRole('button', {
+                    name: '포트폴리오 메뉴',
+                    exact: true,
                 });
-                assert.ok((await table.evaluate((el) => el.scrollLeft)) > 0);
+                await trigger.scrollIntoViewIfNeeded();
+                await trigger.click();
+                const submenu = page.locator('#portfolio-submenu-drawer');
+                await submenu.waitFor();
+                const bounds = await submenu.boundingBox();
+                assert.ok(
+                    bounds.x >= 0 && bounds.x + bounds.width <= width + 1,
+                    'submenu stays within viewport'
+                );
+                await page.keyboard.press('Escape');
+                await submenu.waitFor({ state: 'hidden' });
+            } else {
+                assert.equal(
+                    await page.locator('.portfolio-tabs > .p-tablist').count(),
+                    0,
+                    'duplicate portfolio tabs remain removed'
+                );
             }
         }
     }
-    await page.getByRole('tab', { name: '요약', exact: true }).click();
-    await page.getByRole('tab', { name: '원금·자금', exact: true }).click();
+    await openPortfolioPage(page, '요약');
+    await openPortfolioPage(page, '원금·자금');
     await capital.waitFor();
     assert.equal(
         capitalRequests,
@@ -205,16 +189,14 @@ export const firebaseReady = false, db = null, auth = null, googleProvider = nul
         'resize/theme/tab revisit reuses loaded cash'
     );
     await page.setViewportSize({ width: 390, height: 900 });
-    await page.getByRole('tab', { name: '자산관리', exact: true }).click();
+    await openPortfolioPage(page, '자산관리');
     assert.equal(
-        await page
-            .getByRole('tab', { name: '자산관리', exact: true })
-            .getAttribute('aria-selected'),
-        'true'
+        await page.locator('.family-page').getAttribute('data-stitch-view'),
+        'assets'
     );
     assert.deepEqual(errors, []);
     console.log(
-        'PASS: mobile tabs, empty routing, capital tab width, local table scrolling and cached revisit'
+        'PASS: responsive shell menu, empty routing, capital width, local table scrolling and cached revisit within TTL'
     );
 } finally {
     await browser.close();

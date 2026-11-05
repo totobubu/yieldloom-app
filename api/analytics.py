@@ -11,7 +11,7 @@ from api.firebase_credential import parse_firebase_credential
 app = Flask(__name__)
 configure_cors(app)
 EVENTS = {"search", "card_open", "png_download", "share_copy"}
-CARD_KINDS = {"summary", "comparison", "rival", "calendar", "holding-dividend", "entry-efficiency", "home"}
+CARD_KINDS = {"summary", "comparison", "rival", "calendar", "holding-dividend", "entry-efficiency", "ttm-summary", "home"}
 
 
 def database():

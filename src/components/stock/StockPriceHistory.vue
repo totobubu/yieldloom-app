@@ -7,23 +7,41 @@
     import Dialog from 'primevue/dialog';
     import Message from 'primevue/message';
     import InfoHelp from '@/components/common/InfoHelp.vue';
+    import StockPriceEvents from './StockPriceEvents.vue';
     import { calendarToday, monthDays } from '@/services/portfolioCalendar.js';
     const props = defineProps({
         symbol: { type: String, required: true },
         rows: { type: Array, default: () => [] },
         candles: { type: Array, default: () => [] },
+        events: { type: Array, default: () => [] },
         loading: { type: Boolean, default: false },
         error: { type: String, default: '' },
         currency: { type: String, default: 'USD' },
         adjustmentBasis: { type: String, default: '' },
     });
-    const view = ref('calendar'),
+    const visibleTableRows = ref(10);
+    const view = ref('table'),
         period = ref('');
     const options = [
-        { label: '달력', value: 'calendar' },
         { label: '표', value: 'table' },
+        { label: '달력', value: 'calendar' },
     ];
     const selectedDate = ref(null);
+    // Same precedence as the chart: quote history first, then provider events.
+    // Missing events do not establish that no corporate action occurred.
+    const eventsByDate = computed(() => {
+        const grouped = new Map(),
+            seen = new Set();
+        for (const event of props.events) {
+            if (!event?.date) continue;
+            const key = `${event.date}:${event.kind}`;
+            if (seen.has(key)) continue;
+            seen.add(key);
+            if (!grouped.has(event.date)) grouped.set(event.date, []);
+            grouped.get(event.date).push(event);
+        }
+        return grouped;
+    });
     const calendarFields = [
         { key: 'high', label: '고가' },
         { key: 'close', label: '종가' },
@@ -50,6 +68,9 @@
         return [...rows.values()]
             .sort((a, b) => b.date.localeCompare(a.date))
             .slice(0, 120);
+    });
+    watch(prices, () => {
+        visibleTableRows.value = 10;
     });
     const byDate = computed(
         () => new Map(prices.value.map((row) => [row.date, row]))
@@ -285,29 +306,74 @@
                 </table>
             </div>
         </template>
-        <DataTable
-            v-else
-            :value="prices"
-            striped-rows
-            scrollable
-            scroll-height="420px"
-            :table-style="{ minWidth: '680px' }"
-            :table-props="{ 'aria-label': '일별 시세 표' }">
-            <Column field="date" header="기준일" />
-            <Column
-                v-for="field in fields"
-                :key="field.key"
-                :header="field.label">
-                <template #body="{ data }">{{
-                    price(data[field.key])
-                }}</template>
-            </Column>
-            <Column header="거래량">
-                <template #body="{ data }">{{
-                    provided(data.volume) ? `${number(data.volume)}주` : '—'
-                }}</template>
-            </Column>
-        </DataTable>
+        <template v-else>
+            <div class="price-observation-cards" aria-label="일별 시세 카드">
+                <article
+                    v-for="row in prices.slice(0, visibleTableRows)"
+                    :key="row.date">
+                    <header>
+                        <span>기준일</span><strong>{{ row.date }}</strong>
+                    </header>
+                    <dl>
+                        <div v-for="field in fields" :key="field.key">
+                            <dt>{{ field.label }}</dt>
+                            <dd>{{ price(row[field.key]) }}</dd>
+                        </div>
+                        <div>
+                            <dt>거래량</dt>
+                            <dd>
+                                {{
+                                    provided(row.volume)
+                                        ? `${number(row.volume)}주`
+                                        : '—'
+                                }}
+                            </dd>
+                        </div>
+                    </dl>
+                    <div class="price-card-events">
+                        <span>이벤트</span
+                        ><StockPriceEvents
+                            :events="eventsByDate.get(row.date) || []" />
+                    </div>
+                </article>
+                <Button
+                    v-if="prices.length > visibleTableRows"
+                    :label="`시세 이력 더 보기 (${visibleTableRows}/${prices.length})`"
+                    severity="secondary"
+                    outlined
+                    @click="visibleTableRows += 10" />
+            </div>
+            <DataTable
+                class="price-observation-table"
+                :value="prices"
+                striped-rows
+                scrollable
+                scroll-height="420px"
+                :table-style="{ minWidth: '680px' }"
+                :table-props="{ 'aria-label': '일별 시세 표' }">
+                <Column field="date" header="기준일" />
+                <Column
+                    v-for="field in fields"
+                    :key="field.key"
+                    :header="field.label">
+                    <template #body="{ data }">{{
+                        price(data[field.key])
+                    }}</template>
+                </Column>
+                <Column header="거래량">
+                    <template #body="{ data }">{{
+                        provided(data.volume) ? `${number(data.volume)}주` : '—'
+                    }}</template>
+                </Column>
+                <Column header="이벤트"
+                    ><template #body="{ data }"
+                        ><StockPriceEvents
+                            :events="
+                                eventsByDate.get(data.date) || []
+                            " /></template
+                ></Column>
+            </DataTable>
+        </template>
         <Dialog
             :visible="!!selectedPrice"
             modal
@@ -344,6 +410,14 @@
     .stock-price-history {
         margin-top: 0;
         min-width: 0;
+    }
+    .price-card-events {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 12px;
+        font-size: 12px;
     }
     .history-title {
         display: flex;
@@ -502,6 +576,57 @@
         }
         td strong {
             font-size: 12px;
+        }
+    }
+
+    /* Original 87cd20: table by default; labelled observation cards below1024. */
+    .price-observation-cards {
+        display: none;
+    }
+    @media (max-width: 1023px) {
+        .price-observation-table {
+            display: none;
+        }
+        .price-observation-cards {
+            display: grid;
+            gap: 12px;
+        }
+        .price-observation-cards article {
+            padding: 16px;
+            background: var(--app-surface);
+            border: 1px solid var(--app-border);
+            border-radius: 8px;
+        }
+        .price-observation-cards header {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--app-border-subtle);
+        }
+        .price-observation-cards header > span,
+        .price-observation-cards dt {
+            color: var(--app-muted);
+        }
+        .price-observation-cards dl {
+            display: grid;
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .price-observation-cards dl > div {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 12px;
+        }
+        .price-observation-cards dd {
+            margin: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .price-observation-cards small {
+            color: var(--app-muted);
+            font-size: 11px;
         }
     }
 </style>

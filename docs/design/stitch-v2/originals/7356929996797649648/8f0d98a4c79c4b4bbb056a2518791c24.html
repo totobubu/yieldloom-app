@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTENT / Portfolio Calendar</title>
+  <style>
+    /* Reset & Base Tokens */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #0d7a6e;
+      --primary-hover: #0a6359;
+      --primary-light: #e6f5f3;
+      --primary-border: #a2dcd5;
+      --mint: #2dd4bf;
+      --mint-light: #f0fdfa;
+      --yellow: #eab308;
+      --yellow-light: #fefce8;
+      --yellow-border: #fde047;
+      --dark-brown: #382418;
+      --bg-neutral: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+      --font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-neutral);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding: 16px;
+    }
+
+    /* Outer Wrapper - Pure content frame (No global nav/footer) */
+    .calendar-content-frame {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Common Card */
+    .p-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      padding: 20px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    /* Header & Title Area */
+    .view-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .view-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--dark-brown);
+      letter-spacing: -0.02em;
+    }
+
+    .data-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      background-color: var(--primary-light);
+      border: 1px solid var(--primary-border);
+      border-radius: 9999px;
+    }
+
+    .status-meta-badge {
+      font-size: 13px;
+      color: var(--text-muted);
+      background: #f1f5f9;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Control Strip (Filter, Selectors, Toggles) */
+    .control-cluster {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* PrimeVue-styled Inputs & Selectors */
+    .field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .p-select {
+      height: 44px;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      background-color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+    .p-select:focus, .p-select:hover {
+      border-color: var(--primary);
+    }
+
+    /* Segmented Controls (Buttons / Toggles) */
+    .p-segmented {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+      min-height: 44px;
+      align-items: center;
+    }
+
+    .p-segment-btn {
+      height: 38px;
+      min-height: 38px;
+      padding: 0 14px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .p-segment-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Date Navigation Unit */
+    .date-nav-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 3px 6px;
+      height: 44px;
+    }
+
+    .p-icon-btn {
+      width: 38px;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--text-main);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.15s ease;
+    }
+    .p-icon-btn:hover {
+      background: #f1f5f9;
+    }
+
+    .date-display {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--dark-brown);
+      padding: 0 8px;
+      min-width: 110px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .p-btn-today {
+      height: 32px;
+      padding: 0 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .p-btn-today:hover {
+      background: #edf2f7;
+    }
+
+    /* Mode Pill Navigator */
+    .mode-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 12px;
+    }
+
+    .mode-tab {
+      height: 44px;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+      background: #ffffff;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .mode-tab:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .mode-tab.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+    .mode-tab .badge {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .mode-tab:not(.active) .badge {
+      background: #f1f5f9;
+      color: var(--text-muted);
+    }
+
+    /* Layout: Main Calendar / Content + Side / Detail Panels */
+    .calendar-body-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+    }
+
+    /* Calendar Grid Display (Desktop Table-like structure) */
+    .calendar-view-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .calendar-header-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 8px;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    .legend-dot.confirmed {
+      background-color: var(--primary);
+    }
+    .legend-dot.estimated {
+      background: repeating-linear-gradient(45deg, var(--yellow), var(--yellow) 2px, #fff 2px, #fff 4px);
+      border: 1px solid var(--yellow);
+    }
+    .legend-dot.saved {
+      background-color: var(--mint);
+    }
+
+    /* Table / Month Grid */
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+    }
+
+    .grid-day-header {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 8px 0;
+    }
+
+    .grid-cell {
+      min-height: 105px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      transition: border-color 0.15s ease;
+    }
+    .grid-cell:hover {
+      border-color: var(--primary-border);
+    }
+    .grid-cell.outside-month {
+      background: #fafafa;
+      opacity: 0.45;
+    }
+    .grid-cell.today {
+      border: 2px solid var(--primary);
+      background: #fafdfc;
+    }
+
+    .cell-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .grid-cell.today .cell-top {
+      color: var(--primary);
+    }
+
+    .today-tag {
+      font-size: 10px;
+      padding: 1px 5px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    /* Event Badges inside Cells */
+    .event-pill {
+      display: flex;
+      flex-direction: column;
+      padding: 5px 6px;
+      border-radius: 6px;
+      font-size: 11px;
+      line-height: 1.25;
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.1s ease;
+      word-break: keep-all;
+    }
+    .event-pill:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Confirmed vs Estimated Style Differentiation */
+    .event-pill.confirmed {
+      background-color: var(--primary-light);
+      border: 1px solid var(--primary-border);
+      color: var(--primary-hover);
+    }
+
+    .event-pill.estimated {
+      background: #fffdf0 repeating-linear-gradient(45deg, #fef08a 0, #fef08a 4px, #fffdf0 4px, #fffdf0 8px);
+      border: 1px dashed var(--yellow);
+      color: #854d0e;
+    }
+
+    .event-pill.active-selection {
+      outline: 2px solid var(--dark-brown);
+    }
+
+    .event-ticker {
+      font-weight: 700;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .event-amount {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .pill-type-label {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .confirmed .pill-type-label {
+      background: var(--primary);
+      color: #fff;
+    }
+    .estimated .pill-type-label {
+      background: var(--yellow);
+      color: #713f12;
+    }
+
+    /* Side / Bottom Detail Panels */
+    .side-detail-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .detail-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--dark-brown);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .detail-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .detail-item-label {
+      color: var(--text-muted);
+      font-weight: 500;
+      min-width: 90px;
+    }
+    .detail-item-value {
+      color: var(--text-main);
+      font-weight: 600;
+      text-align: right;
+      word-break: keep-all;
+    }
+
+    /* Verification Status Pill */
+    .verify-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .verify-pill.confirmed {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+    .verify-pill.unverified {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid #cbd5e1;
+    }
+
+    /* Notice Banner (Subtle & short data reference basis) */
+    .data-source-note {
+      background-color: #f8fafc;
+      border-left: 3px solid var(--primary);
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-radius: 0 6px 6px 0;
+      margin-top: 8px;
+    }
+
+    /* Reconciliation (대조) Card & ICS Card */
+    .action-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .checkbox-control {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-main);
+      user-select: none;
+    }
+
+    .checkbox-control input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    .p-btn-action {
+      height: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.15s ease;
+      text-decoration: none;
+    }
+    .p-btn-action:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+    .p-btn-action:disabled {
+      background: #cbd5e1;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    .p-btn-outline {
+      height: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #ffffff;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.15s ease;
+    }
+    .p-btn-outline:hover {
+      background: var(--primary-light);
+    }
+
+    /* Comparison Table / Box */
+    .reconciliation-mini-box {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .recon-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 1px dashed var(--border-color);
+    }
+    .recon-row:last-child {
+      border-bottom: none;
+    }
+    .recon-tag {
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .recon-val {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Responsive Breakdown: 1024px & Mobile 390px / 768px */
+    .mobile-cards-view {
+      display: none; /* Desktop default: show table */
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (max-width: 1024px) {
+      .calendar-body-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* Switch dense table into label-card view */
+      .month-grid {
+        display: none;
+      }
+      .mobile-cards-view {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+      .p-card {
+        padding: 16px;
+      }
+      .control-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .control-group {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .p-select, .p-segmented, .date-nav-bar {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .p-segment-btn {
+        flex: 1;
+      }
+      .view-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .mode-tab {
+        flex: 1;
+        justify-content: center;
+        padding: 0 12px;
+        font-size: 13px;
+      }
+    }
+
+    /* Mobile Label Card Item (Prevents 1-char wrapping, clearly labeled) */
+    .schedule-label-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .schedule-label-card.confirmed-card {
+      border-left: 4px solid var(--primary);
+    }
+    .schedule-label-card.estimated-card {
+      border-left: 4px solid var(--yellow);
+    }
+
+    .card-meta-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-date-badge {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark-brown);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-asset-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap; /* Prevents 1-char wrap */
+    }
+
+    .card-grid-data {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .data-cell-label {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+    .data-cell-val {
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 1px;
+      white-space: nowrap;
+    }
+
+    /* Mode View Switch Simulation States */
+    .mode-content-block {
+      display: none;
+    }
+    .mode-content-block.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Single Web Screen Content: Portfolio Calendar -->
+  <main class="calendar-content-frame" id="portfolio-calendar-app">
+
+    <!-- Screen Title & Top Meta Strip -->
+    <header class="p-card view-header">
+      <div class="title-row">
+        <h1 class="view-title">배당 캘린더</h1>
+        <span class="data-badge">예시 데이터</span>
+      </div>
+      <div class="status-meta-badge">
+        <span>현재일: <strong>2026.11.04</strong></span>
+        <span>·</span>
+        <span>기준: <strong>2026년 11월</strong></span>
+      </div>
+    </header>
+
+    <!-- Master Control Strip (Account, Currency, Dates, View Mode) -->
+    <section class="p-card control-cluster">
+      <!-- Row 1: Account Selector & Currency Selector (USD / KRW independent) -->
+      <div class="control-row">
+        <div class="control-group">
+          <label class="field-label" for="accountSelect">대상 계좌</label>
+          <select id="accountSelect" class="p-select" aria-label="대상 계좌 선택" onchange="handleAccountChange(this.value)">
+            <option value="toss_0115" selected>김모음 · 토스증권 ****0115</option>
+            <option value="zero_balance">김모음 · KB증권 ****9901 (잔고 없음)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <span class="field-label">통화 선택 (환산·합산 없음)</span>
+          <div class="p-segmented" role="group" aria-label="통화 선택">
+            <button type="button" class="p-segment-btn active" id="currUsdBtn" onclick="setCurrency('USD')">USD ($)</button>
+            <button type="button" class="p-segment-btn" id="currKrwBtn" onclick="setCurrency('KRW')">KRW (₩)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Date Basis (배당락일 / 지급일), Nav, Month/Year Switch -->
+      <div class="control-row">
+        <div class="control-group">
+          <span class="field-label">날짜 기준</span>
+          <div class="p-segmented" role="group" aria-label="날짜 기준">
+            <button type="button" class="p-segment-btn" id="dateBasisEx" onclick="setDateBasis('ex')">배당락일</button>
+            <button type="button" class="p-segment-btn active" id="dateBasisPay" onclick="setDateBasis('pay')">지급일</button>
+          </div>
+        </div>
+
+        <!-- Date Stepper (Prev, Today, Next, Month Picker) -->
+        <div class="control-group">
+          <div class="date-nav-bar">
+            <button type="button" class="p-icon-btn" aria-label="이전 기간" onclick="changeMonth(-1)">‹</button>
+            <button type="button" class="p-btn-today" onclick="goToday()">오늘</button>
+            <span class="date-display" id="periodDisplay">2026년 11월</span>
+            <button type="button" class="p-icon-btn" aria-label="다음 기간" onclick="changeMonth(1)">›</button>
+          </div>
+
+          <div class="p-segmented" role="group" aria-label="보기 모드">
+            <button type="button" class="p-segment-btn active" id="viewMonthBtn" onclick="setViewMode('month')">월 보기</button>
+            <button type="button" class="p-segment-btn" id="viewYearBtn" onclick="setViewMode('year')">년 보기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Local Modes (공시 기반 일정 / 저장된 배당 기록 / 대조) -->
+      <nav class="mode-bar" aria-label="로컬 모드 탭">
+        <button type="button" class="mode-tab active" id="tabNotice" onclick="setLocalMode('notice')">
+          <span>공시 기반 일정</span>
+          <span class="badge">기본</span>
+        </button>
+        <button type="button" class="mode-tab" id="tabSaved" onclick="setLocalMode('saved')">
+          <span>저장된 배당 기록</span>
+          <span class="badge" id="savedCountBadge">2건</span>
+        </button>
+        <button type="button" class="mode-tab" id="tabRecon" onclick="setLocalMode('recon')">
+          <span>대조 (일정 vs 기록)</span>
+          <span class="badge">검토</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- Balance Alert Notice (When zero balance account is chosen) -->
+    <div id="zeroBalanceNotice" style="display:none;" class="p-card" style="border-left: 4px solid var(--yellow); background:#fefce8;">
+      <p style="font-size:14px; font-weight:600; color:#854d0e;">
+        ⚠️ 잔고가 없는 계좌입니다. 공시 예상액은 산출되지 않지만, 기저장된 배당 기록 조회는 정상적으로 가능합니다.
+      </p>
+    </div>
+
+    <!-- MAIN BODY GRID: Calendar View + Detailed Action Drawer/Card -->
+    <div class="calendar-body-grid">
+
+      <!-- LEFT: Calendar View & Lists -->
+      <section class="calendar-view-panel">
+        
+        <!-- MODE 1: 공시 기반 일정 (기본) -->
+        <div id="modeBlockNotice" class="mode-content-block active">
+          <div class="p-card">
+            <div class="calendar-header-status">
+              <div>
+                <strong style="color:var(--dark-brown); font-size:16px;">2026년 11월 배당 캘린더</strong>
+                <span style="font-size:13px; color:var(--text-muted); margin-left:6px;">기준일자: 지급일 기준</span>
+              </div>
+              <div class="legend-row">
+                <div class="legend-item">
+                  <span class="legend-dot confirmed"></span>
+                  <span>공시 확정 (11.20 예시)</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-dot estimated"></span>
+                  <span>주기 추정 (11.15 예시)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Desktop View: Grid (Hidden on <=1024px) -->
+            <div class="month-grid" aria-label="2026년 11월 배당 달력">
+              <!-- Day Headers -->
+              <div class="grid-day-header" style="color:#ef4444;">일</div>
+              <div class="grid-day-header">월</div>
+              <div class="grid-day-header">화</div>
+              <div class="grid-day-header">수</div>
+              <div class="grid-day-header">목</div>
+              <div class="grid-day-header">금</div>
+              <div class="grid-day-header" style="color:#3b82f6;">토</div>
+
+              <!-- Week 1: 1~7 (2026-11-01 starts on Sunday) -->
+              <div class="grid-cell"><div class="cell-top"><span>1</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>2</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>3</span></div></div>
+              <!-- Today: 2026.11.04 -->
+              <div class="grid-cell today">
+                <div class="cell-top">
+                  <span>4</span>
+                  <span class="today-tag">오늘</span>
+                </div>
+              </div>
+              <div class="grid-cell"><div class="cell-top"><span>5</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>6</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>7</span></div></div>
+
+              <!-- Week 2: 8~14 -->
+              <div class="grid-cell"><div class="cell-top"><span>8</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>9</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>10</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>11</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>12</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>13</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>14</span></div></div>
+
+              <!-- Week 3: 15~21 -->
+              <!-- Nov 15: Periodic Estimate Example (주기 추정 예시) -->
+              <div class="grid-cell" style="background:#fffef5;">
+                <div class="cell-top"><span>15</span></div>
+                <div class="event-pill estimated" onclick="selectEvent('estimated')" tabindex="0" role="button" aria-label="11월 15일 O 주기 추정 예시">
+                  <div class="event-ticker">
+                    <span>O (리얼티인컴)</span>
+                    <span class="pill-type-label">주기 추정</span>
+                  </div>
+                  <div class="event-amount">주당 $0.2635 · 120주</div>
+                </div>
+              </div>
+              <div class="grid-cell"><div class="cell-top"><span>16</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>17</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>18</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>19</span></div></div>
+              <!-- Nov 20: Official Confirmed Schedule Example (공시 확정 예시) -->
+              <div class="grid-cell" style="background:#f4fbf9;">
+                <div class="cell-top"><span>20</span></div>
+                <div class="event-pill confirmed active-selection" onclick="selectEvent('confirmed')" tabindex="0" role="button" aria-label="11월 20일 AAPL 공시 확정 예시">
+                  <div class="event-ticker">
+                    <span>AAPL (애플)</span>
+                    <span class="pill-type-label">공시 확정</span>
+                  </div>
+                  <div class="event-amount">주당 $0.25 · 85주</div>
+                </div>
+              </div>
+              <div class="grid-cell"><div class="cell-top"><span>21</span></div></div>
+
+              <!-- Week 4: 22~28 -->
+              <div class="grid-cell"><div class="cell-top"><span>22</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>23</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>24</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>25</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>26</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>27</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>28</span></div></div>
+
+              <!-- Week 5: 29~30 -->
+              <div class="grid-cell"><div class="cell-top"><span>29</span></div></div>
+              <div class="grid-cell"><div class="cell-top"><span>30</span></div></div>
+              <div class="grid-cell outside-month"><div class="cell-top"><span>1</span></div></div>
+              <div class="grid-cell outside-month"><div class="cell-top"><span>2</span></div></div>
+              <div class="grid-cell outside-month"><div class="cell-top"><span>3</span></div></div>
+              <div class="grid-cell outside-month"><div class="cell-top"><span>4</span></div></div>
+              <div class="grid-cell outside-month"><div class="cell-top"><span>5</span></div></div>
+            </div>
+
+            <!-- Responsive View: Labels & Cards (<=1024px & 390px, no 1-char word break) -->
+            <div class="mobile-cards-view">
+              <!-- Item 1: Confirmed -->
+              <div class="schedule-label-card confirmed-card" onclick="selectEvent('confirmed')">
+                <div class="card-meta-header">
+                  <span class="card-date-badge">2026.11.20 (금) · 지급일</span>
+                  <span class="pill-type-label" style="background:var(--primary); color:#fff;">공시 확정</span>
+                </div>
+                <div class="card-asset-title">AAPL (애플)</div>
+                <div class="card-grid-data">
+                  <div>
+                    <div class="data-cell-label">주당금액</div>
+                    <div class="data-cell-val">$0.25 (USD)</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">보유수량</div>
+                    <div class="data-cell-val">85주 (기준일 잔고)</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">예상 산출액</div>
+                    <div class="data-cell-val">$21.25</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">자료 기준일</div>
+                    <div class="data-cell-val">2026.11.02 SEC Filing</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Item 2: Estimated -->
+              <div class="schedule-label-card estimated-card" onclick="selectEvent('estimated')">
+                <div class="card-meta-header">
+                  <span class="card-date-badge">2026.11.15 (일) · 지급일</span>
+                  <span class="pill-type-label" style="background:var(--yellow); color:#713f12;">주기 추정</span>
+                </div>
+                <div class="card-asset-title">O (리얼티인컴)</div>
+                <div class="card-grid-data">
+                  <div>
+                    <div class="data-cell-label">추정 주당금액</div>
+                    <div class="data-cell-val">$0.2635 (USD)</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">보유수량</div>
+                    <div class="data-cell-val">120주</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">추정 합산액</div>
+                    <div class="data-cell-val">$31.62 (미확정)</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">추정 근거</div>
+                    <div class="data-cell-val">과거 월배당 주기 모델</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="data-source-note">
+              <strong>자료 안내:</strong> 공시 기반 예상액과 기저장된 기록은 중복 합산되지 않으며, 세전 단순 계산 기준입니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE 2: 저장된 배당 기록 -->
+        <div id="modeBlockSaved" class="mode-content-block">
+          <div class="p-card">
+            <div class="calendar-header-status">
+              <div>
+                <strong style="color:var(--dark-brown); font-size:16px;">저장된 실제 배당 기록</strong>
+                <span style="font-size:13px; color:var(--text-muted); margin-left:6px;">취소분 자동 차감 반영</span>
+              </div>
+              <span class="verify-pill unverified">미확인 수량 포함 (0 아님)</span>
+            </div>
+
+            <div class="mobile-cards-view" style="display:flex;">
+              <!-- Record 1 -->
+              <div class="schedule-label-card confirmed-card">
+                <div class="card-meta-header">
+                  <span class="card-date-badge">2026.10.15 입금 완료</span>
+                  <span class="verify-pill confirmed">지급 확정 보관</span>
+                </div>
+                <div class="card-asset-title">KO (코카콜라)</div>
+                <div class="card-grid-data">
+                  <div>
+                    <div class="data-cell-label">수령 통화 / 주당</div>
+                    <div class="data-cell-val">$0.485 (USD)</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">체결 수량</div>
+                    <div class="data-cell-val">50주</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">기록 금액</div>
+                    <div class="data-cell-val">$24.25 (세전 저장액)</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">상태</div>
+                    <div class="data-cell-val">정상 저장</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Record 2 (Cancelled adjustment) -->
+              <div class="schedule-label-card" style="border-left: 4px solid #ef4444;">
+                <div class="card-meta-header">
+                  <span class="card-date-badge">2026.09.28 정정</span>
+                  <span class="verify-pill unverified">취소 차감 반영</span>
+                </div>
+                <div class="card-asset-title">SCHD (슈왑 디비던드 ETF)</div>
+                <div class="card-grid-data">
+                  <div>
+                    <div class="data-cell-label">기록 내역</div>
+                    <div class="data-cell-val">배당 정정 분개 -$12.40</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">미확인 항목</div>
+                    <div class="data-cell-val">상태: 미확인 (≠ 0)</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">차감 규칙</div>
+                    <div class="data-cell-val">취소 기록 즉시 차감</div>
+                  </div>
+                  <div>
+                    <div class="data-cell-label">세금 처리</div>
+                    <div class="data-cell-val">고정 세율 단정 없음</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="data-source-note">
+              <strong>기록 유의사항:</strong> 저장된 금액은 사용자의 기록 기준이며, 개별 세법 또는 증권사 실입금 차감액(실제 세후 수령액)으로 단정하지 않습니다.
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE 3: 대조 (공시 일정 vs 저장 기록) -->
+        <div id="modeBlockRecon" class="mode-content-block">
+          <div class="p-card">
+            <div class="calendar-header-status">
+              <div>
+                <strong style="color:var(--dark-brown); font-size:16px;">일정 및 기록 대조 검토</strong>
+                <span style="font-size:13px; color:var(--text-muted); margin-left:6px;">수량 · 주당금액 · 날짜 · 통화 비교</span>
+              </div>
+            </div>
+
+            <div style="margin: 14px 0;">
+              <label class="checkbox-control">
+                <input type="checkbox" id="reconAgreeCheckbox" onchange="toggleReconComparison(this.checked)">
+                <span><strong>대조 기준 확인:</strong> 공시 일정과 저장 기록의 수량·금액·일자 불일치 여부를 비교하며, 미확인 상태를 단순 미수령으로 단정하거나 자동 정산하지 않음을 확인합니다.</span>
+              </label>
+            </div>
+
+            <!-- Comparison Box (Activated on check) -->
+            <div id="reconContentArea" style="opacity:0.5; pointer-events:none;">
+              <div class="reconciliation-mini-box">
+                <div class="recon-row">
+                  <span class="recon-tag">비교 대상 종목</span>
+                  <span class="recon-val">AAPL (애플) · USD</span>
+                </div>
+                <div class="recon-row">
+                  <span class="recon-tag">공시 일정 (2026.11.20)</span>
+                  <span class="recon-val">85주 · 주당 $0.25 (확정 공시)</span>
+                </div>
+                <div class="recon-row">
+                  <span class="recon-tag">저장된 기록</span>
+                  <span class="recon-val">미확인 기록 보유 (미수령 단정 금지)</span>
+                </div>
+                <div class="recon-row">
+                  <span class="recon-tag">통화 일치 여부</span>
+                  <span class="recon-val" style="color:var(--primary);">USD 일치</span>
+                </div>
+              </div>
+
+              <div style="margin-top:14px;">
+                <button type="button" class="p-btn-outline" onclick="openReconDetail()">대조 상세 화면 진입</button>
+              </div>
+            </div>
+
+            <div class="data-source-note">
+              <strong>대조 원칙:</strong> 비교 결과는 참고용이며 증권사 간 자동 차액 정산이나 강제 정산 처리는 일체 수행되지 않습니다.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT / SIDE: 이벤트 상세 정보 + ICS 내보내기 제어 -->
+      <aside class="side-detail-col">
+
+        <!-- 1. 이벤트 상세 카드 -->
+        <section class="p-card" aria-label="이벤트 상세">
+          <div class="detail-card-title">
+            <span>이벤트 상세 정보</span>
+            <span id="detailBadge" class="verify-pill confirmed">공시 확정</span>
+          </div>
+
+          <div class="detail-list">
+            <div class="detail-item-row">
+              <span class="detail-item-label">종목명 / 티커</span>
+              <span class="detail-item-value" id="detailTicker">AAPL (애플)</span>
+            </div>
+            <div class="detail-item-row">
+              <span class="detail-item-label">선택 통화</span>
+              <span class="detail-item-value" id="detailCurrency">USD ($)</span>
+            </div>
+            <div class="detail-item-row">
+              <span class="detail-item-label">날짜의 종류</span>
+              <span class="detail-item-value" id="detailDateKind">지급일 (2026.11.20)</span>
+            </div>
+            <div class="detail-item-row">
+              <span class="detail-item-label">주당 배당금</span>
+              <span class="detail-item-value" id="detailAmountPerShare">$0.25</span>
+            </div>
+            <div class="detail-item-row">
+              <span class="detail-item-label">계좌 보유수량</span>
+              <span class="detail-item-value" id="detailHolding">85주 (2026.11.02 기준)</span>
+            </div>
+            <div class="detail-item-row">
+              <span class="detail-item-label">공시 출처</span>
+              <span class="detail-item-value" id="detailSource">SEC 8-K 제출 공시</span>
+            </div>
+            <div class="detail-item-row">
+              <span class="detail-item-label">미확인 상태 여부</span>
+              <span class="detail-item-value" id="detailVerifyState">확인 완료 (미확인 아님)</span>
+            </div>
+          </div>
+
+          <div class="data-source-note" id="detailNote">
+            11월 20일 공시 확정 일정입니다. 증권사 입금 처리는 당사 영업일 일정에 따라 시차가 발생할 수 있습니다.
+          </div>
+        </section>
+
+        <!-- 2. ICS 캘린더 내보내기 카드 (엄격한 제약 충족) -->
+        <section class="p-card action-panel" aria-label="ICS 내보내기">
+          <div class="detail-card-title" style="margin-bottom:6px;">
+            <span>캘린더(ICS) 내보내기</span>
+            <span class="data-badge" style="font-size:11px;">미래 확정 전용</span>
+          </div>
+
+          <p style="font-size:12px; color:var(--text-muted); line-height:1.4;">
+            미래의 <strong>공시 확정 일정(11월 20일 예시)</strong>만 내보낼 수 있으며, 과거 일정이나 <strong>11월 15일 추정 일정은 제외</strong>됩니다.
+          </p>
+
+          <!-- Reminder Notification Select -->
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label class="field-label" for="alarmSelect">알림 시간 선택</label>
+            <select id="alarmSelect" class="p-select">
+              <option value="none">알림 없음</option>
+              <option value="day_before" selected>1일 전 오전 9시 알림</option>
+              <option value="on_day">당일 오전 9시 알림</option>
+            </select>
+          </div>
+
+          <!-- Consent Checkbox -->
+          <label class="checkbox-control" style="margin-top:4px;">
+            <input type="checkbox" id="icsConsent" onchange="toggleIcsDownload(this.checked)">
+            <span>공시 확정 일정의 캘린더 파일 생성을 동의합니다. (자동 구독 및 푸시는 제공되지 않습니다)</span>
+          </label>
+
+          <!-- Action Button: Disabled by default -->
+          <button type="button" id="icsDownloadBtn" class="p-btn-action" disabled onclick="downloadIcsFile()">
+            <span>.ICS 파일 다운로드</span>
+          </button>
+        </section>
+
+      </aside>
+
+    </div>
+
+  </main>
+
+  <script>
+    // State Tracker
+    const state = {
+      account: 'toss_0115',
+      currency: 'USD',
+      dateBasis: 'pay', // 'pay' or 'ex'
+      periodMonth: 11,
+      periodYear: 2026,
+      viewType: 'month', // 'month' or 'year'
+      localMode: 'notice', // 'notice', 'saved', 'recon'
+      selectedEvent: 'confirmed' // 'confirmed' (AAPL 11.20) or 'estimated' (O 11.15)
+    };
+
+    function handleAccountChange(val) {
+      state.account = val;
+      const notice = document.getElementById('zeroBalanceNotice');
+      if (val === 'zero_balance') {
+        notice.style.display = 'block';
+      } else {
+        notice.style.display = 'none';
+      }
+    }
+
+    function setCurrency(curr) {
+      state.currency = curr;
+      document.getElementById('currUsdBtn').classList.toggle('active', curr === 'USD');
+      document.getElementById('currKrwBtn').classList.toggle('active', curr === 'KRW');
+      document.getElementById('detailCurrency').innerText = curr === 'USD' ? 'USD ($)' : 'KRW (₩)';
+    }
+
+    function setDateBasis(basis) {
+      state.dateBasis = basis;
+      document.getElementById('dateBasisEx').classList.toggle('active', basis === 'ex');
+      document.getElementById('dateBasisPay').classList.toggle('active', basis === 'pay');
+      
+      const label = basis === 'pay' ? '지급일' : '배당락일';
+      if (state.selectedEvent === 'confirmed') {
+        document.getElementById('detailDateKind').innerText = `${label} (2026.11.20)`;
+      } else {
+        document.getElementById('detailDateKind').innerText = `${label} (2026.11.15 추정)`;
+      }
+    }
+
+    function setViewMode(mode) {
+      state.viewType = mode;
+      document.getElementById('viewMonthBtn').classList.toggle('active', mode === 'month');
+      document.getElementById('viewYearBtn').classList.toggle('active', mode === 'year');
+      document.getElementById('periodDisplay').innerText = mode === 'month' ? '2026년 11월' : '2026년 연간';
+    }
+
+    function changeMonth(delta) {
+      // Prototype keeps 2026년 11월 as central standard
+      const label = delta > 0 ? '2026년 12월' : '2026년 10월';
+      document.getElementById('periodDisplay').innerText = label;
+    }
+
+    function goToday() {
+      document.getElementById('periodDisplay').innerText = '2026년 11월';
+      state.viewType = 'month';
+      document.getElementById('viewMonthBtn').classList.add('active');
+      document.getElementById('viewYearBtn').classList.remove('active');
+    }
+
+    function setLocalMode(mode) {
+      state.localMode = mode;
+      
+      // Update Tab Styles
+      document.getElementById('tabNotice').classList.toggle('active', mode === 'notice');
+      document.getElementById('tabSaved').classList.toggle('active', mode === 'saved');
+      document.getElementById('tabRecon').classList.toggle('active', mode === 'recon');
+
+      // Toggle Panels
+      document.getElementById('modeBlockNotice').classList.toggle('active', mode === 'notice');
+      document.getElementById('modeBlockSaved').classList.toggle('active', mode === 'saved');
+      document.getElementById('modeBlockRecon').classList.toggle('active', mode === 'recon');
+    }
+
+    function selectEvent(type) {
+      state.selectedEvent = type;
+      
+      const badge = document.getElementById('detailBadge');
+      const ticker = document.getElementById('detailTicker');
+      const dateKind = document.getElementById('detailDateKind');
+      const amount = document.getElementById('detailAmountPerShare');
+      const holding = document.getElementById('detailHolding');
+      const source = document.getElementById('detailSource');
+      const verify = document.getElementById('detailVerifyState');
+      const note = document.getElementById('detailNote');
+
+      if (type === 'confirmed') {
+        badge.className = 'verify-pill confirmed';
+        badge.innerText = '공시 확정';
+        ticker.innerText = 'AAPL (애플)';
+        dateKind.innerText = state.dateBasis === 'pay' ? '지급일 (2026.11.20)' : '배당락일 (2026.11.07)';
+        amount.innerText = '$0.25';
+        holding.innerText = '85주 (기준일 잔고)';
+        source.innerText = 'SEC 8-K 제출 공시';
+        verify.innerText = '확인 완료 (미확인 아님)';
+        note.innerText = '11월 20일 공시 확정 일정입니다. 증권사 입금 처리는 당사 영업일 일정에 따라 시차가 발생할 수 있습니다.';
+      } else {
+        badge.className = 'verify-pill unverified';
+        badge.innerText = '주기 추정 (미확정)';
+        badge.style.background = '#fef9c3';
+        badge.style.color = '#854d0e';
+        ticker.innerText = 'O (리얼티인컴)';
+        dateKind.innerText = state.dateBasis === 'pay' ? '지급일 (2026.11.15 추정)' : '배당락일 (2026.10.31)';
+        amount.innerText = '$0.2635 (예상치)';
+        holding.innerText = '120주';
+        source.innerText = '월배당 과거 시계열 추정치';
+        verify.innerText = '공시 미확인 (미수령 단정 아님)';
+        note.innerText = '주의: 주기 추정 일정은 증권사 입금이나 실제 확정 지급을 보장하지 않습니다. 공식 공시가 발표되면 자동 갱신됩니다.';
+      }
+    }
+
+    function toggleReconComparison(isChecked) {
+      const area = document.getElementById('reconContentArea');
+      if (isChecked) {
+        area.style.opacity = '1';
+        area.style.pointerEvents = 'auto';
+      } else {
+        area.style.opacity = '0.5';
+        area.style.pointerEvents = 'none';
+      }
+    }
+
+    function openReconDetail() {
+      alert('대조 상세: 공시 일정과 저장 기록을 항목별(수량, 주당금액, 날짜, 통화)로 세부 비교하는 화면으로 진입합니다.');
+    }
+
+    function toggleIcsDownload(isAgreed) {
+      const btn = document.getElementById('icsDownloadBtn');
+      btn.disabled = !isAgreed;
+    }
+
+    function downloadIcsFile() {
+      // Generates standard RFC 5545 iCalendar content for the Nov 20 confirmed event only
+      const icsContent = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Moeum//Portfolio Dividend Calendar//KO",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "BEGIN:VEVENT",
+        "UID:dividend-aapl-20261120@moeum.app",
+        "DTSTAMP:20261104T000000Z",
+        "DTSTART;VALUE=DATE:20261120",
+        "DTEND;VALUE=DATE:20261121",
+        "SUMMARY:[공시 확정] AAPL 배당 지급일 (주당 $0.25)",
+        "DESCRIPTION:종목: AAPL (애플)\\n보유수량: 85주\\n통화: USD\\n출처: SEC 8-K 제출 공시\\n* 본 일정은 미래 공시 확정 일정입니다.",
+        "STATUS:CONFIRMED",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+
+      const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "dividend_confirmed_20261120.ics";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

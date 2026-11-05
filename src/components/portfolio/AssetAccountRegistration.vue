@@ -8,12 +8,13 @@
     import { familyRequest } from '@/services/familyPortfolio';
     const props = defineProps({
         memberName: { type: String, required: true },
+        showMemberName: { type: Boolean, default: true },
         accounts: { type: Array, required: true },
         busy: Boolean,
         error: { type: String, default: '' },
     });
     const emit = defineEmits(['submit', 'existing']);
-    const method = ref('manual');
+    const method = ref('document');
     const form = ref({
         institution: '',
         type: 'general',
@@ -29,8 +30,8 @@
     const fileInput = ref(null);
     let generation = 0;
     const options = [
-        { label: '직접 입력', value: 'manual' },
         { label: '문서로 등록 (토스 거래내역 PDF)', value: 'document' },
+        { label: '직접 입력', value: 'manual' },
     ];
     const types = [
         { label: '일반', value: 'general' },
@@ -103,7 +104,7 @@
 </script>
 <template>
     <section class="account-registration" aria-label="계좌 등록">
-        <p>
+        <p v-if="showMemberName">
             명의자: <strong>{{ memberName }}</strong>
         </p>
         <SelectButton

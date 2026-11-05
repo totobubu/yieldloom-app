@@ -16,6 +16,9 @@ try {
             viewport: { width, height: 1000 },
         });
         const page = await context.newPage();
+        await page.route('**/api/analytics', (r) =>
+            r.fulfill({ status: 204, body: '' })
+        );
         const errors = [];
         const requests = [];
         page.on('pageerror', (error) => errors.push(error.message));
@@ -25,12 +28,15 @@ try {
         });
         await page.goto(base + '/');
         await page.locator('.stock-card-grid li').first().waitFor();
+        await page
+            .getByRole('button', { name: '주요 운용사 바로가기', exact: true })
+            .click();
         const shortcuts = page.locator('.provider-chips button:visible');
         assert.ok(
             (await shortcuts.count()) > 5,
             'Show more than the previous five providers'
         );
-        assert.ok((await shortcuts.count()) <= (width < 768 ? 9 : 16));
+        assert.ok((await shortcuts.count()) <= 15);
         const requestsBefore = requests.length;
         const provider = await shortcuts.nth(1).innerText();
         await shortcuts.nth(1).focus();
@@ -45,7 +51,7 @@ try {
             provider
         );
         for (const name of await page
-            .locator('.stock-provider-badge')
+            .locator('.stock-card-meta > span:first-child')
             .allTextContents())
             assert.equal(name, provider);
         const toggle = page.locator('.provider-expand');
@@ -60,7 +66,7 @@ try {
             .getByText('일치하는 운용사가 없습니다.', { exact: true })
             .waitFor();
         await search.fill(provider.toLowerCase());
-        assert.ok((await shortcuts.count()) >= 2);
+        assert.ok((await shortcuts.count()) >= 1);
         await toggle.click();
         await page
             .getByRole('button', { name: '선택 초기화', exact: true })

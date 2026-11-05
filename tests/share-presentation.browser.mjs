@@ -137,6 +137,9 @@ try {
     ];
     for (const label of labels)
         await page.getByRole('checkbox', { name: label, exact: true }).check();
+    await page
+        .getByRole('checkbox', { name: '선택한 카드 모두 보기', exact: true })
+        .check();
     const kinds = [
         'summary',
         'comparison',
@@ -254,7 +257,7 @@ try {
         });
     }
     await page
-        .getByRole('button', { name: '프리셋 저장', exact: true })
+        .getByRole('button', { name: '프리셋 저장 대화상자', exact: true })
         .click();
     const dialog = page.getByRole('dialog', {
         name: '프리셋 저장',
@@ -268,9 +271,11 @@ try {
     await page
         .getByRole('checkbox', { name: '배당 일정', exact: true })
         .uncheck();
+    await page.getByLabel('저장된 프리셋 불러오기', { exact: true }).click();
     await page
-        .getByRole('button', { name: '새 정사각형', exact: true })
+        .getByRole('option', { name: '새 정사각형', exact: true })
         .click();
+    await page.getByRole('button', { name: '적용', exact: true }).click();
     assert.equal(
         await page.locator('.summary-card').getAttribute('data-aspect-ratio'),
         'square'
@@ -285,9 +290,11 @@ try {
             .isChecked()
     );
     await page.reload();
+    await page.getByLabel('저장된 프리셋 불러오기', { exact: true }).click();
     await page
-        .getByRole('button', { name: '새 정사각형', exact: true })
+        .getByRole('option', { name: '새 정사각형', exact: true })
         .click();
+    await page.getByRole('button', { name: '적용', exact: true }).click();
     assert.equal(
         await page.locator('.summary-card').getAttribute('data-card-template'),
         'classic'
@@ -295,6 +302,29 @@ try {
     for (const width of [1440, 768, 390, 360]) {
         await page.setViewportSize({ width, height: 1000 });
         for (const [ratio] of ratios) {
+            const resizeTrace = await page.evaluate(async () => {
+                const sample = () => ({
+                    viewport: innerWidth,
+                    scroll: document.documentElement.scrollWidth,
+                    elements: [...document.querySelectorAll('body *')]
+                        .filter(
+                            (el) =>
+                                el.getBoundingClientRect().right >
+                                innerWidth + 1
+                        )
+                        .slice(0, 8)
+                        .map((el) => ({
+                            class: el.className,
+                            right: el.getBoundingClientRect().right,
+                        })),
+                });
+                const before = sample();
+                await new Promise((resolve) =>
+                    requestAnimationFrame(() => requestAnimationFrame(resolve))
+                );
+                return { before, after: sample() };
+            });
+            console.log('RESIZE TRACE', width, JSON.stringify(resizeTrace));
             assert.ok(
                 await page.evaluate(
                     () => document.documentElement.scrollWidth <= innerWidth + 1
@@ -305,9 +335,11 @@ try {
             await page.screenshot({ path: `${output}/${width}-${ratio}.png` });
         }
     }
+    await page.getByLabel('저장된 프리셋 불러오기', { exact: true }).click();
     await page
-        .getByRole('button', { name: '기존 정사각형', exact: true })
+        .getByRole('option', { name: '기존 정사각형', exact: true })
         .click();
+    await page.getByRole('button', { name: '적용', exact: true }).click();
     assert.equal(
         await page.locator('.summary-card').getAttribute('data-aspect-ratio'),
         'square'
@@ -326,6 +358,43 @@ try {
         template: 'navy',
     });
     assert.equal(await page.locator('.share-editor .toss-copy').count(), 1);
+    const inlineForm = page.locator('.share-export-settings form');
+    await inlineForm.getByLabel('프리셋 이름', { exact: true }).fill('');
+    await inlineForm
+        .getByRole('button', { name: '프리셋 저장', exact: true })
+        .click();
+    await page
+        .getByText('프리셋 이름을 입력해 주세요.', { exact: true })
+        .waitFor();
+    await inlineForm
+        .getByLabel('프리셋 이름', { exact: true })
+        .fill('인라인 검증');
+    await inlineForm
+        .getByRole('button', { name: '프리셋 저장', exact: true })
+        .click();
+    assert.ok(
+        await page.evaluate(() =>
+            JSON.parse(
+                localStorage.getItem('yieldloom.thumbnail-presets.v1')
+            ).some((item) => item.name === '인라인 검증')
+        )
+    );
+    await page.getByLabel('저장된 프리셋 불러오기', { exact: true }).click();
+    await page
+        .getByRole('option', { name: '인라인 검증', exact: true })
+        .click();
+    await page
+        .getByRole('button', { name: '선택한 프리셋 삭제', exact: true })
+        .click();
+    assert.equal(
+        await page.evaluate(() =>
+            JSON.parse(
+                localStorage.getItem('yieldloom.thumbnail-presets.v1')
+            ).some((item) => item.name === '인라인 검증')
+        ),
+        false
+    );
+
     const textBefore = await page.locator('.toss-copy').innerText();
     await page.getByRole('button', { name: '간결형', exact: true }).click();
     assert.notEqual(await page.locator('.toss-copy').innerText(), textBefore);

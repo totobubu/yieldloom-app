@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONTENT / Stock Search</title>
+  <style>
+    /* CSS Reset & Core Tokens */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --color-primary: #0d7a6e;
+      --color-primary-hover: #0a5f56;
+      --color-primary-light: #e6f4f2;
+      --color-warning: #eab308;
+      --color-warning-light: #fef9c3;
+      --color-mint: #2dd4bf;
+      --color-mint-light: #f0fdfa;
+      --color-brown: #382418;
+      --color-bg: #f8fafc;
+      --color-surface: #ffffff;
+      --color-border: #e2e8f0;
+      --color-text-main: #1e293b;
+      --color-text-muted: #64748b;
+      --color-text-subtle: #94a3b8;
+      --radius-card: 12px;
+      --radius-sm: 8px;
+      --radius-full: 9999px;
+      --font-family: -apple-system, BlinkMacSystemFont, "Pretendard Variable", Pretendard, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      font-family: var(--font-family);
+      background-color: var(--color-bg);
+      color: var(--color-text-main);
+      font-size: 15px;
+      line-height: 1.5;
+      padding: 24px 20px 48px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Header Bar (No Global Chrome) */
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-bottom: 4px;
+    }
+    .title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text-main);
+      letter-spacing: -0.02em;
+    }
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      background-color: var(--color-mint-light);
+      border: 1px solid var(--color-mint);
+      color: var(--color-primary);
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+    .header-sub-info {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Search & Filter Form */
+    .search-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .input-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 280px;
+      height: 44px;
+    }
+    .search-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 40px 0 14px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      color: var(--color-text-main);
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .search-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(13, 122, 110, 0.12);
+    }
+    .clear-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      background: #e2e8f0;
+      color: #64748b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      transition: background 0.15s;
+    }
+    .clear-btn:hover {
+      background: #cbd5e1;
+      color: #334155;
+    }
+
+    /* 9 Public Type Single Select Bar */
+    .filter-group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .filter-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text-main);
+    }
+    .helper-text {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .type-scroll-container {
+      position: relative;
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .type-scroll-container::-webkit-scrollbar {
+      height: 4px;
+    }
+    .type-scroll-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .type-pill-group {
+      display: inline-flex;
+      gap: 8px;
+      white-space: nowrap;
+      padding-right: 20px;
+    }
+    .type-pill {
+      height: 44px;
+      padding: 0 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-main);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .type-pill:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .type-pill.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #ffffff;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(13, 122, 110, 0.2);
+    }
+
+    /* Management Firm (운용사) Drawer / Selector */
+    .manager-section {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .manager-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .manager-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-main);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .action-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .action-btn.active {
+      background: var(--color-primary-light);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+    .manager-search-box {
+      width: 220px;
+      height: 36px;
+      padding: 0 10px;
+      font-size: 13px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      outline: none;
+    }
+    .manager-search-box:focus {
+      border-color: var(--color-primary);
+    }
+
+    /* Control Bar: Delisted checkbox + Sort select */
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 6px;
+      border-top: 1px solid var(--color-border);
+    }
+    .checkbox-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--color-text-main);
+      cursor: pointer;
+      user-select: none;
+      height: 44px;
+    }
+    .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+    .sort-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sort-label {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+    .sort-select {
+      height: 44px;
+      padding: 0 32px 0 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface) url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E") no-repeat right 12px center;
+      font-size: 14px;
+      color: var(--color-text-main);
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .sort-select:focus {
+      border-color: var(--color-primary);
+    }
+
+    /* Result Meta & Cards Grid (PC: 3 cols, Tablet: 2 cols, Mobile: 1 col) */
+    .result-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: var(--color-text-muted);
+      margin-bottom: -6px;
+    }
+    .result-summary strong {
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+    .grid-results {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    /* Single Stock Card */
+    .stock-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      position: relative;
+    }
+    .stock-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .card-top {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card-badge-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .ticker-symbol {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--color-text-main);
+      letter-spacing: -0.01em;
+    }
+    .type-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      background: #f1f5f9;
+      color: #475569;
+      white-space: nowrap;
+    }
+    .type-badge.etf {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      border: 1px solid rgba(13, 122, 110, 0.2);
+    }
+    .type-badge.stock {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid rgba(234, 179, 8, 0.25);
+    }
+    .stock-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--color-text-main);
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+    .manager-text {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+
+    /* Price & Dividend Stats Box */
+    .card-stat-box {
+      background: #f8fafc;
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .stat-label {
+      color: var(--color-text-muted);
+    }
+    .stat-val {
+      font-weight: 600;
+      color: var(--color-text-main);
+    }
+    .stat-val.primary {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .stat-val.unknown {
+      color: #94a3b8;
+      font-style: normal;
+    }
+
+    /* Card Actions (VS button + Details Link) */
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .vs-btn {
+      height: 44px;
+      padding: 0 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .vs-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .details-link-btn {
+      flex: 1;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      background: var(--color-primary);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .details-link-btn:hover {
+      background: var(--color-primary-hover);
+    }
+
+    /* Pagination */
+    .pagination-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 0;
+    }
+    .page-btn {
+      height: 44px;
+      min-width: 44px;
+      padding: 0 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-main);
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .page-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      background: #f1f5f9;
+    }
+    .page-btn.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #ffffff;
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 1024px) {
+      .grid-results {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px 12px 32px;
+      }
+      .card {
+        padding: 16px;
+      }
+      .grid-results {
+        grid-template-columns: 1fr;
+      }
+      .input-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-input-wrapper {
+        min-width: 100%;
+      }
+      .control-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .sort-wrapper {
+        justify-content: space-between;
+      }
+      .sort-select {
+        flex: 1;
+      }
+      .type-pill {
+        font-size: 13px;
+        padding: 0 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Content Header (No GNB / No Footer) -->
+  <header class="content-header">
+    <div class="title-group">
+      <h1 class="page-title">ETF·주식 검색</h1>
+      <span class="demo-badge">예시 데이터</span>
+    </div>
+    <div class="header-sub-info">
+      공개 종목 카탈로그 · 로그인 불필요
+    </div>
+  </header>
+
+  <!-- Filter & Search Section Card -->
+  <div class="card search-section">
+    <!-- Search Input & Clear -->
+    <div class="input-row">
+      <div class="search-input-wrapper">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="종목명, 티커, 또는 운용사 검색" 
+          value="DEMO"
+        />
+        <button type="button" class="clear-btn" title="입력 지우기" aria-label="입력 지우기">✕</button>
+      </div>
+    </div>
+
+    <!-- 9 Exact Public Types Single Select Pill Bar -->
+    <div>
+      <div class="filter-group-header">
+        <span class="filter-label">공개 종목 유형 (단일 선택)</span>
+        <span class="helper-text">※ 보유 이력 등 개인 데이터와 무관한 공개 카탈로그 분류입니다.</span>
+      </div>
+      <div class="type-scroll-container">
+        <div class="type-pill-group">
+          <!-- Exact 9 options -->
+          <button type="button" class="type-pill active">전체 종목</button>
+          <button type="button" class="type-pill">ETF</button>
+          <button type="button" class="type-pill">배당 ETF</button>
+          <button type="button" class="type-pill">레버리지 ETF</button>
+          <button type="button" class="type-pill">일반 주식</button>
+          <button type="button" class="type-pill">배당주</button>
+          <button type="button" class="type-pill">성장주</button>
+          <button type="button" class="type-pill">배당성장주</button>
+          <button type="button" class="type-pill">고배당주</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Management Firm Filter Section -->
+    <div class="manager-section">
+      <div class="manager-top-bar">
+        <div class="manager-left">
+          <span style="font-size: 13px; font-weight: 600; color: var(--color-text-main);">운용사 필터:</span>
+          <button type="button" class="action-btn active">전체 운용사</button>
+          <button type="button" class="action-btn">주요 운용사 바로가기</button>
+          <button type="button" class="action-btn" title="운용사 검색 펼치기">펼치기 ▾</button>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input type="text" class="manager-search-box" placeholder="운용사명 검색..." />
+          <button type="button" class="action-btn" style="color: var(--color-text-muted);">선택 초기화</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delisted Checkbox & 6 Exact Sort Options -->
+    <div class="control-row">
+      <label class="checkbox-label">
+        <input type="checkbox" />
+        <span>상장폐지 종목 포함</span>
+      </label>
+
+      <div class="sort-wrapper">
+        <span class="sort-label">정렬 기준</span>
+        <select class="sort-select">
+          <!-- 6 exact sort options -->
+          <option selected>최근 상장순</option>
+          <option>티커순</option>
+          <option>운용사순</option>
+          <option>최근 배당일순</option>
+          <option>배당금 높은순</option>
+          <option>시가총액 높은순</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Results Meta -->
+  <div class="result-summary">
+    <div>검색 결과: <strong>6건</strong> (페이지 크기 60)</div>
+    <div style="font-size: 12px; color: var(--color-text-subtle);">※ 자료 출처: 가상 DEMO 카탈로그 스냅샷</div>
+  </div>
+
+  <!-- 6 Result Cards (DEMO-A to DEMO-F) -->
+  <div class="grid-results">
+    
+    <!-- 1. DEMO-A: 배당 ETF (기초자산 연결됨, VS 활성) -->
+    <div class="stock-card">
+      <div class="card-top">
+        <div class="card-badge-row">
+          <span class="ticker-symbol">DEMO-A</span>
+          <span class="type-badge etf">배당 ETF</span>
+        </div>
+        <div class="stock-name">가상 고배당 인덱스 ETF</div>
+        <div class="manager-text">예시 운용사 (ETF)</div>
+      </div>
+
+      <div class="card-stat-box">
+        <div class="stat-row">
+          <span class="stat-label">현재 가격 (USD)</span>
+          <span class="stat-val primary">$50.00</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 주당 배당금</span>
+          <span class="stat-val">$0.18</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 배당락일</span>
+          <span class="stat-val">2026.10.20</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="vs-btn" title="기초자산 비교 분석">VS 비교</button>
+        <button type="button" class="details-link-btn">상세 보기</button>
+      </div>
+    </div>
+
+    <!-- 2. DEMO-B: 인컴 ETF (기초자산 연결됨, VS 활성) -->
+    <div class="stock-card">
+      <div class="card-top">
+        <div class="card-badge-row">
+          <span class="ticker-symbol">DEMO-B</span>
+          <span class="type-badge etf">인컴 ETF</span>
+        </div>
+        <div class="stock-name">가상 월배당 커버드콜 ETF</div>
+        <div class="manager-text">알파 인컴 운용 (ETF)</div>
+      </div>
+
+      <div class="card-stat-box">
+        <div class="stat-row">
+          <span class="stat-label">현재 가격 (USD)</span>
+          <span class="stat-val primary">$24.30</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 주당 배당금</span>
+          <span class="stat-val">$0.21</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 배당락일</span>
+          <span class="stat-val">2026.10.15</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="vs-btn" title="기초자산 비교 분석">VS 비교</button>
+        <button type="button" class="details-link-btn">상세 보기</button>
+      </div>
+    </div>
+
+    <!-- 3. DEMO-C: 레버리지 ETF (기초자산 연결됨, VS 활성) -->
+    <div class="stock-card">
+      <div class="card-top">
+        <div class="card-badge-row">
+          <span class="ticker-symbol">DEMO-C</span>
+          <span class="type-badge etf">레버리지 ETF</span>
+        </div>
+        <div class="stock-name">가상 테크 2X 레버리지 인덱스</div>
+        <div class="manager-text">베타 글로벌 (ETF)</div>
+      </div>
+
+      <div class="card-stat-box">
+        <div class="stat-row">
+          <span class="stat-label">현재 가격 (USD)</span>
+          <span class="stat-val primary">$88.10</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 주당 배당금</span>
+          <span class="stat-val">$0.05</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 배당락일</span>
+          <span class="stat-val">2026.09.28</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="vs-btn" title="기초자산 비교 분석">VS 비교</button>
+        <button type="button" class="details-link-btn">상세 보기</button>
+      </div>
+    </div>
+
+    <!-- 4. DEMO-D: 무배당 일반 주식 (ETF 아님 -> VS 버튼 없음) -->
+    <div class="stock-card">
+      <div class="card-top">
+        <div class="card-badge-row">
+          <span class="ticker-symbol">DEMO-D</span>
+          <span class="type-badge stock">일반 주식</span>
+        </div>
+        <div class="stock-name">가상 테크놀로지스 보통주</div>
+        <div class="manager-text">일반 주식 (IT/플랫폼)</div>
+      </div>
+
+      <div class="card-stat-box">
+        <div class="stat-row">
+          <span class="stat-label">현재 가격 (USD)</span>
+          <span class="stat-val primary">$142.50</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">배당 여부</span>
+          <span class="stat-val" style="color: #64748b;">배당 없음</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">추정 시가총액</span>
+          <span class="stat-val">$18.4B</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="details-link-btn">상세 보기</button>
+      </div>
+    </div>
+
+    <!-- 5. DEMO-E: 배당자료 미확인 ETF (기초자산 연결됨, VS 활성, 미확인≠0) -->
+    <div class="stock-card">
+      <div class="card-top">
+        <div class="card-badge-row">
+          <span class="ticker-symbol">DEMO-E</span>
+          <span class="type-badge etf">배당자료 미확인 ETF</span>
+        </div>
+        <div class="stock-name">가상 신흥국 배당성장 포트폴리오</div>
+        <div class="manager-text">신흥마켓 파트너스 (ETF)</div>
+      </div>
+
+      <div class="card-stat-box">
+        <div class="stat-row">
+          <span class="stat-label">현재 가격 (USD)</span>
+          <span class="stat-val primary">$31.20</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 주당 배당금</span>
+          <span class="stat-val unknown">미확인 / 자료 확인 중</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 배당락일</span>
+          <span class="stat-val unknown">미확인</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="vs-btn" title="기초자산 비교 분석">VS 비교</button>
+        <button type="button" class="details-link-btn">상세 보기</button>
+      </div>
+    </div>
+
+    <!-- 6. DEMO-F: 배당 있는 일반 주식 (ETF 아님 -> VS 버튼 없음) -->
+    <div class="stock-card">
+      <div class="card-top">
+        <div class="card-badge-row">
+          <span class="ticker-symbol">DEMO-F</span>
+          <span class="type-badge stock">배당주 (일반)</span>
+        </div>
+        <div class="stock-name">가상 에너지 파트너스 보통주</div>
+        <div class="manager-text">일반 주식 (에너지/유틸리티)</div>
+      </div>
+
+      <div class="card-stat-box">
+        <div class="stat-row">
+          <span class="stat-label">현재 가격 (USD)</span>
+          <span class="stat-val primary">$67.80</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 주당 배당금</span>
+          <span class="stat-val">$0.75</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">최근 배당락일</span>
+          <span class="stat-val">2026.10.12</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="details-link-btn">상세 보기</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Pagination (6 results out of page size 60 -> page 1 disabled prev/next) -->
+  <div class="pagination-bar">
+    <button type="button" class="page-btn" disabled>‹ 이전</button>
+    <button type="button" class="page-btn active">1</button>
+    <button type="button" class="page-btn" disabled>다음 ›</button>
+  </div>
+
+</div>
+
+</body>
+</html>

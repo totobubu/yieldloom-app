@@ -1,0 +1,1 @@
+PASS cold/failed icon font: both views, viewport changes, every measured frame bounded.

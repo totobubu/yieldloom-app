@@ -2698,6 +2698,7 @@
         <AssetUploadDialog
             v-model:visible="uploadDialog"
             :receipt="!!importReceipt"
+            :review="!!review"
             :title="`자료 업로드 · ${activeAccount?.alias || ''}`"
             :mapping="inputMethod === 'broker' && !review && !importReceipt"
             :busy="busy">

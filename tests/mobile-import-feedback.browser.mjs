@@ -255,7 +255,7 @@ try {
             () => document.querySelector('.preview-button')?.disabled === false
         );
         const heading = page.getByRole('heading', {
-            name: '추출 결과 미리보기 · 저장 전 검토',
+            name: '증권 데이터 검토 및 확정',
         });
         await page.waitForFunction(
             () => document.activeElement?.tagName === 'H2'

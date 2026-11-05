@@ -5,6 +5,7 @@
     import DataTable from 'primevue/datatable';
     import InputText from 'primevue/inputtext';
     import Select from 'primevue/select';
+    import StitchSymbol from './StitchSymbol.vue';
     import TossPdfImportReview from './TossPdfImportReview.vue';
     import { importReviewGroups } from '@/services/tossImportReview.js';
     import {
@@ -196,23 +197,28 @@
 
 <template>
     <div id="portfolio-import-review" class="import-review">
-        <div class="review-breadcrumb">
-            포트폴리오 관리
-            <i class="pi pi-angle-right" aria-hidden="true" />자료 가져오기<i
-                class="pi pi-angle-right"
-                aria-hidden="true" /><strong
-                >추출 결과 미리보기 및 저장 전 검토</strong
-            >
-        </div>
-        <div class="review-heading">
+        <header class="review-heading">
             <div class="review-heading-copy">
-                <div class="review-title-line">
-                    <h2 ref="heading" tabindex="-1">
-                        추출 결과 미리보기 · 저장 전 검토
-                    </h2>
+                <div class="review-meta">
+                    <span class="review-import-badge"
+                        ><StitchSymbol
+                            name="sync_alt"
+                            class="review-sync-tablet" /><StitchSymbol
+                            name="cloud_sync"
+                            class="review-sync-mobile" />데이터 가져오기 및
+                        등록</span
+                    >
+                    <span class="review-kind-badge">{{
+                        isHoldings ? '보유 잔고' : '거래 내역'
+                    }}</span>
                     <span class="account-capsule"
                         ><span />{{ accountLabel }}</span
                     >
+                </div>
+                <div class="review-title-line">
+                    <h2 ref="heading" tabindex="-1">
+                        증권 데이터 검토 및 확정
+                    </h2>
                 </div>
                 <div v-if="review.statementFiles?.length" class="review-files">
                     <span
@@ -224,40 +230,26 @@
                     >
                 </div>
                 <p>
-                    {{
-                        isHoldings
-                            ? '입력된 보유 잔고'
-                            : '증권사 자료에서 추출된 거래 및 배당 데이터'
-                    }}
-                    {{ counts.all.toLocaleString() }}건을 검토하고 확인이 필요한
-                    내용을 수정합니다.
+                    업로드된 자료 {{ counts.all.toLocaleString() }}건을 최종
+                    확인하고 포트폴리오에 반영합니다. 확인이 필요한 내용은 저장
+                    전에 수정하세요.
                 </p>
                 <h3 class="review-source">검토 · {{ review.source }}</h3>
             </div>
             <ol class="review-steps" aria-label="자료 등록 진행 단계">
                 <li>
-                    <i class="pi pi-check-circle" aria-hidden="true" />
-                    <b class="completed-step-number">1</b
-                    ><span
-                        ><span class="step-prefix">1. </span>업로드<br />및
-                        검증</span
-                    >
+                    <b class="completed-step-number"
+                        ><StitchSymbol name="check" /></b
+                    ><span><small>완료 (Step 1)</small>파일 업로드</span>
                 </li>
                 <li aria-current="step">
-                    <b>2</b
-                    ><span
-                        ><span class="step-prefix">2. </span>결과 및<br />상세
-                        검토</span
-                    >
+                    <b>2</b><span><small>진행 중</small>데이터 검토</span>
                 </li>
                 <li>
-                    <b>3</b
-                    ><span
-                        ><span class="step-prefix">3. </span>최종 저장<br />대기</span
-                    >
+                    <b>3</b><span><small>대기 (Step 3)</small>저장 결과</span>
                 </li>
             </ol>
-        </div>
+        </header>
         <div class="review-metrics">
             <article class="metric-card">
                 <span
@@ -479,6 +471,10 @@
                         </li>
                     </ul>
                 </details>
+                <p class="review-scroll-cue">
+                    <StitchSymbol name="swipe" />가로로 스크롤하여 세부 금액 및
+                    원본 대조 열을 확인할 수 있습니다.
+                </p>
                 <div class="review-table-card">
                     <div
                         v-if="review.source !== 'toss-pdf'"
@@ -773,7 +769,7 @@
             var(--app-surface)
         );
         min-width: 0;
-        max-width: 1184px;
+        max-width: 834px;
         margin-inline: auto;
         scroll-margin-top: 90px;
         font-size: 13px;
@@ -819,6 +815,9 @@
         letter-spacing: -0.03em;
     }
     .account-capsule {
+        max-width: 100%;
+        min-width: 0;
+        overflow-wrap: anywhere;
         display: inline-flex;
         align-items: center;
         gap: 5px;
@@ -829,6 +828,7 @@
         font-weight: 650;
     }
     .account-capsule > span {
+        flex-shrink: 0;
         width: 6px;
         height: 6px;
         background: var(--app-accent);
@@ -916,7 +916,7 @@
     }
     .review-metrics {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px;
         margin-bottom: 24px;
     }
@@ -1120,9 +1120,9 @@
     }
     .review-grid {
         display: grid;
-        grid-template-columns: minmax(0, 2.05fr) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
         align-items: start;
-        gap: 24px;
+        gap: 16px;
     }
     .review-main,
     .review-sidebar {
@@ -1572,7 +1572,7 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
     }
-    @media (max-width: 1100px) {
+    @media (max-width: 1023px) {
         .review-heading {
             flex-direction: column;
             align-items: stretch;
@@ -1585,7 +1585,7 @@
         }
         .review-sidebar {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: minmax(0, 1fr);
         }
         .review-expiry {
             display: none;
@@ -1672,6 +1672,191 @@
     @media (max-width: 360px) {
         .review-metrics {
             grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    .review-scroll-cue {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        margin: 0 0 12px;
+        font-size: 11px;
+        line-height: 16px;
+        color: var(--app-accent);
+        background: var(--review-tint);
+        border: 1px solid var(--review-line);
+        border-radius: 8px;
+    }
+    /* Final reviewed import header; source body/financial panels remain under review. */
+    .review-heading {
+        display: block;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: var(--app-surface);
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgb(23 32 51 / 4%);
+    }
+    .review-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+    .review-import-badge,
+    .review-kind-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 11px;
+        line-height: 16px;
+        background: var(--review-strong-tint);
+        color: var(--app-accent);
+    }
+    .review-import-badge .stitch-symbol {
+        font-size: 14px;
+    }
+    .review-import-badge .review-sync-mobile {
+        display: none;
+    }
+    .review-kind-badge {
+        background: var(--app-bg);
+        color: var(--app-muted);
+    }
+    .review-title-line h2 {
+        font-size: 24px;
+        line-height: 32px;
+        color: var(--app-brand-brown);
+    }
+    .review-heading p {
+        margin-top: 4px;
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .review-steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        width: 100%;
+        padding: 16px 0 0;
+        margin: 20px 0 0;
+        border-top: 1px solid var(--app-border);
+        border-radius: 0;
+        background: transparent;
+    }
+    .review-steps li {
+        display: flex;
+        flex-direction: row;
+        padding: 6px 0;
+        gap: 10px;
+        font-size: 13px;
+        line-height: 18px;
+        text-align: left;
+    }
+    .review-steps li:first-child {
+        background: transparent;
+    }
+    .review-steps li[aria-current] {
+        padding: 6px 10px;
+        color: var(--app-accent);
+        background: var(--review-tint);
+        border: 1px solid var(--review-line);
+    }
+    .review-steps b,
+    .review-steps .completed-step-number {
+        display: grid;
+        flex: 0 0 28px;
+        width: 28px;
+        height: 28px;
+        border: 1px solid var(--app-border);
+        font-size: 12px;
+        color: var(--app-muted);
+        background: var(--app-bg);
+    }
+    .review-steps .completed-step-number {
+        color: var(--app-accent);
+        background: var(--review-strong-tint);
+    }
+    .review-steps b .stitch-symbol {
+        font-size: 16px;
+    }
+    .review-steps li[aria-current] b {
+        color: var(--app-accent-contrast);
+        background: var(--app-accent);
+        border-color: var(--app-accent);
+    }
+    .review-steps li > span {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .review-steps small {
+        font-size: 11px;
+        line-height: 16px;
+        color: var(--app-muted);
+        font-weight: 400;
+    }
+    @media (max-width: 640px) {
+        .import-review {
+            max-width: 358px;
+        }
+        .review-meta {
+            margin-bottom: 12px;
+        }
+        .review-import-badge {
+            border: 1px solid var(--review-line);
+            font-size: 11px;
+            line-height: 20px;
+        }
+        .review-import-badge .review-sync-tablet {
+            display: none;
+        }
+        .review-import-badge .review-sync-mobile {
+            display: inline-block;
+        }
+        .review-heading {
+            padding: 0;
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+        }
+        .review-title-line h2 {
+            font-size: 20px;
+            line-height: 28px;
+        }
+        .review-heading p {
+            font-size: 14px;
+            line-height: 22.75px;
+        }
+        .review-steps {
+            padding: 12px;
+            margin-top: 12px;
+            background: var(--app-surface);
+            border: 1px solid var(--app-border);
+            border-radius: 12px;
+            gap: 8px;
+        }
+        .review-steps li,
+        .review-steps li[aria-current] {
+            padding: 0;
+            gap: 6px;
+            font-size: 12px;
+            line-height: 16px;
+            word-break: normal;
+            border: 0;
+            background: transparent;
+        }
+        .review-steps small {
+            display: none;
+        }
+        .review-steps b,
+        .review-steps .completed-step-number {
+            flex-basis: 24px;
+            width: 24px;
+            height: 24px;
         }
     }
 </style>

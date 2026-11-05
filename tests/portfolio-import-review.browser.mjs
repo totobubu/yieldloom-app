@@ -191,7 +191,7 @@ try {
     const review = page.locator('#portfolio-import-review');
     await review
         .getByRole('heading', {
-            name: '추출 결과 미리보기 · 저장 전 검토',
+            name: '증권 데이터 검토 및 확정',
             exact: true,
         })
         .waitFor();
@@ -296,8 +296,8 @@ try {
             .evaluate(
                 (element) => element.scrollWidth > element.clientWidth + 1
             ),
-        false,
-        'desktop table has no horizontal scroll'
+        true,
+        'final reference bounds desktop table horizontally inside the content column'
     );
     await review
         .getByRole('button', { name: '폴라리스AI 1건 보기', exact: true })
@@ -399,8 +399,8 @@ try {
             .evaluate(
                 (element) => element.scrollWidth > element.clientWidth + 1
             ),
-        false,
-        '1280px reference width has no horizontal table scroll'
+        true,
+        '1280px reference keeps wide editable fields in a horizontal table'
     );
     await review.screenshot({
         path: `${output}/desktop.png`,
@@ -408,6 +408,20 @@ try {
     });
     for (const width of [320, 360, 390, 430, 768, 1024, 1201, 1280]) {
         await page.setViewportSize({ width, height: 900 });
+        const sourceWidth = {
+            320: 288,
+            360: 328,
+            390: 358,
+            430: 358,
+            768: 720,
+            1024: 834,
+            1201: 834,
+            1280: 834,
+        }[width];
+        assert.ok(
+            Math.abs((await review.boundingBox()).width - sourceWidth) < 1,
+            `${width}px: final-reference content width ${sourceWidth}`
+        );
         for (const dark of [false, true]) {
             await page.evaluate(
                 (value) =>

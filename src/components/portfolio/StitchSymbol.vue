@@ -13,7 +13,13 @@
     import arrow_forward from '@/assets/icons/material-symbols/arrow_forward.svg';
     import download from '@/assets/icons/material-symbols/download.svg';
     import calendar_month from '@/assets/icons/material-symbols/calendar_month.svg';
+    import sync_alt from '@/assets/icons/material-symbols/sync_alt.svg';
+    import cloud_sync from '@/assets/icons/material-symbols/cloud_sync.svg';
+    import swipe from '@/assets/icons/material-symbols/swipe.svg';
     const icons = {
+        sync_alt,
+        cloud_sync,
+        swipe,
         check,
         done_all,
         receipt_long,

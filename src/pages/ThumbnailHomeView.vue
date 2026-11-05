@@ -628,6 +628,7 @@
     .search-heading h1 {
         margin: 0;
         font-size: 22px;
+        line-height: 33px;
         font-weight: 700;
         letter-spacing: -0.02em;
     }

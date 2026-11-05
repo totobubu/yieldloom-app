@@ -3511,6 +3511,7 @@
         .family-page[data-stitch-view='assets'] .asset-overview-heading h2 {
             font-size: 24px;
             line-height: 32px;
+            font-weight: 600;
         }
     }
     .family-page[data-stitch-view='holdings']
@@ -3579,6 +3580,7 @@
         margin: 0;
         font-size: 24px;
         line-height: 32px;
+        font-weight: 600;
     }
     .holdings-page-actions {
         display: flex;
@@ -3770,6 +3772,7 @@
         margin: 0;
         font-size: 20px;
         line-height: 28px;
+        font-weight: 600;
     }
     .asset-list-heading small {
         font-size: 12px;

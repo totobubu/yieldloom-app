@@ -1688,6 +1688,7 @@
     .comparison-page-heading h1 {
         margin: 0 0 6px;
         font-size: 24px;
+        line-height: 36px;
     }
     .comparison-page-heading p {
         font-size: 14px;
@@ -2304,5 +2305,12 @@
     .product-fields a:focus-visible {
         color: var(--app-accent);
         text-decoration: underline;
+    }
+    /* All three authoritative comparison sources use 20/30px on mobile. */
+    @media (max-width: 767px) {
+        .comparison-page-heading h1 {
+            font-size: 20px;
+            line-height: 30px;
+        }
     }
 </style>

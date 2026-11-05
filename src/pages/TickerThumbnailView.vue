@@ -4063,4 +4063,9 @@
         color: var(--app-accent-contrast);
         transition: none;
     }
+    .ticker-thumbnail-page[data-stitch-view='share'] .share-preview-heading h2 {
+        font-size: 16px;
+        line-height: 24px;
+        font-weight: 600;
+    }
 </style>

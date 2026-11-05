@@ -12,8 +12,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/aapb/",
-        "contentSha256": "22c204dcbca8e0f7da449502eda90f99d5806f768706f65e3c51de6977e8d379",
-        "fetchedAt": "2026-11-04T16:21:16.415382+00:00",
+        "contentSha256": "541a11aca45736a0a594b8ca5159d41beb3e6baf733a30b98cb8807e53039705",
+        "fetchedAt": "2026-11-05T16:30:05.240456+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long AAPL Daily ETF (AAPB)"
       }
@@ -29,8 +29,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily AAPL Bear 1X ETF"
       }
@@ -46,8 +46,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily AAPL Bull 2X ETF"
       }
@@ -63,8 +63,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.kurvinvest.com/etf/aapy",
-        "contentSha256": "bb41dd9024d8de18a16135a8bb256cd735b2a5cf5cd8585daa7d46487064c6b0",
-        "fetchedAt": "2026-11-04T16:21:15.315698+00:00",
+        "contentSha256": "8a1a4ac60bcbc367b71ae939ee875fe8315023e70dfdbea9d047915d5b65cfe5",
+        "fetchedAt": "2026-11-05T16:30:03.137949+00:00",
         "method": "official-product-title",
         "text": "Potential Benefits of the Kurv Yield Premium Strategy Apple ETF"
       }
@@ -80,8 +80,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily AMD Bear 1X ETF"
       }
@@ -97,8 +97,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/amdl/",
-        "contentSha256": "e1a0abd6f5e93a41cc1ea27a23514779e1fb554c8be9e70603655dae4fce9e2f",
-        "fetchedAt": "2026-11-04T16:21:16.417053+00:00",
+        "contentSha256": "1ffade9f14f10c0f56e75487d5e20e2fbde4e8589526a07769aed9e94f3752bc",
+        "fetchedAt": "2026-11-05T16:30:05.207984+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long AMD Daily ETF (AMDL)"
       }
@@ -114,8 +114,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/amdw/",
-        "contentSha256": "cb5cd1bebbce5525c641c7107ec88263e9db1829d9e2dbaed5917f622e95f50a",
-        "fetchedAt": "2026-11-04T16:21:29.686865+00:00",
+        "contentSha256": "9d1d5d3606cb6a9c8f5b324ced9f833738826340abcace0fc48ba0905b0e995c",
+        "fetchedAt": "2026-11-05T16:30:26.007858+00:00",
         "method": "official-product-title",
         "text": "AMD WeeklyPay™ ETF"
       }
@@ -131,8 +131,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/amdy/",
-        "contentSha256": "45fae76eaaa5955dae75b29bb2b97bb933625e762ce89504c83f23699d3322f7",
-        "fetchedAt": "2026-11-04T16:21:37.469023+00:00",
+        "contentSha256": "2457999cc475329a87a17b11ec0451fbb22792a6c093f3e9491dbe6b1642cadd",
+        "fetchedAt": "2026-11-05T16:30:33.769527+00:00",
         "method": "official-product-title",
         "text": "YieldMax AMD Option Income Strategy ETF"
       }
@@ -148,8 +148,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily AMD Bull 2X ETF"
       }
@@ -165,8 +165,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/amyy/",
-        "contentSha256": "cb9f397f295804cb77be33dbf8d795155ba5fe253b4d66b6e360950e01beaa01",
-        "fetchedAt": "2026-11-04T16:21:16.826473+00:00",
+        "contentSha256": "6b6203c7776e875bf077226882eb033d52e555f353797af8fbf2b6cd8029a1d0",
+        "fetchedAt": "2026-11-05T16:30:05.872662+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ AMD ETF (AMYY)"
       }
@@ -182,8 +182,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily AMZN Bear 1X ETF"
       }
@@ -199,8 +199,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.kurvinvest.com/etf/amzp",
-        "contentSha256": "7cadc04c6d06cfad81b8a30a80ae42ccdb5d352f35671690922ce24af0d627f7",
-        "fetchedAt": "2026-11-04T16:21:14.959493+00:00",
+        "contentSha256": "a9b4ddc4fecc07b8a98cc5dd284def04682107f28cea2c6ac5291d0a6ad61403",
+        "fetchedAt": "2026-11-05T16:30:02.796792+00:00",
         "method": "official-product-title",
         "text": "Potential Benefits of the Kurv Yield Premium Strategy Amazon ETF"
       }
@@ -216,8 +216,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily AMZN Bull 2X ETF"
       }
@@ -233,8 +233,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/amzw/",
-        "contentSha256": "8d04368ac790f9375d3c8cd44d61ec8bb1739023ac975815e832e955f9ed864a",
-        "fetchedAt": "2026-11-04T16:21:30.210599+00:00",
+        "contentSha256": "582cea05603c0c1984664e74a60f00513c7e9314a32b3f4fc4e54eb658b6f087",
+        "fetchedAt": "2026-11-05T16:30:26.261632+00:00",
         "method": "official-product-title",
         "text": "AMZN WeeklyPay™ ETF"
       }
@@ -250,8 +250,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/amzy/",
-        "contentSha256": "5d7ffaf26f326fde27be8ee3263182c59d8e3da05198a61c529bd154d35a7e93",
-        "fetchedAt": "2026-11-04T16:21:37.447344+00:00",
+        "contentSha256": "e0ba4ecfcc1d1b6a21202d1324eb27e5f8415c958d57d9644e02dac4a7c300e9",
+        "fetchedAt": "2026-11-05T16:30:33.732119+00:00",
         "method": "official-product-title",
         "text": "YieldMax AMZN Option Income Strategy ETF"
       }
@@ -267,8 +267,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/amzz/",
-        "contentSha256": "c47bc2f8888f849b8e97326ec1faeb5b63cd70bf8c4612563af9eaef29f6ab41",
-        "fetchedAt": "2026-11-04T16:21:16.827864+00:00",
+        "contentSha256": "84b9611b9e8b179f68524999a3b234ddacd1adb034ed3e3b7d0358343a9f3a4b",
+        "fetchedAt": "2026-11-05T16:30:05.901046+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long AMZN Daily ETF (AMZZ)"
       }
@@ -284,8 +284,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/anel/",
-        "contentSha256": "e93b2deca368286c6977b965c0e8eaf5a64655e9d7e6f034ea633d24a97f0677",
-        "fetchedAt": "2026-11-04T16:21:52.468731+00:00",
+        "contentSha256": "1fd7a07cdd93c559133ff0e4946cec4f40c1f08bb1f1847b1e2a9115c89d924c",
+        "fetchedAt": "2026-11-05T16:30:54.097332+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long ANET (Arista Networks) ETF"
       }
@@ -301,8 +301,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/aply/",
-        "contentSha256": "7c03842871131df1cdd31a2a5228b70f68ea7f5286bcbf4b5399eea4ee643af5",
-        "fetchedAt": "2026-11-04T16:21:37.494713+00:00",
+        "contentSha256": "c99729e2c36633709dc594fb8ffc6d34cd8cecb7519ab4a30c6aa386a4373860",
+        "fetchedAt": "2026-11-05T16:30:33.718295+00:00",
         "method": "official-product-title",
         "text": "YieldMax AAPL Option Income Strategy ETF"
       }
@@ -318,8 +318,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/armw/",
-        "contentSha256": "76fc9a9138c2908c1b3d02ad3863c6d0d1ed8b067263795c63581c9fa9588b11",
-        "fetchedAt": "2026-11-04T16:21:30.176820+00:00",
+        "contentSha256": "a62aac2553153af1be8a942589dfff86a467b999a67ede7506342864f1561f9c",
+        "fetchedAt": "2026-11-05T16:30:26.261897+00:00",
         "method": "official-product-title",
         "text": "ARM WeeklyPay™ ETF"
       }
@@ -335,8 +335,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/avgu/",
-        "contentSha256": "fd593f7472b951a5f72ce615f5bc4a3e15f422437e99041e16b32bfa14b9bf18",
-        "fetchedAt": "2026-11-04T16:21:17.244771+00:00",
+        "contentSha256": "e3a2700fe500ac91caef80977a675c00452b8ac9b9d762204e12d53075f94cf0",
+        "fetchedAt": "2026-11-05T16:30:06.562784+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long AVGO Daily ETF (AVGU)"
       }
@@ -352,8 +352,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/avgw/",
-        "contentSha256": "fda22cd66642f1722215be1007eeaa3d9ba3629997c5aeaa6b5c07ef48ae3256",
-        "fetchedAt": "2026-11-04T16:21:30.257529+00:00",
+        "contentSha256": "160b183cedaec646b7a53b77d7b09caad40548270c6abfc84a985efb7dff29b1",
+        "fetchedAt": "2026-11-05T16:30:26.354582+00:00",
         "method": "official-product-title",
         "text": "AVGO WeeklyPay™ ETF"
       }
@@ -369,8 +369,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/avgx/",
-        "contentSha256": "39252c38ffbce574e84620ee04d2cdae582780aa8112a4364c2d55ab0bd60a3a",
-        "fetchedAt": "2026-11-04T16:21:53.628837+00:00",
+        "contentSha256": "2fb041ecad23610ee6854f4501dcb28166c59e6a360eb12ba0d4325246ea36b4",
+        "fetchedAt": "2026-11-05T16:30:55.903058+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long AVGO ETF"
       }
@@ -386,8 +386,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily AVGO Bull 2X ETF"
       }
@@ -403,8 +403,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily AVGO Bear 1X ETF"
       }
@@ -420,8 +420,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/avxx/",
-        "contentSha256": "73660c0f7054d01ed3bfd2fd20369c04bd1b6d98a55b83bafcaad537dbbd6a10",
-        "fetchedAt": "2026-11-04T16:21:53.687784+00:00",
+        "contentSha256": "d85383cfcdc904bfab2e0a9cdc14b8c35c196b6f51b8e099292f020f3d42afa9",
+        "fetchedAt": "2026-11-05T16:30:55.842022+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long AVAV ETF"
       }
@@ -437,8 +437,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/azyy/",
-        "contentSha256": "8aaaffac63eaa4ff9223c694ceb8edea610e361d306640e57dfef980e3aa8d4b",
-        "fetchedAt": "2026-11-04T16:21:17.247611+00:00",
+        "contentSha256": "bc59802c79d7416ee296598b911453a6ba76cac9ef4e2ce62c55016367ca3a7e",
+        "fetchedAt": "2026-11-05T16:30:06.595833+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ AMZN ETF (AZYY)"
       }
@@ -454,8 +454,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/babo/",
-        "contentSha256": "d2e82c39f1dde084670ad247c349d5478fdc5517924dd5a09bfb495050e17abe",
-        "fetchedAt": "2026-11-04T16:21:38.110654+00:00",
+        "contentSha256": "59352204196de46e4096d8afb467842a88cfdf1f515d39c00d47fc2e2f442fce",
+        "fetchedAt": "2026-11-05T16:30:34.555129+00:00",
         "method": "official-product-title",
         "text": "YieldMax BABA Option Income Strategy ETF"
       }
@@ -471,8 +471,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/babw/",
-        "contentSha256": "eab5baf78623c74ba38915d6a672f774d16af813080a85231a1741b91932481e",
-        "fetchedAt": "2026-11-04T16:21:30.206731+00:00",
+        "contentSha256": "4f71f31bea19718364ce01704fc9c6e42da30e46afb69c46fff84f74f7f16495",
+        "fetchedAt": "2026-11-05T16:30:26.619438+00:00",
         "method": "official-product-title",
         "text": "BABA WeeklyPay™ ETF"
       }
@@ -488,8 +488,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/babx/",
-        "contentSha256": "a71f05d6281240eb3ef4ff79547327258c5df47ca0aa1d6f65eb228c000c7cdd",
-        "fetchedAt": "2026-11-04T16:21:17.254215+00:00",
+        "contentSha256": "e0c7d0c03172cec35094767d624c43c060b6a5213c62cc4ef20986d38a42c9de",
+        "fetchedAt": "2026-11-05T16:30:06.594767+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long BABA Daily ETF (BABX)"
       }
@@ -505,8 +505,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/bbyy/",
-        "contentSha256": "d80ba26ca6af31b60d66979a5d0c69d31732cdaaea452702c60627ed99f911f9",
-        "fetchedAt": "2026-11-04T16:21:17.676579+00:00",
+        "contentSha256": "89b1b2f15c625310993484519302a4d52575b1747463406a958f978d4792727f",
+        "fetchedAt": "2026-11-05T16:30:07.239505+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ BABA ETF (BBYY)"
       }
@@ -522,8 +522,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/bmnu/",
-        "contentSha256": "a65b75de4b3f298b8ce6207b760b307994299b01448437e95d4289ebfbc6e9a2",
-        "fetchedAt": "2026-11-04T16:22:12.541942+00:00",
+        "contentSha256": "ae5e93514ece2a4aae51382e9c6585c5d8d6d7ac07faf9f1e5b98db9fd8d3394",
+        "fetchedAt": "2026-11-05T16:31:19.088155+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long BMNR Daily Target ETF"
       }
@@ -539,8 +539,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily BA Bull 2X ETF"
       }
@@ -556,8 +556,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/brkc/",
-        "contentSha256": "9ee5e5d0befec88c2b628a741c6abe4a7995ae9b8648137299a2c71171e3c887",
-        "fetchedAt": "2026-11-04T16:21:38.094275+00:00",
+        "contentSha256": "a59aece86ec99395269a3fcc544f80a3bdcb74a2facf456ff8c7910424db2512",
+        "fetchedAt": "2026-11-05T16:30:34.624346+00:00",
         "method": "official-product-title",
         "text": "YieldMax BRK.B Option Income Strategy ETF"
       }
@@ -573,8 +573,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily BRKB Bull 2X ETF"
       }
@@ -590,8 +590,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/brkw/",
-        "contentSha256": "bd3ba3e428fbc8fd1139451c197187c3be87759f363900094cbcd58b7735e850",
-        "fetchedAt": "2026-11-04T16:21:30.691576+00:00",
+        "contentSha256": "8e8dddfdeef8a365db4eedffca707896226b7293e1ed8bbec823697feed67236",
+        "fetchedAt": "2026-11-05T16:30:26.722564+00:00",
         "method": "official-product-title",
         "text": "BRKB WeeklyPay™ ETF"
       }
@@ -607,8 +607,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/coiw/",
-        "contentSha256": "42217afd952b9e29679d335d5183086f92604b17331e84060aed0c12e15b60dd",
-        "fetchedAt": "2026-11-04T16:21:30.712434+00:00",
+        "contentSha256": "7b074673330bc9dbb3acfba58a519301f9b907cebcd857273add14eeb193ee95",
+        "fetchedAt": "2026-11-05T16:30:26.732810+00:00",
         "method": "official-product-title",
         "text": "COIN WeeklyPay™ ETF"
       }
@@ -624,8 +624,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/coni/",
-        "contentSha256": "ebd59a1f349a8ac7b5e67c357a5c437d25c26d5fe13654d3e41da6f35a6bc768",
-        "fetchedAt": "2026-11-04T16:21:18.083237+00:00",
+        "contentSha256": "50c30f4b8741b6601b29dd6387dae247942e144f0ae465b1e1f3e646111bcbd7",
+        "fetchedAt": "2026-11-05T16:30:07.908888+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Short COIN Daily ETF (CONI)"
       }
@@ -641,8 +641,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/conl/",
-        "contentSha256": "32f87cfa1718a597dba576e37f326e5e3d7664218902bb56cf924c529e8e8aac",
-        "fetchedAt": "2026-11-04T16:21:18.083038+00:00",
+        "contentSha256": "4479ebfd62428144372429a93f24bcb607de91cd92308b4e3857f4d49e8b4aa0",
+        "fetchedAt": "2026-11-05T16:30:07.923322+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long COIN Daily ETF (CONL)"
       }
@@ -658,8 +658,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/cony/",
-        "contentSha256": "1abe6b32b297dfab639d11295d5ac838a1bef88245523aece9fd65d7ff5c5bf2",
-        "fetchedAt": "2026-11-04T16:21:38.175430+00:00",
+        "contentSha256": "4ae29977f7f9b97a48e98f3cd2ca6b20090b0752ee9803897beb7846a7c6fdb7",
+        "fetchedAt": "2026-11-05T16:30:34.675589+00:00",
         "method": "official-product-title",
         "text": "YieldMax COIN Option Income Strategy ETF"
       }
@@ -675,8 +675,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/cosw/",
-        "contentSha256": "e8182c52dddbfe829cbc9447463409b58c455357a1d6d1c53481d6ab462e49ab",
-        "fetchedAt": "2026-11-04T16:21:30.689628+00:00",
+        "contentSha256": "f3bc8a8a7e2516898f7d344d4752db8bf81807e00ed062f04effd5708c032fc1",
+        "fetchedAt": "2026-11-05T16:30:27.169412+00:00",
         "method": "official-product-title",
         "text": "COST WeeklyPay™ ETF"
       }
@@ -692,8 +692,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/coyy/",
-        "contentSha256": "5f7cf1995505f6ac80243ee725a5664282de09352f812892d73e532b1ed60197",
-        "fetchedAt": "2026-11-04T16:21:18.454907+00:00",
+        "contentSha256": "45564c46203be96c75d9f8e65cebc5fc5fed49ece6ebc0dd7fde019ed16884db",
+        "fetchedAt": "2026-11-05T16:30:08.613799+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ COIN ETF (COYY)"
       }
@@ -709,8 +709,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/crco/",
-        "contentSha256": "dacd36c525629d3a73c2d8bf43a3a28ad23687a180ac27cb7111ff9b8b75fe73",
-        "fetchedAt": "2026-11-04T16:21:38.134874+00:00",
+        "contentSha256": "fdb49762dead26eaf5723b52297c0829e1340455c5ddfb54494700878e2193d5",
+        "fetchedAt": "2026-11-05T16:30:34.656023+00:00",
         "method": "official-product-title",
         "text": "YieldMax CRCL Option Income Strategy ETF"
       }
@@ -726,8 +726,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/crsh/",
-        "contentSha256": "ad337bd67d9aaab82e0d6d0619efd39608937539a232ab640a9fc8c3e9615070",
-        "fetchedAt": "2026-11-04T16:21:38.782433+00:00",
+        "contentSha256": "04a53fe723c3ce400b80ef1e650e75e06566e61735d963e7b007c8a88607d8ae",
+        "fetchedAt": "2026-11-05T16:30:35.454882+00:00",
         "method": "official-product-title",
         "text": "YieldMax Short TSLA Option Income Strategy ETF"
       }
@@ -743,8 +743,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/crwl/",
-        "contentSha256": "cbcb1e1364080ad877187910a75a3675f17d711532ba5b7a6389706c46ced932",
-        "fetchedAt": "2026-11-04T16:21:18.455130+00:00",
+        "contentSha256": "ff2fcc993976be7170acd2033bbdcc32f94b76c4056016d8c9a4086dc244ac13",
+        "fetchedAt": "2026-11-05T16:30:08.579417+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long CRWD Daily ETF (CRWL)"
       }
@@ -760,8 +760,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/cry/",
-        "contentSha256": "785a7e5fc01e0e9fd859b6360a6c700d70903ac5f4f64db4565b38a8716ced95",
-        "fetchedAt": "2026-11-04T16:21:18.472761+00:00",
+        "contentSha256": "2a1b8439cf74c341934b9ed622a0f7eda0c3b89d9edb579c5bd949c3c6aea1f1",
+        "fetchedAt": "2026-11-05T16:30:08.585602+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ CRCL ETF (CRY)"
       }
@@ -777,8 +777,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily CSCO Bull 2X ETF"
       }
@@ -794,8 +794,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily CSCO Bear 1X ETF"
       }
@@ -811,8 +811,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/cvny/",
-        "contentSha256": "3e1dc2c5fea34357cf94433b1a2fe746648ab21b64bffba0435fd426ecbcef1a",
-        "fetchedAt": "2026-11-04T16:21:38.757224+00:00",
+        "contentSha256": "b99a25210521116227a4835e3cc46b1595f398bbcb756801491ebe2a8e4c2149",
+        "fetchedAt": "2026-11-05T16:30:35.450796+00:00",
         "method": "official-product-title",
         "text": "YieldMax CVNA Option Income Strategy ETF"
       }
@@ -828,8 +828,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/cwy/",
-        "contentSha256": "2de29a6b77a58732b5b382752d3ffb3c9c0873606285af94b6f84b443637dd57",
-        "fetchedAt": "2026-11-04T16:21:18.739164+00:00",
+        "contentSha256": "d17d3781c3dc6885ed3a64b480ce2b41680b68c98c56af3ab860434cc82b2dcb",
+        "fetchedAt": "2026-11-05T16:30:08.584515+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ CRWV ETF (CWY)"
       }
@@ -845,8 +845,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/dips/",
-        "contentSha256": "d9cf6bbf2fc391b8f5a7716a368456d247cad60aab4ad4e6fb350ca622ecb792",
-        "fetchedAt": "2026-11-04T16:21:38.791299+00:00",
+        "contentSha256": "53057a1c519e1c885c9b2336616efe602ddb72cf3551285ee8b6985b94285f38",
+        "fetchedAt": "2026-11-05T16:30:35.567393+00:00",
         "method": "official-product-title",
         "text": "YieldMax Short NVDA Option Income Strategy ETF"
       }
@@ -862,8 +862,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/dlll/",
-        "contentSha256": "d74cccb58de3e8263526c3ede73115ea4a7b787eb5262b199f2df58d42f78b39",
-        "fetchedAt": "2026-11-04T16:21:18.910387+00:00",
+        "contentSha256": "3de79d444f3ed553533b08baaa974b696596a32d7b5ae41e12e2a15158913a98",
+        "fetchedAt": "2026-11-05T16:30:09.220623+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long DELL Daily ETF (DLLL)"
       }
@@ -879,8 +879,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/dray/",
-        "contentSha256": "2325f6f946c184bd112bbeb9b2fa342721c770cf5761330cb5e5495b066b9336",
-        "fetchedAt": "2026-11-04T16:21:38.826975+00:00",
+        "contentSha256": "e89862351cf96ab2603b7bc4ddf181e8b499604bdeca1aed5fff64fab1303910",
+        "fetchedAt": "2026-11-05T16:30:35.547604+00:00",
         "method": "official-product-title",
         "text": "YieldMax DKNG Option Income Strategy ETF"
       }
@@ -896,8 +896,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily LLY Bull 2X ETF"
       }
@@ -913,8 +913,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/fbl/",
-        "contentSha256": "9300646c00d1a98e51a83cec48bdcd7c88be75e44b6cb9bf0936e408e7f0f9a7",
-        "fetchedAt": "2026-11-04T16:21:18.874243+00:00",
+        "contentSha256": "3d39b61e56bbc22aef4a7848cbbb6c1aaad1b81c7f7e44d4fc0eef7e8321a225",
+        "fetchedAt": "2026-11-05T16:30:09.281850+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long META Daily ETF (FBL)"
       }
@@ -930,8 +930,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/fby/",
-        "contentSha256": "50d7e9b0ae987814db75ce5e1ab14fa521096ee07a5998567f52c3b5881f00e7",
-        "fetchedAt": "2026-11-04T16:21:39.430386+00:00",
+        "contentSha256": "1118681e490d32bb6274cbb4235c32fb4a89fe6342f7cd1f82cf0547ece92b31",
+        "fetchedAt": "2026-11-05T16:30:36.278411+00:00",
         "method": "official-product-title",
         "text": "YieldMax META Option Income Strategy ETF"
       }
@@ -947,8 +947,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/fbyy/",
-        "contentSha256": "ec6ff795c07e230f2cb211cfc2c70584bf52c16978ba0e580e5e2989ff004e55",
-        "fetchedAt": "2026-11-04T16:21:19.102602+00:00",
+        "contentSha256": "2ed2fdde3cef626e590803bfe74e6b21284042610f1a5fc354ddde246c4ead34",
+        "fetchedAt": "2026-11-05T16:30:09.751545+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ META ETF (FBYY)"
       }
@@ -964,8 +964,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/fiat/",
-        "contentSha256": "a2216b22bca5d2f9b82a6b5767faa262cd878a4204ee369941dd11c9867cf29c",
-        "fetchedAt": "2026-11-04T16:21:39.410057+00:00",
+        "contentSha256": "59edf4fc41fef1602df7692c446197f055fbafc9e9b335728ed3b8d12790083f",
+        "fetchedAt": "2026-11-05T16:30:36.296654+00:00",
         "method": "official-product-title",
         "text": "YieldMax Short COIN Option Income Strategy ETF"
       }
@@ -981,8 +981,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily GOOGL Bull 2X ETF"
       }
@@ -998,8 +998,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily GOOGL Bear 1X ETF"
       }
@@ -1015,8 +1015,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/gmey/",
-        "contentSha256": "662ded7e82687f0cfaf4c8fec8e7e94f452b38b7b6e2578ec5e1ee3c94284250",
-        "fetchedAt": "2026-11-04T16:21:39.410339+00:00",
+        "contentSha256": "a8486e59364c06a8f103599451bb39e4e01f6e8d8db460bd19ce8f30595b6296",
+        "fetchedAt": "2026-11-05T16:30:36.395341+00:00",
         "method": "official-product-title",
         "text": "YieldMax GME Option Income Strategy ETF"
       }
@@ -1032,8 +1032,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.kurvinvest.com/etf/goop",
-        "contentSha256": "05c2679cdef787f5dcd69d14dbdb8275eba3cb4543d370bc570fd92bef3d0f6c",
-        "fetchedAt": "2026-11-04T16:21:15.305618+00:00",
+        "contentSha256": "12cd41c30a163e33121362be3cbfa43927726ff342521afa575e4cc98a1413b9",
+        "fetchedAt": "2026-11-05T16:30:03.159581+00:00",
         "method": "official-product-title",
         "text": "Potential Benefits of the Kurv Yield Premium Strategy Google ETF"
       }
@@ -1049,8 +1049,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/goow/",
-        "contentSha256": "b64d2044766aa77bcc3df6f9b29baabe37f5997eb86227f01f4c2d57a436028d",
-        "fetchedAt": "2026-11-04T16:21:31.210936+00:00",
+        "contentSha256": "b8afee6aa7494677f2feb6349f92ef33a4efd8abb10fa9bbb21917049448a65b",
+        "fetchedAt": "2026-11-05T16:30:27.281450+00:00",
         "method": "official-product-title",
         "text": "GOOGL WeeklyPay™ ETF"
       }
@@ -1066,8 +1066,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/gooy/",
-        "contentSha256": "ea1ee1e7e1057b11adbcb3e7d873a9de49348107611a51d1d89fe34088e0b0d8",
-        "fetchedAt": "2026-11-04T16:21:39.463925+00:00",
+        "contentSha256": "cf2861dad04986ff0ecce70ff7ada3eb2f4112409fc5b0ac31fa88f87318b312",
+        "fetchedAt": "2026-11-05T16:30:36.447439+00:00",
         "method": "official-product-title",
         "text": "YieldMax GOOGL Option Income Strategy ETF"
       }
@@ -1083,8 +1083,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/himz/",
-        "contentSha256": "03f0716f945bca9d30c17655f3804d0d5f3be5a603413ef130247fefa1a6bc3f",
-        "fetchedAt": "2026-11-04T16:21:55.331503+00:00",
+        "contentSha256": "92fa9e51379eb9f62476d71afd4a635d9f6dd5b1b42bee1cd0517ae29664eaf7",
+        "fetchedAt": "2026-11-05T16:30:57.700140+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long HIMS ETF"
       }
@@ -1100,8 +1100,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/hiyy/",
-        "contentSha256": "7206c201e15ae970ab29a14dcfae15260651c07701bd5af8357b470f42c46a21",
-        "fetchedAt": "2026-11-04T16:21:40.031097+00:00",
+        "contentSha256": "6b00e0aed5417088bea479380dc564381c41dfbfd5829d7aab912dd0824c2176",
+        "fetchedAt": "2026-11-05T16:30:37.178577+00:00",
         "method": "official-product-title",
         "text": "YieldMax HIMS Option Income Strategy ETF"
       }
@@ -1117,8 +1117,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/hmyy/",
-        "contentSha256": "c9e1b1697c9e71221c08409c79f1bbdbe504ba6f462a4775f9a906d2ea6358c6",
-        "fetchedAt": "2026-11-04T16:21:19.663026+00:00",
+        "contentSha256": "6c3f617eaf216e17ff3319b9b7dade088929fd434c14cc72a046583e9526c2d1",
+        "fetchedAt": "2026-11-05T16:30:10.585143+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ HIMS ETF (HMYY)"
       }
@@ -1134,8 +1134,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/hoow/",
-        "contentSha256": "aead3e9e1ad11de9e9b68458dbd81fa16dc28fecbf12d7f6997c42e5cd4b2d18",
-        "fetchedAt": "2026-11-04T16:21:31.210852+00:00",
+        "contentSha256": "2d2308b546924e0d665dc1ec1ca97b9f5b0df23d3eeb19e49d345c05da8b046f",
+        "fetchedAt": "2026-11-05T16:30:27.596137+00:00",
         "method": "official-product-title",
         "text": "HOOD WeeklyPay™ ETF"
       }
@@ -1151,8 +1151,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/hoox/",
-        "contentSha256": "edc2a38c43e87ad392e0327bb6d6bacff7a48151bad19c0c175c252333fd6ac5",
-        "fetchedAt": "2026-11-04T16:21:55.606682+00:00",
+        "contentSha256": "aa0d775b617cefd09579beed2ed3580cd1d6957daf3ed72393b6d8b087a26bf2",
+        "fetchedAt": "2026-11-05T16:30:57.744981+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long HOOD ETF"
       }
@@ -1168,8 +1168,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/hooy/",
-        "contentSha256": "ea817c8d0782a3985e21a7b83684052022132b3b9768d9a7532675e4ebeaa115",
-        "fetchedAt": "2026-11-04T16:21:40.026782+00:00",
+        "contentSha256": "a2351014c96c1b245796f96878c71a7f2a19ac75d9c3ed805b1f3a4632946bcf",
+        "fetchedAt": "2026-11-05T16:30:37.164000+00:00",
         "method": "official-product-title",
         "text": "YieldMax HOOD Option Income Strategy ETF"
       }
@@ -1185,8 +1185,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/hoyy/",
-        "contentSha256": "ea337e2315cdbc8803e2d03a0132e5ee82963ee5b4dc12932ccd6786405d4a12",
-        "fetchedAt": "2026-11-04T16:21:19.678522+00:00",
+        "contentSha256": "40eb7818c4192cc643268efb5795ed6fe64c81eca7d54a59d3f166089afe4229",
+        "fetchedAt": "2026-11-05T16:30:10.548666+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ HOOD ETF (HOYY)"
       }
@@ -1202,8 +1202,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/intw/",
-        "contentSha256": "e930f004fb499820d286e995705f93c7563dad8012bd12a0037454d913f225f4",
-        "fetchedAt": "2026-11-04T16:21:19.921797+00:00",
+        "contentSha256": "b4278239367ed6b92d1f67293942c6c59e7d683214476de04e50c5645b26737c",
+        "fetchedAt": "2026-11-05T16:30:11.022054+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long INTC Daily ETF (INTW)"
       }
@@ -1219,8 +1219,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/ionl/",
-        "contentSha256": "c3a3cd27aef6b9a80620ddf73b5ca9b36727a24cd63c84a20f34a6942fcf8749",
-        "fetchedAt": "2026-11-04T16:21:20.108252+00:00",
+        "contentSha256": "b746042d5e0da7172b38762a0d38e0e7c1fd48e3b0dd1bb706b2901e721b9048",
+        "fetchedAt": "2026-11-05T16:30:11.239201+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long IONQ Daily ETF (IONL)"
       }
@@ -1236,8 +1236,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/ionx/",
-        "contentSha256": "606a2f170f04c38b568a1cc58afb31189a101e3ad1f2c10a2f051f2fbdb91d16",
-        "fetchedAt": "2026-11-04T16:21:55.520679+00:00",
+        "contentSha256": "ac2ff6ac829efd854da1170ff424bad323d61a99b50bed8be85404a7cdf3e7e7",
+        "fetchedAt": "2026-11-05T16:30:58.757228+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long IONQ ETF"
       }
@@ -1253,8 +1253,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/ionz/",
-        "contentSha256": "0b1701e7b50a0c899381915c4a9f1ea083917d384dc92a988b2cf8fb7fcd1328",
-        "fetchedAt": "2026-11-04T16:21:55.957963+00:00",
+        "contentSha256": "e917891d4cb23e883026919ab50b0eb62ceab55e11c6edf7f246f9d0f0c80899",
+        "fetchedAt": "2026-11-05T16:30:58.782986+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short IONQ ETF"
       }
@@ -1270,8 +1270,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/ioyy/",
-        "contentSha256": "af80ec43b33a92559546e7016429573b495caad8dcaeb7c3af29ea15477844b2",
-        "fetchedAt": "2026-11-04T16:21:20.145592+00:00",
+        "contentSha256": "07d1ff6ed7aa49d64458fb3ea895c62898a89602ce7f4378aabeff474f6e514b",
+        "fetchedAt": "2026-11-05T16:30:11.234931+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ IONQ ETF (IOYY)"
       }
@@ -1287,8 +1287,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/isul/",
-        "contentSha256": "adf4b183fce49bc71f9d1ccc87d49badbb0d539b3fba1ce23878fd2502fef019",
-        "fetchedAt": "2026-11-04T16:21:20.113074+00:00",
+        "contentSha256": "6b26f16a349cfdb7dd84ba299b998bcbfe55c38cecc556ae88f49fb02797a12d",
+        "fetchedAt": "2026-11-05T16:30:11.483615+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long ISRG Daily ETF (ISUL)"
       }
@@ -1304,8 +1304,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/llyx/",
-        "contentSha256": "65197e7afba224bd5a187ae5a70cbf015743922c38cd2c5990335954f8f76462",
-        "fetchedAt": "2026-11-04T16:21:56.796406+00:00",
+        "contentSha256": "01c65a607565da57761f18588af5011e3101118697c6e244f5f1c2fdf6b1d486",
+        "fetchedAt": "2026-11-05T16:30:59.953837+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long LLY ETF"
       }
@@ -1321,8 +1321,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily LMT Bull 2X ETF"
       }
@@ -1338,8 +1338,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/maay/",
-        "contentSha256": "fd3522fc631092a9d1ef74ad946aeb1b3e42e84abe2de428b342dd674300d5f7",
-        "fetchedAt": "2026-11-04T16:21:20.467478+00:00",
+        "contentSha256": "60afd77cb0f2d6f1a58b62d193d7cbb61c80bf3d4e16b2596f1d74e56088f86e",
+        "fetchedAt": "2026-11-05T16:30:11.888821+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ MARA ETF (MAAY)"
       }
@@ -1355,8 +1355,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/maro/",
-        "contentSha256": "6da0995957babbf94a85797eb68b42fc841bec56bebfd2d2fc7bf83ad9653fc2",
-        "fetchedAt": "2026-11-04T16:21:40.772191+00:00",
+        "contentSha256": "c57f8024016720e3df904064cad23adfb16c13a7330750c45f95c8583bf64bfe",
+        "fetchedAt": "2026-11-05T16:30:37.998891+00:00",
         "method": "official-product-title",
         "text": "YieldMax MARA Option Income Strategy ETF"
       }
@@ -1372,8 +1372,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily META Bear 1X ETF"
       }
@@ -1389,8 +1389,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily META Bull 2X ETF"
       }
@@ -1406,8 +1406,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/metw/",
-        "contentSha256": "32a5ed618220fb7c1fea5ed16033761cd5684fbb997b70664fb08bfef43f2ca1",
-        "fetchedAt": "2026-11-04T16:21:31.251979+00:00",
+        "contentSha256": "40ba2b4669b0d1c6a733f7c4346efdb1b37a7d2167d42ae7b00a237c98688580",
+        "fetchedAt": "2026-11-05T16:30:27.623799+00:00",
         "method": "official-product-title",
         "text": "META WeeklyPay™ ETF"
       }
@@ -1423,8 +1423,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/mral/",
-        "contentSha256": "0fc7af8d284f4a254b3605da97b596e10d39462441e0982a0921c77b15311f33",
-        "fetchedAt": "2026-11-04T16:21:20.522570+00:00",
+        "contentSha256": "f9721ae4ea891d24ec0ebfa5815aefee98974457dcc17d9fea2f9478e8f55368",
+        "fetchedAt": "2026-11-05T16:30:12.180610+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long MARA Daily ETF (MRAL)"
       }
@@ -1440,8 +1440,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/mrny/",
-        "contentSha256": "c21bd435a51c39df9fbb641f3952c0c10bfb8bc6c7e7c47fd898bb3cb924fcde",
-        "fetchedAt": "2026-11-04T16:21:40.744909+00:00",
+        "contentSha256": "c288e0381a533ea655561f19bb1ef9c76a44f9682e2bb8961b31e72386a59dc4",
+        "fetchedAt": "2026-11-05T16:30:38.112938+00:00",
         "method": "official-product-title",
         "text": "YieldMax MRNA Option Income Strategy ETF"
       }
@@ -1457,8 +1457,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/msdd/",
-        "contentSha256": "e3614ff2e8030c05a734299269b0e1a246bf24756dc96e170eed23b43c3450d8",
-        "fetchedAt": "2026-11-04T16:21:26.099235+00:00",
+        "contentSha256": "9c483dd18a6e7acc34589508129328cb5e0b8b2aee7b0eaf70cb8deae7baf0f3",
+        "fetchedAt": "2026-11-05T16:30:21.927256+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Short MSTR Daily ETF (MSDD)"
       }
@@ -1474,8 +1474,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily MSFT Bear 1X ETF"
       }
@@ -1491,8 +1491,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/msfl/",
-        "contentSha256": "0f92539cde4a132b19133060f62b2328d15bafc49ceed85ee33f37c3e2f9805b",
-        "fetchedAt": "2026-11-04T16:21:20.764090+00:00",
+        "contentSha256": "5cab639ab73f8f5cc5b38bb54a85e6fe953ca6882ae495ddbd3fcc3d25965ac8",
+        "fetchedAt": "2026-11-05T16:30:12.437995+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long MSFT Daily ETF (MSFL)"
       }
@@ -1508,8 +1508,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/msfo/",
-        "contentSha256": "52dae6d76b85e41e344ea9d069bc9699000eb441067152ea7e3d23c721b54222",
-        "fetchedAt": "2026-11-04T16:21:40.703443+00:00",
+        "contentSha256": "5cc7beb1fcc21a58f0d50c3b4bafecfda56a12de4f798bad776f06b91dd729f1",
+        "fetchedAt": "2026-11-05T16:30:38.042924+00:00",
         "method": "official-product-title",
         "text": "YieldMax MSFT Option Income Strategy ETF"
       }
@@ -1525,8 +1525,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily MSFT Bull 2X ETF"
       }
@@ -1542,8 +1542,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/msfw/",
-        "contentSha256": "d5106ff7a9e2046817319586baa02229080793f29089f6831668431011c8eb02",
-        "fetchedAt": "2026-11-04T16:21:31.670171+00:00",
+        "contentSha256": "48cb8a8c9072d72cce9b7234ea3452f31f2ca1d69649e0ff4870fb6e441056f5",
+        "fetchedAt": "2026-11-05T16:30:27.755184+00:00",
         "method": "official-product-title",
         "text": "MSFT WeeklyPay™ ETF"
       }
@@ -1559,8 +1559,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.kurvinvest.com/etf/msfy",
-        "contentSha256": "0cd44c105643a7f56b4231aa1f9bf07a6d632873dac84328ee7ef6eeb5fc44b1",
-        "fetchedAt": "2026-11-04T16:21:15.386031+00:00",
+        "contentSha256": "a7c35a17dc0698396f5fda3309ed8ce73f8f87c1b60558bc56dbf458a53e0109",
+        "fetchedAt": "2026-11-05T16:30:03.186289+00:00",
         "method": "official-product-title",
         "text": "Potential Benefits of the Kurv Yield Premium Strategy Microsoft ETF"
       }
@@ -1576,8 +1576,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/msst/",
-        "contentSha256": "147bbf0a97bb86ba372812d197acdb8acfd5626876d948308be5bb529963334a",
-        "fetchedAt": "2026-11-04T16:21:45.841080+00:00",
+        "contentSha256": "e86134b7087b4f617c23deca02f0a9ad7111fbd95d7183b0e29b24f8fb750ee6",
+        "fetchedAt": "2026-11-05T16:30:44.728256+00:00",
         "method": "official-product-title",
         "text": "YieldMax MSTR Performance & Distribution Target 25™ ETF"
       }
@@ -1593,8 +1593,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/mst/",
-        "contentSha256": "85589680981a703006b61b8b61f8cb8b11a6076e06e03d3d23a81dd45f005c6a",
-        "fetchedAt": "2026-11-04T16:21:57.369912+00:00",
+        "contentSha256": "fbbc7e23b97819a5c97f771db3d1286aed7a8da4f00306ef0c320d13ce8e5742",
+        "fetchedAt": "2026-11-05T16:31:00.719605+00:00",
         "method": "official-product-title",
         "text": "Defiance Leveraged Long + Income MSTR ETF"
       }
@@ -1610,8 +1610,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/mstp/",
-        "contentSha256": "e33ee24d0883cd90d3214bac7ae41d6e5719dbb92b46c4fa9af078a15e81f274",
-        "fetchedAt": "2026-11-04T16:21:20.926350+00:00",
+        "contentSha256": "e7e8eb49e213c3747530445203d28e70dc01d2f71db6e7360ef42fd083a68c81",
+        "fetchedAt": "2026-11-05T16:30:12.615119+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long MSTR Daily ETF (MSTP)"
       }
@@ -1627,8 +1627,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/mstu/",
-        "contentSha256": "96141e0f84cbdc75d075ef3a694699a5ebbe2813b975931f8b9041b29539f312",
-        "fetchedAt": "2026-11-04T16:22:11.657245+00:00",
+        "contentSha256": "bbe37f2335dbd3195fba8ab2e16ef5df5787f94a550100aa03dc9208fa5e5b5d",
+        "fetchedAt": "2026-11-05T16:31:18.132429+00:00",
         "method": "official-product-title",
         "text": "T-REX 2X Long MSTR Daily Target ETF"
       }
@@ -1644,8 +1644,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/mstw/",
-        "contentSha256": "2a5814ed1943345179fda426f987bc606023f6a479a35cca5dd209b6e8ac3027",
-        "fetchedAt": "2026-11-04T16:21:31.696857+00:00",
+        "contentSha256": "e6c6773b43617da59ce6a2ee3b944d7dde597d26fca5c4612869a00451dcb7b0",
+        "fetchedAt": "2026-11-05T16:30:27.749985+00:00",
         "method": "official-product-title",
         "text": "MSTR WeeklyPay™ ETF"
       }
@@ -1661,8 +1661,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/mstx/",
-        "contentSha256": "f740b8c6bf3c0d87ac16a1cdd7e871ffb986fd5a3dba8c566db40d652b9f6b72",
-        "fetchedAt": "2026-11-04T16:21:57.425394+00:00",
+        "contentSha256": "00dff83e0b67862e78505941f5f6f6c3cc64f791bcbc4fb7f0de9bd0a794994d",
+        "fetchedAt": "2026-11-05T16:31:01.241743+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long MSTR ETF"
       }
@@ -1678,8 +1678,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/msty/",
-        "contentSha256": "807903b42d7fe286a53d71efa5f50b245339fef08c5418f2c4e2b6f78c6a4c69",
-        "fetchedAt": "2026-11-04T16:21:40.712626+00:00",
+        "contentSha256": "405a785a349b4adddd2ed04d57309ea5c656609f9404cae02bfe4370818ed3f4",
+        "fetchedAt": "2026-11-05T16:30:38.229796+00:00",
         "method": "official-product-title",
         "text": "YieldMax MSTR Option Income Strategy ETF"
       }
@@ -1695,8 +1695,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/mtyy/",
-        "contentSha256": "0ae44b08133c726fd04b045a9f94e380202ed814b146ee285779d7c166b861b1",
-        "fetchedAt": "2026-11-04T16:21:20.930911+00:00",
+        "contentSha256": "545b8bf22fd3f919d95d66520c9055ff128eb6a8f2a8a6e16506632699049eb8",
+        "fetchedAt": "2026-11-05T16:30:12.883219+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ MSTR ETF (MTYY)"
       }
@@ -1712,8 +1712,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily MU Bear 1X ETF"
       }
@@ -1729,8 +1729,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/mull/",
-        "contentSha256": "6e03920e399fd72a50fa72a455c2986b86b0c19558ba167919834f88ac189fb1",
-        "fetchedAt": "2026-11-04T16:21:21.110800+00:00",
+        "contentSha256": "873f100a439420d13308ca0153c470c6f72b08a8f037e7bb349eba223f832d3b",
+        "fetchedAt": "2026-11-05T16:30:13.170414+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long MU Daily ETF (MULL)"
       }
@@ -1746,8 +1746,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily MU Bull 2X ETF"
       }
@@ -1763,8 +1763,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/muyy/",
-        "contentSha256": "40b5330faf8467f72ac4be638117c143f922311eb2c7784ca5b78150a7f0ce01",
-        "fetchedAt": "2026-11-04T16:21:21.276610+00:00",
+        "contentSha256": "f848ca356816aaa75a0a05345506ebab433c0a3663b1faa61db5e6d026bbbe75",
+        "fetchedAt": "2026-11-05T16:30:13.264646+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ MU ETF (MUYY)"
       }
@@ -1780,8 +1780,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/mvll/",
-        "contentSha256": "7ee09ddacc8c662115dab19c67c5397cce867c403198d39e02fb7c7339e007ed",
-        "fetchedAt": "2026-11-04T16:21:21.339285+00:00",
+        "contentSha256": "b73f19c5eab5f86fae663372d1d321f7c42ccf03370bf5a6da7449bd4c515e23",
+        "fetchedAt": "2026-11-05T16:30:13.291667+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long MRVL Daily ETF (MVLL)"
       }
@@ -1797,8 +1797,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/nbil/",
-        "contentSha256": "ed81a61a4a0819a4e2617bc55253fa4fd96ef06c0b7d2ed734fbc2559932bf61",
-        "fetchedAt": "2026-11-04T16:21:21.338037+00:00",
+        "contentSha256": "323271081ad8b8f7948254c3a37a1355046823ba0acbe5dee8c683b9d45b6a4d",
+        "fetchedAt": "2026-11-05T16:30:13.581912+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long NBIS Daily ETF (NBIL)"
       }
@@ -1814,8 +1814,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.kurvinvest.com/etf/nflp",
-        "contentSha256": "43c5f3bf0c26fbee87937beb3580f3175c4a6dca85f9e2eb073f4c126dd1cbe8",
-        "fetchedAt": "2026-11-04T16:21:15.371941+00:00",
+        "contentSha256": "35ec576d81893bdf614e61257df761bed015a6027d699ea0330f6fb6b32e92f6",
+        "fetchedAt": "2026-11-05T16:30:03.231424+00:00",
         "method": "official-product-title",
         "text": "Potential Benefits of the Kurv Yield Premium Strategy Netflix ETF"
       }
@@ -1831,8 +1831,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/nflw/",
-        "contentSha256": "8002718b0ab6077d6be94da14ccb694c747ab04bfffd9d4eb1ee017221e414ed",
-        "fetchedAt": "2026-11-04T16:21:31.717683+00:00",
+        "contentSha256": "f9a06eb417a61b3d199db8b92fe64e2ffabdfc7c4e68bf0e3254401cdacee417",
+        "fetchedAt": "2026-11-05T16:30:28.107014+00:00",
         "method": "official-product-title",
         "text": "NFLX WeeklyPay™ ETF"
       }
@@ -1848,8 +1848,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/nfly/",
-        "contentSha256": "857b546db6d52e47cfb0c1a2514ee7330884edf29c1d21d442279d157e4fe8bb",
-        "fetchedAt": "2026-11-04T16:21:41.383455+00:00",
+        "contentSha256": "3a8a265eb8492ce03b754f65cd910ffe4c1610befe3839dd1630f785cf29fbb9",
+        "fetchedAt": "2026-11-05T16:30:38.896413+00:00",
         "method": "official-product-title",
         "text": "YieldMax NFLX Option Income Strategy ETF"
       }
@@ -1865,8 +1865,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily NFLX Bull 2X ETF"
       }
@@ -1882,8 +1882,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily NFLX Bear 1X ETF"
       }
@@ -1899,8 +1899,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/nowl/",
-        "contentSha256": "ab61c9f987f6a72db71bfcf59da0010d1bd4d640d0fb6271acb45722ad19dbb7",
-        "fetchedAt": "2026-11-04T16:21:21.475902+00:00",
+        "contentSha256": "975c938e332a6470f52e6c3ba1245db115d0dd3204a889692fcfc22e35989d8f",
+        "fetchedAt": "2026-11-05T16:30:14.262435+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long NOW Daily ETF (NOWL)"
       }
@@ -1916,8 +1916,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/nvd/",
-        "contentSha256": "3dc21a1c67c1145910fe20736927b4c07a812f3b488f0a2e2b22758af46c8030",
-        "fetchedAt": "2026-11-04T16:21:21.739340+00:00",
+        "contentSha256": "2a10f93bf0ef4e767ff994abc19f70741160271e008721fbaa50f7016ecddf10",
+        "fetchedAt": "2026-11-05T16:30:14.315401+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Short NVDA Daily ETF (NVD)"
       }
@@ -1933,8 +1933,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily NVDA Bear 1X ETF"
       }
@@ -1950,8 +1950,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/nvdl/",
-        "contentSha256": "6f889042712fee7767cd129a37c50224ec0a6cf31707c922ffdefb900a7fe041",
-        "fetchedAt": "2026-11-04T16:21:21.826271+00:00",
+        "contentSha256": "9b1647411c7008ba3bc59b67a17887135ea4665683e82e8cd746db1b6d7b844c",
+        "fetchedAt": "2026-11-05T16:30:14.547666+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long NVDA Daily ETF (NVDL)"
       }
@@ -1967,8 +1967,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily NVDA Bull 2X ETF"
       }
@@ -1984,8 +1984,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/nvdw/",
-        "contentSha256": "a64415bfbd9c8621e1827ca8ca205e0287b4d4a8d5fb06a0da33e5e932e779ee",
-        "fetchedAt": "2026-11-04T16:21:31.750860+00:00",
+        "contentSha256": "2948e7488e652852918daf6f7835aa4f45f819f20100a6b4df78381c92a53298",
+        "fetchedAt": "2026-11-05T16:30:28.093034+00:00",
         "method": "official-product-title",
         "text": "NVDA WeeklyPay™ ETF"
       }
@@ -2001,8 +2001,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/nvdy/",
-        "contentSha256": "bf60fc1b88c57157cdb9186e71350d6b27529a7519f86c0ec10305704ee79371",
-        "fetchedAt": "2026-11-04T16:21:41.459508+00:00",
+        "contentSha256": "b68d5267551a53d66fa7795b79d8c26d7af74b9a61ad9cddc459ca2ae6f584a6",
+        "fetchedAt": "2026-11-05T16:30:38.938895+00:00",
         "method": "official-product-title",
         "text": "YieldMax NVDA Option Income Strategy ETF"
       }
@@ -2018,8 +2018,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/nvii/",
-        "contentSha256": "3cf77b7d25793d5828a62721a3df9986fea2c150e1ad67a16e2cfdd78bfbdc8b",
-        "fetchedAt": "2026-11-04T16:22:10.740362+00:00",
+        "contentSha256": "1c41b2ca690f0804c60b8f497545a2a496117cbb45372a13e2afbab7ac8f86bd",
+        "fetchedAt": "2026-11-05T16:31:17.179524+00:00",
         "method": "official-product-title",
         "text": "NVII - REX NVIDIA Growth & Income ETF"
       }
@@ -2035,8 +2035,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/nvit/",
-        "contentSha256": "ba01e75687eaaeb8293a229722eb88fad9a6198ab200aa2186667f03523edc6f",
-        "fetchedAt": "2026-11-04T16:21:45.904136+00:00",
+        "contentSha256": "fe165aae7d1b630c04ea5e37098281d9f2f3bfbc87cc8b7392af4e1359fe9b8c",
+        "fetchedAt": "2026-11-05T16:30:44.950885+00:00",
         "method": "official-product-title",
         "text": "YieldMax NVDA Performance & Distribution Target 25™ ETF"
       }
@@ -2052,8 +2052,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/nvyy/",
-        "contentSha256": "362b7b9137711d8a69343edf4129a2e876353e3cd8a30f81cc82e5269fde3618",
-        "fetchedAt": "2026-11-04T16:21:22.177239+00:00",
+        "contentSha256": "a720897929b16ae6f73fefadd5d425c817361dc7297f1f5fcaf68ea60ad08cbb",
+        "fetchedAt": "2026-11-05T16:30:14.903444+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ NVDA ETF (NVYY)"
       }
@@ -2069,8 +2069,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/okll/",
-        "contentSha256": "bec3c16a08696c9d411a97df04057e947b737f80d47d84ddd9cd6f541d9999ac",
-        "fetchedAt": "2026-11-04T16:21:58.321185+00:00",
+        "contentSha256": "77862034337ed341a59f610f12d62c5d1a65c17fac89e073c5d9ab4f284534f3",
+        "fetchedAt": "2026-11-05T16:31:01.519502+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long OKLO ETF"
       }
@@ -2086,8 +2086,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/orcx/",
-        "contentSha256": "8d14c05bcf686706879dca79b094b157e3006ef51967d3c0d778c1681e99c07b",
-        "fetchedAt": "2026-11-04T16:21:58.859046+00:00",
+        "contentSha256": "d20817d964524304cfd1efc3210dce7d5bec2f79877555900bc862ca01c0bc0e",
+        "fetchedAt": "2026-11-05T16:31:02.024928+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long ORCL ETF"
       }
@@ -2103,8 +2103,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily PANW Bear 1X ETF"
       }
@@ -2120,8 +2120,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily PANW Bull 2X ETF"
       }
@@ -2137,8 +2137,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/pddl/",
-        "contentSha256": "73516536f1af0b0090b86a9ed7d49db8564a65d58a57a5fd521faa04a8fd7317",
-        "fetchedAt": "2026-11-04T16:21:22.184264+00:00",
+        "contentSha256": "d8119ebb031f6e3856d98a51566cbd6483672a272cfb99baf425b801b7b5accd",
+        "fetchedAt": "2026-11-05T16:30:14.958413+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long PDD Daily ETF (PDDL)"
       }
@@ -2154,8 +2154,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily PLTR Bear 1X ETF"
       }
@@ -2171,8 +2171,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily PLTR Bull 2X ETF"
       }
@@ -2188,8 +2188,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/pltw/",
-        "contentSha256": "07f2aabe366532002b034742776bcfd58e2ebae75ef09832d99cd4da30913850",
-        "fetchedAt": "2026-11-04T16:21:32.157580+00:00",
+        "contentSha256": "4f2e3696e14e404a990b90f8caaace28d5ba52ea6846748b769dfb2b72e12631",
+        "fetchedAt": "2026-11-05T16:30:28.205393+00:00",
         "method": "official-product-title",
         "text": "PLTR WeeklyPay™ ETF"
       }
@@ -2205,8 +2205,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/plty/",
-        "contentSha256": "82e88c0e5f387c556247a2b2b9f08adc44f4a7fce099b60b16030bcc44bc687d",
-        "fetchedAt": "2026-11-04T16:21:41.978263+00:00",
+        "contentSha256": "9a0c420b1ab69283a04cea891e9ec2631f643571d51438402af21bb398afcda1",
+        "fetchedAt": "2026-11-05T16:30:39.698450+00:00",
         "method": "official-product-title",
         "text": "YieldMax PLTR Option Income Strategy ETF"
       }
@@ -2222,8 +2222,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/pltz/",
-        "contentSha256": "3b4d38cc56b51f788c89bfdd86a872634b4c6173ddc3ba1b592e27ca7427de44",
-        "fetchedAt": "2026-11-04T16:21:59.441424+00:00",
+        "contentSha256": "7d8e6dd427e1e53860c8b9a8f48298fab1a34d9acf48014d79d299f97ae534aa",
+        "fetchedAt": "2026-11-05T16:31:02.803288+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short PLTR ETF"
       }
@@ -2239,8 +2239,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/plyy/",
-        "contentSha256": "36bf27cb2ed9877769376f9c94a094a95ca23b1a0ea70f26e588481a2902172a",
-        "fetchedAt": "2026-11-04T16:21:22.552758+00:00",
+        "contentSha256": "3cd57b9046ae04917f737bb9e35e9956f29f824030ad96ff4be09d710da44e05",
+        "fetchedAt": "2026-11-05T16:30:15.875035+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ PLTR ETF (PLYY)"
       }
@@ -2256,8 +2256,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/ptir/",
-        "contentSha256": "de53fc6fc705a3cff8b9675aaab9bdf5eb3cd8e3c1d2816153d27d12b86e25b5",
-        "fetchedAt": "2026-11-04T16:21:22.534462+00:00",
+        "contentSha256": "b12a2f355f779581b9d59f80db51f3f309e92feb16de111fd510bc55c21932dd",
+        "fetchedAt": "2026-11-05T16:30:15.603125+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long PLTR Daily ETF (PTIR)"
       }
@@ -2273,8 +2273,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/pypy/",
-        "contentSha256": "a481dca38ff1bdb2064046d9deea023afcd3ae376d023f41f3e5e81f39070dd5",
-        "fetchedAt": "2026-11-04T16:21:41.990239+00:00",
+        "contentSha256": "d33346bbe6bf17dd6791e38a8cb28b009854b380532b6c0895a4fc5351980ac5",
+        "fetchedAt": "2026-11-05T16:30:39.724288+00:00",
         "method": "official-product-title",
         "text": "YieldMax PYPL Option Income Strategy ETF"
       }
@@ -2290,8 +2290,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/qbtz/",
-        "contentSha256": "5d78b1e144547c3cdc0874131b96263eaef5188f3ebbc2464f99ae7d0641808e",
-        "fetchedAt": "2026-11-04T16:22:00.413819+00:00",
+        "contentSha256": "4c8f7936ea7b7880f8e35efb655ac6df2b8d22df7006db9fa8db9add29ddbd3c",
+        "fetchedAt": "2026-11-05T16:31:03.616422+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short QBTS ETF"
       }
@@ -2307,8 +2307,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/qby/",
-        "contentSha256": "12fef7bd4a9f6eead531fd9bc4d9820e85588a13cc1db93c4e3e2dc3331528d2",
-        "fetchedAt": "2026-11-04T16:21:22.942769+00:00",
+        "contentSha256": "cef72aa6ceafb5b697d2585ccfef92dd3d14a15ce946601508b3f0903da88341",
+        "fetchedAt": "2026-11-05T16:30:15.862990+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ QBTS ETF (QBY)"
       }
@@ -2324,8 +2324,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily QCOM Bear 1X ETF"
       }
@@ -2341,8 +2341,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/qcml/",
-        "contentSha256": "3a00820d5c8eb6c65a8c1cfef8a430fd2b08df1618182cf643fd2d613d599982",
-        "fetchedAt": "2026-11-04T16:21:22.957733+00:00",
+        "contentSha256": "4445862280f7246b287e285e4a6d42f250c8e45963b6f1f0b10c05661c26869b",
+        "fetchedAt": "2026-11-05T16:30:16.279873+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long QCOM Daily ETF (QCML)"
       }
@@ -2358,8 +2358,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily QCOM Bull 2X ETF"
       }
@@ -2375,8 +2375,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/rbly/",
-        "contentSha256": "366479f30a8d7c855cefffc647909aec4da8e1c1418f7c1b237cff1ea1070396",
-        "fetchedAt": "2026-11-04T16:21:42.147465+00:00",
+        "contentSha256": "545711f3143e7eba8561d276d21c4f7186093035d7305eb0d5bdb207c7f359b7",
+        "fetchedAt": "2026-11-05T16:30:39.770534+00:00",
         "method": "official-product-title",
         "text": "YieldMax RBLX Option Income Strategy ETF"
       }
@@ -2392,8 +2392,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/rdtl/",
-        "contentSha256": "d03cb2d18e5fc01bcaa94161d4b597ca92d8f1b8e07f72cb7cdc5defab0e1f39",
-        "fetchedAt": "2026-11-04T16:21:23.392232+00:00",
+        "contentSha256": "5497872a7b1bffc0c0a0c9fbcf4cc8584da31a90ee8e03c1ed1692f77dcbba34",
+        "fetchedAt": "2026-11-05T16:30:16.307506+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long RDDT Daily ETF (RDTL)"
       }
@@ -2409,8 +2409,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/rdyy/",
-        "contentSha256": "fa95b0774c95671c3b73dee49508e3784e048216a8f32bdefd6a8b089cb7998e",
-        "fetchedAt": "2026-11-04T16:21:42.099671+00:00",
+        "contentSha256": "a085bf881517ea011633ab7b5212f76453b3c4c919bc9917b56c68e3824778b4",
+        "fetchedAt": "2026-11-05T16:30:39.976826+00:00",
         "method": "official-product-title",
         "text": "YieldMax RDDT Option Income Strategy ETF"
       }
@@ -2426,8 +2426,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/rgtx/",
-        "contentSha256": "347337a93c78482de8b07dead15d7f75f83ef9e431059a374b6f2aaa9834bf20",
-        "fetchedAt": "2026-11-04T16:22:01.733033+00:00",
+        "contentSha256": "d21bb466c61d35088f16ad213d78264ca06fd1dfd61358804793069e8c5ece1d",
+        "fetchedAt": "2026-11-05T16:31:05.833210+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long RGTI ETF"
       }
@@ -2443,8 +2443,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/rgtz/",
-        "contentSha256": "baffbad95a0f8144552daec9b468952ffc64747dc04a0a150ecbd4b78bf1929a",
-        "fetchedAt": "2026-11-04T16:22:01.987012+00:00",
+        "contentSha256": "4264e0f58338847267ac2e79fe53a5fc6d64b81c745bbc8f61fc23514173f1b4",
+        "fetchedAt": "2026-11-05T16:31:06.462551+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short RGTI ETF"
       }
@@ -2460,8 +2460,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/rgyy/",
-        "contentSha256": "5631cac0b4c5146af36c9ac3bd2359a33ae971b3914d159b0173885d97e93183",
-        "fetchedAt": "2026-11-04T16:21:22.960339+00:00",
+        "contentSha256": "765afd2edfaefa3832d4549673f61dcb354e19127fcc9b66d41d5ad8aa3a178b",
+        "fetchedAt": "2026-11-05T16:30:16.518178+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ RGTI ETF (RGYY)"
       }
@@ -2477,8 +2477,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/riox/",
-        "contentSha256": "ff95f0a957cc57c568843ea3f32c92c115859783b1daeb71190842e73c278a82",
-        "fetchedAt": "2026-11-04T16:22:02.287887+00:00",
+        "contentSha256": "cc985ccf6e25e06da33e96748121896420bd54ad9edff04f6e8cc987dd86884e",
+        "fetchedAt": "2026-11-05T16:31:06.502999+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long RIOT ETF"
       }
@@ -2494,8 +2494,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/rklx/",
-        "contentSha256": "ca81e2c22e641e34120780ad981bd4e2e99cbf8e8d4b0426cfba8382d4aa26ae",
-        "fetchedAt": "2026-11-04T16:22:02.313091+00:00",
+        "contentSha256": "759e54d7595d6ea62ab68d49c4c2c077718e50d901a83330dfb5d49b2683a850",
+        "fetchedAt": "2026-11-05T16:31:06.654955+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long RKLB ETF"
       }
@@ -2511,8 +2511,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/rtyy/",
-        "contentSha256": "515370ea9c39cf8f75cca59832a82a636534ec944c4fcc09d3ff578220bc2653",
-        "fetchedAt": "2026-11-04T16:21:23.382515+00:00",
+        "contentSha256": "350d978d4404b2f235777159a313135aa0126c16f796d1f7607041858a326320",
+        "fetchedAt": "2026-11-05T16:30:16.516894+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ RIOT ETF (RTYY)"
       }
@@ -2528,8 +2528,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily SHOP Bull 2X ETF"
       }
@@ -2545,8 +2545,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/smcl/",
-        "contentSha256": "9a819d42e970af691369e0b70573541bb766d0d2af477de873ad3b6be0db7474",
-        "fetchedAt": "2026-11-04T16:21:23.873835+00:00",
+        "contentSha256": "b7a9f54b48b56b16247b12248caec2e16b7ae1f4308a35b557ff561bcafb2d49",
+        "fetchedAt": "2026-11-05T16:30:17.685851+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long SMCI Daily ETF (SMCL)"
       }
@@ -2562,8 +2562,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/smcx/",
-        "contentSha256": "1d8f6bc199a7e7bf395d7ba859b95c8b5a480044b1ffece06b151db5cdf024fe",
-        "fetchedAt": "2026-11-04T16:22:02.957176+00:00",
+        "contentSha256": "2c322de9fc6e12f76e4e4b4d917aa3df1ec95ae56aed0e9a846a98546b94bd34",
+        "fetchedAt": "2026-11-05T16:31:07.699843+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long SMCI ETF"
       }
@@ -2579,8 +2579,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/smcy/",
-        "contentSha256": "52d039acf8d0f66cb00b60e989e97c19d97b1b5754f041da8b14ffc75d7e4232",
-        "fetchedAt": "2026-11-04T16:21:42.578005+00:00",
+        "contentSha256": "b487da527323874dcafee267915ebd264e672b27809ad76b6746e3705d9b8b9b",
+        "fetchedAt": "2026-11-05T16:30:40.631789+00:00",
         "method": "official-product-title",
         "text": "YieldMax SMCI Option Income Strategy ETF"
       }
@@ -2596,8 +2596,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/smcz/",
-        "contentSha256": "c77b773af751a5e591e90ebcff283242fb071ba57ec698746f6328ff6a63f646",
-        "fetchedAt": "2026-11-04T16:22:02.986252+00:00",
+        "contentSha256": "c9f3713f49fa9ae32664f22832f16935156a05ba73624c7c229944dad1dac800",
+        "fetchedAt": "2026-11-05T16:31:07.770981+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short SMCI ETF"
       }
@@ -2613,8 +2613,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/smst/",
-        "contentSha256": "77f439f3a3a683b8cc4cf2aa4be849f14d0ceaf899ca24f159534782609ff11b",
-        "fetchedAt": "2026-11-04T16:22:03.037873+00:00",
+        "contentSha256": "369713d3a732ce415c833eb51f01283052e183a24a711078a8c103dcec7ed59d",
+        "fetchedAt": "2026-11-05T16:31:08.094381+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Short MSTR ETF"
       }
@@ -2630,8 +2630,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/smyy/",
-        "contentSha256": "f70f29bb0eb47caf4909b13049596775a1eb7fbfcb043f4b4f0e2607e88c0e31",
-        "fetchedAt": "2026-11-04T16:21:24.098015+00:00",
+        "contentSha256": "44dc4c40271896c821a59aa1e951a4c7ed84fe1ca06c08e8dbc4490d792954ed",
+        "fetchedAt": "2026-11-05T16:30:17.819939+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ SMCI ETF (SMYY)"
       }
@@ -2647,8 +2647,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/snoy/",
-        "contentSha256": "f61b91403e2f4186ab65b292f9658a8cc1e1fc584b0a8fcb0003281f0205215f",
-        "fetchedAt": "2026-11-04T16:21:42.610328+00:00",
+        "contentSha256": "2a230f3966d946a2dc82e481e05624687ac61a60f76bf76fb65adc0f1d9b15d1",
+        "fetchedAt": "2026-11-05T16:30:40.585590+00:00",
         "method": "official-product-title",
         "text": "YieldMax SNOW Option Income Strategy ETF"
       }
@@ -2664,8 +2664,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/sofx/",
-        "contentSha256": "2fac4d545245c445add841470ea1f2cce642dca58f1d5fd7501a4389e844b103",
-        "fetchedAt": "2026-11-04T16:22:03.217364+00:00",
+        "contentSha256": "4122a0fdc03b6a6f8670e39dd7a50c64e838d04a13b13d255139ff7462d5b5ea",
+        "fetchedAt": "2026-11-05T16:31:08.361585+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long SOFI ETF"
       }
@@ -2681,8 +2681,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/test/",
-        "contentSha256": "f5ff0423c49d4dc331d25ab5ae291359b4fa48437de07500e9a8096c311d4411",
-        "fetchedAt": "2026-11-04T16:21:45.948934+00:00",
+        "contentSha256": "59da5fc2ae7f30258e7e518fb7a7cc845c9db6785c57eaa50a0bc9e14a862183",
+        "fetchedAt": "2026-11-05T16:30:44.987573+00:00",
         "method": "official-product-title",
         "text": "YieldMax TSLA Performance & Distribution Target 25™ ETF"
       }
@@ -2698,8 +2698,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/tmyy/",
-        "contentSha256": "80636ad8d16fb62e5f5ca50d6913322d7b8afcf72ca1a30f687e24cb5a54341e",
-        "fetchedAt": "2026-11-04T16:21:24.476789+00:00",
+        "contentSha256": "14087edf959c2733890087e8efb44315a31860e16939513e29077bc07cc50431",
+        "fetchedAt": "2026-11-05T16:30:19.351346+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ TSM ETF (TMYY)"
       }
@@ -2715,8 +2715,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/tqqy/",
-        "contentSha256": "49306a458de552dca771a4335f04a200e6ba3f1ac26931643df103f215c67860",
-        "fetchedAt": "2026-11-04T16:21:24.582331+00:00",
+        "contentSha256": "45c62cd974a19ddd7afe7ed8054cb7df5375d2e47d031338066f32b451fa76a8",
+        "fetchedAt": "2026-11-05T16:30:19.436983+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ QQQ ETF (TQQY)"
       }
@@ -2732,8 +2732,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/tsdd/",
-        "contentSha256": "66e49cee72f38053fec206690d43482d10f36d4588032b5ab1318abe3f35b6fc",
-        "fetchedAt": "2026-11-04T16:21:24.810477+00:00",
+        "contentSha256": "f097c0309f912c85ab793d5a5f5989d6d28a5621b7af346155376fe34758cf5a",
+        "fetchedAt": "2026-11-05T16:30:19.244836+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Short TSLA Daily ETF (TSDD)"
       }
@@ -2749,8 +2749,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/tsii/",
-        "contentSha256": "0fde4fc25cf37ff785d6a8117e72cf23bb0a3950393a2aef43293083d467aad7",
-        "fetchedAt": "2026-11-04T16:22:10.793054+00:00",
+        "contentSha256": "2230efec5967d576a22ca30a5d8fd57759d07d7b07c318e8fc4ea11bce331c2d",
+        "fetchedAt": "2026-11-05T16:31:17.202836+00:00",
         "method": "official-product-title",
         "text": "TSII - REX Tesla Growth & Income ETF"
       }
@@ -2766,8 +2766,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/tsl/",
-        "contentSha256": "0248ee2f03516dffd692206aa0273150b6f2f482694457afca1c0a2ca6cd4c5e",
-        "fetchedAt": "2026-11-04T16:21:24.812783+00:00",
+        "contentSha256": "eb90a25328e4f9bae7f200d5b8af5cd2f44be6868c96df2e2c380a0414c2abb7",
+        "fetchedAt": "2026-11-05T16:30:19.535206+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 1.25x Long TSLA Daily ETF (TSL)"
       }
@@ -2783,8 +2783,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily TSLA Bull 2X ETF"
       }
@@ -2800,8 +2800,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.kurvinvest.com/etf/tslp",
-        "contentSha256": "14fd0dd11805343747767ea1e417c59e5683e296645f226e537602c7888f8887",
-        "fetchedAt": "2026-11-04T16:21:15.733956+00:00",
+        "contentSha256": "9a5e2abbb709f49acbc6465062d87161be79f55130bb4e8a7e93b98c6f5f79b2",
+        "fetchedAt": "2026-11-05T16:30:03.558681+00:00",
         "method": "official-product-title",
         "text": "Potential Benefits of the Kurv Yield Premium Strategy Tesla ETF"
       }
@@ -2817,8 +2817,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/tslr/",
-        "contentSha256": "cc01be603c3a28e69816c58203bf8bd6d1c4e89627204e315d1d4d7b742027ef",
-        "fetchedAt": "2026-11-04T16:21:24.831429+00:00",
+        "contentSha256": "e2ece612fd9ec5fe3491121807785aac2f6f55728d794b9bf729b6f44603bd90",
+        "fetchedAt": "2026-11-05T16:30:19.914448+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long TSLA Daily ETF (TSLR)"
       }
@@ -2834,8 +2834,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily TSLA Bear 1X ETF"
       }
@@ -2851,8 +2851,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/tslw/",
-        "contentSha256": "bac066824b017adacc2e71fab8dd27300893cacb6cefaabc3fed9e39e58c57f8",
-        "fetchedAt": "2026-11-04T16:21:32.189965+00:00",
+        "contentSha256": "527ad5c214f62dc9b1b53cb67c7cb2f81e86162a0435f02491574a276b9a87cf",
+        "fetchedAt": "2026-11-05T16:30:28.550478+00:00",
         "method": "official-product-title",
         "text": "TSLA WeeklyPay™ ETF"
       }
@@ -2868,8 +2868,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/tsly/",
-        "contentSha256": "9f2f2817624ea3d38969b89eef7d7596fb647a1abf986ece1594b9e147a80f9b",
-        "fetchedAt": "2026-11-04T16:21:42.743340+00:00",
+        "contentSha256": "1992b5753f2011fcd155c0c27140d4746ec1383862f83f61869e6c57d2f4307f",
+        "fetchedAt": "2026-11-05T16:30:40.615704+00:00",
         "method": "official-product-title",
         "text": "YieldMax TSLA Option Income Strategy ETF"
       }
@@ -2885,8 +2885,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/tsmu/",
-        "contentSha256": "40c9a769c1f7c210957b99a74d03c820d20322714159416fd76f491d699bb060",
-        "fetchedAt": "2026-11-04T16:21:24.996543+00:00",
+        "contentSha256": "f99bd0542e9349112a098c4371d81cb706e18822140a68af2f08a3bde20ff1d1",
+        "fetchedAt": "2026-11-05T16:30:19.988749+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long TSM Daily ETF (TSMU)"
       }
@@ -2902,8 +2902,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily TSM Bull 2X ETF"
       }
@@ -2919,8 +2919,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/tsmy/",
-        "contentSha256": "0b9413b35789c609019e04f83cdf36b79dcfd67d676ba4557e5abaafded47a6f",
-        "fetchedAt": "2026-11-04T16:21:42.788874+00:00",
+        "contentSha256": "c1a3eb41e0f4f2290f51aa865b449c5445c87ee03a03a036bb4d8f9b9d122276",
+        "fetchedAt": "2026-11-05T16:30:40.795142+00:00",
         "method": "official-product-title",
         "text": "YieldMax TSM Option Income Strategy ETF"
       }
@@ -2936,8 +2936,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily TSM Bear 1X ETF"
       }
@@ -2953,8 +2953,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/tsyy/",
-        "contentSha256": "65e1f8c9608d9931346a88d337e2e954ba31e0b362e2c05f77b38fc10cc29159",
-        "fetchedAt": "2026-11-04T16:21:25.175003+00:00",
+        "contentSha256": "dd79a34914d3ea73044bdb701fdf603799a496b03f565f860e3bd694e07c36e7",
+        "fetchedAt": "2026-11-05T16:30:20.096840+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ TSLA ETF (TSYY)"
       }
@@ -2970,8 +2970,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/ubew/",
-        "contentSha256": "dba148ccef7472e27603844a940e9dce5190afe002055c3ef58cc02f672e2664",
-        "fetchedAt": "2026-11-04T16:21:32.681660+00:00",
+        "contentSha256": "342eccabe8b82c9c4d8a44f9b9a1d765037b76f74e71396e53b5d4a6828ca1df",
+        "fetchedAt": "2026-11-05T16:30:28.690541+00:00",
         "method": "official-product-title",
         "text": "UBER WeeklyPay™ ETF"
       }
@@ -2987,8 +2987,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/ubrl/",
-        "contentSha256": "5919f26d23586eb7d7154107d82c163e608da6480bbb3e14e9f1d09bab9f4c12",
-        "fetchedAt": "2026-11-04T16:21:25.179318+00:00",
+        "contentSha256": "20085d057aa8dba394767028998ec8b4bf7fbfc395adff2b059ceb3315aa3539",
+        "fetchedAt": "2026-11-05T16:30:20.213347+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long Uber Daily ETF (UBRL)"
       }
@@ -3004,8 +3004,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.roundhillinvestments.com/etf/unhw/",
-        "contentSha256": "b648e7c6d848b573b5838645d67489955fb06d7c1e455cd273ad5e555fcfc851",
-        "fetchedAt": "2026-11-04T16:21:32.682600+00:00",
+        "contentSha256": "0150eb26fee4db6b305f06f899b644ef886839e27090834155fc04a208f7c084",
+        "fetchedAt": "2026-11-05T16:30:28.753514+00:00",
         "method": "official-product-title",
         "text": "UNH WeeklyPay™ ETF"
       }
@@ -3021,8 +3021,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/vrtl/",
-        "contentSha256": "9d25b0bb3eba4d7c52b7388a6b6892bb21fa964079bc554f85076b7ffebcf86c",
-        "fetchedAt": "2026-11-04T16:21:25.188008+00:00",
+        "contentSha256": "32cd00568e70bb748659e323041f29a59aaf29bc61872389295421535efb02a0",
+        "fetchedAt": "2026-11-05T16:30:20.571512+00:00",
         "method": "official-product-title",
         "text": "GraniteShares 2x Long VRT Daily ETF (VRTL)"
       }
@@ -3038,8 +3038,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.defianceetfs.com/vstl/",
-        "contentSha256": "311983567cd8f75f90f00c519a15106b7ef14506e395d75dbaa6e98ab293e251",
-        "fetchedAt": "2026-11-04T16:22:05.223032+00:00",
+        "contentSha256": "27ad23ade7d075a4a49a0af1985396065da15445bd2830710cc5e9e9d7d6cf0d",
+        "fetchedAt": "2026-11-05T16:31:10.657022+00:00",
         "method": "official-product-title",
         "text": "Defiance Daily Target 2X Long VST ETF (VSTL)"
       }
@@ -3055,8 +3055,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.rexshares.com/wmti/",
-        "contentSha256": "b1b10ada6a83cd621591ff8cc9db7f2fb319308546348e3ec691a3f565735edd",
-        "fetchedAt": "2026-11-04T16:22:10.848693+00:00",
+        "contentSha256": "2513fabe27ca13f6045f8d580f568c4efd37afe804a042ce1ad41b3a99bf8371",
+        "fetchedAt": "2026-11-05T16:31:17.235173+00:00",
         "method": "official-product-title",
         "text": "WMTI - REX Walmart Growth & Income ETF"
       }
@@ -3072,8 +3072,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/wntr/",
-        "contentSha256": "2b09460cde09a1f4ac86b61534a186dab22141e992b06a77eb2099052c2c9db1",
-        "fetchedAt": "2026-11-04T16:21:43.194592+00:00",
+        "contentSha256": "336eea71fee06a43406876d257b8cbe3ad96d30c881d3b016600b7a537554fe1",
+        "fetchedAt": "2026-11-05T16:30:41.385674+00:00",
         "method": "official-product-title",
         "text": "YieldMax MSTR Short Option Income Strategy ETF"
       }
@@ -3089,8 +3089,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/xomo/",
-        "contentSha256": "127897c7da7dff3f4dd8057ad8f0bb6ce1369ef3353454c2ff97c474661e2570",
-        "fetchedAt": "2026-11-04T16:21:43.338340+00:00",
+        "contentSha256": "1528f86d8a26bd41181b375f89c4fb876f6e2c96e56bcca5b0537684764bf7bd",
+        "fetchedAt": "2026-11-05T16:30:41.564136+00:00",
         "method": "official-product-title",
         "text": "YieldMax XOM Option Income Strategy ETF"
       }
@@ -3106,8 +3106,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://www.direxion.com/single-stock-etfs",
-        "contentSha256": "53466999a6cffd764eefc93f561620cda99cbf371b0c1a649120becaf4379eef",
-        "fetchedAt": "2026-11-04T16:21:13.359084+00:00",
+        "contentSha256": "f54ddda8e596b66488fbd5d67c3f2effbc4edd50e4b00789bb0aa6ee4f8f9b31",
+        "fetchedAt": "2026-11-05T16:30:01.092659+00:00",
         "method": "official-catalog-row",
         "text": "Direxion Daily XOM Bull 2X ETF"
       }
@@ -3123,8 +3123,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/xyzy/",
-        "contentSha256": "33659e0e13eb1982f668e6926554f178cb11ad43892de3eb8c0a1fbcc4a26cc2",
-        "fetchedAt": "2026-11-04T16:21:43.374016+00:00",
+        "contentSha256": "cbe07e8c8b025dd79b0bcdde37936c0f18696b0b00ab5fc5b36a193aaabb61f4",
+        "fetchedAt": "2026-11-05T16:30:41.457175+00:00",
         "method": "official-product-title",
         "text": "YieldMax XYZ Option Income Strategy ETF"
       }
@@ -3140,8 +3140,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://yieldmaxetfs.com/our-etfs/yskh/",
-        "contentSha256": "7260fee30ede640cbf88ca7850693954539726be06e7b69df4bcbd28718063e3",
-        "fetchedAt": "2026-11-04T16:21:43.826707+00:00",
+        "contentSha256": "83185fd96cdefa1b8a7f7305c0ad4266db7a6ebcd9dc7af605991e7e7e934bf6",
+        "fetchedAt": "2026-11-05T16:30:42.268599+00:00",
         "method": "official-product-title",
         "text": "YieldMax SKHY Option Income Strategy ETF"
       }
@@ -3157,8 +3157,8 @@
       "verificationStatus": "official",
       "evidence": {
         "url": "https://graniteshares.com/etfs/yspy/",
-        "contentSha256": "fef8e3e360ae08918a3e0bb1d19655a0343fb3186070fd9b0e5020d68d5152b1",
-        "fetchedAt": "2026-11-04T16:21:25.755242+00:00",
+        "contentSha256": "e1ee51151031d3c94644c1e7215403bd929fab1adf132c014cd4ac996e8971f9",
+        "fetchedAt": "2026-11-05T16:30:21.284179+00:00",
         "method": "official-product-title",
         "text": "GraniteShares YieldBOOST™ SPY ETF (YSPY)"
       }

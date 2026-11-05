@@ -64,7 +64,8 @@ try {
         );
         let fail = 0,
             hold = false,
-            release;
+            release,
+            pendingNoteRefresh;
         page.on('pageerror', (e) => errors.push(e.message));
         await page.route('**/api/portfolio-capital*', async (route) => {
             const r = route.request(),
@@ -86,6 +87,16 @@ try {
                     status,
                     json: { error: '합성 연결 저장 실패' },
                 });
+            }
+            if (
+                r.method() === 'GET' &&
+                query.accountId === 'AC' &&
+                pendingNoteRefresh
+            ) {
+                const pending = pendingNoteRefresh;
+                pendingNoteRefresh = null;
+                pending.started();
+                await pending.gate;
             }
             const result = await f.call(body, r.method(), query);
             return route.fulfill({ status: result.status, json: result.data });
@@ -203,9 +214,42 @@ try {
         await row('K')
             .getByLabel('확인 근거·메모 (선택)')
             .fill('합성 연결 메모');
-        await row('K')
-            .getByRole('button', { name: '메모 저장', exact: true })
-            .click();
+        // aria-busy may still be false before the POST completes and emits refresh.
+        // Hold that refresh to deterministically verify the pending/complete sequence.
+        let refreshStarted, releaseRefresh;
+        const started = new Promise((resolve) => {
+            refreshStarted = resolve;
+        });
+        const gate = new Promise((resolve) => {
+            releaseRefresh = resolve;
+        });
+        pendingNoteRefresh = { started: refreshStarted, gate };
+        const noteSaved = page.waitForResponse((response) => {
+            const request = response.request();
+            return (
+                request.method() === 'POST' &&
+                response.url().includes('/api/portfolio-capital') &&
+                request.postDataJSON()?.action === 'classifyCash' &&
+                request.postDataJSON()?.noteOnly
+            );
+        });
+        const refreshed = page.waitForResponse(
+            (response) =>
+                response.request().method() === 'GET' &&
+                response.url().includes('/api/portfolio-capital') &&
+                new URL(response.url()).searchParams.get('accountId') === 'AC'
+        );
+        try {
+            await row('K')
+                .getByRole('button', { name: '메모 저장', exact: true })
+                .click();
+            assert.equal((await noteSaved).status(), 200);
+            await started;
+            await page.locator('main[aria-busy="true"]').waitFor();
+        } finally {
+            releaseRefresh();
+        }
+        assert.equal((await refreshed).status(), 200);
         await page.locator('main[aria-busy="false"]').waitFor();
         state = await f.read();
         assert.equal(

@@ -57,6 +57,18 @@ class StockCollectionTests(unittest.TestCase):
         self.assertIsNone(value['history'][0]['payable_date'])
         self.assertEqual(value['history'][0]['verification_status'], 'needs_review')
 
+    def dividend_access(self, root):
+        path = root / 'dividend-access.json'
+        path.write_text(json.dumps({'schemaVersion': 1, 'providers': {
+            'yahoo': {'enabled': True, 'automatedCollection': True, 'storage': True,
+                      'publicRedistribution': True, 'feeRequired': False,
+                      'evidenceUrl': 'https://license.example/fixture-only',
+                      'reviewedAt': '2020-01-01', 'validUntil': '2099-01-01',
+                      'tickers': ['BAC'], 'datasets': ['dividends'],
+                      'allowedHosts': ['query1.finance.yahoo.com']}
+        }}))
+        return path
+
     def fixture_fetch(self, url):
         if url == ISSUER['indexUrl']:
             return f'<a href="{URL}">Stock dividends</a>'.encode()
@@ -68,7 +80,7 @@ class StockCollectionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             db = ContentDatabase(root/'state.sqlite'); db.initialize()
-            kwargs = dict(fetcher=self.fixture_fetch, today=date(2026, 10, 26), registry={'BAC': ISSUER})
+            kwargs = dict(fetcher=self.fixture_fetch, today=date(2026, 10, 26), registry={'BAC': ISSUER}, dividend_access_path=self.dividend_access(root))
             first = collect_stock('BAC', db, root/'raw', root/'public', 'request-1', **kwargs)
             self.assertEqual(first['status'], 'partial')
             self.assertEqual(first['officialAnnouncements'], 1)
@@ -80,7 +92,7 @@ class StockCollectionTests(unittest.TestCase):
             self.assertEqual(saved['requestId'], 'request-2')
             def broken(url): raise StockCollectionError('rate_limited', True)
             failed = collect_stock('BAC', db, root/'raw', root/'public', 'request-3',
-                                   fetcher=broken, today=date(2026, 10, 26), registry={'BAC': ISSUER})
+                                   fetcher=broken, today=date(2026, 10, 26), registry={'BAC': ISSUER}, dividend_access_path=self.dividend_access(root))
             self.assertEqual(failed['status'], 'failed')
             current = json.loads(path.read_text())
             for key in ('announcements', 'candles', 'history', 'marketObservedAt'):
@@ -93,13 +105,39 @@ class StockCollectionTests(unittest.TestCase):
             self.assertTrue(retry['marketUpdated'])
             self.assertEqual(retry['status'], 'partial')
 
+    def test_unlicensed_yahoo_dividend_events_are_not_requested_or_stored_and_prior_history_survives(self):
+        from urllib.parse import parse_qs, urlparse
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); db = ContentDatabase(root/'state.sqlite'); db.initialize()
+            output = root/'public'; output.mkdir()
+            prior = {'ticker': 'BAC', 'ex_date': '2026-06-01', 'distribution_per_share': '0.27',
+                     'currency': 'USD', 'verification_status': 'needs_review',
+                     'source_class': 'public_aggregator', 'source_provider': 'yahoo'}
+            (output/'stock-evidence-bac.json').write_text(json.dumps({
+                'schemaVersion': 1, 'symbol': 'BAC', 'currency': 'USD', 'announcements': [],
+                'candles': [], 'history': [prior], 'splits': [], 'result': {'status': 'partial'}
+            }))
+            requested = []
+            def fetch(url):
+                requested.append(url)
+                return market()  # Fixture deliberately returns dividends even for an events=splits request.
+            collect_stock('BAC', db, root/'raw', output, fetcher=fetch, today=date(2026,10,26), registry={})
+            market_request = next(url for url in requested if 'finance.yahoo.com' in url)
+            self.assertEqual(parse_qs(urlparse(market_request).query)['events'], ['splits'])
+            saved = json.loads((output/'stock-evidence-bac.json').read_text())
+            self.assertEqual(saved['history'], [prior])
+            self.assertEqual(saved['sourceUrl'], market_request)
+            with db.connect() as connection:
+                self.assertEqual(connection.execute('SELECT COUNT(*) FROM stock_source_documents').fetchone()[0], 0)
+                self.assertEqual(connection.execute('SELECT COUNT(*) FROM stock_market_snapshots').fetchone()[0], 0)
+
     def test_revision_keeps_prior_amount_and_other_symbols_are_untouched(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);db=ContentDatabase(root/'state.sqlite');db.initialize()
             sentinel = root/'public/stock-evidence-aapl.json';sentinel.parent.mkdir();sentinel.write_text('sentinel')
-            collect_stock('BAC', db, root/'raw', root/'public', fetcher=self.fixture_fetch, today=date(2026,10,26), registry={'BAC': ISSUER})
+            collect_stock('BAC', db, root/'raw', root/'public', fetcher=self.fixture_fetch, today=date(2026,10,26), registry={'BAC': ISSUER}, dividend_access_path=self.dividend_access(root))
             def changed(url): return market(amount='0.60') if 'finance.yahoo' in url else self.fixture_fetch(url)
-            result=collect_stock('BAC', db, root/'raw', root/'public', fetcher=changed, today=date(2026,10,26), registry={'BAC': ISSUER})
+            result=collect_stock('BAC', db, root/'raw', root/'public', fetcher=changed, today=date(2026,10,26), registry={'BAC': ISSUER}, dividend_access_path=self.dividend_access(root))
             self.assertIn('dividend_revision_needs_review', [item['code'] for item in result['errors']])
             saved=json.loads((root/'public/stock-evidence-bac.json').read_text())
             self.assertEqual(saved['history'][0]['distribution_per_share'], '0.30')
@@ -121,7 +159,7 @@ class StockCollectionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);db=ContentDatabase(root/'state.sqlite');db.initialize()
             def run(fetcher):
-                return collect_stock('BAC',db,root/'raw',root/'public',fetcher=fetcher,today=date(2026,10,26),registry={'BAC':ISSUER})
+                return collect_stock('BAC',db,root/'raw',root/'public',fetcher=fetcher,today=date(2026,10,26),registry={'BAC':ISSUER}, dividend_access_path=self.dividend_access(root))
             run(self.fixture_fetch)
             def cosmetic(url): return self.fixture_fetch(url)+b'<!-- layout changed -->' if url==URL else self.fixture_fetch(url)
             run(cosmetic)
@@ -141,7 +179,7 @@ class StockCollectionTests(unittest.TestCase):
         from scripts.content_pipeline.stock_collection import validate_stock_export
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);db=ContentDatabase(root/'state.sqlite');db.initialize()
-            collect_stock('BAC',db,root/'raw',root/'public',fetcher=self.fixture_fetch,today=date(2026,10,26),registry={'BAC':ISSUER})
+            collect_stock('BAC',db,root/'raw',root/'public',fetcher=self.fixture_fetch,today=date(2026,10,26),registry={'BAC':ISSUER}, dividend_access_path=self.dividend_access(root))
             self.assertEqual(validate_stock_export(root/'public'),1)
             path=root/'public/stock-evidence-bac.json'
             payload=json.loads(path.read_text());payload['history'][0]['verification_status']='official';path.write_text(json.dumps(payload))
@@ -155,7 +193,7 @@ class StockCollectionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             def collect(symbol, database, raw_dir, output, request_id):
-                return collect_stock(symbol,database,raw_dir,output,request_id,fetcher=self.fixture_fetch,today=date(2026,10,26),registry={'BAC':ISSUER})
+                return collect_stock(symbol,database,raw_dir,output,request_id,fetcher=self.fixture_fetch,today=date(2026,10,26),registry={'BAC':ISSUER}, dividend_access_path=self.dividend_access(root))
             args=['refresh.py','--scope','ticker','--ticker','BAC','--db',str(root/'ledger.sqlite'),'--raw-dir',str(root/'raw'),'--public-dir',str(root/'public'),'--request-id','BAC-test']
             with patch('sys.argv',args),patch('scripts.content_pipeline.stock_collection.collect_stock',collect),patch.object(refresh,'run_collect') as etf,redirect_stdout(io.StringIO()) as result:
                 status=refresh.main()

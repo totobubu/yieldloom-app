@@ -148,3 +148,38 @@ test('general-stock failures keep curated actionable reasons without returning l
     assert.match(result.reason, /종목 또는 통화/);
     assert(!JSON.stringify(result).includes('SECRET_TEST_VALUE'));
 });
+
+test('official outage keeps collected reference rows and exposes the outage separately', async () => {
+    let officialRequests = 0;
+    const value = await loadTicker('AMDY', 'https://app.example', {
+        fetcher: async (url) => {
+            if (String(url).includes('distribution-ticker-'))
+                officialRequests++;
+            return new Response('{}', { status: 503 });
+        },
+        stockEvidenceLoader: async () => ({
+            ...evidence(),
+            symbol: 'AMDY',
+            history: evidence().history.map((row) => ({
+                ...row,
+                ticker: 'AMDY',
+            })),
+        }),
+        priceDataBaseUrl: '',
+        projectionBaseUrl: '',
+        asOfDate: '2026-10-26',
+    });
+    assert.equal(officialRequests, 2); // existing origin fallback only
+    assert.equal(value.sourceStatus.dividends, 'unavailable');
+    assert.equal(value.sourceStatus.officialDividends, 'unavailable');
+    assert.equal(value.sourceStatus.freshness, 'partial');
+    const reference = value.backtestData.find(
+        (row) => row.date === '2026-09-04'
+    );
+    assert(reference);
+    assert.equal(reference.verificationStatus, 'needs_review');
+    assert.equal(
+        value.stockReferenceHistory[0].source_class,
+        'public_aggregator'
+    );
+});

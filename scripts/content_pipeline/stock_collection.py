@@ -15,6 +15,7 @@ from zoneinfo import ZoneInfo
 
 from .database import ContentDatabase
 from .models import utc_now_iso
+from .reference_access import DEFAULT_ACCESS_PATH, load_access, permits
 
 ROOT = Path(__file__).resolve().parents[2]
 REGISTRY = ROOT / 'data-v2/issuer-sources.json'
@@ -125,7 +126,7 @@ def _decimal(value, positive=False):
     return format(number, 'f')
 
 
-def parse_market(content, symbol, expected_currency, today):
+def parse_market(content, symbol, expected_currency, today, *, include_dividends=True):
     payload = json.loads(content, parse_float=Decimal)
     result = (payload.get('chart', {}).get('result') or [None])[0]
     if not result:
@@ -158,7 +159,7 @@ def parse_market(content, symbol, expected_currency, today):
             raise StockCollectionError('invalid_ohlc')
         candles.append(row)
     history = []
-    for event in result.get('events', {}).get('dividends', {}).values():
+    for event in (result.get('events', {}).get('dividends', {}) if include_dividends else {}).values():
         ex = datetime.fromtimestamp(event['date'], timezone.utc).astimezone(zone).date().isoformat()
         if ex > today.isoformat():
             continue
@@ -201,7 +202,7 @@ def _write(path, payload):
     temp.replace(path)
 
 
-def collect_stock(symbol, database, raw_dir, output, request_id=None, *, fetcher=fetch_source, today=None, registry=None):
+def collect_stock(symbol, database, raw_dir, output, request_id=None, *, fetcher=fetch_source, today=None, registry=None, dividend_access_path=DEFAULT_ACCESS_PATH):
     today = today or date.today()
     catalog = json.loads((ROOT / 'data-v2/catalog-seed.json').read_text())['instruments']
     instrument = next((row for row in catalog if row['symbol'] == symbol), None)
@@ -270,17 +271,26 @@ def collect_stock(symbol, database, raw_dir, output, request_id=None, *, fetcher
         start = date.fromisoformat(previous['candles'][-1]['date']) - timedelta(days=120)
     stamp = lambda day: int(datetime(day.year, day.month, day.day, tzinfo=timezone.utc).timestamp())
     yahoo_symbol = re.sub(r'\.([AB])$', r'-\1', symbol)
-    query = urlencode({'period1': stamp(start), 'period2': stamp(today + timedelta(days=1)), 'interval': '1d', 'events': 'div,splits'})
-    market_url = f'https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_symbol}?{query}'
+    query_values = {'period1': stamp(start), 'period2': stamp(today + timedelta(days=1)), 'interval': '1d', 'events': 'div,splits'}
+    candidate_url = f'https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_symbol}?{urlencode(query_values)}'
+    try:
+        collect_dividend_events = permits(load_access(dividend_access_path), 'yahoo', symbol, candidate_url)
+    except Exception:
+        # Invalid or unavailable grants fail closed; price collection can continue.
+        collect_dividend_events = False
+    if not collect_dividend_events:
+        query_values['events'] = 'splits'
+    market_url = f'https://query1.finance.yahoo.com/v8/finance/chart/{yahoo_symbol}?{urlencode(query_values)}'
     try:
         document = fetcher(market_url)
-        current = parse_market(document, symbol, instrument['currency'], today)
+        current = parse_market(document, symbol, instrument['currency'], today, include_dividends=collect_dividend_events)
         for row in current['history']:
             row['source_url'] = market_url
-        source_id = _archive(database, raw_dir, symbol, market_url, document, 'public_aggregator')
-        with database.connect() as connection:
-            connection.execute('INSERT OR IGNORE INTO stock_market_snapshots (ticker,source_document_id,payload_json) VALUES (?,?,?)',
-                               (symbol, source_id, json.dumps(current)))
+        if collect_dividend_events:
+            source_id = _archive(database, raw_dir, symbol, market_url, document, 'public_aggregator')
+            with database.connect() as connection:
+                connection.execute('INSERT OR IGNORE INTO stock_market_snapshots (ticker,source_document_id,payload_json) VALUES (?,?,?)',
+                                   (symbol, source_id, json.dumps(current)))
         market = current
         for field, key in [('candles', 'date'), ('history', 'ex_date'), ('splits', 'date')]:
             merged = {row[key]: row for row in previous.get(field, [])}

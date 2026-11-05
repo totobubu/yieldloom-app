@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+for (const [name,base] of [['pages','https://totobubu.github.io/yieldloom-app/'],['vercel','https://yieldloom-app.vercel.app/']]) {
+ for (const view of ['similar','theme']) {
+  for(const marker of ['', '&marker=a%2Bb%26c']) {
+   const target=new URL('compare?view='+view+marker,base);
+   for(const attempt of ['direct','reload']) {
+    const res=await fetch(target,{cache:'no-store',headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(25000)});
+    assert.equal(res.status,200);assert.equal(res.url,target.href);
+    assert.match(await res.text(),/<script[^>]*type="module"/);
+    console.log(JSON.stringify({name,view,attempt,status:res.status,pathname:new URL(res.url).pathname,marker:new URL(res.url).searchParams.get('marker'),redirected:res.redirected}));
+   }
+  }
+ }
+}
+const unknown=await fetch('https://totobubu.github.io/yieldloom-app/unknown-route-phase64',{signal:AbortSignal.timeout(25000)});assert.equal(unknown.status,404);console.log('PASS unknown Pages path retains HTTP404 fallback.');

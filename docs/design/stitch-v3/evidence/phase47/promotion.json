@@ -7,5 +7,9 @@
   "workCi": 42015382239,
   "promotionCi": 42015516737,
   "checks": "all four jobs passed for each",
-  "production": "awaiting actual verification"
+  "production": "verified on both public domains",
+  "vercelDeploymentId": "dpl_6TFZLHgFwsSPJbqeC5isucVGBSjS",
+  "pagesRun": 42017853716,
+  "postMainCi": 42017853765,
+  "postMainCiStatus": "all four jobs passed"
 }

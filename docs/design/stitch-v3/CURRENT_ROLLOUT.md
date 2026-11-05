@@ -16,6 +16,6 @@
 
 7개 운영 연결, 8개 초안(검토2·장부2·비교4), 5개 병렬 결과 미확인이다. 새 시안13개가 운영 미반영이며 완료율/ETA로 환산하지 않는다. 기존 기능의 운영 여부와 새 선택 시안 적용 상태는 구분한다.
 
-[운영 근거](PHASE47_UPLOAD_PRODUCTION.md): main8a95a0219665dd81851d6790620f41b8b31fb0e4, Pages42017853716 성공, Vercel dpl_6TFZLHgFwsSPJbqeC5isucVGBSjS READY. 두 도메인의 실제 SHA·공개 메타데이터 해시와 공개 번들·PC/Mobile 검색 화면 확인을 마쳤다. 원격 기능/work/승격 CI와 병합 후 main CI는 각각 구분한다. 실제 인증 계좌/PDF와 전체 화면 일치는 미완료다.
+[운영 근거](PHASE47_UPLOAD_PRODUCTION.md): main8a95a0219665dd81851d6790620f41b8b31fb0e4, Pages42017853716 성공, Vercel dpl_6TFZLHgFwsSPJbqeC5isucVGBSjS READY. 두 도메인의 실제 SHA·공개 메타데이터 해시와 공개 번들·PC/Mobile 검색 화면 확인을 마쳤다. 원격 기능/work/승격 및 병합 후 main CI42017853765까지 각각4개 작업 모두 통과했다. 실제 인증 계좌/PDF와 전체 화면 일치는 미완료다.
 
 검토 근거는 PR#256의 PHASE45_REVIEW_CONSENT.md, 장부는 PR#260의 PHASE46_LEDGER_ANALYSIS.md, 비교는 PR#258의 PHASE44_COMPARISON_INTEGRATION.md에 있다. 각 초안의 자체 브랜치에 보존되어 있으며 현재 main에 포함되지 않는다. UnderlyingExplorerView/DividendSimulatorView는 병렬 원본 소유자의 파일을 임의로 수정하지 않았다. 없는 프레임·기능·금융 수치를 만들어 완료 처리하지 않는다.

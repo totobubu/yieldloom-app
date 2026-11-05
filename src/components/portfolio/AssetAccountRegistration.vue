@@ -116,18 +116,28 @@
             aria-label="계좌 등록 방법" />
         <div v-if="method === 'document'" class="document">
             <div class="document-upload">
-                <p>토스 거래내역 PDF에서 계좌 정보를 확인합니다.</p>
-                <label for="registration-pdf">토스 거래내역 PDF</label>
+                <span class="document-upload-icon" aria-hidden="true">📄</span>
+                <label for="registration-pdf" class="document-file-info">{{
+                    file
+                        ? `${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB 선택됨)`
+                        : '토스 거래내역 PDF 선택'
+                }}</label>
+                <p>최대 2MB 이하 토스증권 거래내역 PDF 원본만 지원합니다.</p>
                 <input
                     id="registration-pdf"
                     type="file"
                     accept=".pdf,application/pdf"
+                    aria-label="토스 거래내역 PDF"
                     :disabled="busy || inspecting"
                     @change="file = $event.target.files?.[0] || null" />
             </div>
             <div class="document-extract">
                 <div class="registration-field">
-                    <label for="registration-password">PDF 비밀번호</label>
+                    <label for="registration-password"
+                        >PDF 비밀번호<span
+                            class="required-mark"
+                            aria-hidden="true" /></label
+                    >
                     <InputText
                         id="registration-password"
                         v-model="password"
@@ -154,7 +164,11 @@
         </div>
         <form class="account-form" @submit.prevent="submit">
             <div class="registration-field">
-                <label for="registration-institution">금융기관</label>
+                <label for="registration-institution"
+                    >금융기관<span
+                        class="required-mark"
+                        aria-hidden="true" /></label
+                >
                 <InputText
                     id="registration-institution"
                     v-model="form.institution"
@@ -173,7 +187,11 @@
                     :disabled="busy || inspecting" />
             </div>
             <div class="registration-field">
-                <label for="registration-alias">별칭</label>
+                <label for="registration-alias"
+                    >별칭<span
+                        class="required-mark"
+                        aria-hidden="true" /></label
+                >
                 <InputText
                     id="registration-alias"
                     v-model="form.alias"
@@ -280,6 +298,7 @@
         margin: 0;
     }
     .document-upload {
+        position: relative;
         display: grid;
         gap: 8px;
         padding: 24px;
@@ -288,10 +307,33 @@
         background: var(--app-bg);
         text-align: center;
     }
+    .document-upload:focus-within {
+        outline: 2px solid var(--app-accent);
+        outline-offset: 2px;
+    }
+    .document-file-info {
+        font-size: 15px;
+        line-height: 22.5px;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
     .document-upload p {
         margin: 0;
         color: var(--app-muted);
         font-size: 13px;
+        line-height: 19.5px;
+    }
+    .document-upload-icon {
+        justify-self: center;
+        font-size: 28px;
+        line-height: 42px;
+    }
+    .required-mark {
+        margin-left: 2px;
+        color: var(--p-red-500);
+    }
+    .required-mark::before {
+        content: '*';
     }
     .document-extract {
         display: grid;
@@ -299,8 +341,14 @@
         align-items: end;
         gap: 16px;
     }
-    .document-extract :deep(.p-button) {
+    .document-extract :deep(.p-button),
+    .account-form > .p-button {
+        height: 44px;
         min-height: 44px;
+        padding: 0 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
     }
     .identified-summary {
         padding: 14px 18px;
@@ -327,12 +375,15 @@
         font-size: 13px;
     }
     .document input[type='file'] {
+        position: absolute;
+        inset: 0;
         width: 100%;
-        min-height: 44px;
-        padding: 12px;
-        border: 1px solid var(--app-border);
-        border-radius: 8px;
-        background: var(--app-surface);
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .document input[type='file']:disabled {
+        cursor: not-allowed;
     }
     .account-form {
         display: grid;
@@ -350,20 +401,33 @@
     }
     .registration-field label {
         font-size: 13px;
+        line-height: 19.5px;
         font-weight: 600;
     }
     .registration-field :deep(.p-inputtext),
     .registration-field :deep(.p-select) {
         width: 100%;
+        height: 44px;
         min-height: 44px;
         border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    .registration-field :deep(.p-inputtext) {
+        padding: 0 14px;
+    }
+    .registration-field :deep(.p-select-label) {
+        padding: 0 14px;
+        line-height: 42px;
+        font-size: 14px;
+        font-weight: 500;
     }
     .account-form > :not(.registration-field) {
         grid-column: 1 / -1;
     }
     .account-form > .p-button {
         justify-self: end;
-        min-height: 44px;
+        min-width: 180px;
     }
     @media (max-width: 768px) {
         .account-form,
@@ -372,9 +436,6 @@
         }
     }
     @media (max-width: 640px) {
-        .account-registration {
-            padding: 16px;
-        }
         .account-form {
             padding: 0;
         }
@@ -383,12 +444,6 @@
         }
         .account-registration :deep(.p-togglebutton) {
             width: 100%;
-        }
-        .document {
-            padding: 16px;
-        }
-        .account-form > .p-button {
-            justify-self: stretch;
         }
     }
 </style>

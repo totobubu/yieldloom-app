@@ -18,8 +18,8 @@ try {
             viewport: { width, height: 1024 },
             deviceScaleFactor: 2,
         });
-        const failures = await installStaticAssets(page);
         await installStitchFixtures(page, { admin: true });
+        const failures = await installStaticAssets(page);
         const mutations = [],
             errors = [];
         let mode = 'success',
@@ -104,7 +104,14 @@ try {
         await form
             .getByRole('button', { name: '문서로 등록', exact: true })
             .click();
-        await pdf.setInputFiles({
+        await pdf.focus();
+        assert.equal(
+            await page.evaluate(() => document.activeElement?.id),
+            'registration-pdf'
+        );
+        const keyboardChooser = page.waitForEvent('filechooser');
+        await page.keyboard.press('Enter');
+        await (await keyboardChooser).setFiles({
             name: 'oversize.pdf',
             mimeType: 'application/pdf',
             buffer: Buffer.alloc(2 * 1024 * 1024 + 1),
@@ -116,11 +123,17 @@ try {
             .waitFor();
         assert.equal(inspectCount, 0);
         await capture('document-oversize');
-        await pdf.setInputFiles({
+        const pointerChooser = page.waitForEvent('filechooser');
+        await form.locator('.document-upload').click();
+        await (await pointerChooser).setFiles({
             name: 'synthetic.pdf',
             mimeType: 'application/pdf',
             buffer: Buffer.from('%PDF-synthetic-identity-only'),
         });
+        assert.match(
+            await form.locator('.document-file-info').innerText(),
+            /synthetic\.pdf.*선택됨/
+        );
         mode = 'error';
         await inspect.click();
         await form.getByText('합성 문서 식별 오류', { exact: true }).waitFor();
@@ -131,6 +144,7 @@ try {
         await page.waitForFunction(
             () => document.querySelector('#registration-password')?.disabled
         );
+        assert.equal(await pdf.isDisabled(), true);
         await capture('inspection-pending');
         release();
         mode = 'success';

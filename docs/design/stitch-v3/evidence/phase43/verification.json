@@ -1,0 +1,18 @@
+{
+  "scope": "local only; synthetic identities/files; no customer writes",
+  "browser": [
+    "standard-upload-inline",
+    "manual-holdings",
+    "broker-spreadsheet",
+    "portfolio-enhancements",
+    "portfolio-import-review",
+    "mobile-import-feedback",
+    "asset-management"
+  ],
+  "result": "passed",
+  "capture": "upload+receipt: five widths, dark, zero API requests",
+  "lint": "0 errors, existing 54 warnings",
+  "type_and_build": "passed",
+  "live_authenticated_flow": "not verified",
+  "production": "not deployed"
+}

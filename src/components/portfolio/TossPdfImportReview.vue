@@ -976,27 +976,27 @@
         color: var(--app-accent);
         font-size: 12px;
     }
-    :global(.p-dark) .type-pill.buy {
+    .p-dark .type-pill.buy {
         background: #4c1d32;
         color: #fda4af;
     }
-    :global(.p-dark) .type-pill.sell {
+    .p-dark .type-pill.sell {
         background: #172e57;
         color: #93c5fd;
     }
-    :global(.p-dark) .type-pill.dividend {
+    .p-dark .type-pill.dividend {
         background: #123b34;
         color: #6ee7b7;
     }
-    :global(.p-dark) .positive,
-    :global(.p-dark) .recognition-state {
+    .p-dark .positive,
+    .p-dark .recognition-state {
         color: #6ee7b7;
     }
-    :global(.p-dark) .negative,
-    :global(.p-dark) .fee-value {
+    .p-dark .negative,
+    .p-dark .fee-value {
         color: #fda4af;
     }
-    :global(.p-dark) .recognition-state.warning {
+    .p-dark .recognition-state.warning {
         color: #fcd34d;
     }
     @media (max-width: 1000px) {

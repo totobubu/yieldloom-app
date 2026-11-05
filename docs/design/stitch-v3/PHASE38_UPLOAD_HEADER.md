@@ -1,5 +1,6 @@
 # 업로드 헤더와 단계 배치 원본 대조
 
+> 이 문서는 당시 단계의 기록입니다. 현재 미리보기 기능과 남은 차이는 [phase41](PHASE41_UPLOAD_PREVIEW.md)을 따릅니다.
 #253 초안의 기능을 유지한 후속 보정이다. 최종 Tablet/Mobile 원본 HTML은 변경하지 않았다. 태블릿의 배지/제목·수기 입력/단계 3행, 모바일의 배지 옆 수기 입력→제목→가로 단계 배치를 복원했다. 24px 원형 단계, 연결선 2개, 배지·본문 줄 높이, 원본 안내 문구·아이콘/버튼 크기를 맞췄다. 실제 다음 화면이 검토/저장 결과이므로 해당 단계의 이름은 실제 기능을 유지한다. 원본의 기기 규격 주석과 예시 데이터 배지는 운영 정보로 만들지 않는다.
 
 [전체 측정](evidence/phase38/measurements.json), [Tablet 원본 HTML](evidence/phase38/source-834.png)/[구현](evidence/phase38/implementation-834.png), [Mobile 원본 HTML fallback](evidence/phase38/source-390.png)/[구현](evidence/phase38/implementation-390.png). 834와 768 헤더 높이는 각각 **159.5px/179px로 변경 없는 원본과 일치**하며 캡처에서 두 값의 동일성을 단언한다. 834 수기 버튼은 원본/구현 44px다. 768에서는 원본 버튼 50px/구현 44px의 세부 차이가 남는다. Mobile은 원본 글꼴 URL HTTP 400으로 fallback 244px/구현 223px이며 원래 PNG와 일치했다고 판정하지 않는다. Tablet 원본 PNG의 물리 폭은 2560px이므로 이것을 834 CSS px 스크린샷이라고 부르지 않는다.

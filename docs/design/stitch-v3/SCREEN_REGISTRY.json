@@ -1518,7 +1518,7 @@
                 "environment": "production",
                 "pr": 249,
                 "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-                "preservedBy": "fe299f61be2bec42de860e3810f5bce93132e6eb"
+                "preservedBy": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
             }
         },
         {
@@ -1567,7 +1567,7 @@
                 "environment": "production",
                 "pr": 249,
                 "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-                "preservedBy": "fe299f61be2bec42de860e3810f5bce93132e6eb"
+                "preservedBy": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
             }
         },
         {
@@ -1616,7 +1616,7 @@
                 "environment": "production",
                 "pr": 249,
                 "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-                "preservedBy": "fe299f61be2bec42de860e3810f5bce93132e6eb"
+                "preservedBy": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
             }
         },
         {
@@ -1628,7 +1628,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/2476bb94e3174e6182500d8f520a6424",
@@ -1661,8 +1661,9 @@
                 "projects/17382728461495959991/screens/1b227a5b79784aa9b8e13ba0513b8d3e"
             ],
             "rollout": {
-                "environment": "not verified against final selected ID",
-                "qualification": "existing production feature is not final-reference acceptance"
+                "environment": "parallel implementation; not integrated",
+                "branch": "feat/stitch-comparison-responsive-20261105",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
             }
         },
         {
@@ -1674,7 +1675,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/77fdbd798a3941c68f098120a210c44d",
@@ -1707,8 +1708,9 @@
                 "projects/17382728461495959991/screens/e64931e753ca4625b32d9124c3ac8208"
             ],
             "rollout": {
-                "environment": "not verified against final selected ID",
-                "qualification": "existing production feature is not final-reference acceptance"
+                "environment": "parallel implementation; not integrated",
+                "branch": "feat/stitch-comparison-responsive-20261105",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
             }
         },
         {
@@ -1720,7 +1722,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/4dbfbf717c75483e88e6d1186ecbdb2b",
@@ -1753,8 +1755,9 @@
                 "projects/17382728461495959991/screens/7a7f75ab55b64d38a618e21bcf4aa237"
             ],
             "rollout": {
-                "environment": "not verified against final selected ID",
-                "qualification": "existing production feature is not final-reference acceptance"
+                "environment": "parallel implementation; not integrated",
+                "branch": "feat/stitch-comparison-responsive-20261105",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
             }
         },
         {
@@ -1766,7 +1769,7 @@
             "overlapWithExisting14": true,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "parallel source branch 91b81ab reported implementation; current main merge audit clean; no remote CI, not deployed",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/12bcd42390bb468eb1700a909aec3f5d",
@@ -1799,8 +1802,9 @@
                 "projects/17382728461495959991/screens/c4f19b1c965840e8adc2fbe5056fe473"
             ],
             "rollout": {
-                "environment": "not verified against final selected ID",
-                "qualification": "existing production feature is not final-reference acceptance"
+                "environment": "parallel implementation; not integrated",
+                "branch": "feat/stitch-comparison-responsive-20261105",
+                "sha": "91b81ab727a23414cc643aa21cc3417801d3d611"
             }
         },
         {
@@ -1812,8 +1816,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "Draft PR #253; reference header geometry corrected (Tablet 834/768 matched); actual controls retained; inline preview incomplete; not deployed",
-            "visualAcceptance": "not accepted: source inspection state differs; Mobile source Pretendard Google Fonts URL HTTP 400; see PHASE36_UPLOAD.md",
+            "implementation": "Draft #253; actual CSV/XLSX/holdings response preview and zero-request next stage verified locally; visual work incomplete; not deployed",
+            "visualAcceptance": "not accepted: raw preview now implemented; source header 834/768 matched; settings/file/state/copy/spacing differences and Mobile source font HTTP400 remain",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6",
             "sourceFiles": [
@@ -1846,7 +1850,7 @@
                 "environment": "local only",
                 "branch": "feat/stitch-upload-phase36"
             },
-            "latestEvidence": "PHASE38_UPLOAD_HEADER.md"
+            "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md"
         },
         {
             "family": "Data Upload",
@@ -1857,8 +1861,8 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "Draft PR #253; reference header geometry corrected (Tablet 834/768 matched); actual controls retained; inline preview incomplete; not deployed",
-            "visualAcceptance": "not accepted: source inspection state differs; Mobile source Pretendard Google Fonts URL HTTP 400; see PHASE36_UPLOAD.md",
+            "implementation": "Draft #253; actual CSV/XLSX/holdings response preview and zero-request next stage verified locally; visual work incomplete; not deployed",
+            "visualAcceptance": "not accepted: raw preview now implemented; source header 834/768 matched; settings/file/state/copy/spacing differences and Mobile source font HTTP400 remain",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33",
             "sourceFiles": [
@@ -1891,7 +1895,7 @@
                 "environment": "local only",
                 "branch": "feat/stitch-upload-phase36"
             },
-            "latestEvidence": "PHASE38_UPLOAD_HEADER.md"
+            "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md"
         },
         {
             "family": "Import Result",
@@ -1902,7 +1906,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "reference-backed receipt deployed via #250/#251; canonical cash/name display correction #252 pending CI; financial aggregates unavailable",
+            "implementation": "reference receipt and canonical stored type/name display deployed #257; financial aggregates unavailable; whole-frame differences remain",
             "visualAcceptance": "header/stepper dimensions match 834/768/390; tablet aggregate card matches 376.5px; full pixel acceptance pending; see PHASE35_RECEIPT_FIDELITY.md",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/f5a2132c4e234e648269220f0e889387",
@@ -1934,8 +1938,8 @@
             "supersededCandidates": [],
             "rollout": {
                 "environment": "production",
-                "pr": 251,
-                "mergeSha": "fe299f61be2bec42de860e3810f5bce93132e6eb"
+                "pr": 257,
+                "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
             }
         },
         {
@@ -1947,7 +1951,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "reference-backed receipt deployed via #250/#251; canonical cash/name display correction #252 pending CI; financial aggregates unavailable",
+            "implementation": "reference receipt and canonical stored type/name display deployed #257; financial aggregates unavailable; whole-frame differences remain",
             "visualAcceptance": "header/stepper dimensions match 834/768/390; tablet aggregate card matches 376.5px; full pixel acceptance pending; see PHASE35_RECEIPT_FIDELITY.md",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/cf7686fbb620465f93418fde1572a6cc",
@@ -1979,8 +1983,8 @@
             "supersededCandidates": [],
             "rollout": {
                 "environment": "production",
-                "pr": 251,
-                "mergeSha": "fe299f61be2bec42de860e3810f5bce93132e6eb"
+                "pr": 257,
+                "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809"
             }
         },
         {
@@ -1992,7 +1996,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "Draft #256; source header geometry/width and existing functionality verified locally; full body work remains",
             "visualAcceptance": "not accepted",
             "referenceCaveat": null,
             "selectedScreen": "projects/17382728461495959991/screens/6bd9777b8bea43b98aea8397a29f809a",
@@ -2025,8 +2029,9 @@
                 "projects/17382728461495959991/screens/36b701cb88c84a91a4ed9edab8229755"
             ],
             "rollout": {
-                "environment": "not verified against final selected ID",
-                "qualification": "existing production feature is not final-reference acceptance"
+                "environment": "local partial only",
+                "pr": 256,
+                "branch": "feat/stitch-review-phase39"
             }
         },
         {
@@ -2038,7 +2043,7 @@
             "overlapWithExisting14": false,
             "owner": "redesign integration",
             "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-            "implementation": "legacy feature exists;new reference not applied",
+            "implementation": "Draft #256; source header geometry/width and existing functionality verified locally; full body work remains",
             "visualAcceptance": "not accepted",
             "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
             "selectedScreen": "projects/17382728461495959991/screens/5aa7a573854a46db9b106f89c09c4f23",
@@ -2071,8 +2076,9 @@
                 "projects/17382728461495959991/screens/b7be4fa2034e4e2ea5585be95f85528e"
             ],
             "rollout": {
-                "environment": "not verified against final selected ID",
-                "qualification": "existing production feature is not final-reference acceptance"
+                "environment": "local partial only",
+                "pr": 256,
+                "branch": "feat/stitch-review-phase39"
             }
         },
         {
@@ -2392,15 +2398,18 @@
     "projectFrameCountAtInitialRead": 64,
     "registeredFrameCount": 73,
     "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-    "latestImplementationBase": "c48d049d258c2773fe58948a14e005f8af04578a",
+    "latestImplementationBase": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
     "rolloutSnapshot": {
-        "recordedAt": "2026-11-05T08:30:26.341231+00:00",
+        "recordedAt": "2026-11-05T10:01:35.477415+00:00",
         "scope": "20 final reviewed IDs / 9 families only; not additive to original 14",
-        "productionMergeSha": "fe299f61be2bec42de860e3810f5bce93132e6eb",
+        "productionMergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
         "productionTargets": 5,
-        "localWorkTargets": 2,
-        "otherTargets": 13,
+        "localWorkTargets": 4,
+        "otherTargets": 11,
         "visualAcceptance": "production does not mean whole-frame acceptance",
-        "evidence": "CURRENT_ROLLOUT.md"
+        "evidence": "CURRENT_ROLLOUT.md",
+        "remainingOwnTargets": 2,
+        "parallelScopeTargets": 9,
+        "qualification": "5 production / 4 current integration WIP / 2 ledger / 9 parallel scope; whole-frame acceptance incomplete"
     }
 }

@@ -16,7 +16,7 @@ await fs.mkdir(out, { recursive: true });
 const harness = resolve(repo, '.phase36-upload.html');
 await fs.writeFile(
     harness,
-    `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app" class="studio-shell"></div><script type="module">import {createApp,h,ref} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import ko from '/src/config/locale/ko.js';import Upload from '/src/components/portfolio/PortfolioFileImportForm.vue';import 'primeicons/primeicons.css';import '/src/styles/style.scss';import '/src/styles/studio.scss';const values={kind:ref('transactions'),format:ref('standard-csv'),asOf:ref('2026-03-31'),password:ref(''),rememberPassword:ref(false),confirmed:ref(false)},files=ref([]),busy=ref(false),owner=ref(true),error=ref(''),component=ref(null),events=[];window.uploadFixture={values,files,busy,owner,error,component,events};createApp({setup(){return()=>h('main',{class:'fixture-frame'},h(Upload,{ref:component,accountLabel:'DEMO-ACC-****-891',passwordConfigured:true,isOwner:owner.value,busy:busy.value,error:error.value,reviewing:false,kindOptions:[{label:'거래 내역',value:'transactions'},{label:'보유 잔고',value:'holdings'}],formatOptions:[{label:'표준 CSV',value:'standard-csv'},{label:'표준 XLSX',value:'standard-xlsx'},{label:'토스 거래내역 PDF',value:'toss-pdf'}],selectedFiles:files.value,...Object.fromEntries(Object.entries(values).map(([k,v])=>[k,v.value])),...Object.fromEntries(Object.entries(values).map(([k,v])=>['onUpdate:'+k,x=>v.value=x])),onSelect:e=>{files.value=e.files;values.confirmed.value=false;events.push('select')},onClear:()=>{files.value=[];events.push('clear')},onPreview:()=>events.push('preview'),onManual:()=>events.push('manual'),onRemovePassword:()=>events.push('remove-password'),onReset:()=>{component.value.clear();values.confirmed.value=false;events.push('reset')}}));}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script><style>body{margin:0}.fixture-frame{max-width:834px;margin:auto;padding:24px}@media(max-width:640px){.fixture-frame{max-width:390px;padding:16px}}</style></body></html>`
+    `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app" class="studio-shell"></div><script type="module">import {createApp,h,ref} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import ko from '/src/config/locale/ko.js';import Upload from '/src/components/portfolio/PortfolioFileImportForm.vue';import 'primeicons/primeicons.css';import '/src/styles/style.scss';import '/src/styles/studio.scss';const values={kind:ref('transactions'),format:ref('standard-csv'),asOf:ref('2026-03-31'),password:ref(''),rememberPassword:ref(false),confirmed:ref(false)},files=ref([]),preview=ref(null),busy=ref(false),owner=ref(true),error=ref(''),component=ref(null),events=[];window.uploadFixture={values,files,preview,busy,owner,error,component,events};createApp({setup(){return()=>h('main',{class:'fixture-frame'},h(Upload,{ref:component,accountLabel:'DEMO-ACC-****-891',passwordConfigured:true,isOwner:owner.value,busy:busy.value,error:error.value,reviewing:false,kindOptions:[{label:'거래 내역',value:'transactions'},{label:'보유 잔고',value:'holdings'}],formatOptions:[{label:'표준 CSV',value:'standard-csv'},{label:'표준 XLSX',value:'standard-xlsx'},{label:'토스 거래내역 PDF',value:'toss-pdf'}],selectedFiles:files.value,previewReview:preview.value,...Object.fromEntries(Object.entries(values).map(([k,v])=>[k,v.value])),...Object.fromEntries(Object.entries(values).map(([k,v])=>['onUpdate:'+k,x=>v.value=x])),onSelect:e=>{files.value=e.files;preview.value=null;values.confirmed.value=false;events.push('select')},onClear:()=>{files.value=[];events.push('clear')},onPreview:()=>events.push('preview'),onManual:()=>events.push('manual'),onRemovePassword:()=>events.push('remove-password'),onReset:()=>{component.value.clear();values.confirmed.value=false;events.push('reset')}}));}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script><style>body{margin:0}.fixture-frame{max-width:834px;margin:auto;padding:24px}@media(max-width:640px){.fixture-frame{max-width:390px;padding:16px}}</style></body></html>`
 );
 const browser = await chromium.launch({
     executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
@@ -56,7 +56,7 @@ try {
             name: 'DEMO_DIVIDEND_2024.csv',
             mimeType: 'text/csv',
             buffer: Buffer.from(
-                'date,symbol,amount,currency,type,externalId\n2024-03-15,DEMO-A,43.32,KRW,dividend,DEMO-1\n'
+                'date,symbol,securityName,amount,currency,type,externalId,rawType\n2024-03-15,KRX-DEMO-01,가상모의전자,43320,KRW,dividend,DEMO-1,현금배당\n2024-03-20,NYSE-DEMO-US,알파테크가상 ETF,10.80,USD,dividend,DEMO-2,배당금입금\n2024-04-02,KRX-DEMO-99,모의에너지홀딩스,60000,,dividend,DEMO-3,분기배당\n'
             ),
         });
         await page
@@ -70,7 +70,7 @@ try {
         );
         assert.match(
             await page.locator('.upload-preview').innerText(),
-            /이 화면에는 원문 행을 표시하지 않습니다/
+            /현재 행수·통화·금액은 미확인/
         );
         assert.ok(
             !/142|정상 인식|세전 실입금액/.test(
@@ -83,6 +83,69 @@ try {
             ),
             false,
             `viewport ${width} overflow`
+        );
+        await page.evaluate(() => {
+            window.uploadFixture.preview.value = {
+                kind: 'transactions',
+                rows: [
+                    {
+                        date: '2024-03-15',
+                        symbol: 'KRX-DEMO-01',
+                        rawType: '현금배당',
+                        securityName: '가상모의전자',
+                        amount: 43320,
+                        currency: 'KRW',
+                        type: 'dividend',
+                    },
+                    {
+                        date: '2024-03-20',
+                        symbol: 'NYSE-DEMO-US',
+                        rawType: '배당금입금',
+                        securityName: '알파테크가상 ETF',
+                        amount: '10.80',
+                        currency: 'USD',
+                        type: 'dividend',
+                    },
+                    {
+                        date: '2024-04-02',
+                        symbol: 'KRX-DEMO-99',
+                        rawType: '분기배당',
+                        securityName: '모의에너지홀딩스',
+                        amount: 60000,
+                        currency: '',
+                        type: 'dividend',
+                    },
+                ],
+            };
+        });
+        assert.equal(await page.locator('.upload-sample-row').count(), 3);
+        assert.equal(
+            await page
+                .locator('.upload-sample-row')
+                .nth(0)
+                .locator('td')
+                .nth(3)
+                .innerText(),
+            '43,320'
+        );
+        assert.equal(
+            await page
+                .locator('.upload-sample-row')
+                .nth(1)
+                .locator('td')
+                .nth(3)
+                .innerText(),
+            '10.80'
+        );
+        assert.match(
+            await page.locator('.upload-sample-row').nth(2).innerText(),
+            /미지정/
+        );
+        assert.equal(
+            await page
+                .getByRole('button', { name: '다음: 데이터 검토', exact: true })
+                .isDisabled(),
+            true
         );
         await page.evaluate(() => document.activeElement?.blur());
         const measured = await page.locator('.import-layout').evaluate((e) => {
@@ -114,6 +177,21 @@ try {
         await page.screenshot({
             path: resolve(out, `implementation-${width}.png`),
             fullPage: true,
+        });
+        if (width === 390) {
+            await page.evaluate(() =>
+                document.documentElement.classList.add('p-dark')
+            );
+            await page.screenshot({
+                path: resolve(out, 'implementation-preview-dark-390.png'),
+                fullPage: true,
+            });
+            await page.evaluate(() =>
+                document.documentElement.classList.remove('p-dark')
+            );
+        }
+        await page.evaluate(() => {
+            window.uploadFixture.preview.value = null;
         });
         await page
             .getByRole('checkbox', { name: /의 자료임을 확인했습니다/ })
@@ -230,7 +308,7 @@ try {
             implementation: measured,
             apiCalls,
             visualAcceptance:
-                'not accepted; pre-extraction data and format controls differ from source post-inspection fixture',
+                'not accepted; actual raw preview supported, but required format/date controls, financial labels and remaining layout differ from source',
         };
         if ([834, 768, 390].includes(width)) {
             const id =

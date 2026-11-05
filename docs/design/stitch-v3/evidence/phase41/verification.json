@@ -1,0 +1,39 @@
+{
+  "browserSuites": [
+    {
+      "suite": "standard-upload-inline",
+      "exitCode": 0
+    },
+    {
+      "suite": "manual-holdings",
+      "exitCode": 0
+    },
+    {
+      "suite": "broker-spreadsheet",
+      "exitCode": 0
+    },
+    {
+      "suite": "portfolio-enhancements",
+      "exitCode": 0
+    },
+    {
+      "suite": "portfolio-import-review",
+      "exitCode": 0
+    },
+    {
+      "suite": "mobile-import-feedback",
+      "exitCode": 0
+    },
+    {
+      "suite": "asset-management",
+      "exitCode": 0
+    }
+  ],
+  "lintErrors": 0,
+  "existingLintWarnings": 54,
+  "typeAndBuild": "passed",
+  "testData": "synthetic memory API only",
+  "productionWrites": 0,
+  "nextStageApiRequests": 0,
+  "financialLogicChanges": false
+}

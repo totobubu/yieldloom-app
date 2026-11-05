@@ -8,14 +8,16 @@
     import RadioButton from 'primevue/radiobutton';
     import Tag from 'primevue/tag';
     import StitchSymbol from './StitchSymbol.vue';
+    import { transactionTypeLabel } from '@/services/tossImportReview.js';
 
-    defineProps({
+    const props = defineProps({
         accountLabel: { type: String, required: true },
         passwordConfigured: Boolean,
         isOwner: Boolean,
         busy: Boolean,
         reviewing: Boolean,
         error: { type: String, default: '' },
+        previewReview: { type: Object, default: null },
         kindOptions: { type: Array, required: true },
         formatOptions: { type: Array, required: true },
         selectedFiles: { type: Array, required: true },
@@ -38,6 +40,40 @@
     const errorNotice = ref(null);
     const passwordInput = ref(null);
     const showPassword = ref(false);
+    const previewHeading = ref(null);
+    const previewReady = computed(() =>
+        Array.isArray(props.previewReview?.rows)
+    );
+    const previewRows = computed(
+        () => props.previewReview?.rows?.slice(0, 3) || []
+    );
+    function previewType(row) {
+        return props.previewReview?.kind === 'holdings'
+            ? '보유 잔고'
+            : row.rawType || transactionTypeLabel(row.type);
+    }
+    function previewCell(value) {
+        return value === null || value === undefined || value === ''
+            ? '미제공'
+            : String(value);
+    }
+    function revealRequiredField(event) {
+        const settings = event.target.closest('details');
+        if (settings) settings.open = true;
+    }
+    function previewAmount(value) {
+        const text = previewCell(value);
+        const parts = /^([+-]?)(\d+)(\.\d+)?$/.exec(text);
+        return parts
+            ? parts[1] +
+                  parts[2].replace(/\B(?=(\d{3})+(?!\d))/g, ',') +
+                  (parts[3] || '')
+            : text;
+    }
+    function focusPreview() {
+        previewHeading.value?.focus({ preventScroll: true });
+        previewHeading.value?.scrollIntoView({ block: 'center' });
+    }
     const isPdf = computed(() => format.value === 'toss-pdf');
     const fileExtension = computed(() =>
         isPdf.value ? 'PDF' : format.value === 'standard-xlsx' ? 'XLSX' : 'CSV'
@@ -78,7 +114,7 @@
         errorNotice.value?.focus({ preventScroll: true });
         errorNotice.value?.scrollIntoView({ block: 'center' });
     }
-    defineExpose({ clear, focusError });
+    defineExpose({ clear, focusError, focusPreview });
 </script>
 
 <template>
@@ -142,11 +178,12 @@
         <form
             class="import-form"
             aria-label="파일 업로드"
+            @invalid.capture="revealRequiredField"
             @submit.prevent="emit('preview')">
             <fieldset :disabled="busy" class="import-fields">
                 <article class="import-card">
                     <div class="card-heading">
-                        <h3>데이터 유형 및 파일 설정</h3>
+                        <h3>데이터 유형 선택</h3>
                         <span class="status-pill">필수 지정</span>
                     </div>
                     <div class="field-grid">
@@ -173,56 +210,69 @@
                                     " /><span>{{ option.label }}</span></label
                             >
                         </fieldset>
-                        <div class="import-field">
-                            <label for="import-format">파일 형식</label>
-                            <Select
-                                v-model="format"
-                                input-id="import-format"
-                                :options="formatOptions"
-                                option-label="label"
-                                option-value="value"
-                                aria-label="파일 형식"
-                                :disabled="busy" />
-                            <small>{{
-                                isPdf
-                                    ? '토스 앱에서 발급받은 거래내역 PDF를 선택하세요.'
-                                    : '표준 양식의 열 이름과 자료 형식을 확인하세요.'
-                            }}</small>
-                        </div>
-                        <div v-if="!isPdf" class="import-field">
-                            <label for="import-date">{{
-                                kind === 'transactions'
-                                    ? '조회 종료일'
-                                    : '잔고 기준일'
-                            }}</label>
-                            <InputText
-                                id="import-date"
-                                v-model="asOf"
-                                type="date"
-                                required
-                                :disabled="busy" />
-                            <small v-if="kind === 'transactions'"
-                                >거래내역서 조회 기간의 마지막 날입니다.</small
-                            >
-                        </div>
-                    </div>
-                    <div class="import-notice">
-                        <i class="pi pi-info-circle" aria-hidden="true" />
-                        <p v-if="isPdf">
-                            <strong>토스 거래내역 PDF 안내</strong> · 최대
-                            10,000행을 추출하며 저장은 200행씩 나눠 진행합니다.
-                            조회 종료일은 PDF에서 추출된 마지막 거래일로 자동
-                            입력됩니다.
+                        <p class="upload-kind-guidance">
+                            거래내역과 배당 입금 또는 기준일 보유 잔고를
+                            불러옵니다. 전체 자료는 검토 화면에서 확인하고
+                            수정합니다.
                         </p>
-                        <p v-else>
-                            <strong>표준 CSV·XLSX 안내</strong> · 최대 200행,
-                            파일당 2MB를 지원합니다.
-                            {{
-                                kind === 'holdings'
-                                    ? '잔고는 기준일의 전체 보유 종목을 입력하세요. 새 잔고는 해당 계좌의 이전 잔고를 대체합니다.'
-                                    : '거래 고유번호는 같은 계좌에서 다시 업로드해도 동일해야 합니다.'
-                            }}
-                        </p>
+                        <details class="upload-settings" :open="!previewReady">
+                            <summary>파일 형식·기준일 설정</summary>
+                            <div class="settings-field-grid">
+                                <div class="import-field">
+                                    <label for="import-format">파일 형식</label>
+                                    <Select
+                                        v-model="format"
+                                        input-id="import-format"
+                                        :options="formatOptions"
+                                        option-label="label"
+                                        option-value="value"
+                                        aria-label="파일 형식"
+                                        :disabled="busy" />
+                                    <small>{{
+                                        isPdf
+                                            ? '토스 앱에서 발급받은 거래내역 PDF를 선택하세요.'
+                                            : '표준 양식의 열 이름과 자료 형식을 확인하세요.'
+                                    }}</small>
+                                </div>
+                                <div v-if="!isPdf" class="import-field">
+                                    <label for="import-date">{{
+                                        kind === 'transactions'
+                                            ? '조회 종료일'
+                                            : '잔고 기준일'
+                                    }}</label>
+                                    <InputText
+                                        id="import-date"
+                                        v-model="asOf"
+                                        type="date"
+                                        required
+                                        :disabled="busy" />
+                                    <small v-if="kind === 'transactions'"
+                                        >거래내역서 조회 기간의 마지막
+                                        날입니다.</small
+                                    >
+                                </div>
+                            </div>
+                            <div class="import-notice">
+                                <i
+                                    class="pi pi-info-circle"
+                                    aria-hidden="true" />
+                                <p v-if="isPdf">
+                                    <strong>토스 거래내역 PDF 안내</strong> ·
+                                    최대 10,000행을 추출하며 저장은 200행씩 나눠
+                                    진행합니다. 조회 종료일은 PDF에서 추출된
+                                    마지막 거래일로 자동 입력됩니다.
+                                </p>
+                                <p v-else>
+                                    <strong>표준 CSV·XLSX 안내</strong> · 최대
+                                    200행, 파일당 2MB를 지원합니다.
+                                    {{
+                                        kind === 'holdings'
+                                            ? '잔고는 기준일의 전체 보유 종목을 입력하세요. 새 잔고는 해당 계좌의 이전 잔고를 대체합니다.'
+                                            : '거래 고유번호는 같은 계좌에서 다시 업로드해도 동일해야 합니다.'
+                                    }}
+                                </p>
+                            </div>
+                        </details>
                     </div>
                 </article>
 
@@ -315,8 +365,12 @@
                                         <strong>{{ file.name }}</strong
                                         ><small
                                             >{{ fileSize(file.size) }} ·
-                                            {{ fileExtension }} · 추출
-                                            대기</small
+                                            {{ fileExtension }} ·
+                                            {{
+                                                previewReady
+                                                    ? `${previewReview.rows.length}건 추출 · 검토 전`
+                                                    : '추출 대기'
+                                            }}</small
                                         >
                                     </div>
                                     <Button
@@ -368,7 +422,7 @@
                         <div>
                             <section>
                                 <strong>일반 스프레드시트 (CSV / XLSX)</strong>
-                                <p>파일당 최대 2MB · 최대 200행 / 50열</p>
+                                <p>파일 1개 · 최대 2MB · 최대 200행 / 50열</p>
                             </section>
                             <section>
                                 <strong>거래명세서 PDF</strong>
@@ -388,14 +442,6 @@
                             }}
                         </p>
                     </div>
-                    <p class="field-note">
-                        파일당 최대 <strong>2MB</strong> ·
-                        {{
-                            isPdf
-                                ? 'PDF 최대 20개 · 파일당 10,000행'
-                                : '파일 1개 · 최대 200행'
-                        }}
-                    </p>
                 </article>
 
                 <article v-if="isPdf" class="import-card">
@@ -544,7 +590,11 @@
                             @click="emit('reset')" />
                         <Button
                             type="submit"
-                            label="추출·미리보기"
+                            :label="
+                                previewReady
+                                    ? '다음: 데이터 검토'
+                                    : '추출·미리보기'
+                            "
                             icon="pi pi-arrow-right"
                             icon-pos="right"
                             :loading="busy"
@@ -570,12 +620,21 @@
                 class="import-card upload-preview"
                 aria-label="원본 미리보기 제공 상태">
                 <div class="card-heading">
-                    <h3><StitchSymbol name="preview" />원본 데이터 미리보기</h3>
-                    <Tag severity="secondary" value="검토 화면에서 제공" />
+                    <h3 ref="previewHeading" tabindex="-1">
+                        <StitchSymbol name="preview" />원본 데이터 미리보기
+                    </h3>
+                    <Tag
+                        severity="secondary"
+                        :value="
+                            previewReady ? '상위 3행 · 검토 전' : '추출 전'
+                        " />
                 </div>
                 <p class="field-note">
-                    추출·미리보기 후 다음 검토 화면에서 전체 자료를 확인합니다.
-                    이 화면에는 원문 행을 표시하지 않습니다.
+                    {{
+                        previewReady
+                            ? `총 ${previewReview.rows.length}건 중 상위 ${previewRows.length}건입니다. 전체 행의 수정·확정은 다음 검토 화면에서 진행합니다.`
+                            : '파일을 추출하면 상위 3행을 먼저 확인할 수 있습니다. 현재 행수·통화·금액은 미확인 상태입니다.'
+                    }}
                 </p>
                 <div class="upload-preview-table">
                     <table>
@@ -589,7 +648,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr
+                                v-for="(row, index) in previewRows"
+                                :key="index"
+                                class="upload-sample-row">
+                                <td>{{ previewCell(row.date) }}</td>
+                                <td>
+                                    {{
+                                        previewCell(
+                                            row.securityName || row.symbol
+                                        )
+                                    }}
+                                </td>
+                                <td>
+                                    <span class="upload-type-pill">{{
+                                        previewType(row)
+                                    }}</span>
+                                </td>
+                                <td>{{ previewAmount(row.amount) }}</td>
+                                <td>{{ row.currency || '미지정' }}</td>
+                            </tr>
+                            <tr v-if="!previewRows.length">
                                 <td colspan="5">
                                     <StitchSymbol name="description" /><strong
                                         >아직 추출하지 않았습니다.</strong
@@ -599,6 +678,30 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div v-if="previewRows.length" class="upload-preview-cards">
+                    <article
+                        v-for="(row, index) in previewRows"
+                        :key="index"
+                        class="upload-sample-card">
+                        <div>
+                            <strong>{{
+                                previewCell(row.securityName || row.symbol)
+                            }}</strong
+                            ><span>{{ previewType(row) }}</span>
+                        </div>
+                        <div>
+                            <span>{{ previewCell(row.symbol) }}</span
+                            ><span>{{ previewCell(row.date) }}</span>
+                        </div>
+                        <div>
+                            <span>검토 전 추출 금액</span
+                            ><strong
+                                >{{ previewAmount(row.amount) }}
+                                {{ row.currency || '(통화 미지정)' }}</strong
+                            >
+                        </div>
+                    </article>
                 </div>
                 <p class="upload-data-note">
                     통화가 없거나 금액이 비어 있으면 검토 화면에서 확인하세요.
@@ -626,7 +729,13 @@
                     </div>
                     <div>
                         <dt>자료 인식 상태</dt>
-                        <dd>추출 전 · 미확인</dd>
+                        <dd>
+                            {{
+                                previewReady
+                                    ? `${previewReview.rows.length}건 추출 · 검토 필요`
+                                    : '추출 전 · 미확인'
+                            }}
+                        </dd>
                     </div>
                 </dl>
                 <p class="field-note">
@@ -1304,14 +1413,14 @@ date,symbol,quantity,amount,currency,type,externalId
     }
     .import-form {
         grid-column: 1 / span 7;
-        padding: 20px;
+        padding: 16px;
         border: 1px solid var(--app-border);
         border-radius: 12px;
         background: var(--app-surface);
         min-width: 0;
     }
     .import-fields {
-        gap: 20px;
+        gap: 16px;
     }
     .import-form .import-card {
         padding: 0;
@@ -1320,7 +1429,7 @@ date,symbol,quantity,amount,currency,type,externalId
         background: transparent;
     }
     .import-form .card-heading {
-        margin-bottom: 12px;
+        margin-bottom: 6px;
         gap: 8px;
     }
     .import-form h3,
@@ -1355,8 +1464,11 @@ date,symbol,quantity,amount,currency,type,externalId
         margin: 0;
     }
     .import-kind-choice legend {
-        font-size: 12px;
-        padding: 0 4px;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
     }
     .import-kind-choice label {
         position: relative;
@@ -1748,5 +1860,104 @@ date,symbol,quantity,amount,currency,type,externalId
     }
     :global(html:not(.p-dark)) .upload-heading-row h2 {
         color: #382418;
+    }
+    .upload-sample-row td {
+        text-align: left;
+        padding: 10px 8px;
+        font-size: 11px;
+        line-height: 18px;
+        overflow-wrap: anywhere;
+    }
+    .upload-preview-cards {
+        display: none;
+    }
+    @media (max-width: 640px) {
+        .upload-preview:has(.upload-preview-cards) .upload-preview-table {
+            display: none;
+        }
+        .upload-preview-cards {
+            display: grid;
+            gap: 10px;
+        }
+        .upload-sample-card {
+            padding: 10px;
+            border: 1px solid var(--app-border);
+            border-radius: 8px;
+            background: var(--app-bg);
+            min-width: 0;
+        }
+        .upload-sample-card > div {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 11px;
+            line-height: 18px;
+            margin-bottom: 6px;
+            overflow-wrap: anywhere;
+        }
+        .upload-sample-card > div:first-child {
+            font-size: 12px;
+        }
+        .upload-sample-card > div:last-child {
+            border-top: 1px solid var(--app-border);
+            padding-top: 6px;
+            margin-bottom: 0;
+        }
+        .upload-sample-card strong {
+            color: var(--app-text);
+        }
+    }
+    .import-form h3 {
+        font-size: 12px;
+        line-height: 18px;
+    }
+    .import-kind-choice label {
+        min-height: 44px;
+    }
+    .upload-settings {
+        grid-column: 1/-1;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-bg);
+        min-width: 0;
+    }
+    .upload-settings > summary {
+        padding: 8px 10px;
+        font-size: 11px;
+        line-height: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        color: var(--app-muted);
+    }
+    .settings-field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding: 4px 10px 10px;
+    }
+    @media (max-width: 640px) {
+        .settings-field-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    .upload-kind-guidance {
+        grid-column: 1/-1;
+        font-size: 11px;
+        line-height: 18px;
+        color: var(--app-muted);
+        margin: 0;
+    }
+    .upload-settings .import-notice {
+        margin: 0 10px 10px;
+    }
+    .upload-type-pill {
+        display: inline-flex;
+        padding: 2px 6px;
+        border: 1px solid var(--app-accent);
+        border-radius: 4px;
+        color: var(--app-accent);
+        background: var(--import-tint);
+        line-height: 16px;
+        word-break: keep-all;
     }
 </style>

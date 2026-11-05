@@ -338,7 +338,8 @@
         password = ref(''),
         confirmed = ref(false),
         statementConfirmed = ref(false),
-        review = ref(null);
+        review = ref(null),
+        inlineReview = ref(false);
     watch(
         [selectedFiles, password, format, selectedAccount, inputMethod],
         () => {
@@ -354,7 +355,9 @@
         if (!focusFilePreview) return;
         focusFilePreview = false;
         await nextTick();
-        if (review.value) importReview.value?.focusHeading();
+        if (review.value && inlineReview.value)
+            fileUpload.value?.focusPreview();
+        else if (review.value) importReview.value?.focusHeading();
         else fileUpload.value?.focusError();
     }
     const statementBlocked = computed(
@@ -369,6 +372,10 @@
     );
     watch(review, () => {
         statementConfirmed.value = false;
+        if (!review.value) inlineReview.value = false;
+    });
+    watch([kind, asOf], () => {
+        if (inlineReview.value) review.value = null;
     });
     function resetFileInput() {
         fileUpload.value?.clear();
@@ -381,6 +388,10 @@
         importReceipt.value = null;
         error.value = '';
         message.value = '';
+    }
+    function clearImportFiles() {
+        selectedFiles.value = [];
+        if (inlineReview.value) review.value = null;
     }
     function selectImportFiles(event) {
         confirmed.value = false;
@@ -822,6 +833,19 @@
     }
     async function preview() {
         if (busy.value) return;
+        if (inlineReview.value && review.value) {
+            if (
+                !confirmed.value ||
+                review.value.accountId !== selectedAccount.value
+            )
+                return;
+            inlineReview.value = false;
+            selectedFiles.value = [];
+            fileUpload.value?.clear();
+            await nextTick();
+            importReview.value?.focusHeading();
+            return;
+        }
         filePreviewError.value = '';
         focusFilePreview = true;
         await run(
@@ -937,7 +961,8 @@
                     };
                     Object.assign(result, await enrichTossReview(result.rows));
                 }
-                if (ownUid.value === uid && selectedAccount.value === a.id)
+                if (ownUid.value === uid && selectedAccount.value === a.id) {
+                    inlineReview.value = result.source !== 'toss-pdf';
                     review.value = {
                         ...result,
                         accountId: a.id,
@@ -946,11 +971,14 @@
                         accountAlias: a.alias,
                         fileNames: files.map((file) => file.name),
                     };
+                }
                 if (format.value === 'toss-pdf' && result.asOf)
                     asOf.value = result.asOf;
                 password.value = '';
-                selectedFiles.value = [];
-                fileUpload.value?.clear();
+                if (result.source === 'toss-pdf') {
+                    selectedFiles.value = [];
+                    fileUpload.value?.clear();
+                }
                 if (results.some((item) => item.passwordSaved)) await refresh();
             },
             {
@@ -2698,7 +2726,11 @@
         <AssetUploadDialog
             v-model:visible="uploadDialog"
             :receipt="!!importReceipt"
-            :upload="inputMethod === 'file' && !review && !importReceipt"
+            :upload="
+                inputMethod === 'file' &&
+                (!review || inlineReview) &&
+                !importReceipt
+            "
             :title="`자료 업로드 · ${activeAccount?.alias || ''}`"
             :mapping="inputMethod === 'broker' && !review && !importReceipt"
             :busy="busy">
@@ -2771,7 +2803,7 @@
                         </div>
                     </div>
                     <SelectButton
-                        v-if="!review"
+                        v-if="!review || inlineReview"
                         v-model="inputMethod"
                         :options="inputMethodOptions"
                         option-label="label"
@@ -2800,7 +2832,7 @@
                         @preview="previewBroker" />
                     <PortfolioFileImportForm
                         v-if="inputMethod === 'file'"
-                        v-show="!review"
+                        v-show="!review || inlineReview"
                         ref="fileUpload"
                         v-model:kind="kind"
                         v-model:format="format"
@@ -2816,19 +2848,20 @@
                             activeAccount.permissions?.[ownUid] === 'owner'
                         "
                         :busy="busy"
-                        :reviewing="!!review"
+                        :reviewing="!!review && !inlineReview"
+                        :preview-review="inlineReview ? review : null"
                         :error="filePreviewError"
                         :kind-options="kindOptions"
                         :format-options="formatOptions"
                         :selected-files="selectedFiles"
                         @select="selectImportFiles"
-                        @clear="selectedFiles = []"
+                        @clear="clearImportFiles"
                         @preview="preview"
                         @remove-password="removePdfPassword"
                         @manual="inputMethod = 'manual'"
                         @reset="resetFileInput" />
                     <PortfolioImportReview
-                        v-if="review"
+                        v-if="review && !inlineReview"
                         ref="importReview"
                         :key="review.reviewId"
                         :review="review"

@@ -27,3 +27,6 @@
 사용자의 완료 부분 배포 요청에 따라 최신 운영 `df60198b514142ecfda3865f249b4a4cc754b2d4`에서 공개 검색 제목·입력의 scoped CSS만 분리했다. PR #237, head `66d24304691645c15e96b4f3bee5b998d825093d`다. 애플리케이션 변경은 `ThumbnailHomeView.vue` 한 파일이며 동작·데이터·계좌 기능은 변경하지 않는다. 제목22/33px·700/-0.02em, 입력44px/8px/15px를 원본과 대조했다. #236의 전체 변경은 배포하지 않는다.
 
 4폭×밝음/어두움의7속성, 기존 공개 부분 회귀/운용사 필터, Node788, build/type, lint오류0/기존69경고를 확인했다. Preview `dpl_FoKs5Th3Meua9An6p3CSp2kZjJss`는READY이며 릴리스SHA와 실제 동적 검색 CSS 응답이 일치한다. 처음 공통 index CSS를 조회했을 때 해당 선택자가 없었으며, entry JS가 참조하는 `ThumbnailHomeView-CV0EJw9_.css`를 확인해 두 속성군을 검증했다. 보호 설정과 인증 비밀은 변경·저장하지 않았다. 전체 검색 구조 수용 또는 실제 계좌 검증으로 확대하지 않는다. 이후 work/main 승격 및 운영 확인 결과는 클라우드의28차 릴리스 기록으로 구분한다.
+
+
+28차 원격 후속: 최신 공개 검색 work 병합과의 검색 CSS 충돌은 참조 기반 구조를 유지하고 검증한 입력 글꼴15px을 반영해 해소했다. 이 통합7513d5c의 application/API는 통과했으나 browser는 `final-ledger.browser.mjs:149`에서 두 Select leave-transition 목록을 단일 locator로 기다려 strict-mode 실패했다(실제 필터/0.2500/요청2회 검증 이후). 모든 목록의 detach를 기다리도록 해당 동기화만 수정하며 금융 assertion·제품 코드·권한을 바꾸지 않는다. 최초 실패41942791955와 후속 전체 검증은 클라우드28차 체크포인트에 분리 기록한다.

@@ -34,3 +34,7 @@
 남은 순서는 파일 업로드 → 검토 → 저장 결과의 연속 흐름, 장부 분석, 유사·테마 비교의 최종 기기별 시안 대조다. 별도 담당 시뮬레이터 파일은 통합 시 최종 SHA와 테스트를 받아 합친다. 실제 로그인한 계좌/PDF 흐름은 합성 테스트와 분리해 검증해야 한다.
 
 최신 열 연결 후속 치수·동작 검증은 [PHASE33_MAPPING_LAYOUT.md](PHASE33_MAPPING_LAYOUT.md)에 기록했다.
+
+저장 결과의 후속 구현·미검증 경계는 [PHASE34_IMPORT_RESULT.md](PHASE34_IMPORT_RESULT.md)에 기록합니다. 이 분기의 저장 결과 변경은 운영 승격 #249와 분리하며, 아직 배포하지 않았습니다.
+
+저장 결과의 헤더·아이콘·분리 카드 후속 대조는 [PHASE35_RECEIPT_FIDELITY.md](PHASE35_RECEIPT_FIDELITY.md)에 기록합니다. 금융 집계·명칭·영수증 전용 CSV는 근거 없는 값으로 대체하지 않습니다.

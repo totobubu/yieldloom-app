@@ -195,11 +195,48 @@ try {
         .click();
     await page
         .getByRole('heading', {
-            name: '자료 저장이 완료되었습니다',
+            name: /^증권 (거래|잔고)내역 저장 영수증$/,
+            level: 2,
             exact: true,
         })
         .waitFor();
     assert.equal(await form.isVisible(), false);
+    const savedRow = page.locator('.receipt-table tbody tr').first();
+    assert.match(await savedRow.innerText(), /AAPL/);
+    assert.match(await savedRow.innerText(), /250 USD/);
+    assert.match(await savedRow.innerText(), /1\.25/);
+    assert.match(
+        await page.locator('.receipt-overview').innerText(),
+        /broker\.xlsx/
+    );
+    await page
+        .getByRole('button', { name: 'CSV로 내려받기', exact: true })
+        .click({ trial: true });
+    const beforeReceiptResize = requests.length;
+    for (const width of [1440, 1280, 834, 768, 390, 360]) {
+        await page.setViewportSize({ width, height: 1000 });
+        const receipt = page.locator('.import-result');
+        const box = await receipt.boundingBox();
+        const expected = Math.min(width, 882) - (width <= 640 ? 16 : 48);
+        assert.ok(
+            Math.abs(box.width - expected) < 1,
+            `actual receipt content width ${width}: ${box.width} vs ${expected}`
+        );
+        assert.equal(
+            await receipt.evaluate((e) => e.scrollWidth > e.clientWidth + 1),
+            false,
+            `receipt overflow ${width}`
+        );
+        await page.screenshot({
+            path: `/tmp/yieldloom-receipt-dialog-${width}.png`,
+        });
+    }
+    assert.equal(
+        requests.length,
+        beforeReceiptResize,
+        'resizing the receipt adds no API requests'
+    );
+    await page.setViewportSize({ width: 1280, height: 900 });
     await page.getByRole('button', { name: '추가 등록', exact: true }).click();
     await choose('연결 자료 종류', '거래 내역');
     await form.getByLabel('조회 종료일', { exact: true }).fill('2026-10-18');
@@ -229,7 +266,8 @@ try {
         .click();
     await page
         .getByRole('heading', {
-            name: '자료 저장이 완료되었습니다',
+            name: /^증권 (거래|잔고)내역 저장 영수증$/,
+            level: 2,
             exact: true,
         })
         .waitFor();

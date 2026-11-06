@@ -1,0 +1,27 @@
+{
+  "sourceScreen": "cf7686fbb620465f93418fde1572a6cc",
+  "cssUrl": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css",
+  "checkedAt": "2026-11-06T02:03:08.668789+00:00",
+  "fontFilesUnmodified": true,
+  "scope": "Only Tablet/PC receipt refresh copy; CSS alias avoids altering the application Pretendard family; native PNG font identity not asserted",
+  "fonts": [
+    {
+      "weight": 400,
+      "file": "Pretendard-Regular.woff2",
+      "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2",
+      "bytes": 765892,
+      "sha256": "fad853f7f47c6c8b103171e7193fa095708cdcd70850a71d93aa5379e8a61d63"
+    },
+    {
+      "weight": 700,
+      "file": "Pretendard-Bold.woff2",
+      "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2",
+      "bytes": 791156,
+      "sha256": "4609c3356e536fafe38f4add0daeceb3d8595d3057bce13c428c33ddbd43d362"
+    }
+  ],
+  "licenseUrl": "https://raw.githubusercontent.com/orioncactus/pretendard/main/LICENSE",
+  "licenseSha256": "cc2582fa6dbd72ddfd229e709c0bae635f75a151ed1787adab9729a531b48a1f",
+  "upstreamLicenseSha256": "82e9c8a4b203261f10ddba1296422d64914ff3d4b7bd8a12896d03f0f088d70a",
+  "licenseWhitespaceNormalized": true
+}

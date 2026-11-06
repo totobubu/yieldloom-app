@@ -263,7 +263,10 @@ try {
         /broker\.xlsx/
     );
     await page
-        .getByRole('button', { name: 'CSV로 내려받기', exact: true })
+        .getByRole('button', {
+            name: '선택 계좌 전체 내역 CSV로 내려받기',
+            exact: true,
+        })
         .click({ trial: true });
     const beforeReceiptResize = requests.length;
     for (const width of [1440, 1280, 834, 768, 390, 360]) {

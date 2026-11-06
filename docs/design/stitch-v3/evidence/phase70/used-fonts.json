@@ -1,0 +1,91 @@
+[
+  {
+    "width": 834,
+    "scope": "actual browser font selection; native PNG font identity not asserted",
+    "fonts": [
+      {
+        "familyName": "Pretendard",
+        "postScriptName": "Pretendard-Regular",
+        "isCustomFont": true,
+        "glyphCount": 76
+      }
+    ],
+    "faces": [
+      {
+        "family": "YieldloomReceiptReference",
+        "weight": "400",
+        "status": "loaded"
+      },
+      {
+        "family": "YieldloomReceiptReference",
+        "weight": "700",
+        "status": "loaded"
+      }
+    ],
+    "requests": [
+      "/src/assets/fonts/stitch-receipt/Pretendard-Bold.woff2",
+      "/src/assets/fonts/stitch-receipt/Pretendard-Regular.woff2"
+    ]
+  },
+  {
+    "width": 768,
+    "scope": "actual browser font selection; native PNG font identity not asserted",
+    "fonts": [
+      {
+        "familyName": "Pretendard",
+        "postScriptName": "Pretendard-Regular",
+        "isCustomFont": true,
+        "glyphCount": 75
+      }
+    ],
+    "faces": [
+      {
+        "family": "YieldloomReceiptReference",
+        "weight": "400",
+        "status": "loaded"
+      },
+      {
+        "family": "YieldloomReceiptReference",
+        "weight": "700",
+        "status": "loaded"
+      }
+    ],
+    "requests": [
+      "/src/assets/fonts/stitch-receipt/Pretendard-Bold.woff2",
+      "/src/assets/fonts/stitch-receipt/Pretendard-Regular.woff2"
+    ],
+    "sourceFonts": [
+      {
+        "familyName": "Pretendard",
+        "postScriptName": "Pretendard-Regular",
+        "isCustomFont": true,
+        "glyphCount": 76
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "scope": "actual browser font selection; native PNG font identity not asserted",
+    "fonts": [
+      {
+        "familyName": "Noto Sans CJK KR",
+        "postScriptName": "NotoSansCJKkr-Regular",
+        "isCustomFont": false,
+        "glyphCount": 77
+      }
+    ],
+    "faces": [
+      {
+        "family": "YieldloomReceiptReference",
+        "weight": "400",
+        "status": "unloaded"
+      },
+      {
+        "family": "YieldloomReceiptReference",
+        "weight": "700",
+        "status": "unloaded"
+      }
+    ],
+    "requests": []
+  }
+]

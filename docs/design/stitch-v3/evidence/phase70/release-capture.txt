@@ -1,0 +1,1 @@
+PASS: receipt error/ready/replay, filters, 101-row paging, zero/precision, 5 widths, dark; zero API requests; source captures recorded, full visual acceptance pending.

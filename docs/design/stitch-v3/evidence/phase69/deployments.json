@@ -1,0 +1,35 @@
+{
+  "production": {
+    "id": "dpl_FV7yRpWShWdE7qb6Bix2bwbvQmtU",
+    "state": "READY",
+    "target": "production",
+    "url": "yieldloom-lc04fq3qq-totobubus-projects.vercel.app",
+    "sha": "fae1ce41961509eb21e71af64e28f143592b2e16"
+  },
+  "featurePreview": {
+    "id": "dpl_BxJz79hRhbUzQ9vMepAe4MLFdKwD",
+    "status": 200,
+    "release": {
+      "schemaVersion": 1,
+      "commit": "af9eb7f13ba8d50ba25455318496b520418b0d8d",
+      "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+    },
+    "styleChecks": {
+      "status": 200,
+      "path": "assets/FamilyPortfolioView-CcIzbDTy.css",
+      "checks": {
+        "footer": true,
+        "codeFlex": true
+      }
+    }
+  },
+  "workPreview": {
+    "id": "dpl_JAJ3wqHfn4SAieM3MucYGVydW7Kg",
+    "status": 200,
+    "release": {
+      "schemaVersion": 1,
+      "commit": "7a9227ffca114f00c37956f2ff20d7f60f90c3a3",
+      "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "sourceId": "80b06442816e4d1baebc96cb520b19d6",
+    "url": "https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap",
+    "httpStatus": "400",
+    "exitCode": 0,
+    "bodyBytes": 6658
+  },
+  {
+    "sourceId": "5aa7a573854a46db9b106f89c09c4f23",
+    "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+    "httpStatus": "200",
+    "exitCode": 0,
+    "bodyBytes": 2598
+  },
+  {
+    "sourceId": "5aa7a573854a46db9b106f89c09c4f23",
+    "url": "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap",
+    "httpStatus": "200",
+    "exitCode": 0,
+    "bodyBytes": 2598
+  },
+  {
+    "sourceId": "5aa7a573854a46db9b106f89c09c4f23",
+    "url": "https://fonts.googleapis.com/css2?family=Inter,+'Pretendard',+'Apple+SD+Gothic+Neo',+sans-serif:wght@100..900&display=swap",
+    "httpStatus": "400",
+    "exitCode": 0,
+    "bodyBytes": 6578
+  }
+]

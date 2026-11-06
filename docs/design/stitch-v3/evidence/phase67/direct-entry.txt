@@ -1,0 +1,17 @@
+{"name":"pages","view":"similar","attempt":"direct","status":200,"pathname":"/yieldloom-app/compare","marker":null,"redirected":false}
+{"name":"pages","view":"similar","attempt":"reload","status":200,"pathname":"/yieldloom-app/compare","marker":null,"redirected":false}
+{"name":"pages","view":"similar","attempt":"direct","status":200,"pathname":"/yieldloom-app/compare","marker":"a+b&c","redirected":false}
+{"name":"pages","view":"similar","attempt":"reload","status":200,"pathname":"/yieldloom-app/compare","marker":"a+b&c","redirected":false}
+{"name":"pages","view":"theme","attempt":"direct","status":200,"pathname":"/yieldloom-app/compare","marker":null,"redirected":false}
+{"name":"pages","view":"theme","attempt":"reload","status":200,"pathname":"/yieldloom-app/compare","marker":null,"redirected":false}
+{"name":"pages","view":"theme","attempt":"direct","status":200,"pathname":"/yieldloom-app/compare","marker":"a+b&c","redirected":false}
+{"name":"pages","view":"theme","attempt":"reload","status":200,"pathname":"/yieldloom-app/compare","marker":"a+b&c","redirected":false}
+{"name":"vercel","view":"similar","attempt":"direct","status":200,"pathname":"/compare","marker":null,"redirected":false}
+{"name":"vercel","view":"similar","attempt":"reload","status":200,"pathname":"/compare","marker":null,"redirected":false}
+{"name":"vercel","view":"similar","attempt":"direct","status":200,"pathname":"/compare","marker":"a+b&c","redirected":false}
+{"name":"vercel","view":"similar","attempt":"reload","status":200,"pathname":"/compare","marker":"a+b&c","redirected":false}
+{"name":"vercel","view":"theme","attempt":"direct","status":200,"pathname":"/compare","marker":null,"redirected":false}
+{"name":"vercel","view":"theme","attempt":"reload","status":200,"pathname":"/compare","marker":null,"redirected":false}
+{"name":"vercel","view":"theme","attempt":"direct","status":200,"pathname":"/compare","marker":"a+b&c","redirected":false}
+{"name":"vercel","view":"theme","attempt":"reload","status":200,"pathname":"/compare","marker":"a+b&c","redirected":false}
+PASS unknown Pages path retains HTTP404 fallback.

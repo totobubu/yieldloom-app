@@ -1,0 +1,72 @@
+[
+  {
+    "width": 1280,
+    "before": {
+      "totalDelta": null,
+      "refresh": 170,
+      "next": 314.5
+    },
+    "after": {
+      "totalDelta": null,
+      "refresh": 164.5,
+      "next": 288
+    },
+    "apiRequests": 0
+  },
+  {
+    "width": 834,
+    "before": {
+      "totalDelta": 32,
+      "refresh": 170,
+      "next": 314.5
+    },
+    "after": {
+      "totalDelta": 0,
+      "refresh": 164.5,
+      "next": 288
+    },
+    "apiRequests": 0
+  },
+  {
+    "width": 768,
+    "before": {
+      "totalDelta": 32,
+      "refresh": 170,
+      "next": 314.5
+    },
+    "after": {
+      "totalDelta": 0,
+      "refresh": 164.5,
+      "next": 288
+    },
+    "apiRequests": 0
+  },
+  {
+    "width": 390,
+    "before": {
+      "totalDelta": 14.875,
+      "refresh": 170,
+      "next": 316.75
+    },
+    "after": {
+      "totalDelta": 3.75,
+      "refresh": 161.625,
+      "next": 304.5
+    },
+    "apiRequests": 0
+  },
+  {
+    "width": 360,
+    "before": {
+      "totalDelta": null,
+      "refresh": 170,
+      "next": 330.5
+    },
+    "after": {
+      "totalDelta": null,
+      "refresh": 161.625,
+      "next": 304.5
+    },
+    "apiRequests": 0
+  }
+]

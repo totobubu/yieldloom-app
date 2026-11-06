@@ -1,0 +1,29 @@
+[
+  {
+    "sourceId": "5aa7a573854a46db9b106f89c09c4f23",
+    "size": [
+      2560,
+      2264
+    ],
+    "metadataKeys": [],
+    "sha256": "b7446a248d0a4891d093a58464a9cdeb617fd6123f27eb0074b3e365b6d8f184"
+  },
+  {
+    "sourceId": "6bd9777b8bea43b98aea8397a29f809a",
+    "size": [
+      780,
+      5416
+    ],
+    "metadataKeys": [],
+    "sha256": "c15ea5f4ecdce7e3ff814095e8724151bd78798caf3b2354b7b00ba1ce975bc0"
+  },
+  {
+    "sourceId": "80b06442816e4d1baebc96cb520b19d6",
+    "size": [
+      780,
+      4152
+    ],
+    "metadataKeys": [],
+    "sha256": "78a699ac0fd3c2917a9171806e0cb53eacef8b11de75acbbc47e94b6867c3287"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "sourceId": "5aa7a573854a46db9b106f89c09c4f23",
+    "status": 400,
+    "reason": "Invalid selector: font family list was encoded as one requested family"
+  },
+  {
+    "sourceId": "80b06442816e4d1baebc96cb520b19d6",
+    "status": 400,
+    "reason": "Missing font family: requested Pretendard family was unavailable at the source URL"
+  }
+]

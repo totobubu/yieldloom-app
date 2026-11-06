@@ -1,5 +1,5 @@
 <script setup>
-    import { computed, ref } from 'vue';
+    import { computed, nextTick, ref, useId } from 'vue';
     import Button from 'primevue/button';
     import FileUpload from 'primevue/fileupload';
     import InputText from 'primevue/inputtext';
@@ -37,6 +37,8 @@
         'manual',
     ]);
     const uploader = ref(null);
+    const replacementPicker = ref(null);
+    const uploadInputId = `portfolio-upload-${useId()}`;
     const errorNotice = ref(null);
     const passwordInput = ref(null);
     const showPassword = ref(false);
@@ -99,8 +101,28 @@
         href: `data:text/csv;charset=utf-8,${encodeURIComponent('\uFEFF' + sample.text)}`,
     }));
     function chooseFile() {
-        if (!isPdf.value) clear();
-        uploader.value?.choose();
+        if (props.busy) return;
+        if (!isPdf.value && props.selectedFiles.length)
+            replacementPicker.value?.click();
+        else uploader.value?.choose();
+    }
+    async function selectReplacement(event) {
+        const picker = event.target;
+        const files = picker.files;
+        if (props.busy || !files?.length) {
+            picker.value = '';
+            return;
+        }
+        // Keep the current file/preview until a new selection exists. Clearing
+        // first also disables PrimeVue's limit-1 input until its next DOM tick.
+        clear();
+        await nextTick();
+        const input = document.getElementById(uploadInputId);
+        if (input) {
+            input.files = files;
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        picker.value = '';
     }
     function clear() {
         showPassword.value = false;
@@ -301,6 +323,15 @@
                                 : '파일 선택 전'
                         }}</span>
                     </div>
+                    <input
+                        v-if="!isPdf"
+                        ref="replacementPicker"
+                        type="file"
+                        hidden
+                        aria-label="변경할 파일"
+                        :accept="accept"
+                        :disabled="busy"
+                        @change="selectReplacement" />
                     <FileUpload
                         ref="uploader"
                         name="portfolioFile"
@@ -315,7 +346,7 @@
                         invalid-file-type-message="{0}: 선택한 파일 형식과 일치하는 파일을 올려 주세요."
                         invalid-file-limit-message="선택 가능한 파일 수는 최대 {0}개입니다."
                         :pt="{
-                            input: { 'aria-label': '파일' },
+                            input: { id: uploadInputId, 'aria-label': '파일' },
                             header: { class: 'import-uploader-header' },
                             content: { class: 'import-uploader-content' },
                         }"
@@ -329,8 +360,7 @@
                         @select="emit('select', $event)"
                         @remove="emit('select', $event)"
                         @clear="emit('clear')">
-                        <template
-                            #header="{ chooseCallback, clearCallback, files }">
+                        <template #header="{ clearCallback, files }">
                             <div class="upload-mobile-picker">
                                 <span class="upload-picker-symbol"
                                     ><i
@@ -381,12 +411,7 @@
                                     "
                                     icon="pi pi-plus"
                                     :disabled="busy"
-                                    @click="
-                                        () => {
-                                            if (!isPdf) clearCallback();
-                                            chooseCallback();
-                                        }
-                                    " />
+                                    @click="chooseFile" />
                                 <Button
                                     v-if="files.length"
                                     type="button"

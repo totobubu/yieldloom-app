@@ -45,22 +45,28 @@
     const presetApplied = ref(false);
     const presetSheet = ref('');
     let pendingPreset = null;
-    watch([broker, kind, () => props.account.id], () => {
-        pendingPreset = null;
-        presetSheet.value = '';
-        presetStatus.value = '';
-        info.value = null;
-        mapping.value = {};
-        generation++;
-        inspecting.value = false;
-        confirmed.value = false;
-    });
+    watch(
+        [broker, kind, () => props.account.id],
+        () => {
+            pendingPreset = null;
+            presetSheet.value = '';
+            presetStatus.value = '';
+            info.value = null;
+            mapping.value = {};
+            mappingConfirmed.value = false;
+            presetApplied.value = false;
+            generation++;
+            inspecting.value = false;
+            confirmed.value = false;
+        },
+        { flush: 'sync' }
+    );
     watch(
         [mapping, defaultCurrency],
         () => {
             mappingConfirmed.value = false;
         },
-        { deep: true }
+        { deep: true, flush: 'sync' }
     );
     function loadPreset() {
         try {
@@ -70,6 +76,8 @@
                 kind.value
             );
             if (!pendingPreset) throw new Error('저장된 설정이 없습니다.');
+            mappingConfirmed.value = false;
+            presetApplied.value = false;
             encoding.value = pendingPreset.encoding;
             headerRow.value = pendingPreset.headerRow;
             info.value = null;
@@ -321,12 +329,17 @@
         }
     }
     function preview() {
+        if (props.busy || inspecting.value) return;
         error.value = '';
         try {
             if (!info.value) throw new Error('파일의 열을 먼저 확인하세요.');
-            if (presetApplied.value && !mappingConfirmed.value)
+            if (!mappingReady.value)
+                throw new Error('필수 열과 통화 설정을 확인하세요.');
+            if (!mappingConfirmed.value)
                 throw new Error(
-                    '불러온 열 연결과 통화를 확인한 뒤 확인란을 선택하세요.'
+                    presetApplied.value
+                        ? '불러온 열 연결과 통화를 확인한 뒤 확인란을 선택하세요.'
+                        : '파일의 열 연결과 기본 통화를 확인한 뒤 확인란을 선택하세요.'
                 );
             const data = form();
             data.set('defaultCurrency', defaultCurrency.value);
@@ -925,6 +938,7 @@
                                     ><input
                                         v-model="mappingConfirmed"
                                         type="checkbox"
+                                        required
                                         :disabled="!mappingReady" />파일의 열
                                     연결과 기본 통화를 확인했습니다.</label
                                 >
@@ -943,13 +957,14 @@
                                     활성화됩니다.</Message
                                 >
                                 <Message
-                                    v-else-if="
-                                        presetApplied && !mappingConfirmed
-                                    "
+                                    v-else-if="!mappingConfirmed"
                                     severity="warn"
                                     :closable="false"
-                                    >불러온 열 연결과 통화를 확인한 뒤 확인란을
-                                    선택하세요.</Message
+                                    >{{
+                                        presetApplied
+                                            ? '불러온 열 연결과 통화를 확인한 뒤 확인란을 선택하세요.'
+                                            : '파일의 열 연결과 기본 통화를 확인한 뒤 확인란을 선택하세요.'
+                                    }}</Message
                                 >
                                 <Button
                                     type="submit"
@@ -957,8 +972,7 @@
                                     icon="pi pi-arrow-right"
                                     icon-pos="right"
                                     :disabled="
-                                        !mappingReady ||
-                                        (presetApplied && !mappingConfirmed)
+                                        !mappingReady || !mappingConfirmed
                                     " />
                                 <Button
                                     type="button"

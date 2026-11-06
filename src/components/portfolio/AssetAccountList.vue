@@ -265,6 +265,8 @@
         background: currentColor;
     }
     .account-card-primary-tools {
+        --p-button-label-font-weight: 400;
+        --p-button-gap: 4px;
         display: flex;
         gap: 8px;
         padding-top: 8px;
@@ -277,6 +279,7 @@
         min-height: 36px;
         padding: 0 12px;
         border-radius: 8px;
+        border: 0;
         font-size: 12px;
         line-height: 16px;
     }
@@ -337,7 +340,7 @@
     .account-card-snapshot > div {
         display: flex;
         justify-content: space-between;
-        align-items: baseline;
+        align-items: center;
         gap: 12px;
     }
     .account-card-snapshot dt {

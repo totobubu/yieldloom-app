@@ -1,0 +1,513 @@
+{
+  "scope": "Read-only synthetic fixture DOM ancestors. Geometry diagnosis only; no native acceptance/private account or production writes.",
+  "rows": [
+    {
+      "width": 1280,
+      "ancestors": [
+        {
+          "tag": "UL",
+          "classes": "accounts",
+          "role": null,
+          "x": 272,
+          "width": 984,
+          "padding": "0px 0px 0px 20px",
+          "border": "0px",
+          "display": "grid",
+          "gap": "16px"
+        },
+        {
+          "tag": "SECTION",
+          "classes": "asset-management-overview",
+          "role": null,
+          "x": 272,
+          "width": 984,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "SECTION",
+          "classes": "portfolio-panel",
+          "role": null,
+          "x": 272,
+          "width": 984,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-panels",
+          "role": null,
+          "x": 272,
+          "width": 984,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-tabs",
+          "role": null,
+          "x": 272,
+          "width": 984,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-content-body",
+          "role": null,
+          "x": 272,
+          "width": 984,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-content family-page",
+          "role": null,
+          "x": 272,
+          "width": 984,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "MAIN",
+          "classes": "studio-main",
+          "role": null,
+          "x": 272,
+          "width": 984,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "shell-body with-submenu",
+          "role": null,
+          "x": 0,
+          "width": 1280,
+          "padding": "24px",
+          "border": "0px",
+          "display": "flex",
+          "gap": "24px"
+        },
+        {
+          "tag": "DIV",
+          "classes": "thumbnail-app studio-shell portfolio-submenu-open",
+          "role": null,
+          "x": 0,
+          "width": 1280,
+          "padding": "0px",
+          "border": "0px",
+          "display": "flex",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "",
+          "role": null,
+          "x": 0,
+          "width": 1280,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        }
+      ],
+      "assetFailures": []
+    },
+    {
+      "width": 1024,
+      "ancestors": [
+        {
+          "tag": "UL",
+          "classes": "accounts",
+          "role": null,
+          "x": 272,
+          "width": 728,
+          "padding": "0px 0px 0px 20px",
+          "border": "0px",
+          "display": "grid",
+          "gap": "16px"
+        },
+        {
+          "tag": "SECTION",
+          "classes": "asset-management-overview",
+          "role": null,
+          "x": 272,
+          "width": 728,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "SECTION",
+          "classes": "portfolio-panel",
+          "role": null,
+          "x": 272,
+          "width": 728,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-panels",
+          "role": null,
+          "x": 272,
+          "width": 728,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-tabs",
+          "role": null,
+          "x": 272,
+          "width": 728,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-content-body",
+          "role": null,
+          "x": 272,
+          "width": 728,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-content family-page",
+          "role": null,
+          "x": 272,
+          "width": 728,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "MAIN",
+          "classes": "studio-main",
+          "role": null,
+          "x": 272,
+          "width": 728,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "shell-body with-submenu",
+          "role": null,
+          "x": 0,
+          "width": 1024,
+          "padding": "24px",
+          "border": "0px",
+          "display": "flex",
+          "gap": "24px"
+        },
+        {
+          "tag": "DIV",
+          "classes": "thumbnail-app studio-shell portfolio-submenu-open",
+          "role": null,
+          "x": 0,
+          "width": 1024,
+          "padding": "0px",
+          "border": "0px",
+          "display": "flex",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "",
+          "role": null,
+          "x": 0,
+          "width": 1024,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        }
+      ],
+      "assetFailures": []
+    },
+    {
+      "width": 834,
+      "ancestors": [
+        {
+          "tag": "UL",
+          "classes": "accounts",
+          "role": null,
+          "x": 24,
+          "width": 786,
+          "padding": "0px 0px 0px 20px",
+          "border": "0px",
+          "display": "grid",
+          "gap": "16px"
+        },
+        {
+          "tag": "SECTION",
+          "classes": "asset-management-overview",
+          "role": null,
+          "x": 24,
+          "width": 786,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "SECTION",
+          "classes": "portfolio-panel",
+          "role": null,
+          "x": 24,
+          "width": 786,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-panels",
+          "role": null,
+          "x": 24,
+          "width": 786,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-tabs",
+          "role": null,
+          "x": 24,
+          "width": 786,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-content-body",
+          "role": null,
+          "x": 24,
+          "width": 786,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-content family-page",
+          "role": null,
+          "x": 24,
+          "width": 786,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "MAIN",
+          "classes": "studio-main",
+          "role": null,
+          "x": 0,
+          "width": 834,
+          "padding": "24px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "shell-body with-submenu",
+          "role": null,
+          "x": 0,
+          "width": 834,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "24px"
+        },
+        {
+          "tag": "DIV",
+          "classes": "thumbnail-app studio-shell portfolio-submenu-open",
+          "role": null,
+          "x": 0,
+          "width": 834,
+          "padding": "0px",
+          "border": "0px",
+          "display": "flex",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "",
+          "role": null,
+          "x": 0,
+          "width": 834,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        }
+      ],
+      "assetFailures": []
+    },
+    {
+      "width": 390,
+      "ancestors": [
+        {
+          "tag": "UL",
+          "classes": "accounts",
+          "role": null,
+          "x": 16,
+          "width": 358,
+          "padding": "0px 0px 0px 20px",
+          "border": "0px",
+          "display": "grid",
+          "gap": "16px"
+        },
+        {
+          "tag": "SECTION",
+          "classes": "asset-management-overview",
+          "role": null,
+          "x": 16,
+          "width": 358,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "SECTION",
+          "classes": "portfolio-panel",
+          "role": null,
+          "x": 16,
+          "width": 358,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-panels",
+          "role": null,
+          "x": 16,
+          "width": 358,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-tabs",
+          "role": null,
+          "x": 16,
+          "width": 358,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-content-body",
+          "role": null,
+          "x": 16,
+          "width": 358,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "portfolio-content family-page",
+          "role": null,
+          "x": 16,
+          "width": 358,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "MAIN",
+          "classes": "studio-main",
+          "role": null,
+          "x": 0,
+          "width": 390,
+          "padding": "16px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "shell-body with-submenu",
+          "role": null,
+          "x": 0,
+          "width": 390,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "24px"
+        },
+        {
+          "tag": "DIV",
+          "classes": "thumbnail-app studio-shell portfolio-submenu-open",
+          "role": null,
+          "x": 0,
+          "width": 390,
+          "padding": "0px",
+          "border": "0px",
+          "display": "flex",
+          "gap": "normal"
+        },
+        {
+          "tag": "DIV",
+          "classes": "",
+          "role": null,
+          "x": 0,
+          "width": 390,
+          "padding": "0px",
+          "border": "0px",
+          "display": "block",
+          "gap": "normal"
+        }
+      ],
+      "assetFailures": []
+    }
+  ]
+}

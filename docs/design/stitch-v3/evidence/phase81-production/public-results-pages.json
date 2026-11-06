@@ -1,0 +1,52 @@
+{
+  "site": "pages",
+  "commit": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+  "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
+  "status": 200,
+  "states": [
+    {
+      "width": 1280,
+      "samePayloadAndRevertedInputReusesId": true,
+      "changedMessageAndCategoryStoredWithNewId": true,
+      "pendingLocked": true,
+      "extraReads": 0,
+      "realFeedbackOrOtherWrites": 0
+    },
+    {
+      "width": 768,
+      "samePayloadAndRevertedInputReusesId": true,
+      "changedMessageAndCategoryStoredWithNewId": true,
+      "pendingLocked": true,
+      "extraReads": 0,
+      "realFeedbackOrOtherWrites": 0
+    },
+    {
+      "width": 390,
+      "samePayloadAndRevertedInputReusesId": true,
+      "changedMessageAndCategoryStoredWithNewId": true,
+      "pendingLocked": true,
+      "extraReads": 0,
+      "realFeedbackOrOtherWrites": 0
+    }
+  ],
+  "mockPosts": 18,
+  "forwardedWrites": 0,
+  "initialReads": 1,
+  "extraReads": 0,
+  "reads": [
+    {
+      "path": "/api/thumbnail-data",
+      "status": 200
+    }
+  ],
+  "writesBlocked": [
+    {
+      "method": "POST",
+      "host": "yieldloom-app.vercel.app",
+      "path": "/api/analytics"
+    }
+  ],
+  "errors": [],
+  "failedHosts": [],
+  "scope": "Actual deployed anonymous QQQI frontend with feedback POSTs fully intercepted before transport and synthetic acknowledgements. Actual public GET data untouched, inherited Node CA/proxy. No real feedback receipt, customer account/PDF or DB write verification; no full native PNG acceptance."
+}

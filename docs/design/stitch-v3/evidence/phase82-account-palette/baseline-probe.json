@@ -1,0 +1,25 @@
+{
+  "errors": [],
+  "responses": [
+    {
+      "path": "/node_modules/.vite/deps/vue.js",
+      "status": 404
+    },
+    {
+      "path": "/node_modules/.vite/deps/primevue_config.js",
+      "status": 404
+    }
+  ],
+  "failed": [
+    {
+      "path": "/node_modules/.vite/deps/vue.js",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/node_modules/.vite/deps/primevue_config.js",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "count": 0,
+  "body": ""
+}

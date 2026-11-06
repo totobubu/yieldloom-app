@@ -1,0 +1,25 @@
+{
+  "harnessFailures": "Initial original-button role lookup included the material icon text, so CSS source locator was used. Early baseline HTML hardcoded Vite cache URLs and saw404; final harness resolves actual Vue/PrimeVue URLs including versions from each local Vite entry. Not a product/auth defect. No dependency/lock/production configuration change.",
+  "scopeCorrection": "Intermediate :global ancestor syntax dropped descendant selectors in SFC compilation. Replaced with ordinary :root:not(.p-dark) ancestor plus compiler-scoped component nodes; final outside-control equality verifies isolation. Intermediate output not used for acceptance.",
+  "darkFailureAndCorrection": [
+    {
+      "viewport": 1280,
+      "oldInheritedBody": "rgb(255, 255, 255)",
+      "intermediateExplicitToken": "rgb(241, 245, 249)",
+      "resolution": "Restore inherit fallback; final nine-role dark values and owner RGB identical."
+    },
+    {
+      "viewport": 834,
+      "oldInheritedBody": "rgb(255, 255, 255)",
+      "intermediateExplicitToken": "rgb(241, 245, 249)",
+      "resolution": "Restore inherit fallback; final nine-role dark values and owner RGB identical."
+    },
+    {
+      "viewport": 390,
+      "oldInheritedBody": "rgb(255, 255, 255)",
+      "intermediateExplicitToken": "rgb(241, 245, 249)",
+      "resolution": "Restore inherit fallback; final nine-role dark values and owner RGB identical."
+    }
+  ],
+  "notAccepted": "Original dark frame unavailable; source and app example strings/permissions differ, whole frame/fonts/opacity and unsupported-original-file behavior not accepted. No financial status or dummy values copied."
+}

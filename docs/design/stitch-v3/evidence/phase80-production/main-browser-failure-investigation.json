@@ -1,0 +1,12 @@
+{
+  "run": 42221027876,
+  "attempt": 1,
+  "head": "160951854be8c74c81306bd20305eec79f364651",
+  "failedJob": 127902807175,
+  "failure": "locator.evaluate timeout30s at last month active-element check, viewport768 resize; visible button resolved",
+  "chartAndTestUnchangedFromPreviousProduction": true,
+  "localFullSuite": "passed1280/768/390 + inactive/missing; exact assertion/timeout retained",
+  "earlierSameTreeFeatureWorkPromotionCI": "all4 success",
+  "historicalRootCause": "unconfirmed; no browser trace/active-element history in failed CI. Re-run success must not be reported as cause resolution.",
+  "rerun": "Only failed browser job once on exact same main head; no app or test relaxation, permission or CI settings changes."
+}

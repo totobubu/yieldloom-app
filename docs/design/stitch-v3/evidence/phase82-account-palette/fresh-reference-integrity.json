@@ -1,0 +1,22 @@
+{
+  "screenId": "b611bd07ed0c464581479140b9207afb",
+  "projectId": "7356929996797649648",
+  "checkedAt": "2026-11-06T14:19:05.248222+00:00",
+  "method": "fresh official MCP get_screen and download_file",
+  "files": [
+    {
+      "resourceName": "projects/7356929996797649648/screens/b611bd07ed0c464581479140b9207afb/fileEntries/html",
+      "kind": "html",
+      "bytes": 40503,
+      "sha256": "a2c479cdcf8a29a631a78328110569b91f98bc6eaa9eaa166c486367cd38e0fe",
+      "matchesCachedMapping": true
+    },
+    {
+      "resourceName": "projects/7356929996797649648/screens/b611bd07ed0c464581479140b9207afb/fileEntries/screenshot",
+      "kind": "png",
+      "bytes": 482314,
+      "sha256": "9d0d725fe085b02fc461a826580dcd4a0409be27af1ea5ecbc14dc3037adaf8f",
+      "matchesCachedMapping": true
+    }
+  ]
+}

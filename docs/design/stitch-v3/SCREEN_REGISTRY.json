@@ -7,7 +7,7 @@
   "families": 9,
   "testFramesExcluded": 1,
   "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-  "currentCodeBase": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+  "currentCodeBase": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
   "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
   "frames": [
     {
@@ -2504,28 +2504,24 @@
   "projectFrameCountAtInitialRead": 64,
   "registeredFrameCount": 73,
   "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-  "latestImplementationBase": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+  "latestImplementationBase": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
   "rolloutSnapshot": {
-    "recordedAt": "2026-11-06T11:17:02.495413+00:00",
-    "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
-    "productionMergeSha": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+    "recordedAt": "2026-11-06T14:12:14.748149+00:00",
+    "scope": "20 final reviewed IDs/9 families,15 operating/5 external/approval; not additive to original14; no new designs this phase",
+    "productionMergeSha": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+    "servedProductionSha": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
     "productionTargets": 15,
-    "localWorkTargets": 0,
-    "parallelDeliveredDraftTargets": 0,
     "externalUnverifiedTargets": 5,
-    "visualAcceptance": "whole-frame acceptance remains incomplete",
-    "evidence": "PHASE79_PRODUCTION.md",
-    "qualification": "15 production-connected /5 external handoff unverified; not whole-frame visual acceptance or real-account verification",
+    "localWorkTargets": 0,
+    "visualAcceptance": "whole native frame/font acceptance remains incomplete",
+    "evidence": "PHASE81_PRODUCTION.md",
     "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
-    "verificationScope": "Actual anonymous QQQI on two sites/four widths, same focused month visible after resize; private accounts/customer PDFs/full native PNG unverified.",
     "mainPostMergeCi": {
-      "run": "42206667537",
+      "run": "42228322203",
       "result": "4/4 success",
-      "head": "67a7b2214c2678dea90b46a70e5e8c3303fd0966"
+      "head": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b"
     },
-    "servedProductionSha": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
-    "phase79Evidence": "PHASE79_PRODUCTION.md",
-    "phase79Qualification": "Two existing-screen improvements only. Inventory counts unchanged, not whole-screen native acceptance or real account/PDF verification."
+    "verificationScope": "Local synthetic asset flows/geometry; actual two-site release/index/entry/CSS and anonymous QQQI feedback with all POST intercepted. No actual authenticated accounts/customer PDFs/DB writes/full native acceptance."
   },
   "latestReferenceIntegrity": {
     "checkedAt": "2026-11-05T17:19:37.559897+00:00",
@@ -2563,20 +2559,29 @@
     "sourceBranchHistorical": true
   },
   "latestOriginal14Followup": {
-    "screenId": "bd619d24ceb74c92afad1787a364ab4b",
     "projectId": "7356929996797649648",
-    "route": "/stock/:ticker?tab=dividends",
-    "component": "src/components/stock/StockDividendTrend.vue",
-    "sourceIntegrity": "evidence/phase78/fresh-reference-integrity.json",
-    "viewports": [
+    "screenId": "b611bd07ed0c464581479140b9207afb",
+    "route": "/mypage?tab=assets",
+    "component": "src/pages/FamilyPortfolioView.vue ordinary-list CSS affecting AssetAccountList root",
+    "main": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+    "tree": "9abc0772b41272390895159c9dd1ee5959c95d92",
+    "sourceIntegrity": "evidence/phase81-account-inset/fresh-reference-integrity.json",
+    "geometryViewports": [
       1280,
+      1024,
       834,
+      390
+    ],
+    "syntheticIntegratedFlowViewports": [
+      1280,
       768,
       390
     ],
-    "status": "operating; focused resize corrected; full native PNG/font not accepted; private accounts/PDF unverified",
-    "evidence": "PHASE79_PRODUCTION.md",
-    "newDeviceDesignCount": 0
+    "actualDelivery": "both releases/current entry/exact built CSS only; authenticated account rendering unverified",
+    "status": "operating list inset correction; PC composition/columns/colors/full native PNG/font/private accounts/PDF not accepted/verified",
+    "newDeviceDesignCount": 0,
+    "evidence": "PHASE81_PRODUCTION.md",
+    "sourceRouteStateMap": "evidence/phase81-production/source-route-state-map.json"
   },
   "phase78Original14FollowupHistorical": {
     "screenId": "bd619d24ceb74c92afad1787a364ab4b",
@@ -2596,6 +2601,58 @@
   },
   "latestOriginal14Followups": [
     {
+      "projectId": "7356929996797649648",
+      "screenId": "b611bd07ed0c464581479140b9207afb",
+      "route": "/mypage?tab=assets",
+      "component": "src/pages/FamilyPortfolioView.vue ordinary-list CSS affecting AssetAccountList root",
+      "main": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+      "tree": "9abc0772b41272390895159c9dd1ee5959c95d92",
+      "sourceIntegrity": "evidence/phase81-account-inset/fresh-reference-integrity.json",
+      "geometryViewports": [
+        1280,
+        1024,
+        834,
+        390
+      ],
+      "syntheticIntegratedFlowViewports": [
+        1280,
+        768,
+        390
+      ],
+      "actualDelivery": "both releases/current entry/exact built CSS only; authenticated account rendering unverified",
+      "status": "operating list inset correction; PC composition/columns/colors/full native PNG/font/private accounts/PDF not accepted/verified",
+      "newDeviceDesignCount": 0,
+      "evidence": "PHASE81_PRODUCTION.md",
+      "sourceRouteStateMap": "evidence/phase81-production/source-route-state-map.json"
+    },
+    {
+      "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
+      "projectId": "7356929996797649648",
+      "route": "/stock/:ticker?tab=details",
+      "component": "src/components/stock/StockFeedbackForm.vue",
+      "states": [
+        "pending",
+        "lost acknowledgement",
+        "same/reverted payload retry",
+        "changed message retry",
+        "changed category retry",
+        "success",
+        "dark"
+      ],
+      "viewports": [
+        1280,
+        768,
+        390
+      ],
+      "main": "160951854be8c74c81306bd20305eec79f364651",
+      "sourceTree": "42097a68b4bcf8cdd25a505dbb75f19e39ae59cb",
+      "newDeviceDesignCount": 0,
+      "scope": "Actual frontend served at two public sites; all feedback POST intercepted before transport. No real receipt, private account/PDF or full native PNG/font acceptance.",
+      "evidence": "PHASE80_PRODUCTION.md",
+      "sourceRouteStateMap": "evidence/phase80-production/source-route-state-map.json",
+      "status": "operating retry-identity fix; all actual feedback POST intercepted; real receipt/private accounts/PDF/full native PNG/font not verified"
+    },
+    {
       "screenId": "bd619d24ceb74c92afad1787a364ab4b",
       "projectId": "7356929996797649648",
       "route": "/stock/:ticker?tab=dividends",
@@ -2610,21 +2667,6 @@
       "status": "operating; focused resize corrected; full native PNG/font not accepted; private accounts/PDF unverified",
       "evidence": "PHASE79_PRODUCTION.md",
       "newDeviceDesignCount": 0
-    },
-    {
-      "screenId": "b611bd07ed0c464581479140b9207afb",
-      "projectId": "7356929996797649648",
-      "route": "/mypage?tab=assets",
-      "component": "src/components/portfolio/AssetAccountList.vue",
-      "viewports": [
-        1280,
-        1024,
-        834,
-        390
-      ],
-      "status": "operating partial card correction; PC slot/columns and native font/PNG remain unaccepted; real accounts/PDF unverified",
-      "evidence": "PHASE79_PRODUCTION.md",
-      "newDeviceDesignCount": 0
     }
   ],
   "phase79Followup": {
@@ -2633,5 +2675,78 @@
     "newDeviceDesigns": 0,
     "evidence": "PHASE79_PRODUCTION.md",
     "scope": "Fresh asset-card reference; focus operating defect verified. No refetch/acceptance claim for all original14 or final20."
+  },
+  "phase80Followup": {
+    "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
+    "projectId": "7356929996797649648",
+    "route": "/stock/:ticker?tab=details",
+    "component": "src/components/stock/StockFeedbackForm.vue",
+    "states": [
+      "pending",
+      "lost acknowledgement",
+      "same/reverted payload retry",
+      "changed message retry",
+      "changed category retry",
+      "success",
+      "dark"
+    ],
+    "viewports": [
+      1280,
+      768,
+      390
+    ],
+    "main": "160951854be8c74c81306bd20305eec79f364651",
+    "sourceTree": "42097a68b4bcf8cdd25a505dbb75f19e39ae59cb",
+    "newDeviceDesignCount": 0,
+    "scope": "Actual frontend served at two public sites; all feedback POST intercepted before transport. No real receipt, private account/PDF or full native PNG/font acceptance.",
+    "evidence": "PHASE80_PRODUCTION.md",
+    "sourceRouteStateMap": "evidence/phase80-production/source-route-state-map.json"
+  },
+  "phase81Followup": {
+    "projectId": "7356929996797649648",
+    "screenId": "b611bd07ed0c464581479140b9207afb",
+    "route": "/mypage?tab=assets",
+    "component": "src/pages/FamilyPortfolioView.vue ordinary-list CSS affecting AssetAccountList root",
+    "main": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+    "tree": "9abc0772b41272390895159c9dd1ee5959c95d92",
+    "sourceIntegrity": "evidence/phase81-account-inset/fresh-reference-integrity.json",
+    "geometryViewports": [
+      1280,
+      1024,
+      834,
+      390
+    ],
+    "syntheticIntegratedFlowViewports": [
+      1280,
+      768,
+      390
+    ],
+    "actualDelivery": "both releases/current entry/exact built CSS only; authenticated account rendering unverified",
+    "status": "operating list inset correction; PC composition/columns/colors/full native PNG/font/private accounts/PDF not accepted/verified",
+    "newDeviceDesignCount": 0,
+    "evidence": "PHASE81_PRODUCTION.md",
+    "sourceRouteStateMap": "evidence/phase81-production/source-route-state-map.json"
+  },
+  "phase79RolloutSnapshotHistorical": {
+    "recordedAt": "2026-11-06T11:17:02.495413+00:00",
+    "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
+    "productionMergeSha": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+    "productionTargets": 15,
+    "localWorkTargets": 0,
+    "parallelDeliveredDraftTargets": 0,
+    "externalUnverifiedTargets": 5,
+    "visualAcceptance": "whole-frame acceptance remains incomplete",
+    "evidence": "PHASE79_PRODUCTION.md",
+    "qualification": "15 production-connected /5 external handoff unverified; not whole-frame visual acceptance or real-account verification",
+    "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
+    "verificationScope": "Actual anonymous QQQI on two sites/four widths, same focused month visible after resize; private accounts/customer PDFs/full native PNG unverified.",
+    "mainPostMergeCi": {
+      "run": "42206667537",
+      "result": "4/4 success",
+      "head": "67a7b2214c2678dea90b46a70e5e8c3303fd0966"
+    },
+    "servedProductionSha": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+    "phase79Evidence": "PHASE79_PRODUCTION.md",
+    "phase79Qualification": "Two existing-screen improvements only. Inventory counts unchanged, not whole-screen native acceptance or real account/PDF verification."
   }
 }

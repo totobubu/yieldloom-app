@@ -1,0 +1,34 @@
+{
+  "baseline": "phase81-account-inset/after/geometry.json",
+  "scope": "Same synthetic full-app fixture; all previously recorded card geometry fields equal, not full original PNG acceptance",
+  "rows": [
+    {
+      "viewport": 1280,
+      "allRecordedAppGeometryIdentical": true,
+      "cardWidth": 317.328125,
+      "cardHeight": 300,
+      "columns": 3
+    },
+    {
+      "viewport": 1024,
+      "allRecordedAppGeometryIdentical": true,
+      "cardWidth": 728,
+      "cardHeight": 284,
+      "columns": 1
+    },
+    {
+      "viewport": 834,
+      "allRecordedAppGeometryIdentical": true,
+      "cardWidth": 786,
+      "cardHeight": 284,
+      "columns": 1
+    },
+    {
+      "viewport": 390,
+      "allRecordedAppGeometryIdentical": true,
+      "cardWidth": 358,
+      "cardHeight": 284,
+      "columns": 1
+    }
+  ]
+}

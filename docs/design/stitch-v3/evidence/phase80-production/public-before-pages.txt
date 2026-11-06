@@ -1,0 +1,17 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to:
+
+'a4577e9e-cb12-4a39-9781-9ff63531be22'
+    at file:///tmp/phase80/public-feedback.mjs:35:337 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'a4577e9e-cb12-4a39-9781-9ff63531be22',
+  expected: 'a4577e9e-cb12-4a39-9781-9ff63531be22',
+  operator: 'notStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

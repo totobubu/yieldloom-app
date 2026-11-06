@@ -1,0 +1,12 @@
+{
+  "base": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+  "work": "f162760133fc8040a6d76ee06c46f1f79398dbba",
+  "feature": "02990db8132ba6c7f607f259e33261c99d59a888",
+  "tree": "42097a68b4bcf8cdd25a505dbb75f19e39ae59cb",
+  "candidateEqualsFeatureAndWorkTree": true,
+  "featureCi": "42215242683",
+  "featureCiAll4": "success",
+  "localBuildAndNode819": "passed on unchanged application code at7b13ccf; test/document-only followup at02990db also passed scoped lint and full broker default/delayed tests",
+  "freshBuildNeeded": "No source/data changes to already checked tree; if main changes, review and validate updated candidate",
+  "financialAndApiAndDependencyDiff": []
+}

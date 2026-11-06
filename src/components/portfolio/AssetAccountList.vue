@@ -224,7 +224,7 @@
     }
     .account-card-identity {
         display: flex;
-        align-items: baseline;
+        align-items: center;
         flex-wrap: wrap;
         gap: 8px;
         min-width: 0;

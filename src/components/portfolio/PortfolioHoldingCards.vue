@@ -39,11 +39,19 @@
                     </div>
                     <p>{{ row.name || '종목명 미제공' }}</p>
                 </div>
-                <span class="holding-status">{{
-                    row.estimated || row.calculationMode === 'estimated'
-                        ? '추정 잔고'
-                        : '저장 잔고'
-                }}</span>
+                <span
+                    class="holding-status"
+                    :class="{
+                        'is-estimated':
+                            row.estimated ||
+                            row.calculationMode === 'estimated',
+                    }"
+                    >{{
+                        row.estimated || row.calculationMode === 'estimated'
+                            ? '추정 잔고'
+                            : '저장 잔고'
+                    }}</span
+                >
             </header>
             <div class="holding-figures">
                 <div>
@@ -115,6 +123,7 @@
     @media (max-width: 1023px) {
         .holding-cards {
             display: grid;
+            grid-template-columns: minmax(0, 1fr);
             gap: 16px;
             padding: 16px;
             border-radius: 12px;
@@ -122,42 +131,54 @@
             box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
         }
         .holding-card {
+            min-width: 0;
+            font-size: 14px;
+            line-height: 20px;
             padding: 16px;
             border-radius: 12px;
             background: var(--app-surface-muted);
+            color: var(--holding-text, var(--app-text));
         }
         header {
             display: flex;
             align-items: flex-start;
-            gap: 8px;
+            gap: 12px;
         }
         .holding-ticker {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
             gap: 8px;
+        }
+        .holding-identity {
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
         .holding-identity p {
             margin: 0;
             font-size: 12px;
             line-height: 16px;
-            color: var(--app-muted);
+            color: var(--holding-outline, var(--app-muted));
         }
         header strong {
             font-size: 16px;
             line-height: 24px;
+            font-weight: 600;
         }
         .currency {
-            font-size: 11px;
-            line-height: 14px;
+            font:
+                600 11px/14px 'JetBrains Mono',
+                monospace;
             padding: 2px 8px;
             border-radius: 4px;
-            background: var(--app-surface-muted);
+            background: var(--holding-badge, var(--app-surface-muted));
         }
         .holding-status {
             margin-left: auto;
-            font-size: 11px;
-            line-height: 14px;
-            color: var(--app-accent);
+            font:
+                600 11px/14px 'JetBrains Mono',
+                monospace;
+            color: var(--holding-status-normal, var(--app-accent));
             display: inline-flex;
             align-items: center;
             gap: 4px;
@@ -167,11 +188,17 @@
             width: 6px;
             height: 6px;
             border-radius: 50%;
+            background: var(--app-accent);
+        }
+        .holding-status.is-estimated {
+            color: var(--app-warning-text);
+        }
+        .holding-status.is-estimated::before {
             background: currentColor;
         }
         .holding-figures {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
             padding: 12px;
             margin-top: 14px;
@@ -179,8 +206,9 @@
             background: var(--app-surface);
         }
         .holding-figures > div {
-            display: grid;
-            gap: 0;
+            display: block;
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
         .holding-figures > div:last-child {
             text-align: right;
@@ -189,14 +217,23 @@
         dt {
             font-size: 11px;
             line-height: 14px;
-            color: var(--app-muted);
+            color: var(--holding-outline, var(--app-muted));
+        }
+        .holding-figures span {
+            display: block;
+            color: var(--holding-variant, var(--app-muted));
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
         }
         .holding-figures strong {
-            font-size: 13px;
-            line-height: 20px;
+            font:
+                600 13px/16px 'JetBrains Mono',
+                monospace;
             font-variant-numeric: tabular-nums;
         }
         dl {
+            font-size: 12px;
+            line-height: 16px;
             display: grid;
             gap: 6px;
             margin: 14px 0 0;
@@ -225,28 +262,48 @@
             font-size: 12px;
             line-height: 16px;
         }
+        dl > div:first-child dd {
+            color: var(--holding-text, var(--app-text));
+            font-weight: 500;
+        }
+        dl > div:nth-child(2) dd {
+            font:
+                500 11px/14px 'JetBrains Mono',
+                monospace;
+        }
         .holding-access {
             display: inline;
             padding: 2px 4px;
             border-radius: 4px;
-            background: var(--app-surface);
+            background: var(--holding-badge, var(--app-surface));
             font-size: 11px;
             line-height: 14px;
         }
         footer {
+            --p-button-label-font-weight: 400;
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             justify-content: flex-end;
             align-items: center;
             gap: 8px;
             margin-top: 14px;
             padding-top: 8px;
         }
+        footer > * {
+            flex: 0 1 auto;
+            min-width: 0;
+            white-space: normal;
+            justify-content: center;
+            text-align: center;
+        }
         footer :deep(.p-button) {
             height: 36px;
             min-height: 36px;
             padding: 0 12px;
+            border: 0;
+            border-radius: 8px;
             font-size: 12px;
+            line-height: 16px;
         }
         footer a {
             display: inline-flex;
@@ -255,8 +312,9 @@
             padding: 0 12px;
             border-radius: 8px;
             background: var(--app-accent);
-            color: white;
+            color: var(--app-accent-contrast);
             font-size: 12px;
+            line-height: 16px;
             text-decoration: none;
         }
         nav {
@@ -264,6 +322,20 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
+        }
+        /* d90f121f light reference; dark retains the existing app tokens. */
+        :root:not(.p-dark) .holding-cards {
+            --holding-text: #191c1e;
+            --holding-outline: #6e7977;
+            --holding-variant: #3e4947;
+            --holding-status-normal: #005f55;
+            --holding-badge: #eceef0;
+        }
+        :root:not(.p-dark) footer :deep(.p-button) {
+            --p-button-secondary-background: #eceef0;
+            --p-button-secondary-color: #3e4947;
+            --p-button-secondary-hover-background: #e6e8ea;
+            --p-button-secondary-hover-color: #3e4947;
         }
     }
 </style>

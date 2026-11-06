@@ -174,9 +174,16 @@ try {
         );
         await capture(page, `default-${width}`);
         const count = requests.filter((r) => r.url.includes('/api/')).length;
-        await page
-            .getByRole('combobox', { name: '평가 계좌 범위', exact: true })
-            .selectOption('b');
+        if (
+            (await page.locator('.summary-scope').getAttribute('open')) === null
+        )
+            await page.locator('.summary-scope summary').click();
+        for (const [index, id] of ['a', 'b', 'c'].entries())
+            await page
+                .locator('.summary-scope')
+                .getByRole('checkbox')
+                .nth(index)
+                .setChecked(id === 'b');
         await ready(page);
         assert.match(
             await page.locator('.stored-valuation-panel').innerText(),
@@ -192,9 +199,16 @@ try {
                 : page.locator('.valuation-detail-card');
         assert.equal(await visible.count(), 1);
         await capture(page, `usd-${width}`);
-        await page
-            .getByRole('combobox', { name: '평가 계좌 범위', exact: true })
-            .selectOption('c');
+        if (
+            (await page.locator('.summary-scope').getAttribute('open')) === null
+        )
+            await page.locator('.summary-scope summary').click();
+        for (const [index, id] of ['a', 'b', 'c'].entries())
+            await page
+                .locator('.summary-scope')
+                .getByRole('checkbox')
+                .nth(index)
+                .setChecked(id === 'c');
         await ready(page);
         assert.equal(
             await page
@@ -356,6 +370,28 @@ try {
         reads.length,
         before,
         'Paging and responsive switch add no reads'
+    );
+    await page
+        .getByRole('navigation', { name: '보유 평가 카드 페이지', exact: true })
+        .getByRole('button', { name: '페이지 2', exact: true })
+        .click();
+    await page.locator('.summary-scope summary').click();
+    await page.locator('.summary-scope').getByRole('checkbox').uncheck();
+    await page.getByText('선택한 계좌가 없습니다.', { exact: false }).waitFor();
+    await page
+        .locator('.summary-scope')
+        .getByRole('button', { name: '전체선택', exact: true })
+        .click();
+    assert.equal(
+        await cards.count(),
+        10,
+        'Changing account scope resets pagination to first page'
+    );
+    assert.match(await cards.first().innerText(), /SYN01/);
+    assert.equal(
+        reads.length,
+        before,
+        'Scope reset does not re-fetch quotes or ledger'
     );
     console.log(
         'PASS summary/paging:12 rows, synchronized desktop/mobile pages, zero baseline/value vs missing quote, no extra reads'

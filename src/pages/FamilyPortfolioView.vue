@@ -1,5 +1,12 @@
 <script setup>
-    import { computed, nextTick, onScopeDispose, ref, watch } from 'vue';
+    import {
+        computed,
+        nextTick,
+        onMounted,
+        onScopeDispose,
+        ref,
+        watch,
+    } from 'vue';
     import { formatStoredAmount } from '@/utils/formatStoredAmount.js';
     import { groupStoredPositions } from '@/services/holdingsPresentation.js';
     import { capitalAccountLabel } from '@/services/accountDisplay.js';
@@ -488,7 +495,37 @@
         accountDialog.value = false;
         uploadDialog.value = true;
     }
-    const summaryAccountId = ref('');
+    // null follows all currently permitted accounts; [] is an explicit empty scope.
+    const summaryAccountIds = ref(null);
+    const summaryScopeMenu = ref(null);
+    function selectAllSummaryAccounts() {
+        summaryAccountIds.value = null;
+    }
+    function toggleSummaryAccount(id, checked) {
+        if (!visibleAccounts.value.some((account) => account.id === id)) return;
+        const selected = new Set(
+            valuationAccounts.value.map((account) => account.id)
+        );
+        if (checked) selected.add(id);
+        else selected.delete(id);
+        summaryAccountIds.value = [...selected];
+    }
+    function closeSummaryScope() {
+        if (!summaryScopeMenu.value?.open) return;
+        summaryScopeMenu.value.open = false;
+        summaryScopeMenu.value.querySelector('summary')?.focus();
+    }
+    function dismissSummaryScope(event) {
+        if (
+            summaryScopeMenu.value?.open &&
+            !summaryScopeMenu.value.contains(event.target)
+        )
+            summaryScopeMenu.value.open = false;
+    }
+    onMounted(() => document.addEventListener('click', dismissSummaryScope));
+    onScopeDispose(() =>
+        document.removeEventListener('click', dismissSummaryScope)
+    );
     // Reuse the existing projection unchanged for the summary-only account scope.
     // Filtering does not alter account selection, ledger loading or other pages.
     const summarizeSelection = (selectedAccounts) => {
@@ -552,32 +589,39 @@
         document.getElementById('asset-account-alias')?.focus();
     }
     const valuationAccounts = computed(() =>
-        summaryAccountId.value
-            ? visibleAccounts.value.filter(
-                  (account) => account.id === summaryAccountId.value
+        summaryAccountIds.value === null
+            ? visibleAccounts.value
+            : visibleAccounts.value.filter((account) =>
+                  summaryAccountIds.value.includes(account.id)
               )
-            : visibleAccounts.value
+    );
+    const valuationAccountIds = computed(() =>
+        valuationAccounts.value.map((account) => account.id)
     );
     const valuationSummary = computed(() =>
-        summaryAccountId.value
-            ? summarizeSelection(valuationAccounts.value)
-            : summary.value
+        summarizeSelection(valuationAccounts.value)
     );
     watch(
         ownUid,
         () => {
-            summaryAccountId.value = '';
+            summaryAccountIds.value = null;
+            if (summaryScopeMenu.value) summaryScopeMenu.value.open = false;
         },
         { flush: 'sync' }
     );
-    watch(visibleAccounts, () => {
-        if (
-            !visibleAccounts.value.some(
-                (account) => account.id === summaryAccountId.value
-            )
-        )
-            summaryAccountId.value = '';
-    });
+    watch(
+        visibleAccounts,
+        () => {
+            if (summaryAccountIds.value === null) return;
+            const allowed = new Set(
+                visibleAccounts.value.map((account) => account.id)
+            );
+            summaryAccountIds.value = summaryAccountIds.value.filter((id) =>
+                allowed.has(id)
+            );
+        },
+        { flush: 'sync' }
+    );
     watch(visibleAccounts, () => {
         if (!visibleAccounts.value.some((a) => a.id === selectedAccount.value))
             selectedAccount.value = memberAccounts.value[0]?.id || '';
@@ -1444,22 +1488,80 @@
                 v-if="
                     portfolioTab === 'overview' && overviewView === 'summary'
                 ">
-                <label class="summary-scope"
-                    >계좌 범위
-                    <select
-                        v-model="summaryAccountId"
-                        aria-label="평가 계좌 범위"
-                        :disabled="busy || accountsState !== 'ready'">
-                        <option value="">전체 계좌</option>
-                        <option
-                            v-for="account in visibleAccounts"
-                            :key="account.id"
-                            :value="account.id">
-                            {{ account.alias }} ·
-                            {{ account.maskedNumber || '끝자리 미확인' }}
-                        </option>
-                    </select>
-                </label>
+                <div class="summary-scope-tools">
+                    <details
+                        ref="summaryScopeMenu"
+                        class="summary-scope"
+                        @keydown.esc.stop.prevent="closeSummaryScope">
+                        <summary
+                            :aria-disabled="busy || accountsState !== 'ready'"
+                            @click="
+                                (busy || accountsState !== 'ready') &&
+                                $event.preventDefault()
+                            ">
+                            <i class="pi pi-wallet" aria-hidden="true" />
+                            <span
+                                >명의자 · 계좌 선택 ({{
+                                    valuationAccounts.length
+                                }}/{{ visibleAccounts.length }})</span
+                            >
+                            <i class="pi pi-chevron-down" aria-hidden="true" />
+                        </summary>
+                        <div class="summary-scope-menu">
+                            <div class="summary-scope-menu-heading">
+                                <span
+                                    >계좌 목록 ({{
+                                        valuationAccounts.length ===
+                                        visibleAccounts.length
+                                            ? '전체 선택됨'
+                                            : `${valuationAccounts.length}개 선택`
+                                    }})</span
+                                >
+                                <button
+                                    type="button"
+                                    :disabled="
+                                        busy || accountsState !== 'ready'
+                                    "
+                                    @click="selectAllSummaryAccounts">
+                                    전체선택
+                                </button>
+                            </div>
+                            <label
+                                v-for="account in visibleAccounts"
+                                :key="account.id">
+                                <input
+                                    type="checkbox"
+                                    :checked="
+                                        valuationAccountIds.includes(account.id)
+                                    "
+                                    :disabled="
+                                        busy || accountsState !== 'ready'
+                                    "
+                                    @change="
+                                        toggleSummaryAccount(
+                                            account.id,
+                                            $event.target.checked
+                                        )
+                                    " />
+                                <span
+                                    >{{ ownerName(account.ownerId) }} ·
+                                    {{ account.alias
+                                    }}<small>{{
+                                        account.maskedNumber || '끝자리 미확인'
+                                    }}</small></span
+                                >
+                            </label>
+                        </div>
+                    </details>
+                    <button
+                        class="summary-scope-reset"
+                        type="button"
+                        :disabled="busy || accountsState !== 'ready'"
+                        @click="selectAllSummaryAccounts">
+                        <i class="pi pi-refresh" aria-hidden="true" />선택
+                        초기화
+                    </button>
+                </div>
                 <Button
                     label="자료 업로드"
                     icon="pi pi-upload"
@@ -1517,7 +1619,15 @@
                                 v-if="overviewView === 'summary'"
                                 class="portfolio-panel"
                                 aria-label="포트폴리오 요약">
+                                <Message
+                                    v-if="!valuationAccounts.length"
+                                    severity="info"
+                                    :closable="false">
+                                    선택한 계좌가 없습니다. 평가할 계좌를 선택해
+                                    주세요.
+                                </Message>
                                 <PortfolioValuation
+                                    v-show="valuationAccounts.length > 0"
                                     v-if="
                                         portfolioTab === 'overview' &&
                                         overviewView === 'summary' &&
@@ -1527,7 +1637,7 @@
                                     "
                                     :key="`${ownUid}:${familyId}`"
                                     :positions="summary.positions"
-                                    :scope-account-id="summaryAccountId"
+                                    :scope-account-ids="valuationAccountIds"
                                     :accounts="valuationAccounts"
                                     :owner-name="ownerName"
                                     :missing-accounts="
@@ -3134,20 +3244,125 @@
         color: var(--app-muted);
         margin: 0;
     }
+    .summary-scope-tools {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-right: auto;
+        min-width: 0;
+    }
     .summary-scope {
+        position: relative;
+        max-width: 100%;
+    }
+    .summary-scope summary {
+        line-height: 20px;
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-right: auto;
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 8px;
+        background: var(--p-surface-100);
+        color: var(--app-text);
+        cursor: pointer;
+        list-style: none;
+        font-size: 14px;
+    }
+    .summary-scope summary .pi-wallet {
+        font-size: 20px;
+        color: var(--p-primary-color);
+    }
+    .summary-scope summary .pi-chevron-down {
+        font-size: 16px;
+    }
+    .summary-scope summary::-webkit-details-marker {
+        display: none;
+    }
+    .summary-scope summary[aria-disabled='true'] {
+        opacity: 0.6;
+        cursor: default;
+    }
+    .summary-scope-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 14px;
+        line-height: 20px;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 288px;
+        max-width: calc(100vw - 48px);
+        max-height: 320px;
+        overflow-y: auto;
+        padding: 12px;
+        border-radius: 12px;
+        background: var(--app-bg);
+        box-shadow: 0 10px 25px rgb(0 0 0 / 15%);
+        z-index: 20;
+    }
+    .summary-scope-menu-heading {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--app-border);
+        font-size: 11px;
+        line-height: 14px;
+    }
+    .summary-scope-menu-heading button {
+        font: inherit;
+        font-weight: 600;
+        border: 0;
+        padding: 0;
+        background: none;
+        color: var(--p-primary-color);
+        cursor: pointer;
+    }
+    .summary-scope-menu label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: 600;
+    }
+    .summary-scope-menu label input {
+        width: 16px;
+        height: 16px;
+        flex: 0 0 16px;
+        accent-color: var(--p-primary-color);
+    }
+    .summary-scope-menu label span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+    .summary-scope-menu small {
+        display: block;
+        color: var(--app-muted);
+        font-size: 11px;
+        line-height: 14px;
+    }
+    .summary-scope-reset {
+        min-height: 44px;
+        padding: 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: 0;
+        border-radius: 8px;
+        background: none;
+        color: var(--app-muted);
+        cursor: pointer;
         font-size: 13px;
     }
-    .summary-scope select {
-        max-width: 100%;
-        border: 1px solid var(--app-border);
-        border-radius: 8px;
-        background: var(--app-bg);
-        color: var(--app-muted);
-        padding: 10px 12px;
+    :global(.p-dark) .summary-scope summary {
+        background: var(--p-surface-800);
     }
     .portfolio-tools {
         display: flex;

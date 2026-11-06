@@ -108,6 +108,32 @@ try {
             /2026-12.*미확인/
         );
         assert.equal(await bars.last().locator('.actual').count(), 0);
+        assert.equal(
+            await bars.nth(10).locator('.month-status').innerText(),
+            '부분'
+        );
+        assert.equal(
+            await bars.last().locator('.month-status').innerText(),
+            '미확인'
+        );
+        await bars.last().focus();
+        await page.keyboard.press('Enter');
+        assert.match(
+            await trend.locator('.trend-detail').innerText(),
+            /2026-12.*미확인/s
+        );
+        if (width === 390)
+            assert.ok(
+                await trend
+                    .locator('.trend-chart')
+                    .evaluate((el) => el.scrollLeft > 0),
+                'Keyboard focus must reveal the final month inside the chart, not overflow the page'
+            );
+        assert.ok(
+            await page.evaluate(
+                () => document.documentElement.scrollWidth <= innerWidth + 1
+            )
+        );
         await trend.getByRole('button', { name: '2025', exact: true }).click();
         assert.match(await bars.first().getAttribute('aria-label'), /2025-01/);
         assert.equal(await trend.locator('.previous').count(), 0);
@@ -202,6 +228,58 @@ try {
         );
         await page.close();
     }
+    // A current month without an observed distribution remains unknown, not a partial value or zero.
+    const missingPage = await browser.newPage({
+        viewport: { width: 390, height: 1024 },
+    });
+    await installStitchFixtures(missingPage);
+    await missingPage.route('**/api/thumbnail-data?**', (route) =>
+        route.fulfill({
+            json: {
+                catalog: { company: '예시 운용사', securityType: 'etf' },
+                ticker: {
+                    symbol: 'DEMO-A',
+                    tickerInfo: {
+                        symbol: 'DEMO-A',
+                        longName: '가상 검증 ETF',
+                        currency: 'USD',
+                        price: 50,
+                    },
+                    backtestData: [
+                        { date: '2026-09-01', close: 50, amount: 0.25 },
+                    ],
+                    sourceStatus: {
+                        priceDate: '2026-11-03',
+                        freshness: 'fresh',
+                    },
+                },
+                series: {},
+                rivals: [],
+                rivalOptions: [],
+                dataStatus: 'fresh',
+            },
+        })
+    );
+    await missingPage.goto(base + '/stock/DEMO-A?tab=dividends');
+    const missingTrend = missingPage.locator('.dividend-trend');
+    const missingBars = missingTrend.locator('.month-bar');
+    await missingBars.first().waitFor();
+    assert.equal(await missingBars.nth(10).locator('.actual').count(), 0);
+    assert.equal(
+        await missingBars.nth(10).locator('.month-status').innerText(),
+        '미확인'
+    );
+    await missingTrend
+        .getByRole('button', { name: '2025', exact: true })
+        .click();
+    await missingTrend
+        .getByText('아직 표시할 월별 배당 이력이 없습니다', { exact: true })
+        .waitFor();
+    assert.equal(await missingTrend.locator('.actual').count(), 0);
+    await missingPage.close();
+    console.log(
+        'PASS dividend-navigation/missing: unobserved current month and empty prior year stay unknown'
+    );
     if (output)
         await fs.writeFile(
             `${output}/results.json`,

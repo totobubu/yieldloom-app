@@ -1,0 +1,11 @@
+
+/workspace/yieldloom-redesign-phase78/src/components/stock/StockDividendTrend.vue
+  147:21  warning  Attribute "v-for" should go before ":outlined"  vue/attributes-order
+  148:21  warning  Attribute ":key" should go before ":outlined"   vue/attributes-order
+
+/workspace/yieldloom-redesign-phase78/src/pages/TickerThumbnailView.vue
+  1177:25  warning  Attribute "v-tooltip.top" should go before "aria-describedby"  vue/attributes-order
+  1196:17  warning  Attribute "class" should go before "@update:value"             vue/attributes-order
+
+✖ 4 problems (0 errors, 4 warnings)
+  0 errors and 4 warnings potentially fixable with the `--fix` option.

@@ -1,0 +1,16 @@
+✔ matching payment joins without rounding decimals or deriving a missing ROC amount (1.758434ms)
+✔ ROC-only payments remain visible and annual summaries never become payment rows (0.212197ms)
+✔ different currencies, amounts, and ambiguous same-date payments do not merge (13.671224ms)
+✔ payable date does not match the ex-date without an explicit shared date (0.240039ms)
+✔ final evidence takes priority without duplicating payments; conflicting peers remain unknown (0.53525ms)
+✔ missing dates are not joined together and forecast rows are excluded (0.213389ms)
+✔ monthly summary totals weekly payments and weights only known ROC percentages (1.250706ms)
+✔ monthly summary keeps missing ROC distinct from zero ROC (0.273561ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 115.353056

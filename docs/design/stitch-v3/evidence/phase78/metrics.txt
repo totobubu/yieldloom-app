@@ -1,0 +1,15 @@
+PASS metrics/complete/1280: nine cards, strict TTM, unknown fields, one cached public read
+PASS metrics/complete/768: nine cards, strict TTM, unknown fields, one cached public read
+PASS metrics/complete/390: nine cards, strict TTM, unknown fields, one cached public read
+PASS metrics/partial/1280: nine cards, strict TTM, unknown fields, one cached public read
+PASS metrics/partial/768: nine cards, strict TTM, unknown fields, one cached public read
+PASS metrics/partial/390: nine cards, strict TTM, unknown fields, one cached public read
+PASS schedule/announced/1280: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+PASS schedule/announced/768: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+PASS schedule/announced/390: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+PASS schedule/forecast/1280: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+PASS schedule/forecast/768: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+PASS schedule/forecast/390: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+PASS schedule/unconfirmed/1280: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+PASS schedule/unconfirmed/768: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+PASS schedule/unconfirmed/390: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read

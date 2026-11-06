@@ -29,7 +29,11 @@
     import cloud_done from '@/assets/icons/material-symbols/cloud_done.svg';
     import cloud_upload from '@/assets/icons/material-symbols/cloud_upload.svg';
     import sort from '@/assets/icons/material-symbols/sort.svg';
+    import sync from '@/assets/icons/material-symbols/sync.svg';
+    import lan from '@/assets/icons/material-symbols/lan.svg';
     const icons = {
+        sync,
+        lan,
         visibility,
         verified,
         task_alt,

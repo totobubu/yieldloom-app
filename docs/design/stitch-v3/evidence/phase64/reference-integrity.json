@@ -1,0 +1,490 @@
+{
+  "scope": "20 unique final selected device IDs; source integrity and component presence only, not visual acceptance",
+  "targets": 20,
+  "families": 9,
+  "html": 20,
+  "png": 20,
+  "allPassed": true,
+  "rows": [
+    {
+      "id": "e0fb1368a1684edaa56c1a506e806530",
+      "family": "Column Mapping",
+      "device": "Mobile",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/BrokerSpreadsheetForm.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 33752,
+          "expectedBytes": 33752,
+          "sha256": "0d422a7319ddaa7a4ff267b186078f25a6b151cfc95b53eb8312383b6a08c085",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 553770,
+          "expectedBytes": 553770,
+          "sha256": "a164b53a3bda22a80b7da2e94b751f730cfb87e7e058005021335c2737694bf3",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "9ae2f0f1253a41b1839e792d36996900",
+      "family": "Column Mapping",
+      "device": "PC",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/BrokerSpreadsheetForm.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 35185,
+          "expectedBytes": 35185,
+          "sha256": "a2f37c699c53e1552447ab66ac7bf071c60f31904165141a917fbf3aeb23d98c",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 615853,
+          "expectedBytes": 615853,
+          "sha256": "12dea35e60afb22191bd1af248877dac330b9873ad8cffb17cdf8881e7f03f4e",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "0bb2ab1d8197472f910b73ed175c4448",
+      "family": "Column Mapping",
+      "device": "Tablet",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/BrokerSpreadsheetForm.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 35493,
+          "expectedBytes": 35493,
+          "sha256": "b8892a94d76e345a29607cc4f63bc84832bc67f57410474462c924523166dd41",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 633949,
+          "expectedBytes": 633949,
+          "sha256": "4eacad1ef583e3d8770a5989c3c084ec4eff56ddf40f8b8445a9e0bab01cf8d3",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "2476bb94e3174e6182500d8f520a6424",
+      "family": "Compare Similar",
+      "device": "Mobile",
+      "route": "/compare?view=similar",
+      "component": "src/pages/UnderlyingExplorerView.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 27633,
+          "expectedBytes": 27633,
+          "sha256": "abe067baf66892adb794551e3d0b69aaca17e13cafb1efd6a5275dc4015a538e",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 457744,
+          "expectedBytes": 457744,
+          "sha256": "001b68485794d66595578b6ed0184c7c2c80b15a0894dbe750b9d2872325b594",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "77fdbd798a3941c68f098120a210c44d",
+      "family": "Compare Similar",
+      "device": "Tablet",
+      "route": "/compare?view=similar",
+      "component": "src/pages/UnderlyingExplorerView.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 34229,
+          "expectedBytes": 34229,
+          "sha256": "618705db215d08ec61084b19dc7cfffe2754745b619a9a6f57203dc6bd2504d2",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 500244,
+          "expectedBytes": 500244,
+          "sha256": "94ccc26108c54c5bd8e082e25a189ffe79126bcb15828c1528794b4069268139",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "4dbfbf717c75483e88e6d1186ecbdb2b",
+      "family": "Compare Theme",
+      "device": "Mobile",
+      "route": "/compare?view=theme",
+      "component": "src/pages/UnderlyingExplorerView.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 27957,
+          "expectedBytes": 27957,
+          "sha256": "b5b474c438c4b060a9cbb6f9f3f95c6e9139ced8e27fa6cc99c9cd4d34b4a1fd",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 529668,
+          "expectedBytes": 529668,
+          "sha256": "effcfd0c2b2aba9f7336d16838de318760e3d2082129c7b84c93518b08d3ff0f",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "12bcd42390bb468eb1700a909aec3f5d",
+      "family": "Compare Theme",
+      "device": "Tablet",
+      "route": "/compare?view=theme",
+      "component": "src/pages/UnderlyingExplorerView.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 35231,
+          "expectedBytes": 35231,
+          "sha256": "425bb68dca03a88b3cb077409bf4c70cc30c7eea5ce522823000a3d06c1af146",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 756415,
+          "expectedBytes": 756415,
+          "sha256": "226bf8002262ffb038bd24fa87410b12dc89726c9553bd5e495f4599eae3bcab",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "80b06442816e4d1baebc96cb520b19d6",
+      "family": "Data Upload",
+      "device": "Mobile",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/PortfolioFileImportForm.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 17428,
+          "expectedBytes": 17428,
+          "sha256": "e090b6b5cabf0400adf6c0582dfc8e8474535283b5a94309b1c3c29f2aa5f358",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 442388,
+          "expectedBytes": 442388,
+          "sha256": "78a699ac0fd3c2917a9171806e0cb53eacef8b11de75acbbc47e94b6867c3287",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "3c2a0d37b5f54a63b3a633f01f0d2b33",
+      "family": "Data Upload",
+      "device": "Tablet",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/PortfolioFileImportForm.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 18056,
+          "expectedBytes": 18056,
+          "sha256": "6be160abd9a7a5520e4c9c9fb9aec0986de0b96f4735aa84bca42afa8b87fa83",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 471025,
+          "expectedBytes": 471025,
+          "sha256": "3cceeeea3f65269923d338f0b6d5c616b4901f00ccf9efd005ad6246d778174b",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "f5a2132c4e234e648269220f0e889387",
+      "family": "Import Result",
+      "device": "Mobile",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/PortfolioImportResult.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 26628,
+          "expectedBytes": 26628,
+          "sha256": "15b93469be5e6bc043fb834dd491efbd3abb9cb6cdc3c9dc84dc31d2ba29e491",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 550320,
+          "expectedBytes": 550320,
+          "sha256": "f575284a7cdff1fdd06b99070123541adcd24e2454ff9e09a48f1cef1755c267",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "cf7686fbb620465f93418fde1572a6cc",
+      "family": "Import Result",
+      "device": "Tablet",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/PortfolioImportResult.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 26366,
+          "expectedBytes": 26366,
+          "sha256": "91c500b272930134ed2e4b60d5039250c1ec9fbb2ecaea18ce9e1d8c9248ff6b",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 677328,
+          "expectedBytes": 677328,
+          "sha256": "142b2819fdbcefc33d7adff0404bbbc1515fef3bdda7991086762e48a1b60b83",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "6bd9777b8bea43b98aea8397a29f809a",
+      "family": "Import Review",
+      "device": "Mobile",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/PortfolioImportReview.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 26176,
+          "expectedBytes": 26176,
+          "sha256": "b6a33ce0171c8914e02a5242c430e0c479b986e949def8cfbe62998ff62829a6",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 475344,
+          "expectedBytes": 475344,
+          "sha256": "c15ea5f4ecdce7e3ff814095e8724151bd78798caf3b2354b7b00ba1ce975bc0",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "5aa7a573854a46db9b106f89c09c4f23",
+      "family": "Import Review",
+      "device": "Tablet",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/PortfolioImportReview.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 28919,
+          "expectedBytes": 28919,
+          "sha256": "4cc79e9816c31ab765467b38698e2551fb8a3a89533e7416ef7311ea0644d0ac",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 531534,
+          "expectedBytes": 531534,
+          "sha256": "b7446a248d0a4891d093a58464a9cdeb617fd6123f27eb0074b3e365b6d8f184",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "986013fd6b61404f82b4eeda2b643cd6",
+      "family": "Ledger Analysis",
+      "device": "Mobile",
+      "route": "/mypage?tab=insights",
+      "component": "src/components/portfolio/AdvancedPortfolioInsights.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 29466,
+          "expectedBytes": 29466,
+          "sha256": "ad3c3a6af709a947e3ff174322aaff8a44be259336d7d9854255f05e9497399d",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 575544,
+          "expectedBytes": 575544,
+          "sha256": "724002f4c458f8b9b39c85d5a2b6b332bea80e670f0144a71634de465c080f72",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "65c1b225397746ada071cf14ae4f687c",
+      "family": "Ledger Analysis",
+      "device": "Tablet",
+      "route": "/mypage?tab=insights",
+      "component": "src/components/portfolio/AdvancedPortfolioInsights.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 29609,
+          "expectedBytes": 29609,
+          "sha256": "2c849ed4242cce0159529cf0bd4e8b484677d1715909812a1a56a0296e74fdf5",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 672269,
+          "expectedBytes": 672269,
+          "sha256": "d1da906f29b18fdcc64c00502166af267860594ae4ff7aa5bac438b98418af54",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "fbb16724366740e1ab9d8fce50db986a",
+      "family": "Simulator",
+      "device": "Mobile",
+      "route": "/simulator",
+      "component": "src/pages/DividendSimulatorView.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 35238,
+          "expectedBytes": 35238,
+          "sha256": "354e1eb864eaea71969479bf877d83468809ecac8547b976ed5ccdb0df9e77b3",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 666792,
+          "expectedBytes": 666792,
+          "sha256": "b9d4e197d1d1c2b0fd922807752f7fc4af854d5e4f726a3fa05059a131929f2a",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "85f567e48c3c4dbdad938b7e210c22ed",
+      "family": "Simulator",
+      "device": "Tablet",
+      "route": "/simulator",
+      "component": "src/pages/DividendSimulatorView.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 32390,
+          "expectedBytes": 32390,
+          "sha256": "28be9039fed80243e37f8c19ba298400e1523c93b57de54608f99d5d804a3792",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 765106,
+          "expectedBytes": 765106,
+          "sha256": "6e54f9c249788175ea850abb5485942b7099752285b48c117e5f2b6b32de37a3",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "b640738daaf5434d9af72530fe150006",
+      "family": "Tax Comparison",
+      "device": "Mobile",
+      "route": "/simulator",
+      "component": "src/pages/DividendSimulatorView.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 34238,
+          "expectedBytes": 34238,
+          "sha256": "35a0094c9617e5ac6d72566b92a82f976be55ef6d191e02377e18a8835649409",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 667492,
+          "expectedBytes": 667492,
+          "sha256": "4f617a09e5680eaa0dd72695787d7557d817d4ee8181a560ece902ba75652bff",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "678e97a05dc14fec9c77e971bd5ef960",
+      "family": "Tax Comparison",
+      "device": "PC",
+      "route": "/simulator",
+      "component": "src/pages/DividendSimulatorView.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 37458,
+          "expectedBytes": 37458,
+          "sha256": "46d69b7f6e5fe682c5c047667c781de7f0542ce8ce7edd1afc8a979250474cbb",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 811618,
+          "expectedBytes": 811618,
+          "sha256": "18b35806c0eccb8a6d3dcc3ff8c1ab9fd582c51db9c1d96019d405fae302e80c",
+          "matches": true
+        }
+      ]
+    },
+    {
+      "id": "388202e7721941e98095ae02b264b1b1",
+      "family": "Tax Comparison",
+      "device": "Tablet",
+      "route": "/simulator",
+      "component": "src/pages/DividendSimulatorView.vue",
+      "componentExists": true,
+      "sources": [
+        {
+          "kind": "htmlCode",
+          "bytes": 32556,
+          "expectedBytes": 32556,
+          "sha256": "b0800c8c3d680b3970506a97ccd616db36832c29b17b6ac6e954c5e0967c4143",
+          "matches": true
+        },
+        {
+          "kind": "screenshot",
+          "bytes": 783443,
+          "expectedBytes": 783443,
+          "sha256": "0ba88e508d61fd8d9fcd82560d6be6caa4ed47daef72f12a7ce42ae90267f87d",
+          "matches": true
+        }
+      ]
+    }
+  ]
+}

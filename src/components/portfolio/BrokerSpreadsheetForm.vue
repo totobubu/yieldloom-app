@@ -1,4 +1,5 @@
 <script setup>
+    import StitchSymbol from './StitchSymbol.vue';
     import { computed, onScopeDispose, ref, watch } from 'vue';
     import Button from 'primevue/button';
     import InputText from 'primevue/inputtext';
@@ -404,7 +405,7 @@
                                 title="파일·계좌 확인 및 업로드 설정"
                                 :disabled="busy || inspecting"
                                 @click="openUploadSettings">
-                                <i class="pi pi-file" aria-hidden="true" />
+                                <StitchSymbol name="description" />
                             </button>
                             <div>
                                 <div class="broker-file-name">
@@ -2401,6 +2402,15 @@
         }
     }
     @media (min-width: 641px) and (max-width: 1023px) {
+        .broker-file-settings {
+            font-size: 24px;
+            background: #f0fdfa;
+            border-color: #ccfbf1;
+        }
+        :global(.p-dark .broker-file-settings) {
+            background: var(--app-accent-light);
+            border-color: #d1fae5;
+        }
         .broker-mismatch {
             margin-bottom: 20px;
             background: #fefce8;

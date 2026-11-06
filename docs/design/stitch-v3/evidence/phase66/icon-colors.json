@@ -1,0 +1,125 @@
+[
+  {
+    "viewport": 1280,
+    "mode": "source",
+    "background": "rgb(236, 253, 245)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(13, 122, 110)",
+    "width": 40,
+    "height": 40
+  },
+  {
+    "viewport": 1280,
+    "mode": "before",
+    "background": "rgb(236, 253, 245)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(13, 122, 110)",
+    "width": 40,
+    "height": 40
+  },
+  {
+    "viewport": 1280,
+    "mode": "before-dark",
+    "background": "rgb(16, 60, 54)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(125, 214, 200)"
+  },
+  {
+    "viewport": 1280,
+    "mode": "after",
+    "background": "rgb(236, 253, 245)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(13, 122, 110)",
+    "width": 40,
+    "height": 40
+  },
+  {
+    "viewport": 1280,
+    "mode": "after-dark",
+    "background": "rgb(16, 60, 54)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(125, 214, 200)"
+  },
+  {
+    "viewport": 834,
+    "mode": "source",
+    "background": "rgb(240, 253, 250)",
+    "border": "rgb(204, 251, 241)",
+    "color": "rgb(13, 122, 110)",
+    "width": 40,
+    "height": 40
+  },
+  {
+    "viewport": 834,
+    "mode": "before",
+    "background": "rgb(236, 253, 245)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(13, 122, 110)",
+    "width": 40,
+    "height": 40
+  },
+  {
+    "viewport": 834,
+    "mode": "before-dark",
+    "background": "rgb(16, 60, 54)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(125, 214, 200)"
+  },
+  {
+    "viewport": 834,
+    "mode": "after",
+    "background": "rgb(240, 253, 250)",
+    "border": "rgb(204, 251, 241)",
+    "color": "rgb(13, 122, 110)",
+    "width": 40,
+    "height": 40
+  },
+  {
+    "viewport": 834,
+    "mode": "after-dark",
+    "background": "rgb(16, 60, 54)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(125, 214, 200)"
+  },
+  {
+    "viewport": 390,
+    "mode": "source",
+    "background": "rgb(236, 253, 245)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(13, 122, 110)",
+    "width": 40,
+    "height": 40
+  },
+  {
+    "viewport": 390,
+    "mode": "before",
+    "background": "rgb(236, 253, 245)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(13, 122, 110)",
+    "width": 40,
+    "height": 40
+  },
+  {
+    "viewport": 390,
+    "mode": "before-dark",
+    "background": "rgb(16, 60, 54)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(125, 214, 200)"
+  },
+  {
+    "viewport": 390,
+    "mode": "after",
+    "background": "rgb(236, 253, 245)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(13, 122, 110)",
+    "width": 40,
+    "height": 40
+  },
+  {
+    "viewport": 390,
+    "mode": "after-dark",
+    "background": "rgb(16, 60, 54)",
+    "border": "rgb(209, 250, 229)",
+    "color": "rgb(125, 214, 200)"
+  }
+]

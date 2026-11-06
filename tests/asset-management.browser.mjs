@@ -117,14 +117,14 @@ try {
     await selectAssetOwner(page, '테스트 본인');
     await page
         .getByRole('button', {
-            name: '테스트증권 · 본인 계좌 · ****1234',
+            name: '테스트 본인 · 테스트증권 · 본인 계좌 · ****1234 · 소유자 (Owner) · 일반',
             exact: true,
         })
         .waitFor();
     await selectAssetOwner(page, '배우자');
     await page
         .getByRole('button', {
-            name: '테스트증권 · 가족 계좌 · ****4321',
+            name: '배우자 · 테스트증권 · 가족 계좌 · ****4321 · 소유자 (Owner) · 일반',
             exact: true,
         })
         .waitFor();
@@ -205,7 +205,7 @@ try {
         await closeDialog();
         await page
             .getByRole('button', {
-                name: '토스증권 · 문서 계좌 · ****5678',
+                name: '배우자 · 토스증권 · 문서 계좌 · ****5678 · 소유자 (Owner) · 일반',
                 exact: true,
             })
             .waitFor();
@@ -246,7 +246,7 @@ try {
         await page.unroute('**/api/family-portfolio?action=preview');
         await page
             .getByRole('button', {
-                name: '토스증권 · 업로드 재시도 계좌 · ****6789',
+                name: '배우자 · 토스증권 · 업로드 재시도 계좌 · ****6789 · 소유자 (Owner) · 일반',
                 exact: true,
             })
             .waitFor();

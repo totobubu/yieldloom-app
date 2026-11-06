@@ -11,7 +11,7 @@
 | 기능 | [42138681643](https://github.com/totobubu/yieldloom-app/actions/runs/42138681643) | application/portfolio-api/browser/registration-browser 4개 성공 |
 | work | [42141456150](https://github.com/totobubu/yieldloom-app/actions/runs/42141456150) | 같은 4개 성공 |
 | 승격 | [42141590951](https://github.com/totobubu/yieldloom-app/actions/runs/42141590951) | 같은 4개 성공 |
-| 최종 main | [42143592035](https://github.com/totobubu/yieldloom-app/actions/runs/42143592035) | 앱/API/계좌 등록 성공, 브라우저 재검사 진행 중인 시점의 기록 |
+| 최종 main | [42143592035](https://github.com/totobubu/yieldloom-app/actions/runs/42143592035) | 같은 4개 성공 |
 | Pages | [42143592046](https://github.com/totobubu/yieldloom-app/actions/runs/42143592046) | 성공 |
 
 기능 Preview dpl_BxJz79hRhbUzQ9vMepAe4MLFdKwD의 실제 app-release는af9eb7f이고 새 CSS도 확인했다. work Preview dpl_JAJ3wqHfn4SAieM3MucYGVydW7Kg의 실제 app-release는7a9227f다. Vercel Production **dpl_FV7yRpWShWdE7qb6Bix2bwbvQmtU**는 READY/production/fae1ce4다. [Vercel](https://yieldloom-app.vercel.app/)과 [Pages](https://totobubu.github.io/yieldloom-app/)의 실제 app-release.json은 모두fae1ce4와 공개 메타데이터 SHA256 aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e를 제공한다. 이 해시는 공개 JSON3개 범위이고 전체 금융 이력·개인 원장 검증이 아니다. 이 문서는 날짜별 고정 기록이며 현재 버전은 각 사이트 app-release.json과 CI 링크로 확인한다.
@@ -31,3 +31,5 @@
 글꼴 원본 URL을 직접 재확인했다. 업로드의 Pretendard 요청은HTTP400(해당 요청의 글꼴 없음), 검토의 여러 family명을 한 family로 요청한 URL은HTTP400(잘못된 selector), 같은 검토 원본의 Material Symbols 요청은HTTP200이다. [요청/응답](evidence/phase69/source-font-responses.json), [오류 분류](evidence/phase69/font-error-headings.json). 원본 PNG의 실제 렌더 글꼴 파일·정상 URL 또는 렌더 설정이 없어 정확한 대조가 막혀 있다. 임의 대체 글꼴/패딩으로 완전 일치를 주장하지 않는다. 원본 HTML/PNG 자체는 변경하지 않았다.
 
 최종20개 기기ID/9개 화면군 중15개 운영 연결·외부5개 상태는 그대로이며 기존14종과 합산하지 않는다. 전체 native PNG 수용·미지원 지표 정의/자료·없는 상세 원본·실제 인증 계좌/고객PDF 검증은 남는다. 시뮬레이터 공개PR 승인 차단도 유지한다. 새29종을 만들거나 완료로 표시하지 않았다.
+
+최종 main42143592035도4개 모두 성공했다. 검토 Tablet/Mobile·업로드 Mobile의 native PNG3개는 등록부 SHA256과 일치하며 PNG 메타데이터 키가 모두 비어 있어 파일 자체에서 렌더 글꼴 이름을 얻지 못했다. [PNG 확인](evidence/phase69/native-png-metadata.json). 원본 목록을 새로 생성하거나 수정한 것은 아니다.

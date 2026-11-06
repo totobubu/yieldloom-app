@@ -79,11 +79,14 @@ examples.push({
     label: '일반',
     rename: false,
 });
+const longInstitution =
+    'SYNTHETIC_INSTITUTION_WITHOUT_BREAKS_01234567890123456789';
+const longAlias = 'SYNTHETIC_ACCOUNT_ALIAS_WITHOUT_BREAKS_01234567890123456789';
 const accounts = examples.map((x) => ({
     id: x.id,
     ownerId: x.id,
-    institution: '합성 기관',
-    alias: x.id,
+    institution: x.id === 'owner' ? longInstitution : '합성 기관',
+    alias: x.id === 'owner' ? longAlias : x.id,
     maskedNumber: '****0000',
     authorityUid: x.authorityUid,
     permissions: x.role ? { synthetic: x.role } : {},
@@ -108,7 +111,7 @@ const browser = await chromium.launch({
     args: ['--no-sandbox'],
 });
 try {
-    for (const width of [1280, 834, 390]) {
+    for (const width of [1280, 1100, 1024, 834, 390, 320]) {
         const p = await browser.newPage({ viewport: { width, height: 1100 } });
         const errors = [],
             apis = [];
@@ -124,6 +127,61 @@ try {
         await p.goto(base + '/tests/phase79-account-cards.html');
         await p.locator('.accounts li').last().waitFor();
         assert.equal(await p.locator('.accounts li').count(), examples.length);
+        assert.equal(
+            await p
+                .locator('.accounts li')
+                .first()
+                .locator('.account-card-alias')
+                .innerText(),
+            longAlias
+        );
+        const contentOverflows = await p
+            .locator(
+                '.account-card-content, .account-card-heading, .account-card-alias'
+            )
+            .evaluateAll((elements) =>
+                elements.some(
+                    (element) => element.scrollWidth > element.clientWidth + 1
+                )
+            );
+        assert.equal(
+            contentOverflows,
+            false,
+            'Full institution and alias text must fit within each account card'
+        );
+        const tools = await p
+            .locator('.account-card-primary-tools')
+            .evaluateAll((groups) =>
+                groups.map((group) => {
+                    const buttons = [...group.querySelectorAll('button')];
+                    return {
+                        centers: buttons.map((button) => {
+                            const rect = button.getBoundingClientRect();
+                            return rect.top + rect.height / 2;
+                        }),
+                        clipped: buttons.some((button) =>
+                            [button, ...button.children].some(
+                                (element) =>
+                                    element.scrollWidth >
+                                        element.clientWidth + 1 ||
+                                    element.scrollHeight >
+                                        element.clientHeight + 1
+                            )
+                        ),
+                    };
+                })
+            );
+        for (const tool of tools) {
+            assert.ok(
+                Math.abs(tool.centers[0] - tool.centers[1]) <= 1,
+                'Account actions must retain one row, including unavailable and permission states'
+            );
+            assert.equal(
+                tool.clipped,
+                false,
+                'Account action labels must remain readable'
+            );
+        }
         const beforeFinancial = await p
             .locator('.account-card-snapshot')
             .allTextContents();

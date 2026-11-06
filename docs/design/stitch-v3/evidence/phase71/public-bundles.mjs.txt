@@ -1,0 +1,34 @@
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+const sha=process.env.PUBLIC_RELEASE_SHA;
+assert.match(sha,/^[a-f0-9]{40}$/);
+for(const base of ['https://yieldloom-app.vercel.app/','https://totobubu.github.io/yieldloom-app/']) {
+ const release=await (await fetch(new URL('app-release.json?release='+sha,base))).json();
+ assert.equal(release.commit,sha);
+ const html=await (await fetch(base+'?release='+sha)).text();
+ const entry=[...html.matchAll(/<script[^>]*src="([^"]+)"/g)].map(m=>new URL(m[1],base)).find(u=>u.origin===new URL(base).origin&&u.pathname.includes('/assets/index-'));
+ assert.ok(entry);
+ const js=await (await fetch(entry)).text(), family=js.match(/FamilyPortfolioView-[\w-]+\.js/)?.[0];
+ assert.ok(family);
+ const url=new URL(family,entry), content=await (await fetch(url)).text();
+ const cssPath=js.match(/assets\/FamilyPortfolioView-[A-Za-z0-9_-]+\.css/)?.[0];
+ assert.ok(cssPath);
+ const css=await(await fetch(new URL(cssPath,base))).text();
+ const styleChecks={reviewChild:/\.p-dark\s+\.issue-metric\[data-v-/.test(css),pdfChild:/\.p-dark\s+\.fee-value\[data-v-/.test(css)};
+ assert.ok(Object.values(styleChecks).every(Boolean),JSON.stringify(styleChecks));
+ assert.ok(css.includes('font-size:24px;background:#f0fdfa;border-color:#ccfbf1'),'new Tablet file-icon CSS');assert.ok(/\.p-dark\s+\.broker-file-settings\{background:var\(--app-accent-light\);border-color:#d1fae5\}/.test(css),'preserved dark file-icon CSS');console.log(JSON.stringify({scope:'deployed scoped dark style targets',base,cssPath,checks:styleChecks}));
+ assert.ok(/\.generic-review-table\[data-v-[^\]]+\] \.p-datatable-paginator-bottom\{border:0\}/.test(css),'review footer duplicate border removed');assert.ok(css.includes('flex:0 1 auto'),'reference code flex');console.log(JSON.stringify({base,scope:'new deployed review styles',footerBorderRemoved:true,referenceCodeFlex:true}));
+ const receiptChecks={scopedFont:/@media\(min-width:641px\)\{\.receipt-refresh-copy\[data-v-[^\]]+\]\{font-family:YieldloomReceiptReference,sans-serif\}/.test(css),heading:content.includes('receipt-next-heading'),scopeLabel:content.includes('선택 계좌 전체 내역 CSV로 내려받기')};assert.ok(Object.values(receiptChecks).every(Boolean),JSON.stringify(receiptChecks));
+ const manifest=JSON.parse(fs.readFileSync('src/assets/fonts/stitch-receipt/SOURCE.json','utf8'));const refs=[...css.matchAll(/url\(([^)]+Pretendard-(Regular|Bold)[^)]+)\)/g)];assert.equal(refs.length,2);const fontProof=[];for(const [,raw,name] of refs){const u=new URL(raw.replace(/^["']|["']$/g,''),new URL(cssPath,base));assert.equal(u.origin,new URL(base).origin);const res=await fetch(u);assert.equal(res.status,200);assert.equal(new URL(res.url).origin,u.origin);const data=Buffer.from(await res.arrayBuffer());assert.equal(data.subarray(0,4).toString('ascii'),'wOF2');const expected=manifest.fonts.find(f=>f.file==='Pretendard-'+name+'.woff2');const hash=createHash('sha256').update(data).digest('hex');assert.equal(hash,expected.sha256);assert.equal(data.length,expected.bytes);fontProof.push({path:u.pathname,bytes:data.length,sha256:hash,contentType:res.headers.get('content-type')})}console.log(JSON.stringify({base,scope:'new deployed receipt CSS and public static fonts only; authenticated receipt not exercised',checks:receiptChecks,fonts:fontProof}));
+ const comparisonName=js.match(/UnderlyingExplorerView-[\w-]+\.js/)?.[0];assert.ok(comparisonName);const comparisonUrl=new URL(comparisonName,entry),comparison=await(await fetch(comparisonUrl)).text();const comparisonChecks={responsive:comparison.includes('responsive-product-card'),sourceArrow:comparison.includes('keyboard_arrow_down'),unsupportedMeaning:comparison.includes('자동 불러오기는 지원하지 않습니다.')};assert.ok(Object.values(comparisonChecks).every(Boolean),JSON.stringify(comparisonChecks));console.log(JSON.stringify({base,scope:'public deployed comparison artifact',path:comparisonUrl.pathname,checks:comparisonChecks}));
+ const checks={rawPreview:content.includes('원본 데이터 미리보기'),mobilePicker:content.includes('upload-mobile-picker'),accountConfirmation:content.includes('upload-account-confirmation'),reviewPresent:content.includes('import-review-agreement'),reviewRowEditor:content.includes('review-row-editor'),reviewRawUnsupported:content.includes('원문 보기 (미지원)'),reviewSaveCaption:content.includes('배당달력 포트폴리오에 저장 및 반영'),ledgerPresent:content.includes('ledger-records'),ledgerGates:content.includes('계좌 XIRR 결과')};
+ assert.ok(Object.values(checks).every(Boolean));
+ console.log(JSON.stringify({base,release,entry:entry.pathname,family:url.pathname,checks,scope:'anonymous public deployed artifacts only; authenticated import not exercised'}));
+ if(new URL(base).hostname==='yieldloom-app.vercel.app') {
+  const response=await fetch(new URL('api/family-portfolio',base));
+  const documents=response.headers.get('x-portfolio-document-reads');
+  assert.equal(response.status,401);assert.equal(documents,'0');
+  console.log(JSON.stringify({scope:'anonymous account API',status:response.status,documentReads:documents,readOperations:response.headers.get('x-portfolio-read-operations')}));
+ }
+}

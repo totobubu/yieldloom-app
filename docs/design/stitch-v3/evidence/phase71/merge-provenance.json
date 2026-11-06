@@ -1,0 +1,14 @@
+{
+  "productionCommit": "016fcddda89e0f5285a65446e8859adde247c208",
+  "tree": "e01c056bec6bc0c96566b8b8b745a3062d86031c",
+  "featureHead": "85314d97334f3bbf0e856898e7ccb120a67d8457",
+  "workHead": "736c5fa8c98e6c77bed27dd571435431e71b85bb",
+  "fullPromotionCiSyntheticMerge": "228f93a1516310c975a6d3f2a6e39de33e5edb4c",
+  "fullPromotionCiBase": "64f327e4feab44c4f0a10bf121cafdf672b66502",
+  "additionalAutomatedDataBase": "f7e7d8705b8d7f1f622dacef959d634955b70c9f",
+  "locallyValidatedMerge": "46f9fb510763ca39b15360c61d682745fb8cdd91",
+  "applicationCodeIdentical": true,
+  "additionalDataFiles": 6,
+  "allIncomingPublicDataPreserved": true,
+  "qualification": "Full promotion CI covered previous base; latest extra six automatic Content Studio JSON snapshots were preserved, JSON parsed, data status and exact merged-tree type/build validated separately. Final main CI and actual public release are recorded separately."
+}

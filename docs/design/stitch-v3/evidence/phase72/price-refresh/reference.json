@@ -1,0 +1,26 @@
+{
+  "screenId": "87cd200796914464b7613003247de771",
+  "projectId": "7356929996797649648",
+  "htmlSha256": "cf300d76cdc85d808b3475b2f01ccf4f5255e9d2d48da557210bfbca78a3662b",
+  "hashMatches": true,
+  "lines": {
+    "button": 795,
+    "position": [
+      785,
+      786,
+      787,
+      788,
+      789,
+      790,
+      791,
+      792,
+      793,
+      794,
+      795,
+      796,
+      797,
+      798
+    ]
+  },
+  "scope": "cached MCP HTML inspected and rerendered at same viewport; native PNG not newly verified"
+}

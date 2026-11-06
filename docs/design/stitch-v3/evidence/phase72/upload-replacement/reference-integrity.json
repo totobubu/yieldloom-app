@@ -1,0 +1,26 @@
+[
+  {
+    "family": "Data Upload",
+    "device": "Mobile",
+    "selectedScreen": "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6",
+    "htmlHashMatches": true
+  },
+  {
+    "family": "Data Upload",
+    "device": "Tablet",
+    "selectedScreen": "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33",
+    "htmlHashMatches": true
+  },
+  {
+    "family": "Import Review",
+    "device": "Mobile",
+    "selectedScreen": "projects/17382728461495959991/screens/6bd9777b8bea43b98aea8397a29f809a",
+    "htmlHashMatches": true
+  },
+  {
+    "family": "Import Review",
+    "device": "Tablet",
+    "selectedScreen": "projects/17382728461495959991/screens/5aa7a573854a46db9b106f89c09c4f23",
+    "htmlHashMatches": true
+  }
+]

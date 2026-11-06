@@ -1,0 +1,2 @@
+PASS comparison title: query/fallback and search/history; query-only changes reuse one directory read and make no detail requests.
+Responsive comparison: 14 viewport/view states passed; /tmp/phase72-integration-comparison

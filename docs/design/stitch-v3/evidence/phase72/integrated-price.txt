@@ -1,0 +1,4 @@
+{"width":1280,"initialReads":1,"normalRefreshButtons":1}
+{"width":768,"initialReads":1,"normalRefreshButtons":1}
+{"width":390,"initialReads":1,"normalRefreshButtons":1}
+PASS: 3 widths, normal explicit refresh uses existing forced public fetch; one initial read, pending lock/shared cache, no control auto reads, stale ticker abort, error/retry and source button geometry preserved. Synthetic public data only.

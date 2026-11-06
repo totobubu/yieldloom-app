@@ -197,7 +197,7 @@ try {
     );
     await page.getByRole('tab', { name: '배당정보', exact: true }).click();
     await page
-        .getByRole('heading', { name: '월별 배당 흐름', exact: true })
+        .getByRole('heading', { name: '월별 배당 추이', exact: true })
         .waitFor();
     assert.equal(await page.locator('.month-bar').count(), 12);
     await page.getByText('최근 기간 보기', { exact: true }).click();

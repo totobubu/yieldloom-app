@@ -1,0 +1,74 @@
+[
+  {
+    "width": 1280,
+    "theme": "light",
+    "overflow": false,
+    "plotWidth": 1168,
+    "scrollLeft": 0,
+    "missing": "미확인",
+    "partial": "부분",
+    "background": "rgb(242, 244, 246)",
+    "text": "rgb(100, 116, 139)",
+    "errors": []
+  },
+  {
+    "width": 1280,
+    "theme": "dark",
+    "overflow": false,
+    "plotWidth": 1168,
+    "scrollLeft": 0,
+    "missing": "미확인",
+    "partial": "부분",
+    "background": "rgb(28, 43, 66)",
+    "text": "rgb(179, 192, 209)",
+    "errors": []
+  },
+  {
+    "width": 768,
+    "theme": "light",
+    "overflow": false,
+    "plotWidth": 672,
+    "scrollLeft": 0,
+    "missing": "미확인",
+    "partial": "부분",
+    "background": "rgb(242, 244, 246)",
+    "text": "rgb(100, 116, 139)",
+    "errors": []
+  },
+  {
+    "width": 768,
+    "theme": "dark",
+    "overflow": false,
+    "plotWidth": 672,
+    "scrollLeft": 0,
+    "missing": "미확인",
+    "partial": "부분",
+    "background": "rgb(28, 43, 66)",
+    "text": "rgb(179, 192, 209)",
+    "errors": []
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "overflow": false,
+    "plotWidth": 620,
+    "scrollLeft": 302,
+    "missing": "미확인",
+    "partial": "부분",
+    "background": "rgb(242, 244, 246)",
+    "text": "rgb(100, 116, 139)",
+    "errors": []
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "overflow": false,
+    "plotWidth": 620,
+    "scrollLeft": 302,
+    "missing": "미확인",
+    "partial": "부분",
+    "background": "rgb(28, 43, 66)",
+    "text": "rgb(179, 192, 209)",
+    "errors": []
+  }
+]

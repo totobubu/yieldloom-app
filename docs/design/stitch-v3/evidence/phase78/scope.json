@@ -1,0 +1,18 @@
+{
+  "sourceId": "bd619d24ceb74c92afad1787a364ab4b",
+  "projectId": "7356929996797649648",
+  "route": "/stock/:ticker?tab=dividends",
+  "component": "src/components/stock/StockDividendTrend.vue",
+  "viewports": [
+    1280,
+    834,
+    768,
+    390
+  ],
+  "financialScriptUnchanged": true,
+  "scriptSha256": "7b3ae127f478024073c56f0db9e3e735a06846554285c873c13ad2a9f03d9118",
+  "base": "5c9d1b3270818ba37a0fb86c5784cac0885ca87f",
+  "privateAccountsAndCustomerPdfsTested": false,
+  "fullNativePngAcceptance": false,
+  "simulatorPublicPrBlocked": true
+}

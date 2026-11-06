@@ -1,0 +1,4 @@
+browser	Browser flows with synthetic identities and an in-memory API	2026-11-06T10:33:27.2037462Z List initial render 30392ms
+browser	Browser flows with synthetic identities and an in-memory API	2026-11-06T10:33:27.3576125Z AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+browser	Browser flows with synthetic identities and an in-memory API	2026-11-06T10:33:27.3577005Z   assert(initialMs < 20000)
+browser	Browser flows with synthetic identities and an in-memory API	2026-11-06T10:33:27.3577965Z     at file:///home/runner/work/yieldloom-app/yieldloom-app/tests/sheet-ledger-list.browser.mjs:211:5 {

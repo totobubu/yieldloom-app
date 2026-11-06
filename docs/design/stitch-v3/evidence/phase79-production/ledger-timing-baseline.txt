@@ -1,0 +1,13 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByText(/전체 2285건/).first() to be visible[22m
+
+    at /workspace/yieldloom-redesign-phase79/tests/sheet-ledger-list.browser.mjs:145:10 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0

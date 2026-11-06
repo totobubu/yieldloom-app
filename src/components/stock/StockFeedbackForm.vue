@@ -18,22 +18,31 @@
         error = ref(''),
         sent = ref(false);
     const requestId = ref(crypto.randomUUID());
+    let submittedContent = null;
 
     async function submit() {
         if (busy.value) return;
         busy.value = true;
         error.value = '';
         sent.value = false;
+        const content = {
+            symbol: props.symbol,
+            category: form.category,
+            message: form.message,
+            website: form.website,
+        };
+        const contentKey = JSON.stringify(content);
+        if (submittedContent !== null && submittedContent !== contentKey)
+            requestId.value = crypto.randomUUID();
+        submittedContent = contentKey;
         try {
             await submitStockFeedback({
-                symbol: props.symbol,
-                category: form.category,
-                message: form.message,
-                website: form.website,
+                ...content,
                 requestId: requestId.value,
                 pageUrl: window.location.href,
             });
             form.message = '';
+            submittedContent = null;
             requestId.value = crypto.randomUUID();
             sent.value = true;
         } catch (reason) {

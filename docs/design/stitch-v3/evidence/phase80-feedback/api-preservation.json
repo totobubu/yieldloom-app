@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "path": "src/services/stockFeedback.js",
+      "unchanged": true,
+      "sha256": "74342d1c34fdd111ff906208eedb699f38d3ce085be3e86e7650fe6b574317f1"
+    },
+    {
+      "path": "lib/stock-feedback.js",
+      "unchanged": true,
+      "sha256": "a27078b66ed1e9ad0ed664e1ca57a2b521481d9559c498fbed465dd56b1b9688"
+    },
+    {
+      "path": "api/stock-feedback.js",
+      "unchanged": true,
+      "sha256": "8607e066cedd8daae12cc7bd0c6a9498f1064e5a3abc1f59ebff2b5d6b798cbb"
+    }
+  ],
+  "newAutomaticRequests": 0,
+  "financialCodeChanged": false,
+  "customerAccountsOrPdfTested": false,
+  "realFeedbackSubmitted": false,
+  "simulatorPublicPrStillBlocked": true
+}

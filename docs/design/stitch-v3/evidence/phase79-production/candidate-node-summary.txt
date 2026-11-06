@@ -1,0 +1,9 @@
+✔ zero fees and amounts display a hyphen while negative values and a millionth dollar survive (0.420375ms)
+ℹ tests 819
+ℹ suites 0
+ℹ pass 819
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17264.914923

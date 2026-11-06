@@ -1,0 +1,15 @@
+{
+  "firstComparison": {
+    "identical": 11,
+    "total": 15,
+    "unmatched": [
+      "1280-success",
+      "1280-dark",
+      "768-dark",
+      "390-dark"
+    ]
+  },
+  "observed": "Dark captures had different real focus targets after Select asynchronously restored focus. Other transient pixel differences were not separately attributed.",
+  "normalization": "Same pointer position, completed finite transitions, and explicit textarea focus for dark snapshots in both baseline and after; no product CSS or input assertions altered.",
+  "finalComparison": "15/15 identical application RGB crops, not native Stitch parity"
+}

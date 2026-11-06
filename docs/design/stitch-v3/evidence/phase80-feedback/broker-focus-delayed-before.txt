@@ -1,0 +1,22 @@
+{"width":1280,"before":{"focused":true,"disabled":false,"checked":false,"activeRole":null,"delayed":0},"after":{"focused":true,"disabled":false,"checked":true,"activeRole":null,"delayed":0}}
+{"width":1280,"before":{"focused":true,"disabled":false,"checked":false,"activeRole":null,"delayed":0},"after":{"focused":true,"disabled":false,"checked":true,"activeRole":null,"delayed":0}}
+{"width":1280,"before":{"focused":true,"disabled":false,"checked":false,"activeRole":null,"delayed":2},"after":{"focused":false,"disabled":false,"checked":false,"activeRole":"combobox","delayed":2}}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+false !== true
+
+    at confirm (file:///workspace/yieldloom-redesign-phase80/tests/.phase80-broker-focus-probe.mjs:131:20)
+    at async file:///workspace/yieldloom-redesign-phase80/tests/.phase80-broker-focus-probe.mjs:234:9 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

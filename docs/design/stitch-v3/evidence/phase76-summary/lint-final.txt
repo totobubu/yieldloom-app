@@ -1,0 +1,6 @@
+
+/workspace/yieldloom-summary-phase75/src/pages/FamilyPortfolioView.vue
+  2550:33  warning  Attribute "v-if" should go before "type"  vue/attributes-order
+
+✖ 1 problem (0 errors, 1 warning)
+  0 errors and 1 warning potentially fixable with the `--fix` option.

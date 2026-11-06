@@ -1,0 +1,31 @@
+{
+  "screen": {
+    "name": "projects/7356929996797649648/screens/008f9456b8c643d0b9f41957447b9afc",
+    "title": "CONTENT / Portfolio Summary",
+    "deviceType": "DESKTOP",
+    "width": "2560",
+    "height": "2048",
+    "htmlCode": {
+      "name": "projects/7356929996797649648/screens/008f9456b8c643d0b9f41957447b9afc/fileEntries/html",
+      "mimeType": "text/html"
+    },
+    "screenshot": {
+      "name": "projects/7356929996797649648/screens/008f9456b8c643d0b9f41957447b9afc/fileEntries/screenshot",
+      "mimeType": "image/png"
+    }
+  },
+  "files": [
+    {
+      "kind": "htmlCode",
+      "bytes": 32619,
+      "sha256": "38dff368dfd247372d50da65a57c2bb36d772a76a091f365b29cf7dce65790f9"
+    },
+    {
+      "kind": "screenshot",
+      "bytes": 415277,
+      "sha256": "0aafabd9c8ad5c9fc326855ef0c8f14fecf045091118bc5a8edfa056cf811904"
+    }
+  ],
+  "htmlMatchesReviewed": true,
+  "method": "fresh official Stitch MCP get_screen/download_file; runtime key in memory only"
+}

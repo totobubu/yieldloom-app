@@ -1,0 +1,4 @@
+
+> etf@0.0.0 type-check
+> vue-tsc --noEmit
+

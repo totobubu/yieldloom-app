@@ -1,0 +1,1 @@
+REPRODUCED:3 viewports allow pending edits then erase the new text when the earlier request succeeds

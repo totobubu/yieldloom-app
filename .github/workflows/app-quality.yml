@@ -99,8 +99,10 @@ jobs:
                   export CHROMIUM_PATH="$(node --input-type=module -e "import { chromium } from 'playwright'; process.stdout.write(chromium.executablePath());")"
                   FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/manual-holdings.browser.mjs
                   BROKER_SLOW_ANALYSIS=5000 FAMILY_UI_BASE_URL=http://127.0.0.1:5175 node tests/broker-spreadsheet.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/broker-confirmation.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/upload-file-replacement.browser.mjs
                   UI_BASE_URL=http://127.0.0.1:5175 node tests/stock-price-refresh.browser.mjs
+                  UI_BASE_URL=http://127.0.0.1:5175 node tests/stock-feedback.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-ledger.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/sheet-ledger-list.browser.mjs
                   SHEET_LEDGER_UI_BASE_URL=http://127.0.0.1:5175 node tests/toss-trial-ledger.browser.mjs

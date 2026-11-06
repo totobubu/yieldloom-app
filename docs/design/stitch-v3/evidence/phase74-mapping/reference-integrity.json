@@ -1,0 +1,56 @@
+[
+  {
+    "device": "Mobile",
+    "sourceId": "projects/17382728461495959991/screens/e0fb1368a1684edaa56c1a506e806530",
+    "files": [
+      {
+        "kind": "htmlCode",
+        "sha256": "0d422a7319ddaa7a4ff267b186078f25a6b151cfc95b53eb8312383b6a08c085",
+        "bytes": 33752,
+        "hashMatches": true
+      },
+      {
+        "kind": "screenshot",
+        "sha256": "a164b53a3bda22a80b7da2e94b751f730cfb87e7e058005021335c2737694bf3",
+        "bytes": 553770,
+        "hashMatches": true
+      }
+    ]
+  },
+  {
+    "device": "PC",
+    "sourceId": "projects/17382728461495959991/screens/9ae2f0f1253a41b1839e792d36996900",
+    "files": [
+      {
+        "kind": "htmlCode",
+        "sha256": "a2f37c699c53e1552447ab66ac7bf071c60f31904165141a917fbf3aeb23d98c",
+        "bytes": 35185,
+        "hashMatches": true
+      },
+      {
+        "kind": "screenshot",
+        "sha256": "12dea35e60afb22191bd1af248877dac330b9873ad8cffb17cdf8881e7f03f4e",
+        "bytes": 615853,
+        "hashMatches": true
+      }
+    ]
+  },
+  {
+    "device": "Tablet",
+    "sourceId": "projects/17382728461495959991/screens/0bb2ab1d8197472f910b73ed175c4448",
+    "files": [
+      {
+        "kind": "htmlCode",
+        "sha256": "b8892a94d76e345a29607cc4f63bc84832bc67f57410474462c924523166dd41",
+        "bytes": 35493,
+        "hashMatches": true
+      },
+      {
+        "kind": "screenshot",
+        "sha256": "4eacad1ef583e3d8770a5989c3c084ec4eff56ddf40f8b8445a9e0bab01cf8d3",
+        "bytes": 633949,
+        "hashMatches": true
+      }
+    ]
+  }
+]

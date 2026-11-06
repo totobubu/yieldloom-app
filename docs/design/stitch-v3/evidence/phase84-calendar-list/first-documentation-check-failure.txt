@@ -1,0 +1,2 @@
+git diff --cached --check: lint.txt:94: new blank line at EOF.
+Corrected before the first remote push in a docs-only follow-up.

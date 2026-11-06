@@ -4,5 +4,6 @@
   "layout": "Three visual rows retain previous account/quantity and monetary value, with money inline instead of a separate fourth line. No fixed height. Real longer metadata, unknown quantities and null/zero values retained.",
   "dates": "Only new script block is a display-only UTC weekday formatter; date-only ISO remains in time.datetime and original detail handler. Cross-timezone UI tests passed UTC/Seoul/LosAngeles.",
   "acceptance": "146 selected narrow computed properties, native Tag display internals/actual date text/type/quantity/amount differ legitimately from source dummy data. Whole native/font/full-state acceptance remains incomplete. PC default grid RGB preserved by this unit, not acceptance of grid original beyondphase83.",
-  "writes": "Final audit, guarded regression and timezone contexts abort all unmatched writes under page-level synthetic mock routes. No real private account/customer PDF/DB-write verification."
+  "writes": "Final audit, guarded regression and timezone contexts abort all unmatched writes under page-level synthetic mock routes. No real private account/customer PDF/DB-write verification.",
+  "firstDocumentationCheckFailure": "Final full lint output was copied after evidence normalization, leaving a blank EOF line. git diff --cached --check caught it; a local commit was mistakenly made before inspecting that asynchronous result. A docs-only follow-up removes it before any remote push; no app code/test assertion changed."
 }

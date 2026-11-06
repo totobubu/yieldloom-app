@@ -91,4 +91,3 @@
 
 ✖ 54 problems (0 errors, 54 warnings)
   0 errors and 37 warnings potentially fixable with the `--fix` option.
-

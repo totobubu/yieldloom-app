@@ -19,4 +19,6 @@
 
 단일 반응형 HTML을4폭에서 측정한 것이며4개의 별도 native 시안을 생성/확정한 것은 아니다. [전후 원자료](evidence/phase81-account-inset/after/geometry.json). baseline 측정 모드의 일반 PASS 출력은 렌더 성공만 뜻한다. 별도로 JSON에서 이름/기관/역할/유형 font·line, 이름 weight, 카드 padding/radius, 도구 높이, snapshot padding과 넘침0을 원본과 대조했다. 전체 원본 PNG/글꼴 일치나 PC 카드의284px 고정 높이 적용 근거로 사용하지 않는다. 이전 독립 원본과 실제 셸 조립의 차이는 이 수정으로 덮어쓰지 않는다.
 
+첫 locator 캡처에서는 고정 하단 메뉴가 Mobile 카드 도구 일부를 가려 검수 이미지로 쓰지 않았다. 카드를 viewport 중앙에 놓고 전후4폭을 다시 촬영했고 원본/앱 geometry JSON의 모든 행은 그대로임을 확인했다. [촬영 조건과 한계](evidence/phase81-account-inset/capture-normalization.json), [같은 합성 자료의 촬영 스크립트](evidence/phase81-account-inset/centered-capture-script.txt). 제품 CSS나 기능은 추가 변경하지 않았다.
+
 타입 포함 [빌드](evidence/phase81-account-inset/build.txt)·[Node819](evidence/phase81-account-inset/node-summary.txt)·[lint오류0/기존경고54](evidence/phase81-account-inset/lint.txt)를 통과했다. 위 측정과 통합 검사는 합성 계좌/메모리 서비스이며 실제 로그인 계좌·고객PDF·운영 DB 쓰기 검증은 수행하지 않았다. 이 문서는 로컬 구현 시점 기록으로 원격 CI·Preview·운영 제공 완료를 주장하지 않는다. 최종 제공은 해당 PR의 후속 운영 근거와 실제 release를 따른다. 시뮬레이터 공개PR 승인 차단은 유지한다.

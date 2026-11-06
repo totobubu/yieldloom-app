@@ -677,7 +677,7 @@
         }
         .price-observation-cards header > span,
         .price-observation-cards dt,
-        .price-card-events > span {
+        .price-card-events > span:first-child {
             font-weight: 500;
             color: var(--app-muted);
         }

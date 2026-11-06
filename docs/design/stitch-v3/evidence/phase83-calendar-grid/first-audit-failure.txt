@@ -1,0 +1,13 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: '다크 모드', exact: true })[22m
+
+    at /tmp/phase83-calendar/audit.mjs:42:59 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0

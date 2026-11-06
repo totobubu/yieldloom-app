@@ -1,0 +1,15 @@
+✔ past and future ex-dates resolve gross reference amounts from the available quantity snapshot (10.601694ms)
+✔ past entitlement rolls later trades back and falls back to a received dividend (0.702413ms)
+✔ missing payout dates, reviewed announcements and periodic forecasts never invent payments or amounts (8.564579ms)
+✔ recorded reversals subtract, native zero is retained, unknown amounts stay unknown and currencies never combine (1.089055ms)
+✔ month grid handles leap years and invalid dates (0.451674ms)
+✔ ledger reads every page and rechecks revisions and permissions (1.004977ms)
+✔ ledger discards duplicate pages and responses from a replaced user scope (0.495586ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 102.315841

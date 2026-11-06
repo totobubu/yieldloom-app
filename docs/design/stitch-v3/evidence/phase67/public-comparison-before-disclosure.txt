@@ -1,0 +1,9 @@
+file:///tmp/phase67-public-comparison.mjs:17
+ const clickVisible=async selector=>{const links=page.locator(selector);for(let i=0;i<await links.count();i++){const a=links.nth(i);if(await a.isVisible()){await a.click();return}}throw Error('No visible navigation link: '+selector)};
+                                                                                                                                                                                          ^
+
+Error: No visible navigation link: a[href*="view=theme"]
+    at clickVisible (file:///tmp/phase67-public-comparison.mjs:17:187)
+    at async file:///tmp/phase67-public-comparison.mjs:23:48
+
+Node.js v24.19.0

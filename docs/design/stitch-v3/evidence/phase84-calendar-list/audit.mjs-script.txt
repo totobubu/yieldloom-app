@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {chromium} from '/workspace/yieldloom-redesign-phase84/node_modules/playwright/index.mjs';
+import {installStaticAssets} from '/workspace/yieldloom-redesign-phase84/scripts/design/browser-static-assets.mjs';
+import {installStitchFixtures} from '/workspace/yieldloom-redesign-phase84/tests/stitch-fixtures.mjs';
+const out=process.env.CALENDAR_AUDIT_OUT;assert.ok(out);await fs.mkdir(out,{recursive:true});
+const before=process.env.CALENDAR_AUDIT_BEFORE==='1';
+const html=await fs.readFile('/tmp/phase83-calendar/fresh-originals/fc276eb9388a48909296fb018f60771b.html','utf8');
+const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});const rows=[];
+const measure=(root,source)=>{
+ const q=s=>root.querySelector(s);
+ const st=e=>{if(!e)return null;const s=getComputedStyle(e),r=e.getBoundingClientRect();return Object.fromEntries(['display','gap','padding','minHeight','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderTopStyle','borderTopColor','borderRadius','fontSize','lineHeight','fontWeight','color','backgroundColor','marginLeft'].map(k=>[k,s[k]]).concat([['width',r.width],['height',r.height]]));};
+ const map=source?{grid:'.cal-grid-body',header:'.cal-grid-header',weekday:'.cal-grid-header div:nth-child(2)',sunday:'.cal-grid-header div:first-child',saturday:'.cal-grid-header div:last-child',normal:'.day-cell:not(.today)',number:'.day-cell:not(.today) .day-num',today:'.day-cell.today',todayNumber:'.day-cell.today .day-num',badge:'.today-badge',announced:'.event-confirmed',forecast:'.event-estimated'}:{grid:'.calendar-days',header:'.calendar-weekdays',weekday:'.weekday:nth-child(2)',sunday:'.weekday:first-child',saturday:'.weekday:last-child',normal:'.day-cell:not(.today)',number:'.day-cell:not(.today)>b',today:'.day-cell.today',todayNumber:'.day-cell.today>b',badge:'.calendar-today-badge',announced:'.day-event.announced',forecast:'.day-event.forecast'};
+ Object.assign(map,source?{listCard:'.mobile-event-card:last-child',listHeader:'.mobile-event-card:last-child>div:first-child',listDate:'.mobile-event-card:last-child>div:first-child>span:first-child',listBadge:'.mobile-event-card:last-child .badge-status',listSymbol:'.mobile-event-card:last-child>div:nth-child(2)',listMeta:'.mobile-event-card:last-child>div:nth-child(3)',forecastCard:'.mobile-event-card:first-child',forecastBadge:'.mobile-event-card:first-child .badge-status'}:{listCard:'.event-row',listHeader:'.event-row>div',listDate:'.event-row>div>b',listBadge:'.event-row .p-tag',listSymbol:'.calendar-event-symbol',listMeta:'.event-row>span',forecastCard:'.event-row:has(.p-tag-warn)',forecastBadge:'.event-row:has(.p-tag-warn) .p-tag'});
+ const result=Object.fromEntries(Object.entries(map).map(([k,s])=>[k,st(q(s))]));
+ result.gridVisible=source?!!q('.cal-grid-body')?.getBoundingClientRect().width:!!q('.month-grid')?.getBoundingClientRect().width;
+ result.listCount=root.querySelectorAll(source?'.mobile-event-card':'.event-row').length;
+ result.listCardTexts=[...root.querySelectorAll('.event-row')].map(el=>({symbol:el.querySelector('.calendar-event-symbol')?.textContent.trim(),date:el.querySelector('time')?.getAttribute('datetime') || el.querySelector('div>b')?.textContent.trim(),dateLabel:el.querySelector('div>b')?.textContent.trim(),money:(el.querySelector('strong'))?.textContent.trim(),meta:el.querySelector(':scope>span')?.textContent.trim()}));
+ result.forecastText=root.querySelector('.event-row:has(.p-tag-warn)')?.textContent.trim();
+ result.cellCount=root.querySelectorAll('.day-cell').length;result.todayCount=root.querySelectorAll('.day-cell.today').length;
+ result.currentDateCount=root.querySelectorAll('[aria-current="date"]').length;
+ result.overflow=document.documentElement.scrollWidth>innerWidth+1;return result;
+};
+try{
+ for(const width of[1280,834,390]){
+  const source=await browser.newPage({viewport:{width,height:1100},deviceScaleFactor:2});const se=[];source.on('pageerror',e=>se.push(e.message));const sa=await installStaticAssets(source);await source.setContent(html,{waitUntil:'networkidle'});await source.evaluate(()=>document.fonts.ready);
+  const original=await source.locator('body').evaluate(measure,true);await source.locator('.calendar-container').screenshot({path:`${out}/source-${width}.png`,animations:'disabled'});
+  const context=await browser.newContext({viewport:{width,height:1100},deviceScaleFactor:2});const blockedWrites=[];
+  await context.route('**/*',r=>{if(!['GET','HEAD','OPTIONS'].includes(r.request().method())){blockedWrites.push({method:r.request().method(),path:new URL(r.request().url()).pathname});return r.abort()}return r.fallback()});
+  const page=await context.newPage();await installStitchFixtures(page,{admin:true});const pa=await installStaticAssets(page);const pe=[];page.on('pageerror',e=>pe.push(e.message));
+  await page.goto('http://127.0.0.1:5287/mypage?tab=calendar',{waitUntil:'networkidle'});await page.locator('.calendar-left').waitFor();await page.locator('.fullscreen-data-loading-mask').waitFor({state:'hidden'});await page.evaluate(()=>document.fonts.ready);
+  const app=await page.locator('.calendar-left').evaluate(measure,false);await page.locator('.calendar-left').screenshot({path:`${out}/app-${width}.png`,animations:'disabled'});
+  if(!before)assert.equal(app.currentDateCount,1);
+  assert.deepEqual(se,[]);assert.deepEqual(sa,[]);assert.deepEqual(pe,[]);assert.deepEqual(pa,[]);assert.deepEqual(blockedWrites,[]);assert.equal(app.overflow,false);assert.equal(app.gridVisible,original.gridVisible);
+  let keyboardDateDialog=false;
+  if(width===1280){const day=page.locator('.day-cell.today');await day.focus();await day.press('Enter');await page.getByRole('dialog').waitFor();keyboardDateDialog=true;await page.keyboard.press('Escape');await page.getByRole('dialog').waitFor({state:'hidden'});}
+  await page.getByRole('button',{name:'다크 모드',exact:true}).click();await page.locator('.calendar-left').screenshot({path:`${out}/app-dark-${width}.png`,animations:'disabled'});const dark=await page.locator('.calendar-left').evaluate(measure,false);assert.equal(dark.overflow,false);assert.equal(dark.gridVisible,original.gridVisible);
+  let forecastState=null;
+  if(!before){
+   await page.getByRole('button',{name:'라이트 모드',exact:true}).click();
+   const fp=await context.newPage();await installStitchFixtures(fp,{admin:true});const fa=await installStaticAssets(fp);const fe=[];fp.on('pageerror',e=>fe.push(e.message));const reads=[];fp.on('request',r=>{if(r.method()==='GET'&&/\/api\/|distribution-ticker/.test(r.url()))reads.push(new URL(r.url()).pathname)});
+   await fp.route('**/distribution-ticker-demo-m.json',r=>r.fulfill({json:{history:[['2026-10-15','2026-10-20'],['2026-09-15','2026-09-20']].map(([ex_date,payable_date],i)=>({id:800+i,ticker:'DEMO-M',ex_date,payable_date,distribution_per_share:.25,currency:'USD',verification_status:'official',frequency:'monthly'}))}}));
+   await fp.goto('http://127.0.0.1:5287/mypage?tab=calendar',{waitUntil:'networkidle'});await fp.locator('.calendar-left').waitFor();await fp.locator('.fullscreen-data-loading-mask').waitFor({state:'hidden'});const readCount=reads.length;
+   await fp.getByRole('button',{name:'배당락일',exact:true}).click();await fp.locator('.day-event.forecast').first().waitFor({state:'attached'});await fp.waitForLoadState('networkidle');assert.equal(reads.length,readCount);
+   const fs=await fp.locator('.calendar-left').evaluate(measure,false);assert.equal(fs.overflow,false);await fp.locator('.calendar-left').screenshot({path:`${out}/app-forecast-${width}.png`,animations:'disabled'});
+   const forecastText=await fp.locator('.day-event.forecast').first().textContent();assert.ok(forecastText.includes('주기 추정'));
+   await fp.getByRole('button',{name:'다크 모드',exact:true}).click();const fd=await fp.locator('.calendar-left').evaluate(measure,false);await fp.locator('.calendar-left').screenshot({path:`${out}/app-forecast-dark-${width}.png`,animations:'disabled'});assert.equal(fd.overflow,false);assert.deepEqual(fe,[]);assert.deepEqual(fa,[]);assert.deepEqual(blockedWrites,[]);
+   forecastState={app:fs,dark:fd,forecastText,extraReads:reads.length-readCount,errors:fe,assetErrors:fa,qualification:'Actual forecast derived by existing service from synthetic DEMO-M history in ex-date mode; not a DOM-injected or live financial event. Default fixture unchanged.'};await fp.close();
+  }
+  rows.push({width,original,app,dark,forecastState,keyboardDateDialog,blockedWrites,sourceErrors:se,sourceAssetErrors:sa,appErrors:pe,appAssetErrors:pa});await context.close();await source.close();
+ }
+}finally{await browser.close();await fs.writeFile(out+'/measurements.json',JSON.stringify({before,scope:'Fresh authoritative responsive HTML rendered at three viewports; selected grid/day styles and synthetic app functionality, not whole native PNG/font/private account acceptance. App service fixture values remain unchanged. All unmatched writes blocked.',rows},null,2)+'\n');}
+console.log(`Captured ${rows.length} viewport pairs with source health, keyboard date selection and dark responsive checks.`);

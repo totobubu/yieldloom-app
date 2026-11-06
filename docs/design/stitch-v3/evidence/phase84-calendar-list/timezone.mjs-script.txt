@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';import fs from 'node:fs/promises';
+import {chromium} from '/workspace/yieldloom-redesign-phase84/node_modules/playwright/index.mjs';
+import {installStitchFixtures} from '/workspace/yieldloom-redesign-phase84/tests/stitch-fixtures.mjs';
+import {installStaticAssets} from '/workspace/yieldloom-redesign-phase84/scripts/design/browser-static-assets.mjs';
+const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});const rows=[];
+try{for(const timezoneId of ['UTC','Asia/Seoul','America/Los_Angeles']){
+ const context=await browser.newContext({timezoneId,viewport:{width:834,height:1100}});const writes=[];
+ await context.route('**/*',r=>{if(!['GET','HEAD','OPTIONS'].includes(r.request().method())){writes.push(new URL(r.request().url()).pathname);return r.abort()}return r.fallback()});
+ const page=await context.newPage();await installStitchFixtures(page,{admin:true});const assets=await installStaticAssets(page);const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:5287/mypage?tab=calendar',{waitUntil:'networkidle'});await page.locator('.event-row time').first().waitFor();await page.locator('.fullscreen-data-loading-mask').waitFor({state:'hidden'});
+ const labels=await page.locator('.event-row time').evaluateAll(els=>els.map(el=>({date:el.getAttribute('datetime'),label:el.textContent.trim()})));assert.equal(labels.length,3);
+ for(const r of labels){assert.equal(r.date,'2026-11-25');assert.equal(r.label,'2026.11.25 (수)')}
+ await page.locator('.event-row').first().focus();await page.keyboard.press('Enter');const dialog=page.getByRole('dialog');await dialog.waitFor();assert.ok((await dialog.innerText()).includes('2026-11-25'));await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
+ assert.deepEqual(errors,[]);assert.deepEqual(assets,[]);assert.deepEqual(writes,[]);rows.push({timezoneId,labels,canonicalDetailDatePreserved:true,nativeKeyboardSelection:true,errors,assets,unmatchedWrites:writes});await context.close();
+}}finally{await browser.close()}
+await fs.writeFile('/tmp/phase84-calendar-list/timezone.json',JSON.stringify({scope:'Synthetic service dates rendered without browser timezone day shifts; actual account/customer PDF unverified.',rows},null,2)+'\n');console.log('PASS three timezones: actual row dates/weekday labels and keyboard-opened canonical detail dates.');

@@ -1,0 +1,71 @@
+{
+  "scope": "Synthetic service dates rendered without browser timezone day shifts; actual account/customer PDF unverified.",
+  "rows": [
+    {
+      "timezoneId": "UTC",
+      "labels": [
+        {
+          "date": "2026-11-25",
+          "label": "2026.11.25 (수)"
+        },
+        {
+          "date": "2026-11-25",
+          "label": "2026.11.25 (수)"
+        },
+        {
+          "date": "2026-11-25",
+          "label": "2026.11.25 (수)"
+        }
+      ],
+      "canonicalDetailDatePreserved": true,
+      "nativeKeyboardSelection": true,
+      "errors": [],
+      "assets": [],
+      "unmatchedWrites": []
+    },
+    {
+      "timezoneId": "Asia/Seoul",
+      "labels": [
+        {
+          "date": "2026-11-25",
+          "label": "2026.11.25 (수)"
+        },
+        {
+          "date": "2026-11-25",
+          "label": "2026.11.25 (수)"
+        },
+        {
+          "date": "2026-11-25",
+          "label": "2026.11.25 (수)"
+        }
+      ],
+      "canonicalDetailDatePreserved": true,
+      "nativeKeyboardSelection": true,
+      "errors": [],
+      "assets": [],
+      "unmatchedWrites": []
+    },
+    {
+      "timezoneId": "America/Los_Angeles",
+      "labels": [
+        {
+          "date": "2026-11-25",
+          "label": "2026.11.25 (수)"
+        },
+        {
+          "date": "2026-11-25",
+          "label": "2026.11.25 (수)"
+        },
+        {
+          "date": "2026-11-25",
+          "label": "2026.11.25 (수)"
+        }
+      ],
+      "canonicalDetailDatePreserved": true,
+      "nativeKeyboardSelection": true,
+      "errors": [],
+      "assets": [],
+      "unmatchedWrites": []
+    }
+  ]
+}

@@ -2490,7 +2490,7 @@
   "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
   "latestImplementationBase": "fae1ce41961509eb21e71af64e28f143592b2e16",
   "rolloutSnapshot": {
-    "recordedAt": "2026-11-06T01:31:36.461451+00:00",
+    "recordedAt": "2026-11-06T01:41:06.791609+00:00",
     "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
     "productionMergeSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
     "productionTargets": 15,
@@ -2502,7 +2502,7 @@
     "qualification": "15 production-connected /5 external handoff unverified; not whole-frame visual acceptance or real-account verification",
     "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
     "verificationScope": "both public release identities; live comparison titles/direct/reload/visible navigation/history/120 frames and search; deployed review CSS; synthetic five-width review/upload/result and4716-row memory flow; no authenticated account/PDF E2E",
-    "mainPostMergeCi": "in_progress:42143592035;3/4 success"
+    "mainPostMergeCi": "success:42143592035;4/4"
   },
   "latestReferenceIntegrity": {
     "checkedAt": "2026-11-05T17:19:37.559897+00:00",

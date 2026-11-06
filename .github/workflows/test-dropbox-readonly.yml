@@ -1,0 +1,112 @@
+name: Test Dropbox authentication and folder read
+
+# Requires this file on the default branch before the first manual run.
+on:
+    workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+    group: dropbox-readonly-test
+    cancel-in-progress: false
+
+jobs:
+    dropbox-readonly:
+        runs-on: ubuntu-latest
+        timeout-minutes: 3
+        steps:
+            # No checkout, dependencies, uploads, artifacts or persistent tokens.
+            - name: Refresh token and read one root folder entry
+              env:
+                  DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+                  DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
+                  DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+              shell: python
+              run: |
+                  import json
+                  import os
+                  import sys
+                  import urllib.error
+                  import urllib.parse
+                  import urllib.request
+
+                  def fail(stage, category, status=None):
+                      suffix = f" (HTTP {status})" if status is not None else ""
+                      print(f"{stage}: FAIL [{category}]{suffix}")
+                      sys.exit(1)
+
+                  class NoRedirect(urllib.request.HTTPRedirectHandler):
+                      def redirect_request(self, req, fp, code, msg, headers, newurl):
+                          return None
+
+                  opener = urllib.request.build_opener(NoRedirect)
+                  known_errors = {
+                      "invalid_client", "invalid_grant", "invalid_request",
+                      "unsupported_grant_type", "missing_scope",
+                      "expired_access_token", "invalid_access_token",
+                      "insufficient_permissions", "rate_limit", "path",
+                  }
+
+                  def post(stage, url, data, headers):
+                      request = urllib.request.Request(url, data=data, headers=headers, method="POST")
+                      try:
+                          with opener.open(request, timeout=30) as response:
+                              raw = response.read(1024 * 1024 + 1)
+                          if len(raw) > 1024 * 1024:
+                              fail(stage, "response_too_large")
+                          result = json.loads(raw)
+                          if not isinstance(result, dict):
+                              fail(stage, "invalid_response")
+                          return result
+                      except urllib.error.HTTPError as error:
+                          category = "http_error"
+                          try:
+                              body = json.loads(error.read(65536))
+                              detail = body.get("error") if isinstance(body, dict) else None
+                              if isinstance(detail, dict):
+                                  detail = detail.get(".tag")
+                              if isinstance(detail, str) and detail in known_errors:
+                                  category = detail
+                          except (ValueError, OSError):
+                              pass
+                          fail(stage, category, error.code)
+                      except (urllib.error.URLError, OSError, TimeoutError):
+                          fail(stage, "network_or_tls_error")
+                      except (ValueError, UnicodeError):
+                          fail(stage, "invalid_json")
+
+                  names = ("DROPBOX_APP_KEY", "DROPBOX_APP_SECRET", "DROPBOX_REFRESH_TOKEN")
+                  missing = [name for name in names if not os.environ.get(name, "").strip()]
+                  if missing:
+                      print("Secrets: FAIL [missing: " + ", ".join(missing) + "]")
+                      sys.exit(1)
+                  print("Secrets: PASS [all three supplied]")
+
+                  token_response = post(
+                      "Authentication refresh",
+                      "https://api.dropboxapi.com/oauth2/token",
+                      urllib.parse.urlencode({
+                          "grant_type": "refresh_token",
+                          "client_id": os.environ["DROPBOX_APP_KEY"],
+                          "client_secret": os.environ["DROPBOX_APP_SECRET"],
+                          "refresh_token": os.environ["DROPBOX_REFRESH_TOKEN"],
+                      }).encode(),
+                      {"Content-Type": "application/x-www-form-urlencoded"},
+                  )
+                  access_token = token_response.get("access_token")
+                  if not isinstance(access_token, str) or not access_token:
+                      fail("Authentication refresh", "missing_access_token")
+                  print("Authentication refresh: PASS")
+
+                  listing = post(
+                      "Root folder read",
+                      "https://api.dropboxapi.com/2/files/list_folder",
+                      json.dumps({"path": "", "recursive": False, "limit": 1}).encode(),
+                      {"Content-Type": "application/json", "Authorization": "Bearer " + access_token},
+                  )
+                  if not isinstance(listing.get("entries"), list):
+                      fail("Root folder read", "invalid_response")
+                  print("Root folder read: PASS [metadata only; names suppressed]")
+                  with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+                      summary.write("Dropbox authentication refresh: PASS\n\nRoot folder metadata read: PASS\n\n")
+                      summary.write("Read-only test: no files uploaded or modified; no names or tokens logged.\n")

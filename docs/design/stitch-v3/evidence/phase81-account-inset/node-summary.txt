@@ -1,0 +1,10 @@
+✔ stale, reset, incomplete and unknown-method funding fall back to statement amounts (0.580314ms)
+✔ zero fees and amounts display a hyphen while negative values and a millionth dollar survive (0.440402ms)
+ℹ tests 819
+ℹ suites 0
+ℹ pass 819
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25145.055785

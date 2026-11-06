@@ -1,0 +1,1412 @@
+[
+  {
+    "screen": "0bb2ab1d8197472f910b73ed175c4448",
+    "family": "Column Mapping",
+    "device": "Tablet",
+    "responses": [
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2",
+        "status": 200
+      }
+    ],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "증권사 파일 열 연결 (컬럼 매핑)",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "24px",
+        "line": "32px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Bold",
+            "isCustomFont": true,
+            "glyphCount": 7
+          },
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Bold",
+            "isCustomFont": true,
+            "glyphCount": 12
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "업로드된 증권사 거래내역 파일의 열을 표준 항목에 연결합니다. 필수 항목이 모두 연결되면 검토 단계",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "14px",
+        "line": "22.75px",
+        "actual": [
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Regular",
+            "isCustomFont": true,
+            "glyphCount": 50
+          },
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 18
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "※ CSV 파일은 시트 선택을 지원하지 않습니다.",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "12px",
+        "line": "16px",
+        "actual": [
+          {
+            "familyName": "Pretendard Medium",
+            "postScriptName": "Pretendard-Medium",
+            "isCustomFont": true,
+            "glyphCount": 16
+          },
+          {
+            "familyName": "Inter Medium",
+            "postScriptName": "Inter-Medium",
+            "isCustomFont": true,
+            "glyphCount": 11
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "H2",
+        "text": "헤더 지문 불일치 안내",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "15px",
+        "line": "18.75px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Bold",
+            "isCustomFont": true,
+            "glyphCount": 3
+          },
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Bold",
+            "isCustomFont": true,
+            "glyphCount": 9
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "2476bb94e3174e6182500d8f520a6424",
+    "family": "Compare Similar",
+    "device": "Mobile",
+    "responses": [
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2",
+        "status": 200
+      }
+    ],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "유사 ETF 비교",
+        "declared": "Pretendard, Inter, sans-serif",
+        "font": "20px",
+        "line": "28px",
+        "actual": [
+          {
+            "familyName": "Pretendard SemiBold",
+            "postScriptName": "Pretendard-SemiBold",
+            "isCustomFont": true,
+            "glyphCount": 8
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "가상 전략 및 배당 주기별 유사 가상 상품군을 탐색하고 운용 지표와 보수를 대조합니다.",
+        "declared": "Pretendard, Inter, sans-serif",
+        "font": "14px",
+        "line": "19.25px",
+        "actual": [
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Regular",
+            "isCustomFont": true,
+            "glyphCount": 48
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "※ 상위 전략·방향 변경 시 하위 조건이 자동 재설정되는 종속 필터입니다.",
+        "declared": "Pretendard, Inter, sans-serif",
+        "font": "11px",
+        "line": "13.75px",
+        "actual": [
+          {
+            "familyName": "Pretendard Medium",
+            "postScriptName": "Pretendard-Medium",
+            "isCustomFont": true,
+            "glyphCount": 41
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "H2",
+        "text": "가상 커버드콜 USD",
+        "declared": "Pretendard, Inter, sans-serif",
+        "font": "20px",
+        "line": "28px",
+        "actual": [
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Bold",
+            "isCustomFont": true,
+            "glyphCount": 11
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "77fdbd798a3941c68f098120a210c44d",
+    "family": "Compare Similar",
+    "device": "Tablet",
+    "responses": [
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
+        "status": 200
+      }
+    ],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "유사 ETF 비교",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "30px",
+        "line": "38px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 9
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "가상 전략 및 배당 주기별 유사 가상 상품군을 탐색하고 운용 지표와 보수를 대조합니다.",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "14px",
+        "line": "20px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 48
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "H2",
+        "text": "종속 필터 설정",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "13px",
+        "line": "18px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 8
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "H2",
+        "text": "비교 분석 인사이트",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "20px",
+        "line": "28px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 10
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "cf7686fbb620465f93418fde1572a6cc",
+    "family": "Import Result",
+    "device": "Tablet",
+    "responses": [
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2",
+        "status": 200
+      }
+    ],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "증권 거래내역 저장 영수증5건 저장 완료 · 실패 0건",
+        "declared": "Pretendard, Inter, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+        "font": "24px",
+        "line": "32px",
+        "actual": [
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Bold",
+            "isCustomFont": true,
+            "glyphCount": 14
+          },
+          {
+            "familyName": "Pretendard SemiBold",
+            "postScriptName": "Pretendard-SemiBold",
+            "isCustomFont": true,
+            "glyphCount": 16
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "업로드된 총 6건 중 5건이 신규 반영 완료되었으며, 1건은 중복으로 안전하게 제외되었습니다. (원",
+        "declared": "Pretendard, Inter, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+        "font": "14px",
+        "line": "22.75px",
+        "actual": [
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Regular",
+            "isCustomFont": true,
+            "glyphCount": 43
+          },
+          {
+            "familyName": "Pretendard SemiBold",
+            "postScriptName": "Pretendard-SemiBold",
+            "isCustomFont": true,
+            "glyphCount": 30
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "H2",
+        "text": "거래내역 저장 영수증 (총 6건 처리: 반영 5건 · 중복 제외 1건 · 실패 0건)",
+        "declared": "Pretendard, Inter, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+        "font": "16px",
+        "line": "24px",
+        "actual": [
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Regular",
+            "isCustomFont": true,
+            "glyphCount": 34
+          },
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Bold",
+            "isCustomFont": true,
+            "glyphCount": 12
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "P",
+        "text": "업로드된 거래내역 검증 및 데이터 저장이 정상적으로 완료되었습니다. 저장 완료 영수증 내역을 확인하",
+        "declared": "Pretendard, Inter, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+        "font": "12px",
+        "line": "19.5px",
+        "actual": [
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Regular",
+            "isCustomFont": true,
+            "glyphCount": 64
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "5aa7a573854a46db9b106f89c09c4f23",
+    "family": "Import Review",
+    "device": "Tablet",
+    "responses": [
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
+        "status": 200
+      }
+    ],
+    "assetFailures": [
+      {
+        "host": "fonts.googleapis.com",
+        "status": "asset-fetch-failed"
+      }
+    ],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "증권 데이터 검토 및 확정",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "24px",
+        "line": "32px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 14
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "업로드된 데이터 파싱 결과를 최종 확인하고 배당달력 포트폴리오에 안전하게 반영합니다.",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "14px",
+        "line": "20px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 47
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "본 가이드는 향후 추가 업로드 시 발생 가능한 예시 오류(미등록 종목코드, 통화 코드 결측)에 대한",
+        "declared": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "font": "12px",
+        "line": "19.5px",
+        "actual": [
+          {
+            "familyName": "Noto Sans",
+            "postScriptName": "NotoSans-Regular",
+            "isCustomFont": false,
+            "glyphCount": 19
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 43
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "H2",
+        "text": "analytics검토 현황 요약 (정상율 100% 6/6건)",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "13px",
+        "line": "18px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 24
+          },
+          {
+            "familyName": "Material Symbols Outlined",
+            "postScriptName": "MaterialSymbolsOutlined-Regular",
+            "isCustomFont": true,
+            "glyphCount": 1
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "986013fd6b61404f82b4eeda2b643cd6",
+    "family": "Ledger Analysis",
+    "device": "Mobile",
+    "responses": [
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2",
+        "status": 200
+      },
+      {
+        "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2",
+        "status": 200
+      }
+    ],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "원장 품질 및 청산 손익 분석",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "20px",
+        "line": "28px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Bold",
+            "isCustomFont": true,
+            "glyphCount": 5
+          },
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Bold",
+            "isCustomFont": true,
+            "glyphCount": 11
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "가져온 증권 거래 원장의 데이터 품질 정합성을 검증하고, 실현 손익 및 현금흐름 연동 상태를 분석합",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "14px",
+        "line": "19.25px",
+        "actual": [
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Regular",
+            "isCustomFont": true,
+            "glyphCount": 42
+          },
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 15
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "총 6건 원본 데이터 매핑 완료",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "10px",
+        "line": "15px",
+        "actual": [
+          {
+            "familyName": "Pretendard",
+            "postScriptName": "Pretendard-Regular",
+            "isCustomFont": true,
+            "glyphCount": 11
+          },
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 6
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "P",
+        "text": "현재 예시 자료만으로 산출하지 않음",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "10px",
+        "line": "12.5px",
+        "actual": [
+          {
+            "familyName": "Pretendard Medium",
+            "postScriptName": "Pretendard-Medium",
+            "isCustomFont": true,
+            "glyphCount": 15
+          },
+          {
+            "familyName": "Inter Medium",
+            "postScriptName": "Inter-Medium",
+            "isCustomFont": true,
+            "glyphCount": 4
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "e0fb1368a1684edaa56c1a506e806530",
+    "family": "Column Mapping",
+    "device": "Mobile",
+    "responses": [],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "증권사 파일 열 연결 (컬럼 매핑)",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "20px",
+        "line": "25px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Bold",
+            "isCustomFont": true,
+            "glyphCount": 7
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 12
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "업로드된 증권사 거래내역 파일의 열을 표준 항목에 연결합니다. 필수 항목이 모두 연결되면 검토 단계",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "12px",
+        "line": "19.5px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 18
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 50
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "총 3행 데이터 감지됨",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "11px",
+        "line": "16.5px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 4
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 8
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "P",
+        "text": "※ CSV 파일은 시트 선택을 지원하지 않습니다.",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "11px",
+        "line": "16.5px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 16
+          },
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 11
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "9ae2f0f1253a41b1839e792d36996900",
+    "family": "Column Mapping",
+    "device": "PC",
+    "responses": [],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "증권사 파일 열 연결 (컬럼 매핑)",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "24px",
+        "line": "32px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Bold",
+            "isCustomFont": true,
+            "glyphCount": 7
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 12
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "업로드된 증권사 거래내역 파일의 열을 표준 항목에 연결합니다. 필수 항목이 모두 연결되면 검토 단계",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "14px",
+        "line": "22.75px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 18
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 50
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "총 3행 데이터 감지됨",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "12px",
+        "line": "16px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 4
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 8
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "P",
+        "text": "기존 저장된 설정과 업로드된 파일의 헤더 구조가 일치하지 않아 자동 연결이 해제되었습니다. 각 항목",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "12px",
+        "line": "19.5px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 20
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 54
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "4dbfbf717c75483e88e6d1186ecbdb2b",
+    "family": "Compare Theme",
+    "device": "Mobile",
+    "responses": [],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "테마별 배당 ETF 및 구성종목 비교",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "24px",
+        "line": "32px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Bold",
+            "isCustomFont": true,
+            "glyphCount": 8
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 12
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "가상 테마를 탐색하고 대표 기초자산 종목군과 관련 배당 ETF의 운용 지표 및 분배금 성격을 대조 ",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "14px",
+        "line": "22.75px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Regular",
+            "isCustomFont": true,
+            "glyphCount": 19
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 42
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "※ 상위 전략·방향 변경 시 하위 조건이 자동 재설정되는 종속 필터입니다. | 단일 통화: USD",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "11px",
+        "line": "15.125px",
+        "actual": [
+          {
+            "familyName": "Inter Medium",
+            "postScriptName": "Inter-Medium",
+            "isCustomFont": true,
+            "glyphCount": 22
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 32
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "H2",
+        "text": "인공지능(AI) 인프라 & 반도체 전력 테마",
+        "declared": "Inter, Pretendard, \"Apple SD Gothic Neo\", sans-serif",
+        "font": "20px",
+        "line": "25px",
+        "actual": [
+          {
+            "familyName": "Inter",
+            "postScriptName": "Inter-Bold",
+            "isCustomFont": true,
+            "glyphCount": 10
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 14
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "12bcd42390bb468eb1700a909aec3f5d",
+    "family": "Compare Theme",
+    "device": "Tablet",
+    "responses": [],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "테마별 배당 ETF 및 구성종목 비교",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "24px",
+        "line": "32px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 20
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "가상 테마를 탐색하고 대표 기초자산 종목군과 관련 배당 ETF의 운용 지표 및 분배금 성격을 대조 ",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "14px",
+        "line": "22.75px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 61
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "H2",
+        "text": "인공지능(AI) 인프라 & 반도체 전력 테마",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "20px",
+        "line": "28px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 24
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "P",
+        "text": "warning공식 연관 정보 미확인 (가상 시뮬레이션 예시이며, 실제 지수 편입 및 연관 관계는 공",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "13px",
+        "line": "17.875px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 89
+          },
+          {
+            "familyName": "Material Symbols Outlined",
+            "postScriptName": "MaterialSymbolsOutlined-Regular",
+            "isCustomFont": true,
+            "glyphCount": 1
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "80b06442816e4d1baebc96cb520b19d6",
+    "family": "Data Upload",
+    "device": "Mobile",
+    "responses": [],
+    "assetFailures": [
+      {
+        "host": "fonts.googleapis.com",
+        "status": "asset-fetch-failed"
+      }
+    ],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "증권 데이터 등록",
+        "declared": "Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+        "font": "20px",
+        "line": "28px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 7
+          },
+          {
+            "familyName": "Noto Sans",
+            "postScriptName": "NotoSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 2
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "증권사 거래내역 및 잔고 스냅샷을 안전하게 불러와 배당달력 포트폴리오를 구성합니다. 모든 데이터는 ",
+        "declared": "Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+        "font": "12px",
+        "line": "19.5px",
+        "actual": [
+          {
+            "familyName": "Noto Sans",
+            "postScriptName": "NotoSans-Regular",
+            "isCustomFont": false,
+            "glyphCount": 16
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 50
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "배당금 입금 내역을 분석하거나 현재 보유 주식 잔고를 기반으로 향후 예상 배당을 계산합니다.",
+        "declared": "Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+        "font": "11px",
+        "line": "16.5px",
+        "actual": [
+          {
+            "familyName": "Noto Sans",
+            "postScriptName": "NotoSans-Regular",
+            "isCustomFont": false,
+            "glyphCount": 13
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 38
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "P",
+        "text": "현재 첨부된 CSV 파일은 일반 텍스트 포맷으로 암호 복호화 절차가 필요하지 않습니다. (보안 PD",
+        "declared": "Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif",
+        "font": "11px",
+        "line": "16.5px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 2
+          },
+          {
+            "familyName": "Noto Sans",
+            "postScriptName": "NotoSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 4
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 39
+          },
+          {
+            "familyName": "Noto Sans",
+            "postScriptName": "NotoSans-Regular",
+            "isCustomFont": false,
+            "glyphCount": 19
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "3c2a0d37b5f54a63b3a633f01f0d2b33",
+    "family": "Data Upload",
+    "device": "Tablet",
+    "responses": [],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "증권 데이터 등록",
+        "declared": "\"Noto Sans KR\", Inter, sans-serif",
+        "font": "24px",
+        "line": "32px",
+        "actual": [
+          {
+            "familyName": "Noto Sans KR",
+            "postScriptName": "NotoSansKR-Bold",
+            "isCustomFont": true,
+            "glyphCount": 9
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "증권사 거래내역 및 잔고 스냅샷을 안전하게 불러와 배당달력 포트폴리오를 구성합니다. 모든 데이터는 ",
+        "declared": "\"Noto Sans KR\", Inter, sans-serif",
+        "font": "12px",
+        "line": "19.5px",
+        "actual": [
+          {
+            "familyName": "Noto Sans KR",
+            "postScriptName": "NotoSansKR-Regular",
+            "isCustomFont": true,
+            "glyphCount": 66
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "배당금 입금 내역을 분석하거나 현재 보유 주식 잔고를 기반으로 향후 예상 배당을 계산합니다.",
+        "declared": "\"Noto Sans KR\", Inter, sans-serif",
+        "font": "11px",
+        "line": "16.5px",
+        "actual": [
+          {
+            "familyName": "Noto Sans KR",
+            "postScriptName": "NotoSansKR-Regular",
+            "isCustomFont": true,
+            "glyphCount": 51
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "P",
+        "text": "현재 첨부된 CSV 파일은 일반 텍스트 포맷으로 암호 복호화 절차가 필요하지 않습니다. (보안 PD",
+        "declared": "\"Noto Sans KR\", Inter, sans-serif",
+        "font": "11px",
+        "line": "16px",
+        "actual": [
+          {
+            "familyName": "Noto Sans KR",
+            "postScriptName": "NotoSansKR-Regular",
+            "isCustomFont": true,
+            "glyphCount": 59
+          },
+          {
+            "familyName": "Noto Sans KR",
+            "postScriptName": "NotoSansKR-Bold",
+            "isCustomFont": true,
+            "glyphCount": 6
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "f5a2132c4e234e648269220f0e889387",
+    "family": "Import Result",
+    "device": "Mobile",
+    "responses": [],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "증권 거래내역 저장 영수증",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "20px",
+        "line": "28px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 14
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "업로드된 총 6건 중 5건이 신규 반영 완료되었으며, 1건은 중복으로 안전하게 제외되었습니다. (원",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "14px",
+        "line": "22.75px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 30
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 43
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "업로드된 거래내역 검증 및 데이터 저장이 정상적으로 완료되었습니다. 저장완료 영수증을 유지합니다.",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "14px",
+        "line": "21px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 54
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "H2",
+        "text": "account_balance포트폴리오 반영 집계",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "20px",
+        "line": "28px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 11
+          },
+          {
+            "familyName": "Material Symbols Outlined",
+            "postScriptName": "MaterialSymbolsOutlined-Regular",
+            "isCustomFont": true,
+            "glyphCount": 1
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "6bd9777b8bea43b98aea8397a29f809a",
+    "family": "Import Review",
+    "device": "Mobile",
+    "responses": [],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "증권 데이터 검토 및 확정",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "20px",
+        "line": "28px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 14
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "업로드된 데이터 파싱 결과를 최종 확인하고 배당달력 포트폴리오에 안전하게 반영합니다.",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "14px",
+        "line": "22.75px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 47
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  },
+  {
+    "screen": "65c1b225397746ada071cf14ae4f687c",
+    "family": "Ledger Analysis",
+    "device": "Tablet",
+    "responses": [],
+    "assetFailures": [],
+    "samples": [
+      {
+        "index": 0,
+        "tag": "H1",
+        "text": "원장 품질 및 청산 손익 분석",
+        "declared": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "font": "30px",
+        "line": "41.25px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Bold",
+            "isCustomFont": false,
+            "glyphCount": 11
+          },
+          {
+            "familyName": "Noto Sans",
+            "postScriptName": "NotoSans-Bold",
+            "isCustomFont": false,
+            "glyphCount": 5
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "tag": "P",
+        "text": "가져온 증권 거래 원장의 데이터 품질 정합성을 검증하고, 실현 손익 및 현금흐름 연동 상태를 분석합",
+        "declared": "\"Inter, 'Pretendard', 'Apple SD Gothic Neo', sans-serif\"",
+        "font": "14px",
+        "line": "22.75px",
+        "actual": [
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 58
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "tag": "P",
+        "text": "예시 데이터 분석 검토 중",
+        "declared": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "font": "11px",
+        "line": "16.5px",
+        "actual": [
+          {
+            "familyName": "Noto Sans",
+            "postScriptName": "NotoSans-Regular",
+            "isCustomFont": false,
+            "glyphCount": 4
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 10
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "tag": "P",
+        "text": "현재 예시 자료만으로 산출하지 않음",
+        "declared": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "font": "11px",
+        "line": "13.75px",
+        "actual": [
+          {
+            "familyName": "Noto Sans",
+            "postScriptName": "NotoSans-Regular",
+            "isCustomFont": false,
+            "glyphCount": 4
+          },
+          {
+            "familyName": "Noto Sans CJK KR",
+            "postScriptName": "NotoSansCJKkr-Regular",
+            "isCustomFont": false,
+            "glyphCount": 15
+          }
+        ]
+      }
+    ],
+    "scope": "preserved source HTML with inherited-CA static asset bridge; CDN declaration is not proof of selected font; native PNG not verified"
+  }
+]

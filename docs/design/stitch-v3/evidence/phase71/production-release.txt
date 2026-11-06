@@ -1,0 +1,6 @@
+https://totobubu.github.io/yieldloom-app/: commit and metadata verified
+https://yieldloom-app.vercel.app/: waiting for expected release (1/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (2/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (3/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (4/32)
+https://yieldloom-app.vercel.app/: commit and metadata verified

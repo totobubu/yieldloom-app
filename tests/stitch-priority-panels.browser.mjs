@@ -164,6 +164,35 @@ try {
                 .innerText(),
             /전체 명의자/
         );
+        const systemStatus = page.getByRole('region', {
+            name: '자산 관리 시스템 상태',
+            exact: true,
+        });
+        await systemStatus.waitFor();
+        assert.equal(
+            await systemStatus.getByText('미확인', { exact: true }).count(),
+            2
+        );
+        assert.equal(
+            await systemStatus.getByText('미집계', { exact: true }).isVisible(),
+            true
+        );
+        assert.doesNotMatch(
+            await systemStatus.innerText(),
+            /동기화 완료|정상 응답|0건|1분 전/
+        );
+        const unavailableRetry = systemStatus.getByRole('button', {
+            name: '원격 조회 재시도 (미지원)',
+            exact: true,
+        });
+        assert.equal(await unavailableRetry.isDisabled(), true);
+        const beforeUnavailableRetry = requests.length;
+        await unavailableRetry.evaluate((button) => button.click());
+        assert.equal(
+            requests.length,
+            beforeUnavailableRetry,
+            'unavailable diagnostics must not query or mutate data'
+        );
         const beforeAlias = requests.length;
         await page
             .locator('.accounts li')

@@ -13,6 +13,7 @@
     import { useAssetManagement } from '@/composables/useAssetManagement.js';
     import AssetMemberSelector from '@/components/portfolio/AssetMemberSelector.vue';
     import AssetAccountList from '@/components/portfolio/AssetAccountList.vue';
+    import AssetSystemStatusPlaceholder from '@/components/portfolio/AssetSystemStatusPlaceholder.vue';
     import AssetCurrencySummary from '@/components/portfolio/AssetCurrencySummary.vue';
     import AssetMemberDialog from '@/components/portfolio/AssetMemberDialog.vue';
     import AssetAccountRegistration from '@/components/portfolio/AssetAccountRegistration.vue';
@@ -2792,6 +2793,7 @@
                             </template>
                         </Dialog>
                     </template>
+                    <AssetSystemStatusPlaceholder />
                 </section>
             </div>
         </div>

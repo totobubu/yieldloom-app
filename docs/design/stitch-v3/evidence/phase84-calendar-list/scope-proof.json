@@ -1,0 +1,12 @@
+{
+  "baseWork": "931848bcd72a89e6e5b8c27897724da9713e6b3d",
+  "baseGridFeature": "3a167b64a7046bce0326e29d7d4d2259ce7afc3e",
+  "component": "src/components/portfolio/PortfolioDividendCalendar.vue",
+  "financialScriptUnchangedExcludingLocalDateFormatter": true,
+  "formatterAdded": "    const listWeekday = new Intl.DateTimeFormat('ko-KR', {\n        weekday: 'short',\n        timeZone: 'UTC',\n    });\n    // Calendar rows contain dates, not instants in the viewer's timezone.\n    const listDateLabel = (date) =>\n        validCalendarDate(date)\n            ? `${date.replaceAll('-', '.')} (${listWeekday.format(new Date(`${date}T00:00:00Z`))})`\n            : date || '날짜 미확인';\n",
+  "sourceSha256": "6d670cbcbbb20993d4d604fa218f3e3f10a27c817767b8cff413fa9b045d186c",
+  "scope": "Event-row status class/announced Tag severity, three-row metadata layout and date-only formatted label/time datetime. Existing projection/click/filter/ledger/financial services/data/permissions/requests unchanged.",
+  "appChanges": [
+    "src/components/portfolio/PortfolioDividendCalendar.vue"
+  ]
+}

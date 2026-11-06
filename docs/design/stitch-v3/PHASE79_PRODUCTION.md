@@ -15,7 +15,7 @@
 
 기능 [42200815763](https://github.com/totobubu/yieldloom-app/actions/runs/42200815763), work [42203234306](https://github.com/totobubu/yieldloom-app/actions/runs/42203234306), 승격 [42203281041](https://github.com/totobubu/yieldloom-app/actions/runs/42203281041), 최종 main [42206667537](https://github.com/totobubu/yieldloom-app/actions/runs/42206667537)의 앱/API/일반 브라우저/등록 브라우저4개 작업이 모두 성공했다. 이 문서의 원격 검증은 작업 상태와 해당 workflow의 실행 범위를 근거로 하며, CLI 로그 추출에서 누락된 개별 PASS 수를 만들어 세지 않았다. [상태 원문](evidence/phase79-production/main-ci.json).
 
-최신 main 자동 콘텐츠 갱신 f1b1cb2의4개 Content Studio JSON을 보존한 후보 tree `bb3537521d48d684307e2924f0341f3c5fe52079`에서 타입 포함 build와 Node819/819를 통과했다. GitHub 병합 후보와 실제 main 트리가 이 값과 같음을 확인했다. [후보 검증](evidence/phase79-production/main-candidate-validation.json), [Node 요약](evidence/phase79-production/candidate-node-summary.txt), [빌드](evidence/phase79-production/candidate-build.log). 첫 Node 호출은 source cwd였으므로 그 결과를 후보 cwd 근거로 쓰지 않고 정확한 후보 작업 공간에서 다시819개를 확인했다.
+최신 main 자동 콘텐츠 갱신 f1b1cb2의4개 Content Studio JSON을 보존한 후보 tree `bb3537521d48d684307e2924f0341f3c5fe52079`에서 타입 포함 build와 Node819/819를 통과했다. GitHub 병합 후보와 실제 main 트리가 이 값과 같음을 확인했다. [후보 검증](evidence/phase79-production/main-candidate-validation.json), [Node 요약](evidence/phase79-production/candidate-node-summary.txt), [빌드](evidence/phase79-production/candidate-build.txt). 첫 Node 호출은 source cwd였으므로 그 결과를 후보 cwd 근거로 쓰지 않고 정확한 후보 작업 공간에서 다시819개를 확인했다.
 
 첫 기능 CI의 등록 Chromium 설치12분 초과와, 재실행에서 발견한 이전 접근성 이름4개는 [통합 기록](PHASE79_INTEGRATION.md)에 남겼다. 네 전체 exact 이름을 새 명의자/역할/유형으로 갱신했고, 합성 PDF+Memory API의 본인/가족 수동·문서 등록→검토→저장·오류/재시도·4폭×2테마를 통과했다. 실제 고객 PDF가 아니다.
 
@@ -23,7 +23,7 @@ work 첫 브라우저 실행은 변경하지 않은 장부 목록 시간 검사�
 
 ## 실제 운영 확인
 
-[Vercel](https://yieldloom-app.vercel.app/), [Pages](https://totobubu.github.io/yieldloom-app/)의 실제 release commit·3개 metadata 대상 해시를 확인했다. 이 해시는 전체 금융 이력/공급자 자료의 완전성 증명이 아니다. [release 동기화](evidence/phase79-production/release-verification.log), [마지막 실제 응답](evidence/phase79-production/final-release-snapshot.json). Vercel production ID `dpl_A9C9cNGmLBbpKDryE9snAbHftoF3`는 READY이며 [배포 기록](evidence/phase79-production/vercel-production.json), Pages [42206666240](https://github.com/totobubu/yieldloom-app/actions/runs/42206666240)도 성공했다.
+[Vercel](https://yieldloom-app.vercel.app/), [Pages](https://totobubu.github.io/yieldloom-app/)의 실제 release commit·3개 metadata 대상 해시를 확인했다. 이 해시는 전체 금융 이력/공급자 자료의 완전성 증명이 아니다. [release 동기화](evidence/phase79-production/release-verification.txt), [마지막 실제 응답](evidence/phase79-production/final-release-snapshot.json). Vercel production ID `dpl_A9C9cNGmLBbpKDryE9snAbHftoF3`는 READY이며 [배포 기록](evidence/phase79-production/vercel-production.json), Pages [42206666240](https://github.com/totobubu/yieldloom-app/actions/runs/42206666240)도 성공했다.
 
 실제 익명 QQQI 자료를1280/834/768/390px에서 읽고 처음 키보드로 고른 마지막 월이 크기 변경 후 재포커스 없이 계속 활성/가시 상태임을 확인했다. Mobile의 scrollLeft286·활성 월 x306~354px/clip right354px, 연도·24개월·다크·제목20/28px·224px플롯·144px막대·24/20px패딩, 각 사이트 최초 읽기2/추가0·JS오류/가로넘침0을 확인했다. 분석 POST는 전송 전에 차단했고 모든 실제 쓰기는0이다. [Vercel](evidence/phase79-production/public-results-vercel.json), [Pages](evidence/phase79-production/public-results-pages.json). Node의 기존 CA/프록시 HTTPS를 Chromium에 전달했으며 TLS 검증을 끄거나 합성 금융 값으로 치환하지 않았다.
 

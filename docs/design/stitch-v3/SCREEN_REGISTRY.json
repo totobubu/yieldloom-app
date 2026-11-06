@@ -2524,5 +2524,21 @@
     "sourceHtmlHashesMatch": true,
     "scope": "cached original HTML reread and browser actual font selection sampled; no fresh MCP inventory or native PNG font acceptance",
     "evidence": "evidence/phase71/reference-used-fonts.json"
+  },
+  "candidateRefinement": {
+    "recordedAt": "2026-11-06T04:14:20.078500+00:00",
+    "branch": "fix/stitch-user-surfaces-phase72",
+    "status": "five local/integrated tested units; remote CI and production pending",
+    "productionSnapshotUnchanged": "016fcddda89e0f5285a65446e8859adde247c208",
+    "evidence": "PHASE72_USER_SURFACE_FIXES.md",
+    "sourceRouteStateMap": "evidence/phase72/source-route-state-map.json",
+    "units": [
+      "standard file replacement cancel preservation",
+      "Tablet comparison condition cards",
+      "Mobile receipt summary",
+      "five existing analysis module shortcuts",
+      "normal price refresh"
+    ],
+    "scope": "not five new device designs; original14 and final20 still overlap; no whole native PNG acceptance; external five simulator/tax targets unchanged"
   }
 }

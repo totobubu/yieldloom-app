@@ -1,0 +1,47 @@
+[
+  {
+    "width": 1280,
+    "columns": 5,
+    "sourceGridWidth": 1232,
+    "appGridWidth": 984,
+    "sourceFirstCard": [
+      236.796875,
+      121.796875
+    ],
+    "appFirstCard": [
+      187.1875,
+      138.59375
+    ],
+    "all15ButtonForegroundBackgroundMatch": true
+  },
+  {
+    "width": 768,
+    "columns": 2,
+    "sourceGridWidth": 720,
+    "appGridWidth": 720,
+    "sourceFirstCard": [
+      354,
+      121.796875
+    ],
+    "appFirstCard": [
+      354,
+      121.796875
+    ],
+    "all15ButtonForegroundBackgroundMatch": true
+  },
+  {
+    "width": 390,
+    "columns": 1,
+    "sourceGridWidth": 366,
+    "appGridWidth": 358,
+    "sourceFirstCard": [
+      366,
+      121.796875
+    ],
+    "appFirstCard": [
+      358,
+      121.796875
+    ],
+    "all15ButtonForegroundBackgroundMatch": true
+  }
+]

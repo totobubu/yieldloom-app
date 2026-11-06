@@ -1,0 +1,58 @@
+{
+  "commit": "0595acfaf8496575da1cc849d7deea66235c365f",
+  "base": "08b2c2a47a023d9ccb3e0140aaf49c5fb13ceee6",
+  "sourceId": "87cd200796914464b7613003247de771",
+  "changedFiles": [
+    "src/components/stock/StockCandlestickChart.vue",
+    "tests/stock-price-refresh.browser.mjs"
+  ],
+  "viewports": [
+    1280,
+    768,
+    390
+  ],
+  "initialReadsPerViewport": 1,
+  "legitimateTickerChangeReads": 1,
+  "explicitRefreshAndRetryReads": 4,
+  "duplicateClickExtraReads": 0,
+  "periodIntervalThemeExtraReads": 0,
+  "transportCacheModes": [
+    "no-store",
+    "reload",
+    "reload",
+    "no-store",
+    "reload",
+    "reload"
+  ],
+  "staleRefreshAborted": true,
+  "keyboardRefresh768": true,
+  "dark390": true,
+  "sourceButtonCssFieldsMatch": [
+    "height30",
+    "font12",
+    "weight500",
+    "radius8",
+    "padding0 10"
+  ],
+  "widthResidualPx": 0.046875,
+  "unitTests": 6,
+  "priceEventsWidths": [
+    1280,
+    768,
+    390
+  ],
+  "priceCalendarWidths": [
+    1440,
+    768,
+    390,
+    360
+  ],
+  "typeCheck": "passed",
+  "lint": "0 errors;4 pre-existing attribute-order warnings",
+  "prettier": "passed",
+  "fullBuild": "deferred to root per scope",
+  "liveProviderAccountPdf": "not verified",
+  "nativePngFullAcceptance": "not accepted",
+  "remoteMutations": "none",
+  "writesStopped": true
+}

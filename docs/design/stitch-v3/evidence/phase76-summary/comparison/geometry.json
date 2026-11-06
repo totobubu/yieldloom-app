@@ -1,0 +1,206 @@
+[
+  {
+    "mode": "after",
+    "width": 1280,
+    "metrics": {
+      "trigger": {
+        "width": 217.15625,
+        "height": 44,
+        "padding": "0px 16px",
+        "gap": "8px",
+        "radius": "8px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "menu": {
+        "width": 288,
+        "height": 214,
+        "padding": "12px",
+        "gap": "8px",
+        "radius": "12px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "checkbox": {
+        "width": 16,
+        "height": 16,
+        "padding": "0px",
+        "gap": "normal",
+        "radius": "0px",
+        "fontSize": "13.3333px",
+        "lineHeight": "normal"
+      },
+      "overflow": false
+    }
+  },
+  {
+    "mode": "source",
+    "width": 1280,
+    "metrics": {
+      "trigger": {
+        "width": 225.140625,
+        "height": 44,
+        "padding": "0px 16px",
+        "gap": "8px",
+        "radius": "8px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "menu": {
+        "width": 288,
+        "height": 209,
+        "padding": "12px",
+        "gap": "8px",
+        "radius": "12px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "checkbox": {
+        "width": 16,
+        "height": 16,
+        "padding": "0px",
+        "gap": "normal",
+        "radius": "0px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "overflow": false
+    }
+  },
+  {
+    "mode": "after",
+    "width": 768,
+    "metrics": {
+      "trigger": {
+        "width": 217.15625,
+        "height": 44,
+        "padding": "0px 16px",
+        "gap": "8px",
+        "radius": "8px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "menu": {
+        "width": 288,
+        "height": 214,
+        "padding": "12px",
+        "gap": "8px",
+        "radius": "12px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "checkbox": {
+        "width": 16,
+        "height": 16,
+        "padding": "0px",
+        "gap": "normal",
+        "radius": "0px",
+        "fontSize": "13.3333px",
+        "lineHeight": "normal"
+      },
+      "overflow": false
+    }
+  },
+  {
+    "mode": "source",
+    "width": 768,
+    "metrics": {
+      "trigger": {
+        "width": 225.140625,
+        "height": 44,
+        "padding": "0px 16px",
+        "gap": "8px",
+        "radius": "8px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "menu": {
+        "width": 288,
+        "height": 209,
+        "padding": "12px",
+        "gap": "8px",
+        "radius": "12px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "checkbox": {
+        "width": 16,
+        "height": 16,
+        "padding": "0px",
+        "gap": "normal",
+        "radius": "0px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "overflow": false
+    }
+  },
+  {
+    "mode": "after",
+    "width": 390,
+    "metrics": {
+      "trigger": {
+        "width": 217.15625,
+        "height": 44,
+        "padding": "0px 16px",
+        "gap": "8px",
+        "radius": "8px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "menu": {
+        "width": 288,
+        "height": 214,
+        "padding": "12px",
+        "gap": "8px",
+        "radius": "12px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "checkbox": {
+        "width": 16,
+        "height": 16,
+        "padding": "0px",
+        "gap": "normal",
+        "radius": "0px",
+        "fontSize": "13.3333px",
+        "lineHeight": "normal"
+      },
+      "overflow": false
+    }
+  },
+  {
+    "mode": "source",
+    "width": 390,
+    "metrics": {
+      "trigger": {
+        "width": 225.140625,
+        "height": 44,
+        "padding": "0px 16px",
+        "gap": "8px",
+        "radius": "8px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "menu": {
+        "width": 288,
+        "height": 209,
+        "padding": "12px",
+        "gap": "8px",
+        "radius": "12px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "checkbox": {
+        "width": 16,
+        "height": 16,
+        "padding": "0px",
+        "gap": "normal",
+        "radius": "0px",
+        "fontSize": "14px",
+        "lineHeight": "20px"
+      },
+      "overflow": false
+    }
+  }
+]

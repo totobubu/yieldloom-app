@@ -17,14 +17,22 @@
         positions: { type: Array, required: true },
         ownerName: { type: Function, default: () => '명의자 미확인' },
         scopeAccountId: { type: String, default: '' },
+        scopeAccountIds: { type: Array, default: null },
         accounts: { type: Array, default: () => [] },
         missingAccounts: { type: Number, default: 0 },
         estimatedPositions: { type: Number, default: 0 },
     });
     const firstRow = ref(0);
-    watch([() => props.scopeAccountId, () => props.positions], () => {
-        firstRow.value = 0;
-    });
+    watch(
+        [
+            () => props.scopeAccountId,
+            () => props.scopeAccountIds,
+            () => props.positions,
+        ],
+        () => {
+            firstRow.value = 0;
+        }
+    );
     const emit = defineEmits(['request-transactions']);
     const quotes = ref({}),
         loading = ref(false),
@@ -44,11 +52,15 @@
             )
     );
     const scopedPositions = computed(() =>
-        props.scopeAccountId
-            ? props.positions.filter(
-                  (row) => row.accountId === props.scopeAccountId
+        props.scopeAccountIds !== null
+            ? props.positions.filter((row) =>
+                  props.scopeAccountIds.includes(row.accountId)
               )
-            : props.positions
+            : props.scopeAccountId
+              ? props.positions.filter(
+                    (row) => row.accountId === props.scopeAccountId
+                )
+              : props.positions
     );
     const valuation = computed(() =>
         valuePortfolio(scopedPositions.value, quotes.value, {

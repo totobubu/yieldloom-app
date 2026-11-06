@@ -1,0 +1,3 @@
+PASS 1280: all/single/two-of-three/empty/restore, KRW/USD separation, missing quote, keyboard, no additional requests
+PASS 768: all/single/two-of-three/empty/restore, KRW/USD separation, missing quote, keyboard, no additional requests
+PASS 390: all/single/two-of-three/empty/restore, KRW/USD separation, missing quote, keyboard, no additional requests

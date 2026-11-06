@@ -304,37 +304,55 @@
                                         ? 'alert'
                                         : 'status'
                                 ">
-                                <StitchSymbol
-                                    class="receipt-warning-icon"
-                                    name="warning" />
-                                <div>
-                                    <strong>{{
-                                        accountsState === 'error'
-                                            ? '계좌 목록 새로고침이 필요합니다'
-                                            : '계좌 목록을 갱신하고 있습니다'
-                                    }}</strong>
-                                    <p>
-                                        저장 영수증은 유지됩니다. 계좌 목록
-                                        갱신이 완료되면 잔고·거래, 배당 캘린더와
-                                        CSV 내보내기를 이용할 수 있습니다.
-                                    </p>
-                                    <Button
-                                        v-if="accountsState === 'error'"
-                                        label="계좌 목록 다시 불러오기"
-                                        severity="secondary"
-                                        outlined
-                                        :disabled="busy"
-                                        @click="$emit('retry')"
-                                        ><template #icon
-                                            ><StitchSymbol
-                                                name="refresh" /></template
-                                    ></Button>
+                                <div class="receipt-refresh-content">
+                                    <StitchSymbol
+                                        class="receipt-warning-icon"
+                                        name="warning" />
+                                    <div class="receipt-refresh-copy">
+                                        <strong>{{
+                                            accountsState === 'error'
+                                                ? '계좌 목록 새로고침이 필요합니다'
+                                                : '계좌 목록을 갱신하고 있습니다'
+                                        }}</strong>
+                                        <p v-if="accountsState === 'error'">
+                                            저장 영수증은 유지되었으나, 최신
+                                            계좌 목록을 새로 불러오는 과정에서
+                                            오류가 발생했습니다. 아래 버튼으로
+                                            목록 갱신을 다시 시도해 주세요.
+                                        </p>
+                                        <p v-else>
+                                            저장 영수증은 유지됩니다. 최신 계좌
+                                            목록을 새로고침하고 있습니다. 갱신이
+                                            완료되면 후속 작업을 이용할 수
+                                            있습니다.
+                                        </p>
+                                    </div>
                                 </div>
+                                <Button
+                                    v-if="accountsState === 'error'"
+                                    label="계좌 목록 다시 불러오기"
+                                    severity="secondary"
+                                    outlined
+                                    :disabled="busy"
+                                    @click="$emit('retry')"
+                                    ><template #icon
+                                        ><StitchSymbol
+                                            name="refresh" /></template
+                                ></Button>
                             </div>
                             <div class="receipt-next">
-                                <h3>후속 작업 및 확인</h3>
+                                <div class="receipt-next-heading">
+                                    <h3>후속 작업 및 확인</h3>
+                                    <span
+                                        v-if="accountsState !== 'ready'"
+                                        class="receipt-lock-state">
+                                        <StitchSymbol name="lock" />연동 화면
+                                        잠김
+                                    </span>
+                                </div>
                                 <div class="result-actions">
                                     <Button
+                                        class="receipt-calendar-action"
                                         label="배당 캘린더 확인"
                                         severity="secondary"
                                         outlined
@@ -351,6 +369,7 @@
                                                 " /></template
                                     ></Button>
                                     <Button
+                                        class="receipt-view-action"
                                         :label="
                                             receipt.kind === 'holdings'
                                                 ? '잔고 확인'
@@ -378,12 +397,12 @@
                                 <p
                                     v-if="accountsState !== 'ready'"
                                     class="receipt-lock-help">
-                                    계좌 목록 갱신이 완료되면 배당 캘린더와
-                                    잔고·거래를 확인할 수 있습니다.
+                                    계좌 목록 갱신 후 배당 캘린더·잔고·거래
+                                    조회와 CSV 내보내기가 활성화됩니다.
                                 </p>
                                 <div class="receipt-export-actions">
                                     <Button
-                                        label="CSV로 내려받기"
+                                        label="선택 계좌 전체 내역 CSV로 내려받기"
                                         severity="secondary"
                                         outlined
                                         :disabled="
@@ -398,9 +417,8 @@
                                                         : 'lock'
                                                 " /></template
                                     ></Button>
-                                    <p class="receipt-footnote">
-                                        CSV는 선택 계좌 전체 내역입니다.
-                                    </p>
+                                </div>
+                                <div class="receipt-another-group">
                                     <Button
                                         class="receipt-another"
                                         label="추가 등록"
@@ -682,6 +700,22 @@
 </template>
 
 <style scoped>
+    @font-face {
+        font-family: 'YieldloomReceiptReference';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url('../../assets/fonts/stitch-receipt/Pretendard-Regular.woff2')
+            format('woff2');
+    }
+    @font-face {
+        font-family: 'YieldloomReceiptReference';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: url('../../assets/fonts/stitch-receipt/Pretendard-Bold.woff2')
+            format('woff2');
+    }
     .import-result {
         display: flex;
         flex-direction: column;
@@ -1902,12 +1936,19 @@
         .receipt-row-values {
             margin: 0;
             padding-top: 2px;
-            line-height: 18.75px;
+            line-height: 20px;
         }
         .receipt-row-values strong {
             display: block;
             font-size: 15px;
-            line-height: 18.75px;
+            line-height: 20px;
+        }
+        .receipt-row-status time {
+            line-height: 20px;
+        }
+        .receipt-row.duplicate {
+            border-width: 2px;
+            border-inline-start-width: 4px;
         }
         .receipt-row-values p {
             font-size: 11px;
@@ -2028,6 +2069,150 @@
             border-top: 1px solid var(--app-border);
             background: var(--app-bg);
             line-height: 16.5px;
+        }
+    }
+
+    .receipt-followup .receipt-refresh {
+        flex-direction: column;
+        gap: 12px;
+        border-radius: 12px;
+    }
+    .receipt-refresh-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        width: 100%;
+    }
+    .receipt-refresh-content .receipt-warning-icon {
+        flex-shrink: 0;
+        font-size: 20px;
+        margin-top: 2px;
+    }
+    .receipt-refresh-copy {
+        flex: 1;
+        min-width: 0;
+    }
+    @media (min-width: 641px) {
+        .receipt-refresh-copy {
+            font-family: 'YieldloomReceiptReference', sans-serif;
+        }
+    }
+    .receipt-refresh-copy strong {
+        display: block;
+        font-size: 12px;
+        line-height: 16px;
+    }
+    .receipt-refresh-copy p {
+        font-size: 12px;
+        line-height: 19.5px;
+        margin: 4px 0 0;
+    }
+    .receipt-refresh > :deep(.p-button) {
+        width: 100%;
+    }
+    .receipt-next {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+    .receipt-next-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        order: 1;
+    }
+    .receipt-lock-state {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        line-height: 16px;
+        white-space: nowrap;
+        color: var(--app-warning-text);
+    }
+    .receipt-lock-state .stitch-symbol {
+        font-size: 12px;
+    }
+    .receipt-next > .result-actions {
+        display: contents;
+    }
+    .receipt-next .receipt-calendar-action {
+        order: 2;
+        margin-top: 10px;
+        min-height: 44px;
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .receipt-calendar-action :deep(.stitch-symbol) {
+        font-size: 18px;
+    }
+    .receipt-next .receipt-view-action {
+        order: 3;
+        margin-top: 6px;
+    }
+    .receipt-next > .receipt-lock-help {
+        order: 4;
+        margin: 6px 0 0;
+        padding-inline: 4px;
+        font-size: 10px;
+        line-height: 12.5px;
+    }
+    .receipt-export-actions {
+        order: 5;
+    }
+    .receipt-another-group {
+        order: 6;
+        margin-top: 8px;
+    }
+    .receipt-another-group .receipt-another {
+        margin: 0;
+    }
+    @media (max-width: 640px) {
+        .receipt-refresh-copy strong {
+            font-size: 13px;
+            line-height: 18px;
+        }
+        .receipt-refresh-copy p {
+            font-size: 11px;
+            line-height: 17.875px;
+        }
+        .receipt-next-heading h3 {
+            font-size: 13px;
+            line-height: 18px;
+        }
+        .receipt-lock-state {
+            line-height: 16.5px;
+        }
+        .receipt-lock-state .stitch-symbol {
+            font-size: 13px;
+        }
+        .receipt-next .receipt-calendar-action {
+            font-size: 13px;
+            line-height: 18px;
+        }
+        .receipt-calendar-action :deep(.stitch-symbol) {
+            font-size: 16px;
+        }
+        .receipt-next .receipt-view-action {
+            margin-top: 8px;
+        }
+        .receipt-export-actions {
+            order: 4;
+            margin-top: 8px;
+            border: 0;
+            padding-top: 0;
+        }
+        .receipt-next > .receipt-lock-help {
+            order: 5;
+            margin-top: 8px;
+            font-size: 11px;
+            line-height: 13.75px;
+        }
+        .receipt-another-group {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid var(--app-border);
         }
     }
 </style>

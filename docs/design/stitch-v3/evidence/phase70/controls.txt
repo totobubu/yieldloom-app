@@ -1,0 +1,4 @@
+{"width":834,"loading":true,"busy":true,"ready":true,"heldScopeLabel":true,"exportEvent":1,"buttons":4,"keyboardOrder":true,"responsiveOrder":true,"api":0}
+{"width":768,"loading":true,"busy":true,"ready":true,"heldScopeLabel":true,"exportEvent":1,"buttons":4,"keyboardOrder":true,"responsiveOrder":true,"api":0}
+{"width":390,"loading":true,"busy":true,"ready":true,"heldScopeLabel":true,"exportEvent":1,"buttons":4,"keyboardOrder":true,"responsiveOrder":true,"api":0}
+{"width":360,"loading":true,"busy":true,"ready":true,"heldScopeLabel":true,"exportEvent":1,"buttons":4,"keyboardOrder":true,"responsiveOrder":true,"api":0}

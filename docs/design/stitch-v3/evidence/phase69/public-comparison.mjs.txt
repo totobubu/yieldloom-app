@@ -1,0 +1,41 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const {chromium}=createRequire('/workspace/yieldloom-redesign-phase66/package.json')('playwright');
+const sha=process.env.PUBLIC_RELEASE_SHA;assert.match(sha,/^[a-f0-9]{40}$/);
+const hosts=new Set(['yieldloom-app.vercel.app','totobubu.github.io','fonts.googleapis.com','fonts.gstatic.com','www.gstatic.com','unpkg.com']);
+if(process.env.VITE_R2_PUBLIC_URL){const u=new URL(process.env.VITE_R2_PUBLIC_URL);if(u.protocol==='https:')hosts.add(u.hostname)}
+const label=view=>({theme:'테마 비교',similar:'유사 ETF 비교',underlying:'기초자산별 ETF 비교'})[view];
+const fullTitle=view=>label(view)+' - 모으멍 배당달력';
+const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+const metrics=()=>({title:document.title,width:innerWidth,documentWidth:document.documentElement.scrollWidth,responsive:document.querySelectorAll('[data-responsive-view]').length,cards:document.querySelectorAll('.responsive-product-card').length});
+try{for(const [site,base] of [['vercel','https://yieldloom-app.vercel.app/'],['pages','https://totobubu.github.io/yieldloom-app/']]){for(const view of ['similar','theme']){
+ const context=await b.newContext({viewport:{width:1440,height:1000}});const page=await context.newPage();const errors=[],failedHosts=new Set(),excludedHosts=new Set();let blockedWrites=0,fetches=0,disclosuresOpened=0;
+ page.on('pageerror',e=>errors.push(e.message));
+ await context.route('**/*',async route=>{const req=route.request(),u=new URL(req.url());if(!['GET','HEAD','OPTIONS'].includes(req.method())){blockedWrites++;return route.abort()}if(!hosts.has(u.hostname)||/\/api\/(family-portfolio|toss|sheet-ledger|portfolio-capital|admin)/.test(u.pathname)){excludedHosts.add(u.hostname);return route.abort()}
+  try{const r=await fetch(u,{method:req.method(),signal:AbortSignal.timeout(25000)});assert.ok(hosts.has(new URL(r.url).hostname));fetches++;const headers=Object.fromEntries([...r.headers].filter(([k])=>!['content-encoding','content-length','transfer-encoding','set-cookie'].includes(k)));await route.fulfill({status:r.status,headers,body:Buffer.from(await r.arrayBuffer())})}catch{failedHosts.add(u.hostname);await route.abort()}});
+ const title=async v=>page.waitForFunction(expected=>document.title===expected,fullTitle(v));
+ const clickVisible=async selector=>{
+  const links=page.locator(selector);
+  for(let i=0;i<await links.count();i++){
+   const a=links.nth(i);
+   if(!await a.isVisible()){
+    const disclosure=a.locator('xpath=ancestor::details[1]');
+    if(await disclosure.count()&&await disclosure.isVisible()&&await disclosure.getAttribute('open')===null){
+     await disclosure.locator(':scope > summary').click();disclosuresOpened++;
+    }
+   }
+   if(await a.isVisible()){await a.click();return}
+  }
+  throw Error('No visible navigation link: '+selector);
+ };
+ try{
+  const response=await page.goto(base+'compare?view='+view+'&release='+sha+'&marker=a%2Bb%26c',{waitUntil:'networkidle',timeout:45000});assert.equal(response.status(),200);await title(view);await page.evaluate(()=>document.fonts.ready);const desktop=await page.evaluate(metrics);assert.ok(desktop.documentWidth<=1440);await page.screenshot({path:`/tmp/phase69-${site}-${view}-1440.png`});
+  await page.setViewportSize({width:834,height:1000});const overflowFrames=await page.evaluate(async()=>{const rows=[];for(let frame=0;frame<30;frame++){await new Promise(requestAnimationFrame);if(document.documentElement.scrollWidth>innerWidth)rows.push({frame,width:document.documentElement.scrollWidth,viewport:innerWidth})}return rows});assert.deepEqual(overflowFrames,[]);const tablet=await page.evaluate(metrics);assert.equal(tablet.responsive,1);assert.ok(tablet.documentWidth<=834);await page.screenshot({path:`/tmp/phase69-${site}-${view}-834.png`});
+  await page.setViewportSize({width:390,height:844});await page.locator('.responsive-product-card').first().waitFor();await page.waitForTimeout(250);const mobile=await page.evaluate(metrics);assert.equal(mobile.responsive,1);assert.ok(mobile.cards>0&&mobile.documentWidth<=390);await page.screenshot({path:`/tmp/phase69-${site}-${view}-390.png`});
+  const reload=await page.reload({waitUntil:'networkidle',timeout:45000});assert.equal(reload.status(),200);await title(view);assert.equal(new URL(page.url()).searchParams.get('marker'),'a+b&c');
+  const other=view==='theme'?'similar':'theme';await clickVisible(`a[href*="view=${other}"]`);await title(other);await clickVisible('a[href*="view=underlying"]');await title('underlying');await clickVisible(`a[href*="view=${view}"]`);await title(view);
+  await clickVisible(`a[href="${new URL(base).pathname}"]`);await page.waitForFunction(()=>document.title==='ETF·주식 검색 - 모으멍 배당달력');await page.goBack();await title(view);const ordinary=await page.goto(base+'compare?view='+view,{waitUntil:'networkidle',timeout:45000});assert.equal(ordinary.status(),200);await title(view);
+  assert.deepEqual(errors,[]);assert.equal(failedHosts.size,0);assert.equal(blockedWrites,0);
+  console.log(JSON.stringify({site,view,status:response.status(),desktop,tablet,mobile,overflowFrames,actualReload:reload.status(),ordinaryDirect:ordinary.status(),ordinaryTitleVerified:true,queryPreserved:true,visibleViewLinks:true,underlyingTitleVerified:true,homeAndHistoryTitles:true,blockedWrites,fetches,disclosuresOpened,errors,failedHosts:[...failedHosts],excludedHosts:[...excludedHosts],transport:'anonymous Node inherited-CA HTTPS to Chromium; no TLS bypass or synthetic data'}));
+ }finally{await context.close()}
+}}}finally{await b.close()}

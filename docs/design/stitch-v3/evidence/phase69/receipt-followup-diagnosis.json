@@ -1,0 +1,15 @@
+{
+  "width": 834,
+  "scope": "cached unchanged source HTML vs synthetic receipt; native PNG acceptance incomplete",
+  "overallHeightDifference": 32,
+  "followup": {
+    "refresh": {
+      "implementation": 170,
+      "source": 164.5
+    },
+    "next": {
+      "implementation": 314.5,
+      "source": 288
+    }
+  }
+}

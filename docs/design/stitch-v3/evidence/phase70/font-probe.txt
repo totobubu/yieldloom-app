@@ -1,0 +1,10 @@
+implementation {
+  font: '12px / 19.5px Pretendard, "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  width: 224.34375,
+  height: 78
+}
+source {
+  font: '12px / 19.5px Pretendard, Inter, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif',
+  width: 224.34375,
+  height: 58.5
+}

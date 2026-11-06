@@ -1,0 +1,1 @@
+{"scope":"legacy fixture before any input or upload","path":"/","headings":["ETF·주식 검색"," 검색 결과 4,290건 (페이지 크기 60)"],"errors":[]}

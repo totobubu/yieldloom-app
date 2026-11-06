@@ -1,0 +1,5 @@
+> etf@0.0.0 build
+> vue-tsc --noEmit && vite build && node scripts/seo/prerender-thumbnail-pages.mjs
+vite v7.2.7 building client environment for production...
+(!) Some chunks are larger than 1000 kB after minification. Consider:
+✓ built in 17.95s

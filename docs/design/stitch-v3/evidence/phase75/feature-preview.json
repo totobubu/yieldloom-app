@@ -1,0 +1,34 @@
+{
+  "id": "dpl_F3VCx7ZLRsrKsyufPCvQmBZPfq9Q",
+  "state": "READY",
+  "url": "yieldloom-9yqrdziqe-totobubus-projects.vercel.app",
+  "sha": "b708e335cb2902a1f16028f8634048aad1c6bbef",
+  "release": {
+    "schemaVersion": 1,
+    "commit": "b708e335cb2902a1f16028f8634048aad1c6bbef",
+    "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+  },
+  "assets": [
+    {
+      "file": "TickerThumbnailView-BWoIUXzu.js",
+      "status": 200,
+      "bytes": 165704,
+      "priceNote": true,
+      "priceTitle": true,
+      "pendingSemantics": true,
+      "mappingConfirmation": false,
+      "nativeRequired": true
+    },
+    {
+      "file": "FamilyPortfolioView--2AZKq2v.js",
+      "status": 200,
+      "bytes": 399187,
+      "priceNote": false,
+      "priceTitle": false,
+      "pendingSemantics": true,
+      "mappingConfirmation": true,
+      "nativeRequired": true
+    }
+  ],
+  "scope": "authenticated protected preview release/assets only; live account and full native PNG parity unverified"
+}

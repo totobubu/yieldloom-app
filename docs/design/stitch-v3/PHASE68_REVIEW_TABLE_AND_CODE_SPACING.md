@@ -28,3 +28,5 @@ PrimeVue4.5.3의 datatable paginator-bottom wrapper는 자체 아래 테두리�
 새 미지원 지표·금융 계산·데이터·권한·API 변경은 없다. 인증 계좌와 고객PDF는 미검증이며 시뮬레이터 공개PR 승인 차단을 유지한다.
 
 최종 타입 포함 빌드 성공, 린트 오류0/기존경고54다. 합성4716행을 필터가 켜진 상태에서24배치로 저장하고 화면 밖 편집을 보존하는 기존 브라우저 검사도 통과했다. 신원·추출 응답·쓰기는 loopback Memory API의 합성값이다. [흐름 검사](evidence/phase68/import-flow.txt), [빌드](evidence/phase68/build.txt), [린트](evidence/phase68/lint.txt).
+
+[운영 반영·실제 버전과 남은 검증](PHASE69_REVIEW_SPACING_PRODUCTION.md)에 후속 결과를 기록했다.

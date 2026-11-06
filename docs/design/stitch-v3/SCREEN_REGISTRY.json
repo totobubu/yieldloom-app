@@ -7,7 +7,7 @@
   "families": 9,
   "testFramesExcluded": 1,
   "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-  "currentCodeBase": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+  "currentCodeBase": "fae1ce41961509eb21e71af64e28f143592b2e16",
   "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
   "frames": [
     {
@@ -1518,11 +1518,11 @@
         "environment": "production",
         "pr": 249,
         "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "deployed glyph/color CSS verified; local original HTML/PNG and synthetic flow tests; authenticated production modal not exercised"
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       }
     },
     {
@@ -1571,11 +1571,11 @@
         "environment": "production",
         "pr": 249,
         "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "deployed glyph/color CSS verified; local original HTML/PNG and synthetic flow tests; authenticated production modal not exercised"
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       }
     },
     {
@@ -1624,11 +1624,11 @@
         "environment": "production",
         "pr": 249,
         "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "deployed glyph/color CSS verified; local original HTML/PNG and synthetic flow tests; authenticated production modal not exercised"
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       }
     },
     {
@@ -1676,12 +1676,12 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "both public domains:1440/834/390 titles/direct/reload/visible navigation/history and30 transition frames per view; whole-frame acceptance incomplete"
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "both live public domains1440/834/390 titles/direct/reload/visible navigation/history and120 total transition frames; whole native acceptance incomplete"
       }
     },
     {
@@ -1729,12 +1729,12 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "both public domains:1440/834/390 titles/direct/reload/visible navigation/history and30 transition frames per view; whole-frame acceptance incomplete"
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "both live public domains1440/834/390 titles/direct/reload/visible navigation/history and120 total transition frames; whole native acceptance incomplete"
       }
     },
     {
@@ -1782,12 +1782,12 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "both public domains:1440/834/390 titles/direct/reload/visible navigation/history and30 transition frames per view; whole-frame acceptance incomplete"
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "both live public domains1440/834/390 titles/direct/reload/visible navigation/history and120 total transition frames; whole native acceptance incomplete"
       }
     },
     {
@@ -1835,12 +1835,12 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "both public domains:1440/834/390 titles/direct/reload/visible navigation/history and30 transition frames per view; whole-frame acceptance incomplete"
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "both live public domains1440/834/390 titles/direct/reload/visible navigation/history and120 total transition frames; whole native acceptance incomplete"
       }
     },
     {
@@ -1888,11 +1888,11 @@
         "pr": 253,
         "mergeSha": "4b78ccc418270279aa42328bbb7c33454d165b02",
         "productionPromotion": 259,
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation only; authenticated modal not exercised; whole-frame acceptance incomplete"
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete; fresh five-width synthetic local state/precision/ownership checks and original HTML comparisons"
       },
       "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
       "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
@@ -1942,11 +1942,11 @@
         "pr": 253,
         "mergeSha": "4b78ccc418270279aa42328bbb7c33454d165b02",
         "productionPromotion": 259,
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation only; authenticated modal not exercised; whole-frame acceptance incomplete"
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete; fresh five-width synthetic local state/precision/ownership checks and original HTML comparisons"
       },
       "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
       "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
@@ -1994,11 +1994,11 @@
         "environment": "production",
         "pr": 257,
         "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation only; authenticated modal not exercised; whole-frame acceptance incomplete"
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete; fresh five-width synthetic local state/precision/ownership checks and original HTML comparisons"
       }
     },
     {
@@ -2044,11 +2044,11 @@
         "environment": "production",
         "pr": 257,
         "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation only; authenticated modal not exercised; whole-frame acceptance incomplete"
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete; fresh five-width synthetic local state/precision/ownership checks and original HTML comparisons"
       }
     },
     {
@@ -2060,7 +2060,7 @@
       "overlapWithExisting14": false,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#256/#264 production3b5dd96; premerge CI4 each and public deployed artifacts verified; authenticated customer flow not exercised",
+      "implementation": "production duplicate footer border removed and sample code flex corrected; five-width source/synthetic and4716-row memory flow verified",
       "visualAcceptance": "not accepted; source font, measured detail differences and unavailable original-row API remain",
       "referenceCaveat": null,
       "selectedScreen": "projects/17382728461495959991/screens/6bd9777b8bea43b98aea8397a29f809a",
@@ -2096,11 +2096,11 @@
         "environment": "production",
         "pr": 264,
         "mergeSha": "3b5dd96e2dce6474f644ab1b3b81536ae789b300",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE61_REVIEW_PRODUCTION_AND_STATUS.md",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation only; authenticated modal not exercised; whole-frame acceptance incomplete; fresh five-width synthetic local checks and preserved source HTML captures"
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "new deployed CSS verified; source/synthetic five-width reference table/card measurements; actual authenticated production review not exercised"
       }
     },
     {
@@ -2112,7 +2112,7 @@
       "overlapWithExisting14": false,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "PR#256/#264 production3b5dd96; premerge CI4 each and public deployed artifacts verified; authenticated customer flow not exercised",
+      "implementation": "production duplicate footer border removed and sample code flex corrected; five-width source/synthetic and4716-row memory flow verified",
       "visualAcceptance": "not accepted; source font, measured detail differences and unavailable original-row API remain",
       "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
       "selectedScreen": "projects/17382728461495959991/screens/5aa7a573854a46db9b106f89c09c4f23",
@@ -2148,11 +2148,11 @@
         "environment": "production",
         "pr": 264,
         "mergeSha": "3b5dd96e2dce6474f644ab1b3b81536ae789b300",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE61_REVIEW_PRODUCTION_AND_STATUS.md",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation only; authenticated modal not exercised; whole-frame acceptance incomplete; fresh five-width synthetic local checks and preserved source HTML captures"
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "new deployed CSS verified; source/synthetic five-width reference table/card measurements; actual authenticated production review not exercised"
       }
     },
     {
@@ -2201,12 +2201,12 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation only; authenticated modal not exercised; whole-frame acceptance incomplete; fresh five-width synthetic local checks and preserved source HTML captures"
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       },
       "implementationEvidence": "PHASE57_LEDGER_MOBILE_TITLE.md"
     },
@@ -2253,12 +2253,12 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+        "lastVerifiedProductionSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
-        "lastVerifiedEvidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation only; authenticated modal not exercised; whole-frame acceptance incomplete; fresh five-width synthetic local checks and preserved source HTML captures"
+        "preservedBy": "fae1ce41961509eb21e71af64e28f143592b2e16",
+        "lastVerifiedEvidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
+        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       },
       "implementationEvidence": "PHASE57_LEDGER_MOBILE_TITLE.md"
     },
@@ -2488,21 +2488,21 @@
   "projectFrameCountAtInitialRead": 64,
   "registeredFrameCount": 73,
   "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-  "latestImplementationBase": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+  "latestImplementationBase": "fae1ce41961509eb21e71af64e28f143592b2e16",
   "rolloutSnapshot": {
-    "recordedAt": "2026-11-06T00:33:47.084020+00:00",
+    "recordedAt": "2026-11-06T01:31:36.461451+00:00",
     "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
-    "productionMergeSha": "67428099d8046bfbb7cb1bf6da47b2a5b1dcf84e",
+    "productionMergeSha": "fae1ce41961509eb21e71af64e28f143592b2e16",
     "productionTargets": 15,
     "localWorkTargets": 0,
     "parallelDeliveredDraftTargets": 0,
     "externalUnverifiedTargets": 5,
     "visualAcceptance": "whole-frame acceptance remains incomplete",
-    "evidence": "PHASE67_TITLES_AND_MAPPING_PRODUCTION.md",
+    "evidence": "PHASE69_REVIEW_SPACING_PRODUCTION.md",
     "qualification": "15 production-connected /5 external handoff unverified; not whole-frame visual acceptance or real-account verification",
     "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
-    "verificationScope": "both public release identities; comparison titles/direct/reload/visible navigation/history/120 frames and search anonymous browser; deployed private UI artifacts; synthetic local review/ledger; no authenticated account/PDF E2E",
-    "mainPostMergeCi": "success:42135839187;4/4"
+    "verificationScope": "both public release identities; live comparison titles/direct/reload/visible navigation/history/120 frames and search; deployed review CSS; synthetic five-width review/upload/result and4716-row memory flow; no authenticated account/PDF E2E",
+    "mainPostMergeCi": "in_progress:42143592035;3/4 success"
   },
   "latestReferenceIntegrity": {
     "checkedAt": "2026-11-05T17:19:37.559897+00:00",

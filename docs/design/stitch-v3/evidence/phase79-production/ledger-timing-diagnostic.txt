@@ -1,0 +1,2 @@
+List initial render 18624ms
+Passed: fictional 2285-row document list, initial 18624ms; progressive document scroll, global sort/filter, full keyboard access, nullable manual add/cancel/validation/double-click/reload, mobile/dark; remote writes=0.

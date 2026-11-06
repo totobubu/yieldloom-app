@@ -1,0 +1,21 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Success must refer to the changed content actually stored, not the prior submission
++ actual - expected
+
++ '합성 검증: 응답 유실 전 접수된 원래 의견입니다.'
+- '합성 검증: 오류 후 내용을 바꾼 별개의 의견입니다.'
+          ^
+
+    at file:///workspace/yieldloom-redesign-phase80/tests/stock-feedback.browser.mjs:185:20 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '합성 검증: 응답 유실 전 접수된 원래 의견입니다.',
+  expected: '합성 검증: 오류 후 내용을 바꾼 별개의 의견입니다.',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

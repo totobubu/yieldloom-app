@@ -1,0 +1,140 @@
+{
+  "scope": "Application before/after form crops, controlled data/focus/pointer and settled finite transitions; not native Stitch parity",
+  "states": [
+    {
+      "width": 1280,
+      "state": "idle",
+      "size": [
+        814,
+        896
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 1280,
+      "state": "pending",
+      "size": [
+        814,
+        896
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 1280,
+      "state": "error",
+      "size": [
+        814,
+        1068
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 1280,
+      "state": "success",
+      "size": [
+        814,
+        1068
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 1280,
+      "state": "dark",
+      "size": [
+        814,
+        1068
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 768,
+      "state": "idle",
+      "size": [
+        1488,
+        824
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 768,
+      "state": "pending",
+      "size": [
+        1488,
+        824
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 768,
+      "state": "error",
+      "size": [
+        1488,
+        994
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 768,
+      "state": "success",
+      "size": [
+        1488,
+        994
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 768,
+      "state": "dark",
+      "size": [
+        1488,
+        994
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 390,
+      "state": "idle",
+      "size": [
+        732,
+        872
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 390,
+      "state": "pending",
+      "size": [
+        732,
+        872
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 390,
+      "state": "error",
+      "size": [
+        732,
+        1042
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 390,
+      "state": "success",
+      "size": [
+        732,
+        1094
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    },
+    {
+      "width": 390,
+      "state": "dark",
+      "size": [
+        732,
+        1094
+      ],
+      "identicalApplicationBeforeAfterRgb": true
+    }
+  ]
+}

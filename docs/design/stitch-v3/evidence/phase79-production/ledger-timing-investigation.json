@@ -1,0 +1,54 @@
+{
+  "workHead": "26b211e5f948a10093d6a04f803e65914c2080de",
+  "workFirstCi": "42203234306/attempts/1",
+  "observedFailure": {
+    "test": "tests/sheet-ledger-list.browser.mjs:211",
+    "measurement": "Page entry plus existing cloud details and list dialog opening/closing; not network-only time",
+    "measuredMs": 30392,
+    "unchangedThresholdMs": 20000
+  },
+  "sameLocalTest": [
+    {
+      "measuredMs": 20736,
+      "result": "failed unchanged threshold"
+    },
+    {
+      "measuredMs": 18624,
+      "result": "full suite passed",
+      "instrumentation": "passive page/request timing, original assertions intact"
+    }
+  ],
+  "diagnosticPageGotoMs": 476,
+  "diagnosticExternalCertErrors": "font/unpkg/analytics errors within first 322ms; no TLS bypass. This does not establish cause of 18s interactions. Local visual/native parity is not established.",
+  "baselineComparison": "inconclusive: separate old-UI Vite with custom cache failed synthetic page initialization; not evidence of baseline timing or a product defect",
+  "ledgerFiles": [
+    {
+      "path": "tests/sheet-ledger-list.browser.mjs",
+      "unchanged": true,
+      "sha256": "c81fcd7bfcd06f045674e2e3e0d84303a538d122a075f423a668bce62eda023d"
+    },
+    {
+      "path": "src/pages/SheetLedgerSourceToolsView.vue",
+      "unchanged": true,
+      "sha256": "6e4219098192cb0edff8b1a0241fab2a70bf1eb871004a0ce88b3d2300ca9e86"
+    },
+    {
+      "path": "src/pages/SheetTrialLedgerView.vue",
+      "unchanged": true,
+      "sha256": "b11f5c58215fbc6adab002ca39db1d98750fadd69bd665b03d0d304c8d8d2c94"
+    },
+    {
+      "path": "src/services/sheetLedger.js",
+      "unchanged": true,
+      "sha256": "030b49340ca44eaa81aaeead5f0656e0b0b495b6d0639c6a193a46166dcd8422"
+    },
+    {
+      "path": "lib/sheet-ledger.js",
+      "unchanged": true,
+      "sha256": "5e19ea5c3cb83febd1b4715653b54acf011e0bd5a2e627b6a0d62355d8cf1b80"
+    }
+  ],
+  "cause": "not established; timing variation observed, no performance assertion loosened or product code changed to bypass it",
+  "retry": "only failed work browser rerun once at same head; final outcome recorded in production evidence separately",
+  "realAccountsPdfsOrRemoteWrites": false
+}

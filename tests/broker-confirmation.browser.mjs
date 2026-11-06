@@ -94,6 +94,8 @@ try {
             await page
                 .getByRole('option', { name: option, exact: true })
                 .click();
+            // Select restores focus asynchronously when its option list closes.
+            await page.getByRole('listbox').waitFor({ state: 'hidden' });
         };
         const count = () =>
             page.evaluate(() => window.brokerConfirmFixture.previews.length);
@@ -112,7 +114,14 @@ try {
             await form.getByLabel('연결 거래 유형', { exact: true }).waitFor();
         };
         const confirm = async () => {
+            assert.equal(await check.isEnabled(), true);
             await check.focus();
+            assert.equal(
+                await check.evaluate(
+                    (element) => element === document.activeElement
+                ),
+                true
+            );
             await page.keyboard.press('Space');
             assert.equal(await check.isChecked(), true);
         };

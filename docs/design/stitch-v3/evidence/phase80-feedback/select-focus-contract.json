@@ -1,0 +1,11 @@
+{
+  "installedVersion": "4.5.3",
+  "file": "node_modules/primevue/select/index.mjs",
+  "sha256": "a2f6b60ae18dd054c26b26cdc209ef7d06b669c390f99064785ac1994701067e",
+  "observedContract": "onOptionSelect updates model then hide(true); hide schedules overlay close and focus restoration via setTimeout(...,0).",
+  "injection": "50ms for only delayed _hide callbacks; 100ms Space key hold, local synthetic harness only.",
+  "before": "focused enabled checkbox becomes unfocused unchecked; active role combobox",
+  "after": "listbox hidden before checkbox enabled/focus assertions and Space; full native checked/submit/payload guards preserved",
+  "ciHistoricTiming": "CI had no focus trace, so identical historical cause is not asserted",
+  "artifact403": "No direct signed URL or authentication/network-policy workaround attempted"
+}

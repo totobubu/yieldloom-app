@@ -1,0 +1,19 @@
+List initial render 20736ms
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(initialMs < 20000)
+
+    at file:///workspace/yieldloom-redesign-phase79/tests/sheet-ledger-list.browser.mjs:211:5 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

@@ -26,10 +26,12 @@ Stitch `d33c8e06e86f4404a4b5388c7aa33e13`(프로젝트7356929996797649648) → `
 
 ## 남은 원본 차이와 다음 범위
 
-PC 공통 셸1170392357232825899도 공식 MCP로 새로 읽었다. 1280/1440/1600px에서 원본/앱 expanded 슬롯984px·collapsed1008px, 헤더 geometry가 맞는다. [무결성](evidence/phase80-production/shell-source-integrity.json), [치수](evidence/phase80-production/shell-measurements.json), [한계](evidence/phase80-production/shell-qualification.json). 과거 일반 ‘셸 폭 차이’를 모든 PC 화면의 현재 결함으로 재확정하지 않는다. standalone 콘텐츠 폭/열/줄바꿈은 남으므로 다음은 실제 셸 슬롯에 원본 콘텐츠를 조립하는 대조다. 존재하지 않는 합성 native 원본이 있다고 주장하거나 공통 폭을 임의 변경하지 않았다. Tablet/Mobile 셸 원본은 이번에 독립 MCP 재확인한 범위가 아니다.
+PC 공통 셸1170392357232825899도 공식 MCP로 새로 읽었다. 1280/1440/1600px에서 원본/앱 expanded 슬롯984px·collapsed1008px, 헤더 geometry가 맞는다. [무결성](evidence/phase80-production/shell-source-integrity.json), [치수](evidence/phase80-production/shell-measurements.json), [한계](evidence/phase80-production/shell-qualification.json). 과거 일반 ‘셸 폭 차이’를 모든 PC 화면의 현재 결함으로 재확정하지 않는다. standalone 콘텐츠 폭/열/줄바꿈은 남으므로 다음은 실제 셸 슬롯에 원본 콘텐츠를 조립하는 대조다. 존재하지 않는 합성 native 원본이 있다고 주장하거나 공통 폭을 임의 변경하지 않았다. 닫힌 PC·Tablet/Mobile 셸은 기존 캐시 HTML 대조이며 이번에 독립 MCP 재확인한 범위가 아니다.
 
 종목 상세의 제목/공시/피드백/문자수/안내 글자 크기·행간과 Select/Textarea/버튼 높이·글자 크기8영역×3폭은 원본 치수와 맞는다. [선택 치수](evidence/phase80-production/detail-selected-measurements.json). font family/weight·전체 간격/PNG 수용은 아니며 과거 일반 글자 크기 실패를 현재 결함으로 반복 집계하지 않는다. 자산 카드1024열수·1280슬롯과 높이, 기타 콘텐츠 조립·상태/간격·미지원 금융 지표/원문 보관 권한·없는 상세 프레임은 여전히 남는다.
 
 추가로 원본 자산 콘텐츠의 media viewport는 유지하고 main만984/708px로 제한한 탐색용 조립 측정을 했다. 1280px에서는 원본 카드296×324px/앱310.66×300px,1024px 원본3열의204×378px/앱1열708×284px이다.834/390px 원본 카드786/358px·앱766/338px로20px 차이도 남는다. 이는 padding/조립·반응형 열수 검토의 근거이며 실제 문구와 별도 native combined 프레임의 수용이 아니다. 독립 원본의284px 높이를 PC에 강제로 고정하는 것은 조립된 원본 줄바꿈도 훼손한다. [측정과 적용 한계](evidence/phase80-production/composite-card-qualification.json), [raw geometry](evidence/phase80-production/composite-card-raw-measurements.json), [읽기 전용 스크립트](evidence/phase80-production/composite-card-audit-script.txt). 기존 harness의 baseline 모드라 equality 검사는 꺼져 있고 일반 PASS 출력은 렌더 성공만 뜻한다. 이 탐색 결과만으로 제품 CSS나 시각 판정을 바꾸지 않았다. 후속으로20px는 부모의 일반 목록 규칙이 자식 루트 accounts의 padding0을 덮어쓰는 충돌임을 DOM/소스에서 확인했다. 별도 phase81에서 수정하며 이 main의 배포/시각 완료에 포함하지 않는다.
 
 최종20개/9화면군은15개 운영 연결·5개 별도 인계/승인 상태 그대로다. 기존14종과 겹치며 이 동작 개선을 새 페이지나 전체 완료율로 세지 않는다. 실제 로그인 계좌·고객PDF·운영 원장 쓰기/청구량과 전체 native PNG/글꼴 일치는 미검증/미수용이다. 시뮬레이터 공개PR 승인 차단을 유지하고 새 PR이나 우회 게시를 하지 않았다. [화면별 잔여](REMAINING_USER_SURFACES_PHASE72.md). 이 기록은 문서 전용 체크포인트이며 추가 운영 배포를 만들지 않는다.
+
+병합된 이번 원격 기능 브랜치만 검토한02990db head의 lease로 삭제했다. 로컬 활성 작업 공간·main/work·검증 문서 브랜치는 보존했다. [정리 범위](evidence/phase80-production/branch-cleanup.json).

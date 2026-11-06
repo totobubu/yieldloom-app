@@ -1,0 +1,6 @@
+{
+  "remoteFeatureDeleted": "refs/heads/fix/stitch-feedback-retry-phase80",
+  "expectedHead": "02990db8132ba6c7f607f259e33261c99d59a888",
+  "activeLocalWorktreeRetained": true,
+  "mainWorkAndProofBranchesRetained": true
+}

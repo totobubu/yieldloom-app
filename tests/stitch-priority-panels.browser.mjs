@@ -170,7 +170,7 @@ try {
         assert.equal(
             await page
                 .locator('.accounts')
-                .getByRole('button', { name: '별칭 수정', exact: true })
+                .getByRole('button', { name: '별칭 수정 불가', exact: true })
                 .isDisabled(),
             true
         );

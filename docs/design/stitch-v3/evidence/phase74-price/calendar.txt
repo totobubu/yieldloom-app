@@ -1,0 +1,6 @@
+PASS 1440: month navigation, exact close, missing/weekend dates, table toggle, no extra API reads
+PASS 768: month navigation, exact close, missing/weekend dates, table toggle, no extra API reads
+PASS 390: month navigation, exact close, missing/weekend dates, table toggle, no extra API reads
+PASS 360: month navigation, exact close, missing/weekend dates, table toggle, no extra API reads
+PASS stale history: current month uses today rather than latest quoted month
+PASS empty: no invented calendar prices

@@ -1,0 +1,1 @@
+PASS: detail/price source spacing, 4/2/1 metrics, stacked facts, feedback height at 4 widths; unchanged TTM; no overflow

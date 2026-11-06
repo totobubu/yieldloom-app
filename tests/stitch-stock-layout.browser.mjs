@@ -100,13 +100,13 @@ try {
                     await history
                         .locator('.price-observation-table')
                         .isVisible(),
-                    width >= 1024
+                    width > 1024
                 );
                 assert.equal(
                     await history
                         .locator('.price-observation-cards')
                         .isVisible(),
-                    width < 1024
+                    width <= 1024
                 );
                 assert.equal(
                     await history
@@ -114,7 +114,7 @@ try {
                         .getAttribute('aria-pressed'),
                     'true'
                 );
-                if (width < 1024) {
+                if (width <= 1024) {
                     assert.equal(
                         await history
                             .locator('.price-observation-cards article')

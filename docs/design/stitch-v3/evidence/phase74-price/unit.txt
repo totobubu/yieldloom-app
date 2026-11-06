@@ -1,0 +1,14 @@
+✔ anonymous price responses keep public CORS consistent for CDN and Pages (1.709933ms)
+✔ concurrent server requests for the same ticker make one upstream request (16.984446ms)
+✔ candles retain actual OHLC and volume and normalize dotted share classes (1.391969ms)
+✔ missing or inconsistent OHLC is excluded instead of fabricating candles (1.399172ms)
+✔ invalid tickers never request upstream and upstream failures remain retryable (0.496207ms)
+✔ split markers retain source ratios and exclude future events (0.762133ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 216.92384

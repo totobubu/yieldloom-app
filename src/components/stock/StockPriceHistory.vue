@@ -19,6 +19,12 @@
         currency: { type: String, default: 'USD' },
         adjustmentBasis: { type: String, default: '' },
     });
+    // Public PrimeVue 4 Column PT hooks keep the seven-column source styling local.
+    const priceColumnPt = {
+        headerCell: { class: 'history-column-heading' },
+        columnHeaderContent: { class: 'history-column-label' },
+        bodyCell: { class: 'history-column-value' },
+    };
     const visibleTableRows = ref(10);
     const view = ref('table'),
         period = ref('');
@@ -141,7 +147,7 @@
         <header class="history-header">
             <div>
                 <div class="history-title">
-                    <h2>시세 이력</h2>
+                    <h2>시세 이력 기록</h2>
                     <InfoHelp
                         label="시세 이력 안내"
                         :text="`${currency} 기준 · ‘—’는 시세 미제공입니다. 휴장일 또는 수집되지 않은 날짜에 가격을 채우지 않습니다.`" />
@@ -160,6 +166,10 @@
                 :allow-empty="false"
                 aria-label="시세 이력 표시 방식" />
         </header>
+        <p class="history-record-note">
+            휴장일이나 미수집일은 임의로 채우지 않으며, 종가만 확인된 일자는
+            시가·고가·저가·거래량을 미확인으로 보존합니다.
+        </p>
         <Message
             v-if="loading"
             severity="info"
@@ -315,7 +325,10 @@
                         <span>기준일</span><strong>{{ row.date }}</strong>
                     </header>
                     <dl>
-                        <div v-for="field in fields" :key="field.key">
+                        <div
+                            v-for="field in fields"
+                            :key="field.key"
+                            :class="{ 'closing-price': field.key === 'close' }">
                             <dt>{{ field.label }}</dt>
                             <dd>{{ price(row[field.key]) }}</dd>
                         </div>
@@ -346,26 +359,27 @@
             <DataTable
                 class="price-observation-table"
                 :value="prices"
-                striped-rows
                 scrollable
                 scroll-height="420px"
                 :table-style="{ minWidth: '680px' }"
                 :table-props="{ 'aria-label': '일별 시세 표' }">
-                <Column field="date" header="기준일" />
+                <Column field="date" header="기준일" :pt="priceColumnPt" />
                 <Column
                     v-for="field in fields"
                     :key="field.key"
-                    :header="field.label">
+                    :header="field.label"
+                    :body-class="{ 'closing-price': field.key === 'close' }"
+                    :pt="priceColumnPt">
                     <template #body="{ data }">{{
                         price(data[field.key])
                     }}</template>
                 </Column>
-                <Column header="거래량">
+                <Column header="거래량" :pt="priceColumnPt">
                     <template #body="{ data }">{{
                         provided(data.volume) ? `${number(data.volume)}주` : '—'
                     }}</template>
                 </Column>
-                <Column header="이벤트"
+                <Column header="이벤트" :pt="priceColumnPt"
                     ><template #body="{ data }"
                         ><StockPriceEvents
                             :events="
@@ -416,8 +430,9 @@
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-top: 12px;
-        font-size: 12px;
+        padding: 6px 0;
+        font-size: 13px;
+        line-height: 1.5;
     }
     .history-title {
         display: flex;
@@ -428,12 +443,20 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
         flex-wrap: wrap;
     }
     h2 {
         margin: 0;
-        font-size: 20px;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.5;
+    }
+    .history-record-note {
+        margin: 8px 0 26px;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--app-muted);
     }
     .history-header p {
         font-size: 12px;
@@ -579,11 +602,51 @@
         }
     }
 
-    /* Original 87cd20: table by default; labelled observation cards below1024. */
+    /* Original 87cd20: public PT classes avoid global DataTable overrides. */
+    .price-observation-table {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .price-observation-table :deep(.history-column-heading),
+    .price-observation-table :deep(.history-column-value) {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--app-border);
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+    .price-observation-table :deep(.history-column-heading) {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--app-muted);
+        background: var(--app-surface-muted);
+    }
+    .price-observation-table :deep(.history-column-label) {
+        justify-content: flex-end;
+    }
+    .price-observation-table :deep(.history-column-value) {
+        color: var(--app-text);
+        background: var(--app-surface);
+    }
+    .price-observation-table :deep(.history-column-heading:first-child),
+    .price-observation-table :deep(.history-column-value:first-child) {
+        text-align: left;
+        font-weight: 600;
+    }
+    .price-observation-table
+        :deep(.history-column-heading:first-child .history-column-label) {
+        justify-content: flex-start;
+    }
+    .price-observation-table :deep(.closing-price) {
+        font-weight: 700;
+    }
+    .price-observation-table :deep(tr:hover .history-column-value) {
+        background: var(--app-surface-muted);
+    }
+    /* The source changes to labelled cards at 1024px inclusive. */
     .price-observation-cards {
         display: none;
     }
-    @media (max-width: 1023px) {
+    @media (max-width: 1024px) {
         .price-observation-table {
             display: none;
         }
@@ -592,41 +655,51 @@
             gap: 12px;
         }
         .price-observation-cards article {
-            padding: 16px;
+            padding: 12px 14px;
             background: var(--app-surface);
             border: 1px solid var(--app-border);
             border-radius: 8px;
+            box-shadow: 0 1px 2px rgb(0 0 0 / 2%);
         }
         .price-observation-cards header {
             display: flex;
+            align-items: center;
             justify-content: space-between;
             gap: 12px;
-            font-size: 12px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--app-border-subtle);
+            font-size: 15px;
+            line-height: 1.5;
+            padding: 6px 0 8px;
+            margin-bottom: 4px;
+            border-bottom: 1px solid var(--app-border);
+        }
+        .price-observation-cards header strong {
+            font-weight: 600;
         }
         .price-observation-cards header > span,
-        .price-observation-cards dt {
+        .price-observation-cards dt,
+        .price-card-events > span {
+            font-weight: 500;
             color: var(--app-muted);
         }
         .price-observation-cards dl {
-            display: grid;
-            gap: 8px;
-            margin: 12px 0;
+            margin: 0;
         }
         .price-observation-cards dl > div {
             display: flex;
+            align-items: center;
             justify-content: space-between;
             gap: 12px;
-            font-size: 12px;
+            padding: 6px 0;
+            border-bottom: 1px dashed var(--app-border-subtle);
+            font-size: 13px;
+            line-height: 1.5;
         }
         .price-observation-cards dd {
             margin: 0;
             font-variant-numeric: tabular-nums;
         }
-        .price-observation-cards small {
-            color: var(--app-muted);
-            font-size: 11px;
+        .price-observation-cards .closing-price dd {
+            font-weight: 700;
         }
     }
 </style>

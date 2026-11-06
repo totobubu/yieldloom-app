@@ -3806,6 +3806,14 @@
         font-size: 36px;
         line-height: 44px;
     }
+    @media (min-width: 1024px) {
+        .family-page[data-stitch-view='assets']
+            .portfolio-tabs
+            .portfolio-panel
+            > .asset-management-overview {
+            padding-inline: 32px;
+        }
+    }
     @media (max-width: 767px) {
         .family-page[data-stitch-view='assets'] .asset-overview-heading h2 {
             font-size: 24px;

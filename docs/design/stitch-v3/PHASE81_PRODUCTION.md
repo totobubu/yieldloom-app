@@ -33,3 +33,5 @@
 두 운영 주소의 실제 익명 QQQI를1280/768/390px에서 열어 기존 의견 재전송 회귀도 확인했다. 사이트별18건의 POST는 전송 전에 모두 가로채 합성 응답/저장소에서 같은·원복 ID 보존과 변경한 본문/유형의 새 ID를 확인했다. 실제 공개 GET은 치환하지 않았고 추가 읽기·JS오류/넘침·실제 쓰기는0이었다. [Vercel](evidence/phase81-production/public-results-vercel.json), [Pages](evidence/phase81-production/public-results-pages.json). 기존 CA/프록시/TLS를 사용했다. 실제 의견 접수·로그인 계좌·고객PDF·운영 DB/권한 쓰기와 청구량은 검증하지 않았다.
 
 최종20기기/9화면군의15개 운영 연결·5개 외부 인계/승인 상태는 그대로다. 기존14종과 겹치며 새 페이지/기기 생성이나 전체 시각 완료로 계수하지 않는다. 실제 로그인 계좌·고객PDF와 전체 native PNG/글꼴 수용은 미검증/미완료다. 시뮬레이터 공개PR 승인 차단을 유지한다. [화면별 잔여](REMAINING_USER_SURFACES_PHASE72.md). 이 운영 증거는 문서 전용 체크포인트로 추가 운영 배포를 만들지 않는다.
+
+통합 운영 근거의 원격 보존을 확인한 뒤 병합된 이번 원격 기능 브랜치만 검토한612153e head의 lease로 삭제했다. 로컬 활성 작업 공간·main/work·두 검증 문서 브랜치는 보존했다. [정리 범위](evidence/phase81-production/branch-cleanup.json).

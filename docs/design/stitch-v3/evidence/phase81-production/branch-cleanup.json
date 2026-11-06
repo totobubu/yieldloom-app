@@ -1,0 +1,7 @@
+{
+  "remoteFeatureDeleted": "refs/heads/fix/stitch-account-list-inset-phase81",
+  "expectedHead": "612153e306c1b9409fe820fb3139c2dc34121b7e",
+  "activeLocalWorktreeRetained": true,
+  "mainWorkAndBothProofBranchesRetained": true,
+  "verifiedRemoteEvidenceCommitBeforeCleanup": "87fd0700ea64096f7b882caa3265acb70f100c99"
+}

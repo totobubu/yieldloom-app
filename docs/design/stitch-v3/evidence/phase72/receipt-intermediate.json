@@ -1,0 +1,2044 @@
+[
+  {
+    "width": 1280,
+    "implementation": {
+      "width": 834,
+      "height": 1074.25,
+      "header": 189.25,
+      "titleFont": "24px",
+      "layout": {
+        "sections": [
+          {
+            "width": 0,
+            "height": 0,
+            "top": -24,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 478.15625,
+            "height": 579.1875,
+            "top": 412.25,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ],
+        "header": {
+          "width": 834,
+          "height": 189.25,
+          "top": 0,
+          "padding": "0px",
+          "gap": "16px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "headerChildren": [
+          {
+            "width": 834,
+            "height": 26,
+            "top": 0,
+            "padding": "0px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 834,
+            "height": 66.5,
+            "top": 42,
+            "padding": "16px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 834,
+            "height": 64.75,
+            "top": 124.5,
+            "padding": "4px 0px 0px",
+            "gap": "6px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "steps": {
+          "width": 834,
+          "height": 66.5,
+          "top": 42,
+          "padding": "16px",
+          "gap": "8px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "title": {
+          "width": 259.6875,
+          "height": 32,
+          "top": 128.5,
+          "padding": "0px",
+          "gap": "normal",
+          "font": "24px",
+          "line": "32px",
+          "color": "rgb(56, 36, 24)"
+        },
+        "summary": {
+          "width": 478.15625,
+          "height": 179,
+          "top": 213.25,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "finance": {
+          "width": 335.84375,
+          "height": 376.5,
+          "top": 213.25,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "financeChildren": [
+          {
+            "width": 301.84375,
+            "height": 31,
+            "top": 230.25,
+            "padding": "0px 0px 10px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 121.59375,
+                "height": 20,
+                "top": 230.25,
+                "padding": "0px",
+                "gap": "8px",
+                "font": "14px",
+                "line": "20px",
+                "color": "rgb(56, 36, 24)"
+              },
+              {
+                "width": 89,
+                "height": 20,
+                "top": 230.25,
+                "padding": "2px 6px",
+                "gap": "4px",
+                "font": "11px",
+                "line": "16px",
+                "color": "rgb(13, 122, 110)"
+              }
+            ]
+          },
+          {
+            "width": 301.84375,
+            "height": 236,
+            "top": 277.25,
+            "padding": "0px",
+            "gap": "16px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 301.84375,
+                "height": 121,
+                "top": 277.25,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              },
+              {
+                "width": 301.84375,
+                "height": 99,
+                "top": 414.25,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              }
+            ]
+          },
+          {
+            "width": 301.84375,
+            "height": 43.5,
+            "top": 529.25,
+            "padding": "8px",
+            "gap": "6px",
+            "font": "11px",
+            "line": "13.75px",
+            "color": "rgb(100, 116, 139)",
+            "children": [
+              {
+                "width": 14,
+                "height": 14,
+                "top": 538.25,
+                "padding": "0px",
+                "gap": "normal",
+                "font": "14px",
+                "line": "13.75px",
+                "color": "rgb(100, 116, 139)"
+              }
+            ]
+          }
+        ],
+        "refresh": {
+          "width": 335.84375,
+          "height": 164.5,
+          "top": 605.75,
+          "padding": "16px",
+          "gap": "12px",
+          "font": "13px",
+          "line": "20px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "next": {
+          "width": 335.84375,
+          "height": 288,
+          "top": 786.25,
+          "padding": "16px",
+          "gap": "0px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "rows": [
+          {
+            "width": 0,
+            "height": 0,
+            "top": -24,
+            "padding": "16px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 0,
+            "height": 0,
+            "top": -24,
+            "padding": "16px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ]
+      }
+    },
+    "apiRequests": 0,
+    "sourceComparison": "No final source at this viewport"
+  },
+  {
+    "width": 834,
+    "implementation": {
+      "width": 786,
+      "height": 1074.25,
+      "header": 189.25,
+      "titleFont": "24px",
+      "layout": {
+        "sections": [
+          {
+            "width": 0,
+            "height": 0,
+            "top": -24,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 450.15625,
+            "height": 579.1875,
+            "top": 412.25,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ],
+        "header": {
+          "width": 786,
+          "height": 189.25,
+          "top": 0,
+          "padding": "0px",
+          "gap": "16px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "headerChildren": [
+          {
+            "width": 786,
+            "height": 26,
+            "top": 0,
+            "padding": "0px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 786,
+            "height": 66.5,
+            "top": 42,
+            "padding": "16px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 786,
+            "height": 64.75,
+            "top": 124.5,
+            "padding": "4px 0px 0px",
+            "gap": "6px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "steps": {
+          "width": 786,
+          "height": 66.5,
+          "top": 42,
+          "padding": "16px",
+          "gap": "8px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "title": {
+          "width": 259.6875,
+          "height": 32,
+          "top": 128.5,
+          "padding": "0px",
+          "gap": "normal",
+          "font": "24px",
+          "line": "32px",
+          "color": "rgb(56, 36, 24)"
+        },
+        "summary": {
+          "width": 450.15625,
+          "height": 179,
+          "top": 213.25,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "finance": {
+          "width": 315.84375,
+          "height": 376.5,
+          "top": 213.25,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "financeChildren": [
+          {
+            "width": 281.84375,
+            "height": 31,
+            "top": 230.25,
+            "padding": "0px 0px 10px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 121.59375,
+                "height": 20,
+                "top": 230.25,
+                "padding": "0px",
+                "gap": "8px",
+                "font": "14px",
+                "line": "20px",
+                "color": "rgb(56, 36, 24)"
+              },
+              {
+                "width": 89,
+                "height": 20,
+                "top": 230.25,
+                "padding": "2px 6px",
+                "gap": "4px",
+                "font": "11px",
+                "line": "16px",
+                "color": "rgb(13, 122, 110)"
+              }
+            ]
+          },
+          {
+            "width": 281.84375,
+            "height": 236,
+            "top": 277.25,
+            "padding": "0px",
+            "gap": "16px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 281.84375,
+                "height": 121,
+                "top": 277.25,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              },
+              {
+                "width": 281.84375,
+                "height": 99,
+                "top": 414.25,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              }
+            ]
+          },
+          {
+            "width": 281.84375,
+            "height": 43.5,
+            "top": 529.25,
+            "padding": "8px",
+            "gap": "6px",
+            "font": "11px",
+            "line": "13.75px",
+            "color": "rgb(100, 116, 139)",
+            "children": [
+              {
+                "width": 14,
+                "height": 14,
+                "top": 538.25,
+                "padding": "0px",
+                "gap": "normal",
+                "font": "14px",
+                "line": "13.75px",
+                "color": "rgb(100, 116, 139)"
+              }
+            ]
+          }
+        ],
+        "refresh": {
+          "width": 315.84375,
+          "height": 164.5,
+          "top": 605.75,
+          "padding": "16px",
+          "gap": "12px",
+          "font": "13px",
+          "line": "20px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "next": {
+          "width": 315.84375,
+          "height": 288,
+          "top": 786.25,
+          "padding": "16px",
+          "gap": "0px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "rows": [
+          {
+            "width": 0,
+            "height": 0,
+            "top": -24,
+            "padding": "16px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 0,
+            "height": 0,
+            "top": -24,
+            "padding": "16px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ]
+      }
+    },
+    "apiRequests": 0,
+    "sourceComparison": "content width and title font match; full visual acceptance pending",
+    "source": {
+      "width": 786,
+      "height": 1074.25,
+      "titleFont": "24px",
+      "layout": {
+        "columns": [
+          [
+            {
+              "width": 450.15625,
+              "height": 181,
+              "top": 213.25,
+              "padding": "16px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "receipt_long\n거래내역 저장 영수증 (총 6건 처리: 반영 5건 · 중복 제외 1건 · 실패 0건)",
+              "children": [
+                {
+                  "width": 416.15625,
+                  "height": 147,
+                  "top": 230.25,
+                  "padding": "0px",
+                  "gap": "14px",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                }
+              ]
+            },
+            {
+              "width": 450.15625,
+              "height": 580,
+              "top": 410.25,
+              "padding": "0px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "전체 결과 (6건)\n반영 완료 (5건)\n제외/중복 (1건)\n가로 스크롤 가능\narrow_forward\n상태\t",
+              "children": [
+                {
+                  "width": 448.15625,
+                  "height": 57,
+                  "top": 411.25,
+                  "padding": "14px",
+                  "gap": "8px",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 448.15625,
+                  "height": 467,
+                  "top": 468.25,
+                  "padding": "0px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 448.15625,
+                  "height": 54,
+                  "top": 935.25,
+                  "padding": "10px 14px",
+                  "gap": "normal",
+                  "font": "11px",
+                  "line": "16.5px",
+                  "color": "rgb(100, 116, 139)"
+                }
+              ]
+            }
+          ],
+          [
+            {
+              "width": 315.84375,
+              "height": 376.5,
+              "top": 213.25,
+              "padding": "16px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "account_balance\n포트폴리오 반영 집계\n통화별 독립 산출\n원화 (KRW) 반영 내역\n3건 저장\n매",
+              "children": [
+                {
+                  "width": 281.84375,
+                  "height": 31,
+                  "top": 230.25,
+                  "padding": "0px 0px 10px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 281.84375,
+                  "height": 121,
+                  "top": 277.25,
+                  "padding": "12px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 281.84375,
+                  "height": 99,
+                  "top": 414.25,
+                  "padding": "12px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 281.84375,
+                  "height": 43.5,
+                  "top": 529.25,
+                  "padding": "8px",
+                  "gap": "6px",
+                  "font": "11px",
+                  "line": "13.75px",
+                  "color": "rgb(100, 116, 139)"
+                }
+              ]
+            },
+            {
+              "width": 315.84375,
+              "height": 164.5,
+              "top": 605.75,
+              "padding": "16px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "warning\n계좌 목록 새로고침 일시 지연\n\n저장된 5건의 내역은 안전하게 DB에 보존되었으나, 최신 연동",
+              "children": [
+                {
+                  "width": 281.84375,
+                  "height": 78.5,
+                  "top": 622.75,
+                  "padding": "0px",
+                  "gap": "10px",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 281.84375,
+                  "height": 40,
+                  "top": 713.25,
+                  "padding": "0px 12px",
+                  "gap": "6px",
+                  "font": "12px",
+                  "line": "16px",
+                  "color": "rgb(255, 255, 255)"
+                }
+              ]
+            },
+            {
+              "width": 315.84375,
+              "height": 288,
+              "top": 786.25,
+              "padding": "16px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "후속 작업 및 확인\nlock\n연동 화면 잠김\nlock\n배당달력에서 결과 확인하기\nlock\n보유 잔고 및 포트",
+              "children": [
+                {
+                  "width": 281.84375,
+                  "height": 16,
+                  "top": 803.25,
+                  "padding": "0px",
+                  "gap": "normal",
+                  "font": "12px",
+                  "line": "16px",
+                  "color": "rgb(56, 36, 24)"
+                },
+                {
+                  "width": 281.84375,
+                  "height": 121,
+                  "top": 829.25,
+                  "padding": "0px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 281.84375,
+                  "height": 97,
+                  "top": 960.25,
+                  "padding": "8px 0px 0px",
+                  "gap": "8px",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                }
+              ]
+            }
+          ]
+        ],
+        "sections": [],
+        "sourceMobileRows": [],
+        "header": {
+          "width": 786,
+          "height": 189.25,
+          "top": 0,
+          "padding": "0px",
+          "gap": "16px",
+          "font": "16px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "headerChildren": [
+          {
+            "width": 786,
+            "height": 26,
+            "top": 0,
+            "padding": "0px",
+            "gap": "8px",
+            "font": "16px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 786,
+            "height": 66.5,
+            "top": 42,
+            "padding": "16px",
+            "gap": "normal",
+            "font": "16px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 786,
+            "height": 64.75,
+            "top": 124.5,
+            "padding": "4px 0px 0px",
+            "gap": "normal",
+            "font": "16px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "steps": {
+          "width": 786,
+          "height": 66.5,
+          "top": 42,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "16px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "title": {
+          "width": 786,
+          "height": 32,
+          "top": 128.5,
+          "padding": "0px",
+          "gap": "8px",
+          "font": "24px",
+          "line": "32px",
+          "color": "rgb(56, 36, 24)"
+        },
+        "summary": null,
+        "finance": null,
+        "refresh": null,
+        "next": null,
+        "rows": [
+          {
+            "width": 560,
+            "height": 68,
+            "top": 520.75,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "12px",
+            "line": "16px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 560,
+            "height": 68,
+            "top": 588.75,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "12px",
+            "line": "16px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ]
+      }
+    },
+    "heightDifference": 0
+  },
+  {
+    "width": 768,
+    "implementation": {
+      "width": 720,
+      "height": 1074.25,
+      "header": 189.25,
+      "titleFont": "24px",
+      "layout": {
+        "sections": [
+          {
+            "width": 0,
+            "height": 0,
+            "top": -24,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 411.65625,
+            "height": 579.1875,
+            "top": 412.25,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ],
+        "header": {
+          "width": 720,
+          "height": 189.25,
+          "top": 0,
+          "padding": "0px",
+          "gap": "16px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "headerChildren": [
+          {
+            "width": 720,
+            "height": 26,
+            "top": 0,
+            "padding": "0px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 720,
+            "height": 66.5,
+            "top": 42,
+            "padding": "16px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 720,
+            "height": 64.75,
+            "top": 124.5,
+            "padding": "4px 0px 0px",
+            "gap": "6px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "steps": {
+          "width": 720,
+          "height": 66.5,
+          "top": 42,
+          "padding": "16px",
+          "gap": "8px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "title": {
+          "width": 259.6875,
+          "height": 32,
+          "top": 128.5,
+          "padding": "0px",
+          "gap": "normal",
+          "font": "24px",
+          "line": "32px",
+          "color": "rgb(56, 36, 24)"
+        },
+        "summary": {
+          "width": 411.65625,
+          "height": 179,
+          "top": 213.25,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "finance": {
+          "width": 288.34375,
+          "height": 376.5,
+          "top": 213.25,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "financeChildren": [
+          {
+            "width": 254.34375,
+            "height": 31,
+            "top": 230.25,
+            "padding": "0px 0px 10px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 121.59375,
+                "height": 20,
+                "top": 230.25,
+                "padding": "0px",
+                "gap": "8px",
+                "font": "14px",
+                "line": "20px",
+                "color": "rgb(56, 36, 24)"
+              },
+              {
+                "width": 89,
+                "height": 20,
+                "top": 230.25,
+                "padding": "2px 6px",
+                "gap": "4px",
+                "font": "11px",
+                "line": "16px",
+                "color": "rgb(13, 122, 110)"
+              }
+            ]
+          },
+          {
+            "width": 254.34375,
+            "height": 236,
+            "top": 277.25,
+            "padding": "0px",
+            "gap": "16px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 254.34375,
+                "height": 121,
+                "top": 277.25,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              },
+              {
+                "width": 254.34375,
+                "height": 99,
+                "top": 414.25,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              }
+            ]
+          },
+          {
+            "width": 254.34375,
+            "height": 43.5,
+            "top": 529.25,
+            "padding": "8px",
+            "gap": "6px",
+            "font": "11px",
+            "line": "13.75px",
+            "color": "rgb(100, 116, 139)",
+            "children": [
+              {
+                "width": 14,
+                "height": 14,
+                "top": 538.25,
+                "padding": "0px",
+                "gap": "normal",
+                "font": "14px",
+                "line": "13.75px",
+                "color": "rgb(100, 116, 139)"
+              }
+            ]
+          }
+        ],
+        "refresh": {
+          "width": 288.34375,
+          "height": 164.5,
+          "top": 605.75,
+          "padding": "16px",
+          "gap": "12px",
+          "font": "13px",
+          "line": "20px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "next": {
+          "width": 288.34375,
+          "height": 288,
+          "top": 786.25,
+          "padding": "16px",
+          "gap": "0px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "rows": [
+          {
+            "width": 0,
+            "height": 0,
+            "top": -24,
+            "padding": "16px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 0,
+            "height": 0,
+            "top": -24,
+            "padding": "16px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ]
+      }
+    },
+    "apiRequests": 0,
+    "sourceComparison": "content width and title font match; full visual acceptance pending",
+    "source": {
+      "width": 720,
+      "height": 1074.25,
+      "titleFont": "24px",
+      "layout": {
+        "columns": [
+          [
+            {
+              "width": 411.65625,
+              "height": 181,
+              "top": 213.25,
+              "padding": "16px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "receipt_long\n거래내역 저장 영수증 (총 6건 처리: 반영 5건 · 중복 제외 1건 · 실패 0건)",
+              "children": [
+                {
+                  "width": 377.65625,
+                  "height": 147,
+                  "top": 230.25,
+                  "padding": "0px",
+                  "gap": "14px",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                }
+              ]
+            },
+            {
+              "width": 411.65625,
+              "height": 610.5,
+              "top": 410.25,
+              "padding": "0px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "전체 결과 (6건)\n반영 완료 (5건)\n제외/중복 (1건)\n가로 스크롤 가능\narrow_forward\n상태\t",
+              "children": [
+                {
+                  "width": 409.65625,
+                  "height": 87.5,
+                  "top": 411.25,
+                  "padding": "14px",
+                  "gap": "8px",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 409.65625,
+                  "height": 467,
+                  "top": 498.75,
+                  "padding": "0px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 409.65625,
+                  "height": 54,
+                  "top": 965.75,
+                  "padding": "10px 14px",
+                  "gap": "normal",
+                  "font": "11px",
+                  "line": "16.5px",
+                  "color": "rgb(100, 116, 139)"
+                }
+              ]
+            }
+          ],
+          [
+            {
+              "width": 288.34375,
+              "height": 376.5,
+              "top": 213.25,
+              "padding": "16px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "account_balance\n포트폴리오 반영 집계\n통화별 독립 산출\n원화 (KRW) 반영 내역\n3건 저장\n매",
+              "children": [
+                {
+                  "width": 254.34375,
+                  "height": 31,
+                  "top": 230.25,
+                  "padding": "0px 0px 10px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 254.34375,
+                  "height": 121,
+                  "top": 277.25,
+                  "padding": "12px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 254.34375,
+                  "height": 99,
+                  "top": 414.25,
+                  "padding": "12px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 254.34375,
+                  "height": 43.5,
+                  "top": 529.25,
+                  "padding": "8px",
+                  "gap": "6px",
+                  "font": "11px",
+                  "line": "13.75px",
+                  "color": "rgb(100, 116, 139)"
+                }
+              ]
+            },
+            {
+              "width": 288.34375,
+              "height": 164.5,
+              "top": 605.75,
+              "padding": "16px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "warning\n계좌 목록 새로고침 일시 지연\n\n저장된 5건의 내역은 안전하게 DB에 보존되었으나, 최신 연동",
+              "children": [
+                {
+                  "width": 254.34375,
+                  "height": 78.5,
+                  "top": 622.75,
+                  "padding": "0px",
+                  "gap": "10px",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 254.34375,
+                  "height": 40,
+                  "top": 713.25,
+                  "padding": "0px 12px",
+                  "gap": "6px",
+                  "font": "12px",
+                  "line": "16px",
+                  "color": "rgb(255, 255, 255)"
+                }
+              ]
+            },
+            {
+              "width": 288.34375,
+              "height": 288,
+              "top": 786.25,
+              "padding": "16px",
+              "gap": "normal",
+              "font": "16px",
+              "line": "24px",
+              "color": "rgb(25, 28, 30)",
+              "prefix": "후속 작업 및 확인\nlock\n연동 화면 잠김\nlock\n배당달력에서 결과 확인하기\nlock\n보유 잔고 및 포트",
+              "children": [
+                {
+                  "width": 254.34375,
+                  "height": 16,
+                  "top": 803.25,
+                  "padding": "0px",
+                  "gap": "normal",
+                  "font": "12px",
+                  "line": "16px",
+                  "color": "rgb(56, 36, 24)"
+                },
+                {
+                  "width": 254.34375,
+                  "height": 121,
+                  "top": 829.25,
+                  "padding": "0px",
+                  "gap": "normal",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                },
+                {
+                  "width": 254.34375,
+                  "height": 97,
+                  "top": 960.25,
+                  "padding": "8px 0px 0px",
+                  "gap": "8px",
+                  "font": "16px",
+                  "line": "24px",
+                  "color": "rgb(25, 28, 30)"
+                }
+              ]
+            }
+          ]
+        ],
+        "sections": [],
+        "sourceMobileRows": [],
+        "header": {
+          "width": 720,
+          "height": 189.25,
+          "top": 0,
+          "padding": "0px",
+          "gap": "16px",
+          "font": "16px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "headerChildren": [
+          {
+            "width": 720,
+            "height": 26,
+            "top": 0,
+            "padding": "0px",
+            "gap": "8px",
+            "font": "16px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 720,
+            "height": 66.5,
+            "top": 42,
+            "padding": "16px",
+            "gap": "normal",
+            "font": "16px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 720,
+            "height": 64.75,
+            "top": 124.5,
+            "padding": "4px 0px 0px",
+            "gap": "normal",
+            "font": "16px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "steps": {
+          "width": 720,
+          "height": 66.5,
+          "top": 42,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "16px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "title": {
+          "width": 720,
+          "height": 32,
+          "top": 128.5,
+          "padding": "0px",
+          "gap": "8px",
+          "font": "24px",
+          "line": "32px",
+          "color": "rgb(56, 36, 24)"
+        },
+        "summary": null,
+        "finance": null,
+        "refresh": null,
+        "next": null,
+        "rows": [
+          {
+            "width": 560,
+            "height": 68,
+            "top": 551.25,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "12px",
+            "line": "16px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 560,
+            "height": 68,
+            "top": 619.25,
+            "padding": "0px",
+            "gap": "normal",
+            "font": "12px",
+            "line": "16px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ]
+      }
+    },
+    "heightDifference": 0
+  },
+  {
+    "width": 390,
+    "implementation": {
+      "width": 374,
+      "height": 2475.625,
+      "header": 257.5,
+      "titleFont": "20px",
+      "layout": {
+        "sections": [
+          {
+            "width": 0,
+            "height": 0,
+            "top": 596,
+            "padding": "16px",
+            "gap": "14px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 374,
+            "height": 966,
+            "top": 1461.625,
+            "padding": "8px 0px 0px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ],
+        "header": {
+          "width": 374,
+          "height": 257.5,
+          "top": 0,
+          "padding": "8px 0px 0px",
+          "gap": "12px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "headerChildren": [
+          {
+            "width": 374,
+            "height": 48,
+            "top": 8,
+            "padding": "0px",
+            "gap": "6px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 70,
+            "top": 68,
+            "padding": "12px",
+            "gap": "0px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 107.5,
+            "top": 150,
+            "padding": "0px 2px",
+            "gap": "6px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "steps": {
+          "width": 374,
+          "height": 70,
+          "top": 68,
+          "padding": "12px",
+          "gap": "0px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "title": {
+          "width": 211.40625,
+          "height": 56,
+          "top": 150,
+          "padding": "0px",
+          "gap": "normal",
+          "font": "20px",
+          "line": "28px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "summary": {
+          "width": 374,
+          "height": 305,
+          "top": 273.5,
+          "padding": "16px",
+          "gap": "14px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "finance": {
+          "width": 374,
+          "height": 357,
+          "top": 594.5,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "financeChildren": [
+          {
+            "width": 340,
+            "height": 20,
+            "top": 611.5,
+            "padding": "0px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 128.28125,
+                "height": 20,
+                "top": 611.5,
+                "padding": "0px",
+                "gap": "8px",
+                "font": "15px",
+                "line": "20px",
+                "color": "rgb(25, 28, 30)"
+              },
+              {
+                "width": 89,
+                "height": 20,
+                "top": 611.5,
+                "padding": "2px 6px",
+                "gap": "4px",
+                "font": "11px",
+                "line": "16px",
+                "color": "rgb(13, 122, 110)"
+              }
+            ]
+          },
+          {
+            "width": 340,
+            "height": 231.5,
+            "top": 643.5,
+            "padding": "0px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 340,
+                "height": 123.5,
+                "top": 643.5,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              },
+              {
+                "width": 340,
+                "height": 100,
+                "top": 775,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              }
+            ]
+          },
+          {
+            "width": 340,
+            "height": 43.5,
+            "top": 891,
+            "padding": "8px",
+            "gap": "6px",
+            "font": "11px",
+            "line": "13.75px",
+            "color": "rgb(62, 73, 71)",
+            "children": [
+              {
+                "width": 14,
+                "height": 14,
+                "top": 900,
+                "padding": "0px",
+                "gap": "normal",
+                "font": "14px",
+                "line": "13.75px",
+                "color": "rgb(62, 73, 71)"
+              }
+            ]
+          }
+        ],
+        "refresh": {
+          "width": 374,
+          "height": 161.625,
+          "top": 971.5,
+          "padding": "14px",
+          "gap": "12px",
+          "font": "13px",
+          "line": "20px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "next": {
+          "width": 374,
+          "height": 304.5,
+          "top": 1141.125,
+          "padding": "14px",
+          "gap": "0px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "rows": [
+          {
+            "width": 374,
+            "height": 129,
+            "top": 1549.625,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 374,
+            "height": 129,
+            "top": 1688.625,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ]
+      }
+    },
+    "apiRequests": 0,
+    "sourceComparison": "content width and title font match; full visual acceptance pending",
+    "source": {
+      "width": 374,
+      "height": 2423.875,
+      "titleFont": "20px",
+      "layout": {
+        "sections": [
+          {
+            "width": 374,
+            "height": 257.5,
+            "top": 0,
+            "padding": "8px 0px 0px",
+            "gap": "12px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 249.75,
+            "top": 273.5,
+            "padding": "16px",
+            "gap": "14px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 376.5,
+            "top": 539.25,
+            "padding": "16px",
+            "gap": "12px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 478.125,
+            "top": 931.75,
+            "padding": "4px 0px 0px",
+            "gap": "8px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 950,
+            "top": 1425.875,
+            "padding": "8px 0px 0px",
+            "gap": "12px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "sourceMobileRows": [
+          {
+            "width": 374,
+            "height": 161.625,
+            "top": 935.75,
+            "padding": "14px",
+            "gap": "12px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 304.5,
+            "top": 1105.375,
+            "padding": "14px",
+            "gap": "10px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 129,
+            "top": 1549.875,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 129,
+            "top": 1688.875,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 129,
+            "top": 1827.875,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 129,
+            "top": 1966.875,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 129,
+            "top": 2105.875,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 131,
+            "top": 2244.875,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "header": {
+          "width": 374,
+          "height": 257.5,
+          "top": 0,
+          "padding": "8px 0px 0px",
+          "gap": "12px",
+          "font": "14px",
+          "line": "20px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "headerChildren": [
+          {
+            "width": 374,
+            "height": 48,
+            "top": 8,
+            "padding": "0px",
+            "gap": "6px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 70,
+            "top": 68,
+            "padding": "12px",
+            "gap": "normal",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 374,
+            "height": 107.5,
+            "top": 150,
+            "padding": "0px 2px",
+            "gap": "6px",
+            "font": "14px",
+            "line": "20px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "steps": {
+          "width": 374,
+          "height": 70,
+          "top": 68,
+          "padding": "12px",
+          "gap": "normal",
+          "font": "14px",
+          "line": "20px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "title": {
+          "width": 203.21875,
+          "height": 56,
+          "top": 150,
+          "padding": "0px",
+          "gap": "normal",
+          "font": "20px",
+          "line": "28px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "summary": null,
+        "finance": null,
+        "refresh": null,
+        "next": null,
+        "rows": []
+      }
+    },
+    "heightDifference": 51.75
+  },
+  {
+    "width": 360,
+    "implementation": {
+      "width": 344,
+      "height": 2491.625,
+      "header": 273.5,
+      "titleFont": "20px",
+      "layout": {
+        "sections": [
+          {
+            "width": 0,
+            "height": 0,
+            "top": 612,
+            "padding": "16px",
+            "gap": "14px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 344,
+            "height": 966,
+            "top": 1477.625,
+            "padding": "8px 0px 0px",
+            "gap": "normal",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ],
+        "header": {
+          "width": 344,
+          "height": 273.5,
+          "top": 0,
+          "padding": "8px 0px 0px",
+          "gap": "12px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "headerChildren": [
+          {
+            "width": 344,
+            "height": 48,
+            "top": 8,
+            "padding": "0px",
+            "gap": "6px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 344,
+            "height": 86,
+            "top": 68,
+            "padding": "12px",
+            "gap": "0px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          },
+          {
+            "width": 344,
+            "height": 107.5,
+            "top": 166,
+            "padding": "0px 2px",
+            "gap": "6px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(25, 28, 30)"
+          }
+        ],
+        "steps": {
+          "width": 344,
+          "height": 86,
+          "top": 68,
+          "padding": "12px",
+          "gap": "0px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "title": {
+          "width": 181.40625,
+          "height": 56,
+          "top": 166,
+          "padding": "0px",
+          "gap": "normal",
+          "font": "20px",
+          "line": "28px",
+          "color": "rgb(25, 28, 30)"
+        },
+        "summary": {
+          "width": 344,
+          "height": 305,
+          "top": 289.5,
+          "padding": "16px",
+          "gap": "14px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "finance": {
+          "width": 344,
+          "height": 357,
+          "top": 610.5,
+          "padding": "16px",
+          "gap": "normal",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "financeChildren": [
+          {
+            "width": 310,
+            "height": 20,
+            "top": 627.5,
+            "padding": "0px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 128.28125,
+                "height": 20,
+                "top": 627.5,
+                "padding": "0px",
+                "gap": "8px",
+                "font": "15px",
+                "line": "20px",
+                "color": "rgb(25, 28, 30)"
+              },
+              {
+                "width": 89,
+                "height": 20,
+                "top": 627.5,
+                "padding": "2px 6px",
+                "gap": "4px",
+                "font": "11px",
+                "line": "16px",
+                "color": "rgb(13, 122, 110)"
+              }
+            ]
+          },
+          {
+            "width": 310,
+            "height": 231.5,
+            "top": 659.5,
+            "padding": "0px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)",
+            "children": [
+              {
+                "width": 310,
+                "height": 123.5,
+                "top": 659.5,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              },
+              {
+                "width": 310,
+                "height": 100,
+                "top": 791,
+                "padding": "12px",
+                "gap": "normal",
+                "font": "15px",
+                "line": "24px",
+                "color": "rgb(51, 65, 85)"
+              }
+            ]
+          },
+          {
+            "width": 310,
+            "height": 43.5,
+            "top": 907,
+            "padding": "8px",
+            "gap": "6px",
+            "font": "11px",
+            "line": "13.75px",
+            "color": "rgb(62, 73, 71)",
+            "children": [
+              {
+                "width": 14,
+                "height": 14,
+                "top": 916,
+                "padding": "0px",
+                "gap": "normal",
+                "font": "14px",
+                "line": "13.75px",
+                "color": "rgb(62, 73, 71)"
+              }
+            ]
+          }
+        ],
+        "refresh": {
+          "width": 344,
+          "height": 161.625,
+          "top": 987.5,
+          "padding": "14px",
+          "gap": "12px",
+          "font": "13px",
+          "line": "20px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "next": {
+          "width": 344,
+          "height": 304.5,
+          "top": 1157.125,
+          "padding": "14px",
+          "gap": "0px",
+          "font": "15px",
+          "line": "24px",
+          "color": "rgb(51, 65, 85)"
+        },
+        "rows": [
+          {
+            "width": 344,
+            "height": 129,
+            "top": 1565.625,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          },
+          {
+            "width": 344,
+            "height": 129,
+            "top": 1704.625,
+            "padding": "14px",
+            "gap": "8px",
+            "font": "15px",
+            "line": "24px",
+            "color": "rgb(51, 65, 85)"
+          }
+        ]
+      }
+    },
+    "apiRequests": 0,
+    "sourceComparison": "No final source at this viewport"
+  }
+]

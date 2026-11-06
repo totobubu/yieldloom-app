@@ -193,14 +193,20 @@
                                 ><StitchSymbol name="receipt_long"
                             /></span>
                             <div>
-                                <h3>
-                                    {{
-                                        receipt.kind === 'holdings'
-                                            ? '잔고내역'
-                                            : '거래내역'
-                                    }}
-                                    저장 영수증
-                                </h3>
+                                <div class="receipt-summary-heading">
+                                    <h3>
+                                        {{
+                                            receipt.kind === 'holdings'
+                                                ? '잔고내역'
+                                                : '거래내역'
+                                        }}
+                                        저장 영수증
+                                    </h3>
+                                    <Tag
+                                        class="receipt-summary-mobile-badge"
+                                        severity="secondary"
+                                        value="저장 영수증 유지" />
+                                </div>
                                 <p>
                                     총 {{ number(total) }}건 처리: 신규
                                     {{ number(receipt.inserted) }}건 · 중복 제외
@@ -208,6 +214,7 @@
                                 </p>
                             </div>
                             <Tag
+                                class="receipt-summary-wide-badge"
                                 severity="secondary"
                                 value="저장 영수증 유지" />
                         </div>
@@ -2213,6 +2220,81 @@
             margin-top: 10px;
             padding-top: 8px;
             border-top: 1px solid var(--app-border);
+        }
+    }
+    .receipt-summary-heading {
+        display: contents;
+    }
+    .receipt-summary-mobile-badge {
+        display: none;
+    }
+    /* f5a2132c: the Mobile badge shares the title row; metadata has its own rule. */
+    @media (max-width: 640px) {
+        .receipt-overview {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .receipt-summary {
+            flex-wrap: nowrap;
+        }
+        .receipt-summary > div {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .receipt-summary .receipt-summary-heading {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .receipt-summary h3 {
+            line-height: 18.75px;
+        }
+        .receipt-summary p {
+            line-height: 16px;
+            margin: 0;
+        }
+        .receipt-summary .receipt-summary-mobile-badge {
+            display: inline-flex;
+            padding: 0 6px;
+            font-size: 11px;
+            line-height: 16px;
+            font-weight: 600;
+            color: var(--app-accent);
+            background: var(--app-accent-light);
+        }
+        .receipt-summary-wide-badge {
+            display: none;
+        }
+        .result-explanation {
+            margin: 0;
+            font-size: 14px;
+            line-height: 21px;
+        }
+        .result-counts {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 8px;
+            padding-top: 12px;
+            margin: 0;
+            border-top: 1px solid var(--app-border);
+        }
+        .result-counts > div {
+            align-items: center;
+            padding: 0;
+            border-bottom: 0;
+        }
+        .result-counts dt,
+        .result-counts dd {
+            font-size: 13px;
+            line-height: 18px;
+        }
+        .result-counts dd {
+            font-family:
+                ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+                'Liberation Mono', 'Courier New', monospace;
         }
     }
 </style>

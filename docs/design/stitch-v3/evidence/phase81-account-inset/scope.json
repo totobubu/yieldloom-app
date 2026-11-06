@@ -1,0 +1,57 @@
+{
+  "screenId": "b611bd07ed0c464581479140b9207afb",
+  "projectId": "7356929996797649648",
+  "route": "/mypage?tab=assets",
+  "component": "src/pages/FamilyPortfolioView.vue parent CSS affecting AssetAccountList.vue root ul",
+  "base": "160951854be8c74c81306bd20305eec79f364651",
+  "newDeviceDesignCount": 0,
+  "cause": "Scoped parent .portfolio-tabs ul padding-left20 overrides child .accounts padding0 on the child root, reducing available grid width20. Exclude only .accounts from ordinary list rule.",
+  "rows": [
+    {
+      "viewport": 1280,
+      "sourceWidth": 394.65625,
+      "sourceHeight": 284,
+      "beforeWidth": 310.65625,
+      "beforeHeight": 300,
+      "afterWidth": 317.328125,
+      "afterHeight": 300,
+      "beforeColumns": 3,
+      "afterColumns": 3
+    },
+    {
+      "viewport": 1024,
+      "sourceWidth": 309.328125,
+      "sourceHeight": 300,
+      "beforeWidth": 708,
+      "beforeHeight": 284,
+      "afterWidth": 728,
+      "afterHeight": 284,
+      "beforeColumns": 1,
+      "afterColumns": 1
+    },
+    {
+      "viewport": 834,
+      "sourceWidth": 786,
+      "sourceHeight": 284,
+      "beforeWidth": 766,
+      "beforeHeight": 284,
+      "afterWidth": 786,
+      "afterHeight": 284,
+      "beforeColumns": 1,
+      "afterColumns": 1
+    },
+    {
+      "viewport": 390,
+      "sourceWidth": 358,
+      "sourceHeight": 284,
+      "beforeWidth": 338,
+      "beforeHeight": 284,
+      "afterWidth": 358,
+      "afterHeight": 284,
+      "beforeColumns": 1,
+      "afterColumns": 1
+    }
+  ],
+  "checks": "Actual integrated app1280/768/390 card leading/trailing-edge alignment; existing alias/owner/currency/viewer/source-disabled flows and no writes; same geometry guard failed before fix. Build/type and Node819 passed; lint0 errors54 existing warnings.",
+  "acceptance": "834/390px card widths and284px height match standalone source. PC1280/1024 whole layout/composition still differs. Raw measurement harness baseline mode only guarantees render; selected font/line/padding/radius/tool/snapshot fields were separately checked from JSON. Not full native PNG/font/real accounts/PDF acceptance."
+}

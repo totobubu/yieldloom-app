@@ -1,0 +1,9 @@
+{
+  "base": "160951854be8c74c81306bd20305eec79f364651",
+  "applicationSource": "870393a8f83d16c0343a10d42afa3d41fa16bd1f",
+  "finalSource": "612153e306c1b9409fe820fb3139c2dc34121b7e",
+  "path": "assets/FamilyPortfolioView-DhSImp9W.css",
+  "sha256": "4e832696639f19ac289b1ff00a0c4fde6f98d1a78119f6f10b4e3fbdf2189205",
+  "rule": ".portfolio-tabs ul[data-v-16d78579]:not(.accounts){padding-left:20px}",
+  "scope": "Local type-checked build. Verify exact publicly served CSS bytes after deployment; no claim of real authenticated rendering."
+}

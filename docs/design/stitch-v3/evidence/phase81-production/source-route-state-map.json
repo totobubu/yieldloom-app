@@ -1,0 +1,24 @@
+{
+  "projectId": "7356929996797649648",
+  "screenId": "b611bd07ed0c464581479140b9207afb",
+  "route": "/mypage?tab=assets",
+  "component": "src/pages/FamilyPortfolioView.vue ordinary-list CSS affecting AssetAccountList root",
+  "main": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+  "tree": "9abc0772b41272390895159c9dd1ee5959c95d92",
+  "sourceIntegrity": "evidence/phase81-account-inset/fresh-reference-integrity.json",
+  "geometryViewports": [
+    1280,
+    1024,
+    834,
+    390
+  ],
+  "syntheticIntegratedFlowViewports": [
+    1280,
+    768,
+    390
+  ],
+  "actualDelivery": "both releases/current entry/exact built CSS only; authenticated account rendering unverified",
+  "status": "operating list inset correction; PC composition/columns/colors/full native PNG/font/private accounts/PDF not accepted/verified",
+  "newDeviceDesignCount": 0,
+  "evidence": "PHASE81_PRODUCTION.md"
+}

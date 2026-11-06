@@ -1,0 +1,11 @@
+{
+  "base": "160951854be8c74c81306bd20305eec79f364651",
+  "work": "a1c5107f79c1b1850b7702910cef0eaae6a8df03",
+  "feature": "612153e306c1b9409fe820fb3139c2dc34121b7e",
+  "tree": "9abc0772b41272390895159c9dd1ee5959c95d92",
+  "candidateEqualsFeatureAndWorkTree": true,
+  "featureCi": "42223458245",
+  "featureCiAll4": "success",
+  "localBuildAndNode819": "passed on870393a application code;612153e only documentation/capture followup; final remote all4 success",
+  "financialAndApiAndDependencyDiff": []
+}

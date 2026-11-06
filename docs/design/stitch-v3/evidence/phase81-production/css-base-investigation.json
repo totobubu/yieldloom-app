@@ -1,0 +1,18 @@
+{
+  "initialVerifier": "Assumed identical CSS basename/hash for both deployment bases; failed at current Pages entry CSS reference before recording acceptance.",
+  "configuration": "vite.config.js21 selects /yieldloom-app/ when GITHUB_ACTIONS is set, otherwise /",
+  "actualDifference": "Three @font-face asset URLs have Pages base prefix,42 bytes difference; no scoped selector/declaration changes",
+  "independentBuilds": {
+    "vercel": {
+      "file": "assets/FamilyPortfolioView-DhSImp9W.css",
+      "sha256": "4e832696639f19ac289b1ff00a0c4fde6f98d1a78119f6f10b4e3fbdf2189205",
+      "actualBytesMatchLocal": true
+    },
+    "pages": {
+      "file": "assets/FamilyPortfolioView-D8uYLhRr.css",
+      "sha256": "d93ffb117b804799f5134f1f61555c024c1a6af8b9b7e226c3be9cdeab0acae8",
+      "actualBytesMatchLocal": true
+    }
+  },
+  "correction": "Verifier expects exact independently built file/hash per target, not normalized actual CSS. Root app source/config/deployment not changed. Initial failed checker preserved."
+}

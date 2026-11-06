@@ -1,0 +1,21 @@
+{
+  "vercel": {
+    "base": "/",
+    "applicationSource": "870393a8f83d16c0343a10d42afa3d41fa16bd1f",
+    "finalSource": "612153e306c1b9409fe820fb3139c2dc34121b7e",
+    "path": "assets/FamilyPortfolioView-DhSImp9W.css",
+    "sha256": "4e832696639f19ac289b1ff00a0c4fde6f98d1a78119f6f10b4e3fbdf2189205",
+    "rule": ".portfolio-tabs ul[data-v-16d78579]:not(.accounts){padding-left:20px}",
+    "scope": "Local type-checked build. Verify exact publicly served CSS bytes after deployment; no claim of real authenticated rendering."
+  },
+  "pages": {
+    "base": "/yieldloom-app/",
+    "applicationSource": "870393a8f83d16c0343a10d42afa3d41fa16bd1f",
+    "finalSource": "612153e306c1b9409fe820fb3139c2dc34121b7e",
+    "path": "assets/FamilyPortfolioView-D8uYLhRr.css",
+    "sha256": "d93ffb117b804799f5134f1f61555c024c1a6af8b9b7e226c3be9cdeab0acae8",
+    "rule": ".portfolio-tabs ul[data-v-16d78579]:not(.accounts){padding-left:20px}",
+    "scope": "Independent local Pages-base type-checked build; exact actual Pages CSS bytes matched.",
+    "buildCommand": "GITHUB_ACTIONS=true npm run build"
+  }
+}

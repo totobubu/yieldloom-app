@@ -1,0 +1,5 @@
+PASS dividend-navigation/1280: calendar/future unknown, both years, rolling retained, month focus, missing source disabled, no extra reads
+PASS dividend-navigation/768: calendar/future unknown, both years, rolling retained, month focus, missing source disabled, no extra reads
+PASS dividend-navigation/390: calendar/future unknown, both years, rolling retained, month focus, missing source disabled, no extra reads
+PASS dividend-navigation/inactive: initial position, outside focus unchanged, observer cleanup on tab/empty view
+PASS dividend-navigation/missing: unobserved current month and empty prior year stay unknown

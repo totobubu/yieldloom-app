@@ -1,0 +1,1 @@
+PASS: read-only isolated Mobile summary diagnosis; API0

@@ -2494,7 +2494,7 @@
   "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
   "latestImplementationBase": "016fcddda89e0f5285a65446e8859adde247c208",
   "rolloutSnapshot": {
-    "recordedAt": "2026-11-06T03:08:35.315407+00:00",
+    "recordedAt": "2026-11-06T03:18:08.480451+00:00",
     "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
     "productionMergeSha": "016fcddda89e0f5285a65446e8859adde247c208",
     "productionTargets": 15,
@@ -2506,7 +2506,7 @@
     "qualification": "15 production-connected /5 external handoff unverified; not whole-frame visual acceptance or real-account verification",
     "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
     "verificationScope": "both public release identities and three-public-metadata hash; public static receipt CSS/fonts bytes and hashes; live comparison titles/direct/reload/visible navigation/history/120 frames and search; five-width synthetic receipt and loopback broker/asset flows; no authenticated account/PDF E2E",
-    "mainPostMergeCi": "pending:42153915815;3/4 observed"
+    "mainPostMergeCi": "success:42153915815;4/4"
   },
   "latestReferenceIntegrity": {
     "checkedAt": "2026-11-05T17:19:37.559897+00:00",

@@ -1,0 +1,15 @@
+{
+  "sourcePath": "src/components/portfolio/AssetAccountList.vue",
+  "base": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+  "componentSha256": "3b8aa86b1c30582b6ff4ba2926543a17eded3d4c61d20d5f2fa8d9b5040c38d6",
+  "scriptSha256": "7c5986ec285ed9d695b73d32bda96491b0859cac01d31f3583ad857cc57f3c7e",
+  "templateSha256": "de7a9674078e3464b4f75b19b86add0b1224f3834dd55c3f6a532ffd7906508a",
+  "scriptAndTemplateIdenticalToMain": true,
+  "noStandaloneRootTokenRule": true,
+  "installed": {
+    "vue": "3.5.25",
+    "primevue": "4.5.3",
+    "vite": "7.2.7"
+  },
+  "buttonTokenSource": "node_modules/@primeuix/styles/dist/button/index.mjs"
+}

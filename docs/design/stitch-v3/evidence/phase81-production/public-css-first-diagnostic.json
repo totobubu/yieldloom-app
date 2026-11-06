@@ -1,0 +1,22 @@
+{
+  "rows": [
+    {
+      "base": "https://yieldloom-app.vercel.app/",
+      "status": 200,
+      "entry": "/assets/index-fyUMm2b0.js",
+      "entryStatus": 200,
+      "css": [
+        "FamilyPortfolioView-DhSImp9W.css"
+      ]
+    },
+    {
+      "base": "https://totobubu.github.io/yieldloom-app/",
+      "status": 200,
+      "entry": "/yieldloom-app/assets/index-C7bZ9B4R.js",
+      "entryStatus": 200,
+      "css": [
+        "FamilyPortfolioView-D8uYLhRr.css"
+      ]
+    }
+  ]
+}

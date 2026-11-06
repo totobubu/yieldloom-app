@@ -1,0 +1,17 @@
+{
+  "freshCanonicalPCSubmenuReference": "1170392357232825899",
+  "freshIntegrity": "fresh-reference-integrity.json",
+  "desktopViewports": [
+    1280,
+    1440,
+    1600
+  ],
+  "measuredBothOriginalAndApp": {
+    "expandedSlot": 984,
+    "collapsedSlot": 1008
+  },
+  "desktopHeaderGeometryAlsoMatches": true,
+  "otherCachedShellReferences": "Tablet/Mobile/closed historical HTML, not independently MCP-refetched in this phase",
+  "notAccepted": "Full shell-native font/PNG, content assembly and narrower-slot card wrapping; 1024 case not measured by this script",
+  "earlierLocalHarnessFailures": "Empty synthetic route before isolated generated cache; after isolation same code/fixtures measured successfully; no product permissions regression established"
+}

@@ -1,0 +1,133 @@
+// Presentational account-card contract only: synthetic props, no authentication or API access.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import { chromium } from '/workspace/yieldloom-redesign-phase82/node_modules/playwright/index.mjs';
+const base = process.env.UI_BASE_URL || 'http://127.0.0.1:5175';
+assert.ok(['127.0.0.1', 'localhost'].includes(new URL(base).hostname));
+const out = process.env.ACCOUNT_CARDS_TEST_DIR;
+if (out) await fs.mkdir(out, { recursive: true });
+const examples = [
+    {
+        id: 'owner',
+        role: 'owner',
+        authorityUid: 'synthetic',
+        type: 'general',
+        label: '일반',
+        rename: true,
+    },
+    {
+        id: 'editor',
+        role: 'editor',
+        authorityUid: 'synthetic',
+        type: 'isa',
+        label: 'ISA',
+        rename: true,
+    },
+    {
+        id: 'viewer',
+        role: 'viewer',
+        authorityUid: 'synthetic',
+        type: 'pension',
+        label: '연금',
+        rename: false,
+    },
+    {
+        id: 'foreign-authority',
+        role: 'owner',
+        authorityUid: 'other',
+        type: 'other',
+        label: '기타',
+        rename: false,
+    },
+    {
+        id: 'unknown-role',
+        role: 'not-a-role',
+        authorityUid: 'synthetic',
+        type: 'not-a-type',
+        label: '유형 미확인',
+        rename: false,
+    },
+    {
+        id: 'missing-role',
+        authorityUid: 'synthetic',
+        type: null,
+        label: '유형 미확인',
+        rename: false,
+    },
+    {
+        id: 'prototype-name',
+        role: 'viewer',
+        authorityUid: 'synthetic',
+        type: '__proto__',
+        label: '유형 미확인',
+        rename: false,
+    },
+    {
+        id: 'invalid-type',
+        role: 'viewer',
+        authorityUid: 'synthetic',
+        type: { toString: null },
+        label: '유형 미확인',
+        rename: false,
+    },
+];
+examples.push({
+    id: 'prototype-role',
+    role: '__proto__',
+    authorityUid: 'synthetic',
+    type: 'general',
+    label: '일반',
+    rename: false,
+});
+const accounts = examples.map((x) => ({
+    id: x.id,
+    ownerId: x.id,
+    institution: '합성 기관',
+    alias: x.id,
+    maskedNumber: '****0000',
+    authorityUid: x.authorityUid,
+    permissions: x.role ? { synthetic: x.role } : {},
+    type: x.type,
+    snapshot: {
+        source: '합성 검증 자료',
+        asOf: '2026-11-03',
+        rows: [{ symbol: 'DEMO', quantity: 0, amount: null, currency: 'USD' }],
+    },
+}));
+const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"></head><body><div id="app"></div><script type="module">
+import {createApp,h,ref} from '/node_modules/.vite/deps/vue.js';
+import PrimeVue from '/node_modules/.vite/deps/primevue_config.js';
+import AccountCards from '/src/components/portfolio/AssetAccountList.vue';
+import {MyPreset} from '/src/config/theme.js';
+import '/src/styles/style.scss';import '/src/styles/studio.scss';
+const accounts=${JSON.stringify(accounts)};
+const app=createApp({setup(){const selected=ref('owner'),busy=ref(false),events=ref([]);return()=>h('main',{style:'padding:20px'},[h('h1','합성 계좌 카드 검증'),h('button',{id:'busy',onClick:()=>busy.value=!busy.value},'처리 상태 전환'),h('button',{id:'theme',onClick:()=>document.documentElement.classList.toggle('p-dark')},'테마 전환'),h(AccountCards,{accounts,selected:selected.value,userId:'synthetic',busy:busy.value,ownerName:id=>'예시 '+id,onSelect:id=>{selected.value=id;events.value.push(['select',id])},onRename:id=>events.value.push(['rename',id])}),h('output',{id:'events'},JSON.stringify(events.value))])}});app.use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}}});app.mount('#app');
+</script></body></html>`;
+
+import {installStaticAssets} from '/workspace/yieldloom-redesign-phase82/scripts/design/browser-static-assets.mjs';
+
+const output=process.env.PALETTE_EVIDENCE_DIR;assert.ok(output);await fs.mkdir(output,{recursive:true});
+const original=await fs.readFile('docs/design/stitch-v2/originals/7356929996797649648/b611bd07ed0c464581479140b9207afb.html','utf8');
+const mainResponse=await fetch(base+'/src/main.js');assert.equal(mainResponse.status,200);const entry=await mainResponse.text();const moduleUrls=[...entry.matchAll(/from\s+["']([^"']+)["']/g)].map(x=>x[1]);const vueUrl=moduleUrls.find(x=>/\/vue\.js(?:\?|$)/.test(x));const primeVueUrl=moduleUrls.find(x=>/\/primevue_config\.js(?:\?|$)/.test(x));assert.ok(vueUrl&&primeVueUrl);const harness=html.replace('/node_modules/.vite/deps/vue.js',vueUrl).replace('/node_modules/.vite/deps/primevue_config.js',primeVueUrl);
+const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});const rows=[];
+const settle=async p=>{await p.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));await p.evaluate(()=>Promise.all(document.getAnimations().filter(a=>a.effect?.getTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{}))));};
+const measure=(el,source)=>{
+ const snapshot=source?el.querySelector('.p-3.flex.flex-col'):el.querySelector('.account-card-snapshot');
+ const role=source?el.querySelector('.font-label-sm.font-semibold'):el.querySelector('.account-role-label');
+ const selection=source?(el.querySelector('.inline-flex')||el.querySelector('button[onclick]')):el.querySelector('.account-card-selection');
+ const owner=source?el.querySelector('.font-title-md.text-title-md'):el.querySelector('.account-card-identity strong');
+ const selectors={card:el,owner,institution:source?owner.nextElementSibling:el.querySelector('.account-card-identity>span'),role,type:role.nextElementSibling,selection,snapshot,label:source?snapshot.firstElementChild.firstElementChild:snapshot.querySelector('dt'),value:source?snapshot.firstElementChild.lastElementChild:snapshot.querySelector('dd'),alias:source?el.querySelector('.pt-2').firstElementChild:el.querySelector('.account-card-primary-tools').firstElementChild};
+ const st=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return {color:s.color,background:s.backgroundColor,border:s.borderColor,opacity:s.opacity,font:s.fontSize,line:s.lineHeight,padding:s.padding,width:r.width,height:r.height};};
+ return Object.fromEntries(Object.entries(selectors).map(([key,node])=>[key,st(node)]));
+};
+try{for(const width of [1280,834,390]){
+ const source=await browser.newPage({viewport:{width,height:1100},deviceScaleFactor:2});const sourceErrors=[];source.on('pageerror',e=>sourceErrors.push(e.message));const sourceAssets=await installStaticAssets(source);await source.setContent(original,{waitUntil:'networkidle'});await source.evaluate(()=>document.fonts.ready);const refs=[];
+ for(let n=1;n<=3;n++){const card=source.locator('#acc-card-'+n);await source.mouse.move(0,0);await settle(source);refs.push(await card.evaluate(measure,true));if(n===1){await card.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));await card.screenshot({path:output+'/source-'+width+'.png',animations:'disabled'});const btn=card.locator('.pt-2 > button').first();await btn.hover();await settle(source);refs[0].aliasHover=await btn.evaluate(el=>{const s=getComputedStyle(el);return{color:s.color,background:s.backgroundColor}});}
+ const badge=n===1?card.locator('.inline-flex'):card.locator('button[onclick]').first();await badge.hover();await settle(source);refs[n-1].selectionHover=await badge.evaluate(el=>{const s=getComputedStyle(el);return{color:s.color,background:s.backgroundColor,headerBackground:getComputedStyle(el.closest('[id^=acc-card-]').firstElementChild.firstElementChild).backgroundColor}});}
+ assert.deepEqual(sourceErrors,[]);assert.deepEqual(sourceAssets,[]);await source.close();
+ const p=await browser.newPage({viewport:{width,height:1100},deviceScaleFactor:2});const errors=[],apis=[];p.on('pageerror',e=>errors.push(e.message));p.on('request',r=>{if(new URL(r.url()).pathname.startsWith('/api/'))apis.push(r.method())});const assets=await installStaticAssets(p);await p.route('**/tests/phase79-account-cards.html',r=>r.fulfill({contentType:'text/html',body:harness}));await p.goto(base+'/tests/phase79-account-cards.html');await p.locator('.accounts li').last().waitFor();await p.evaluate(()=>document.fonts.ready);
+ await p.evaluate(()=>{const el=document.createElement('button');el.id='outside-secondary';el.className='p-button p-component p-button-secondary';el.textContent='합성 범위 대조';el.style.cssText='position:absolute;left:-9999px;top:0';document.body.append(el)});const outside={};
+ const app={};for(const theme of ['light','dark']){if(theme==='dark')await p.locator('#theme').click();await p.mouse.move(0,0);await settle(p);outside[theme]=await p.locator('#outside-secondary').evaluate(el=>{const s=getComputedStyle(el);return{color:s.color,background:s.backgroundColor,border:s.borderColor}});const cards=[];for(let n=0;n<accounts.length;n++)cards.push(await p.locator('.accounts li').nth(n).evaluate(measure,false));const card=p.locator('.accounts li').first();await card.evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));await card.screenshot({path:output+'/app-'+width+'-'+theme+'.png',animations:'disabled'});const alias=card.getByRole('button',{name:'별칭 수정',exact:true});await alias.hover();await settle(p);cards[0].aliasHover=await alias.evaluate(el=>{const s=getComputedStyle(el);return{color:s.color,background:s.backgroundColor}});for(let i=0;i<3;i++){const header=p.locator('.accounts li').nth(i).locator('.account-card-select');await header.hover();await settle(p);cards[i].selectionHover=await header.locator('.account-card-selection').evaluate(el=>{const s=getComputedStyle(el);return{color:s.color,background:s.backgroundColor,headerBackground:getComputedStyle(el.parentElement).backgroundColor}});}app[theme]=cards;}
+ assert.deepEqual(errors,[]);assert.deepEqual(assets,[]);assert.deepEqual(apis,[]);rows.push({width,reference:refs,app,outside,errors,assets,apis});await p.close();
+}}finally{await browser.close()}
+await fs.writeFile(output+'/palette.json',JSON.stringify({scope:'Computed source light styles and synthetic component props at3 widths. Dark is preservation-only: native dark reference not available. No real account/API/writes; no native whole-frame acceptance.',rows},null,2)+'\n');console.log('Measured source/light/dark3widths with nine synthetic role/type cases each; API0.');

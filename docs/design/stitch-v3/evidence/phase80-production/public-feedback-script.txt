@@ -1,0 +1,41 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {createRequire} from 'node:module';
+const {chromium}=createRequire('/workspace/yieldloom-redesign-phase80/package.json')('playwright');
+const sha=process.env.PUBLIC_RELEASE_SHA,site=process.env.PUBLIC_VERIFY_SITE;
+assert.match(sha,/^[a-f0-9]{40}$/);assert.ok(['vercel','pages'].includes(site));
+const base=site==='pages'?'https://totobubu.github.io/yieldloom-app/':'https://yieldloom-app.vercel.app/';
+const hosts=new Set(['yieldloom-app.vercel.app','totobubu.github.io','fonts.googleapis.com','fonts.gstatic.com','www.gstatic.com','unpkg.com']);
+if(process.env.VITE_R2_PUBLIC_URL){const u=new URL(process.env.VITE_R2_PUBLIC_URL);assert.equal(u.protocol,'https:');hosts.add(u.hostname);}
+const r=await fetch(new URL('app-release.json?feedback='+Date.now(),base));assert.equal(r.status,200);const release=await r.json();assert.equal(release.commit,sha);
+const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+const context=await browser.newContext({viewport:{width:1280,height:1100},deviceScaleFactor:2});const page=await context.newPage();page.setDefaultTimeout(20000);
+const errors=[],failedHosts=new Set(),writesBlocked=[],reads=[],states=[];let mockPosts=0,arrived;
+page.on('pageerror',e=>errors.push(e.message));
+await context.route('**/*',async route=>{
+ const req=route.request(),url=new URL(req.url());
+ if(url.pathname==='/api/stock-feedback'&&req.method()==='POST'){
+  assert.ok(hosts.has(url.hostname));mockPosts++;const record={route,body:req.postDataJSON()};assert.ok(arrived,'only deliberate intercepted submissions expected');const resolve=arrived;arrived=undefined;resolve(record);return;
+ }
+ if(!['GET','HEAD','OPTIONS'].includes(req.method())){writesBlocked.push({method:req.method(),host:url.hostname,path:url.pathname});return route.abort()}
+ if(!hosts.has(url.hostname)||/\/api\/(family-portfolio|portfolio-capital|sheet-ledger|monthly-statements|admin|toss)/.test(url.pathname))return route.abort();
+ try{const response=await fetch(url,{method:req.method(),headers:Object.fromEntries(Object.entries(req.headers()).filter(([k])=>['origin','referer','cache-control','pragma','accept'].includes(k))),signal:AbortSignal.timeout(45000)});assert.ok(hosts.has(new URL(response.url).hostname));if(url.pathname.startsWith('/api/')||url.pathname.includes('/security-insights/'))reads.push({path:url.pathname,status:response.status});const body=Buffer.from(await response.arrayBuffer());const headers=Object.fromEntries([...response.headers].filter(([k])=>!['content-encoding','content-length','transfer-encoding','set-cookie'].includes(k)));await route.fulfill({status:response.status,headers,body})}catch{failedHosts.add(url.hostname);await route.abort()}
+});
+const next=()=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>{arrived=undefined;reject(Error('intercepted feedback request not emitted'))},20000);arrived=value=>{clearTimeout(timer);resolve(value)}});
+try{
+ const response=await page.goto(base+'stock/QQQI/?tab=details&release='+sha,{waitUntil:'networkidle',timeout:60000});assert.equal(response.status(),200);const form=page.locator('#stock-feedback');await form.waitFor();await page.locator('.fullscreen-data-loading-mask').waitFor({state:'hidden'});await page.evaluate(()=>document.fonts.ready);
+ const initialReads=reads.length;const message=form.locator('#feedback-message'),category=form.getByRole('combobox'),button=form.getByRole('button',{name:'요청 전송하기',exact:true});
+ for(const width of[1280,768,390]){
+  await page.setViewportSize({width,height:1100});await category.click();await page.getByRole('option',{name:'질문',exact:true}).click();
+  for(const field of['message','category']){
+   const text='합성 운영 UI 검증: 실제 접수하지 않는 이전 의견입니다.';await message.fill(text);let arrival=next();await button.click();const original=await arrival;assert.equal(original.body.symbol,'QQQI');assert.equal(await message.isDisabled(),true);const stored=new Map([[original.body.requestId,original.body]]);
+   await original.route.fulfill({status:503,json:{error:'합성 응답 유실: 전송 전에 차단된 검증입니다.'}});await form.getByRole('alert').waitFor();
+   await message.fill(text+' 임시 변경');await message.fill(text);arrival=next();await button.click();const same=await arrival;assert.equal(same.body.requestId,original.body.requestId);await same.route.fulfill({status:503,json:{error:'합성 응답 유실: 전송 전에 차단된 검증입니다.'}});await form.getByRole('alert').waitFor();
+   if(field==='message')await message.fill('합성 운영 UI 검증: 본문을 바꾼 새 의견이며 실제 접수하지 않습니다.');else{await category.click();await page.getByRole('option',{name:'정보 오류',exact:true}).click()}
+   arrival=next();await button.click();const changed=await arrival;const duplicate=stored.has(changed.body.requestId);if(!duplicate)stored.set(changed.body.requestId,changed.body);await changed.route.fulfill({status:202,json:{status:'received',duplicate}});await form.getByText('의견을 접수했습니다. 검토에 참고하겠습니다.',{exact:true}).waitFor();assert.notEqual(changed.body.requestId,original.body.requestId);assert.equal(stored.get(changed.body.requestId)[field],changed.body[field]);assert.equal(stored.size,2);assert.equal(await message.inputValue(),'');
+  }
+  assert.equal(reads.length,initialReads);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await form.screenshot({path:`/tmp/phase80/public-${site}-${width}.png`,animations:'disabled'});states.push({width,samePayloadAndRevertedInputReusesId:true,changedMessageAndCategoryStoredWithNewId:true,pendingLocked:true,extraReads:0,realFeedbackOrOtherWrites:0});
+ }
+ await page.getByRole('button',{name:'다크 모드',exact:true}).click();await form.screenshot({path:`/tmp/phase80/public-${site}-390-dark.png`,animations:'disabled'});assert.deepEqual(errors,[]);assert.equal(failedHosts.size,0);assert.equal(mockPosts,18);assert.deepEqual(writesBlocked.filter(x=>x.path!=='/api/analytics'),[]);
+ const result={site,commit:release.commit,metadataSha256:release.metadataSha256,status:200,states,mockPosts,forwardedWrites:0,initialReads,extraReads:reads.length-initialReads,reads,writesBlocked,errors,failedHosts:[...failedHosts],scope:'Actual deployed anonymous QQQI frontend with feedback POSTs fully intercepted before transport and synthetic acknowledgements. Actual public GET data untouched, inherited Node CA/proxy. No real feedback receipt, customer account/PDF or DB write verification; no full native PNG acceptance.'};await fs.writeFile(`/tmp/phase80/public-results-${site}.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
+}catch(error){await fs.writeFile(`/tmp/phase80/public-failure-${site}.json`,JSON.stringify({site,commit:release.commit,mockPosts,forwardedWrites:0,reads,writesBlocked,errors,failedHosts:[...failedHosts],failure:{name:error.name,message:error.message},scope:'Actual anonymous frontend, synthetic feedback acknowledgements intercepted before transport; no real feedback/customer data/DB writes.'},null,2)+'\n');await page.locator('#stock-feedback').screenshot({path:`/tmp/phase80/public-failure-${site}.png`,animations:'disabled'}).catch(()=>{});throw error}finally{await context.close();await browser.close()}

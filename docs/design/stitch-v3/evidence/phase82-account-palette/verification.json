@@ -1,0 +1,29 @@
+{
+  "scope": "Selected computed light RGB/background/hover properties. No native whole PNG/font or dark-reference acceptance.",
+  "widths": [
+    {
+      "viewport": 1280,
+      "sourceColorAndHoverPropertiesMatched": 71,
+      "darkNineRoleComputedFieldsIdentical": true,
+      "darkOwnerRgbIdentical": true,
+      "nineRoleTypeGeometryIdentical": true,
+      "outsideSecondaryButtonLightDarkIdentical": true
+    },
+    {
+      "viewport": 834,
+      "sourceColorAndHoverPropertiesMatched": 71,
+      "darkNineRoleComputedFieldsIdentical": true,
+      "darkOwnerRgbIdentical": true,
+      "nineRoleTypeGeometryIdentical": true,
+      "outsideSecondaryButtonLightDarkIdentical": true
+    },
+    {
+      "viewport": 390,
+      "sourceColorAndHoverPropertiesMatched": 71,
+      "darkNineRoleComputedFieldsIdentical": true,
+      "darkOwnerRgbIdentical": true,
+      "nineRoleTypeGeometryIdentical": true,
+      "outsideSecondaryButtonLightDarkIdentical": true
+    }
+  ]
+}

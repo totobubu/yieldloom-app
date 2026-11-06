@@ -1,0 +1,24 @@
+{
+  "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
+  "projectId": "7356929996797649648",
+  "route": "/stock/:ticker?tab=details",
+  "component": "src/components/stock/StockFeedbackForm.vue",
+  "states": [
+    "pending",
+    "lost acknowledgement",
+    "same/reverted payload retry",
+    "changed message retry",
+    "changed category retry",
+    "success",
+    "dark"
+  ],
+  "viewports": [
+    1280,
+    768,
+    390
+  ],
+  "main": "160951854be8c74c81306bd20305eec79f364651",
+  "sourceTree": "42097a68b4bcf8cdd25a505dbb75f19e39ae59cb",
+  "newDeviceDesignCount": 0,
+  "scope": "Actual frontend served at two public sites; all feedback POST intercepted before transport. No real receipt, private account/PDF or full native PNG/font acceptance."
+}

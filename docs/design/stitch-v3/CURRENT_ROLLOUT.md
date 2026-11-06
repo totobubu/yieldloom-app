@@ -1,5 +1,9 @@
 # Stitch 시안 운영 현황
 
+최신 phase81 운영 제공은 `dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b`이다. 부모 목록 스타일로 자산 카드가20px 밀리던 차이를 제거했다. 기능/work/승격/main CI와 두 실제 release·현재 entry/CSS 해시를 확인했다. 실제 계좌 화면은 미검증이다. [최종 운영 근거와 남은 차이](PHASE81_PRODUCTION.md). 아래 phase80/79는 해당 시점의 기록이며 최종20개 중15개 운영 연결/5개 외부·승인 상태와 전체 native PNG/글꼴·실계좌/PDF 미검증은 유지한다.
+
+phase80 당시 운영 제공은 `160951854be8c74c81306bd20305eec79f364651`이다. 익명 의견의 응답 유실 후 수정 재시도에서 본문이 누락되던 경로를 수정했다. 기능/work/승격/main CI 및 두 실제 release·차단된 합성 재전송의 증거와 한계는 [phase80 운영 기록](PHASE80_PRODUCTION.md)을 따른다. 아래 phase79는 당시 스냅샷이며 최종20개 중15개 운영 연결/5개 외부 인계·승인 상태와 전체 원본·실계좌/PDF 미검증은 그대로다.
+
 2026-11-06 phase79에서 확인한 UI 병합과 두 사이트 실제 제공은67a7b2214c2678dea90b46a70e5e8c3303fd0966이다. 기능/work/승격/최종 main CI4/4, Pages 및 Vercel READY, 실제 익명 QQQI4폭×2사이트를 확인했다. 자산관리 카드와 활성 배당 월의 반응형 포커스를 보정했으며 전체 원본/실계좌 검증 완료와 구분한다. [최종 운영 근거](PHASE79_PRODUCTION.md).
 
 최종20개 고유 기기ID/9개 화면군 중15개 운영 연결·5개 별도 인계/승인 상태는 그대로다. 기존14종과 중복되며 이전4개 개선과 이번 월별 배당 차트를 신규페이지나 전체 시각 완료율로 세지 않는다.
@@ -32,3 +36,6 @@ Pages188c581 배포는syncing_files에서 시간 초과·취소됐으나 최신5
 
 
 후속 phase80: [익명 의견 수정 재시도의 본문 유실 방지](PHASE80_FEEDBACK_RETRY.md)는 구현 시점의 합성/로컬 검증 기록이다. 실제 제공 버전은 [Vercel release](https://yieldloom-app.vercel.app/app-release.json)·[Pages release](https://totobubu.github.io/yieldloom-app/app-release.json)와 해당 변경 PR의 최종 운영 검증을 따른다. 위 phase79 스냅샷을 후속 변경의 배포 완료 증명으로 사용하지 않는다.
+
+
+phase82 로컬 구현: [자산 카드 라이트 색상/hover 대조](PHASE82_ACCOUNT_PALETTE.md). 선택된213개 속성·다크/치수/외부 컨트롤 보존과 기존 기능 검증을 확인했다. 원격CI·Preview·운영은 후속 검증 대상이며 위 phase81 운영 스냅샷을 이번 배포 완료로 사용하지 않는다.

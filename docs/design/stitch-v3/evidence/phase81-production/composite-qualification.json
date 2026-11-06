@@ -1,0 +1,69 @@
+{
+  "purpose": "Exploratory constrained original content at actual main984/728px; not a separately approved combined native PNG or acceptance. Original media viewport retained; original HTML file unchanged.",
+  "constraints": {
+    "1280": {
+      "mainWidth": 984,
+      "x": 272
+    },
+    "1024": {
+      "mainWidth": 728,
+      "x": 272
+    }
+  },
+  "corrects": "Earlier708px was card width after20px list inset, not main width. Phase80 raw assumed708 render is rejected as actual-slot evidence.",
+  "rows": [
+    {
+      "viewport": 1280,
+      "source": {
+        "cardWidth": 296,
+        "cardHeight": 324,
+        "columns": 3
+      },
+      "app": {
+        "cardWidth": 317.328125,
+        "cardHeight": 300,
+        "columns": 3
+      }
+    },
+    {
+      "viewport": 1024,
+      "source": {
+        "cardWidth": 210.65625,
+        "cardHeight": 374,
+        "columns": 3
+      },
+      "app": {
+        "cardWidth": 728,
+        "cardHeight": 284,
+        "columns": 1
+      }
+    },
+    {
+      "viewport": 834,
+      "source": {
+        "cardWidth": 786,
+        "cardHeight": 284,
+        "columns": 1
+      },
+      "app": {
+        "cardWidth": 786,
+        "cardHeight": 284,
+        "columns": 1
+      }
+    },
+    {
+      "viewport": 390,
+      "source": {
+        "cardWidth": 358,
+        "cardHeight": 284,
+        "columns": 1
+      },
+      "app": {
+        "cardWidth": 358,
+        "cardHeight": 284,
+        "columns": 1
+      }
+    }
+  ],
+  "harnessQualification": "Baseline mode only checks rendering/asset errors, not equality. Static historical knownUnaccepted strings inherited from standalone helper are not new constrained measurements; use rows. Fixed synthetic app metadata and original example text differ; no real account access or writes."
+}

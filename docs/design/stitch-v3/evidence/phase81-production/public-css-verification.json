@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-11-06T13:55:20.714Z",
+  "scope": "Actual public release/index/entry and static CSS delivery only. No authenticated account rendering, private API, customer PDF or DB-write verification. No finance data substitution.",
+  "rows": [
+    {
+      "base": "https://yieldloom-app.vercel.app/",
+      "commit": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+      "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
+      "cssPath": "assets/FamilyPortfolioView-DhSImp9W.css",
+      "sha256": "4e832696639f19ac289b1ff00a0c4fde6f98d1a78119f6f10b4e3fbdf2189205",
+      "entryReferencesExpectedCss": true,
+      "expectedRule": ".portfolio-tabs ul[data-v-16d78579]:not(.accounts){padding-left:20px}",
+      "responses": [
+        {
+          "path": "/app-release.json",
+          "status": 200
+        },
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/assets/index-fyUMm2b0.js",
+          "status": 200
+        },
+        {
+          "path": "/assets/FamilyPortfolioView-DhSImp9W.css",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "base": "https://totobubu.github.io/yieldloom-app/",
+      "commit": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+      "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
+      "cssPath": "assets/FamilyPortfolioView-D8uYLhRr.css",
+      "sha256": "d93ffb117b804799f5134f1f61555c024c1a6af8b9b7e226c3be9cdeab0acae8",
+      "entryReferencesExpectedCss": true,
+      "expectedRule": ".portfolio-tabs ul[data-v-16d78579]:not(.accounts){padding-left:20px}",
+      "responses": [
+        {
+          "path": "/yieldloom-app/app-release.json",
+          "status": 200
+        },
+        {
+          "path": "/yieldloom-app/",
+          "status": 200
+        },
+        {
+          "path": "/yieldloom-app/assets/index-C7bZ9B4R.js",
+          "status": 200
+        },
+        {
+          "path": "/yieldloom-app/assets/FamilyPortfolioView-D8uYLhRr.css",
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

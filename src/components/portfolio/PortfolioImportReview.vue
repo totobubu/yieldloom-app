@@ -912,7 +912,7 @@
                         <div class="review-example-desktop-code">
                             <span>결측 예시 참고 데이터:</span
                             ><code
-                                >20260307, 신규미식별종목, 매수, 10, , 100000 →
+                                >20260307, 신규미식별종목, 매수, 10, , 100000 -&gt;
                                 점검 지침: 통화 누락 시 수정 후 저장</code
                             >
                         </div>
@@ -2950,7 +2950,7 @@
         font-weight: 600;
     }
     .review-example-desktop-code code {
-        flex: 1;
+        flex: 0 1 auto;
         min-width: 0;
         padding: 0;
         margin: 0;

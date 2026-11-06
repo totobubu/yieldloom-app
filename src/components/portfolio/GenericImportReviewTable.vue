@@ -321,6 +321,9 @@
         font-size: 12px;
         line-height: 16px;
     }
+    .generic-review-table :deep(.p-datatable-paginator-bottom) {
+        border: 0;
+    }
     .generic-review-table :deep(.p-paginator-current) {
         line-height: 16px;
     }

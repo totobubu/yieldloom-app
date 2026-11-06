@@ -282,7 +282,7 @@
     }
     .account-card-primary-tools > .p-button:first-child {
         flex: 1 1 0;
-        min-width: 0;
+        min-width: max-content;
     }
     .account-card-primary-tools > .p-button:last-child {
         flex: 0 1 auto;
@@ -397,7 +397,7 @@
         > .p-button:first-child:disabled {
         --p-button-secondary-color: #6e7977;
     }
-    @media (max-width: 1024px) {
+    @media (max-width: 1023px) {
         .accounts {
             grid-template-columns: 1fr;
         }

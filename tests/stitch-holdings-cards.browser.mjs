@@ -22,7 +22,7 @@ async function capture(page, name, width) {
     captured.push({ name, width, dpr: 2 });
 }
 try {
-    for (const width of [1280, 768, 390]) {
+    for (const width of [1280, 768, 390, 320]) {
         const page = await browser.newPage({
             viewport: { width, height: 1024 },
             ...(process.env.STITCH_HOLDINGS_STATE_DIR
@@ -131,6 +131,53 @@ try {
             assert.match(await mobile.innerText(), /₩190,000/);
             assert.match(await mobile.innerText(), /\$980\.00/);
             assert.match(await mobile.innerText(), /\$450\.00/);
+            const storedStatus = page
+                .locator('.holding-card')
+                .filter({ hasText: 'DEMO-K' })
+                .locator('.holding-status');
+            const estimatedStatus = page
+                .locator('.holding-card')
+                .filter({ hasText: 'DEMO-M' })
+                .locator('.holding-status');
+            assert.match(await estimatedStatus.innerText(), /추정 잔고/);
+            assert.notEqual(
+                await estimatedStatus.evaluate(
+                    (element) => getComputedStyle(element).color
+                ),
+                await storedStatus.evaluate(
+                    (element) => getComputedStyle(element).color
+                ),
+                'Estimated holdings must retain a visual distinction from stored balances'
+            );
+            if (width === 320) {
+                const actions = await page
+                    .locator('.holding-card footer')
+                    .evaluateAll((footers) =>
+                        footers.map((footer) => {
+                            const elements = [...footer.children];
+                            return {
+                                tops: elements.map(
+                                    (element) =>
+                                        element.getBoundingClientRect().top
+                                ),
+                                clipped: elements.some(
+                                    (element) =>
+                                        element.scrollHeight >
+                                            element.clientHeight + 1 ||
+                                        element.scrollWidth >
+                                            element.clientWidth + 1
+                                ),
+                            };
+                        })
+                    );
+                for (const action of actions) {
+                    assert.ok(
+                        Math.abs(action.tops[0] - action.tops[1]) <= 1,
+                        'Narrow holdings actions must retain the reference row'
+                    );
+                    assert.equal(action.clipped, false);
+                }
+            }
             const baseline = api.length;
             await page
                 .getByRole('textbox', { name: '종목 검색', exact: true })

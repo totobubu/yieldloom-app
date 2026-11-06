@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-05T04:15:40.197719+00:00",
+  "checkedAt": "2026-11-06",
   "source": "actual Stitch MCP list_screens/download_file",
   "projectId": "17382728461495959991",
   "logicalDeviceTargets": 20,
   "families": 9,
   "testFramesExcluded": 1,
   "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-  "currentCodeBase": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+  "currentCodeBase": "5c9d1b3270818ba37a0fb86c5784cac0885ca87f",
   "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
   "frames": [
     {
@@ -2554,5 +2554,40 @@
     "productionCommit": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
     "featureHead": "3267bb12f7018350dd1604d848fd0daf46ca47df",
     "sourceBranchHistorical": true
+  },
+  "verifiedUiCommit": "543300ee2da105faf7a1a3c100b70704a6b63f65",
+  "verifiedUiQualityRun": 42179152419,
+  "operatingSnapshot": {
+    "checkedAt": "2026-11-06T07:38:25.551Z",
+    "verifiedUiCommit": "543300ee2da105faf7a1a3c100b70704a6b63f65",
+    "servedCommit": "5c9d1b3270818ba37a0fb86c5784cac0885ca87f",
+    "sites": [
+      {
+        "base": "https://yieldloom-app.vercel.app/",
+        "status": 200,
+        "schemaVersion": 1,
+        "commit": "5c9d1b3270818ba37a0fb86c5784cac0885ca87f",
+        "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+      },
+      {
+        "base": "https://totobubu.github.io/yieldloom-app/",
+        "status": 200,
+        "schemaVersion": 1,
+        "commit": "5c9d1b3270818ba37a0fb86c5784cac0885ca87f",
+        "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+      }
+    ]
+  },
+  "phase77Evidence": {
+    "report": "PHASE77_FINAL_PRODUCTION.md",
+    "sourceRouteStateMap": "evidence/phase77/source-route-state-map.json",
+    "scope": "4 independent improvements within existing screens; not4 new pages or full native PNG acceptance",
+    "pagesRecovery": {
+      "failedRun": 42175923103,
+      "uiRecoveredRun": 42179152357,
+      "latestDataSyncRun": 42181596027
+    },
+    "actualAccountAndCustomerPdf": "not tested",
+    "simulatorPublicPr": "prior approval block preserved; not created"
   }
 }

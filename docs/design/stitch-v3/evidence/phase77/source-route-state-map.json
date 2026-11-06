@@ -1,0 +1,90 @@
+{
+  "uiMerge": "543300ee2da105faf7a1a3c100b70704a6b63f65",
+  "servedCommit": "5c9d1b3270818ba37a0fb86c5784cac0885ca87f",
+  "groups": [
+    {
+      "group": "stock-price-records",
+      "sourceIds": [
+        "87cd200796914464b7613003247de771"
+      ],
+      "project": "7356929996797649648",
+      "path": "/stock/:ticker?tab=prices",
+      "components": [
+        "src/components/stock/StockPriceHistory.vue",
+        "src/pages/TickerThumbnailView.vue"
+      ],
+      "widths": [
+        1280,
+        1024,
+        834,
+        768,
+        390
+      ],
+      "synthetic": "passed",
+      "actualPublic": "both sites passed",
+      "actualPrivate": "not applicable",
+      "fullNativePng": "not accepted"
+    },
+    {
+      "group": "feedback-pending",
+      "sourceIds": [
+        "d33c8e06e86f4404a4b5388c7aa33e13"
+      ],
+      "project": "7356929996797649648",
+      "path": "/stock/:ticker?tab=details#stock-feedback",
+      "components": [
+        "src/components/stock/StockFeedbackForm.vue"
+      ],
+      "widths": [
+        1280,
+        768,
+        390
+      ],
+      "synthetic": "passed",
+      "actualPublic": "deployed frontend pending/abort/error passed on both sites; no actual server receipt",
+      "fullNativePng": "not accepted; pending source frame unavailable"
+    },
+    {
+      "group": "mapping-confirmation",
+      "sourceIds": {
+        "PC": "9ae2f0f1253a41b1839e792d36996900",
+        "Tablet": "0bb2ab1d8197472f910b73ed175c4448",
+        "Mobile": "e0fb1368a1684edaa56c1a506e806530"
+      },
+      "project": "17382728461495959991",
+      "path": "/mypage?tab=assets -> broker file mapping",
+      "components": [
+        "src/components/portfolio/BrokerSpreadsheetForm.vue"
+      ],
+      "widths": [
+        1280,
+        834,
+        768,
+        390
+      ],
+      "synthetic": "3-width input/payload and 4-width strict reference capture, memory XLSX/CSV flows passed",
+      "actualAuthenticated": "not tested",
+      "fullNativePng": "not accepted"
+    },
+    {
+      "group": "summary-subset",
+      "sourceIds": [
+        "008f9456b8c643d0b9f41957447b9afc"
+      ],
+      "project": "7356929996797649648",
+      "path": "/mypage?tab=overview&view=summary",
+      "components": [
+        "src/pages/FamilyPortfolioView.vue",
+        "src/components/portfolio/PortfolioValuation.vue"
+      ],
+      "widths": [
+        1280,
+        768,
+        390
+      ],
+      "synthetic": "all/single/2of3/none/reset/removal/viewer/missing/keyboard/paging passed; extra selection reads0",
+      "actualAuthenticated": "not tested",
+      "fullNativePng": "not accepted; trigger width difference -3.984375px"
+    }
+  ]
+}

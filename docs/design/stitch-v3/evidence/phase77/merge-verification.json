@@ -1,0 +1,27 @@
+{
+  "uiMerge": "543300ee2da105faf7a1a3c100b70704a6b63f65",
+  "candidate": "778d8b9387e35bc83b58c90fc9aee2ed51a3c21c",
+  "validatedWholeTree": "10d1ebd5cdea855b30f32ce7b9be8e458d4bfa4a",
+  "actualMergeMatchesBuiltCandidate": true,
+  "uiTestsApiEqualCiSource": true,
+  "ciSource": "2aa9edf351b2bf0c83d295524351bb8a642b1808",
+  "servedCommit": "5c9d1b3270818ba37a0fb86c5784cac0885ca87f",
+  "servedUiApiTestsEqualUiMerge": true,
+  "servedOnlyDataChanges": [
+    "public/content-studio/dashboard.json",
+    "public/content-studio/reconciliation.json",
+    "public/content-studio/sources.json",
+    "public/content-studio/system-logs.json"
+  ],
+  "preflightIncident": {
+    "oldGithubTestMerge": "3d422d8eff9bc1bd07b683bc6c4748c5a197559a",
+    "oldGithubTestTree": "7e088f19cc98d5db7c19e89e022977b329012ce0",
+    "differentExistingContentStudioJsonFiles": 27,
+    "failedComparisonDidNotStopShell": true,
+    "acknowledged": true,
+    "correctedFailFast": "set -e on subsequent operational commands",
+    "postMergeWholeTreeValidationPassed": true,
+    "exactMainCiRun": 42179152419,
+    "exactMainCiConclusion": "success"
+  }
+}

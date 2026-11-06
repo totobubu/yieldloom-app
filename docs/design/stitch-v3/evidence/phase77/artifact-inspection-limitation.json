@@ -1,0 +1,20 @@
+{
+  "operation": "read Actions github-pages artifact archive",
+  "targets": [
+    {
+      "run": 42175923103,
+      "artifact": 13482584227,
+      "compressedBytes": 9461502
+    },
+    {
+      "run": 42165281707,
+      "artifact": 13478369232,
+      "compressedBytes": 9459688
+    }
+  ],
+  "metadataRead": "success",
+  "archiveDownloads": "HTTP403 denied",
+  "internalTarComparison": "not performed",
+  "rawSignedUrls": "not retained in repository evidence",
+  "alternativeCredentialsOrRawUrlReplay": false
+}

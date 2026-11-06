@@ -24,6 +24,7 @@ declare module 'vue' {
     AssetCurrencySummary: typeof import('./src/components/portfolio/AssetCurrencySummary.vue')['default']
     AssetMemberDialog: typeof import('./src/components/portfolio/AssetMemberDialog.vue')['default']
     AssetMemberSelector: typeof import('./src/components/portfolio/AssetMemberSelector.vue')['default']
+    AssetSystemStatusPlaceholder: typeof import('./src/components/portfolio/AssetSystemStatusPlaceholder.vue')['default']
     AssetUploadDialog: typeof import('./src/components/portfolio/AssetUploadDialog.vue')['default']
     BrokerSpreadsheetForm: typeof import('./src/components/portfolio/BrokerSpreadsheetForm.vue')['default']
     Button: typeof import('primevue/button')['default']

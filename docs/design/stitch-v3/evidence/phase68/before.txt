@@ -1,0 +1,6 @@
+PASS five widths, heading focus, filter/commit preserves six input rows, busy/blocked guard, dark, zero API calls. Full visual acceptance pending.
+[2m  - waiting for getByRole('heading', { name: '증권 데이터 검토 및 확정', exact: true }) to be visible[22m
+
+    at /workspace/yieldloom-redesign-phase68/scripts/design/.phase68-measure.mjs:73:14
+
+Node.js v24.19.0

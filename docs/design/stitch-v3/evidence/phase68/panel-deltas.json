@@ -1,0 +1,94 @@
+[
+  {
+    "viewport": 1280,
+    "before": [
+      [
+        "review-main",
+        833.75
+      ],
+      [
+        "review-table-card",
+        428.5
+      ]
+    ],
+    "final": [
+      [
+        "review-main",
+        832.75
+      ],
+      [
+        "review-table-card",
+        427.5
+      ]
+    ]
+  },
+  {
+    "viewport": 834,
+    "before": [
+      [
+        "review-main",
+        771.375
+      ],
+      [
+        "review-table-card",
+        421.5
+      ]
+    ],
+    "final": [
+      [
+        "review-main",
+        770.375
+      ],
+      [
+        "review-table-card",
+        420.5
+      ]
+    ]
+  },
+  {
+    "viewport": 768,
+    "before": [
+      [
+        "review-main",
+        778.375
+      ],
+      [
+        "review-table-card",
+        428.5
+      ]
+    ],
+    "final": [
+      [
+        "review-main",
+        777.375
+      ],
+      [
+        "review-table-card",
+        427.5
+      ]
+    ]
+  },
+  {
+    "viewport": 390,
+    "before": [
+      [
+        "review-main",
+        1655.625
+      ],
+      [
+        "review-table-card",
+        1238
+      ]
+    ],
+    "final": [
+      [
+        "review-main",
+        1655.625
+      ],
+      [
+        "review-table-card",
+        1238
+      ]
+    ]
+  }
+]

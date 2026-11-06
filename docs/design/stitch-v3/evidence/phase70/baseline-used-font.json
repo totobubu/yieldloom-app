@@ -1,0 +1,13 @@
+{
+  "scope": "pre-change component blob identical to production fae1ce4; local synthetic fixture only",
+  "fonts": [
+    {
+      "familyName": "Noto Sans CJK KR",
+      "postScriptName": "NotoSansCJKkr-Regular",
+      "isCustomFont": false,
+      "glyphCount": 65
+    }
+  ],
+  "componentGitBlob": "3deeeba09dceec2263e5620f21d4e6dfb067fb7c",
+  "qualification": "Standalone local fixture omits index.html Google Fonts; this is not an authenticated production font inspection."
+}

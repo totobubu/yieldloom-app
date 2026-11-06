@@ -1,0 +1,1 @@
+PASS: original Tablet and implementation use the custom Pretendard face; alias loads two local weights only above640px and zero on Mobile; no native PNG identity claim.

@@ -225,7 +225,7 @@ try {
         for (const name of [
             '저장 거래 확인',
             '배당 캘린더 확인',
-            'CSV로 내려받기',
+            '선택 계좌 전체 내역 CSV로 내려받기',
         ])
             assert.equal(
                 await page
@@ -290,7 +290,10 @@ try {
             window.receiptFixture.state.value = 'ready';
         });
         await page
-            .getByRole('button', { name: 'CSV로 내려받기', exact: true })
+            .getByRole('button', {
+                name: '선택 계좌 전체 내역 CSV로 내려받기',
+                exact: true,
+            })
             .click();
         assert.deepEqual(
             await page.evaluate(() => window.receiptFixture.events),

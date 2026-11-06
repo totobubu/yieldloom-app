@@ -88,6 +88,28 @@ try {
         await page.locator('.accounts li').first().waitFor();
         await ready();
         assert.equal(await page.locator('.accounts li').count(), 3);
+        const accountGrid = await page.locator('.accounts').boundingBox();
+        const firstAccount = await page
+            .locator('.accounts li')
+            .first()
+            .boundingBox();
+        const lastAccount = await page
+            .locator('.accounts li')
+            .last()
+            .boundingBox();
+        assert.ok(
+            Math.abs(firstAccount.x - accountGrid.x) <= 1,
+            `${width}px: account cards must align with the grid's leading edge`
+        );
+        assert.ok(
+            Math.abs(
+                lastAccount.x +
+                    lastAccount.width -
+                    accountGrid.x -
+                    accountGrid.width
+            ) <= 1,
+            `${width}px: account cards must fill the grid's trailing edge`
+        );
         assert.match(
             await currency.locator('[data-currency="USD"] strong').innerText(),
             /\$1,430.00/

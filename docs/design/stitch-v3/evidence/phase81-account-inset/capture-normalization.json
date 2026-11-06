@@ -1,0 +1,6 @@
+{
+  "reason": "Initial locator screenshots scrolled card minimally and fixed bottom navigation overlaid part of Mobile tool row. Rejected as faithful card captures; original committed images remain in870393a history, not used for native acceptance.",
+  "correction": "Center card within viewport before screenshot; all4-width original/app geometry JSON rows unchanged in before/after; only captured scroll position changed.",
+  "productChanges": "None beyond same CSS selector at870393a. Build/Node819/scoped lint of same app/test code remain valid; final remoteCI head checked separately.",
+  "scope": "App card crops with synthetic fixtures; not native Stitch full-frame/font acceptance."
+}

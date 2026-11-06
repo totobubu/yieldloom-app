@@ -3473,7 +3473,7 @@
         font-size: 14px;
         font-weight: 650;
     }
-    .portfolio-tabs ul {
+    .portfolio-tabs ul:not(.accounts) {
         padding-left: 20px;
     }
     .portfolio-tabs li {

@@ -37,6 +37,15 @@
         period = ref(calendarToday().slice(0, 7)),
         accountId = ref(''),
         currency = ref('');
+    const listWeekday = new Intl.DateTimeFormat('ko-KR', {
+        weekday: 'short',
+        timeZone: 'UTC',
+    });
+    // Calendar rows contain dates, not instants in the viewer's timezone.
+    const listDateLabel = (date) =>
+        validCalendarDate(date)
+            ? `${date.replaceAll('-', '.')} (${listWeekday.format(new Date(`${date}T00:00:00Z`))})`
+            : date || '날짜 미확인';
     // Keep the existing ledger period string; the picker uses local calendar fields.
     const periodDate = computed({
         get: () =>
@@ -700,34 +709,43 @@
                                 )"
                                 :key="event.id"
                                 class="event-row"
+                                :class="event.status"
                                 @click="
                                     inlineEventId = event.id;
                                     detailDate = event.date;
                                 ">
                                 <div>
-                                    <b>{{ event.date }}</b
+                                    <b
+                                        ><time :datetime="event.date">{{
+                                            listDateLabel(event.date)
+                                        }}</time></b
                                     ><Tag
+                                        class="calendar-list-status"
                                         :value="stateNames[event.status]"
                                         :severity="
                                             event.status === 'forecast' ||
                                             event.status === 'review'
                                                 ? 'warn'
-                                                : 'info'
+                                                : event.status === 'announced'
+                                                  ? 'success'
+                                                  : 'info'
                                         " />
                                 </div>
                                 <b class="calendar-event-symbol">{{
                                     event.symbol
                                 }}</b>
-                                <span
+                                <span class="calendar-list-meta"
                                     >{{ accountLabel(event.accountId) }} · 수량
                                     {{
                                         event.quantity == null
                                             ? '미확인'
                                             : event.quantity
-                                    }}</span
-                                ><strong>{{
-                                    money(event.amount, event.currency)
-                                }}</strong>
+                                    }}
+                                    ·
+                                    <strong>{{
+                                        money(event.amount, event.currency)
+                                    }}</strong></span
+                                >
                             </button>
                             <Button
                                 v-if="rangeRows.length > visibleCount"
@@ -1263,8 +1281,88 @@
     }
     .event-row {
         padding: 12px;
-        gap: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
         border-radius: 8px;
+        line-height: 1.5;
+    }
+    .event-row > div {
+        align-items: center;
+        gap: normal;
+    }
+    .event-row > div > b {
+        font-size: 15px;
+        line-height: 22.5px;
+        font-weight: 700;
+    }
+    .event-row .calendar-event-symbol {
+        font-size: 14px;
+        line-height: 21px;
+        font-weight: 600;
+    }
+    .event-row .calendar-list-meta {
+        font-size: 13px;
+        line-height: 19.5px;
+    }
+    .event-row .calendar-list-meta > strong {
+        font: inherit;
+    }
+    .calendar-list-status {
+        --p-tag-font-size: 12px;
+        --p-tag-font-weight: 600;
+        --p-tag-padding: 2px 8px;
+        --p-tag-border-radius: 4px;
+        --p-tag-success-background: var(
+            --calendar-list-confirmed-badge-bg,
+            var(--app-accent-light)
+        );
+        --p-tag-success-color: var(
+            --calendar-list-confirmed-badge-text,
+            var(--app-text)
+        );
+        --p-tag-warn-background: var(
+            --calendar-list-forecast-badge-bg,
+            var(--app-warning-light)
+        );
+        --p-tag-warn-color: var(
+            --calendar-list-forecast-badge-text,
+            var(--app-warning-text)
+        );
+        border: 1px solid var(--app-border);
+        line-height: 18px;
+    }
+    .event-row.announced {
+        border-left: 4px solid var(--app-accent);
+        background: var(--calendar-list-confirmed-bg, var(--app-accent-light));
+    }
+    .event-row.announced .calendar-event-symbol {
+        color: var(--app-accent);
+    }
+    .event-row.announced .calendar-list-status {
+        border-color: var(
+            --calendar-list-confirmed-badge-border,
+            var(--app-accent)
+        );
+    }
+    .event-row.forecast {
+        border-left: 4px solid var(--app-warning);
+    }
+    .event-row.forecast .calendar-list-status {
+        border-color: var(
+            --calendar-list-forecast-badge-border,
+            var(--app-warning)
+        );
+    }
+    :root:not(.p-dark) .month-events {
+        --calendar-list-confirmed-bg: #fcfefe;
+        --calendar-list-confirmed-badge-bg: #ecfdf5;
+        --calendar-list-confirmed-badge-text: #047857;
+        --calendar-list-confirmed-badge-border: #a7f3d0;
+        --calendar-list-forecast-badge-bg: #fef9c3;
+        --calendar-list-forecast-badge-text: #a16207;
+        --calendar-list-forecast-badge-border: #fde047;
     }
     @media (max-width: 1024px) {
         .calendar-body {

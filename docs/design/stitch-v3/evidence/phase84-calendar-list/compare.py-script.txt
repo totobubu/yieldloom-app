@@ -1,0 +1,30 @@
+import json,re
+from pathlib import Path
+from PIL import Image,ImageChops
+root=Path('/tmp/phase84-calendar-list');before=json.loads((root/'before/measurements.json').read_text());after=json.loads((root/'verified-final/measurements.json').read_text())
+text=['fontSize','lineHeight','fontWeight','color']
+card=['display','gap','padding','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderTopStyle','borderTopColor','borderRadius','fontSize','lineHeight','fontWeight','color','backgroundColor']
+badge=['padding','borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderTopStyle','borderTopColor','borderRadius',*text,'backgroundColor','height']
+spec={'listCard':card,'listHeader':['gap','height','lineHeight'],'listDate':text,'listBadge':badge,'listSymbol':text,'listMeta':text}
+matched=[];geometry=[]
+for old,new in zip(before['rows'],after['rows']):
+ assert old['width']==new['width'];assert new['app']['listCount']==old['app']['listCount']
+ for a,b in zip(old['app']['listCardTexts'],new['app']['listCardTexts']):
+  assert a['symbol']==b['symbol'] and a['money']==b['money'];assert b['meta']==a['meta']+' · '+a['money'];assert b['date']=='2026-11-25' and b['dateLabel']=='2026.11.25 (수)'
+ if new['width']<=1024:
+  for element,props in spec.items():
+   for prop in props:
+    assert new['app'][element][prop]==new['original'][element][prop],(new['width'],element,prop,new['app'][element][prop],new['original'][element][prop])
+    matched.append(f"{new['width']}:{element}.{prop}")
+  for element,props in [('forecastCard',card),('forecastBadge',badge)]:
+   for prop in props:
+    assert new['forecastState']['app'][element][prop]==new['original'][element][prop],(new['width'],element,prop)
+    matched.append(f"{new['width']}:{element}.{prop}")
+  geometry.append({'width':new['width'],'beforeCardHeight':old['app']['listCard']['height'],'afterCardHeight':new['app']['listCard']['height'],'sourceCardHeight':new['original']['listCard']['height'],'beforeBadgeHeight':old['app']['listBadge']['height'],'afterBadgeHeight':new['app']['listBadge']['height'],'sourceBadgeHeight':new['original']['listBadge']['height']})
+ assert new['forecastState']['extraReads']==0;assert '미확인' in new['forecastState']['app']['forecastText'];assert '0 USD' not in new['forecastState']['app']['forecastText']
+preserved=[]
+for theme in ['app','app-dark']:
+ a=Image.open(root/f'before/{theme}-1280.png').convert('RGB');b=Image.open(root/f'verified-final/{theme}-1280.png').convert('RGB');assert a.size==b.size and ImageChops.difference(a,b).getbbox() is None
+ preserved.append({'viewport':1280,'theme':theme,'rgbIdentical':True})
+proof={'sourceScreenId':'fc276eb9388a48909296fb018f60771b','matchedNarrowProperties':matched,'matchedNarrowPropertyCount':len(matched),'geometry':geometry,'preservedCollapsedPcGrid':preserved,'financialValuesAndAccountMetadataPreserved':True,'scope':'Two narrow responsive source renders, selected card/label/badge/status properties; current real service synthetic fields preserved. No fixed card height and no source dummy amounts/quantities/types copied. Metadata lengths and actual statuses/rows remain different; not whole native/font/state acceptance.'}
+(root/'verification.json').write_text(json.dumps(proof,ensure_ascii=False,indent=2)+'\n');print('PASS',len(matched),'narrow properties, unchanged PC grid RGB, original synthetic amounts/metadata and real forecast unknown states retained.')

@@ -1,0 +1,3 @@
+PASS priority/1280: real ETF reference without filtering/fetching, scoped currencies/unknown/viewer, four unchanged KPIs, inline/modal detail and real reconciliation; no writes
+PASS priority/768: real ETF reference without filtering/fetching, scoped currencies/unknown/viewer, four unchanged KPIs, inline/modal detail and real reconciliation; no writes
+PASS priority/390: real ETF reference without filtering/fetching, scoped currencies/unknown/viewer, four unchanged KPIs, inline/modal detail and real reconciliation; no writes

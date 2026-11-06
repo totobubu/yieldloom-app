@@ -98,6 +98,7 @@
         gap: 8px;
     }
     .system-status-retry {
+        --p-button-label-font-weight: 500;
         padding: 0;
         border: 0;
         border-radius: 0;

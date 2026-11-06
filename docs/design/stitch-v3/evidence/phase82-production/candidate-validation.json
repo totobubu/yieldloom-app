@@ -1,0 +1,11 @@
+{
+  "base": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+  "work": "03284ff8504d79d1d2b5d7803968db43cea38413",
+  "feature": "5b086c7acb5c6e52349e754f99b6f1bf3ab3d645",
+  "tree": "03e793aa4bc73d16bbe9fb0dfdc57038a652e6a5",
+  "candidateEqualsFeatureAndWorkTree": true,
+  "featureCi": "42238565932",
+  "featureCiAll4": "success",
+  "localBuild": "Type-checked final SFC source; both Vercel and Pages bases built and separately hashed.",
+  "financialAndApiAndDependencyDiff": []
+}

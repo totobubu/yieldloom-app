@@ -1,0 +1,13 @@
+{
+  "uiMerge": "e740bdd79509487768ccfab2acfe26356bfb8fb2",
+  "servedCommit": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+  "servedTree": "e30549e6d2b34776da0d5f749beff431fffaa6b6",
+  "changedPaths": [
+    "data-v2/collection-health.json",
+    "data-v2/security-underlyings.json",
+    "docs/data-management/underlying-audit.json"
+  ],
+  "applicationAndTestsAndContractsUnchanged": true,
+  "author": "github-actions[bot]",
+  "scope": "Existing verified ETF underlyings workflow updated public data/audit while UI main CI ran. No data writes performed by this UI task; existing follow-up preserved. UI4-job CI applies to e740, not a nonexistent ba450ec application run."
+}

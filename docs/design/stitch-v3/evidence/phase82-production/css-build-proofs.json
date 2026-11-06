@@ -1,0 +1,22 @@
+{
+  "vercel": {
+    "target": "vercel",
+    "base": "/",
+    "source": "5b086c7acb5c6e52349e754f99b6f1bf3ab3d645",
+    "componentSha256": "3b8aa86b1c30582b6ff4ba2926543a17eded3d4c61d20d5f2fa8d9b5040c38d6",
+    "path": "assets/FamilyPortfolioView-BMZRTCrd.css",
+    "sha256": "5bed78d4bac02f1dacd809e5d60a6335880dc4a9e1c3e4514645781fbe6d41fc",
+    "lightVariableRule": ":root:not(.p-dark) .accounts[data-v-0a130990]{--account-card-text: #191c1e;--account-card-variant: #3e4947;--account-card-outline: #6e7977;--account-card-snapshot-bg: rgb(242 244 246 / 60%);--account-card-role-bg: #e6e8ea;--account-card-selection-bg: #eceef0;--account-card-selected-bg: rgb(153 243 228 / 40%);--account-card-selected-text: #005f55}",
+    "buildCommand": "npm run build"
+  },
+  "pages": {
+    "target": "pages",
+    "base": "/yieldloom-app/",
+    "source": "5b086c7acb5c6e52349e754f99b6f1bf3ab3d645",
+    "componentSha256": "3b8aa86b1c30582b6ff4ba2926543a17eded3d4c61d20d5f2fa8d9b5040c38d6",
+    "path": "assets/FamilyPortfolioView-CO4KzeRX.css",
+    "sha256": "606fc897d5ab2473ee4dfaae444e2aa60be640189c1b60497214520eda088d70",
+    "lightVariableRule": ":root:not(.p-dark) .accounts[data-v-0a130990]{--account-card-text: #191c1e;--account-card-variant: #3e4947;--account-card-outline: #6e7977;--account-card-snapshot-bg: rgb(242 244 246 / 60%);--account-card-role-bg: #e6e8ea;--account-card-selection-bg: #eceef0;--account-card-selected-bg: rgb(153 243 228 / 40%);--account-card-selected-text: #005f55}",
+    "buildCommand": "GITHUB_ACTIONS=true npm run build"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "projectId": "7356929996797649648",
+  "screenId": "fc276eb9388a48909296fb018f60771b",
+  "route": "/mypage?tab=calendar",
+  "component": "src/components/portfolio/PortfolioDividendCalendar.vue",
+  "viewports": [
+    1280,
+    834,
+    390
+  ],
+  "states": [
+    {
+      "state": "PC month grid/header/day/today/announced/forecast",
+      "result": "selected83computed-properties-pass; not-whole-frame"
+    },
+    {
+      "state": "Tablet/Mobile month list light/dark",
+      "result": "source list-vs-grid visibility pass; four prior list RGB captures unchanged"
+    },
+    {
+      "state": "real today aria-current/date keyboard dialog",
+      "result": "synthetic-clock and native keyboard pass"
+    },
+    {
+      "state": "dark today/announced/forecast",
+      "result": "existing theme tokens, selected text contrast >4.5; no native dark source"
+    },
+    {
+      "state": "month/year, filters, missing histories, reload/logout, inline/modal/reconciliation",
+      "result": "existing synthetic regressions pass; no full original-state acceptance"
+    },
+    {
+      "state": "authenticated real accounts/customer PDF/DB writes",
+      "result": "unverified"
+    }
+  ],
+  "newDeviceDesignCount": 0
+}

@@ -627,51 +627,66 @@
                                 @click="showMonthList = !showMonthList" />
                         </header>
                         <div class="month-grid" aria-label="배당 월간 달력">
-                            <div
-                                v-for="weekday in [
-                                    '일',
-                                    '월',
-                                    '화',
-                                    '수',
-                                    '목',
-                                    '금',
-                                    '토',
-                                ]"
-                                :key="weekday"
-                                class="weekday">
-                                {{ weekday }}
+                            <div class="calendar-weekdays">
+                                <div
+                                    v-for="weekday in [
+                                        '일',
+                                        '월',
+                                        '화',
+                                        '수',
+                                        '목',
+                                        '금',
+                                        '토',
+                                    ]"
+                                    :key="weekday"
+                                    class="weekday">
+                                    {{ weekday }}
+                                </div>
                             </div>
-                            <button
-                                v-for="day in days"
-                                :key="day.date"
-                                class="day-cell"
-                                :class="{
-                                    'outside-month': !day.inMonth,
-                                    today: day.date === calendarToday(),
-                                }"
-                                :aria-label="`${day.date} 배당 일정 ${onDate(day.date).length}건`"
-                                @click="
-                                    inlineEventId = '';
-                                    detailDate = day.date;
-                                ">
-                                <b>{{ day.day }}</b
-                                ><span
-                                    v-for="event in onDate(day.date).slice(
-                                        0,
-                                        2
-                                    )"
-                                    :key="event.id"
-                                    class="day-event"
-                                    :class="event.status"
-                                    >{{ event.symbol
-                                    }}<small>{{
-                                        stateNames[event.status]
-                                    }}</small></span
-                                ><small v-if="onDate(day.date).length > 2"
-                                    >+{{ onDate(day.date).length - 2 }}건 더
-                                    보기</small
-                                >
-                            </button>
+                            <div class="calendar-days">
+                                <button
+                                    v-for="day in days"
+                                    :key="day.date"
+                                    class="day-cell"
+                                    :class="{
+                                        'outside-month': !day.inMonth,
+                                        today: day.date === calendarToday(),
+                                    }"
+                                    :aria-current="
+                                        day.date === calendarToday()
+                                            ? 'date'
+                                            : undefined
+                                    "
+                                    :aria-label="`${day.date} 배당 일정 ${onDate(day.date).length}건`"
+                                    @click="
+                                        inlineEventId = '';
+                                        detailDate = day.date;
+                                    ">
+                                    <b>{{ day.day }}</b>
+                                    <span
+                                        v-if="day.date === calendarToday()"
+                                        class="calendar-today-badge"
+                                        aria-hidden="true"
+                                        >오늘</span
+                                    >
+                                    <span
+                                        v-for="event in onDate(day.date).slice(
+                                            0,
+                                            2
+                                        )"
+                                        :key="event.id"
+                                        class="day-event"
+                                        :class="event.status"
+                                        >{{ event.symbol
+                                        }}<small>{{
+                                            stateNames[event.status]
+                                        }}</small></span
+                                    ><small v-if="onDate(day.date).length > 2"
+                                        >+{{ onDate(day.date).length - 2 }}건 더
+                                        보기</small
+                                    >
+                                </button>
+                            </div>
                         </div>
                         <section
                             class="month-events"
@@ -919,31 +934,46 @@
         align-items: start;
     }
     .month-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .calendar-weekdays,
+    .calendar-days {
         display: grid;
         grid-template-columns: repeat(7, minmax(0, 1fr));
-        border-left: 1px solid var(--app-border);
-        border-top: 1px solid var(--app-border);
-        border-radius: 12px;
-        overflow: hidden;
-        background: var(--app-surface);
+    }
+    .calendar-weekdays {
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--calendar-grid-border, var(--app-border));
+        font-size: 13px;
+        line-height: 19.5px;
+        font-weight: 600;
+        color: var(--calendar-date-text, var(--app-text));
+    }
+    .calendar-days {
+        gap: 6px;
     }
     .weekday {
-        padding: 12px;
         text-align: center;
-        font-size: 13px;
-        background: var(--app-surface-muted);
+        color: var(--calendar-date-text, var(--app-text));
+    }
+    .weekday:first-child {
+        color: var(--calendar-sunday, var(--app-text));
+    }
+    .weekday:last-child {
+        color: var(--calendar-saturday, var(--app-text));
     }
     .day-cell {
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: 5px;
+        gap: 4px;
         min-height: 112px;
         min-width: 0;
         padding: 8px;
-        border: 0;
-        border-right: 1px solid var(--app-border);
-        border-bottom: 1px solid var(--app-border);
+        border: 1px solid var(--calendar-grid-border, var(--app-border));
+        border-radius: 8px;
         color: var(--app-text);
         background: var(--app-surface);
         cursor: pointer;
@@ -965,8 +995,29 @@
     .outside-month {
         opacity: 0.45;
     }
-    .today > b {
-        color: var(--app-accent);
+    .day-cell > b {
+        font-size: 12px;
+        line-height: 18px;
+        font-weight: 600;
+        color: var(--calendar-date-text, var(--app-text));
+    }
+    .day-cell.today {
+        border-color: var(--calendar-today, var(--app-accent));
+        background: var(--calendar-today-bg, var(--app-surface));
+    }
+    .day-cell.today > b {
+        color: var(--calendar-today, var(--app-accent));
+        font-weight: 700;
+    }
+    .calendar-today-badge {
+        margin-left: 4px;
+        padding: 1px 4px;
+        border-radius: 3px;
+        background: var(--calendar-today, var(--app-accent));
+        color: var(--app-accent-contrast);
+        font-size: 10px;
+        line-height: 15px;
+        font-weight: 400;
     }
     .day-event {
         background: var(--app-surface-muted);
@@ -982,6 +1033,36 @@
     .day-event.forecast,
     .day-event.review {
         border-left-style: dashed;
+    }
+    .day-event.announced,
+    .day-event.forecast {
+        border: 1px solid var(--calendar-event-border, var(--app-accent));
+        border-radius: 6px;
+        font-size: 11px;
+    }
+    .day-event.announced {
+        background: var(--calendar-announced-bg, var(--app-accent-light));
+        color: var(--calendar-announced-text, var(--app-text));
+    }
+    .day-event.forecast {
+        border-style: dashed;
+        border-color: var(--calendar-forecast-border, var(--app-warning));
+        background: var(--calendar-forecast-bg, var(--app-warning-light));
+        color: var(--calendar-forecast-text, var(--app-warning-text));
+    }
+    :root:not(.p-dark) .month-grid {
+        --calendar-grid-border: #f1f5f9;
+        --calendar-date-text: #64748b;
+        --calendar-sunday: #ef4444;
+        --calendar-saturday: #3b82f6;
+        --calendar-today: #0d7a6e;
+        --calendar-today-bg: #fafdfc;
+        --calendar-event-border: rgb(13 122 110 / 30%);
+        --calendar-announced-bg: #e6f4f2;
+        --calendar-announced-text: #064e3b;
+        --calendar-forecast-border: #ca8a04;
+        --calendar-forecast-bg: #fef9c3;
+        --calendar-forecast-text: #713f12;
     }
     .month-events {
         display: grid;
@@ -1161,8 +1242,10 @@
         padding: 6px;
     }
     .weekday {
-        padding: 10px 6px;
-        font-size: 12px;
+        padding: 0;
+        font-size: 13px;
+        line-height: 19.5px;
+        font-weight: 600;
     }
     .day-event {
         padding: 4px 6px;

@@ -1,0 +1,6 @@
+......{"catalogInstruments": 2175, "etfsAudited": 1603, "newComparedWithLegacy": 0, "no-single-underlying-detected": 1402, "needs-review": 106, "legacy-unverified": 95}
+.....
+----------------------------------------------------------------------
+Ran 11 tests in 0.898s
+
+OK

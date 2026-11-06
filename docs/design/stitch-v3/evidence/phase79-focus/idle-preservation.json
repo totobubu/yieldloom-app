@@ -1,0 +1,41 @@
+{
+  "scope": "Implementation before/after unchanged idle pixels, not native Stitch PNG equality",
+  "rows": [
+    {
+      "viewport": 1280,
+      "size": [
+        2432,
+        1052
+      ],
+      "rgbDifferenceBounds": null,
+      "exactRgbMatch": true
+    },
+    {
+      "viewport": 834,
+      "size": [
+        1572,
+        1052
+      ],
+      "rgbDifferenceBounds": null,
+      "exactRgbMatch": true
+    },
+    {
+      "viewport": 768,
+      "size": [
+        1440,
+        1124
+      ],
+      "rgbDifferenceBounds": null,
+      "exactRgbMatch": true
+    },
+    {
+      "viewport": 390,
+      "size": [
+        716,
+        1412
+      ],
+      "rgbDifferenceBounds": null,
+      "exactRgbMatch": true
+    }
+  ]
+}

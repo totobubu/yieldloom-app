@@ -134,6 +134,40 @@ try {
                 () => document.documentElement.scrollWidth <= innerWidth + 1
             )
         );
+        const selectedBeforeResize = await trend
+            .locator('.trend-detail')
+            .innerText();
+        const originalFocused = await bars.last().getAttribute('aria-label');
+        for (const nextWidth of [width === 390 ? 1280 : 390, width]) {
+            await page.setViewportSize({ width: nextWidth, height: 1024 });
+            await page.waitForFunction(() => {
+                const scroller = document.querySelector('.trend-chart');
+                const active = document.activeElement;
+                if (!scroller?.contains(active)) return false;
+                const box = active.getBoundingClientRect(),
+                    clip = scroller.getBoundingClientRect();
+                return box.left >= clip.left - 1 && box.right <= clip.right + 1;
+            });
+            assert.equal(
+                await bars
+                    .last()
+                    .evaluate((el) => el === document.activeElement),
+                true
+            );
+            assert.equal(
+                await bars.last().getAttribute('aria-label'),
+                originalFocused
+            );
+            assert.equal(
+                await trend.locator('.trend-detail').innerText(),
+                selectedBeforeResize
+            );
+            assert.equal(
+                requests.length,
+                initialReads,
+                'Resize must not refetch or change the selected month'
+            );
+        }
         await trend.getByRole('button', { name: '2025', exact: true }).click();
         assert.match(await bars.first().getAttribute('aria-label'), /2025-01/);
         assert.equal(await trend.locator('.previous').count(), 0);
@@ -228,6 +262,53 @@ try {
         );
         await page.close();
     }
+    const inactivePage = await browser.newPage({
+        viewport: { width: 390, height: 1024 },
+    });
+    await installStitchFixtures(inactivePage);
+    const inactiveErrors = [];
+    inactivePage.on('pageerror', (e) => inactiveErrors.push(e.message));
+    await inactivePage.goto(base + '/stock/DEMO-A?tab=dividends');
+    const inactiveTrend = inactivePage.locator('.dividend-trend');
+    const inactiveChart = inactiveTrend.locator('.trend-chart');
+    await inactiveChart.waitFor();
+    assert.equal(
+        await inactiveChart.evaluate((el) => el.scrollLeft),
+        0,
+        'Initial unfocused chart must retain the source first-month position'
+    );
+    await inactiveTrend
+        .getByRole('button', { name: '전체 비교', exact: true })
+        .focus();
+    await inactiveChart.evaluate((el) => (el.scrollLeft = 100));
+    await inactivePage.setViewportSize({ width: 360, height: 1024 });
+    await inactivePage.evaluate(
+        () =>
+            new Promise((resolve) =>
+                requestAnimationFrame(() => requestAnimationFrame(resolve))
+            )
+    );
+    assert.equal(
+        await inactiveChart.evaluate((el) => el.scrollLeft),
+        100,
+        'Resize outside the chart must not chase its selected month'
+    );
+    await inactivePage
+        .getByRole('tab', { name: '상세정보', exact: true })
+        .click();
+    await inactivePage.locator('.stock-facts').waitFor();
+    await inactivePage.setViewportSize({ width: 1280, height: 1024 });
+    await inactivePage.evaluate(
+        () =>
+            new Promise((resolve) =>
+                requestAnimationFrame(() => requestAnimationFrame(resolve))
+            )
+    );
+    assert.deepEqual(inactiveErrors, []);
+    await inactivePage.close();
+    console.log(
+        'PASS dividend-navigation/inactive: initial position, outside focus unchanged, observer cleanup on tab/empty view'
+    );
     // A current month without an observed distribution remains unknown, not a partial value or zero.
     const missingPage = await browser.newPage({
         viewport: { width: 390, height: 1024 },

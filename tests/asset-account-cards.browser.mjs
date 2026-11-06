@@ -28,7 +28,7 @@ const examples = [
         role: 'viewer',
         authorityUid: 'synthetic',
         type: 'pension',
-        label: '연금',
+        label: '연금계좌',
         rename: false,
     },
     {

@@ -24,7 +24,7 @@
     const accountTypeLabels = {
         general: '일반',
         isa: 'ISA',
-        pension: '연금',
+        pension: '연금계좌',
         other: '기타',
     };
     const accountTypeLabel = (type) =>

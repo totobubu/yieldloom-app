@@ -1,0 +1,210 @@
+{
+  "scope": "Selected source-backed properties, not whole native PNG/font acceptance. Same fixed synthetic app data at all widths; source financial examples unchanged.",
+  "before": true,
+  "rows": [
+    {
+      "width": 1280,
+      "original": {
+        "title": {
+          "fontSize": "20px",
+          "lineHeight": "28px",
+          "fontWeight": "600"
+        },
+        "legendSwatch": {
+          "width": 12,
+          "height": 12
+        },
+        "plot": {
+          "width": 1168,
+          "height": 224
+        },
+        "bars": {
+          "width": 34,
+          "height": 144
+        },
+        "padding": "24px",
+        "overflow": false
+      },
+      "implementation": {
+        "title": {
+          "fontSize": "22.5px",
+          "lineHeight": "31.5px",
+          "fontWeight": "700"
+        },
+        "legendSwatch": {
+          "width": 8,
+          "height": 8
+        },
+        "plot": null,
+        "bars": {
+          "width": 90.15625,
+          "height": 174
+        },
+        "padding": "20px",
+        "overflow": false
+      },
+      "sourceErrors": [],
+      "sourceAssets": [],
+      "errors": [],
+      "assets": [],
+      "requests": [
+        "GET /api/thumbnail-data",
+        "POST /api/analytics",
+        "GET /security-insights/19.json"
+      ]
+    },
+    {
+      "width": 834,
+      "original": {
+        "title": {
+          "fontSize": "20px",
+          "lineHeight": "28px",
+          "fontWeight": "600"
+        },
+        "legendSwatch": {
+          "width": 12,
+          "height": 12
+        },
+        "plot": {
+          "width": 738,
+          "height": 224
+        },
+        "bars": {
+          "width": 34,
+          "height": 144
+        },
+        "padding": "24px",
+        "overflow": false
+      },
+      "implementation": {
+        "title": {
+          "fontSize": "22.5px",
+          "lineHeight": "31.5px",
+          "fontWeight": "700"
+        },
+        "legendSwatch": {
+          "width": 8,
+          "height": 8
+        },
+        "plot": null,
+        "bars": {
+          "width": 54.328125,
+          "height": 174
+        },
+        "padding": "20px",
+        "overflow": false
+      },
+      "sourceErrors": [],
+      "sourceAssets": [],
+      "errors": [],
+      "assets": [],
+      "requests": [
+        "GET /api/thumbnail-data",
+        "POST /api/analytics",
+        "GET /security-insights/19.json"
+      ]
+    },
+    {
+      "width": 768,
+      "original": {
+        "title": {
+          "fontSize": "20px",
+          "lineHeight": "28px",
+          "fontWeight": "600"
+        },
+        "legendSwatch": {
+          "width": 12,
+          "height": 12
+        },
+        "plot": {
+          "width": 672,
+          "height": 224
+        },
+        "bars": {
+          "width": 34,
+          "height": 144
+        },
+        "padding": "24px",
+        "overflow": false
+      },
+      "implementation": {
+        "title": {
+          "fontSize": "22.5px",
+          "lineHeight": "31.5px",
+          "fontWeight": "700"
+        },
+        "legendSwatch": {
+          "width": 8,
+          "height": 8
+        },
+        "plot": null,
+        "bars": {
+          "width": 49.5,
+          "height": 174
+        },
+        "padding": "16px",
+        "overflow": false
+      },
+      "sourceErrors": [],
+      "sourceAssets": [],
+      "errors": [],
+      "assets": [],
+      "requests": [
+        "GET /api/thumbnail-data",
+        "POST /api/analytics",
+        "GET /security-insights/19.json"
+      ]
+    },
+    {
+      "width": 390,
+      "original": {
+        "title": {
+          "fontSize": "20px",
+          "lineHeight": "28px",
+          "fontWeight": "600"
+        },
+        "legendSwatch": {
+          "width": 12,
+          "height": 12
+        },
+        "plot": {
+          "width": 620,
+          "height": 224
+        },
+        "bars": {
+          "width": 34,
+          "height": 144
+        },
+        "padding": "20px",
+        "overflow": false
+      },
+      "implementation": {
+        "title": {
+          "fontSize": "22.5px",
+          "lineHeight": "31.5px",
+          "fontWeight": "700"
+        },
+        "legendSwatch": {
+          "width": 8,
+          "height": 8
+        },
+        "plot": null,
+        "bars": {
+          "width": 32,
+          "height": 174
+        },
+        "padding": "16px",
+        "overflow": false
+      },
+      "sourceErrors": [],
+      "sourceAssets": [],
+      "errors": [],
+      "assets": [],
+      "requests": [
+        "GET /api/thumbnail-data",
+        "POST /api/analytics",
+        "GET /security-insights/19.json"
+      ]
+    }
+  ]
+}

@@ -3238,8 +3238,9 @@
     }
     .ticker-thumbnail-page[data-stitch-view='dividends']
         :deep(.dividend-trend) {
-        padding: 20px;
-        border: 1px solid var(--app-border);
+        padding: 24px;
+        border: 0;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
         border-radius: 12px;
         background: var(--app-surface);
         margin: 20px 0;
@@ -3334,8 +3335,6 @@
     @media (max-width: 768px) {
         .ticker-thumbnail-page[data-stitch-view='prices'] .stock-section,
         .ticker-thumbnail-page[data-stitch-view='dividends'] .dividend-next,
-        .ticker-thumbnail-page[data-stitch-view='dividends']
-            :deep(.dividend-trend),
         .ticker-thumbnail-page[data-stitch-view='share'] .share-workspace {
             padding: 16px;
         }
@@ -4066,5 +4065,18 @@
         font-size: 16px;
         line-height: 24px;
         font-weight: 600;
+    }
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(.dividend-trend h2) {
+        font-size: 20px;
+        line-height: 28px;
+        font-weight: 600;
+    }
+    /* bd619d... trend card uses p-5 below md and p-6 from 768px. */
+    @media (max-width: 767px) {
+        .ticker-thumbnail-page[data-stitch-view='dividends']
+            :deep(.dividend-trend) {
+            padding: 20px;
+        }
     }
 </style>

@@ -76,60 +76,68 @@
         <header>
             <div>
                 <div class="trend-title">
-                    <h2>월별 배당 흐름</h2>
+                    <h2>월별 배당 추이</h2>
                     <InfoHelp
                         label="월별 배당 집계 안내"
                         text="선택 연도와 전년 동월을 비교합니다. 당월은 기준일까지 집계합니다. 회차는 배당락일 기준이며, 공시가 없는 달은 0으로 채우지 않습니다." />
                 </div>
-                <p>주당 세전 {{ currency }} · 배당락일 기준</p>
             </div>
-            <p
-                v-if="series.some((row) => row.total != null)"
-                class="trend-note">
-                <span v-if="compare"
-                    ><i class="gray" aria-hidden="true" />{{
-                        chartYear === 'rolling'
-                            ? '전년 동월'
-                            : `${years[0] - 1}년`
-                    }}</span
-                >
-                <span
-                    ><i class="blue" aria-hidden="true" />{{
-                        chartYear === 'all'
-                            ? years[0]
-                            : chartYear === 'rolling'
-                              ? '선택 기간'
-                              : chartYear
-                    }}{{ chartYear === 'rolling' ? '' : '년' }}</span
-                >
-            </p>
-            <div class="trend-controls">
-                <Button
-                    label="전체 비교"
-                    :aria-pressed="chartYear === 'all'"
-                    :severity="chartYear === 'all' ? undefined : 'secondary'"
-                    text
-                    @click="
-                        chartYear = 'all';
-                        selected = null;
-                    " />
-                <Button
-                    v-for="year in years"
-                    :key="year"
-                    :label="String(year)"
-                    :aria-pressed="chartYear === year"
-                    :severity="chartYear === year ? undefined : 'secondary'"
-                    text
-                    @click="
-                        chartYear = year;
-                        selected = null;
-                    " />
+            <div class="trend-header-tools">
+                <p
+                    v-if="series.some((row) => row.total != null)"
+                    class="trend-note">
+                    <span v-if="compare"
+                        ><i class="gray" aria-hidden="true" />{{
+                            chartYear === 'rolling'
+                                ? '전년 동월'
+                                : `${years[0] - 1}년`
+                        }}</span
+                    >
+                    <span
+                        ><i class="blue" aria-hidden="true" />{{
+                            chartYear === 'all'
+                                ? years[0]
+                                : chartYear === 'rolling'
+                                  ? '선택 기간'
+                                  : chartYear
+                        }}{{ chartYear === 'rolling' ? '' : '년' }}</span
+                    >
+                </p>
+                <div class="trend-controls">
+                    <Button
+                        label="전체 비교"
+                        :aria-pressed="chartYear === 'all'"
+                        :severity="
+                            chartYear === 'all' ? undefined : 'secondary'
+                        "
+                        text
+                        @click="
+                            chartYear = 'all';
+                            selected = null;
+                        " />
+                    <Button
+                        v-for="year in years"
+                        :key="year"
+                        :label="String(year)"
+                        :aria-pressed="chartYear === year"
+                        :severity="chartYear === year ? undefined : 'secondary'"
+                        text
+                        @click="
+                            chartYear = year;
+                            selected = null;
+                        " />
+                </div>
             </div>
         </header>
-        <p class="trend-coverage">
-            기록 없음은 0이 아닙니다. 기준 월은 집계 중이며 미래 월은
-            미확인입니다.
-        </p>
+        <div class="trend-guidance">
+            <p class="trend-unit">
+                단위: 주당 세전 {{ currency }} · 배당락일 기준
+            </p>
+            <p class="trend-coverage">
+                기록 없음은 0이 아닙니다. 기준 월은 집계 중이며 미래 월은
+                미확인입니다.
+            </p>
+        </div>
         <details class="trend-periods">
             <summary>최근 기간 보기</summary>
             <div class="trend-period-buttons">
@@ -153,36 +161,60 @@
             class="trend-chart"
             role="group"
             aria-label="월별 주당 배당금 차트">
-            <button
-                v-for="row in series"
-                :key="row.month"
-                class="month-bar"
-                :class="{ selected: current?.month === row.month }"
-                :aria-label="`${row.month} 배당 ${format(row.total)}, ${row.count ?? '미확인'}회${row.partial ? ', 집계 중' : ''}`"
-                @focus="selected = row.month"
-                @click="selected = row.month">
-                <div class="bars">
-                    <i
-                        v-if="compare && row.previousTotal != null"
-                        class="previous"
-                        :style="{
-                            height: `${(row.previousTotal / max) * 100}%`,
-                        }" /><i
-                        v-if="row.total != null"
-                        class="actual"
-                        :class="{ partial: row.partial }"
-                        :style="{
-                            height: `${(row.total / max) * 100}%`,
-                        }" /><span v-if="row.total == null" class="missing"
-                        >—</span
-                    >
-                </div>
-                <span>{{
-                    chartYear === 'rolling'
-                        ? row.month.slice(2).replace('-', '.')
-                        : `${Number(row.month.slice(5))}월`
-                }}</span>
-            </button>
+            <div
+                class="trend-plot"
+                :class="{ rolling: chartYear === 'rolling' && length === 24 }">
+                <span
+                    v-for="line in 3"
+                    :key="line"
+                    class="trend-gridline"
+                    aria-hidden="true" />
+                <button
+                    v-for="row in series"
+                    :key="row.month"
+                    class="month-bar"
+                    :class="{
+                        selected: current?.month === row.month,
+                        'has-status': row.partial || row.total == null,
+                    }"
+                    :aria-label="`${row.month} 배당 ${format(row.total)}, ${row.count ?? '미확인'}회${row.partial ? ', 집계 중' : ''}`"
+                    @focus="selected = row.month"
+                    @click="selected = row.month">
+                    <div class="bars">
+                        <i
+                            v-if="compare && row.previousTotal != null"
+                            class="previous"
+                            :style="{
+                                height: `${(row.previousTotal / max) * 100}%`,
+                            }" /><i
+                            v-if="row.total != null"
+                            class="actual"
+                            :class="{ partial: row.partial }"
+                            :style="{
+                                height: `${(row.total / max) * 100}%`,
+                            }" /><span v-if="row.total == null" class="missing"
+                            >—</span
+                        >
+                    </div>
+                    <span class="month-label">
+                        <span>{{
+                            chartYear === 'rolling'
+                                ? row.month.slice(2).replace('-', '.')
+                                : `${Number(row.month.slice(5))}월`
+                        }}</span>
+                        <small
+                            v-if="row.partial && row.total != null"
+                            class="month-status partial"
+                            >부분</small
+                        >
+                        <small
+                            v-else-if="row.total == null"
+                            class="month-status"
+                            >미확인</small
+                        >
+                    </span>
+                </button>
+            </div>
         </div>
         <div v-else class="trend-empty" role="status">
             <span class="empty-icon" aria-hidden="true"
@@ -219,23 +251,32 @@
         margin: 24px 0 32px;
     }
     .dividend-trend header {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
         align-items: center;
         gap: 16px;
     }
     .dividend-trend h2 {
-        margin: 0 !important;
+        margin: 0;
+        font-size: 20px;
+        line-height: 28px;
+        font-weight: 600;
     }
-    .dividend-trend header p,
+    .trend-header-tools {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+    }
     .trend-note {
         color: var(--app-muted);
-        font-size: 0.8rem;
-        line-height: 1.7;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 16px;
+        line-height: 24px;
     }
     .trend-note {
         display: flex;
-        justify-self: center;
         align-items: center;
         gap: 12px;
         margin: 0;
@@ -243,24 +284,53 @@
     .trend-note span {
         white-space: nowrap;
     }
+    .trend-note span:last-child {
+        color: var(--app-accent);
+        font-weight: 600;
+    }
     .trend-controls {
-        grid-column: 3;
         display: flex;
-        gap: 6px;
         border-radius: 8px;
         background: var(--app-surface-muted);
         padding: 2px;
     }
     .trend-controls :deep(.p-button) {
         height: 32px;
+        min-height: 32px;
         padding: 0 10px;
-        font-size: 11px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 16px;
+        line-height: 24px;
+        border-radius: 6px;
+    }
+    .trend-controls :deep(.p-button[aria-pressed='true']) {
+        background: var(--app-surface);
+        color: var(--app-accent);
+        font-weight: 600;
+        box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+    }
+    .trend-guidance {
+        display: grid;
+        gap: 4px;
+        margin-top: 24px;
+    }
+    .trend-unit {
+        margin: 0;
+        color: var(--app-muted);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 16px;
+        line-height: 24px;
     }
     .trend-coverage,
     .trend-periods {
         font-size: 12px;
         color: var(--app-muted);
         margin: 8px 0;
+    }
+    .trend-coverage {
+        margin: 0;
+        font-size: 16px;
+        line-height: 24px;
     }
     .trend-periods summary {
         cursor: pointer;
@@ -271,42 +341,92 @@
         margin-top: 8px;
     }
     .trend-chart {
-        display: flex;
-        gap: 4px;
-        height: 220px;
         overflow-x: auto;
-        align-items: stretch;
-        border-bottom: 1px solid var(--app-border);
-        margin-top: 22px;
+        padding-bottom: 8px;
+        margin-top: 24px;
+    }
+    /* bd619d... keeps the twelve-month graphic readable inside its own scroll region. */
+    .trend-plot {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        position: relative;
+        min-width: 620px;
+        height: 224px;
+        padding: 24px 16px 0;
+        background: var(--app-surface-muted);
+        border-radius: 12px;
+    }
+    .trend-plot.rolling {
+        min-width: 1232px;
+    }
+    .trend-gridline {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--app-border);
+        opacity: 0.3;
+        pointer-events: none;
+    }
+    .trend-gridline:nth-child(1) {
+        top: 24px;
+    }
+    .trend-gridline:nth-child(2) {
+        top: 96px;
+        opacity: 0.2;
+    }
+    .trend-gridline:nth-child(3) {
+        top: 160px;
+        opacity: 0.2;
     }
     .month-bar {
-        flex: 1;
-        min-width: 36px;
+        flex: 0 0 44px;
+        min-width: 0;
+        z-index: 1;
         border: 0;
         background: transparent;
         color: var(--app-muted);
         cursor: pointer;
-        padding: 6px 2px;
-        font-size: 0.7rem;
+        padding: 0;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 16px;
+        line-height: 24px;
         display: flex;
         flex-direction: column;
-        justify-content: flex-end;
-        gap: 10px;
+        align-items: center;
+        gap: 8px;
+    }
+    .month-bar.has-status {
+        flex-basis: 48px;
+    }
+    .month-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .month-status {
+        font-size: 9px;
+        line-height: 9px;
+    }
+    .month-status.partial {
+        color: var(--app-brand-brown);
+        font-weight: 600;
     }
     .month-bar.selected {
         background: var(--app-surface-muted);
         border-radius: 6px;
     }
     .bars {
-        height: 174px;
+        height: 144px;
         display: flex;
-        gap: 3px;
+        gap: 6px;
         align-items: flex-end;
         justify-content: center;
         position: relative;
     }
     .bars i {
-        width: 35%;
+        width: 14px;
         min-height: 2px;
         border-radius: 4px 4px 0 0;
     }
@@ -315,11 +435,12 @@
         background: var(--app-accent);
     }
     .actual.partial {
-        opacity: 0.6;
+        opacity: 0.5;
+        border-top: 2px dashed var(--app-accent);
     }
     .previous,
     .gray {
-        background: #cbd5e1;
+        background: #94a3b8;
     }
     .missing {
         position: absolute;
@@ -345,15 +466,23 @@
     }
     .trend-note i {
         display: inline-block;
-        width: 8px;
-        height: 8px;
+        width: 12px;
+        height: 12px;
         border-radius: 2px;
-        margin-right: 4px;
+        margin-right: 6px;
+        vertical-align: middle;
     }
     .trend-title {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 10px;
+    }
+    .trend-title::before {
+        content: '';
+        flex: 0 0 10px;
+        height: 24px;
+        background: var(--app-accent);
+        border-radius: 2px;
     }
     .trend-empty {
         display: flex;
@@ -387,27 +516,10 @@
         font-size: 12px;
         line-height: 1.7;
     }
-    @media (max-width: 800px) {
+    @media (max-width: 639px) {
         .dividend-trend header {
-            grid-template-columns: minmax(0, 1fr) auto;
-            gap: 8px 12px;
-        }
-        .dividend-trend header > div:first-child {
-            grid-column: 1 / -1;
-        }
-        .trend-note {
-            justify-self: start;
-        }
-        .trend-controls {
-            grid-column: 2;
-        }
-    }
-    @media (max-width: 420px) {
-        .trend-note {
-            grid-column: 1 / -1;
-        }
-        .trend-controls {
-            justify-self: end;
+            flex-direction: column;
+            align-items: flex-start;
         }
     }
 </style>

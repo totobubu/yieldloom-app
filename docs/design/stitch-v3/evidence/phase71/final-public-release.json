@@ -1,0 +1,22 @@
+[
+  {
+    "base": "https://yieldloom-app.vercel.app/",
+    "status": 200,
+    "release": {
+      "schemaVersion": 1,
+      "commit": "016fcddda89e0f5285a65446e8859adde247c208",
+      "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+    },
+    "checkedAt": "2026-11-06T03:18:09.084Z"
+  },
+  {
+    "base": "https://totobubu.github.io/yieldloom-app/",
+    "status": 200,
+    "release": {
+      "schemaVersion": 1,
+      "commit": "016fcddda89e0f5285a65446e8859adde247c208",
+      "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+    },
+    "checkedAt": "2026-11-06T03:18:09.603Z"
+  }
+]

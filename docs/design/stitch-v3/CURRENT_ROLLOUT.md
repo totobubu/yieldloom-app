@@ -14,7 +14,7 @@
 | 시뮬레이터 |2|외부 최종 인계 미확인·공개PR 승인 차단 유지|허용된 고정 SHA/검증 인계|
 | 세율 비교 |3|외부 최종 인계 미확인|허용된 고정 SHA/검증 인계|
 
-[최신 운영 증거](PHASE71_RECEIPT_HEIGHT_PRODUCTION.md): main016fcddda89e0f5285a65446e8859adde247c208, Pages42153915739 성공, Vercel Production dpl_Cw1SSqGgWbDn1cBxwxeJyhP41MSa READY. 두 운영 주소의 릴리스/세 공개 메타데이터 결합 해시가 일치하고 새 글꼴2개도 bytes/SHA256이 원본과 같다. 기능/work/승격 CI는 각각4/4 성공했다. 승격 CI 이후 추가된 자동 Content Studio6개 JSON은 앱 코드 동일성·최신 자료 보존·상태/타입/빌드로 별도 검증했으며 최종 운영 트리가 로컬 검증 트리와 같다. 최종 main CI42153915815는 진행 중으로 앞선 성공과 구분한다.
+[최신 운영 증거](PHASE71_RECEIPT_HEIGHT_PRODUCTION.md): main016fcddda89e0f5285a65446e8859adde247c208, Pages42153915739 성공, Vercel Production dpl_Cw1SSqGgWbDn1cBxwxeJyhP41MSa READY. 두 운영 주소의 릴리스/세 공개 메타데이터 결합 해시가 일치하고 새 글꼴2개도 bytes/SHA256이 원본과 같다. 기능/work/승격 CI는 각각4/4 성공했다. 승격 CI 이후 추가된 자동 Content Studio6개 JSON은 앱 코드 동일성·최신 자료 보존·상태/타입/빌드로 별도 검증했으며 최종 운영 트리가 로컬 검증 트리와 같다. 최종 main CI42153915815도 정확한 운영 커밋016fcdd에서4/4 성공했다.
 
 공개 비교4조합/3기기에서 일반 직접주소·새로고침200, 쿼리·보이는 메뉴·홈/뒤로가기 제목을 확인했다. PC1440→Tablet834 전환120프레임 넘침0, Mobile390 공개 카드·실행 오류/넘침/쓰기0이다. 검색도두주소1440/390에서오류/넘침/쓰기0이다. 익명 계좌API401·문서 읽기0·읽기 작업0이며 실제 인증 계좌·고객PDF 종단 검증은 하지 않았다.
 

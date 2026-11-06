@@ -18,13 +18,15 @@ Pages [42153915739](https://github.com/totobubu/yieldloom-app/actions/runs/42153
 
 Mobile 전체+3.75px는 요약+7.25px, 실제 금융 미제공 안내-19.5px, 서버 저장 의미 안내+16px의 합이다. 요약 카드 조립은 후속 UI 대상으로 남는다. 실제 금융 상태/설명을 지우거나 예시 금액·빈 공간으로 전체 높이를 상쇄하지 않았다. 전체 native PNG·글꼴·금융 예시 문구 일치는 수용하지 않았다.
 
+추가390px 읽기 전용 진단에서 요약+7.25px는 내부 제목/배지 행+23.25px(86/62.75), 실제 설명-22px(20/42), 계좌·날짜·파일 행+10px(93/83), 그룹 간격-4px로 좁혔다. 원본은 제목 아이콘+문구2개 자식, 구현은 실제 영수증 유지 배지가 더해진3개 자식이며 줄 조립이 다르다. 다음 UI 단위는 해당 제목/배지 조립과 메타데이터 행간이다. 실제 상태 설명을 원본 예시 문구로 바꾸는 작업과 구분한다. [측정 분해](evidence/phase71/mobile-summary-deltas.json), [DOM 근거](evidence/phase71/mobile-summary-probe.json). 초기 진단의 잘못된 main 선택자는 실제 원본 body>div 구조로 바로잡았고 제품 회귀 실패가 아니다. 이 진단 동안 운영 코드는 추가로 바꾸지 않았다.
+
 ## 코드·자료와 CI의 구분
 
 기능 HEAD `85314d9`의 [42150103825](https://github.com/totobubu/yieldloom-app/actions/runs/42150103825), work `736c5fa`의 [42152205987](https://github.com/totobubu/yieldloom-app/actions/runs/42152205987), 승격 [42152257370](https://github.com/totobubu/yieldloom-app/actions/runs/42152257370)는 각각 application·portfolio-api·browser·registration-browser **4/4 성공**이다. 각 PR의 테스트 checkout은 GitHub 합성 병합 커밋이며 source HEAD와 구분한다. 기능 Preview와 work Preview의 정확한 release SHA·READY도 확인했다.
 
 승격 전체 CI는 base `64f327e`의 합성 병합 `228f93a`를 검사했다. 검사 중 자동 자료 갱신 `f7e7d87`가 추가됐다. 앱·테스트·빌드/CI 코드 동일성을 확인하고 최신 자료를 포함한 로컬 병합에서 데이터 상태 검사와 타입 포함 빌드를 통과했다. 추가6개 JSON 및 이전 자동 갱신을 합친17개 Content Studio JSON의 유효성·해시·최신 main과의 바이트 동일성을 확인했다. 최종 운영 트리 `e01c056bec6bc0c96566b8b8b745a3062d86031c`는 그 로컬 검증 트리와 정확히 같다. 자료 값을 수동 편집하지 않았다. [병합 계보](evidence/phase71/merge-provenance.json), [자료 보존](evidence/phase71/latest-data-integrity.json).
 
-최종 main의 [42153915815](https://github.com/totobubu/yieldloom-app/actions/runs/42153915815)는 기록 작성 중 진행 중이다. 앞선 성공과 별개이며 완료 후 상태를 갱신한다.
+최종 main016fcdd의 [42153915815](https://github.com/totobubu/yieldloom-app/actions/runs/42153915815)도 application·portfolio-api·browser·registration-browser **4/4 성공**했다. 앞선 PR/work 성공과 별도로 정확한 운영 커밋의 자동 재검사 완료를 확인했다. [최종 CI 기록](evidence/phase71/main-ci.json).
 
 두 실제 운영 주소의 유사·테마 비교4조합에서1440/834/390px, 일반 직접주소200·새로고침200·쿼리 보존·보이는 메뉴 이동·기초자산 제목·홈/뒤로가기 제목을 확인했다. PC→Tablet 전환120프레임 넘침0, 공개 검색2주소1440/390px도 오류/넘침/쓰기0이었다. 익명 계좌 API는401·문서 읽기0·읽기 작업0이다. 기존 Node 인증서 검증 HTTPS→Chromium 전달을 사용했고 TLS 검증을 끄지 않았다. 실제 인증 계좌/고객PDF/운영 DB 쓰기는 하지 않았다.
 

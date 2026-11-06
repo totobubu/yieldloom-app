@@ -1,0 +1,160 @@
+2026-11-06T03:02:39.1807602Z PASS: real XLSX/CSV → explicit broker columns → review → in-memory commit and account statement save/read/delete; typing/mapping zero requests; six mapping-dialog widths and four portfolio widths
+2026-11-06T03:03:43.0230153Z PASS: automatic authenticated eight-case report/four independent source orders, full search/sort, document scroll, raw detail, account/error purge, mobile/dark, zero writes.
+2026-11-06T03:04:33.4911940Z PASS: dynamic source fields, explicit per-field Select approval, cancel=0 writes, one atomic save, immutable source/audit, reload persistence, precise unresolved count, pinned/horizontal header alignment, no extra reads on selection/scroll/sort, mobile/dark; production writes=0
+2026-11-06T03:04:42.5913830Z PASS 1440: calendar boundaries, local filters/no reads, immediate save, rollback/retry, mixed sums, undo, revision conflict, keyboard, duplicate guard, late account isolation, light/dark and immutable fixture.
+2026-11-06T03:04:46.4913402Z PASS 390: calendar boundaries, local filters/no reads, immediate save, rollback/retry, mixed sums, undo, revision conflict, keyboard, duplicate guard, late account isolation, light/dark and immutable fixture.
+2026-11-06T03:04:53.4956220Z PASS 1440: pair selection/approval/shared internal ID, reload, note-only save, error retry, paired detach, read-only, filters without requests, confirmed exclusion, dark/mobile and late account isolation.
+2026-11-06T03:04:59.7110706Z PASS 390: pair selection/approval/shared internal ID, reload, note-only save, error retry, paired detach, read-only, filters without requests, confirmed exclusion, dark/mobile and late account isolation.
+2026-11-06T03:05:09.9086698Z PASS: legacy and family account cash review, principal exclusion, mixed funding, consent, exact settlement, reset, USD separation and mobile layout
+2026-11-06T03:05:11.2538710Z PASS: selected account edits reuse loaded state without revalidating other accounts, desktop/mobile
+2026-11-06T03:05:24.5181282Z PASS: private calendar, monthly/yearly, unknown history, account/date filters, read-only ledgers, 4 viewports, dark, reload and logout race
+2026-11-06T03:05:35.3004701Z PASS: corrections/history, layout reuse/change detection, account XIRR, reconciliation, logout, mobile/themes; inputs/presets/calculations add zero API calls; correction preview/commit read 2/5 documents.
+2026-11-06T03:06:07.4926074Z PASS: review filters preserve original row identity; all 4716 rows in 24 batches and off-screen edits are validated/saved with an active filter; no API calls during edits; desktop/mobile light/dark layouts. Extraction and writes are synthetic fixtures.
+2026-11-06T03:06:12.9076408Z PASS mobile light: visible password/network errors, preserved file, retry and focused review; 3 previews, 0 ledger writes
+2026-11-06T03:06:17.6405804Z PASS mobile dark: visible password/network errors, preserved file, retry and focused review; 3 previews, 0 ledger writes
+2026-11-06T03:06:27.7682688Z PASS actual CSV/XLSX (first sheet)/holdings → one explicit preview per extraction → three rows/zero/missing values → scope invalidation → next without API → Mobile edits/full six-row commit and Mobile→Tablet filtered101-row commit with original row identity; four widths, no page overflow, no production writes.
+2026-11-06T03:06:40.8640605Z PASS public partial: 4 widths × light/dark; full names, 44px buttons, links, paging/reload, unchanged metrics, no writes/errors/overflow
+2026-11-06T03:06:42.9368311Z PASS anonymous 1440: public review payment, admin boundary, no extra quote requests
+2026-11-06T03:06:44.2028637Z PASS member 390: public review payment, admin boundary, no extra quote requests
+2026-11-06T03:06:45.4389794Z PASS unverified-admin 390: public review payment, admin boundary, no extra quote requests
+2026-11-06T03:06:47.7250543Z PASS admin 1440: public review payment, admin boundary, no extra quote requests
+2026-11-06T03:06:51.0105370Z PASS admin 390: public review payment, admin boundary, no extra quote requests
+2026-11-06T03:06:53.2363975Z PASS QLDY 1440: three calendar months, missing data, full monthly totals and no extra reads
+2026-11-06T03:06:54.5017782Z PASS daily 1440: three calendar months, missing data, full monthly totals and no extra reads
+2026-11-06T03:06:56.1127338Z PASS QLDY 390: three calendar months, missing data, full monthly totals and no extra reads
+2026-11-06T03:06:57.3647696Z PASS daily 390: three calendar months, missing data, full monthly totals and no extra reads
+2026-11-06T03:07:00.8083436Z PASS MSTY historical 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:02.5418172Z PASS MSTY crossing 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:03.8306230Z PASS MSTY legacy 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:05.1261009Z PASS MSTY first 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:07.0122691Z PASS MSTY zero 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:08.7421730Z PASS TSLY historical 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:10.0985805Z PASS TSLY crossing 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:11.4489266Z PASS TSLY legacy 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:12.7685065Z PASS TSLY first 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:14.5817407Z PASS TSLY zero 1440: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:17.5986814Z PASS MSTY historical 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:19.0804604Z PASS MSTY crossing 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:20.4035098Z PASS MSTY legacy 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:21.7019312Z PASS MSTY first 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:24.6116616Z PASS MSTY zero 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:27.5449402Z PASS TSLY historical 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:28.8236803Z PASS TSLY crossing 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:30.1113982Z PASS TSLY legacy 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:31.4315632Z PASS TSLY first 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:34.3246498Z PASS TSLY zero 390: eligibility, missing values, light/dark, single API read
+2026-11-06T03:07:40.1495290Z PASS 1440: month navigation, exact close, missing/weekend dates, table toggle, no extra API reads
+2026-11-06T03:07:45.1605966Z PASS 768: month navigation, exact close, missing/weekend dates, table toggle, no extra API reads
+2026-11-06T03:07:51.2353551Z PASS 390: month navigation, exact close, missing/weekend dates, table toggle, no extra API reads
+2026-11-06T03:07:57.3004536Z PASS 360: month navigation, exact close, missing/weekend dates, table toggle, no extra API reads
+2026-11-06T03:08:01.8898473Z PASS stale history: current month uses today rather than latest quoted month
+2026-11-06T03:08:02.9614556Z PASS empty: no invented calendar prices
+2026-11-06T03:08:04.1927196Z PASS entry card: verified cumulative labels/periods and three export ratios; incomplete history and ticker continuity; no API requests or page errors.
+2026-11-06T03:08:05.8519167Z PASS anonymous 1440: role visibility, single ticker collection, publication wait, update without extra ticker reads
+2026-11-06T03:08:06.9699653Z PASS member 390: role visibility, single ticker collection, publication wait, update without extra ticker reads
+2026-11-06T03:08:15.7943424Z PASS admin 1440: role visibility, single ticker collection, publication wait, update without extra ticker reads
+2026-11-06T03:08:25.4753441Z PASS admin 390: role visibility, single ticker collection, publication wait, update without extra ticker reads
+2026-11-06T03:08:26.2461248Z PASS login: no stray > beside Google button
+2026-11-06T03:08:29.2064939Z PASS BAC 1440 light: official partial evidence, unknown ex-date, reference share data, one ticker read, no collection writes
+2026-11-06T03:08:31.1845179Z PASS BAC 390 dark: official partial evidence, unknown ex-date, reference share data, one ticker read, no collection writes
+2026-11-06T03:08:50.0251017Z PASS: 3 original content frame contracts at 1600/1280/768/390; shell header grid independent; source PC984/Tablet720/Mobile358 private slots; no horizontal overflow
+2026-11-06T03:09:01.1360491Z PASS: detail/price source spacing, 4/2/1 metrics, stacked facts, feedback height at 4 widths; unchanged TTM; no overflow
+2026-11-06T03:09:04.8074965Z PASS price-events/1280: exact dates, source precedence, split/zero/unknown/missing, no invented row, one shared read, ticker isolation
+2026-11-06T03:09:08.3936209Z PASS price-events/768: exact dates, source precedence, split/zero/unknown/missing, no invented row, one shared read, ticker isolation
+2026-11-06T03:09:11.4296367Z PASS price-events/390: exact dates, source precedence, split/zero/unknown/missing, no invented row, one shared read, ticker isolation
+2026-11-06T03:09:36.7683503Z PASS holdings/1280: desktop table/mobile cards, exact currencies, local filter, no writes
+2026-11-06T03:09:39.6786811Z PASS holdings/768: desktop table/mobile cards, exact currencies, local filter, no writes
+2026-11-06T03:09:42.5362586Z PASS holdings/390: desktop table/mobile cards, exact currencies, local filter, no writes
+2026-11-06T03:09:43.1635810Z PASS pagination: 13 rows retained across pages, null amount stays unknown, filtering resets page
+2026-11-06T03:09:47.7006767Z PASS metrics/complete/1280: nine cards, strict TTM, unknown fields, one cached public read
+2026-11-06T03:09:50.6363695Z PASS metrics/complete/768: nine cards, strict TTM, unknown fields, one cached public read
+2026-11-06T03:09:53.5165757Z PASS metrics/complete/390: nine cards, strict TTM, unknown fields, one cached public read
+2026-11-06T03:09:56.3547619Z PASS metrics/partial/1280: nine cards, strict TTM, unknown fields, one cached public read
+2026-11-06T03:09:59.2223519Z PASS metrics/partial/768: nine cards, strict TTM, unknown fields, one cached public read
+2026-11-06T03:10:02.0532835Z PASS metrics/partial/390: nine cards, strict TTM, unknown fields, one cached public read
+2026-11-06T03:10:04.0879539Z PASS schedule/announced/1280: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T03:10:06.1066654Z PASS schedule/announced/768: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T03:10:08.1038071Z PASS schedule/announced/390: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T03:10:10.1333029Z PASS schedule/forecast/1280: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T03:10:12.1656372Z PASS schedule/forecast/768: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T03:10:14.1557666Z PASS schedule/forecast/390: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T03:10:16.1458083Z PASS schedule/unconfirmed/1280: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T03:10:18.1363909Z PASS schedule/unconfirmed/768: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T03:10:20.1311746Z PASS schedule/unconfirmed/390: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T03:10:24.3759010Z PASS dividend-navigation/1280: calendar/future unknown, both years, rolling retained, month focus, missing source disabled, no extra reads
+2026-11-06T03:10:27.9747222Z PASS dividend-navigation/768: calendar/future unknown, both years, rolling retained, month focus, missing source disabled, no extra reads
+2026-11-06T03:10:31.5066955Z PASS dividend-navigation/390: calendar/future unknown, both years, rolling retained, month focus, missing source disabled, no extra reads
+2026-11-06T03:10:37.4578840Z PASS 1440: QLDY real snapshot, precision, missing ROC amount, shared source, disclosure, help, no extra reads, light/dark layout
+2026-11-06T03:10:44.8241350Z PASS 768: QLDY real snapshot, precision, missing ROC amount, shared source, disclosure, help, no extra reads, light/dark layout
+2026-11-06T03:10:52.4666506Z PASS 390: QLDY real snapshot, precision, missing ROC amount, shared source, disclosure, help, no extra reads, light/dark layout
+2026-11-06T03:11:00.5358516Z PASS 360: QLDY real snapshot, precision, missing ROC amount, shared source, disclosure, help, no extra reads, light/dark layout
+2026-11-06T03:11:06.5809485Z PASS: SPYI precision and separate fiscal scope; TXN empty ROC and quarterly evidence
+2026-11-06T03:11:12.1696234Z PASS src/components/portfolio/PortfolioImportReview.vue: dark target and document isolation
+2026-11-06T03:11:12.3538975Z PASS src/components/portfolio/TossPdfImportReview.vue: dark target and document isolation
+2026-11-06T03:11:12.5536884Z PASS src/components/portfolio/PortfolioInsights.vue: dark target and document isolation
+2026-11-06T03:11:12.7312806Z PASS src/components/stock/DividendRocChart.vue: dark target and document isolation
+2026-11-06T03:11:24.9400514Z PASS priority/1280: real ETF reference without filtering/fetching, scoped currencies/unknown/viewer, four unchanged KPIs, inline/modal detail and real reconciliation; no writes
+2026-11-06T03:11:36.6716524Z PASS priority/768: real ETF reference without filtering/fetching, scoped currencies/unknown/viewer, four unchanged KPIs, inline/modal detail and real reconciliation; no writes
+2026-11-06T03:11:48.6918818Z PASS priority/390: real ETF reference without filtering/fetching, scoped currencies/unknown/viewer, four unchanged KPIs, inline/modal detail and real reconciliation; no writes
+2026-11-06T03:11:51.0978276Z PASS public: 1280/768/390/320px, navigation, RBAC visibility, no overflow or JS errors
+2026-11-06T03:12:08.2054343Z PASS synthetic admin: 1280/768/390/320px, navigation, RBAC visibility, no overflow or JS errors
+2026-11-06T03:12:14.9607276Z PASS: computed TTM preserved, no public personal API, feedback validation, independent KRW/USD totals, missing quote exclusion, date-basis cache reuse, account permission preserved, no mutations
+2026-11-06T03:12:20.6347609Z PASS 1280: 10 registration states; extraction-only POST; no account writes, errors or overflow
+2026-11-06T03:12:25.9361082Z PASS 768: 10 registration states; extraction-only POST; no account writes, errors or overflow
+2026-11-06T03:12:30.4979422Z PASS 390: 10 registration states; extraction-only POST; no account writes, errors or overflow
+2026-11-06T03:12:34.7583679Z PASS 1280: single preview/ZIP independent, current PNG dispatch and720px, no new data reads; legacy export analytics retained; no errors/overflow
+2026-11-06T03:12:39.1203631Z PASS 768: single preview/ZIP independent, current PNG dispatch and720px, no new data reads; legacy export analytics retained; no errors/overflow
+2026-11-06T03:12:43.9475702Z PASS 390: single preview/ZIP independent, current PNG dispatch and720px, no new data reads; legacy export analytics retained; no errors/overflow
+2026-11-06T03:12:50.4140022Z PASS share tools/1280: candidate allowlist/max3/add/remove and scoped reads; local preset validation/save/apply/delete; no overflow/errors
+2026-11-06T03:12:57.1472191Z PASS share tools/768: candidate allowlist/max3/add/remove and scoped reads; local preset validation/save/apply/delete; no overflow/errors
+2026-11-06T03:13:06.6598538Z PASS share tools/390: candidate allowlist/max3/add/remove and scoped reads; local preset validation/save/apply/delete; no overflow/errors
+2026-11-06T03:13:14.8184970Z PASS share metrics/1280: comparison/calendar/unavailable entry copy and clipboard follow selection; ZIP equality; latest+TTM retained; no data reads/errors/overflow
+2026-11-06T03:13:24.5769101Z PASS share metrics/768: comparison/calendar/unavailable entry copy and clipboard follow selection; ZIP equality; latest+TTM retained; no data reads/errors/overflow
+2026-11-06T03:13:36.0473386Z PASS share metrics/390: comparison/calendar/unavailable entry copy and clipboard follow selection; ZIP equality; latest+TTM retained; no data reads/errors/overflow
+2026-11-06T03:13:41.8520657Z PASS controls/1280/Etc/UTC: localized month and limits, original KPI values, today/prev/next, resize, popup selection/bounds, full text fit, no extra data reads/writes/overflow
+2026-11-06T03:13:46.6728295Z PASS controls/768/Asia/Seoul: localized month and limits, original KPI values, today/prev/next, resize, popup selection/bounds, full text fit, no extra data reads/writes/overflow
+2026-11-06T03:13:51.4519135Z PASS controls/390/America/Los_Angeles: localized month and limits, original KPI values, today/prev/next, resize, popup selection/bounds, full text fit, no extra data reads/writes/overflow
+2026-11-06T03:13:55.0482669Z PASS analysis/normal/1280:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+2026-11-06T03:13:57.6518609Z PASS analysis/unknown/1280:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+2026-11-06T03:14:00.6531816Z PASS analysis/normal/768:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+2026-11-06T03:14:03.1686598Z PASS analysis/unknown/768:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+2026-11-06T03:14:06.6859687Z PASS analysis/normal/390:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+2026-11-06T03:14:09.2021284Z PASS analysis/unknown/390:12 months, actual cancellation amounts, no-record/outside/unknown/zero distinction, preserved tools/chart, no extra reads/writes/errors/overflow
+2026-11-06T03:14:14.8599356Z PASS ledger: five widths, raw zero/missing currency, account scope, local filters, all101 rows by paging, XIRR/closed confirmation reset, dark, zero API. Full visual acceptance pending.
+2026-11-06T03:14:16.8420857Z PASS comparison/underlying/1280: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+2026-11-06T03:14:18.2830719Z PASS comparison/similar/1280: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+2026-11-06T03:14:19.6553469Z PASS comparison/theme/1280: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+2026-11-06T03:14:21.5979059Z PASS comparison/underlying/768: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+2026-11-06T03:14:23.7825398Z PASS comparison/similar/768: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+2026-11-06T03:14:25.2198779Z PASS comparison/theme/768: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+2026-11-06T03:14:27.6751742Z PASS comparison/underlying/390: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+2026-11-06T03:14:31.9830821Z PASS comparison/similar/390: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+2026-11-06T03:14:36.2291370Z PASS comparison/theme/390: explicit query, zero vs unavailable, real links/provenance, structured results, no personal writes/overflow/errors
+2026-11-06T03:15:15.5652293Z PASS comparison title: query/fallback and search/history; query-only changes reuse one directory read and make no detail requests.
+2026-11-06T03:15:22.2388484Z PASS cold/failed icon font: both views, viewport changes, every measured frame bounded.
+2026-11-06T03:15:28.2555740Z PASS complete/1280: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:15:33.7387672Z PASS complete/768: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:15:40.0876010Z PASS complete/390: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:15:42.6647910Z PASS partial/1280: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:15:45.6460755Z PASS partial/768: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:15:49.1242251Z PASS partial/390: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:15:51.2607602Z PASS conflict/1280: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:15:53.9880535Z PASS conflict/768: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:15:57.1425140Z PASS conflict/390: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:15:59.9264078Z PASS zero/1280: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:16:02.6470732Z PASS zero/768: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:16:05.7633505Z PASS zero/390: distinct period, coverage, 720 PNG+ZIP/copy metadata, no crop/overflow
+2026-11-06T03:16:08.0325929Z PASS 1280: all/single KRW/USD/viewer scopes, missing quote exclusion, restore-all, no new API calls or writes
+2026-11-06T03:16:09.6027952Z PASS 768: all/single KRW/USD/viewer scopes, missing quote exclusion, restore-all, no new API calls or writes
+2026-11-06T03:16:11.1667358Z PASS 390: all/single KRW/USD/viewer scopes, missing quote exclusion, restore-all, no new API calls or writes
+2026-11-06T03:16:13.7338897Z PASS summary/1280:10-column table or labeled cards, independent currencies, missing exclusion, scope no fetch/write/overflow/errors
+2026-11-06T03:16:15.7196879Z PASS summary/768:10-column table or labeled cards, independent currencies, missing exclusion, scope no fetch/write/overflow/errors
+2026-11-06T03:16:17.6540892Z PASS summary/390:10-column table or labeled cards, independent currencies, missing exclusion, scope no fetch/write/overflow/errors
+2026-11-06T03:16:19.9627049Z PASS summary/paging:12 rows, synchronized desktop/mobile pages, zero baseline/value vs missing quote, no extra reads
+2026-11-06T03:16:23.3067375Z PASS: 4 submenu links reach and focus their exact destination; growth is explicitly pending; no dialogs, API writes or JavaScript errors
+2026-11-06T03:16:27.2614584Z PASS 1440px: shortcuts, keyboard selection, URL, search/empty, reset, no filter requests, theme/reload, no overflow/errors
+2026-11-06T03:16:30.7493784Z PASS 768px: shortcuts, keyboard selection, URL, search/empty, reset, no filter requests, theme/reload, no overflow/errors
+2026-11-06T03:16:34.1794244Z PASS 390px: shortcuts, keyboard selection, URL, search/empty, reset, no filter requests, theme/reload, no overflow/errors
+2026-11-06T03:16:37.6029214Z PASS 360px: shortcuts, keyboard selection, URL, search/empty, reset, no filter requests, theme/reload, no overflow/errors
+2026-11-06T03:16:53.7808806Z PASS mock end-to-end, keyboard/mobile/dark, late result isolation, duplicate guard, disconnect, error/retry and reopen. No external requests or browser storage.
+2026-11-06T03:17:23.5336148Z PASS Pages comparison: native HTML200, view/query preservation, refresh200, unknown route404, no writes.

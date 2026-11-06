@@ -1,0 +1,14 @@
+{
+  "run": 42211614285,
+  "job": 127871348914,
+  "head": "7b13ccf362a31f1f850e0f51932bdae907a1d9aa",
+  "install": "passed after13m05s",
+  "failedStepDurationSeconds": 39,
+  "actualDecodedLogSource": "connected GitHub fetch_workflow_job_logs",
+  "error": "AssertionError false !== true",
+  "location": "tests/broker-confirmation.browser.mjs:117",
+  "caller": "tests/broker-confirmation.browser.mjs:270",
+  "meaning": "Space activation did not leave confirmation checked",
+  "artifactDownload": "403; no retry/direct signed URL/authentication bypass attempted",
+  "cliLogReader": "returned mixed registration output; not used to identify failure"
+}

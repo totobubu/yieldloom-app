@@ -19,3 +19,13 @@
 타입 포함 build·lint오류0(기존경고54)·Node819개를 통과했다. [빌드](evidence/phase80-feedback/build.txt), [lint](evidence/phase80-feedback/lint.txt), [Node](evidence/phase80-feedback/node-summary.txt). 마지막 촬영 조건 보정은 검증기만 바뀌었으며 앱 소스가 같아819/build 결과를 재사용했다. 최종 검사 코드의 별도 scoped lint도 통과했다. 원격 CI·Preview·운영 제공은 이 구현 시점 문서의 범위가 아니며 해당 PR의 최종 본문과 후속 운영 기록을 따른다.
 
 전체14종/20기기 시안 원본 일치·PC 셸 폭·미정 금융 지표·원문 보관/권한 계약·없는 상세 프레임과 실제 인증 계좌/고객PDF 검증은 여전히 남는다. 시뮬레이터 공개 PR 승인 차단을 유지한다. 이전 [운영 검증 기록](PHASE79_PRODUCTION.md)은 원격 문서 체크포인트의 내용을 그대로 통합했으며 이번에 다시 수행한 검증으로 세지 않는다.
+
+## 첫 원격 CI의 열 연결 키보드 검사와 동기화 보정
+
+7b13ccf의 앱/API/등록 검사는 통과했고, 일반 브라우저는 Chromium 설치13분05초 성공 후39초 만에 기존 broker-confirmation의 확인란 Space 검사에서 실패했다. [첫 상태](evidence/phase80-feedback/feature-ci-first.json), [실패 위치](evidence/phase80-feedback/feature-first-failure.json). CLI 로그가 다른 등록 작업 내용과 섞여 있어 연결된 GitHub 도구의 실제 job 로그로 line117/caller270을 확인했다. 진단 아티팩트는403으로 다운로드하지 못했으며 인증·네트워크·서명 URL로 우회하지 않았다.
+
+동일한 로컬 기본 검사는 통과했다. 설치된 PrimeVue4.5.3 Select는 선택 후 비동기 hide에서 원래 입력으로 포커스를 복귀한다. 기존 검사에서는 옵션 클릭 완료 직후 확인란을 프로그램으로 포커스해 이 비동기 작업과 경합할 수 있었다. Select 닫힘 callback만50ms, Space 누름100ms로 지연을 주입하자 확인란이 focus/unchecked 상태에서 combobox로 포커스를 잃고 unchecked로 남는 같은 실패를 재현했다. [이전 재현](evidence/phase80-feedback/broker-focus-delayed-before.txt), [계약·주입·한계](evidence/phase80-feedback/select-focus-contract.json). 당시 CI에 포커스 추적이 없으므로 실제 CI 타이밍까지 확정하지는 않는다.
+
+choose helper에서 listbox가 닫힐 때까지 기다린 뒤 확인란의 enabled와 실제 focus를 검증하고 기존 Space→checked 검사를 수행하도록 했다. 체크 상태를 강제로 대입하거나 disabled를 우회하지 않았다. 같은 tick 동의 초기화·명의자/계좌/파일/열/통화 변경·busy·직접 submit 거절·정확한3회 preview/9회 명시적 검사·FormData 조건도 그대로다. 지연 주입과 기본 전체3폭을 모두 통과했다. [지연 후](evidence/phase80-feedback/broker-focus-delayed-after.txt), [기본 후](evidence/phase80-feedback/broker-confirmation-final.txt). 이 후속 변경은 검사/문서뿐이며 의견 폼 앱 소스와 이전819/build 결과의 대상은 같다. 새 최종 head의 원격CI는 별도로 수행한다.
+
+추가 로컬 셸 측정에서 합성 계좌 모듈이 로드되지 않아 판단에 쓰지 않았고, 작업별 Vite 생성 캐시를 분리했다. 설치된 의존성·lockfile·제품 설정은 바꾸지 않았다. [로컬 캐시 범위](evidence/phase80-feedback/local-cache-isolation.json). 이 실패를 실계좌나 제품 권한 결함으로 분류하지 않는다.

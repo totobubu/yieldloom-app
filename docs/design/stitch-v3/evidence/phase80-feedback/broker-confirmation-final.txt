@@ -1,0 +1,1 @@
+PASS: manual/preset confirmation, same-tick invalidation, all scope/settings changes, busy/direct submit, keyboard and unchanged FormData; only explicit synthetic inspection requests. No real account/PDF/DB writes.

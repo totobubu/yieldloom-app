@@ -1,0 +1,25 @@
+from pathlib import Path
+import subprocess,os,sys
+p=Path('tests/.phase80-broker-focus-probe.mjs');assert not p.exists();assert not Path('.phase74-broker-confirm.html').exists()
+s=Path('tests/broker-confirmation.browser.mjs').read_text()
+needle="        await page.goto(new URL('/.phase74-broker-confirm.html', base).href);"
+probe='''        await page.addInitScript(() => {
+            const schedule = window.setTimeout.bind(window);
+            window.__delayedSelectHides = 0;
+            window.setTimeout = (fn, delay, ...args) => {
+                if (delay === 0 && typeof fn === 'function' && /_hide/.test(String(fn))) {
+                    window.__delayedSelectHides++;
+                    return schedule(fn, 50, ...args);
+                }
+                return schedule(fn, delay, ...args);
+            };
+        });
+'''
+assert s.count(needle)==1;s=s.replace(needle,probe+needle)
+s=s.replace("            await page.keyboard.press('Space');\n            assert.equal(await check.isChecked(), true);", "            const before = await check.evaluate(e=>({focused:e===document.activeElement,disabled:e.disabled,checked:e.checked,activeRole:document.activeElement?.getAttribute('role'),delayed:window.__delayedSelectHides}));\n            await page.keyboard.press('Space', {delay:100});\n            const after = await check.evaluate(e=>({focused:e===document.activeElement,disabled:e.disabled,checked:e.checked,activeRole:document.activeElement?.getAttribute('role'),delayed:window.__delayedSelectHides}));\n            console.log(JSON.stringify({width,before,after}));\n            assert.equal(await check.isChecked(), true);")
+p.write_text(s)
+try:
+ env=dict(os.environ,CHROMIUM_PATH='/usr/bin/chromium',UI_BASE_URL='http://127.0.0.1:5282',FAMILY_TEST_PYTHON='/tmp/yieldloom-phase32-venv/bin/python')
+ with open(sys.argv[1],'w') as out:r=subprocess.run(['node',str(p)],env=env,stdout=out,stderr=subprocess.STDOUT)
+ print({'probeExit':r.returncode,'log':sys.argv[1]})
+finally:p.unlink()

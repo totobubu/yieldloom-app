@@ -1,0 +1,7 @@
+{
+  "firstFailure": "New owner-name assertion caught mojibake in inline synthetic HTML without charset.",
+  "fix": "Added meta charset=UTF-8 to the intercepted test page. Product index encoding was already UTF-8. Assertions retained.",
+  "finalResult": "9 role/type cases x3 widths passed, zero API/auth access",
+  "allDataSynthetic": true,
+  "realAccountCustomerPdfTested": false
+}

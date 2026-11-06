@@ -1,7 +1,7 @@
 <script setup>
     import InfoHelp from '@/components/common/InfoHelp.vue';
     import Button from 'primevue/button';
-    import { computed, ref } from 'vue';
+    import { computed, ref, watch } from 'vue';
     import { monthlyDividendSeries } from '@/services/stockAnalysis';
     const props = defineProps({
         rows: { type: Array, default: () => [] },
@@ -11,6 +11,34 @@
     const selected = ref(null),
         length = ref(12),
         chartYear = ref('all');
+    const chart = ref(null);
+    // Preserve the active month inside this scroller when its width changes.
+    // Scroll only this element: never refocus, change selection or move the document.
+    watch(
+        chart,
+        (element, _previous, onCleanup) => {
+            if (!element || typeof ResizeObserver === 'undefined') return;
+            const observer = new ResizeObserver(() => {
+                if (chart.value !== element) return;
+                const active = element.ownerDocument.activeElement;
+                if (
+                    !element.contains(active) ||
+                    !active?.classList.contains('month-bar')
+                )
+                    return;
+                const clip = element.getBoundingClientRect();
+                const rect = active.getBoundingClientRect();
+                const left = clip.left + element.clientLeft;
+                const right = left + element.clientWidth;
+                if (rect.left < left) element.scrollLeft -= left - rect.left;
+                else if (rect.right > right)
+                    element.scrollLeft += rect.right - right;
+            });
+            observer.observe(element);
+            onCleanup(() => observer.disconnect());
+        },
+        { flush: 'post' }
+    );
     const years = computed(() => {
         const year = Number(props.asOf.slice(0, 4));
         return Number.isFinite(year) && year > 0 ? [year, year - 1] : [];
@@ -158,6 +186,7 @@
         </details>
         <div
             v-if="series.some((row) => row.total != null)"
+            ref="chart"
             class="trend-chart"
             role="group"
             aria-label="월별 주당 배당금 차트">

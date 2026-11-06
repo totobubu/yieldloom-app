@@ -1,0 +1,1 @@
+PASS: computed TTM preserved, no public personal API, feedback validation, independent KRW/USD totals, missing quote exclusion, date-basis cache reuse, account permission preserved, no mutations

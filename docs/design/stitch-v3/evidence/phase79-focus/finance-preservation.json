@@ -1,0 +1,14 @@
+{
+  "calculationBlockUnchanged": true,
+  "calculationBlockSha256": "f998b8800e72e829c4e4d5d6a13207b578f3f42f044af4cdf5b7e015c33a75e2",
+  "servicesApiLibPublicDependenciesChanged": false,
+  "scope": "Observer only changes own horizontal scrollLeft. Account labels do not modify props, snapshots or permission predicates. Real accounts/customerPDF and server billing unverified.",
+  "checkedUnchangedPaths": [
+    "lib",
+    "api",
+    "src/services",
+    "public",
+    "package.json",
+    "package-lock.json"
+  ]
+}

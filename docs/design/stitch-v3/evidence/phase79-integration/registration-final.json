@@ -1,0 +1,110 @@
+{
+  "result": "passed",
+  "screenshots": "/tmp/yieldloom-asset-management-review",
+  "requests": 21,
+  "reads": [
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?familyId=__all__",
+      "documents": "0",
+      "operations": "1"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=ensurePersonal",
+      "documents": "1",
+      "operations": "1"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=createAccount",
+      "documents": "1",
+      "operations": "1"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?familyId=__all__",
+      "documents": "2",
+      "operations": "2"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=addManagedProfile",
+      "documents": "1",
+      "operations": "1"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?familyId=__all__",
+      "documents": "2",
+      "operations": "2"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=createAccount",
+      "documents": "1",
+      "operations": "1"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?familyId=__all__",
+      "documents": "3",
+      "operations": "2"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=inspectAccountDocument",
+      "documents": "0",
+      "operations": "0"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=inspectAccountDocument",
+      "documents": "0",
+      "operations": "0"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=inspectAccountDocument",
+      "documents": "0",
+      "operations": "0"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=createAccount",
+      "documents": "1",
+      "operations": "1"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?familyId=__all__",
+      "documents": "4",
+      "operations": "2"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=preview",
+      "documents": "3",
+      "operations": "3"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=validateImport",
+      "documents": "3",
+      "operations": "3"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=commit",
+      "documents": "11",
+      "operations": "11"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?familyId=__all__",
+      "documents": "4",
+      "operations": "2"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=inspectAccountDocument",
+      "documents": "0",
+      "operations": "0"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=createAccount",
+      "documents": "1",
+      "operations": "1"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?familyId=__all__",
+      "documents": "5",
+      "operations": "2"
+    },
+    {
+      "url": "http://127.0.0.1:5280/api/family-portfolio?action=preview"
+    }
+  ]
+}

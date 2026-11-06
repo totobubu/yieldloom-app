@@ -1,0 +1,13 @@
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1144906Z node:internal/modules/run_main:107
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1145296Z     triggerUncaughtException(
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1145587Z     ^
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1145656Z
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1145766Z locator.waitFor: Timeout 15000ms exceeded.
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1145932Z Call log:
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1146802Z   - waiting for getByRole('button', { name: '테스트증권 · 본인 계좌 · ****1234', exact: true }) to be visible
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1147171Z
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1147405Z     at /home/runner/work/yieldloom-app/yieldloom-app/tests/asset-management.browser.mjs:123:10 {
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1147686Z   name: 'TimeoutError'
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1147890Z }
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1147993Z
+registration-browser	Existing registration flows with an opt-in synthetic PDF and memory API	2026-11-06T10:09:22.1148051Z Node.js v24.22.2

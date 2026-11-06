@@ -1,0 +1,23 @@
+[
+  {
+    "width": 1280,
+    "sameDimensions": true,
+    "identicalDefaultPixels": true,
+    "differenceBounds": null,
+    "scope": "same viewport/DPR2/fixed data/animations disabled; baseline SFC served from exact main7b8f4ba blob; not native original PNG acceptance"
+  },
+  {
+    "width": 768,
+    "sameDimensions": true,
+    "identicalDefaultPixels": true,
+    "differenceBounds": null,
+    "scope": "same viewport/DPR2/fixed data/animations disabled; baseline SFC served from exact main7b8f4ba blob; not native original PNG acceptance"
+  },
+  {
+    "width": 390,
+    "sameDimensions": true,
+    "identicalDefaultPixels": true,
+    "differenceBounds": null,
+    "scope": "same viewport/DPR2/fixed data/animations disabled; baseline SFC served from exact main7b8f4ba blob; not native original PNG acceptance"
+  }
+]

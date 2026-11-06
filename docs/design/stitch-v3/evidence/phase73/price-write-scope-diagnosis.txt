@@ -1,0 +1,19 @@
+{"site":"vercel","error":"Expected values to be strictly equal:","priceReads":[{"ticker":"QQQI","status":200,"candles":501},{"ticker":"QQQI","status":200,"candles":501}],"errors":[],"failedHosts":[],"blockedWrites":1,"blockedWriteDetails":[{"method":"POST","host":"yieldloom-app.vercel.app","path":"/api/analytics"}],"scope":"actual public price verification failure; no private account access or synthetic data substitution"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1 !== 0
+
+    at file:///tmp/phase73-public-price.mjs:18:209 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

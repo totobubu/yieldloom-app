@@ -1,0 +1,35 @@
+[
+  {
+    "width": 1280,
+    "manual": {
+      "checked": false,
+      "disabled": false,
+      "height": 292,
+      "previews": 0,
+      "requests": 1
+    },
+    "gate": "manual unchecked still enabled"
+  },
+  {
+    "width": 834,
+    "manual": {
+      "checked": false,
+      "disabled": false,
+      "height": 274,
+      "previews": 0,
+      "requests": 1
+    },
+    "gate": "manual unchecked still enabled"
+  },
+  {
+    "width": 390,
+    "manual": {
+      "checked": false,
+      "disabled": false,
+      "height": 284,
+      "previews": 0,
+      "requests": 1
+    },
+    "gate": "manual unchecked still enabled"
+  }
+]

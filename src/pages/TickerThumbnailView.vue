@@ -3208,8 +3208,7 @@
         border: 0;
         background: transparent;
     }
-    .ticker-thumbnail-page[data-stitch-view='prices'] :deep(.chart-heading h2),
-    .ticker-thumbnail-page[data-stitch-view='prices'] :deep(.history-title h2) {
+    .ticker-thumbnail-page[data-stitch-view='prices'] :deep(.chart-heading h2) {
         font-size: 18px;
     }
     .ticker-thumbnail-page[data-stitch-view='prices'] :deep(.candle-plot) {

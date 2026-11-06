@@ -7,7 +7,7 @@
   "families": 9,
   "testFramesExcluded": 1,
   "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-  "currentCodeBase": "016fcddda89e0f5285a65446e8859adde247c208",
+  "currentCodeBase": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
   "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
   "frames": [
     {
@@ -1518,10 +1518,10 @@
         "environment": "production",
         "pr": 249,
         "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
         "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       }
     },
@@ -1571,10 +1571,10 @@
         "environment": "production",
         "pr": 249,
         "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
         "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       }
     },
@@ -1624,10 +1624,10 @@
         "environment": "production",
         "pr": 249,
         "mergeSha": "1543b3cab78a13182c913e0df22b485762226ec6",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
         "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       }
     },
@@ -1676,12 +1676,14 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
-        "verificationScope": "both live public domains1440/834/390 titles/direct/reload/visible navigation/history and120 total transition frames; whole native acceptance incomplete"
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
+        "verificationScope": "actual anonymous public routes/three viewports and Tablet condition-button keyboard focus/URL preservation/extra data reads0; Mobile preservation; full-frame/font acceptance incomplete",
+        "lastRefinementPr": 276,
+        "lastRefinementMergeSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb"
       }
     },
     {
@@ -1693,7 +1695,7 @@
       "overlapWithExisting14": true,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "production responsive UI preserved; document title follows actual selected comparison label",
+      "implementation": "production responsive UI preserved; document title follows actual selected comparison label; final source condition card/button restored, theme support two-column where applicable",
       "visualAcceptance": "not accepted",
       "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
       "selectedScreen": "projects/17382728461495959991/screens/77fdbd798a3941c68f098120a210c44d",
@@ -1729,12 +1731,14 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
-        "verificationScope": "both live public domains1440/834/390 titles/direct/reload/visible navigation/history and120 total transition frames; whole native acceptance incomplete"
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
+        "verificationScope": "actual anonymous public routes/three viewports and Tablet condition-button keyboard focus/URL preservation/extra data reads0; Mobile preservation; full-frame/font acceptance incomplete",
+        "lastRefinementPr": 276,
+        "lastRefinementMergeSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb"
       }
     },
     {
@@ -1782,12 +1786,14 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
-        "verificationScope": "both live public domains1440/834/390 titles/direct/reload/visible navigation/history and120 total transition frames; whole native acceptance incomplete"
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
+        "verificationScope": "actual anonymous public routes/three viewports and Tablet condition-button keyboard focus/URL preservation/extra data reads0; Mobile preservation; full-frame/font acceptance incomplete",
+        "lastRefinementPr": 276,
+        "lastRefinementMergeSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb"
       }
     },
     {
@@ -1799,7 +1805,7 @@
       "overlapWithExisting14": true,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "production responsive UI preserved; document title follows actual selected comparison label",
+      "implementation": "production responsive UI preserved; document title follows actual selected comparison label; final source condition card/button restored, theme support two-column where applicable",
       "visualAcceptance": "not accepted",
       "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
       "selectedScreen": "projects/17382728461495959991/screens/12bcd42390bb468eb1700a909aec3f5d",
@@ -1835,12 +1841,14 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
-        "verificationScope": "both live public domains1440/834/390 titles/direct/reload/visible navigation/history and120 total transition frames; whole native acceptance incomplete"
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
+        "verificationScope": "actual anonymous public routes/three viewports and Tablet condition-button keyboard focus/URL preservation/extra data reads0; Mobile preservation; full-frame/font acceptance incomplete",
+        "lastRefinementPr": 276,
+        "lastRefinementMergeSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb"
       }
     },
     {
@@ -1852,7 +1860,7 @@
       "overlapWithExisting14": false,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "production: upload body, raw preview, responsive file picker and required settings retained; whole-frame fidelity incomplete",
+      "implementation": "standard CSV/XLSX replacement chooser preserves original file/preview/confirmation on cancel; genuine selection uses existing validation; PDF addition unchanged; deployed#275/#276",
       "visualAcceptance": "not accepted as whole frame; required settings and real financial metadata differ",
       "referenceCaveat": null,
       "selectedScreen": "projects/17382728461495959991/screens/80b06442816e4d1baebc96cb520b19d6",
@@ -1888,11 +1896,13 @@
         "pr": 253,
         "mergeSha": "4b78ccc418270279aa42328bbb7c33454d165b02",
         "productionPromotion": 259,
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete; fresh five-width synthetic local state/precision/ownership checks and original HTML comparisons"
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
+        "verificationScope": "deployed static code; synthetic replacement/validation/PDF addition and five-width preservation; actual OS cancel/account/customerPDF parsing not exercised",
+        "lastRefinementPr": 276,
+        "lastRefinementMergeSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb"
       },
       "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
       "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
@@ -1906,7 +1916,7 @@
       "overlapWithExisting14": false,
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
-      "implementation": "production: upload body, raw preview, responsive file picker and required settings retained; whole-frame fidelity incomplete",
+      "implementation": "standard CSV/XLSX replacement chooser preserves original file/preview/confirmation on cancel; genuine selection uses existing validation; PDF addition unchanged; deployed#275/#276",
       "visualAcceptance": "not accepted as whole frame; required settings and real financial metadata differ",
       "referenceCaveat": "Tablet title uses DESKTOP metadata;raw PNG is2560px wide,not a768px capture",
       "selectedScreen": "projects/17382728461495959991/screens/3c2a0d37b5f54a63b3a633f01f0d2b33",
@@ -1942,11 +1952,13 @@
         "pr": 253,
         "mergeSha": "4b78ccc418270279aa42328bbb7c33454d165b02",
         "productionPromotion": 259,
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
-        "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete; fresh five-width synthetic local state/precision/ownership checks and original HTML comparisons"
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
+        "verificationScope": "deployed static code; synthetic replacement/validation/PDF addition and five-width preservation; actual OS cancel/account/customerPDF parsing not exercised",
+        "lastRefinementPr": 276,
+        "lastRefinementMergeSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb"
       },
       "latestEvidence": "PHASE41_UPLOAD_PREVIEW.md",
       "implementationEvidence": "PHASE47_UPLOAD_PRODUCTION.md"
@@ -1961,7 +1973,7 @@
       "owner": "redesign integration",
       "selection": "final reviewed ID supplied and actual HTML/PNG downloaded via MCP",
       "implementation": "receipt refresh and next-action reference structure refined in #273/#274; verified Tablet source font scoped above640px to refresh copy; financial aggregates unavailable; whole-frame differences remain",
-      "visualAcceptance": "390 refresh161.625px,next304.5px,normal row129px,duplicate131px match source HTML; full height delta+3.75px includes summary+7.25px and truthful financial/server guidance; native PNG full-frame/font acceptance pending",
+      "visualAcceptance": "390 summary249.75px/metadata83px match source HTML; refresh161.625/next304.5 preserved; full height delta-3.5px from real finance/server explanation; full native PNG/font acceptance pending",
       "referenceCaveat": null,
       "selectedScreen": "projects/17382728461495959991/screens/f5a2132c4e234e648269220f0e889387",
       "sourceFiles": [
@@ -1994,13 +2006,13 @@
         "environment": "production",
         "pr": 257,
         "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
         "verificationScope": "deployed receipt static CSS/body/font bytes on two public domains; local five-width state/precision/keyboard/ownership/source-height checks and index-font audit; synthetic XLSX/CSV through loopback Memory API; authenticated receipt/account/PDF not exercised",
-        "lastRefinementPr": 274,
-        "lastRefinementMergeSha": "016fcddda89e0f5285a65446e8859adde247c208"
+        "lastRefinementPr": 276,
+        "lastRefinementMergeSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb"
       }
     },
     {
@@ -2046,10 +2058,10 @@
         "environment": "production",
         "pr": 257,
         "mergeSha": "9cbe3334a3bcd626632438e1bfa14fa310d58809",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE53_DARK_PRODUCTION_RECHECK.md",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
         "verificationScope": "deployed receipt static CSS/body/font bytes on two public domains; local five-width state/precision/keyboard/ownership/source-height checks and index-font audit; synthetic XLSX/CSV through loopback Memory API; authenticated receipt/account/PDF not exercised",
         "lastRefinementPr": 274,
         "lastRefinementMergeSha": "016fcddda89e0f5285a65446e8859adde247c208"
@@ -2100,10 +2112,10 @@
         "environment": "production",
         "pr": 264,
         "mergeSha": "3b5dd96e2dce6474f644ab1b3b81536ae789b300",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE61_REVIEW_PRODUCTION_AND_STATUS.md",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
         "verificationScope": "new deployed CSS verified; source/synthetic five-width reference table/card measurements; actual authenticated production review not exercised"
       }
     },
@@ -2152,10 +2164,10 @@
         "environment": "production",
         "pr": 264,
         "mergeSha": "3b5dd96e2dce6474f644ab1b3b81536ae789b300",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE61_REVIEW_PRODUCTION_AND_STATUS.md",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
         "verificationScope": "new deployed CSS verified; source/synthetic five-width reference table/card measurements; actual authenticated production review not exercised"
       }
     },
@@ -2205,11 +2217,11 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
         "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       },
       "implementationEvidence": "PHASE57_LEDGER_MOBILE_TITLE.md"
@@ -2257,11 +2269,11 @@
         "environment": "production",
         "pr": 266,
         "mergeSha": "13fefac3153eaa76a96a0c1902b6dcec6a9fcd28",
-        "lastVerifiedProductionSha": "016fcddda89e0f5285a65446e8859adde247c208",
+        "lastVerifiedProductionSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
         "productionEvidence": "PHASE62_COMPARISON_LEDGER_PRODUCTION.md",
         "qualification": "public release/artifacts verified; public comparison steady-state responsive verified; authenticated ledger/PDF not exercised; whole-frame visual acceptance incomplete",
-        "preservedBy": "016fcddda89e0f5285a65446e8859adde247c208",
-        "lastVerifiedEvidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+        "preservedBy": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+        "lastVerifiedEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
         "verificationScope": "public deployed artifact preservation; authenticated modal not exercised; whole-frame visual acceptance incomplete"
       },
       "implementationEvidence": "PHASE57_LEDGER_MOBILE_TITLE.md"
@@ -2492,21 +2504,21 @@
   "projectFrameCountAtInitialRead": 64,
   "registeredFrameCount": 73,
   "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-  "latestImplementationBase": "016fcddda89e0f5285a65446e8859adde247c208",
+  "latestImplementationBase": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
   "rolloutSnapshot": {
-    "recordedAt": "2026-11-06T03:18:08.480451+00:00",
+    "recordedAt": "2026-11-06T05:18:13.105791+00:00",
     "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
-    "productionMergeSha": "016fcddda89e0f5285a65446e8859adde247c208",
+    "productionMergeSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
     "productionTargets": 15,
     "localWorkTargets": 0,
     "parallelDeliveredDraftTargets": 0,
     "externalUnverifiedTargets": 5,
     "visualAcceptance": "whole-frame acceptance remains incomplete",
-    "evidence": "PHASE71_RECEIPT_HEIGHT_PRODUCTION.md",
+    "evidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
     "qualification": "15 production-connected /5 external handoff unverified; not whole-frame visual acceptance or real-account verification",
     "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
-    "verificationScope": "both public release identities and three-public-metadata hash; public static receipt CSS/fonts bytes and hashes; live comparison titles/direct/reload/visible navigation/history/120 frames and search; five-width synthetic receipt and loopback broker/asset flows; no authenticated account/PDF E2E",
-    "mainPostMergeCi": "success:42153915815;4/4"
+    "verificationScope": "two actual public release identities/static refinement code/font bytes; actual public comparison/filter focus and price refresh/three sizes plus search; private flows synthetic only, no actual authenticated account/customerPDF/DB write E2E",
+    "mainPostMergeCi": "success:42165281731;4/4"
   },
   "latestReferenceIntegrity": {
     "checkedAt": "2026-11-05T17:19:37.559897+00:00",
@@ -2528,9 +2540,8 @@
   "candidateRefinement": {
     "recordedAt": "2026-11-06T04:14:20.078500+00:00",
     "branch": "fix/stitch-user-surfaces-phase72",
-    "status": "five local/integrated tested units; remote CI and production pending",
-    "productionSnapshotUnchanged": "016fcddda89e0f5285a65446e8859adde247c208",
-    "evidence": "PHASE72_USER_SURFACE_FIXES.md",
+    "status": "deployed#275/#276; code/static and public price/condition behavior verified; authenticated private workflows/native PNG acceptance incomplete",
+    "evidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
     "sourceRouteStateMap": "evidence/phase72/source-route-state-map.json",
     "units": [
       "standard file replacement cancel preservation",
@@ -2539,6 +2550,9 @@
       "five existing analysis module shortcuts",
       "normal price refresh"
     ],
-    "scope": "not five new device designs; original14 and final20 still overlap; no whole native PNG acceptance; external five simulator/tax targets unchanged"
+    "scope": "not five new device designs; original14 and final20 still overlap; no whole native PNG acceptance; external five simulator/tax targets unchanged",
+    "productionCommit": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+    "featureHead": "3267bb12f7018350dd1604d848fd0daf46ca47df",
+    "sourceBranchHistorical": true
   }
 }

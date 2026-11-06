@@ -1,0 +1,29 @@
+{
+  "id": "dpl_Cxaqx4TZf9jBLkTbxAz7Jay4q4Mk",
+  "state": "READY",
+  "url": "yieldloom-ey5bkh5eq-totobubus-projects.vercel.app",
+  "sha": "3267bb12f7018350dd1604d848fd0daf46ca47df",
+  "status": 200,
+  "release": {
+    "schemaVersion": 1,
+    "commit": "3267bb12f7018350dd1604d848fd0daf46ca47df",
+    "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+  },
+  "assets": {
+    "entry": "/assets/index-CYlClhWv.js",
+    "familyJS": "FamilyPortfolioView-BJ03jYVj.js",
+    "familyCSS": "FamilyPortfolioView-DxHh_tVY.css",
+    "tickerJS": "TickerThumbnailView-eafWXXK1.js",
+    "tickerCSS": "TickerThumbnailView-D8aEnmed.css",
+    "comparisonJS": "UnderlyingExplorerView-D9OgUPUJ.js"
+  },
+  "checks": {
+    "replacementPicker": true,
+    "analysisTargets": true,
+    "mobileReceipt": true,
+    "comparisonContext": true,
+    "normalPriceRefresh": true,
+    "priceRefreshStyle": true
+  },
+  "scope": "protected static build artifacts only; authenticated account workflows not exercised"
+}

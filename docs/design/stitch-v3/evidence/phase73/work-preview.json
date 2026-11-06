@@ -1,0 +1,13 @@
+{
+  "id": "dpl_45K3yAE8yC1MmCUABvnoA9mYAJxQ",
+  "state": "READY",
+  "url": "yieldloom-8utj4kxvt-totobubus-projects.vercel.app",
+  "sha": "08c611d7d65be67ab62bc6ddd29aed8ab4313ed1",
+  "status": 200,
+  "release": {
+    "schemaVersion": 1,
+    "commit": "08c611d7d65be67ab62bc6ddd29aed8ab4313ed1",
+    "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+  },
+  "scope": "protected deployment release identity only; source tree matches previously checked feature; authenticated account workflows not exercised"
+}

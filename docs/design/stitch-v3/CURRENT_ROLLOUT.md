@@ -25,3 +25,5 @@
 후속 원본 대조·운영 검증: [파일 아이콘·제목 로컬 근거](PHASE66_RECOVERY_TITLES_AND_FILE_ICON.md)와 [운영 결과](PHASE69_REVIEW_SPACING_PRODUCTION.md)를 연결했다. 열 연결 glyph/Tablet 색은 수정됐지만 전체 프레임 일치는 미완료다. 검토/장부5폭 합성 재검증을 추가했으며 실제 로그인 계좌·고객PDF는 미검증이다.
 
 이번 독립 점검에서 업로드/저장 결과5폭 합성 검사를 통과했다. 저장 결과 Tablet 높이+32px는 갱신 안내+5.5px·후속 작업+26.5px로 좁혔다. 원본 글꼴 요청의HTTP400과 Material Symbols200을 확인했으며, 정확한 렌더 글꼴 자료가 없어 native PNG 글꼴 수용은 차단 상태다.
+
+운영 반영 전 후속 구현: [저장 결과 안내·후속 높이와 원본 글꼴](PHASE70_RECEIPT_FOLLOWUP_AND_REFERENCE_FONT.md)을 로컬 검증했다. Tablet의 정상 Pretendard 원본 CSS/파일을 확인해 안내 문단에만 적용했고, Tablet/ Mobile 두 안내 카드 높이가 원본 HTML과 같다. Mobile 전체+3.75px와 native PNG 글꼴 수용·실계좌/PDF는 남는다. 이 후속 코드의 원격 CI/운영 제공은 정확한 최종 SHA에서 별도 기록한다.

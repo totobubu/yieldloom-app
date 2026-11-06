@@ -166,6 +166,43 @@ try {
                 await page.evaluate(() => window.comparisonDirectoryReads),
                 1
             );
+            const filterContext = component.locator(
+                '.comparison-filter-context'
+            );
+            assert.equal(await filterContext.isVisible(), !mobile);
+            if (!mobile) {
+                const currentUrl = page.url();
+                assert.match(
+                    await filterContext.innerText(),
+                    view === 'theme'
+                        ? /설정된 비교 조건[\s\S]*4개 파라미터/
+                        : /대조군 필터 조건[\s\S]*전체 조건/
+                );
+                await filterContext.getByRole('button').focus();
+                await page.keyboard.press('Enter');
+                assert.equal(
+                    await component
+                        .locator('#explorer-strategy')
+                        .evaluate(
+                            (element) => element === document.activeElement
+                        ),
+                    true,
+                    'The source condition action returns keyboard focus to the existing strategy filter'
+                );
+                assert.equal(page.url(), currentUrl);
+                assert.equal(
+                    await page.evaluate(
+                        () => window.comparisonDetailReads?.length || 0
+                    ),
+                    0,
+                    'Returning to filters must not query metrics'
+                );
+                assert.equal(
+                    await page.evaluate(() => window.comparisonDirectoryReads),
+                    1,
+                    'Returning to filters must reuse the existing directory'
+                );
+            }
             const visibleProducts = component.locator(
                 mobile ? '.responsive-product-card' : '.matrix-product'
             );
@@ -197,6 +234,19 @@ try {
                     .getByRole('option')
                     .nth(1)
                     .click();
+                if (!mobile) {
+                    const selectedStrategy = (
+                        await component
+                            .locator('#explorer-strategy')
+                            .innerText()
+                    ).trim();
+                    assert.ok(
+                        (await filterContext.innerText()).includes(
+                            selectedStrategy
+                        ),
+                        'The restored condition card must reflect the live filter rather than the source dummy condition'
+                    );
+                }
                 await component.locator('#explorer-direction').click();
                 const directions = page
                     .getByRole('listbox')

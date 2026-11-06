@@ -52,6 +52,13 @@
         required: true,
     });
     const referenceSelect = ref(null);
+    const filterCard = ref(null);
+    function focusFilters() {
+        filterCard.value?.scrollIntoView({ block: 'center' });
+        filterCard.value
+            ?.querySelector('#explorer-strategy:not([aria-disabled="true"])')
+            ?.focus({ preventScroll: true });
+    }
     const detailSymbol = ref('');
     const detailVisible = ref(false);
     const detailRow = computed(() =>
@@ -104,6 +111,15 @@
             ? `표시 통화: ${currencies.value.join(' · ')} · 환산 없음`
             : '종목별 원문 통화 · 환산 없음'
     );
+    const conditionSummary = computed(() => {
+        const active = props.conditions.filter((condition) => condition.active);
+        return `${active.length ? active.map((condition) => condition.value).join(' · ') : '전체 조건'} · ${props.total}종`;
+    });
+    const conditionValue = (key) =>
+        props.options[key]?.find((option) => option.value === models[key].value)
+            ?.label ||
+        models[key].value ||
+        '미확인';
     const selection = ref([]);
     // A changed result page starts a new tray; metric responses do not reset it.
     watch(
@@ -291,7 +307,10 @@
         /></Message>
         <p v-if="loading" role="status">공용 종목 목록을 불러오고 있습니다.</p>
 
-        <section class="responsive-filter-card" aria-label="단계적 비교 필터">
+        <section
+            ref="filterCard"
+            class="responsive-filter-card"
+            aria-label="단계적 비교 필터">
             <label v-if="isTheme" class="theme-choice" for="explorer-theme">
                 <span id="explorer-theme-label"
                     ><i class="pi pi-search" aria-hidden="true" /> 테마
@@ -910,52 +929,102 @@
                     @click="emit('reset')" />
             </section>
         </template>
-        <aside
-            class="responsive-insights"
-            aria-labelledby="comparison-insights-title">
-            <h2 id="comparison-insights-title">
-                <i class="pi pi-chart-line" aria-hidden="true" />
-                {{ isTheme ? '테마 ' : '' }}비교 분석 인사이트
-            </h2>
-            <div class="insight-cards">
-                <article>
-                    <i class="pi pi-percentage" aria-hidden="true" />
+        <section class="responsive-support" aria-label="비교 인사이트와 조건">
+            <aside
+                class="responsive-insights"
+                aria-labelledby="comparison-insights-title">
+                <h2 id="comparison-insights-title">
+                    <i class="pi pi-chart-line" aria-hidden="true" />
+                    {{ isTheme ? '테마 ' : '' }}비교 분석 인사이트
+                </h2>
+                <div class="insight-cards">
+                    <article>
+                        <i class="pi pi-percentage" aria-hidden="true" />
+                        <div>
+                            <h3>운용보수 대조</h3>
+                            <p>{{ feeSummary }}</p>
+                        </div>
+                    </article>
+                    <article>
+                        <i class="pi pi-calendar" aria-hidden="true" />
+                        <div>
+                            <h3>배당 주기 점검</h3>
+                            <p>{{ cycleSummary }}</p>
+                        </div>
+                    </article>
+                    <article>
+                        <i class="pi pi-chart-bar" aria-hidden="true" />
+                        <div>
+                            <h3>분배율 산출 안내</h3>
+                            <p>
+                                현재 비교 자료에 검증된 연환산 분배율이 제공되지
+                                않아 산출을 보류합니다. 최근 주당 배당금으로
+                                연간 지급액을 가정하지 않습니다.
+                            </p>
+                        </div>
+                    </article>
+                </div>
+            </aside>
+            <div class="comparison-support-details">
+                <div class="comparison-warning">
+                    <i class="pi pi-info-circle" aria-hidden="true" />
                     <div>
-                        <h3>운용보수 대조</h3>
-                        <p>{{ feeSummary }}</p>
-                    </div>
-                </article>
-                <article>
-                    <i class="pi pi-calendar" aria-hidden="true" />
-                    <div>
-                        <h3>배당 주기 점검</h3>
-                        <p>{{ cycleSummary }}</p>
-                    </div>
-                </article>
-                <article>
-                    <i class="pi pi-chart-bar" aria-hidden="true" />
-                    <div>
-                        <h3>분배율 산출 안내</h3>
+                        <h3>비교 자료 주의사항</h3>
                         <p>
-                            현재 비교 자료에 검증된 연환산 분배율이 제공되지
-                            않아 산출을 보류합니다. 최근 주당 배당금으로 연간
-                            지급액을 가정하지 않습니다.
+                            자료 기준일과 통화·기간을 함께 확인하세요. 동일한
+                            위험이나 미래 수익률을 보장하지 않으며 투자 추천을
+                            의미하지 않습니다.
                         </p>
                     </div>
-                </article>
-            </div>
-            <div class="comparison-warning">
-                <i class="pi pi-info-circle" aria-hidden="true" />
-                <div>
-                    <h3>비교 자료 주의사항</h3>
-                    <p>
-                        자료 기준일과 통화·기간을 함께 확인하세요. 동일한
-                        위험이나 미래 수익률을 보장하지 않으며 투자 추천을
-                        의미하지 않습니다.
-                    </p>
                 </div>
+                <section
+                    class="comparison-filter-context"
+                    :aria-label="
+                        isTheme ? '설정된 비교 조건' : '대조군 필터 조건'
+                    ">
+                    <template v-if="isTheme">
+                        <div class="context-heading">
+                            <h3>설정된 비교 조건</h3>
+                            <span>4개 파라미터</span>
+                        </div>
+                        <dl>
+                            <div>
+                                <dt>테마군:</dt>
+                                <dd>{{ theme.label }}</dd>
+                            </div>
+                            <div>
+                                <dt>적용 통화:</dt>
+                                <dd>
+                                    {{ currencies.join(' · ') || '미확인' }}
+                                    (환산 없음)
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>운용 전략:</dt>
+                                <dd>{{ conditionValue('strategy') }}</dd>
+                            </div>
+                            <div>
+                                <dt>지급 주기:</dt>
+                                <dd>{{ conditionValue('frequency') }}</dd>
+                            </div>
+                        </dl>
+                    </template>
+                    <div v-else class="context-summary">
+                        <span>대조군 필터 조건</span
+                        ><strong>{{ conditionSummary }}</strong>
+                    </div>
+                    <Button
+                        :label="isTheme ? '필터 조건 변경하기' : '조건 변경'"
+                        :icon="isTheme ? 'pi pi-filter' : undefined"
+                        severity="secondary"
+                        outlined
+                        aria-controls="explorer-strategy"
+                        title="화면 위 비교 필터로 이동"
+                        :disabled="loading"
+                        @click="focusFilters" />
+                </section>
             </div>
-        </aside>
+        </section>
         <section class="comparison-tray" aria-label="비교 트레이">
             <div class="tray-heading">
                 <h2>
@@ -1183,6 +1252,9 @@
     }
     .responsive-comparison :deep(.pi-calendar) {
         --comparison-symbol: 'calendar_today';
+    }
+    .responsive-comparison :deep(.pi-filter) {
+        --comparison-symbol: 'filter_alt';
     }
     .responsive-comparison :deep(.pi-info-circle) {
         --comparison-symbol: 'info';
@@ -1930,6 +2002,131 @@
         border-radius: 12px;
         text-align: center;
     }
+    .responsive-support {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .comparison-support-details {
+        display: contents;
+    }
+    .comparison-filter-context {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px;
+        border: 1px solid var(--app-border);
+        border-radius: 12px;
+        background: var(--app-surface);
+        box-shadow: 0 1px 3px rgb(0 0 0 / 3%);
+    }
+    .context-summary {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .context-summary > span,
+    .context-heading > span {
+        color: light-dark(#6e7977, var(--app-muted));
+        font-size: 11px;
+        line-height: 16px;
+    }
+    .context-summary > strong {
+        color: var(--comparison-heading);
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 600;
+    }
+    .comparison-filter-context :deep(.p-button) {
+        flex-shrink: 0;
+        height: 36px;
+        min-height: 36px;
+        padding: 0 12px;
+        font-size: 11px;
+        line-height: 16px;
+        font-weight: 500;
+        border-radius: 8px;
+        white-space: nowrap;
+        color: var(--app-muted);
+        border-color: light-dark(#bdc9c6, var(--app-border));
+        background: var(--app-surface);
+    }
+    .theme-comparison .responsive-support {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+    }
+    .theme-comparison .responsive-insights {
+        padding: 16px;
+    }
+    .theme-comparison .comparison-support-details {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .theme-comparison .comparison-filter-context {
+        flex-direction: column;
+        align-items: stretch;
+        border-color: light-dark(rgb(189 201 198 / 40%), var(--app-border));
+    }
+    .context-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .context-heading > h3 {
+        color: var(--app-muted);
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 600;
+    }
+    .comparison-filter-context dl {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 0;
+        font-size: 12px;
+        line-height: 18px;
+    }
+    .comparison-filter-context dl > div {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 4px 0;
+        border-bottom: 1px solid var(--app-border-subtle);
+    }
+    .comparison-filter-context dl > div:last-child {
+        border-bottom: 0;
+    }
+    .comparison-filter-context dt {
+        flex-shrink: 0;
+        color: var(--app-muted);
+    }
+    .comparison-filter-context dd {
+        margin: 0;
+        color: var(--comparison-heading);
+        font-weight: 500;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+    .theme-comparison .comparison-filter-context :deep(.p-button) {
+        height: 44px;
+        min-height: 44px;
+        width: 100%;
+        font-size: 14px;
+        line-height: 20px;
+        gap: 6px;
+        padding: 0;
+        color: var(--comparison-heading);
+        border-color: light-dark(rgb(189 201 198 / 70%), var(--app-border));
+    }
+    .theme-comparison .comparison-filter-context :deep(.p-button-icon) {
+        color: light-dark(#6e7977, var(--app-muted));
+        font-size: 18px;
+        line-height: 18px;
+    }
     .responsive-insights {
         display: flex;
         flex-direction: column;
@@ -2091,6 +2288,22 @@
         border: 0;
     }
     @media (max-width: 640px) {
+        .responsive-support,
+        .theme-comparison .responsive-support {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .comparison-support-details,
+        .theme-comparison .comparison-support-details {
+            display: contents;
+        }
+        .comparison-filter-context {
+            display: none;
+        }
+        .theme-comparison .responsive-insights {
+            padding: 0;
+        }
         .responsive-comparison {
             --app-border: light-dark(#cbd5e1, #35445b);
             gap: 16px;

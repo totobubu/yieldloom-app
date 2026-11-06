@@ -1,0 +1,28 @@
+import json
+from pathlib import Path
+from PIL import Image,ImageChops
+old=json.loads(Path('/tmp/phase82/before-verified/palette.json').read_text())
+new=json.loads(Path('/tmp/phase82/after-verified/palette.json').read_text())
+summary={'scope':'Selected computed light RGB/background/hover properties. No native whole PNG/font or dark-reference acceptance.','widths':[]}
+for a,b in zip(old['rows'],new['rows']):
+ w=a['width'];assert w==b['width'];count=0
+ for i in range(3):
+  for key in b['reference'][i]:
+   props=['color','background']+(['headerBackground'] if key=='selectionHover' else [])
+   for prop in props:
+    assert b['reference'][i][key][prop]==b['app']['light'][i][key][prop],(w,i,key,prop)
+    count+=1
+ assert a['app']['dark']==b['app']['dark'],('dark computed values',w)
+ assert a['outside']==b['outside'],('outside control',w)
+ for i in range(9):
+  for key in a['app']['light'][i]:
+   if key in ['aliasHover','selectionHover']:continue
+   for prop in ['width','height','font','line','padding']:
+    assert a['app']['light'][i][key][prop]==b['app']['light'][i][key][prop],(w,i,key,prop)
+ x=Image.open(f'/tmp/phase82/before-verified/app-{w}-dark.png').convert('RGB')
+ y=Image.open(f'/tmp/phase82/after-verified/app-{w}-dark.png').convert('RGB')
+ assert x.size==y.size and ImageChops.difference(x,y).getbbox() is None,('dark pixels',w)
+ summary['widths'].append({'viewport':w,'sourceColorAndHoverPropertiesMatched':count,'darkNineRoleComputedFieldsIdentical':True,'darkOwnerRgbIdentical':True,'nineRoleTypeGeometryIdentical':True,'outsideSecondaryButtonLightDarkIdentical':True})
+assert sum(x['sourceColorAndHoverPropertiesMatched'] for x in summary['widths'])==213
+Path('/tmp/phase82/verification.json').write_text(json.dumps(summary,indent=2)+'\n')
+print(json.dumps(summary))

@@ -151,6 +151,7 @@
         padding: 0;
         display: grid;
         gap: 1rem;
+        color: var(--account-card-text, inherit);
     }
     .accounts li {
         display: flex;
@@ -184,7 +185,7 @@
     }
     .account-card-alias {
         width: 100%;
-        color: var(--app-muted);
+        color: var(--account-card-outline, var(--app-muted));
         font-size: 12px;
         line-height: 16px;
     }
@@ -208,7 +209,7 @@
         border: 0;
         padding: 0;
         background: transparent;
-        color: var(--app-text);
+        color: var(--account-card-text, var(--app-text));
         box-shadow: none;
         display: flex;
         justify-content: space-between;
@@ -236,7 +237,7 @@
     .account-card-identity > span {
         font-size: 12px;
         line-height: 16px;
-        color: var(--app-muted);
+        color: var(--account-card-outline, var(--app-muted));
         overflow-wrap: anywhere;
     }
     .account-card-selection {
@@ -249,11 +250,11 @@
         white-space: nowrap;
         padding: 4px 8px;
         border-radius: 4px;
-        background: var(--app-surface-muted);
+        background: var(--account-card-selection-bg, var(--app-surface-muted));
     }
     .account-card-select[aria-pressed='true'] .account-card-selection {
-        background: var(--app-accent-light);
-        color: var(--app-accent);
+        background: var(--account-card-selected-bg, var(--app-accent-light));
+        color: var(--account-card-selected-text, var(--app-accent));
     }
     .account-card-select[aria-pressed='true'] .account-card-selection::before {
         content: '';
@@ -308,18 +309,28 @@
             600 11px/14px 'JetBrains Mono',
             monospace;
     }
+    .account-card-role > span:last-child {
+        color: var(--account-card-variant, var(--app-text));
+    }
     .account-role-label[data-role='owner'] {
         color: var(--p-primary-contrast-color, white);
         background: var(--app-accent);
     }
     .account-role-label[data-role='viewer'] {
-        color: var(--app-muted);
+        color: var(--account-card-outline, var(--app-muted));
+    }
+    .account-role-label[data-role='editor'],
+    .account-role-label[data-role='viewer'] {
+        background: var(--account-card-role-bg, var(--app-surface-muted));
+    }
+    .account-role-label[data-role='editor'] {
+        color: var(--account-card-text, var(--app-text));
     }
     .account-card-snapshot {
         margin: 0;
         padding: 12px;
         border-radius: 8px;
-        background: var(--app-bg);
+        background: var(--account-card-snapshot-bg, var(--app-bg));
         display: grid;
         gap: 8px;
     }
@@ -332,7 +343,7 @@
     .account-card-snapshot dt {
         font-size: 12px;
         line-height: 16px;
-        color: var(--app-muted);
+        color: var(--account-card-variant, var(--app-muted));
         flex-shrink: 0;
     }
     .account-card-snapshot dd {
@@ -350,6 +361,41 @@
         font-size: 13px;
         line-height: 16px;
         font-weight: 600;
+    }
+    /* Reviewed light source b611bd07; dark keeps the existing app tokens. */
+    :root:not(.p-dark) .accounts {
+        --account-card-text: #191c1e;
+        --account-card-variant: #3e4947;
+        --account-card-outline: #6e7977;
+        --account-card-snapshot-bg: rgb(242 244 246 / 60%);
+        --account-card-role-bg: #e6e8ea;
+        --account-card-selection-bg: #eceef0;
+        --account-card-selected-bg: rgb(153 243 228 / 40%);
+        --account-card-selected-text: #005f55;
+    }
+    :root:not(.p-dark) .account-card-select:enabled {
+        color: var(--account-card-text);
+        background: transparent;
+    }
+    :root:not(.p-dark)
+        .account-card-select[aria-pressed='false']:enabled:hover
+        .account-card-selection {
+        background: #e6e8ea;
+    }
+    :root:not(.p-dark)
+        .account-card-primary-tools
+        > .p-button:first-child:enabled {
+        --p-button-secondary-background: #eceef0;
+        --p-button-secondary-color: #191c1e;
+        --p-button-secondary-border-color: transparent;
+        --p-button-secondary-hover-background: #e6e8ea;
+        --p-button-secondary-hover-color: #191c1e;
+        --p-button-secondary-hover-border-color: transparent;
+    }
+    :root:not(.p-dark)
+        .account-card-primary-tools
+        > .p-button:first-child:disabled {
+        --p-button-secondary-color: #6e7977;
     }
     @media (max-width: 1024px) {
         .accounts {

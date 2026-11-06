@@ -36,3 +36,6 @@ Pages188c581 배포는syncing_files에서 시간 초과·취소됐으나 최신5
 
 
 후속 phase80: [익명 의견 수정 재시도의 본문 유실 방지](PHASE80_FEEDBACK_RETRY.md)는 구현 시점의 합성/로컬 검증 기록이다. 실제 제공 버전은 [Vercel release](https://yieldloom-app.vercel.app/app-release.json)·[Pages release](https://totobubu.github.io/yieldloom-app/app-release.json)와 해당 변경 PR의 최종 운영 검증을 따른다. 위 phase79 스냅샷을 후속 변경의 배포 완료 증명으로 사용하지 않는다.
+
+
+phase82 로컬 구현: [자산 카드 라이트 색상/hover 대조](PHASE82_ACCOUNT_PALETTE.md). 선택된213개 속성·다크/치수/외부 컨트롤 보존과 기존 기능 검증을 확인했다. 원격CI·Preview·운영은 후속 검증 대상이며 위 phase81 운영 스냅샷을 이번 배포 완료로 사용하지 않는다.

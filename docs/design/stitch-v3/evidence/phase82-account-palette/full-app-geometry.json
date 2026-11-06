@@ -1,0 +1,575 @@
+{
+  "before": true,
+  "knownUnaccepted": [
+    "PC composition/padding/columns and real metadata wrapping still differ; selected full-app dimensions unchanged fromphase81",
+    "Actual1024 main/card now728px after prior20px inset fix; do not reuse historical708px as main",
+    "Original dark/native full font/PNG/private accounts/customer PDFs not accepted or verified"
+  ],
+  "scope": "Selected card properties only; actual institution/alias/permissions/holdings remain synthetic service data and are not replaced with source examples; whole native PNG/font acceptance incomplete",
+  "rows": [
+    {
+      "width": 1280,
+      "original": {
+        "card": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 284,
+          "width": 394.65625,
+          "padding": "20px",
+          "radius": "12px"
+        },
+        "owner": {
+          "font": "16px",
+          "line": "24px",
+          "weight": "600",
+          "height": 24,
+          "width": 44.171875,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "institution": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 16,
+          "width": 93.265625,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "role": {
+          "font": "11px",
+          "line": "14px",
+          "weight": "600",
+          "height": 18,
+          "width": 99.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "type": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 20,
+          "width": 60.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "snapshot": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 92,
+          "width": 354.65625,
+          "padding": "12px",
+          "radius": "8px"
+        },
+        "tool": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 36,
+          "width": 255.375,
+          "padding": "0px 12px",
+          "radius": "8px"
+        },
+        "columns": 3,
+        "overflow": false
+      },
+      "app": {
+        "card": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 300,
+          "width": 317.328125,
+          "padding": "20px",
+          "radius": "12px"
+        },
+        "owner": {
+          "font": "16px",
+          "line": "24px",
+          "weight": "600",
+          "height": 24,
+          "width": 44.171875,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "institution": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 16,
+          "width": 93.265625,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "role": {
+          "font": "11px",
+          "line": "14px",
+          "weight": "600",
+          "height": 18,
+          "width": 99.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "type": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 20,
+          "width": 38.09375,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "snapshot": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 108,
+          "width": 277.328125,
+          "padding": "12px",
+          "radius": "8px"
+        },
+        "tool": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 36,
+          "width": 129.578125,
+          "padding": "0px 12px",
+          "radius": "8px"
+        },
+        "columns": 3,
+        "overflow": false
+      },
+      "sourceErrors": [],
+      "sourceAssets": [],
+      "errors": [],
+      "assets": []
+    },
+    {
+      "width": 1024,
+      "original": {
+        "card": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 300,
+          "width": 309.328125,
+          "padding": "20px",
+          "radius": "12px"
+        },
+        "owner": {
+          "font": "16px",
+          "line": "24px",
+          "weight": "600",
+          "height": 24,
+          "width": 44.171875,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "institution": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 16,
+          "width": 93.265625,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "role": {
+          "font": "11px",
+          "line": "14px",
+          "weight": "600",
+          "height": 18,
+          "width": 99.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "type": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 20,
+          "width": 60.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "snapshot": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 108,
+          "width": 269.328125,
+          "padding": "12px",
+          "radius": "8px"
+        },
+        "tool": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 36,
+          "width": 170.046875,
+          "padding": "0px 12px",
+          "radius": "8px"
+        },
+        "columns": 3,
+        "overflow": false
+      },
+      "app": {
+        "card": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 284,
+          "width": 728,
+          "padding": "20px",
+          "radius": "12px"
+        },
+        "owner": {
+          "font": "16px",
+          "line": "24px",
+          "weight": "600",
+          "height": 24,
+          "width": 44.171875,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "institution": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 16,
+          "width": 93.265625,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "role": {
+          "font": "11px",
+          "line": "14px",
+          "weight": "600",
+          "height": 18,
+          "width": 99.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "type": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 20,
+          "width": 38.09375,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "snapshot": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 92,
+          "width": 278.296875,
+          "padding": "12px",
+          "radius": "8px"
+        },
+        "tool": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 36,
+          "width": 130.546875,
+          "padding": "0px 12px",
+          "radius": "8px"
+        },
+        "columns": 1,
+        "overflow": false
+      },
+      "sourceErrors": [],
+      "sourceAssets": [],
+      "errors": [],
+      "assets": []
+    },
+    {
+      "width": 834,
+      "original": {
+        "card": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 284,
+          "width": 786,
+          "padding": "20px",
+          "radius": "12px"
+        },
+        "owner": {
+          "font": "16px",
+          "line": "24px",
+          "weight": "600",
+          "height": 24,
+          "width": 44.171875,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "institution": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 16,
+          "width": 93.265625,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "role": {
+          "font": "11px",
+          "line": "14px",
+          "weight": "600",
+          "height": 18,
+          "width": 99.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "type": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 20,
+          "width": 60.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "snapshot": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 92,
+          "width": 746,
+          "padding": "12px",
+          "radius": "8px"
+        },
+        "tool": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 36,
+          "width": 646.71875,
+          "padding": "0px 12px",
+          "radius": "8px"
+        },
+        "columns": 1,
+        "overflow": false
+      },
+      "app": {
+        "card": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 284,
+          "width": 786,
+          "padding": "20px",
+          "radius": "12px"
+        },
+        "owner": {
+          "font": "16px",
+          "line": "24px",
+          "weight": "600",
+          "height": 24,
+          "width": 44.171875,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "institution": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 16,
+          "width": 93.265625,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "role": {
+          "font": "11px",
+          "line": "14px",
+          "weight": "600",
+          "height": 18,
+          "width": 99.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "type": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 20,
+          "width": 38.09375,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "snapshot": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 92,
+          "width": 278.296875,
+          "padding": "12px",
+          "radius": "8px"
+        },
+        "tool": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 36,
+          "width": 130.546875,
+          "padding": "0px 12px",
+          "radius": "8px"
+        },
+        "columns": 1,
+        "overflow": false
+      },
+      "sourceErrors": [],
+      "sourceAssets": [],
+      "errors": [],
+      "assets": []
+    },
+    {
+      "width": 390,
+      "original": {
+        "card": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 284,
+          "width": 358,
+          "padding": "20px",
+          "radius": "12px"
+        },
+        "owner": {
+          "font": "16px",
+          "line": "24px",
+          "weight": "600",
+          "height": 24,
+          "width": 44.171875,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "institution": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 16,
+          "width": 93.265625,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "role": {
+          "font": "11px",
+          "line": "14px",
+          "weight": "600",
+          "height": 18,
+          "width": 99.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "type": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 20,
+          "width": 60.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "snapshot": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 92,
+          "width": 318,
+          "padding": "12px",
+          "radius": "8px"
+        },
+        "tool": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 36,
+          "width": 218.71875,
+          "padding": "0px 12px",
+          "radius": "8px"
+        },
+        "columns": 1,
+        "overflow": false
+      },
+      "app": {
+        "card": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 284,
+          "width": 358,
+          "padding": "20px",
+          "radius": "12px"
+        },
+        "owner": {
+          "font": "16px",
+          "line": "24px",
+          "weight": "600",
+          "height": 24,
+          "width": 44.171875,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "institution": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 16,
+          "width": 93.265625,
+          "padding": "0px",
+          "radius": "0px"
+        },
+        "role": {
+          "font": "11px",
+          "line": "14px",
+          "weight": "600",
+          "height": 18,
+          "width": 99.171875,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "type": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 20,
+          "width": 38.09375,
+          "padding": "2px 8px",
+          "radius": "4px"
+        },
+        "snapshot": {
+          "font": "14px",
+          "line": "20px",
+          "weight": "400",
+          "height": 92,
+          "width": 278.296875,
+          "padding": "12px",
+          "radius": "8px"
+        },
+        "tool": {
+          "font": "12px",
+          "line": "16px",
+          "weight": "400",
+          "height": 36,
+          "width": 130.546875,
+          "padding": "0px 12px",
+          "radius": "8px"
+        },
+        "columns": 1,
+        "overflow": false
+      },
+      "sourceErrors": [],
+      "sourceAssets": [],
+      "errors": [],
+      "assets": []
+    }
+  ]
+}

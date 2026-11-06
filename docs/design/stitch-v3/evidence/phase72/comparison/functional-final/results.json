@@ -1,0 +1,374 @@
+[
+  {
+    "width": 1280,
+    "view": "similar",
+    "classic": true,
+    "errors": []
+  },
+  {
+    "width": 1280,
+    "view": "theme",
+    "classic": true,
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "view": "similar",
+    "geometry": {
+      "width": 834,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 386,
+          "height": 44
+        },
+        {
+          "width": 386,
+          "height": 44
+        },
+        {
+          "width": 386,
+          "height": 44
+        },
+        {
+          "width": 386,
+          "height": 44
+        }
+      ],
+      "titleFont": "30px",
+      "matrixScrollable": true,
+      "gridColumns": "386px 386px"
+    },
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "view": "theme",
+    "geometry": {
+      "width": 786,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 370,
+          "height": 44
+        },
+        {
+          "width": 370,
+          "height": 44
+        },
+        {
+          "width": 370,
+          "height": 44
+        },
+        {
+          "width": 370,
+          "height": 44
+        }
+      ],
+      "titleFont": "24px",
+      "matrixScrollable": false,
+      "gridColumns": "370px 370px"
+    },
+    "errors": []
+  },
+  {
+    "width": 834,
+    "view": "similar",
+    "geometry": {
+      "width": 786,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 362,
+          "height": 44
+        },
+        {
+          "width": 362,
+          "height": 44
+        },
+        {
+          "width": 362,
+          "height": 44
+        },
+        {
+          "width": 362,
+          "height": 44
+        }
+      ],
+      "titleFont": "30px",
+      "matrixScrollable": true,
+      "gridColumns": "362px 362px"
+    },
+    "errors": []
+  },
+  {
+    "width": 834,
+    "view": "theme",
+    "geometry": {
+      "width": 786,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 370,
+          "height": 44
+        },
+        {
+          "width": 370,
+          "height": 44
+        },
+        {
+          "width": 370,
+          "height": 44
+        },
+        {
+          "width": 370,
+          "height": 44
+        }
+      ],
+      "titleFont": "24px",
+      "matrixScrollable": false,
+      "gridColumns": "370px 370px"
+    },
+    "errors": []
+  },
+  {
+    "width": 768,
+    "view": "similar",
+    "geometry": {
+      "width": 720,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 329,
+          "height": 44
+        },
+        {
+          "width": 329,
+          "height": 44
+        },
+        {
+          "width": 329,
+          "height": 44
+        },
+        {
+          "width": 329,
+          "height": 44
+        }
+      ],
+      "titleFont": "30px",
+      "matrixScrollable": true,
+      "gridColumns": "329px 329px"
+    },
+    "errors": []
+  },
+  {
+    "width": 768,
+    "view": "theme",
+    "geometry": {
+      "width": 720,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 337,
+          "height": 44
+        },
+        {
+          "width": 337,
+          "height": 44
+        },
+        {
+          "width": 337,
+          "height": 44
+        },
+        {
+          "width": 337,
+          "height": 44
+        }
+      ],
+      "titleFont": "24px",
+      "matrixScrollable": true,
+      "gridColumns": "337px 337px"
+    },
+    "errors": []
+  },
+  {
+    "width": 640,
+    "view": "similar",
+    "geometry": {
+      "width": 358,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 157,
+          "height": 44
+        },
+        {
+          "width": 157,
+          "height": 44
+        },
+        {
+          "width": 157,
+          "height": 44
+        },
+        {
+          "width": 157,
+          "height": 44
+        }
+      ],
+      "titleFont": "20px",
+      "matrixScrollable": false,
+      "gridColumns": "157px 157px"
+    },
+    "errors": []
+  },
+  {
+    "width": 640,
+    "view": "theme",
+    "geometry": {
+      "width": 358,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 175,
+          "height": 44
+        },
+        {
+          "width": 175,
+          "height": 44
+        },
+        {
+          "width": 175,
+          "height": 44
+        },
+        {
+          "width": 175,
+          "height": 44
+        }
+      ],
+      "titleFont": "24px",
+      "matrixScrollable": false,
+      "gridColumns": "175px 175px"
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "view": "similar",
+    "geometry": {
+      "width": 358,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 157,
+          "height": 44
+        },
+        {
+          "width": 157,
+          "height": 44
+        },
+        {
+          "width": 157,
+          "height": 44
+        },
+        {
+          "width": 157,
+          "height": 44
+        }
+      ],
+      "titleFont": "20px",
+      "matrixScrollable": false,
+      "gridColumns": "157px 157px"
+    },
+    "errors": []
+  },
+  {
+    "width": 390,
+    "view": "theme",
+    "geometry": {
+      "width": 358,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 175,
+          "height": 44
+        },
+        {
+          "width": 175,
+          "height": 44
+        },
+        {
+          "width": 175,
+          "height": 44
+        },
+        {
+          "width": 175,
+          "height": 44
+        }
+      ],
+      "titleFont": "24px",
+      "matrixScrollable": false,
+      "gridColumns": "175px 175px"
+    },
+    "errors": []
+  },
+  {
+    "width": 320,
+    "view": "similar",
+    "geometry": {
+      "width": 288,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 122,
+          "height": 44
+        },
+        {
+          "width": 122,
+          "height": 44
+        },
+        {
+          "width": 122,
+          "height": 44
+        },
+        {
+          "width": 122,
+          "height": 44
+        }
+      ],
+      "titleFont": "20px",
+      "matrixScrollable": false,
+      "gridColumns": "122px 122px"
+    },
+    "errors": []
+  },
+  {
+    "width": 320,
+    "view": "theme",
+    "geometry": {
+      "width": 288,
+      "pageOverflow": false,
+      "filters": [
+        {
+          "width": 140,
+          "height": 44
+        },
+        {
+          "width": 140,
+          "height": 44
+        },
+        {
+          "width": 140,
+          "height": 44
+        },
+        {
+          "width": 140,
+          "height": 44
+        }
+      ],
+      "titleFont": "24px",
+      "matrixScrollable": false,
+      "gridColumns": "140px 140px"
+    },
+    "errors": []
+  }
+]

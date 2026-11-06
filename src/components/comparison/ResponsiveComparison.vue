@@ -993,7 +993,7 @@
                                 <dd>{{ theme.label }}</dd>
                             </div>
                             <div>
-                                <dt>적용 통화:</dt>
+                                <dt>표시 통화:</dt>
                                 <dd>
                                     {{ currencies.join(' · ') || '미확인' }}
                                     (환산 없음)

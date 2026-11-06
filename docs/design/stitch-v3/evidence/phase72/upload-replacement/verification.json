@@ -1,0 +1,27 @@
+{
+  "commit": "2dede2a0a12e78de4d624abe8c23f02e44fbf83c",
+  "base": "016fcddda89e0f5285a65446e8859adde247c208",
+  "files": [
+    "src/components/portfolio/PortfolioFileImportForm.vue",
+    "tests/upload-file-replacement.browser.mjs"
+  ],
+  "syntheticChooserCases": 10,
+  "geometryWidths": [
+    1280,
+    834,
+    768,
+    390,
+    360
+  ],
+  "geometryUnchanged": true,
+  "apiCalls": 0,
+  "typeCheck": "passed",
+  "changedFileLint": "passed",
+  "prettier": "passed",
+  "fullBuild": "deferred to root integrated tree per instruction",
+  "actualAccountPdf": "not exercised",
+  "osCancelButton": "not exercised; real Playwright file chooser empty selection and synthetic native cancel exercised",
+  "nativePngAcceptance": "not accepted",
+  "remoteMutations": "none",
+  "writesStopped": true
+}

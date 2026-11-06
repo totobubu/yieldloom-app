@@ -1,0 +1,14 @@
+[
+  {
+    "view": "similar",
+    "width": 390,
+    "beforeAfterScreenshotIdentical": true,
+    "sha256": "f33ccfa6e7931bb81b4f5fb32c2eae90dc1b4d7a4216e6a6701a620ab1f86f78"
+  },
+  {
+    "view": "theme",
+    "width": 390,
+    "beforeAfterScreenshotIdentical": true,
+    "sha256": "2c0373042b41b11a0aa44873830750b5d299ad9b1986984d1b7141615a249c8e"
+  }
+]

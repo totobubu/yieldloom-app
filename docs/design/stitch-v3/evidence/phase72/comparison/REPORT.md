@@ -1,0 +1,11 @@
+# Comparison condition-card completion
+
+Base main016fcddda89e0f5285a65446e8859adde247c208. Own worktree /workspace/yieldloom-comparison-phase72, branch fix/stitch-comparison-gap-phase72. Files changed only src/components/comparison/ResponsiveComparison.vue and tests/comparison-responsive.browser.mjs.
+
+Restored final source similarTablet77fdbd798a3941c68f098120a210c44d missing group-condition card/button; restored themeTablet12bcd42390bb468eb1700a909aec3f5d four-parameter card/button and source two-column insights versus warning/conditions assembly. Actual filters/theme/currencies/total are used, never dummy USD/monthly/three products. Keyboard/button returns focus to existing strategy input without a fetch; disabled loading retained. No popup is invented where the source modal frame is absent. Mobile authoritative2476bb.../4dbfb... do not contain these cards, so they remain hidden there.
+
+Fresh measurements at same viewport/DPR2: similar834=786x70/36px button, similar768=720x70/36; theme834=385x245/44, theme768=352x245/44. Card width/height/padding/radius/border and button height/font/line/radius match source HTML. Asset failures0, API0, overflow0. Actual text and fonts differ from source mock/native PNG; no full-frame acceptance.
+
+Final functional tests: responsive comparison14 viewport/view states and query/title/history passed; returning focus and reactive condition card verified, existing directory reads1/details0 before explicit query; selection/zero/unavailable/links/dark/resizing remain covered. Existing structured comparison9 states across underlying/similar/theme and1280/768/390 pass. Type-check and changed-file ESLint pass. Two Mobile final capture PNGs are byte-identical to before. PC view is not replaced; existing PC behavior covered by14 and9 suites.
+
+Full integrated build/remote CI/deployment are root's next integration step, not performed by this child. No push/PR/main/work mutations. No actual authenticated account/customerPDF/production writes. Evidence under /tmp/phase72-comparison including before/final four source/app frames, condition crop pairs/geometry, functional-final logs/results, existing-results-browser.log, type-check-final.log, lint-final.log and mobile-preservation.json.

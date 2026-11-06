@@ -1,0 +1,42 @@
+[
+  {
+    "width": 1280,
+    "geometryPreserved": true,
+    "apiCalls": 0,
+    "sourceId": null,
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 834,
+    "geometryPreserved": true,
+    "apiCalls": 0,
+    "sourceId": "3c2a0d37b5f54a63b3a633f01f0d2b33",
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 768,
+    "geometryPreserved": true,
+    "apiCalls": 0,
+    "sourceId": "3c2a0d37b5f54a63b3a633f01f0d2b33",
+    "sourceAssetFailures": []
+  },
+  {
+    "width": 390,
+    "geometryPreserved": true,
+    "apiCalls": 0,
+    "sourceId": "80b06442816e4d1baebc96cb520b19d6",
+    "sourceAssetFailures": [
+      {
+        "host": "fonts.googleapis.com",
+        "status": "asset-fetch-failed"
+      }
+    ]
+  },
+  {
+    "width": 360,
+    "geometryPreserved": true,
+    "apiCalls": 0,
+    "sourceId": null,
+    "sourceAssetFailures": []
+  }
+]

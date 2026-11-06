@@ -1,0 +1,93 @@
+
+> etf@0.0.0 lint:check
+> eslint .
+
+
+/workspace/yieldloom-redesign-phase80/src/components/ErrorBoundary.vue
+  12:31  warning  Attribute "v-if" should go before "#footer"  vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/components/portfolio/AccountRecoveryOverview.vue
+  13:9  warning  Prop 'user' requires default value to be set              vue/require-default-prop
+  14:9  warning  Prop 'accounts' requires default value to be set          vue/require-default-prop
+  15:9  warning  Prop 'refreshState' requires default value to be set      vue/require-default-prop
+  16:9  warning  Prop 'refreshAccountId' requires default value to be set  vue/require-default-prop
+
+/workspace/yieldloom-redesign-phase80/src/components/portfolio/InvestmentBlog.vue
+  113:13  warning  Attribute "v-model" should go before "aria-label"  vue/attributes-order
+  129:13  warning  Attribute "id" should go before "input-id"         vue/attributes-order
+  130:13  warning  Attribute "v-model" should go before "input-id"    vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/components/portfolio/InvestmentWorkbench.vue
+  519:29  warning  Attribute "v-model" should go before ":input-id"  vue/attributes-order
+  540:33  warning  Attribute "v-model" should go before "input-id"   vue/attributes-order
+  547:33  warning  Attribute "v-model" should go before "input-id"   vue/attributes-order
+  565:29  warning  Attribute "v-model" should go before "input-id"   vue/attributes-order
+  571:29  warning  Attribute "v-model" should go before "input-id"   vue/attributes-order
+  679:29  warning  Attribute "v-model" should go before ":input-id"  vue/attributes-order
+  754:29  warning  Attribute "v-model" should go before "input-id"   vue/attributes-order
+  761:29  warning  Attribute "v-model" should go before "input-id"   vue/attributes-order
+  767:29  warning  Attribute "v-model" should go before "input-id"   vue/attributes-order
+  784:33  warning  Attribute "v-model" should go before ":input-id"  vue/attributes-order
+  841:29  warning  Attribute "v-model" should go before ":input-id"  vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/components/portfolio/PortfolioCapitalPanel.vue
+  13:9  warning  Prop 'user' requires default value to be set       vue/require-default-prop
+  14:9  warning  Prop 'state' requires default value to be set      vue/require-default-prop
+  16:9  warning  Prop 'error' requires default value to be set      vue/require-default-prop
+  17:9  warning  Prop 'accountId' requires default value to be set  vue/require-default-prop
+
+/workspace/yieldloom-redesign-phase80/src/components/portfolio/PortfolioInsights.vue
+  375:21  warning  Attribute "v-model" should go before "placeholder"  vue/attributes-order
+  384:21  warning  Attribute "v-model" should go before "aria-label"   vue/attributes-order
+  585:41  warning  Attribute "v-model" should go before "input-id"     vue/attributes-order
+  613:41  warning  Attribute "v-model" should go before "aria-label"   vue/attributes-order
+  619:41  warning  Attribute "v-model" should go before "input-id"     vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/components/portfolio/PurchaseFundingEditor.vue
+  13:9  warning  Prop 'user' requires default value to be set         vue/require-default-prop
+  14:9  warning  Prop 'transaction' requires default value to be set  vue/require-default-prop
+  15:9  warning  Prop 'asset' requires default value to be set        vue/require-default-prop
+  16:9  warning  Prop 'state' requires default value to be set        vue/require-default-prop
+  18:9  warning  Prop 'loadError' requires default value to be set    vue/require-default-prop
+  19:9  warning  Prop 'accountId' requires default value to be set    vue/require-default-prop
+
+/workspace/yieldloom-redesign-phase80/src/components/portfolio/WithdrawalSplit.vue
+   9:9  warning  Prop 'amount' requires default value to be set      vue/require-default-prop
+  10:9  warning  Prop 'currency' requires default value to be set    vue/require-default-prop
+  11:9  warning  Prop 'modelValue' requires default value to be set  vue/require-default-prop
+
+/workspace/yieldloom-redesign-phase80/src/components/stock/StockCandlestickChart.vue
+  274:25  warning  Attribute "v-for" should go before "outlined"  vue/attributes-order
+  275:25  warning  Attribute ":key" should go before "outlined"   vue/attributes-order
+  288:25  warning  Attribute "v-for" should go before "outlined"  vue/attributes-order
+  289:25  warning  Attribute ":key" should go before "outlined"   vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/components/stock/StockDividendTrend.vue
+  175:21  warning  Attribute "v-for" should go before ":outlined"  vue/attributes-order
+  176:21  warning  Attribute ":key" should go before ":outlined"   vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/components/thumbnail/DividendCalendarThumbnail.vue
+  204:21  warning  Attribute "aria-label" should go before "@click"  vue/attributes-order
+  211:21  warning  Attribute "aria-label" should go before "@click"  vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/components/thumbnail/RivalThumbnail.vue
+  19:22  warning  Expected a linebreak before this attribute  vue/first-attribute-linebreak
+  35:10  warning  Expected a linebreak before this attribute  vue/first-attribute-linebreak
+  47:57  warning  Expected a linebreak before this attribute  vue/first-attribute-linebreak
+
+/workspace/yieldloom-redesign-phase80/src/pages/DividendSimulatorView.vue
+  216:43  warning  Attribute "id" should go before "for"  vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/pages/FamilyPortfolioView.vue
+  2550:33  warning  Attribute "v-if" should go before "type"  vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/pages/LoginView.vue
+  513:33  warning  Attribute "id" should go before ":aria-hidden"  vue/attributes-order
+  579:33  warning  Attribute "id" should go before ":aria-hidden"  vue/attributes-order
+
+/workspace/yieldloom-redesign-phase80/src/pages/TickerThumbnailView.vue
+  1177:25  warning  Attribute "v-tooltip.top" should go before "aria-describedby"  vue/attributes-order
+  1196:17  warning  Attribute "class" should go before "@update:value"             vue/attributes-order
+
+✖ 54 problems (0 errors, 54 warnings)
+  0 errors and 37 warnings potentially fixable with the `--fix` option.

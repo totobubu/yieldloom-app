@@ -1,6 +1,6 @@
 # Stitch 시안 운영 현황
 
-2026-11-06 최신 UI 병합과 두 사이트 실제 제공은67a7b2214c2678dea90b46a70e5e8c3303fd0966이다. 기능/work/승격/최종 main CI4/4, Pages 및 Vercel READY, 실제 익명 QQQI4폭×2사이트를 확인했다. 자산관리 카드와 활성 배당 월의 반응형 포커스를 보정했으며 전체 원본/실계좌 검증 완료와 구분한다. [최종 운영 근거](PHASE79_PRODUCTION.md).
+2026-11-06 phase79에서 확인한 UI 병합과 두 사이트 실제 제공은67a7b2214c2678dea90b46a70e5e8c3303fd0966이다. 기능/work/승격/최종 main CI4/4, Pages 및 Vercel READY, 실제 익명 QQQI4폭×2사이트를 확인했다. 자산관리 카드와 활성 배당 월의 반응형 포커스를 보정했으며 전체 원본/실계좌 검증 완료와 구분한다. [최종 운영 근거](PHASE79_PRODUCTION.md).
 
 최종20개 고유 기기ID/9개 화면군 중15개 운영 연결·5개 별도 인계/승인 상태는 그대로다. 기존14종과 중복되며 이전4개 개선과 이번 월별 배당 차트를 신규페이지나 전체 시각 완료율로 세지 않는다.
 
@@ -29,3 +29,6 @@ Pages188c581 배포는syncing_files에서 시간 초과·취소됐으나 최신5
 
 
 자산관리 카드는 원본 b611bd07ed0c464581479140b9207afb의 헤더/도구와 실제 권한·유형/접근성 이름을 복원했다. Tablet834/Mobile390 높이는284px로 맞췄으며1024열수·1280슬롯/높이·전체 native 글꼴/PNG 차이는 남는다.27개 합성 상태·기존 등록 전체·금융 계약을 검증했으나 실제 인증 계좌·고객PDF는 미검증이다. 장부 목록20초 시간 검사의 최초 실패/동일 기준 재실행 성공과 원인 미확정도 [phase79](PHASE79_PRODUCTION.md)에 남겼다.
+
+
+후속 phase80: [익명 의견 수정 재시도의 본문 유실 방지](PHASE80_FEEDBACK_RETRY.md)는 구현 시점의 합성/로컬 검증 기록이다. 실제 제공 버전은 [Vercel release](https://yieldloom-app.vercel.app/app-release.json)·[Pages release](https://totobubu.github.io/yieldloom-app/app-release.json)와 해당 변경 PR의 최종 운영 검증을 따른다. 위 phase79 스냅샷을 후속 변경의 배포 완료 증명으로 사용하지 않는다.

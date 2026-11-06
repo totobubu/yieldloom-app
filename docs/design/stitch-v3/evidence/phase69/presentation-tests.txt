@@ -1,0 +1,15 @@
+✔ reference six rows keep both currencies and review cash difference separate (2.61785ms)
+✔ genuine zero survives; a missing value blocks a complete group and cash difference (1.251378ms)
+✔ unknown currency is never inferred; other types are not cash or capital (0.298167ms)
+✔ existing exact arithmetic keeps decimal sums and scientific numeric input precise (0.36404ms)
+✔ invalid signed/boolean/out-of-range or unsupported precision values never become zero totals (0.313786ms)
+✔ domestic labels use names without changing codes; currencies stay attached to amounts (19.975157ms)
+✔ dividend display keeps currencies separate, subtracts reversals, and preserves missing amounts (1.313603ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 91.911213

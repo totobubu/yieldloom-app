@@ -1,0 +1,50 @@
+{
+  "scope": "synthetic file UI; no account/PDF or API writes; reference source HTML rerender not whole native acceptance",
+  "widths": [
+    {
+      "width": 1280,
+      "header": 159.5,
+      "sourceHeader": null,
+      "apiCalls": 0,
+      "sourceAssetFailures": [],
+      "visualAcceptance": "not accepted; actual raw preview supported, but required format/date controls, financial labels and remaining layout differ from source"
+    },
+    {
+      "width": 834,
+      "header": 159.5,
+      "sourceHeader": 159.5,
+      "apiCalls": 0,
+      "sourceAssetFailures": [],
+      "visualAcceptance": "not accepted; actual raw preview supported, but required format/date controls, financial labels and remaining layout differ from source"
+    },
+    {
+      "width": 768,
+      "header": 179,
+      "sourceHeader": 179,
+      "apiCalls": 0,
+      "sourceAssetFailures": [],
+      "visualAcceptance": "not accepted; actual raw preview supported, but required format/date controls, financial labels and remaining layout differ from source"
+    },
+    {
+      "width": 390,
+      "header": 239,
+      "sourceHeader": 244,
+      "apiCalls": 0,
+      "sourceAssetFailures": [
+        {
+          "host": "fonts.googleapis.com",
+          "status": "asset-fetch-failed"
+        }
+      ],
+      "visualAcceptance": "blocked: original source font asset unavailable"
+    },
+    {
+      "width": 360,
+      "header": 239,
+      "sourceHeader": null,
+      "apiCalls": 0,
+      "sourceAssetFailures": [],
+      "visualAcceptance": "not accepted; actual raw preview supported, but required format/date controls, financial labels and remaining layout differ from source"
+    }
+  ]
+}

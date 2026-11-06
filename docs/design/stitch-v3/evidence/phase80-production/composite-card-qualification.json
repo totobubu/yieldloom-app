@@ -1,0 +1,13 @@
+{
+  "purpose": "Exploratory constrained-content audit to diagnose standalone/composite geometry. No visual acceptance or new approved frame.",
+  "source": "Existing source b611bd07ed0c464581479140b9207afb, unchanged HTML file; inline main width/margin imposed only in measurement page at 1280/1024, while media viewport retained.",
+  "constraints": {"1280": {"slot": 984, "x": 272}, "1024": {"slot": 708, "x": 272}},
+  "results": [
+    {"viewport":1280,"constrainedSourceCardWidth":296,"sourceHeight":324,"appWidth":310.65625,"appHeight":300,"sourceColumns":3,"appColumns":3},
+    {"viewport":1024,"constrainedSourceCardWidth":204,"sourceHeight":378,"appWidth":708,"appHeight":284,"sourceColumns":3,"appColumns":1},
+    {"viewport":834,"sourceCardWidth":786,"sourceHeight":284,"appWidth":766,"appHeight":284,"sourceColumns":1,"appColumns":1},
+    {"viewport":390,"sourceCardWidth":358,"sourceHeight":284,"appWidth":338,"appHeight":284,"sourceColumns":1,"appColumns":1}
+  ],
+  "interpretation": "Standalone PC source284px height is not a safe fixed-height target after composition: constrained source wraps to324px. Width/padding and responsive composition need comparison before styling; dummy/live text differences also matter. No app change, private API or real account access.",
+  "rawHarnessCaveat": "Existing baseline flag disables equality checks. Generic PASS line only means rendering completed without page/asset errors. Historical knownUnaccepted strings inherited from the standalone harness are not new constrained measurements; use rows and this qualification."
+}

@@ -1,0 +1,20 @@
+2026-11-06T13:03:24.3239180Z PASS schedule/unconfirmed/390: confirmed vs forecast vs unknown, actual zero/event currency, two responsive panels, one cached read
+2026-11-06T13:03:28.9575863Z PASS dividend-navigation/1280: calendar/future unknown, both years, rolling retained, month focus, missing source disabled, no extra reads
+2026-11-06T13:04:01.1543503Z node:internal/modules/run_main:107
+2026-11-06T13:04:01.1544369Z     triggerUncaughtException(
+2026-11-06T13:04:01.1544924Z     ^
+2026-11-06T13:04:01.1545176Z
+2026-11-06T13:04:01.1545706Z locator.evaluate: Timeout 30000ms exceeded.
+2026-11-06T13:04:01.1549125Z Call log:
+2026-11-06T13:04:01.1550119Z   - waiting for locator('.dividend-trend').locator('.month-bar').last()
+2026-11-06T13:04:01.1552251Z     - locator resolved to visible <button data-v-45bf18e3="" aria-label="2026-12 배당 미확인, 미확인회" class="month-bar selected has-status">…</button>
+2026-11-06T13:04:01.1553170Z
+2026-11-06T13:04:01.1553928Z     at /home/runner/work/yieldloom-app/yieldloom-app/tests/stitch-dividend-navigation.browser.mjs:154:22 {
+2026-11-06T13:04:01.1554895Z   name: 'TimeoutError'
+2026-11-06T13:04:01.1555304Z }
+2026-11-06T13:04:01.1555489Z
+2026-11-06T13:04:01.1555659Z Node.js v24.22.2
+2026-11-06T13:04:01.1688605Z ##[error]Process completed with exit code 1.
+2026-11-06T13:04:01.1777508Z ##[group]Run actions/upload-artifact@v4
+2026-11-06T13:04:01.1777843Z with:
+2026-11-06T13:04:01.1778069Z   name: browser-diagnostics

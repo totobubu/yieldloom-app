@@ -1,0 +1,692 @@
+{
+  "scope": "Named typography/control dimensions only; not full-screen visual acceptance",
+  "rows": [
+    {
+      "width": 1280,
+      "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
+      "original": {
+        "heading": {
+          "text": "개요 및 기본 정보\n          종목 메타데이터",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 767.328125,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "reports": {
+          "text": "공식 공시 및 운용 보고서",
+          "fontSize": "15px",
+          "lineHeight": "22.5px",
+          "weight": "700",
+          "width": 767.328125,
+          "height": 22.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "feedback": {
+          "text": "익명 요청 및 한마디",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 360.65625,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "select": {
+          "text": "정보 오류\n          추가 정보 요청\n          질문\n          기타",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "400",
+          "width": 360.65625,
+          "height": 44,
+          "padding": "0px 12px",
+          "marginBottom": "0px"
+        },
+        "textarea": {
+          "text": "",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "400",
+          "width": 360.65625,
+          "height": 100,
+          "padding": "10px 12px",
+          "marginBottom": "0px"
+        },
+        "count": {
+          "text": "0 / 1,000자",
+          "fontSize": "11px",
+          "lineHeight": "16.5px",
+          "weight": "400",
+          "width": 360.65625,
+          "height": 16.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "privacy": {
+          "text": "※ 이름, 주민등록번호, 연락처 등 일체의 개인정보 입력을 금지합니다. 입력된 내용은 공개 카탈로그 품질 검토 목적으로만 참조됩니다.",
+          "fontSize": "11px",
+          "lineHeight": "14.85px",
+          "weight": "400",
+          "width": 360.65625,
+          "height": 29.6875,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "submit": {
+          "text": "요청 전송하기",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "600",
+          "width": 360.65625,
+          "height": 44,
+          "padding": "0px",
+          "marginBottom": "0px"
+        }
+      },
+      "implementation": {
+        "heading": {
+          "text": "개요 및 기본 정보",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 767.328125,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "reports": {
+          "text": "공식 공시 및 운용 보고서",
+          "fontSize": "15px",
+          "lineHeight": "22.5px",
+          "weight": "700",
+          "width": 767.328125,
+          "height": 22.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "feedback": {
+          "text": "익명 요청 및 한마디",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 360.65625,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "select": {
+          "text": "정보 오류",
+          "fontSize": "14px",
+          "lineHeight": "22.4px",
+          "weight": "400",
+          "width": 360.65625,
+          "height": 44,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "textarea": {
+          "text": "",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "400",
+          "width": 360.65625,
+          "height": 100,
+          "padding": "10px 12px",
+          "marginBottom": "0px"
+        },
+        "count": {
+          "text": "0 / 1,000자",
+          "fontSize": "11px",
+          "lineHeight": "16.5px",
+          "weight": "400",
+          "width": 360.65625,
+          "height": 16.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "privacy": {
+          "text": "10~1,000자 · 개인정보는 남기지 마세요.",
+          "fontSize": "11px",
+          "lineHeight": "14.85px",
+          "weight": "400",
+          "width": 360.65625,
+          "height": 14.84375,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "submit": {
+          "text": "요청 전송하기",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "600",
+          "width": 360.65625,
+          "height": 44,
+          "padding": "12px 16px",
+          "marginBottom": "0px"
+        }
+      },
+      "checks": {
+        "heading": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "reports": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "feedback": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "select": {
+          "fields": [
+            "height",
+            "fontSize"
+          ],
+          "pass": true
+        },
+        "textarea": {
+          "fields": [
+            "height",
+            "fontSize"
+          ],
+          "pass": true
+        },
+        "count": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "privacy": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "submit": {
+          "fields": [
+            "height",
+            "fontSize"
+          ],
+          "pass": true
+        }
+      },
+      "sourceFailures": [],
+      "failures": [],
+      "errors": []
+    },
+    {
+      "width": 768,
+      "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
+      "original": {
+        "heading": {
+          "text": "개요 및 기본 정보\n          종목 메타데이터",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 710,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "reports": {
+          "text": "공식 공시 및 운용 보고서",
+          "fontSize": "15px",
+          "lineHeight": "22.5px",
+          "weight": "700",
+          "width": 710,
+          "height": 22.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "feedback": {
+          "text": "익명 요청 및 한마디",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 710,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "select": {
+          "text": "정보 오류\n          추가 정보 요청\n          질문\n          기타",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "400",
+          "width": 710,
+          "height": 44,
+          "padding": "0px 12px",
+          "marginBottom": "0px"
+        },
+        "textarea": {
+          "text": "",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "400",
+          "width": 710,
+          "height": 100,
+          "padding": "10px 12px",
+          "marginBottom": "0px"
+        },
+        "count": {
+          "text": "0 / 1,000자",
+          "fontSize": "11px",
+          "lineHeight": "16.5px",
+          "weight": "400",
+          "width": 710,
+          "height": 16.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "privacy": {
+          "text": "※ 이름, 주민등록번호, 연락처 등 일체의 개인정보 입력을 금지합니다. 입력된 내용은 공개 카탈로그 품질 검토 목적으로만 참조됩니다.",
+          "fontSize": "11px",
+          "lineHeight": "14.85px",
+          "weight": "400",
+          "width": 710,
+          "height": 14.84375,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "submit": {
+          "text": "요청 전송하기",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "600",
+          "width": 710,
+          "height": 44,
+          "padding": "0px",
+          "marginBottom": "0px"
+        }
+      },
+      "implementation": {
+        "heading": {
+          "text": "개요 및 기본 정보",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 710,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "reports": {
+          "text": "공식 공시 및 운용 보고서",
+          "fontSize": "15px",
+          "lineHeight": "22.5px",
+          "weight": "700",
+          "width": 710,
+          "height": 22.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "feedback": {
+          "text": "익명 요청 및 한마디",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 710,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "select": {
+          "text": "정보 오류",
+          "fontSize": "14px",
+          "lineHeight": "22.4px",
+          "weight": "400",
+          "width": 710,
+          "height": 44,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "textarea": {
+          "text": "",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "400",
+          "width": 710,
+          "height": 100,
+          "padding": "10px 12px",
+          "marginBottom": "0px"
+        },
+        "count": {
+          "text": "0 / 1,000자",
+          "fontSize": "11px",
+          "lineHeight": "16.5px",
+          "weight": "400",
+          "width": 710,
+          "height": 16.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "privacy": {
+          "text": "10~1,000자 · 개인정보는 남기지 마세요.",
+          "fontSize": "11px",
+          "lineHeight": "14.85px",
+          "weight": "400",
+          "width": 710,
+          "height": 14.84375,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "submit": {
+          "text": "요청 전송하기",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "600",
+          "width": 710,
+          "height": 44,
+          "padding": "12px 16px",
+          "marginBottom": "0px"
+        }
+      },
+      "checks": {
+        "heading": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "reports": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "feedback": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "select": {
+          "fields": [
+            "height",
+            "fontSize"
+          ],
+          "pass": true
+        },
+        "textarea": {
+          "fields": [
+            "height",
+            "fontSize"
+          ],
+          "pass": true
+        },
+        "count": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "privacy": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "submit": {
+          "fields": [
+            "height",
+            "fontSize"
+          ],
+          "pass": true
+        }
+      },
+      "sourceFailures": [],
+      "failures": [],
+      "errors": []
+    },
+    {
+      "width": 390,
+      "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
+      "original": {
+        "heading": {
+          "text": "개요 및 기본 정보\n          종목 메타데이터",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 332,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "reports": {
+          "text": "공식 공시 및 운용 보고서",
+          "fontSize": "15px",
+          "lineHeight": "22.5px",
+          "weight": "700",
+          "width": 332,
+          "height": 22.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "feedback": {
+          "text": "익명 요청 및 한마디",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 332,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "select": {
+          "text": "정보 오류\n          추가 정보 요청\n          질문\n          기타",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "400",
+          "width": 332,
+          "height": 44,
+          "padding": "0px 12px",
+          "marginBottom": "0px"
+        },
+        "textarea": {
+          "text": "",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "400",
+          "width": 332,
+          "height": 100,
+          "padding": "10px 12px",
+          "marginBottom": "0px"
+        },
+        "count": {
+          "text": "0 / 1,000자",
+          "fontSize": "11px",
+          "lineHeight": "16.5px",
+          "weight": "400",
+          "width": 332,
+          "height": 16.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "privacy": {
+          "text": "※ 이름, 주민등록번호, 연락처 등 일체의 개인정보 입력을 금지합니다. 입력된 내용은 공개 카탈로그 품질 검토 목적으로만 참조됩니다.",
+          "fontSize": "11px",
+          "lineHeight": "14.85px",
+          "weight": "400",
+          "width": 332,
+          "height": 29.6875,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "submit": {
+          "text": "요청 전송하기",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "600",
+          "width": 332,
+          "height": 44,
+          "padding": "0px",
+          "marginBottom": "0px"
+        }
+      },
+      "implementation": {
+        "heading": {
+          "text": "개요 및 기본 정보",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 332,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "reports": {
+          "text": "공식 공시 및 운용 보고서",
+          "fontSize": "15px",
+          "lineHeight": "22.5px",
+          "weight": "700",
+          "width": 332,
+          "height": 22.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "feedback": {
+          "text": "익명 요청 및 한마디",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "weight": "700",
+          "width": 332,
+          "height": 24,
+          "padding": "0px",
+          "marginBottom": "14px"
+        },
+        "select": {
+          "text": "정보 오류",
+          "fontSize": "14px",
+          "lineHeight": "22.4px",
+          "weight": "400",
+          "width": 332,
+          "height": 44,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "textarea": {
+          "text": "",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "400",
+          "width": 332,
+          "height": 100,
+          "padding": "10px 12px",
+          "marginBottom": "0px"
+        },
+        "count": {
+          "text": "0 / 1,000자",
+          "fontSize": "11px",
+          "lineHeight": "16.5px",
+          "weight": "400",
+          "width": 332,
+          "height": 16.5,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "privacy": {
+          "text": "10~1,000자 · 개인정보는 남기지 마세요.",
+          "fontSize": "11px",
+          "lineHeight": "14.85px",
+          "weight": "400",
+          "width": 332,
+          "height": 14.84375,
+          "padding": "0px",
+          "marginBottom": "0px"
+        },
+        "submit": {
+          "text": "요청 전송하기",
+          "fontSize": "14px",
+          "lineHeight": "normal",
+          "weight": "600",
+          "width": 332,
+          "height": 44,
+          "padding": "12px 16px",
+          "marginBottom": "0px"
+        }
+      },
+      "checks": {
+        "heading": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "reports": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "feedback": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "select": {
+          "fields": [
+            "height",
+            "fontSize"
+          ],
+          "pass": true
+        },
+        "textarea": {
+          "fields": [
+            "height",
+            "fontSize"
+          ],
+          "pass": true
+        },
+        "count": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "privacy": {
+          "fields": [
+            "fontSize",
+            "lineHeight"
+          ],
+          "pass": true
+        },
+        "submit": {
+          "fields": [
+            "height",
+            "fontSize"
+          ],
+          "pass": true
+        }
+      },
+      "sourceFailures": [],
+      "failures": [],
+      "errors": []
+    }
+  ]
+}

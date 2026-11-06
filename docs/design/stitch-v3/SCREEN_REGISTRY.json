@@ -7,7 +7,7 @@
   "families": 9,
   "testFramesExcluded": 1,
   "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-  "currentCodeBase": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+  "currentCodeBase": "160951854be8c74c81306bd20305eec79f364651",
   "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
   "frames": [
     {
@@ -2504,7 +2504,7 @@
   "projectFrameCountAtInitialRead": 64,
   "registeredFrameCount": 73,
   "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-  "latestImplementationBase": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+  "latestImplementationBase": "160951854be8c74c81306bd20305eec79f364651",
   "rolloutSnapshot": {
     "recordedAt": "2026-11-06T11:17:02.495413+00:00",
     "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
@@ -2563,20 +2563,31 @@
     "sourceBranchHistorical": true
   },
   "latestOriginal14Followup": {
-    "screenId": "bd619d24ceb74c92afad1787a364ab4b",
+    "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
     "projectId": "7356929996797649648",
-    "route": "/stock/:ticker?tab=dividends",
-    "component": "src/components/stock/StockDividendTrend.vue",
-    "sourceIntegrity": "evidence/phase78/fresh-reference-integrity.json",
+    "route": "/stock/:ticker?tab=details",
+    "component": "src/components/stock/StockFeedbackForm.vue",
+    "states": [
+      "pending",
+      "lost acknowledgement",
+      "same/reverted payload retry",
+      "changed message retry",
+      "changed category retry",
+      "success",
+      "dark"
+    ],
     "viewports": [
       1280,
-      834,
       768,
       390
     ],
-    "status": "operating; focused resize corrected; full native PNG/font not accepted; private accounts/PDF unverified",
-    "evidence": "PHASE79_PRODUCTION.md",
-    "newDeviceDesignCount": 0
+    "main": "160951854be8c74c81306bd20305eec79f364651",
+    "sourceTree": "42097a68b4bcf8cdd25a505dbb75f19e39ae59cb",
+    "newDeviceDesignCount": 0,
+    "scope": "Actual frontend served at two public sites; all feedback POST intercepted before transport. No real receipt, private account/PDF or full native PNG/font acceptance.",
+    "evidence": "PHASE80_PRODUCTION.md",
+    "sourceRouteStateMap": "evidence/phase80-production/source-route-state-map.json",
+    "status": "operating retry-identity fix; all actual feedback POST intercepted; real receipt/private accounts/PDF/full native PNG/font not verified"
   },
   "phase78Original14FollowupHistorical": {
     "screenId": "bd619d24ceb74c92afad1787a364ab4b",
@@ -2595,6 +2606,33 @@
     "newDeviceDesignCount": 0
   },
   "latestOriginal14Followups": [
+    {
+      "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
+      "projectId": "7356929996797649648",
+      "route": "/stock/:ticker?tab=details",
+      "component": "src/components/stock/StockFeedbackForm.vue",
+      "states": [
+        "pending",
+        "lost acknowledgement",
+        "same/reverted payload retry",
+        "changed message retry",
+        "changed category retry",
+        "success",
+        "dark"
+      ],
+      "viewports": [
+        1280,
+        768,
+        390
+      ],
+      "main": "160951854be8c74c81306bd20305eec79f364651",
+      "sourceTree": "42097a68b4bcf8cdd25a505dbb75f19e39ae59cb",
+      "newDeviceDesignCount": 0,
+      "scope": "Actual frontend served at two public sites; all feedback POST intercepted before transport. No real receipt, private account/PDF or full native PNG/font acceptance.",
+      "evidence": "PHASE80_PRODUCTION.md",
+      "sourceRouteStateMap": "evidence/phase80-production/source-route-state-map.json",
+      "status": "operating retry-identity fix; all actual feedback POST intercepted; real receipt/private accounts/PDF/full native PNG/font not verified"
+    },
     {
       "screenId": "bd619d24ceb74c92afad1787a364ab4b",
       "projectId": "7356929996797649648",
@@ -2633,5 +2671,31 @@
     "newDeviceDesigns": 0,
     "evidence": "PHASE79_PRODUCTION.md",
     "scope": "Fresh asset-card reference; focus operating defect verified. No refetch/acceptance claim for all original14 or final20."
+  },
+  "phase80Followup": {
+    "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
+    "projectId": "7356929996797649648",
+    "route": "/stock/:ticker?tab=details",
+    "component": "src/components/stock/StockFeedbackForm.vue",
+    "states": [
+      "pending",
+      "lost acknowledgement",
+      "same/reverted payload retry",
+      "changed message retry",
+      "changed category retry",
+      "success",
+      "dark"
+    ],
+    "viewports": [
+      1280,
+      768,
+      390
+    ],
+    "main": "160951854be8c74c81306bd20305eec79f364651",
+    "sourceTree": "42097a68b4bcf8cdd25a505dbb75f19e39ae59cb",
+    "newDeviceDesignCount": 0,
+    "scope": "Actual frontend served at two public sites; all feedback POST intercepted before transport. No real receipt, private account/PDF or full native PNG/font acceptance.",
+    "evidence": "PHASE80_PRODUCTION.md",
+    "sourceRouteStateMap": "evidence/phase80-production/source-route-state-map.json"
   }
 }

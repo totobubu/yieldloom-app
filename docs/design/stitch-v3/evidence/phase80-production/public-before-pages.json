@@ -1,0 +1,26 @@
+{
+  "site": "pages",
+  "commit": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+  "mockPosts": 3,
+  "forwardedWrites": 0,
+  "reads": [
+    {
+      "path": "/api/thumbnail-data",
+      "status": 200
+    }
+  ],
+  "writesBlocked": [
+    {
+      "method": "POST",
+      "host": "yieldloom-app.vercel.app",
+      "path": "/api/analytics"
+    }
+  ],
+  "errors": [],
+  "failedHosts": [],
+  "failure": {
+    "name": "AssertionError",
+    "message": "Expected \"actual\" to be strictly unequal to:\n\n'a4577e9e-cb12-4a39-9781-9ff63531be22'"
+  },
+  "scope": "Actual anonymous frontend, synthetic feedback acknowledgements intercepted before transport; no real feedback/customer data/DB writes."
+}

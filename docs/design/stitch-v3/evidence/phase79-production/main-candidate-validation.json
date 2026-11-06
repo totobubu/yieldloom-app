@@ -1,0 +1,16 @@
+{
+  "base": "f1b1cb2663c06aab19dac670b94307183f45dcf0",
+  "work": "26b211e5f948a10093d6a04f803e65914c2080de",
+  "tree": "bb3537521d48d684307e2924f0341f3c5fe52079",
+  "buildAndType": "passed",
+  "nodeTests": 819,
+  "nodeCwd": "/workspace/yieldloom-phase79-candidate",
+  "preservedMainPublicJson": [
+    "dashboard.json",
+    "reconciliation.json",
+    "sources.json",
+    "system-logs.json"
+  ],
+  "previousSourceCwdRun": "also819passed but not used as exact-candidate-cwd evidence",
+  "customerDataOrPdfAccess": false
+}

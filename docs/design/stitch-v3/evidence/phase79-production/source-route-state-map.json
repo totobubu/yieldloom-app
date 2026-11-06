@@ -1,0 +1,75 @@
+{
+  "scope": "Two improvements to existing screens; not two new designs or whole-screen acceptance",
+  "featureHead": "c2c5818d86acf94b6ba2338405a5069557d4ee5e",
+  "surfaces": [
+    {
+      "screenId": "b611bd07ed0c464581479140b9207afb",
+      "projectId": "7356929996797649648",
+      "route": "/mypage?tab=assets",
+      "component": "src/components/portfolio/AssetAccountList.vue",
+      "reference": "Fresh MCP HTML and native PNG hash-checked; one responsive source, not four distinct approved native frames",
+      "renderedWidths": [
+        1280,
+        1024,
+        834,
+        390
+      ],
+      "corrected": [
+        "owner/institution/role grouping",
+        "friendly real role/type labels and complete accessible name",
+        "36px tools/16px icons/20px mobile padding",
+        "existing authority and busy guards preserved"
+      ],
+      "verified": [
+        "27 synthetic role/type cases",
+        "synthetic whole app registration with opt-in fixture PDF and in-memory API"
+      ],
+      "unaccepted": [
+        "1024 source 3 columns vs application 1 due content slot 976 vs 708px",
+        "1280 source card 394.66 vs application 310.66px; live height300 vs source284px",
+        "full native font/PNG and all real data states",
+        "real authenticated accounts/customer PDFs/server writes"
+      ],
+      "tabletAndMobileCardHeight": {
+        "source": 284,
+        "implementation": 284
+      }
+    },
+    {
+      "screenId": "bd619d24ceb74c92afad1787a364ab4b",
+      "projectId": "7356929996797649648",
+      "route": "/stock/:ticker?tab=dividends",
+      "component": "src/components/stock/StockDividendTrend.vue",
+      "corrected": [
+        "same active month remains visible after responsive resize, scoped horizontal scroll only"
+      ],
+      "verified": [
+        "same focus and selection on 3 widths roundtrip",
+        "inactive/empty/unmount cleanup and extra API0",
+        "4 widths idle application before/after RGB difference0"
+      ],
+      "unaccepted": [
+        "full native PNG/font acceptance",
+        "missing ROC/detail frames"
+      ],
+      "financeScriptPreserved": true
+    }
+  ],
+  "safety": {
+    "simulatorPublicPrStillBlocked": true,
+    "customerDataOrPdfAccess": false,
+    "realAccountOrDbWrites": false,
+    "newUnsupportedFinancialValues": false
+  },
+  "remoteCiAndProduction": {
+    "uiMerge": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+    "servedCommit": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
+    "sourceHead": "c2c5818d86acf94b6ba2338405a5069557d4ee5e",
+    "workHead": "26b211e5f948a10093d6a04f803e65914c2080de",
+    "mainCi": "42206667537",
+    "pagesCi": "42206666240",
+    "vercelDeployment": "dpl_A9C9cNGmLBbpKDryE9snAbHftoF3",
+    "publicVerification": "anonymous actual QQQI, two sites/four widths; no customer account/PDF or writes",
+    "newDeviceDesignCount": 0
+  }
+}

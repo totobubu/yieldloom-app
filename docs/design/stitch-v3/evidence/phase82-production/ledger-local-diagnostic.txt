@@ -1,0 +1,3 @@
+Account card nodes at timing: 0
+List initial render 19484ms
+Passed: fictional 2285-row document list, initial 19484ms; progressive document scroll, global sort/filter, full keyboard access, nullable manual add/cancel/validation/double-click/reload, mobile/dark; remote writes=0.

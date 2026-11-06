@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-11-06T16:06:59.209Z",
+  "scope": "Actual public release/index/entry and static CSS delivery only. No authenticated account rendering, private API, customer PDF or DB-write verification. No finance data substitution.",
+  "rows": [
+    {
+      "base": "https://yieldloom-app.vercel.app/",
+      "commit": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+      "metadataSha256": "a9181fb763f2cc2cd18f6bb6c4c7c9bafc824e399a6c14621940c781242b21eb",
+      "cssPath": "assets/FamilyPortfolioView-BMZRTCrd.css",
+      "sha256": "5bed78d4bac02f1dacd809e5d60a6335880dc4a9e1c3e4514645781fbe6d41fc",
+      "entryReferencesExpectedCss": true,
+      "expectedRule": ":root:not(.p-dark) .accounts[data-v-0a130990]{--account-card-text: #191c1e;--account-card-variant: #3e4947;--account-card-outline: #6e7977;--account-card-snapshot-bg: rgb(242 244 246 / 60%);--account-card-role-bg: #e6e8ea;--account-card-selection-bg: #eceef0;--account-card-selected-bg: rgb(153 243 228 / 40%);--account-card-selected-text: #005f55}",
+      "responses": [
+        {
+          "path": "/app-release.json",
+          "status": 200
+        },
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/assets/index-CCazsHDJ.js",
+          "status": 200
+        },
+        {
+          "path": "/assets/FamilyPortfolioView-BMZRTCrd.css",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "base": "https://totobubu.github.io/yieldloom-app/",
+      "commit": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+      "metadataSha256": "a9181fb763f2cc2cd18f6bb6c4c7c9bafc824e399a6c14621940c781242b21eb",
+      "cssPath": "assets/FamilyPortfolioView-CO4KzeRX.css",
+      "sha256": "606fc897d5ab2473ee4dfaae444e2aa60be640189c1b60497214520eda088d70",
+      "entryReferencesExpectedCss": true,
+      "expectedRule": ":root:not(.p-dark) .accounts[data-v-0a130990]{--account-card-text: #191c1e;--account-card-variant: #3e4947;--account-card-outline: #6e7977;--account-card-snapshot-bg: rgb(242 244 246 / 60%);--account-card-role-bg: #e6e8ea;--account-card-selection-bg: #eceef0;--account-card-selected-bg: rgb(153 243 228 / 40%);--account-card-selected-text: #005f55}",
+      "responses": [
+        {
+          "path": "/yieldloom-app/app-release.json",
+          "status": 200
+        },
+        {
+          "path": "/yieldloom-app/",
+          "status": 200
+        },
+        {
+          "path": "/yieldloom-app/assets/index-DKlOvUj1.js",
+          "status": 200
+        },
+        {
+          "path": "/yieldloom-app/assets/FamilyPortfolioView-CO4KzeRX.css",
+          "status": 200
+        }
+      ]
+    }
+  ]
+}

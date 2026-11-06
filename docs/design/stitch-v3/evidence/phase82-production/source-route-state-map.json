@@ -1,0 +1,27 @@
+{
+  "projectId": "7356929996797649648",
+  "screenId": "b611bd07ed0c464581479140b9207afb",
+  "route": "/mypage?tab=assets",
+  "component": "src/components/portfolio/AssetAccountList.vue light scoped CSS only",
+  "main": "e740bdd79509487768ccfab2acfe26356bfb8fb2",
+  "tree": "03e793aa4bc73d16bbe9fb0dfdc57038a652e6a5",
+  "servedCommit": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+  "servedTree": "e30549e6d2b34776da0d5f749beff431fffaa6b6",
+  "sourceIntegrity": "evidence/phase82-account-palette/fresh-reference-integrity.json",
+  "paletteViewports": [
+    1280,
+    834,
+    390
+  ],
+  "selectedComputedProperties": 213,
+  "preservedFullAppGeometryViewports": [
+    1280,
+    1024,
+    834,
+    390
+  ],
+  "actualDelivery": "both releases/current entry/exact built CSS; authenticated card rendering unverified",
+  "status": "light palette and hover corrected; PC composition/full native PNG/font/financial unsupported states/private accounts/PDF not accepted or verified",
+  "newDeviceDesignCount": 0,
+  "evidence": "PHASE82_PRODUCTION.md"
+}

@@ -1,0 +1,2 @@
+2026-11-06T15:19:57.9040250Z List initial render 14063ms
+2026-11-06T15:20:35.2634202Z Passed: fictional 2285-row document list, initial 14063ms; progressive document scroll, global sort/filter, full keyboard access, nullable manual add/cancel/validation/double-click/reload, mobile/dark; remote writes=0.

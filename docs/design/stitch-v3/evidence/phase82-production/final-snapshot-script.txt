@@ -1,0 +1,8 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+const identity=JSON.parse(await fs.readFile('/tmp/phase82/served-release-identity.json','utf8'));const expected=identity.commit;
+const rows=await Promise.all(['https://yieldloom-app.vercel.app/','https://totobubu.github.io/yieldloom-app/'].map(async base=>{
+ const r=await fetch(new URL('app-release.json?final='+Date.now(),base),{cache:'no-store',headers:{'Cache-Control':'no-cache'},signal:AbortSignal.timeout(30000)});assert.equal(r.status,200);const j=await r.json();assert.equal(j.schemaVersion,1);assert.equal(j.commit,expected);assert.equal(j.metadataSha256,identity.metadataSha256);return {base,status:r.status,...j};
+}));
+await fs.writeFile('/tmp/phase82/final-release-snapshot.json',JSON.stringify({checkedAt:new Date().toISOString(),scope:'Actual release identity and three-file public metadata hash, not full market history or private data verification.',rows},null,2)+'\n');
+console.log('Both final actual release identities match expected main.');

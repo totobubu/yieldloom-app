@@ -1,0 +1,49 @@
+{
+  "firstFailure": {
+    "run": 42241585662,
+    "attempt": 1,
+    "head": "03284ff8504d79d1d2b5d7803968db43cea38413",
+    "job": 127972955578,
+    "metricMs": 21806,
+    "assertion": "initialMs < 20000",
+    "location": "tests/sheet-ledger-list.browser.mjs:211"
+  },
+  "localDiagnostic": {
+    "result": "pass",
+    "metricMs": 19484,
+    "accountCardNodes": 0,
+    "thresholdMs": 20000,
+    "allOriginalAssertionsRetained": true,
+    "unknownRemoteWritesBlocked": true,
+    "scope": "Local Vite synthetic2285-row fixture, not exact cloud runner reproduction."
+  },
+  "hashes": {
+    "tests/sheet-ledger-list.browser.mjs": {
+      "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b": "261f4b94239f6d6a4cf6b063daece262e84e4a12",
+      "03284ff8504d79d1d2b5d7803968db43cea38413": "261f4b94239f6d6a4cf6b063daece262e84e4a12"
+    },
+    "src/components/portfolio/AssetAccountList.vue": {
+      "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b": "ec01645901675aa86738c81eda800544b33220ba",
+      "03284ff8504d79d1d2b5d7803968db43cea38413": "737ae54634905d7f3a07c24e0ee1832329598e25"
+    }
+  },
+  "scope": "Only AssetAccountList.vue styles changed; ledger test unchanged. Root cause remains unconfirmed. Historical phase79 timing fluctuation is evidence of prior variation, not proof this failure is harmless. Failed work browser rerun once at identical head; never relax threshold.",
+  "historicalEvidence": "../phase79-production/ledger-timing-investigation.json",
+  "independentPromotionCi": {
+    "run": 42241612283,
+    "head": "03284ff8504d79d1d2b5d7803968db43cea38413",
+    "result": "success",
+    "metricMs": 14063,
+    "originalThresholdMs": 20000
+  },
+  "sameHeadFailedJobRerun": {
+    "run": 42241585662,
+    "attempt": 2,
+    "job": 127978980669,
+    "head": "03284ff8504d79d1d2b5d7803968db43cea38413",
+    "result": "success",
+    "metricMs": 18096,
+    "originalThresholdMs": 20000
+  },
+  "metricDefinition": "Date.now delta from before navigation through cloud summary/detail open-close-cache checks and fullscreen list open-close-reopen. Logged as List initial render, but not a pure page load or card render timing. No new performance SLO is inferred."
+}

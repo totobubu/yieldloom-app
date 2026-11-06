@@ -1,6 +1,8 @@
 # Stitch 시안 운영 현황
 
-최신 phase81 운영 제공은 `dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b`이다. 부모 목록 스타일로 자산 카드가20px 밀리던 차이를 제거했다. 기능/work/승격/main CI와 두 실제 release·현재 entry/CSS 해시를 확인했다. 실제 계좌 화면은 미검증이다. [최종 운영 근거와 남은 차이](PHASE81_PRODUCTION.md). 아래 phase80/79는 해당 시점의 기록이며 최종20개 중15개 운영 연결/5개 외부·승인 상태와 전체 native PNG/글꼴·실계좌/PDF 미검증은 유지한다.
+최신 phase82 UI 병합은 `e740bdd79509487768ccfab2acfe26356bfb8fb2`, 자동 기초자산 갱신 후 실제 제공은 `ba450ec765cf026055fe34da5eb0c01d2dbc7afc`이다. 자산 카드 내부 라이트 색상과 hover를 원본에 맞추고 기존 치수·다크·금융 동작을 보존했다. UI 병합의4개 CI와 후속 데이터 검증·정확한 Pages 빌드, 두 실제 release·현재 entry/CSS를 확인했다. [최종 근거와 한계](PHASE82_PRODUCTION.md). 아래 이전 단계는 당시 기록이다.15개 운영 연결/5개 외부·승인 상태이며 전체 native PNG/글꼴·실계좌/PDF 검증은 미완료다.
+
+phase81 당시 운영 제공은 `dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b`이다. 부모 목록 스타일로 자산 카드가20px 밀리던 차이를 제거했다. 기능/work/승격/main CI와 두 실제 release·현재 entry/CSS 해시를 확인했다. 실제 계좌 화면은 미검증이다. [최종 운영 근거와 남은 차이](PHASE81_PRODUCTION.md). 아래 phase80/79는 해당 시점의 기록이며 최종20개 중15개 운영 연결/5개 외부·승인 상태와 전체 native PNG/글꼴·실계좌/PDF 미검증은 유지한다.
 
 phase80 당시 운영 제공은 `160951854be8c74c81306bd20305eec79f364651`이다. 익명 의견의 응답 유실 후 수정 재시도에서 본문이 누락되던 경로를 수정했다. 기능/work/승격/main CI 및 두 실제 release·차단된 합성 재전송의 증거와 한계는 [phase80 운영 기록](PHASE80_PRODUCTION.md)을 따른다. 아래 phase79는 당시 스냅샷이며 최종20개 중15개 운영 연결/5개 외부 인계·승인 상태와 전체 원본·실계좌/PDF 미검증은 그대로다.
 

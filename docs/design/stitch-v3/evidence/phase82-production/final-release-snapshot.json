@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-11-06T16:08:03.796Z",
+  "scope": "Actual release identity and three-file public metadata hash, not full market history or private data verification.",
+  "rows": [
+    {
+      "base": "https://yieldloom-app.vercel.app/",
+      "status": 200,
+      "schemaVersion": 1,
+      "commit": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+      "metadataSha256": "a9181fb763f2cc2cd18f6bb6c4c7c9bafc824e399a6c14621940c781242b21eb"
+    },
+    {
+      "base": "https://totobubu.github.io/yieldloom-app/",
+      "status": 200,
+      "schemaVersion": 1,
+      "commit": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+      "metadataSha256": "a9181fb763f2cc2cd18f6bb6c4c7c9bafc824e399a6c14621940c781242b21eb"
+    }
+  ]
+}

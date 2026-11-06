@@ -1,0 +1,266 @@
+[
+  {
+    "width": 1280,
+    "manual": {
+      "checked": false,
+      "disabled": true,
+      "height": 312.8125,
+      "previews": 0,
+      "requests": 1
+    },
+    "payload": {
+      "kind": "transactions",
+      "asOf": "2026-03-31",
+      "fields": {
+        "accountId": "synthetic-account",
+        "ownerId": "stitch-review-user",
+        "institution": "합성증권",
+        "identityConfirmed": "true",
+        "kind": "transactions",
+        "asOf": "2026-03-31",
+        "broker": "other",
+        "format": "broker-spreadsheet",
+        "encoding": "utf-8-sig",
+        "sheet": "",
+        "headerRow": "1",
+        "defaultCurrency": "",
+        "mapping": "{\"date\":0,\"type\":2,\"externalId\":3,\"symbol\":1,\"quantity\":4,\"amount\":5,\"currency\":6}"
+      },
+      "file": {
+        "name": "DEMO.csv",
+        "size": 101
+      }
+    },
+    "previewEmits": 3,
+    "requests": [
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      }
+    ],
+    "errors": [],
+    "sameTickReset": true,
+    "transitions": [
+      "preset",
+      "mapping",
+      "currency",
+      "busy",
+      "sheet",
+      "header",
+      "encoding",
+      "broker",
+      "file",
+      "account",
+      "kind"
+    ],
+    "scope": "synthetic component/inspect response only; preview payload emitted without production write; source fidelity is not native PNG acceptance"
+  },
+  {
+    "width": 834,
+    "manual": {
+      "checked": false,
+      "disabled": true,
+      "height": 298.90625,
+      "previews": 0,
+      "requests": 1
+    },
+    "payload": {
+      "kind": "transactions",
+      "asOf": "2026-03-31",
+      "fields": {
+        "accountId": "synthetic-account",
+        "ownerId": "stitch-review-user",
+        "institution": "합성증권",
+        "identityConfirmed": "true",
+        "kind": "transactions",
+        "asOf": "2026-03-31",
+        "broker": "other",
+        "format": "broker-spreadsheet",
+        "encoding": "utf-8-sig",
+        "sheet": "",
+        "headerRow": "1",
+        "defaultCurrency": "",
+        "mapping": "{\"date\":0,\"type\":2,\"externalId\":3,\"symbol\":1,\"quantity\":4,\"amount\":5,\"currency\":6}"
+      },
+      "file": {
+        "name": "DEMO.csv",
+        "size": 101
+      }
+    },
+    "previewEmits": 3,
+    "requests": [
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      }
+    ],
+    "errors": [],
+    "sameTickReset": true,
+    "transitions": [
+      "preset",
+      "mapping",
+      "currency",
+      "busy",
+      "sheet",
+      "header",
+      "encoding",
+      "broker",
+      "file",
+      "account",
+      "kind"
+    ],
+    "scope": "synthetic component/inspect response only; preview payload emitted without production write; source fidelity is not native PNG acceptance"
+  },
+  {
+    "width": 390,
+    "manual": {
+      "checked": false,
+      "disabled": true,
+      "height": 321.546875,
+      "previews": 0,
+      "requests": 1
+    },
+    "payload": {
+      "kind": "transactions",
+      "asOf": "2026-03-31",
+      "fields": {
+        "accountId": "synthetic-account",
+        "ownerId": "stitch-review-user",
+        "institution": "합성증권",
+        "identityConfirmed": "true",
+        "kind": "transactions",
+        "asOf": "2026-03-31",
+        "broker": "other",
+        "format": "broker-spreadsheet",
+        "encoding": "utf-8-sig",
+        "sheet": "",
+        "headerRow": "1",
+        "defaultCurrency": "",
+        "mapping": "{\"date\":0,\"type\":2,\"externalId\":3,\"symbol\":1,\"quantity\":4,\"amount\":5,\"currency\":6}"
+      },
+      "file": {
+        "name": "DEMO.csv",
+        "size": 101
+      }
+    },
+    "previewEmits": 3,
+    "requests": [
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      },
+      {
+        "method": "POST",
+        "action": "inspectSpreadsheet"
+      }
+    ],
+    "errors": [],
+    "sameTickReset": true,
+    "transitions": [
+      "preset",
+      "mapping",
+      "currency",
+      "busy",
+      "sheet",
+      "header",
+      "encoding",
+      "broker",
+      "file",
+      "account",
+      "kind"
+    ],
+    "scope": "synthetic component/inspect response only; preview payload emitted without production write; source fidelity is not native PNG acceptance"
+  }
+]

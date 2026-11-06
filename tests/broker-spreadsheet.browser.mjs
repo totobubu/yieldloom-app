@@ -225,6 +225,11 @@ try {
     }
     await page.setViewportSize({ width: 1280, height: 900 });
     await form
+        .getByLabel('파일의 열 연결과 기본 통화를 확인했습니다.', {
+            exact: true,
+        })
+        .check();
+    await form
         .getByRole('button', { name: '연결 자료 미리보기', exact: true })
         .click();
     await page
@@ -308,6 +313,11 @@ try {
         .getByRole('button', { name: '파일 열 확인', exact: true })
         .click();
     await form.getByLabel('연결 거래 고유번호', { exact: true }).waitFor();
+    await form
+        .getByLabel('파일의 열 연결과 기본 통화를 확인했습니다.', {
+            exact: true,
+        })
+        .check();
     await form
         .getByRole('button', { name: '연결 자료 미리보기', exact: true })
         .click();

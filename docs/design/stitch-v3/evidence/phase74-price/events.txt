@@ -1,0 +1,3 @@
+PASS price-events/1280: exact dates, source precedence, split/zero/unknown/missing, no invented row, one shared read, ticker isolation
+PASS price-events/768: exact dates, source precedence, split/zero/unknown/missing, no invented row, one shared read, ticker isolation
+PASS price-events/390: exact dates, source precedence, split/zero/unknown/missing, no invented row, one shared read, ticker isolation

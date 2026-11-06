@@ -186,7 +186,7 @@ try {
         .getByRole('button', { name: '표', exact: true })
         .click();
     await page
-        .getByRole('heading', { name: '시세 이력', exact: true })
+        .getByRole('heading', { name: '시세 이력 기록', exact: true })
         .waitFor();
     assert.equal(
         await page

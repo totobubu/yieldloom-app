@@ -49,6 +49,7 @@
         id="stock-feedback"
         class="stock-feedback"
         aria-labelledby="stock-feedback-heading"
+        :aria-busy="busy"
         tabindex="-1">
         <div>
             <h2 id="stock-feedback-heading">익명 요청 및 한마디</h2>
@@ -69,6 +70,7 @@
                 v-model="form.category"
                 input-id="feedback-category"
                 :options="categories"
+                :disabled="busy"
                 option-label="label"
                 option-value="value" />
             <label for="feedback-message">내용</label>
@@ -80,6 +82,7 @@
                 maxlength="1000"
                 required
                 fluid
+                :disabled="busy"
                 aria-describedby="feedback-help" />
             <output class="feedback-character-count" for="feedback-message"
                 >{{ form.message.length }} / 1,000자</output
@@ -100,7 +103,7 @@
                 label="요청 전송하기"
                 icon="pi pi-send"
                 :loading="busy"
-                :disabled="form.message.trim().length < 10" />
+                :disabled="busy || form.message.trim().length < 10" />
         </form>
     </section>
 </template>

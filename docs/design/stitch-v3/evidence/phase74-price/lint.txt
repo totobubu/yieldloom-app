@@ -1,0 +1,7 @@
+
+/workspace/yieldloom-redesign-phase74/src/pages/TickerThumbnailView.vue
+  1177:25  warning  Attribute "v-tooltip.top" should go before "aria-describedby"  vue/attributes-order
+  1196:17  warning  Attribute "class" should go before "@update:value"             vue/attributes-order
+
+✖ 2 problems (0 errors, 2 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.

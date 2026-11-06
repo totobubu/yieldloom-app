@@ -1,0 +1,27 @@
+{
+  "screen": {
+    "name": "projects/7356929996797649648/screens/87cd200796914464b7613003247de771",
+    "title": "CONTENT / Stock Prices",
+    "deviceType": "DESKTOP",
+    "width": "2560",
+    "height": "3504",
+    "htmlCode": {
+      "name": "projects/7356929996797649648/screens/87cd200796914464b7613003247de771/fileEntries/html",
+      "mimeType": "text/html"
+    },
+    "screenshot": {
+      "name": "projects/7356929996797649648/screens/87cd200796914464b7613003247de771/fileEntries/screenshot",
+      "mimeType": "image/png"
+    }
+  },
+  "files": {
+    "htmlCode": {
+      "sha256": "cf300d76cdc85d808b3475b2f01ccf4f5255e9d2d48da557210bfbca78a3662b",
+      "bytes": 30136
+    },
+    "screenshot": {
+      "sha256": "c0ab9357cfe9018871e29b8a3a9067b7cfe0b773bd33f552e8b117ab0228db38",
+      "bytes": 523936
+    }
+  }
+}

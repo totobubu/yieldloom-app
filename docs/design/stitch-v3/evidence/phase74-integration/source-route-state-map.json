@@ -1,0 +1,55 @@
+{
+  "baseCommit": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+  "deploymentStatus": "local integration verified; remote CI and production pending",
+  "screens": [
+    {
+      "projectId": "7356929996797649648",
+      "screenId": "87cd200796914464b7613003247de771",
+      "path": "/stock/:ticker?tab=prices",
+      "component": "src/components/stock/StockPriceHistory.vue",
+      "viewports": [
+        1280,
+        1024,
+        834,
+        768,
+        390
+      ],
+      "states": "table/cards/empty/error/calendar/date detail/loading/light/dark",
+      "report": "PHASE74_PRICE_RECORDS.md",
+      "status": "local focused tests passed; full native PNG parity unaccepted"
+    },
+    {
+      "projectId": "7356929996797649648",
+      "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
+      "path": "/stock/:ticker?tab=details#stock-feedback",
+      "component": "src/components/stock/StockFeedbackForm.vue",
+      "viewports": [
+        1280,
+        768,
+        390
+      ],
+      "states": "draft/pending/success/error/retry",
+      "status": "3-viewport pending/error/retry/default preservation passed; no live submission; native pending frame unavailable",
+      "report": "PHASE74_FEEDBACK_PENDING.md"
+    },
+    {
+      "projectId": "17382728461495959991",
+      "screenIds": {
+        "PC": "9ae2f0f1253a41b1839e792d36996900",
+        "Tablet": "0bb2ab1d8197472f910b73ed175c4448",
+        "Mobile": "e0fb1368a1684edaa56c1a506e806530"
+      },
+      "path": "/mypage?tab=assets -> broker file column mapping",
+      "component": "src/components/portfolio/BrokerSpreadsheetForm.vue",
+      "states": "manual/preset/mapping readiness/acknowledgment/pending/reset/preview",
+      "status": "3-viewport confirmation/payload/keyboard/scope tests and 4-width strict source capture passed; native full parity unaccepted",
+      "report": "PHASE74_MAPPING_CONFIRMATION.md"
+    }
+  ],
+  "unverified": [
+    "actual authenticated accounts",
+    "customer PDF",
+    "native PNG full parity",
+    "new simulator public PR remains approval blocked"
+  ]
+}

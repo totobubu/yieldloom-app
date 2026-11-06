@@ -29,7 +29,7 @@
           "matchesRegistry": true
         }
       ],
-      "status": "local/integrated synthetic verification passed; production pending"
+      "status": "code/static assets delivered; behavior validated with synthetic flows; actual authenticated account/PDF and full native PNG not verified"
     },
     {
       "unit": "comparison-context",
@@ -56,7 +56,7 @@
           "matchesRegistry": true
         }
       ],
-      "status": "local/integrated synthetic verification passed; production pending"
+      "status": "actual anonymous Tablet conditions focus four site/view cases; URL unchanged/extra data reads0; three-size navigation/overflow verified; full native PNG incomplete"
     },
     {
       "unit": "receipt-summary",
@@ -80,7 +80,7 @@
           "matchesRegistry": true
         }
       ],
-      "status": "local/integrated synthetic verification passed; production pending"
+      "status": "code/static assets delivered; behavior validated with synthetic flows; actual authenticated account/PDF and full native PNG not verified"
     },
     {
       "unit": "analysis-shortcuts",
@@ -102,7 +102,7 @@
           "matchesRegistry": true
         }
       ],
-      "status": "local/integrated synthetic verification passed; production pending"
+      "status": "code/static assets delivered; behavior validated with synthetic flows; actual authenticated account/PDF and full native PNG not verified"
     },
     {
       "unit": "price-refresh",
@@ -126,7 +126,9 @@
           "matchesRegistry": true
         }
       ],
-      "status": "local/integrated synthetic verification passed; production pending"
+      "status": "actual public QQQI two domains/three widths; initial1/explicit1/resize0, API200/candles501/rendered24; provider freshness/full-market accuracy and native PNG not verified"
     }
-  ]
+  ],
+  "productionCommit": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+  "productionEvidence": "PHASE73_USER_SURFACE_PRODUCTION.md"
 }

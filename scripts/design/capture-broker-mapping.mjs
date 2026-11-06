@@ -343,6 +343,21 @@ try {
                     name: '연결 자료 미리보기',
                     exact: true,
                 })
+                .isDisabled(),
+            true,
+            'manual mappings require explicit confirmation before preview'
+        );
+        await page
+            .getByLabel('파일의 열 연결과 기본 통화를 확인했습니다.', {
+                exact: true,
+            })
+            .check();
+        assert.equal(
+            await page
+                .getByRole('button', {
+                    name: '연결 자료 미리보기',
+                    exact: true,
+                })
                 .isEnabled(),
             true
         );

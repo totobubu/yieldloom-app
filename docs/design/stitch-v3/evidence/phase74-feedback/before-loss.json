@@ -1,0 +1,23 @@
+[
+  {
+    "width": 1280,
+    "oldPayloadPreserved": true,
+    "pendingFieldEditable": true,
+    "newUserInputLostOnOldSuccess": true,
+    "scope": "fully intercepted loopback synthetic feedback POST only; no customer data or remote write"
+  },
+  {
+    "width": 768,
+    "oldPayloadPreserved": true,
+    "pendingFieldEditable": true,
+    "newUserInputLostOnOldSuccess": true,
+    "scope": "fully intercepted loopback synthetic feedback POST only; no customer data or remote write"
+  },
+  {
+    "width": 390,
+    "oldPayloadPreserved": true,
+    "pendingFieldEditable": true,
+    "newUserInputLostOnOldSuccess": true,
+    "scope": "fully intercepted loopback synthetic feedback POST only; no customer data or remote write"
+  }
+]

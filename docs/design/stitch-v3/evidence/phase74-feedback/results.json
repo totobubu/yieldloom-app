@@ -1,0 +1,41 @@
+[
+  {
+    "width": 1280,
+    "mockPosts": 2,
+    "lockedPendingFields": true,
+    "originalPayloadSnapshot": true,
+    "failurePreservesTypeAndMessage": true,
+    "retryUsesSameRequestId": true,
+    "successClearsOnlyCompletedRequest": true,
+    "duplicateSubmitSuppressed": true,
+    "privateRequests": 0,
+    "errors": [],
+    "scope": "fully intercepted loopback synthetic feedback only; no real stock feedback, accounts or PDF validation"
+  },
+  {
+    "width": 768,
+    "mockPosts": 2,
+    "lockedPendingFields": true,
+    "originalPayloadSnapshot": true,
+    "failurePreservesTypeAndMessage": true,
+    "retryUsesSameRequestId": true,
+    "successClearsOnlyCompletedRequest": true,
+    "duplicateSubmitSuppressed": true,
+    "privateRequests": 0,
+    "errors": [],
+    "scope": "fully intercepted loopback synthetic feedback only; no real stock feedback, accounts or PDF validation"
+  },
+  {
+    "width": 390,
+    "mockPosts": 2,
+    "lockedPendingFields": true,
+    "originalPayloadSnapshot": true,
+    "failurePreservesTypeAndMessage": true,
+    "retryUsesSameRequestId": true,
+    "successClearsOnlyCompletedRequest": true,
+    "duplicateSubmitSuppressed": true,
+    "privateRequests": 0,
+    "errors": [],
+    "scope": "fully intercepted loopback synthetic feedback only; no real stock feedback, accounts or PDF validation"
+  }
+]

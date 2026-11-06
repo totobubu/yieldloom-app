@@ -1,0 +1,13 @@
+{
+  "base": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+  "component": "src/components/portfolio/PortfolioDividendCalendar.vue",
+  "scriptUnchanged": true,
+  "scriptSha256": "14fc6f070632d1f73131f420a2f3378d73621842abc9bd93e6f58049319a73a2",
+  "applicationSourceChanged": [
+    "src/components/portfolio/PortfolioDividendCalendar.vue"
+  ],
+  "changes": "Two grid wrappers, real-today badge/aria-current, scoped date grid and announced/forecast styling only. Calendar projection/filter/click handlers, API/data/permissions untouched.",
+  "unrelatedAppDiff": [
+    "src/components/portfolio/PortfolioDividendCalendar.vue"
+  ]
+}

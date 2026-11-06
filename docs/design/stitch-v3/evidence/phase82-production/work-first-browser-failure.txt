@@ -1,0 +1,37 @@
+2026-11-06T15:19:36.0789679Z PASS: 8 synthetic CSV/XLSX PC/Tablet/Mobile file chooser cases preserve selection/preview/confirmation on empty selection and synthetic cancel; genuine replacement resets confirmation/preview and keeps one validated file; wrong extension/2MB limit still reject; 2 PDF addition cases retain both files; API0. OS dialog cancel button and real account/PDF parsing not exercised.
+2026-11-06T15:19:37.0856875Z {"width":1280,"initialReads":1,"normalRefreshButtons":1}
+2026-11-06T15:19:38.0302588Z {"width":768,"initialReads":1,"normalRefreshButtons":1}
+2026-11-06T15:19:38.9828466Z {"width":390,"initialReads":1,"normalRefreshButtons":1}
+2026-11-06T15:19:39.8184063Z PASS: 3 widths, normal explicit refresh uses existing forced public fetch; one initial read, pending lock/shared cache, no control auto reads, stale ticker abort, error/retry and source button geometry preserved. Synthetic public data only.
+2026-11-06T15:20:00.1893627Z PASS public feedback:3 viewports, pending locks/snapshot, failure retention, idempotent retry, success reset, duplicate guard, dark/no overflow/private requests0
+2026-11-06T15:20:04.3701473Z Passed: synthetic edit/filter, importer removed, no pagination or inner Y scroll, mobile horizontal scrolling and responsive column freezing; GET=1, PATCH=1, filter requests=0.
+2026-11-06T15:20:26.8539274Z List initial render 21806ms
+2026-11-06T15:20:27.0333461Z node:internal/modules/run_main:107
+2026-11-06T15:20:27.0336703Z     triggerUncaughtException(
+2026-11-06T15:20:27.0337231Z     ^
+2026-11-06T15:20:27.0337465Z
+2026-11-06T15:20:27.0338129Z AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+2026-11-06T15:20:27.0338711Z
+2026-11-06T15:20:27.0338882Z   assert(initialMs < 20000)
+2026-11-06T15:20:27.0339146Z
+2026-11-06T15:20:27.0339776Z     at file:///home/runner/work/yieldloom-app/yieldloom-app/tests/sheet-ledger-list.browser.mjs:211:5 {
+2026-11-06T15:20:27.0340667Z   generatedMessage: true,
+2026-11-06T15:20:27.0341088Z   code: 'ERR_ASSERTION',
+2026-11-06T15:20:27.0341476Z   actual: false,
+2026-11-06T15:20:27.0341839Z   expected: true,
+2026-11-06T15:20:27.0343179Z   operator: '==',
+2026-11-06T15:20:27.0343573Z   diff: 'simple'
+2026-11-06T15:20:27.0343937Z }
+2026-11-06T15:20:27.0344115Z
+2026-11-06T15:20:27.0344260Z Node.js v24.22.2
+2026-11-06T15:20:27.0504985Z ##[error]Process completed with exit code 1.
+2026-11-06T15:20:27.0604353Z ##[group]Run actions/upload-artifact@v4
+2026-11-06T15:20:27.0604723Z with:
+2026-11-06T15:20:27.0604979Z   name: browser-diagnostics
+2026-11-06T15:20:27.0605904Z   path: /tmp/family-api.log
+/tmp/vite.log
+/tmp/vite-toss-mock.log
+/tmp/yieldloom-enhancements-*.png
+/tmp/yieldloom-fifo-*.png
+/tmp/comparison-responsive-ci/
+/tmp/ledger-analysis-ci/

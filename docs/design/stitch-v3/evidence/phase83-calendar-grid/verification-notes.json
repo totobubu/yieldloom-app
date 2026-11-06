@@ -1,0 +1,9 @@
+{
+  "source": "Fresh official MCP get_screen/download_file; no key values printed/stored. HTML and native PNG match existing mapping hashes.",
+  "browser": "ego-browser unavailable on this Linux environment; installed Chromium/Playwright used. Synthetic user and service fixtures only.",
+  "firstAuditFailure": "Additional forecast page reused the context after the first page toggled dark mode. It inherited localStorage dark state, so the tool could not find the Dark mode button. Corrected by restoring light before opening the additional page; original assertions retained. Not a product defect or accepted capture.",
+  "darkReadabilityCorrection": "During review the new badge fallback was changed to existing --app-accent-contrast, preserving readable text on the existing dark mint accent. Final measured ratios recorded in verification.json.",
+  "stateQualification": "Default fixture unchanged across before/after. Additional forecast fixture uses synthetic DEMO-M historical rows and existing ex-date forecast service; no DOM fake metrics and no live data writes. Date basis change adds zero observed reads.",
+  "guardedRegression": "Original calendar suite passed; final repeated variant adds context-level unmatched-write block beneath existing page mocks, with assertions unchanged. Priority regression uses the same write guard. No production account/PDF or DB-write verification.",
+  "nativeQualification": "Three responsive HTML renders are not three separate native device frames; whole native/font/PC assembly and other states remain unaccepted."
+}

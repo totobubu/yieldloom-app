@@ -7,7 +7,7 @@
   "families": 9,
   "testFramesExcluded": 1,
   "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-  "currentCodeBase": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+  "currentCodeBase": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
   "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
   "frames": [
     {
@@ -2504,24 +2504,24 @@
   "projectFrameCountAtInitialRead": 64,
   "registeredFrameCount": 73,
   "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-  "latestImplementationBase": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+  "latestImplementationBase": "e740bdd79509487768ccfab2acfe26356bfb8fb2",
   "rolloutSnapshot": {
-    "recordedAt": "2026-11-06T14:12:14.748149+00:00",
-    "scope": "20 final reviewed IDs/9 families,15 operating/5 external/approval; not additive to original14; no new designs this phase",
-    "productionMergeSha": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
-    "servedProductionSha": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
+    "recordedAt": "2026-11-06T16:08:03.853246+00:00",
+    "scope": "20 reviewed device IDs/9 families:15 connected/5 external or approval; overlaps original14; no new designs",
+    "productionMergeSha": "e740bdd79509487768ccfab2acfe26356bfb8fb2",
+    "servedProductionSha": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
     "productionTargets": 15,
     "externalUnverifiedTargets": 5,
     "localWorkTargets": 0,
-    "visualAcceptance": "whole native frame/font acceptance remains incomplete",
-    "evidence": "PHASE81_PRODUCTION.md",
-    "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
+    "visualAcceptance": "whole native frame/font acceptance incomplete",
+    "evidence": "PHASE82_PRODUCTION.md",
+    "metadataSha256": "a9181fb763f2cc2cd18f6bb6c4c7c9bafc824e399a6c14621940c781242b21eb",
     "mainPostMergeCi": {
-      "run": "42228322203",
+      "run": "42246376156",
       "result": "4/4 success",
-      "head": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b"
+      "head": "e740bdd79509487768ccfab2acfe26356bfb8fb2"
     },
-    "verificationScope": "Local synthetic asset flows/geometry; actual two-site release/index/entry/CSS and anonymous QQQI feedback with all POST intercepted. No actual authenticated accounts/customer PDFs/DB writes/full native acceptance."
+    "verificationScope": "synthetic cards, local geometry/flows; actual two-site release/index/entry/CSS and anonymous QQQI frontend with POST intercepted. No private account/PDF/DB-write verification."
   },
   "latestReferenceIntegrity": {
     "checkedAt": "2026-11-05T17:19:37.559897+00:00",
@@ -2562,26 +2562,29 @@
     "projectId": "7356929996797649648",
     "screenId": "b611bd07ed0c464581479140b9207afb",
     "route": "/mypage?tab=assets",
-    "component": "src/pages/FamilyPortfolioView.vue ordinary-list CSS affecting AssetAccountList root",
-    "main": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
-    "tree": "9abc0772b41272390895159c9dd1ee5959c95d92",
-    "sourceIntegrity": "evidence/phase81-account-inset/fresh-reference-integrity.json",
-    "geometryViewports": [
+    "component": "src/components/portfolio/AssetAccountList.vue light scoped CSS only",
+    "main": "e740bdd79509487768ccfab2acfe26356bfb8fb2",
+    "tree": "03e793aa4bc73d16bbe9fb0dfdc57038a652e6a5",
+    "servedCommit": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+    "servedTree": "e30549e6d2b34776da0d5f749beff431fffaa6b6",
+    "sourceIntegrity": "evidence/phase82-account-palette/fresh-reference-integrity.json",
+    "paletteViewports": [
+      1280,
+      834,
+      390
+    ],
+    "selectedComputedProperties": 213,
+    "preservedFullAppGeometryViewports": [
       1280,
       1024,
       834,
       390
     ],
-    "syntheticIntegratedFlowViewports": [
-      1280,
-      768,
-      390
-    ],
-    "actualDelivery": "both releases/current entry/exact built CSS only; authenticated account rendering unverified",
-    "status": "operating list inset correction; PC composition/columns/colors/full native PNG/font/private accounts/PDF not accepted/verified",
+    "actualDelivery": "both releases/current entry/exact built CSS; authenticated card rendering unverified",
+    "status": "light palette and hover corrected; PC composition/full native PNG/font/financial unsupported states/private accounts/PDF not accepted or verified",
     "newDeviceDesignCount": 0,
-    "evidence": "PHASE81_PRODUCTION.md",
-    "sourceRouteStateMap": "evidence/phase81-production/source-route-state-map.json"
+    "evidence": "PHASE82_PRODUCTION.md",
+    "sourceRouteStateMap": "evidence/phase82-production/source-route-state-map.json"
   },
   "phase78Original14FollowupHistorical": {
     "screenId": "bd619d24ceb74c92afad1787a364ab4b",
@@ -2604,26 +2607,29 @@
       "projectId": "7356929996797649648",
       "screenId": "b611bd07ed0c464581479140b9207afb",
       "route": "/mypage?tab=assets",
-      "component": "src/pages/FamilyPortfolioView.vue ordinary-list CSS affecting AssetAccountList root",
-      "main": "dcc2c050c5977325ee36eaadcc04fbf2a6cb2e5b",
-      "tree": "9abc0772b41272390895159c9dd1ee5959c95d92",
-      "sourceIntegrity": "evidence/phase81-account-inset/fresh-reference-integrity.json",
-      "geometryViewports": [
+      "component": "src/components/portfolio/AssetAccountList.vue light scoped CSS only",
+      "main": "e740bdd79509487768ccfab2acfe26356bfb8fb2",
+      "tree": "03e793aa4bc73d16bbe9fb0dfdc57038a652e6a5",
+      "servedCommit": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+      "servedTree": "e30549e6d2b34776da0d5f749beff431fffaa6b6",
+      "sourceIntegrity": "evidence/phase82-account-palette/fresh-reference-integrity.json",
+      "paletteViewports": [
+        1280,
+        834,
+        390
+      ],
+      "selectedComputedProperties": 213,
+      "preservedFullAppGeometryViewports": [
         1280,
         1024,
         834,
         390
       ],
-      "syntheticIntegratedFlowViewports": [
-        1280,
-        768,
-        390
-      ],
-      "actualDelivery": "both releases/current entry/exact built CSS only; authenticated account rendering unverified",
-      "status": "operating list inset correction; PC composition/columns/colors/full native PNG/font/private accounts/PDF not accepted/verified",
+      "actualDelivery": "both releases/current entry/exact built CSS; authenticated card rendering unverified",
+      "status": "light palette and hover corrected; PC composition/full native PNG/font/financial unsupported states/private accounts/PDF not accepted or verified",
       "newDeviceDesignCount": 0,
-      "evidence": "PHASE81_PRODUCTION.md",
-      "sourceRouteStateMap": "evidence/phase81-production/source-route-state-map.json"
+      "evidence": "PHASE82_PRODUCTION.md",
+      "sourceRouteStateMap": "evidence/phase82-production/source-route-state-map.json"
     },
     {
       "screenId": "d33c8e06e86f4404a4b5388c7aa33e13",
@@ -2748,5 +2754,33 @@
     "servedProductionSha": "67a7b2214c2678dea90b46a70e5e8c3303fd0966",
     "phase79Evidence": "PHASE79_PRODUCTION.md",
     "phase79Qualification": "Two existing-screen improvements only. Inventory counts unchanged, not whole-screen native acceptance or real account/PDF verification."
+  },
+  "phase82Followup": {
+    "projectId": "7356929996797649648",
+    "screenId": "b611bd07ed0c464581479140b9207afb",
+    "route": "/mypage?tab=assets",
+    "component": "src/components/portfolio/AssetAccountList.vue light scoped CSS only",
+    "main": "e740bdd79509487768ccfab2acfe26356bfb8fb2",
+    "tree": "03e793aa4bc73d16bbe9fb0dfdc57038a652e6a5",
+    "servedCommit": "ba450ec765cf026055fe34da5eb0c01d2dbc7afc",
+    "servedTree": "e30549e6d2b34776da0d5f749beff431fffaa6b6",
+    "sourceIntegrity": "evidence/phase82-account-palette/fresh-reference-integrity.json",
+    "paletteViewports": [
+      1280,
+      834,
+      390
+    ],
+    "selectedComputedProperties": 213,
+    "preservedFullAppGeometryViewports": [
+      1280,
+      1024,
+      834,
+      390
+    ],
+    "actualDelivery": "both releases/current entry/exact built CSS; authenticated card rendering unverified",
+    "status": "light palette and hover corrected; PC composition/full native PNG/font/financial unsupported states/private accounts/PDF not accepted or verified",
+    "newDeviceDesignCount": 0,
+    "evidence": "PHASE82_PRODUCTION.md",
+    "sourceRouteStateMap": "evidence/phase82-production/source-route-state-map.json"
   }
 }

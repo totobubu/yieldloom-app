@@ -1,0 +1,15 @@
+# Analysis shortcuts completion
+
+Base root integration08b2c2a. Branch fix/stitch-analysis-shortcuts-phase72 in /workspace/yieldloom-comparison-phase72. Owned files only PortfolioInsights.vue and tests/stitch-analysis-records.browser.mjs. No push/PR/merge/deployment by child.
+
+Actual adopted source: reviewed2e3c6628d6c74eafa277d9f07d60fc57, original HTML580-621, module CSS294-346. Hash matches cached MCP mapping (reference-integrity.json). The earlier262b... draft's execution button was not treated as a reviewed-source omission.
+
+Restored5 module cards/buttons, reusing the five modules already rendered under existing account/currency/data guards. Targets are AdvancedPortfolioInsights, HoldingDividendCapitalChart, MonthlyStatement, HoldingScenarioComparison and InvestmentWorkbench. Navigation scrolls/focuses existing root elements. Scenario focuses its still-closed summary, does not toggle/open it or instantiate inputs/results. No duplicate modules, new financial calculations, data fetches, source account changes or simulator changes. Descriptions truthfully reflect current modules rather than promising unavailable source financial semantics.
+
+Final browser suite passes3 widths1280/768/390 x normal/unknown-amount =6 cases, with30 keyboard target checks, one target each, scenario closed/no calculation nodes, no added API calls. Existing12-month/no-record/range/cancellation/unknown/zero behavior passes. Empty-account case passes5 disabled controls, no aria-controls to nonexistent modules, no target nodes or writes. Initial empty fixture accidentally only matched query URLs while overview uses the bare URL; corrected the test route glob, kept the strict disabled assertions and preserved initial log. It was a fixture setup failure, not a product guard failure.
+
+Source/app same viewport/DPR2 geometry: source5/2/1 columns, gap12px, card padding14px/gap10px/border1px/radius8px, button36px/padding0 18px/font13px/weight600/radius8px, heading14/21/700 and description12/16.8 all match at all3 widths. Light button foreground/background also match the source black/#efefef; dark snapshots retain project tokens and overflow0. Global shell/host widths were not changed.
+
+Exact remaining host geometry:1280 source grid1232/app984; first card236.796875x121.796875 versus187.1875x138.59375 due narrower existing host and actual copy wrapping.768 source/app grid720 and first card354x121.796875 match.390 source/app grid366/358, first card heights both121.796875. Do not claim whole-frame acceptance or hide these differences with negative margins or global resizing.
+
+Evidence: module-geometry.json, geometry-summary.json, measure-modules.mjs, modules-{1280,768,390}-{source,app,dark}.png; analysis-records-final.log + final-states/; type-check-final.log and lint-final.log. ESLint errors0 with5 existing attribute-order warnings, no new warnings. Build/remote CI/actual production verification reserved for root integration. Native PNG full identity, authenticated real accounts/customer PDFs and actual financial data verification remain unverified.

@@ -1,0 +1,5 @@
+
+> etf@0.0.0 data:validate-status
+> python scripts/metadata/security_status.py --check
+
+Validated 7 listing status records

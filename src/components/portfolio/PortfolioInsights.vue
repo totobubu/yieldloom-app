@@ -292,6 +292,61 @@
                 .map((row) => Math.abs(row.amount))
         )
     );
+    const moduleContents = ref(null);
+    const analysisModules = [
+        {
+            key: 'ledger',
+            target: 'insights-module-ledger',
+            title: '원장 품질·청산 손익',
+            description: '원장 품질과 청산 손익 내역 점검',
+            action: '원장 바로가기',
+        },
+        {
+            key: 'capital',
+            target: 'insights-module-capital',
+            title: '보유 종목 자금·배당',
+            description: '보유 종목 원금과 배당 재투자 내역',
+            action: '자금 조회',
+        },
+        {
+            key: 'monthly',
+            target: 'insights-module-monthly',
+            title: '월간 배당 기록',
+            description: '월별 저장 배당과 결산 기록 대조',
+            action: '월간 기록',
+        },
+        {
+            key: 'scenario',
+            target: 'insights-module-scenario',
+            title: '보유 종목 시나리오',
+            description: '보유 종목의 배당·납입 가정 비교',
+            action: '시나리오',
+        },
+        {
+            key: 'workbench',
+            target: 'insights-module-workbench',
+            title: '투자 설계',
+            description: '목표 현금흐름과 투자 가정 설계',
+            action: '설계 진입',
+        },
+    ];
+    function moduleEnabled(key) {
+        if (!selectedAccounts.value.length) return false;
+        return key === 'monthly'
+            ? !!dividends.value && selectedCurrency.value !== 'UNKNOWN'
+            : ['USD', 'KRW'].includes(selectedCurrency.value);
+    }
+    function focusModule(module) {
+        if (!moduleEnabled(module.key)) return;
+        const root = moduleContents.value?.querySelector(`#${module.target}`);
+        // Focusing the closed summary preserves the existing lazy scenario work.
+        const target =
+            module.key === 'scenario'
+                ? root?.querySelector(':scope > summary')
+                : root;
+        target?.scrollIntoView({ block: 'start' });
+        target?.focus({ preventScroll: true });
+    }
 </script>
 
 <template>
@@ -755,6 +810,34 @@
                 </section>
             </div>
             <section
+                class="analysis-modules"
+                aria-labelledby="analysis-modules-title">
+                <h3 id="analysis-modules-title">상세 분석 및 관리 연계 모듈</h3>
+                <div class="analysis-module-grid">
+                    <article
+                        v-for="module in analysisModules"
+                        :key="module.key"
+                        class="analysis-module-card">
+                        <div>
+                            <h4>{{ module.title }}</h4>
+                            <p>{{ module.description }}</p>
+                        </div>
+                        <Button
+                            :label="module.action"
+                            severity="secondary"
+                            outlined
+                            :disabled="!moduleEnabled(module.key)"
+                            :aria-controls="
+                                moduleEnabled(module.key)
+                                    ? module.target
+                                    : undefined
+                            "
+                            @click="focusModule(module)" />
+                    </article>
+                </div>
+            </section>
+            <section
+                ref="moduleContents"
                 class="additional-insights"
                 aria-labelledby="additional-insights-title">
                 <h3 id="additional-insights-title">
@@ -765,7 +848,10 @@
                         selectedAccounts.length &&
                         ['USD', 'KRW'].includes(selectedCurrency)
                     "
+                    id="insights-module-ledger"
                     :key="`advanced:${firebaseUser?.uid}:${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                    class="analysis-module-target"
+                    tabindex="-1"
                     :entries="entries"
                     :positions="selectedPositions"
                     :accounts="selectedAccounts"
@@ -777,6 +863,9 @@
                         selectedAccounts.length &&
                         ['USD', 'KRW'].includes(selectedCurrency)
                     "
+                    id="insights-module-capital"
+                    class="analysis-module-target"
+                    tabindex="-1"
                     :accounts="selectedAccounts"
                     :positions="selectedPositions"
                     :currency="selectedCurrency"
@@ -787,7 +876,10 @@
                         selectedAccounts.length &&
                         selectedCurrency !== 'UNKNOWN'
                     "
+                    id="insights-module-monthly"
                     :key="`${firebaseUser?.uid}:${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                    class="analysis-module-target"
+                    tabindex="-1"
                     :group="dividends"
                     :month="month"
                     :today="today"
@@ -815,7 +907,9 @@
                         ['USD', 'KRW'].includes(selectedCurrency) &&
                         selectedAccounts.length
                     "
+                    id="insights-module-scenario"
                     :key="`holding:${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                    class="analysis-module-target"
                     :positions="selectedPositions"
                     :entries="entries"
                     :currency="selectedCurrency"
@@ -825,7 +919,10 @@
                         ['USD', 'KRW'].includes(selectedCurrency) &&
                         selectedAccounts.length
                     "
+                    id="insights-module-workbench"
                     :key="`${familyId}:${accountId}:${selectedCurrency}:${month}`"
+                    class="analysis-module-target"
+                    tabindex="-1"
                     :entries="entries"
                     :positions="selectedPositions"
                     :accounts="selectedAccounts"
@@ -1378,5 +1475,75 @@
     }
     .status-recorded {
         color: light-dark(#047857, var(--app-accent));
+    }
+    .analysis-modules {
+        margin-top: 20px;
+    }
+    .analysis-modules > h3 {
+        margin: 0 0 12px;
+        font-size: 15px;
+        line-height: 22.5px;
+        font-weight: 700;
+    }
+    .analysis-module-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .analysis-module-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 10px;
+        min-width: 0;
+        padding: 14px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-surface);
+        word-break: keep-all;
+    }
+    .analysis-module-card h4 {
+        margin: 0;
+        color: var(--app-text);
+        font-size: 14px;
+        line-height: 21px;
+        font-weight: 700;
+    }
+    .analysis-module-card p {
+        margin: 0;
+        color: var(--app-muted);
+        font-size: 12px;
+        line-height: 16.8px;
+    }
+    .analysis-module-card :deep(.p-button) {
+        flex-shrink: 0;
+        height: 36px;
+        min-height: 36px;
+        margin-top: 8px;
+        padding: 0 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        line-height: normal;
+        font-weight: 600;
+        white-space: nowrap;
+        color: light-dark(#000, var(--app-text));
+        background: light-dark(#efefef, var(--app-surface-muted));
+        border-color: transparent;
+    }
+    .additional-insights :deep(.analysis-module-target:focus-visible),
+    .additional-insights
+        :deep(#insights-module-scenario > summary:focus-visible) {
+        outline: 2px solid var(--app-accent);
+        outline-offset: 4px;
+    }
+    @media (max-width: 1024px) {
+        .analysis-module-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 640px) {
+        .analysis-module-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
     }
 </style>

@@ -1,0 +1,218 @@
+[
+  {
+    "width": 1280,
+    "reads": [
+      "DEMO-A",
+      "DEMO-A",
+      "DEMO-A",
+      "DEMO-B",
+      "DEMO-B",
+      "DEMO-B"
+    ],
+    "transports": [
+      {
+        "symbol": "DEMO-A",
+        "cache": "no-store",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-A",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-A",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": true
+      },
+      {
+        "symbol": "DEMO-B",
+        "cache": "no-store",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-B",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-B",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": false
+      }
+    ],
+    "aborted": [
+      "net::ERR_ABORTED"
+    ],
+    "implementation": {
+      "height": 30,
+      "width": 117.046875,
+      "font": "12px",
+      "weight": "500",
+      "radius": "8px",
+      "padding": "0px 10px",
+      "line": "normal"
+    },
+    "source": {
+      "height": 30,
+      "width": 117,
+      "font": "12px",
+      "weight": "500",
+      "radius": "8px",
+      "padding": "0px 10px",
+      "line": "normal"
+    },
+    "errors": [],
+    "scope": "synthetic HTTP responses; source HTML rendered at same viewport; native PNG and live provider/account not accepted"
+  },
+  {
+    "width": 768,
+    "reads": [
+      "DEMO-A",
+      "DEMO-A",
+      "DEMO-A",
+      "DEMO-B",
+      "DEMO-B",
+      "DEMO-B"
+    ],
+    "transports": [
+      {
+        "symbol": "DEMO-A",
+        "cache": "no-store",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-A",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-A",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": true
+      },
+      {
+        "symbol": "DEMO-B",
+        "cache": "no-store",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-B",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-B",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": false
+      }
+    ],
+    "aborted": [
+      "net::ERR_ABORTED"
+    ],
+    "implementation": {
+      "height": 30,
+      "width": 117.046875,
+      "font": "12px",
+      "weight": "500",
+      "radius": "8px",
+      "padding": "0px 10px",
+      "line": "normal"
+    },
+    "source": {
+      "height": 30,
+      "width": 117,
+      "font": "12px",
+      "weight": "500",
+      "radius": "8px",
+      "padding": "0px 10px",
+      "line": "normal"
+    },
+    "errors": [],
+    "scope": "synthetic HTTP responses; source HTML rendered at same viewport; native PNG and live provider/account not accepted"
+  },
+  {
+    "width": 390,
+    "reads": [
+      "DEMO-A",
+      "DEMO-A",
+      "DEMO-A",
+      "DEMO-B",
+      "DEMO-B",
+      "DEMO-B"
+    ],
+    "transports": [
+      {
+        "symbol": "DEMO-A",
+        "cache": "no-store",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-A",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-A",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": true
+      },
+      {
+        "symbol": "DEMO-B",
+        "cache": "no-store",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-B",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": false
+      },
+      {
+        "symbol": "DEMO-B",
+        "cache": "reload",
+        "signalPresent": true,
+        "aborted": false
+      }
+    ],
+    "aborted": [
+      "net::ERR_ABORTED"
+    ],
+    "implementation": {
+      "height": 30,
+      "width": 117.046875,
+      "font": "12px",
+      "weight": "500",
+      "radius": "8px",
+      "padding": "0px 10px",
+      "line": "normal"
+    },
+    "source": {
+      "height": 30,
+      "width": 117,
+      "font": "12px",
+      "weight": "500",
+      "radius": "8px",
+      "padding": "0px 10px",
+      "line": "normal"
+    },
+    "errors": [],
+    "scope": "synthetic HTTP responses; source HTML rendered at same viewport; native PNG and live provider/account not accepted"
+  }
+]

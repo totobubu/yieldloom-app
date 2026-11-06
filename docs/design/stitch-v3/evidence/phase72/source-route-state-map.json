@@ -1,0 +1,132 @@
+{
+  "baseProduction": "016fcddda89e0f5285a65446e8859adde247c208",
+  "scope": "five refinement units, not five new screens or native PNG acceptance",
+  "units": [
+    {
+      "unit": "upload-replacement",
+      "component": "src/components/portfolio/PortfolioFileImportForm.vue",
+      "route": "/mypage?tab=assets",
+      "states": [
+        "file selected",
+        "cancel",
+        "replacement",
+        "invalid extension/size",
+        "PDF append"
+      ],
+      "sources": [
+        {
+          "screenId": "3c2a0d37b5f54a63b3a633f01f0d2b33",
+          "device": "Tablet",
+          "sourceHtml": "docs/design/stitch-v3/originals/17382728461495959991/3c2a0d37b5f54a63b3a633f01f0d2b33.html",
+          "sha256": "6be160abd9a7a5520e4c9c9fb9aec0986de0b96f4735aa84bca42afa8b87fa83",
+          "matchesRegistry": true
+        },
+        {
+          "screenId": "80b06442816e4d1baebc96cb520b19d6",
+          "device": "Mobile",
+          "sourceHtml": "docs/design/stitch-v3/originals/17382728461495959991/80b06442816e4d1baebc96cb520b19d6.html",
+          "sha256": "e090b6b5cabf0400adf6c0582dfc8e8474535283b5a94309b1c3c29f2aa5f358",
+          "matchesRegistry": true
+        }
+      ],
+      "status": "local/integrated synthetic verification passed; production pending"
+    },
+    {
+      "unit": "comparison-context",
+      "component": "src/components/comparison/ResponsiveComparison.vue",
+      "route": "/compare?view=similar|theme",
+      "states": [
+        "Tablet current conditions",
+        "filter focus",
+        "Mobile unchanged"
+      ],
+      "sources": [
+        {
+          "screenId": "77fdbd798a3941c68f098120a210c44d",
+          "device": "Tablet",
+          "sourceHtml": "docs/design/stitch-v3/originals/17382728461495959991/77fdbd798a3941c68f098120a210c44d.html",
+          "sha256": "618705db215d08ec61084b19dc7cfffe2754745b619a9a6f57203dc6bd2504d2",
+          "matchesRegistry": true
+        },
+        {
+          "screenId": "12bcd42390bb468eb1700a909aec3f5d",
+          "device": "Tablet",
+          "sourceHtml": "docs/design/stitch-v3/originals/17382728461495959991/12bcd42390bb468eb1700a909aec3f5d.html",
+          "sha256": "425bb68dca03a88b3cb077409bf4c70cc30c7eea5ce522823000a3d06c1af146",
+          "matchesRegistry": true
+        }
+      ],
+      "status": "local/integrated synthetic verification passed; production pending"
+    },
+    {
+      "unit": "receipt-summary",
+      "component": "src/components/portfolio/PortfolioImportResult.vue",
+      "route": "/mypage?tab=assets",
+      "states": [
+        "error",
+        "ready",
+        "replay",
+        "zero",
+        "precision",
+        "paging",
+        "dark"
+      ],
+      "sources": [
+        {
+          "screenId": "f5a2132c4e234e648269220f0e889387",
+          "device": "Mobile",
+          "sourceHtml": "docs/design/stitch-v3/originals/17382728461495959991/f5a2132c4e234e648269220f0e889387.html",
+          "sha256": "15b93469be5e6bc043fb834dd491efbd3abb9cb6cdc3c9dc84dc31d2ba29e491",
+          "matchesRegistry": true
+        }
+      ],
+      "status": "local/integrated synthetic verification passed; production pending"
+    },
+    {
+      "unit": "analysis-shortcuts",
+      "component": "src/components/portfolio/PortfolioInsights.vue",
+      "route": "/mypage?tab=insights",
+      "states": [
+        "normal",
+        "unknown amounts",
+        "empty account",
+        "five keyboard targets",
+        "lazy scenario closed"
+      ],
+      "sources": [
+        {
+          "screenId": "2e3c6628d6c74eafa277d9f07d60fc57",
+          "device": "responsive HTML, PC/Tablet/Mobile re-render; single native DESKTOP frame",
+          "sourceHtml": "docs/design/stitch-v2/originals/7356929996797649648/2e3c6628d6c74eafa277d9f07d60fc57.html",
+          "sha256": "db9f0607322087b2d2ef8fbf51f4c1613f738de5d630c1adba4f8c2d9738ea23",
+          "matchesRegistry": true
+        }
+      ],
+      "status": "local/integrated synthetic verification passed; production pending"
+    },
+    {
+      "unit": "price-refresh",
+      "component": "src/components/stock/StockCandlestickChart.vue",
+      "route": "/stock/:ticker?tab=prices",
+      "states": [
+        "normal",
+        "loading",
+        "same-tick duplicate",
+        "force cache",
+        "stale symbol",
+        "error/retry",
+        "dark"
+      ],
+      "sources": [
+        {
+          "screenId": "87cd200796914464b7613003247de771",
+          "device": "responsive HTML, PC/Tablet/Mobile re-render; single native DESKTOP frame",
+          "sourceHtml": "docs/design/stitch-v2/originals/7356929996797649648/87cd200796914464b7613003247de771.html",
+          "sha256": "cf300d76cdc85d808b3475b2f01ccf4f5255e9d2d48da557210bfbca78a3662b",
+          "matchesRegistry": true
+        }
+      ],
+      "status": "local/integrated synthetic verification passed; production pending"
+    }
+  ]
+}

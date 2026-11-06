@@ -1,0 +1,115 @@
+/* global document, getComputedStyle, window, innerWidth */
+// Local synthetic receipts only; no Firebase initialization or customer writes.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { chromium } from 'playwright';
+import { installStaticAssets } from './browser-static-assets.mjs';
+const repo = fileURLToPath(new URL('../../', import.meta.url));
+const base = new URL(process.env.UI_BASE_URL || 'http://127.0.0.1:5189');
+assert.ok(['127.0.0.1', 'localhost', '[::1]'].includes(base.hostname));
+const out = resolve(
+    process.env.STITCH_CAPTURE_DIR || '/tmp/yieldloom-result-review'
+);
+await fs.mkdir(out, { recursive: true });
+const harness = resolve(repo, '.phase34-result.html');
+const fixture = {
+    inserted: 5,
+    duplicates: 1,
+    kind: 'transactions',
+    asOf: '2026-03-31',
+    accountAlias: 'DEMO-ACC-****-891',
+    fileNames: ['DEMO_MARCH_2026.csv'],
+    rowResultsComplete: true,
+    rowResults: [
+        {
+            status: 'inserted',
+            position: 0,
+            row: {
+                date: '2026-03-01',
+                symbol: 'DEMO-K',
+                securityName: '가상 한국주식',
+                type: 'buy',
+                quantity: 10,
+                amount: 100000,
+                currency: 'KRW',
+                externalId: 'DEMO-001',
+            },
+        },
+        {
+            status: 'inserted',
+            position: 1,
+            row: {
+                date: '2026-03-02',
+                symbol: 'DEMO-A',
+                securityName: '가상 미국주식',
+                type: 'buy',
+                quantity: 2,
+                amount: 200,
+                currency: 'USD',
+                externalId: 'DEMO-002',
+            },
+        },
+        {
+            status: 'inserted',
+            position: 2,
+            row: {
+                date: '2026-03-03',
+                symbol: 'DEMO-K',
+                securityName: '가상 한국주식',
+                type: 'sell',
+                quantity: 2,
+                amount: 24000,
+                currency: 'KRW',
+                externalId: 'DEMO-003',
+            },
+        },
+        {
+            status: 'inserted',
+            position: 3,
+            row: {
+                date: '2026-03-04',
+                symbol: 'DEMO-A',
+                securityName: '가상 미국주식',
+                type: 'dividend',
+                quantity: null,
+                amount: 10,
+                currency: 'USD',
+                externalId: 'DEMO-004',
+            },
+        },
+        {
+            status: 'inserted',
+            position: 4,
+            row: {
+                date: '2026-03-05',
+                symbol: 'CASH',
+                type: 'cash_in',
+                quantity: null,
+                amount: 1000000,
+                currency: 'KRW',
+                externalId: 'DEMO-005',
+            },
+        },
+        {
+            status: 'duplicate',
+            position: 5,
+            row: {
+                date: '2026-03-06',
+                symbol: 'CASH',
+                type: 'cash_out',
+                quantity: null,
+                amount: 50000,
+                currency: 'KRW',
+                externalId: 'DEMO-006',
+            },
+        },
+    ],
+};
+await fs.writeFile(
+    harness,
+    `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app" class="studio-shell"></div><script type="module">import {createApp,h,ref} from 'vue';import PrimeVue from 'primevue/config';import {MyPreset} from '/src/config/theme.js';import ko from '/src/config/locale/ko.js';import Result from '/src/components/portfolio/PortfolioImportResult.vue';import Tag from 'primevue/tag';import 'primeicons/primeicons.css';import '/src/styles/style.scss';import '/src/styles/studio.scss';const receipt=ref(${JSON.stringify(fixture)}),state=ref('error'),busy=ref(false),events=[];window.receiptFixture={receipt,state,busy,events};createApp({setup(){return()=>h('main',{class:'fixture-frame'},[h(Result,{receipt:receipt.value,accountsState:state.value,busy:busy.value,onRetry:()=>events.push('retry'),onView:()=>events.push('view'),onExport:()=>events.push('export'),onCalendar:()=>events.push('calendar'),onAnother:()=>events.push('another')},{badges:()=>h(Tag,{value:'가상 검증 데이터 (DEMO)',severity:'warn'})})]);}}).use(PrimeVue,{theme:{preset:MyPreset,options:{darkModeSelector:'.p-dark'}},locale:ko}).mount('#app');</script><style>body{margin:0}.fixture-frame{max-width:882px;margin:auto;padding:24px}.fixture-label{font-size:11px;color:#64748b;margin:0 0 8px}@media(min-width:641px) and (max-width:1023px){.fixture-frame{max-width:834px}}@media(max-width:640px){.fixture-frame{max-width:390px;padding:16px 8px}}</style></body></html>`
+);
+
+const b=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});try{const c=await b.newContext({viewport:{width:390,height:1100}});await installStaticAssets(c);const p=await c.newPage();await p.goto(new URL('/.phase34-result.html',base).href,{waitUntil:'domcontentloaded'});await p.locator('.receipt-overview').waitFor();await p.evaluate(()=>document.fonts.ready);const r=await p.locator('.receipt-overview').evaluate(e=>[e,...e.querySelectorAll('*')].map(n=>{const s=getComputedStyle(n),r=n.getBoundingClientRect();return {tag:n.tagName,c:n.className,h:r.height,p:s.padding,m:s.margin,g:s.gap,display:s.display,direction:s.flexDirection,grid:s.gridTemplateColumns,flex:s.flex,line:s.lineHeight,min:s.minHeight}}));await fs.writeFile('/tmp/phase72-summary-working.json',JSON.stringify(r,null,2)+'\n');console.log(JSON.stringify(r));await c.close()}finally{await b.close();await fs.unlink(harness)}

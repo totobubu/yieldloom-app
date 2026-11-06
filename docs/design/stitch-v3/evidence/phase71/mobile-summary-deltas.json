@@ -1,0 +1,10 @@
+{
+  "width": 390,
+  "summaryDelta": 7.25,
+  "header": 23.25,
+  "truthfulExplanation": -22,
+  "metadataRows": 10,
+  "verticalSpacing": -4,
+  "apiRequests": 0,
+  "scope": "isolated local diagnosis only; no new UI/finance changes; initial wrong main selector corrected to actual body>div source structure, not a product regression"
+}

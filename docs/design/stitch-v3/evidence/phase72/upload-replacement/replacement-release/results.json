@@ -1,0 +1,70 @@
+[
+  {
+    "width": 1280,
+    "format": "standard-csv",
+    "action": "filename",
+    "nativeCancelSupported": true,
+    "api": 0
+  },
+  {
+    "width": 1280,
+    "format": "standard-xlsx",
+    "action": "filename",
+    "nativeCancelSupported": true,
+    "api": 0
+  },
+  {
+    "width": 834,
+    "format": "standard-csv",
+    "action": "filename",
+    "nativeCancelSupported": true,
+    "api": 0
+  },
+  {
+    "width": 834,
+    "format": "standard-xlsx",
+    "action": "filename",
+    "nativeCancelSupported": true,
+    "api": 0
+  },
+  {
+    "width": 390,
+    "format": "standard-csv",
+    "action": "picker",
+    "nativeCancelSupported": true,
+    "api": 0
+  },
+  {
+    "width": 390,
+    "format": "standard-csv",
+    "action": "filename",
+    "nativeCancelSupported": true,
+    "api": 0
+  },
+  {
+    "width": 390,
+    "format": "standard-xlsx",
+    "action": "picker",
+    "nativeCancelSupported": true,
+    "api": 0
+  },
+  {
+    "width": 390,
+    "format": "standard-xlsx",
+    "action": "filename",
+    "nativeCancelSupported": true,
+    "api": 0
+  },
+  {
+    "width": 834,
+    "format": "toss-pdf",
+    "action": "add",
+    "api": 0
+  },
+  {
+    "width": 390,
+    "format": "toss-pdf",
+    "action": "add",
+    "api": 0
+  }
+]

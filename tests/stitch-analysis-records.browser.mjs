@@ -31,19 +31,74 @@ async function ready(page) {
         .waitFor({ state: 'hidden' });
 }
 const row = (page, month) =>
-    page
-        .locator('.insights-month-table tbody tr')
-        .filter({
-            has: page.getByRole('cell', {
-                name: `2026년 ${month}월`,
-                exact: true,
-            }),
-        });
+    page.locator('.insights-month-table tbody tr').filter({
+        has: page.getByRole('cell', {
+            name: `2026년 ${month}월`,
+            exact: true,
+        }),
+    });
 async function selectMonth(page, month) {
     await page
         .getByLabel('분석 월 선택 (현재월 이하)', { exact: true })
         .fill(`2026년 ${month}월`);
     await page.keyboard.press('Tab');
+}
+async function verifyModuleShortcuts(page, requests, width) {
+    const modules = [
+        ['원장 바로가기', 'insights-module-ledger'],
+        ['자금 조회', 'insights-module-capital'],
+        ['월간 기록', 'insights-module-monthly'],
+        ['시나리오', 'insights-module-scenario'],
+        ['설계 진입', 'insights-module-workbench'],
+    ];
+    const grid = page.locator('.analysis-module-grid');
+    assert.equal(await grid.locator('.analysis-module-card').count(), 5);
+    const columns = await grid.evaluate(
+        (element) =>
+            getComputedStyle(element).gridTemplateColumns.split(' ').length
+    );
+    assert.equal(columns, width > 1024 ? 5 : width > 640 ? 2 : 1);
+    const before = requests.length;
+    for (const [label, id] of modules) {
+        const button = grid.getByRole('button', { name: label, exact: true });
+        assert.equal(await button.isEnabled(), true);
+        assert.equal(await button.getAttribute('aria-controls'), id);
+        const target = page.locator(`#${id}`);
+        assert.equal(await target.count(), 1);
+        await button.focus();
+        await page.keyboard.press('Enter');
+        const focusTarget =
+            label === '시나리오' ? target.locator(':scope > summary') : target;
+        assert.equal(
+            await focusTarget.evaluate(
+                (element) => element === document.activeElement
+            ),
+            true,
+            `${label} must focus the already rendered module`
+        );
+        assert.equal(
+            await page
+                .locator('#insights-module-scenario')
+                .evaluate((element) => element.open),
+            false,
+            'Shortcut navigation must leave the lazy scenario closed'
+        );
+        assert.equal(
+            await page
+                .locator('#insights-module-scenario > :not(summary)')
+                .count(),
+            0,
+            'Closed scenarios must not instantiate their calculation inputs/results'
+        );
+    }
+    assert.equal(
+        requests.length,
+        before,
+        'Module navigation adds no API requests'
+    );
+    console.log(
+        `PASS analysis shortcuts/${width}:5 existing targets, keyboard focus, lazy scenario closed, no additional API requests`
+    );
 }
 try {
     for (const width of [1280, 768, 390]) {
@@ -106,6 +161,7 @@ try {
             page.on('pageerror', (e) => errors.push(e.message));
             await page.goto(base + '/mypage?tab=insights');
             await ready(page);
+            await page.waitForLoadState('networkidle');
             assert.equal(
                 await page.locator('.insights-month-table tbody tr').count(),
                 12
@@ -115,6 +171,7 @@ try {
                 3
             );
             const reads = requests.length;
+            await verifyModuleShortcuts(page, requests, width);
             assert.match(
                 await row(page, '01').innerText(),
                 /기록 없음 \(0건\)/
@@ -250,6 +307,55 @@ try {
             await page.close();
         }
     }
+    const empty = await browser.newPage({
+        viewport: { width: 390, height: 900 },
+    });
+    await installStaticAssets(empty);
+    await installStitchFixtures(empty, { admin: true });
+    await empty.route('**/api/family-portfolio*', (route) => {
+        if (new URL(route.request().url()).searchParams.has('accountId'))
+            return route.fallback();
+        return route.fulfill({
+            json: {
+                families: [
+                    {
+                        id: 'empty-family',
+                        name: '합성 빈 가족',
+                        kind: 'personal',
+                        adminUid: 'stitch-review-user',
+                        profiles: {},
+                    },
+                ],
+                accounts: [],
+                summary: {
+                    positions: [],
+                    knownValueByCurrency: {},
+                    missingSnapshotAccounts: [],
+                    valueComplete: true,
+                },
+            },
+        });
+    });
+    const emptyRequests = [];
+    empty.on('request', (request) => {
+        if (request.url().includes('/api/'))
+            emptyRequests.push(request.method());
+    });
+    await empty.goto(base + '/mypage?tab=insights');
+    await empty.locator('.insights').waitFor();
+    await empty.waitForLoadState('networkidle');
+    const unavailableShortcuts = empty.locator('.analysis-module-grid button');
+    assert.equal(await unavailableShortcuts.count(), 5);
+    for (const button of await unavailableShortcuts.all()) {
+        assert.equal(await button.isDisabled(), true);
+        assert.equal(await button.getAttribute('aria-controls'), null);
+    }
+    assert.equal(await empty.locator('.analysis-module-target').count(), 0);
+    assert.ok(emptyRequests.every((method) => method === 'GET'));
+    await empty.close();
+    console.log(
+        'PASS analysis shortcuts/empty:5 disabled controls, no unavailable targets or writes'
+    );
 } finally {
     await browser.close();
 }

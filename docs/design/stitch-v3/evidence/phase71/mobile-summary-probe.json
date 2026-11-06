@@ -1,0 +1,200 @@
+[
+  {
+    "width": 390,
+    "scope": "local synthetic receipt + preserved source HTML only; index font links included; not a native PNG/live private account acceptance",
+    "implementation": {
+      "text": "거래내역 저장 영수증  총 6건 처리: 신규 5건 · 중복 제외 1건 저장 영수증 유지자료 저장이 완료되었습니다. 계좌 목록 갱신 상태를 확인해 주세요. 기준일 ",
+      "height": 257,
+      "width": 374,
+      "children": [
+        {
+          "tag": "DIV",
+          "class": "receipt-summary",
+          "text": "거래내역 저장 영수증  총 6건 처리: 신규 5건 · 중복 제외 1건 저장 영수증 유지",
+          "height": 86,
+          "top": 17,
+          "font": "15px",
+          "line": "24px",
+          "gap": "12px",
+          "margin": "0px",
+          "padding": "12px",
+          "children": [
+            {
+              "tag": "SPAN",
+              "height": 32,
+              "font": "18px",
+              "line": "28.8px",
+              "margin": "0px",
+              "padding": "0px"
+            },
+            {
+              "tag": "DIV",
+              "height": 60,
+              "font": "15px",
+              "line": "24px",
+              "margin": "0px",
+              "padding": "0px"
+            },
+            {
+              "tag": "SPAN",
+              "height": 20,
+              "font": "11px",
+              "line": "16px",
+              "margin": "0px",
+              "padding": "2px 6px"
+            }
+          ]
+        },
+        {
+          "tag": "P",
+          "class": "result-explanation",
+          "text": "자료 저장이 완료되었습니다. 계좌 목록 갱신 상태를 확인해 주세요.",
+          "height": 20,
+          "top": 115,
+          "font": "12px",
+          "line": "20px",
+          "gap": "normal",
+          "margin": "12px 0px 0px",
+          "padding": "0px",
+          "children": [
+            {
+              "tag": "SPAN",
+              "height": 17,
+              "font": "12px",
+              "line": "20px",
+              "margin": "0px",
+              "padding": "0px"
+            }
+          ]
+        },
+        {
+          "tag": "DL",
+          "class": "result-counts",
+          "text": "기준일 2026-03-31 연동 계좌 DEMO-ACC-****-891 업로드 파일 DEMO_MARCH_2026.csv",
+          "height": 93,
+          "top": 147,
+          "font": "15px",
+          "line": "24px",
+          "gap": "0px",
+          "margin": "12px 0px 0px",
+          "padding": "0px",
+          "children": [
+            {
+              "tag": "DIV",
+              "height": 31,
+              "font": "15px",
+              "line": "24px",
+              "margin": "0px",
+              "padding": "6px 0px"
+            },
+            {
+              "tag": "DIV",
+              "height": 31,
+              "font": "15px",
+              "line": "24px",
+              "margin": "0px",
+              "padding": "6px 0px"
+            },
+            {
+              "tag": "DIV",
+              "height": 31,
+              "font": "15px",
+              "line": "24px",
+              "margin": "0px",
+              "padding": "6px 0px"
+            }
+          ]
+        }
+      ]
+    },
+    "source": {
+      "text": "receipt_long거래내역 저장 영수증저장완료 영수증 유지(총 6건 처리: 반영 5건 · 중복 제외 1건 · 실패 0건)업로드된 거래내역 검증 및 데이터 저장",
+      "height": 249.75,
+      "width": 374,
+      "children": [
+        {
+          "tag": "DIV",
+          "class": "flex items-start gap-3 bg-surface-container-low p-3 rounded-lg border border-outline-variant/40",
+          "text": "receipt_long거래내역 저장 영수증저장완료 영수증 유지(총 6건 처리: 반영 5건 · 중복 제외 1건 · 실패 0건)",
+          "height": 62.75,
+          "top": 17,
+          "font": "14px",
+          "line": "20px",
+          "gap": "12px",
+          "margin": "0px",
+          "padding": "12px",
+          "children": [
+            {
+              "tag": "DIV",
+              "height": 32,
+              "font": "14px",
+              "line": "20px",
+              "margin": "0px",
+              "padding": "0px"
+            },
+            {
+              "tag": "DIV",
+              "height": 36.75,
+              "font": "14px",
+              "line": "20px",
+              "margin": "0px",
+              "padding": "0px"
+            }
+          ]
+        },
+        {
+          "tag": "P",
+          "class": "font-body-md text-body-md text-on-surface leading-normal text-[13px]",
+          "text": "업로드된 거래내역 검증 및 데이터 저장이 정상적으로 완료되었습니다. 저장완료 영수증을 유지합니다.",
+          "height": 42,
+          "top": 93.75,
+          "font": "14px",
+          "line": "21px",
+          "gap": "normal",
+          "margin": "0px",
+          "padding": "0px",
+          "children": []
+        },
+        {
+          "tag": "DIV",
+          "class": "border-t border-outline-variant/30 pt-3 flex flex-col gap-2 font-label-md text-label-md",
+          "text": "기준일자2026-03-31연동 계좌DEMO-ACC-****-891업로드 파일DEMO_MARCH_2026.csv",
+          "height": 83,
+          "top": 149.75,
+          "font": "13px",
+          "line": "18px",
+          "gap": "8px",
+          "margin": "0px",
+          "padding": "12px 0px 0px",
+          "children": [
+            {
+              "tag": "DIV",
+              "height": 18,
+              "font": "13px",
+              "line": "18px",
+              "margin": "0px",
+              "padding": "0px"
+            },
+            {
+              "tag": "DIV",
+              "height": 18,
+              "font": "13px",
+              "line": "18px",
+              "margin": "0px",
+              "padding": "0px"
+            },
+            {
+              "tag": "DIV",
+              "height": 18,
+              "font": "13px",
+              "line": "18px",
+              "margin": "0px",
+              "padding": "0px"
+            }
+          ]
+        }
+      ]
+    },
+    "api": 0
+  }
+]

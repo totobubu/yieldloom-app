@@ -1,0 +1,11 @@
+{
+  "url": "https://yieldloom-app.vercel.app/api/stock-prices?ticker=QQQ",
+  "status": 200,
+  "symbol": "QQQ",
+  "candles": 501,
+  "asOf": "2026-11-06T04:07:50.525Z",
+  "error": null,
+  "source": "Yahoo Finance",
+  "scope": "one anonymous public GET; no customer account data or client write request; server/provider cache operations and market-data freshness not independently measured",
+  "checkedAt": "2026-11-06T04:07:50.642Z"
+}

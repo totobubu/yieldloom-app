@@ -1,0 +1,14 @@
+{
+  "id": "dpl_Hk6Jogr5ZU48CcLu9Wm5usKx6WyJ",
+  "state": "READY",
+  "url": "yieldloom-azt1a6a59-totobubus-projects.vercel.app",
+  "target": null,
+  "sha": "736c5fa8c98e6c77bed27dd571435431e71b85bb",
+  "status": 200,
+  "release": {
+    "schemaVersion": 1,
+    "commit": "736c5fa8c98e6c77bed27dd571435431e71b85bb",
+    "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e"
+  },
+  "scope": "authenticated account UI not exercised; release/static build verified"
+}

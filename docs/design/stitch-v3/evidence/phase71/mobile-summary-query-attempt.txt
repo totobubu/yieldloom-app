@@ -1,0 +1,13 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.evaluate: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('main > section').nth(1)[22m
+
+    at /workspace/yieldloom-redesign-phase70/scripts/design/.phase71-summary-probe.mjs:121:406 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0

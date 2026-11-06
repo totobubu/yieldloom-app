@@ -1,0 +1,290 @@
+[
+  {
+    "view": "similar",
+    "id": "77fdbd798a3941c68f098120a210c44d",
+    "width": 834,
+    "source": {
+      "card": {
+        "width": 786,
+        "height": 70,
+        "padding": "16px",
+        "gap": "normal",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.5)",
+        "radius": "12px",
+        "color": "rgb(25, 28, 30)",
+        "background": "rgb(255, 255, 255)",
+        "font": "16px",
+        "line": "24px"
+      },
+      "button": {
+        "width": 70.671875,
+        "height": 36,
+        "padding": "0px 12px",
+        "gap": "normal",
+        "border": "1px",
+        "borderColor": "rgb(189, 201, 198)",
+        "radius": "8px",
+        "color": "rgb(62, 73, 71)",
+        "background": "rgb(255, 255, 255)",
+        "font": "11px",
+        "line": "16px"
+      }
+    },
+    "app": {
+      "card": {
+        "width": 786,
+        "height": 70,
+        "padding": "16px",
+        "gap": "12px",
+        "border": "1px",
+        "borderColor": "rgb(222, 228, 227)",
+        "radius": "12px",
+        "color": "rgb(25, 28, 30)",
+        "background": "rgb(255, 255, 255)",
+        "font": "14px",
+        "line": "20px"
+      },
+      "button": {
+        "width": 66.65625,
+        "height": 36,
+        "padding": "0px 12px",
+        "gap": "8px",
+        "border": "1px",
+        "borderColor": "rgb(189, 201, 198)",
+        "radius": "8px",
+        "color": "rgb(62, 73, 71)",
+        "background": "rgb(255, 255, 255)",
+        "font": "11px",
+        "line": "16px"
+      },
+      "support": {
+        "columns": "none",
+        "gap": "16px",
+        "width": 786
+      },
+      "text": "대조군 필터 조건\n전체 조건 · 4종\n조건 변경",
+      "overflow": false
+    },
+    "api": 0,
+    "appAssetFailures": [],
+    "sourceAssetFailures": [],
+    "scope": "same viewport/DPR2; original source condition text versus truthful fixed synthetic data; no full-frame/native PNG/font acceptance"
+  },
+  {
+    "view": "similar",
+    "id": "77fdbd798a3941c68f098120a210c44d",
+    "width": 768,
+    "source": {
+      "card": {
+        "width": 720,
+        "height": 70,
+        "padding": "16px",
+        "gap": "normal",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.5)",
+        "radius": "12px",
+        "color": "rgb(25, 28, 30)",
+        "background": "rgb(255, 255, 255)",
+        "font": "16px",
+        "line": "24px"
+      },
+      "button": {
+        "width": 70.671875,
+        "height": 36,
+        "padding": "0px 12px",
+        "gap": "normal",
+        "border": "1px",
+        "borderColor": "rgb(189, 201, 198)",
+        "radius": "8px",
+        "color": "rgb(62, 73, 71)",
+        "background": "rgb(255, 255, 255)",
+        "font": "11px",
+        "line": "16px"
+      }
+    },
+    "app": {
+      "card": {
+        "width": 720,
+        "height": 70,
+        "padding": "16px",
+        "gap": "12px",
+        "border": "1px",
+        "borderColor": "rgb(222, 228, 227)",
+        "radius": "12px",
+        "color": "rgb(25, 28, 30)",
+        "background": "rgb(255, 255, 255)",
+        "font": "14px",
+        "line": "20px"
+      },
+      "button": {
+        "width": 66.65625,
+        "height": 36,
+        "padding": "0px 12px",
+        "gap": "8px",
+        "border": "1px",
+        "borderColor": "rgb(189, 201, 198)",
+        "radius": "8px",
+        "color": "rgb(62, 73, 71)",
+        "background": "rgb(255, 255, 255)",
+        "font": "11px",
+        "line": "16px"
+      },
+      "support": {
+        "columns": "none",
+        "gap": "16px",
+        "width": 720
+      },
+      "text": "대조군 필터 조건\n전체 조건 · 4종\n조건 변경",
+      "overflow": false
+    },
+    "api": 0,
+    "appAssetFailures": [],
+    "sourceAssetFailures": [],
+    "scope": "same viewport/DPR2; original source condition text versus truthful fixed synthetic data; no full-frame/native PNG/font acceptance"
+  },
+  {
+    "view": "theme",
+    "id": "12bcd42390bb468eb1700a909aec3f5d",
+    "width": 834,
+    "source": {
+      "card": {
+        "width": 385,
+        "height": 245,
+        "padding": "16px",
+        "gap": "normal",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.4)",
+        "radius": "12px",
+        "color": "rgb(25, 28, 30)",
+        "background": "rgb(255, 255, 255)",
+        "font": "16px",
+        "line": "24px"
+      },
+      "button": {
+        "width": 351,
+        "height": 44,
+        "padding": "0px",
+        "gap": "6px",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.7)",
+        "radius": "8px",
+        "color": "rgb(56, 36, 24)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "14px",
+        "line": "20px"
+      }
+    },
+    "app": {
+      "card": {
+        "width": 385,
+        "height": 245,
+        "padding": "16px",
+        "gap": "12px",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.4)",
+        "radius": "12px",
+        "color": "rgb(25, 28, 30)",
+        "background": "rgb(255, 255, 255)",
+        "font": "14px",
+        "line": "20px"
+      },
+      "button": {
+        "width": 351,
+        "height": 44,
+        "padding": "0px",
+        "gap": "6px",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.7)",
+        "radius": "8px",
+        "color": "rgb(56, 36, 24)",
+        "background": "rgb(255, 255, 255)",
+        "font": "14px",
+        "line": "20px"
+      },
+      "support": {
+        "columns": "385px 385px",
+        "gap": "16px",
+        "width": 786
+      },
+      "text": "설정된 비교 조건\n4개 파라미터\n테마군:\n반도체\n적용 통화:\nUSD (환산 없음)\n운용 전략:\n모든 전략\n지급 주기:\n모든 지급 주기\n필터 조건 변경하기",
+      "overflow": false
+    },
+    "api": 0,
+    "appAssetFailures": [],
+    "sourceAssetFailures": [],
+    "scope": "same viewport/DPR2; original source condition text versus truthful fixed synthetic data; no full-frame/native PNG/font acceptance"
+  },
+  {
+    "view": "theme",
+    "id": "12bcd42390bb468eb1700a909aec3f5d",
+    "width": 768,
+    "source": {
+      "card": {
+        "width": 352,
+        "height": 245,
+        "padding": "16px",
+        "gap": "normal",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.4)",
+        "radius": "12px",
+        "color": "rgb(25, 28, 30)",
+        "background": "rgb(255, 255, 255)",
+        "font": "16px",
+        "line": "24px"
+      },
+      "button": {
+        "width": 318,
+        "height": 44,
+        "padding": "0px",
+        "gap": "6px",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.7)",
+        "radius": "8px",
+        "color": "rgb(56, 36, 24)",
+        "background": "rgba(0, 0, 0, 0)",
+        "font": "14px",
+        "line": "20px"
+      }
+    },
+    "app": {
+      "card": {
+        "width": 352,
+        "height": 245,
+        "padding": "16px",
+        "gap": "12px",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.4)",
+        "radius": "12px",
+        "color": "rgb(25, 28, 30)",
+        "background": "rgb(255, 255, 255)",
+        "font": "14px",
+        "line": "20px"
+      },
+      "button": {
+        "width": 318,
+        "height": 44,
+        "padding": "0px",
+        "gap": "6px",
+        "border": "1px",
+        "borderColor": "rgba(189, 201, 198, 0.7)",
+        "radius": "8px",
+        "color": "rgb(56, 36, 24)",
+        "background": "rgb(255, 255, 255)",
+        "font": "14px",
+        "line": "20px"
+      },
+      "support": {
+        "columns": "352px 352px",
+        "gap": "16px",
+        "width": 720
+      },
+      "text": "설정된 비교 조건\n4개 파라미터\n테마군:\n반도체\n적용 통화:\nUSD (환산 없음)\n운용 전략:\n모든 전략\n지급 주기:\n모든 지급 주기\n필터 조건 변경하기",
+      "overflow": false
+    },
+    "api": 0,
+    "appAssetFailures": [],
+    "sourceAssetFailures": [],
+    "scope": "same viewport/DPR2; original source condition text versus truthful fixed synthetic data; no full-frame/native PNG/font acceptance"
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "id": "dpl_DTkjX8x1gVUtJAij4rcU9SEKRjuJ",
+  "state": "READY",
+  "target": "production",
+  "url": "yieldloom-5i9es0uap-totobubus-projects.vercel.app",
+  "sha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+  "scope": "production deployment READY; actual public release and UI recorded independently; no authenticated account/PDF execution"
+}

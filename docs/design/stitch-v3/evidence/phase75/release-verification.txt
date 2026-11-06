@@ -1,0 +1,52 @@
+https://yieldloom-app.vercel.app/: waiting for expected release (1/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (1/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (2/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (2/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (3/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (3/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (4/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (4/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (5/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (5/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (6/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (6/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (7/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (7/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (8/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (8/32)
+https://yieldloom-app.vercel.app/: waiting for expected release (9/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (9/32)
+https://yieldloom-app.vercel.app/: commit and metadata verified
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (10/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (11/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (12/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (13/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (14/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (15/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (16/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (17/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (18/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (19/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (20/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (21/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (22/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (23/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (24/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (25/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (26/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (27/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (28/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (29/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (30/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (31/32)
+https://totobubu.github.io/yieldloom-app/: waiting for expected release (32/32)
+file:///workspace/yieldloom-release-phase75/scripts/deploy/verify-release.mjs:54
+        throw Error(`배포 동기화 미완료: ${[...pending].join(', ')}`);
+              ^
+
+Error: 배포 동기화 미완료: https://totobubu.github.io/yieldloom-app/
+    at waitForReleases (file:///workspace/yieldloom-release-phase75/scripts/deploy/verify-release.mjs:54:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///workspace/yieldloom-release-phase75/scripts/deploy/verify-release.mjs:65:5
+
+Node.js v24.19.0

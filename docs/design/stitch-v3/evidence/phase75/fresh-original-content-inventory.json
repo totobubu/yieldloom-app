@@ -1,0 +1,278 @@
+{
+  "checkedAt": "2026-11-06T06:11:58.193663+00:00",
+  "projectId": "7356929996797649648",
+  "method": "fresh official MCP list_screens",
+  "count": 18,
+  "screens": [
+    {
+      "name": "projects/7356929996797649648/screens/b611bd07ed0c464581479140b9207afb",
+      "title": "CONTENT / Asset Management / Reviewed",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2736",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/b611bd07ed0c464581479140b9207afb/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/b611bd07ed0c464581479140b9207afb/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/008f9456b8c643d0b9f41957447b9afc",
+      "title": "CONTENT / Portfolio Summary",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2048",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/008f9456b8c643d0b9f41957447b9afc/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/008f9456b8c643d0b9f41957447b9afc/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/41abb021992c4d1a9570cd5a03313cb6",
+      "title": "CONTENT / Compare Underlying",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2048",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/41abb021992c4d1a9570cd5a03313cb6/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/41abb021992c4d1a9570cd5a03313cb6/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/bd619d24ceb74c92afad1787a364ab4b",
+      "title": "CONTENT / Stock Dividends",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "6992",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/bd619d24ceb74c92afad1787a364ab4b/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/bd619d24ceb74c92afad1787a364ab4b/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/ef89e781a5c54636b82ad0407924c21f",
+      "title": "CONTENT / Compare Similar",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2064",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/ef89e781a5c54636b82ad0407924c21f/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/ef89e781a5c54636b82ad0407924c21f/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/262b798cdc6040678d88808f4fcccffd",
+      "title": "CONTENT / Portfolio Analysis",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2970",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/262b798cdc6040678d88808f4fcccffd/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/262b798cdc6040678d88808f4fcccffd/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/4a260bc918494e7c86f0f660a03fe0d9",
+      "title": "CONTENT / Asset Management",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2048",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/4a260bc918494e7c86f0f660a03fe0d9/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/4a260bc918494e7c86f0f660a03fe0d9/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/2b8b6a95d49a43a6b0ab02e71556ed0e",
+      "title": "CONTENT / Stock Share",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2700",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/2b8b6a95d49a43a6b0ab02e71556ed0e/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/2b8b6a95d49a43a6b0ab02e71556ed0e/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/2e3c6628d6c74eafa277d9f07d60fc57",
+      "title": "CONTENT / Portfolio Analysis / Reviewed",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2672",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/2e3c6628d6c74eafa277d9f07d60fc57/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/2e3c6628d6c74eafa277d9f07d60fc57/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/d04aa5557c114ec3a4b4895adc3eb724",
+      "title": "CONTENT / Account Registration / Reviewed",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2048",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/d04aa5557c114ec3a4b4895adc3eb724/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/d04aa5557c114ec3a4b4895adc3eb724/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/8f0d98a4c79c4b4bbb056a2518791c24",
+      "title": "CONTENT / Portfolio Calendar",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2188",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/8f0d98a4c79c4b4bbb056a2518791c24/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/8f0d98a4c79c4b4bbb056a2518791c24/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/87cd200796914464b7613003247de771",
+      "title": "CONTENT / Stock Prices",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "3504",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/87cd200796914464b7613003247de771/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/87cd200796914464b7613003247de771/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/fc276eb9388a48909296fb018f60771b",
+      "title": "CONTENT / Portfolio Calendar / Reviewed",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2242",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/fc276eb9388a48909296fb018f60771b/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/fc276eb9388a48909296fb018f60771b/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/6e69286f8e3d4f98b3cbc125f2b2ecd0",
+      "title": "CONTENT / Stock Search",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2440",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/6e69286f8e3d4f98b3cbc125f2b2ecd0/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/6e69286f8e3d4f98b3cbc125f2b2ecd0/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/e8234a8e17a84123ad0063e9f645e00b",
+      "title": "CONTENT / Account Registration",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "3094",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/e8234a8e17a84123ad0063e9f645e00b/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/e8234a8e17a84123ad0063e9f645e00b/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/d90f121fb719421e880cc02309349add",
+      "title": "CONTENT / Portfolio Holdings",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2080",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/d90f121fb719421e880cc02309349add/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/d90f121fb719421e880cc02309349add/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/d33c8e06e86f4404a4b5388c7aa33e13",
+      "title": "CONTENT / Stock Details",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2540",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/d33c8e06e86f4404a4b5388c7aa33e13/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/d33c8e06e86f4404a4b5388c7aa33e13/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    },
+    {
+      "name": "projects/7356929996797649648/screens/05b463a83d564c34886e0f9c018ac2a3",
+      "title": "CONTENT / Compare Theme",
+      "deviceType": "DESKTOP",
+      "width": "2560",
+      "height": "2100",
+      "htmlCode": {
+        "name": "projects/7356929996797649648/screens/05b463a83d564c34886e0f9c018ac2a3/fileEntries/html",
+        "mimeType": "text/html"
+      },
+      "screenshot": {
+        "name": "projects/7356929996797649648/screens/05b463a83d564c34886e0f9c018ac2a3/fileEntries/screenshot",
+        "mimeType": "image/png"
+      }
+    }
+  ]
+}

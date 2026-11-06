@@ -1,0 +1,121 @@
+{
+  "main": "b57f8214c00d1c32c0312a9fd3ee31e67fe7e4cc",
+  "work": "f531675581049737ebed06ac92126bf768930a1c",
+  "source": "b708e335cb2902a1f16028f8634048aad1c6bbef",
+  "tree": "fbccecb537317fdd8b6ca8b07d370b60c2310ff5",
+  "syntheticMerge": "967e5950b1ab14c9ee328c6144cfb595debbc880",
+  "checks": {
+    "baseRefName": "main",
+    "headRefOid": "f531675581049737ebed06ac92126bf768930a1c",
+    "mergeable": "MERGEABLE",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:22:53Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/totobubu/yieldloom-app/actions/runs/42173872217/job/127747732131",
+        "name": "application",
+        "startedAt": "2026-11-06T06:21:09Z",
+        "status": "COMPLETED",
+        "workflowName": "Application quality"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:21:43Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/totobubu/yieldloom-app/actions/runs/42173779600/job/127747437189",
+        "name": "application",
+        "startedAt": "2026-11-06T06:20:17Z",
+        "status": "COMPLETED",
+        "workflowName": "Application quality"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:21:33Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/totobubu/yieldloom-app/actions/runs/42173872217/job/127747731970",
+        "name": "portfolio-api",
+        "startedAt": "2026-11-06T06:21:09Z",
+        "status": "COMPLETED",
+        "workflowName": "Application quality"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:20:40Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/totobubu/yieldloom-app/actions/runs/42173779600/job/127747436990",
+        "name": "portfolio-api",
+        "startedAt": "2026-11-06T06:20:17Z",
+        "status": "COMPLETED",
+        "workflowName": "Application quality"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:38:35Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/totobubu/yieldloom-app/actions/runs/42173872217/job/127747732115",
+        "name": "browser",
+        "startedAt": "2026-11-06T06:21:09Z",
+        "status": "COMPLETED",
+        "workflowName": "Application quality"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:37:43Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/totobubu/yieldloom-app/actions/runs/42173779600/job/127747437262",
+        "name": "browser",
+        "startedAt": "2026-11-06T06:20:17Z",
+        "status": "COMPLETED",
+        "workflowName": "Application quality"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:22:32Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/totobubu/yieldloom-app/actions/runs/42173872217/job/127747732368",
+        "name": "registration-browser",
+        "startedAt": "2026-11-06T06:21:09Z",
+        "status": "COMPLETED",
+        "workflowName": "Application quality"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:21:38Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/totobubu/yieldloom-app/actions/runs/42173779600/job/127747437183",
+        "name": "registration-browser",
+        "startedAt": "2026-11-06T06:20:17Z",
+        "status": "COMPLETED",
+        "workflowName": "Application quality"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:21:09Z",
+        "conclusion": "SKIPPED",
+        "detailsUrl": "https://sourcery.ai",
+        "name": "Sourcery review",
+        "startedAt": "2026-11-06T06:21:09Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      },
+      {
+        "__typename": "StatusContext",
+        "context": "Vercel",
+        "startedAt": "2026-11-06T06:23:11Z",
+        "state": "SUCCESS",
+        "targetUrl": "https://vercel.com/totobubus-projects/yieldloom-app/7GE3MVDKJEuAZTWgGV2YqEVPrnPQ"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-06T06:23:12Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://vercel.com/github",
+        "name": "Vercel Preview Comments",
+        "startedAt": "2026-11-06T06:23:12Z",
+        "status": "COMPLETED",
+        "workflowName": ""
+      }
+    ]
+  }
+}

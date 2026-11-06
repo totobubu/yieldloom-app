@@ -555,10 +555,47 @@
                 총수익률과는 다릅니다.
             </p>
         </template>
+        <div v-if="!error" class="chart-refresh">
+            <span
+                >차트 로딩 오류 발생 시 종가 선차트 대안 또는 재시도 액션이
+                유지됩니다.</span
+            >
+            <Button
+                type="button"
+                label="시세 데이터 재조회"
+                class="chart-refresh-button"
+                severity="secondary"
+                outlined
+                :disabled="loading"
+                :aria-busy="loading"
+                @click="!loading && load(true)" />
+        </div>
     </section>
 </template>
 
 <style scoped>
+    .chart-refresh {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 16px;
+        color: var(--app-muted);
+        font-size: 12px;
+    }
+    .chart-refresh .chart-refresh-button {
+        height: 30px;
+        min-height: 30px;
+        padding: 0 10px;
+        border: 1px solid var(--app-border);
+        border-radius: 8px;
+        background: var(--app-surface);
+        color: var(--app-muted);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: normal;
+    }
     .chart-navigation {
         display: flex;
         justify-content: space-between;

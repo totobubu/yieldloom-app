@@ -1,0 +1,31 @@
+{
+  "featureRun": 42184767590,
+  "observedRunConclusion": "success",
+  "jobs": [
+    {
+      "name": "browser",
+      "databaseId": 127782371242,
+      "conclusion": "success"
+    },
+    {
+      "name": "registration-browser",
+      "databaseId": 127782371346,
+      "conclusion": "success"
+    },
+    {
+      "name": "application",
+      "databaseId": 127782371480,
+      "conclusion": "success"
+    },
+    {
+      "name": "portfolio-api",
+      "databaseId": 127782371552,
+      "conclusion": "success"
+    }
+  ],
+  "ghCliLogObservation": "CLI labels core output with browser but shows registration asset-management invocation; whole-run extraction returned only two PASS lines and no dividend navigation invocation. No full PASS case count claimed from this extraction.",
+  "directJobLogRead": "exit1, HTTP cause not established; no signed URL/credential output saved or fallback auth attempted",
+  "localEvidence": "full Node819 and dedicated browser logs in phase78 are independent of the limited remote log extraction",
+  "remoteWorkflowBlob": "03dad1953aa30eddb96d9a8a5b1553f1ddeceab8",
+  "workflowBlobMatchesFeature": true
+}

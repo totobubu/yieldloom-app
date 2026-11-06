@@ -7,7 +7,7 @@
   "families": 9,
   "testFramesExcluded": 1,
   "original14State": "implemented/deployed,whole-screen visual acceptance incomplete",
-  "currentCodeBase": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+  "currentCodeBase": "7384e39d0791f55fccc50f3fe8ab5593a414f656",
   "reviewRegistryCrosscheck": "exact final20 IDs received;all20 HTML and PNG read successfully",
   "frames": [
     {
@@ -2504,21 +2504,22 @@
   "projectFrameCountAtInitialRead": 64,
   "registeredFrameCount": 73,
   "initialImplementationBase": "dd6d2a6d2105f5f54c3948f55a7fa3d3e8a6515f",
-  "latestImplementationBase": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+  "latestImplementationBase": "7384e39d0791f55fccc50f3fe8ab5593a414f656",
   "rolloutSnapshot": {
-    "recordedAt": "2026-11-06T05:18:13.105791+00:00",
+    "recordedAt": "2026-11-06T08:47:16.931233+00:00",
     "scope": "20 final reviewed IDs / 9 families only; not additive to original14",
-    "productionMergeSha": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
+    "productionMergeSha": "9ad30456a033dc62cf7f0cbe3533ffc4ed541844",
     "productionTargets": 15,
     "localWorkTargets": 0,
     "parallelDeliveredDraftTargets": 0,
     "externalUnverifiedTargets": 5,
     "visualAcceptance": "whole-frame acceptance remains incomplete",
-    "evidence": "PHASE73_USER_SURFACE_PRODUCTION.md",
+    "evidence": "PHASE78_PRODUCTION.md",
     "qualification": "15 production-connected /5 external handoff unverified; not whole-frame visual acceptance or real-account verification",
     "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
-    "verificationScope": "two actual public release identities/static refinement code/font bytes; actual public comparison/filter focus and price refresh/three sizes plus search; private flows synthetic only, no actual authenticated account/customerPDF/DB write E2E",
-    "mainPostMergeCi": "success:42165281731;4/4"
+    "verificationScope": "Actual public QQQI two domains x4 viewports, year/24months/keyboard/dark and no extra reads; same focused month on resize alone is not re-scrolled; private accounts/customerPDF/full-native-PNG unverified",
+    "mainPostMergeCi": "success:42189433099;4/4; superseded9ad CI cancelled by new main push",
+    "servedProductionSha": "7384e39d0791f55fccc50f3fe8ab5593a414f656"
   },
   "latestReferenceIntegrity": {
     "checkedAt": "2026-11-05T17:19:37.559897+00:00",
@@ -2554,5 +2555,21 @@
     "productionCommit": "7b8f4bad9af7125fbe252b586a1caa59f74795bb",
     "featureHead": "3267bb12f7018350dd1604d848fd0daf46ca47df",
     "sourceBranchHistorical": true
+  },
+  "latestOriginal14Followup": {
+    "screenId": "bd619d24ceb74c92afad1787a364ab4b",
+    "projectId": "7356929996797649648",
+    "route": "/stock/:ticker?tab=dividends",
+    "component": "src/components/stock/StockDividendTrend.vue",
+    "sourceIntegrity": "evidence/phase78/fresh-reference-integrity.json",
+    "viewports": [
+      1280,
+      834,
+      768,
+      390
+    ],
+    "status": "reference-backed trend properties and actual public flow verified; whole native PNG/font and same-focus resize not accepted",
+    "evidence": "PHASE78_PRODUCTION.md",
+    "newDeviceDesignCount": 0
   }
 }

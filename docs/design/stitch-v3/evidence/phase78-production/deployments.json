@@ -1,0 +1,29 @@
+{
+  "recordedAt": "2026-11-06T08:51:03.991814+00:00",
+  "projectId": "prj_Kh8jteevjdWQPJ6BsISUmFOMV1nv",
+  "feature": {
+    "id": "dpl_7iZijJ73gfgRj58AbJdQCLR9W7Jy",
+    "state": "READY",
+    "url": "yieldloom-q4qomnkom-totobubus-projects.vercel.app",
+    "commit": "cbc4707908218393e08a0af9300608d7ecdd05e9"
+  },
+  "work": {
+    "id": "dpl_8oPvjyASrHUunUW4u6kbvj531rPJ",
+    "state": "READY",
+    "url": "yieldloom-88laxxrm8-totobubus-projects.vercel.app",
+    "commit": "60c8c124c3a604bc66dcb8d58c62481ab3d82d8e"
+  },
+  "uiProduction": {
+    "id": "dpl_FqszgLzQN6E9tg65LzrHQs9AXG1q",
+    "state": "READY",
+    "url": "yieldloom-kovngj3nx-totobubus-projects.vercel.app",
+    "commit": "9ad30456a033dc62cf7f0cbe3533ffc4ed541844"
+  },
+  "servedProduction": {
+    "id": "dpl_FG1W8ZN5bsuWiCsAue2FSCnNMw1A",
+    "state": "READY",
+    "url": "yieldloom-5ii5hg7z5-totobubus-projects.vercel.app",
+    "commit": "7384e39d0791f55fccc50f3fe8ab5593a414f656"
+  },
+  "previewQualification": "Feature and work app-release.json authenticated fetch HTTP200 with exact commit and metadata; not a protected live account E2E or preview browser test."
+}

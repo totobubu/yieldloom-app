@@ -1,0 +1,13 @@
+{
+  "uiMerge": "9ad30456a033dc62cf7f0cbe3533ffc4ed541844",
+  "supersedingMain": "7384e39d0791f55fccc50f3fe8ab5593a414f656",
+  "changedPaths": [
+    ".github/workflows/test-dropbox-readonly.yml"
+  ],
+  "applicationTestsApiLibPublicDependenciesUnchanged": true,
+  "oldMainCi": "cancelled by later main push, not a test failure",
+  "oldPages": "cancelled by later main push",
+  "latestMainQualityRun": 42189433099,
+  "latestPagesRun": 42189432955,
+  "scope": "Existing independently merged workflow preserved; no rollback/redeploy of superseded main"
+}

@@ -1,0 +1,5 @@
+{
+  "suite": "tests/dividend-comparison-splits.browser.mjs",
+  "actualPassLines": 20,
+  "recordCorrection": "Implementation report initially said30; actual local log has20. PR descriptions corrected and final docs checkpoint must correct implementation report too."
+}

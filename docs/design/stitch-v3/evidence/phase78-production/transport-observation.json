@@ -1,0 +1,7 @@
+{
+  "defaultNodeReader": "fetch failed, ECONNREFUSED; Node did not use configured environment proxy",
+  "configuredProxyReader": "NODE_USE_ENV_PROXY=1 with inherited CA verification; both public URLs HTTP200 latest release and metadata matched",
+  "pythonCrosscheck": "urllib inherited proxy/CA also HTTP200 latest release on both URLs",
+  "networkPolicyChanged": false,
+  "tlsVerificationDisabled": false
+}

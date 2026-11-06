@@ -1,0 +1,136 @@
+[
+  {
+    "site": "pages",
+    "status": 200,
+    "release": "7384e39d0791f55fccc50f3fe8ab5593a414f656",
+    "metadataSha256": "aba948fd05cec02755347f8437f769b394802ecc4fef37e24f9127e85e083e7e",
+    "states": [
+      {
+        "width": 1280,
+        "preKeyboardFocus": {
+          "lastAlreadyFocused": false,
+          "scrollLeft": 0,
+          "lastLeft": 1160,
+          "chartRight": 1224
+        },
+        "title": {
+          "font": "20px",
+          "line": "28px",
+          "weight": "600"
+        },
+        "plot": {
+          "width": 1168,
+          "height": 224
+        },
+        "swatch": {
+          "width": 12,
+          "height": 12
+        },
+        "barHeight": 144,
+        "padding": "24px",
+        "overflow": false
+      },
+      {
+        "width": 834,
+        "preKeyboardFocus": {
+          "lastAlreadyFocused": true,
+          "scrollLeft": 0,
+          "lastLeft": 722,
+          "chartRight": 786
+        },
+        "title": {
+          "font": "20px",
+          "line": "28px",
+          "weight": "600"
+        },
+        "plot": {
+          "width": 738,
+          "height": 224
+        },
+        "swatch": {
+          "width": 12,
+          "height": 12
+        },
+        "barHeight": 144,
+        "padding": "24px",
+        "overflow": false
+      },
+      {
+        "width": 768,
+        "preKeyboardFocus": {
+          "lastAlreadyFocused": true,
+          "scrollLeft": 0,
+          "lastLeft": 656,
+          "chartRight": 720
+        },
+        "title": {
+          "font": "20px",
+          "line": "28px",
+          "weight": "600"
+        },
+        "plot": {
+          "width": 672,
+          "height": 224
+        },
+        "swatch": {
+          "width": 12,
+          "height": 12
+        },
+        "barHeight": 144,
+        "padding": "24px",
+        "overflow": false
+      },
+      {
+        "width": 390,
+        "preKeyboardFocus": {
+          "lastAlreadyFocused": true,
+          "scrollLeft": 0,
+          "lastLeft": 592,
+          "chartRight": 354
+        },
+        "title": {
+          "font": "20px",
+          "line": "28px",
+          "weight": "600"
+        },
+        "plot": {
+          "width": 620,
+          "height": 224
+        },
+        "swatch": {
+          "width": 12,
+          "height": 12
+        },
+        "barHeight": 144,
+        "padding": "20px",
+        "overflow": false
+      }
+    ],
+    "initialReads": 2,
+    "extraReads": 0,
+    "apiReads": [
+      {
+        "path": "/api/thumbnail-data",
+        "status": 200
+      },
+      {
+        "path": "/yieldloom-app/security-insights/60.json",
+        "status": 200
+      }
+    ],
+    "blockedWrites": [
+      {
+        "method": "POST",
+        "host": "yieldloom-app.vercel.app",
+        "path": "/api/analytics"
+      }
+    ],
+    "forwardedWrites": 0,
+    "errors": [],
+    "failedHosts": [],
+    "excludedHosts": [
+      "vitals.vercel-analytics.com"
+    ],
+    "scope": "Anonymous actual public QQQI data; Node inherited-CA HTTPS to Chromium, no TLS bypass/synthetic substitution; private accounts/PDF/full-native-PNG unverified"
+  }
+]

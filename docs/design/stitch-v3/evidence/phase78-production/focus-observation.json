@@ -1,0 +1,12 @@
+{
+  "firstProbe": "Failed after focusing the same already focused last button across viewport resize; repeated focus() did not move its scroll container.",
+  "measuredMobileBeforeNewFocus": {
+    "lastAlreadyFocused": true,
+    "lastLeft": 592,
+    "chartRight": 354,
+    "scrollLeft": 0
+  },
+  "verifiedKeyboardPath": "Focus first month then Tab through all12 months and Enter; actual last month becomes active/visible inside horizontal chart on both production sites; no document overflow, no extra reads.",
+  "remainingBehavior": "Resizing alone while keeping focus on the same month does not automatically re-scroll that month; not claimed fixed.",
+  "codeChangedForProbe": false
+}

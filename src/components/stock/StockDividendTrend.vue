@@ -4,6 +4,7 @@
     import { computed, ref, watch } from 'vue';
     import { monthlyDividendSeries } from '@/services/stockAnalysis';
     const props = defineProps({
+        sectionNumber: { type: Number, default: 0 },
         rows: { type: Array, default: () => [] },
         asOf: { type: String, default: '' },
         currency: { type: String, default: 'USD' },
@@ -104,7 +105,11 @@
         <header>
             <div>
                 <div class="trend-title">
-                    <h2>월별 배당 추이</h2>
+                    <h2>
+                        <span v-if="sectionNumber" aria-hidden="true"
+                            >{{ sectionNumber }}. </span
+                        >월별 배당 추이
+                    </h2>
                     <InfoHelp
                         label="월별 배당 집계 안내"
                         text="선택 연도와 전년 동월을 비교합니다. 당월은 기준일까지 집계합니다. 회차는 배당락일 기준이며, 공시가 없는 달은 0으로 채우지 않습니다." />

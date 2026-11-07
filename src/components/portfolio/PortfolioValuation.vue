@@ -669,6 +669,7 @@
     }
     .stored-valuation-panel h2,
     .valuation-heading h2 {
+        letter-spacing: normal;
         line-height: 24px;
         font-weight: 600;
     }
@@ -697,6 +698,7 @@
     }
     .valuation-details-heading h3 {
         margin: 0;
+        letter-spacing: normal;
         font-size: 16px;
         line-height: 24px;
         font-weight: 600;
@@ -1015,6 +1017,7 @@
     }
     .valuation-review h3 {
         margin: 0;
+        letter-spacing: normal;
         font-size: 16px;
         line-height: 24px;
         font-weight: 600;

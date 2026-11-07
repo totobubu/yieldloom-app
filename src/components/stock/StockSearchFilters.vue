@@ -221,6 +221,7 @@
         scrollbar-width: thin;
     }
     .filter-chips :deep(.p-button) {
+        --p-button-label-font-weight: 500;
         height: 44px;
         min-height: 44px;
         flex-shrink: 0;
@@ -231,6 +232,7 @@
         white-space: nowrap;
     }
     .filter-chips :deep(.p-button[aria-pressed='true']) {
+        --p-button-label-font-weight: 600;
         font-weight: 600;
         box-shadow: 0 2px 4px rgb(13 122 110 / 20%);
     }
@@ -260,6 +262,7 @@
         font-size: 13px;
     }
     .provider-panel :deep(.p-button) {
+        --p-button-label-font-weight: 500;
         height: 36px;
         min-height: 36px;
         border-radius: 8px;
@@ -268,6 +271,7 @@
         font-weight: 500;
     }
     .provider-title :deep(.p-button[aria-pressed='true']) {
+        --p-button-label-font-weight: 600;
         color: var(--app-accent);
         background: color-mix(
             in srgb,

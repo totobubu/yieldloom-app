@@ -872,6 +872,7 @@
 <style scoped>
     .dividend-calendar {
         display: grid;
+        line-height: 1.5;
         gap: 18px;
         padding-top: 20px;
         min-width: 0;
@@ -1258,6 +1259,8 @@
     .day-cell {
         min-height: 90px;
         padding: 6px;
+        line-height: 18px;
+        font-weight: 600;
     }
     .weekday {
         padding: 0;
@@ -1453,6 +1456,17 @@
     .calendar-side :deep(.calendar-export) {
         margin: 0;
     }
+    .calendar-side :deep(.calendar-inline-detail h3) {
+        line-height: 24px;
+    }
+    .calendar-side :deep(.calendar-export .consent) {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+    .calendar-side :deep(.calendar-export .p-button) {
+        --p-button-label-font-weight: 700;
+        line-height: 24px;
+    }
     @media (max-width: 1024px) {
         .month-grid {
             display: none;
@@ -1472,11 +1486,15 @@
         display: flex;
         align-items: flex-start;
         gap: 8px;
+        font-size: 13px;
     }
     .calendar-reconciliation-entry p {
-        font-size: 11px;
+        font-size: 12px;
         color: var(--app-muted);
         margin: 12px 0;
+    }
+    .calendar-reconciliation-entry :deep(.p-button) {
+        font-size: 13px;
     }
     .calendar-event-symbol {
         font-size: 14px;
@@ -1534,6 +1552,7 @@
     }
     .calendar-control :deep(.p-togglebutton) {
         border: 0;
+        --p-togglebutton-font-weight: 600;
         border-radius: 6px;
         background: transparent;
         color: var(--app-muted);

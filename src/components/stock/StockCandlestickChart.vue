@@ -1036,4 +1036,12 @@
         font-size: 12px;
         line-height: 1.5;
     }
+    @media (max-width: 600px) {
+        .chart-meta-footer .chart-note {
+            display: block;
+        }
+        .chart-meta-footer .chart-note > span + span {
+            margin-inline-start: 8px;
+        }
+    }
 </style>

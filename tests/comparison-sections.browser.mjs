@@ -84,6 +84,22 @@ try {
             !requests.some((url) => /stock-prices|security-insights/.test(url)),
             'Details must remain lazy'
         );
+        const responsive = width <= 1024;
+        const categoryProducts = responsive
+            ? width < 768
+                ? '.responsive-product-card'
+                : '.matrix-product'
+            : products;
+        const revealNavigation = async () => {
+            const disclosure = page.locator('.filter-details');
+            if (
+                responsive &&
+                (await disclosure.count()) &&
+                !(await disclosure.evaluate((el) => el.open))
+            ) {
+                await disclosure.locator('summary').click();
+            }
+        };
         const before = requests.length;
         await page.screenshot({ path: `${output}/${width}-underlying.png` });
         await nav
@@ -92,21 +108,27 @@ try {
         await page.waitForURL(
             (url) => url.searchParams.get('view') === 'similar'
         );
-        await page.locator(products).first().waitFor();
+        await page.locator(categoryProducts).first().waitFor();
         assert.match(
             await page.locator('.comparison-result-count').innerText(),
-            /조건별 ETF 비교/
+            responsive ? /비교 대상/ : /조건별 ETF 비교/
         );
         assert.equal(await page.locator('#explorer-reference').count(), 0);
-        assert.ok((await page.locator(products).count()) > 1);
+        assert.ok((await page.locator(categoryProducts).count()) > 1);
         await page.screenshot({ path: `${output}/${width}-similar.png` });
+        await revealNavigation();
         await nav.getByRole('link', { name: '테마 비교', exact: true }).click();
         await page.waitForURL(
             (url) => url.searchParams.get('view') === 'theme'
         );
         await page
-            .locator('.comparison-context')
-            .getByText('M7 (매그니피센트 7)', { exact: true })
+            .locator(
+                responsive ? '.responsive-theme-context' : '.comparison-context'
+            )
+            .getByText(
+                responsive ? 'M7 (매그니피센트 7) 테마' : 'M7 (매그니피센트 7)',
+                { exact: true }
+            )
             .waitFor();
         for (const href of await page
             .locator('.product-context-tags a')
@@ -147,9 +169,15 @@ try {
             .click();
         await page.screenshot({ path: `${output}/${width}-dark.png` });
         await page.reload();
-        await page.locator(products).first().waitFor();
+        await page.locator(categoryProducts).first().waitFor();
         assert.match(
-            await page.locator('.comparison-context').innerText(),
+            await page
+                .locator(
+                    responsive
+                        ? '.responsive-theme-context'
+                        : '.comparison-context'
+                )
+                .innerText(),
             /반도체/
         );
         assert.equal(await page.locator('html.p-dark').count(), 1);

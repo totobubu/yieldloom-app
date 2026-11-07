@@ -6,7 +6,10 @@
     import Textarea from 'primevue/textarea';
     import { submitStockFeedback } from '@/services/stockFeedback.js';
 
-    const props = defineProps({ symbol: { type: String, required: true } });
+    const props = defineProps({
+        symbol: { type: String, required: true },
+        sectionNumber: { type: Number, default: 0 },
+    });
     const categories = [
         { label: '정보 오류', value: 'data_error' },
         { label: '추가 정보 요청', value: 'information_request' },
@@ -61,7 +64,11 @@
         :aria-busy="busy"
         tabindex="-1">
         <div>
-            <h2 id="stock-feedback-heading">익명 요청 및 한마디</h2>
+            <h2 id="stock-feedback-heading">
+                <span v-if="sectionNumber" aria-hidden="true"
+                    >{{ sectionNumber }}. </span
+                >익명 요청 및 한마디
+            </h2>
             <p>
                 {{ symbol }} 정보의 오류나 추가 요청을 익명으로 남겨 주세요.
                 작성 내용은 관리자만 확인합니다.

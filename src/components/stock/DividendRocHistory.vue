@@ -11,6 +11,7 @@
         monthlyDividendRocSummary,
     } from '../../../lib/dividend-roc-history.js';
     const props = defineProps({
+        sectionNumber: { type: Number, default: 0 },
         history: { type: Array, default: () => [] },
         observations: { type: Array, default: () => [] },
         currency: { type: String, default: 'USD' },
@@ -155,7 +156,11 @@
         <header class="history-heading">
             <div>
                 <div class="history-title">
-                    <h2 id="dividend-roc-heading">배당·ROC 이력</h2>
+                    <h2 id="dividend-roc-heading">
+                        <span v-if="sectionNumber" aria-hidden="true"
+                            >{{ sectionNumber }}. </span
+                        >배당·ROC 이력
+                    </h2>
                     <InfoHelp
                         label="배당·ROC 연결 및 금액 안내"
                         :text="helpText" />

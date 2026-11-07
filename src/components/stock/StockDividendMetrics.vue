@@ -2,6 +2,7 @@
     import { computed } from 'vue';
     import InsightMetricCard from '@/components/thumbnail/InsightMetricCard.vue';
     const props = defineProps({
+        sectionNumber: { type: Number, default: 0 },
         metrics: { type: Array, default: () => [] },
         trailing: { type: Object, required: true },
         currency: { type: String, default: '' },
@@ -41,7 +42,11 @@
         class="dividend-core-metrics"
         aria-labelledby="dividend-core-heading">
         <header>
-            <h2 id="dividend-core-heading">핵심 재무·배당 지표</h2>
+            <h2 id="dividend-core-heading">
+                <span v-if="sectionNumber" aria-hidden="true"
+                    >{{ sectionNumber }}. </span
+                >핵심 재무 &amp; 배당 지표
+            </h2>
             <span>9개 지표</span>
         </header>
         <div class="dividend-core-grid">

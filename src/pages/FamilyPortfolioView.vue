@@ -3887,6 +3887,7 @@
     }
     .holdings-page-heading h1 {
         margin: 0;
+        letter-spacing: -0.025em;
         font-size: 24px;
         line-height: 32px;
         font-weight: 600;
@@ -4065,6 +4066,7 @@
     }
     .asset-overview-heading h2 {
         margin: 0;
+        letter-spacing: -0.025em;
     }
     .asset-scope-label {
         padding: 4px 10px;
@@ -4079,6 +4081,7 @@
     }
     .asset-list-heading h3 {
         margin: 0;
+        letter-spacing: normal;
         font-size: 20px;
         line-height: 28px;
         font-weight: 600;

@@ -504,9 +504,10 @@
                         v-for="(row, index) in candles"
                         :key="row.date"
                         class="volume-bar"
-                        :class="
-                            row.close >= row.open ? 'candle-up' : 'candle-down'
-                        ">
+                        :class="[
+                            row.close >= row.open ? 'candle-up' : 'candle-down',
+                            { 'volume-selected': index === currentIndex },
+                        ]">
                         <title>
                             {{ row.date }} · 거래량
                             {{ row.volume == null ? '미제공' : row.volume }}
@@ -536,24 +537,37 @@
                         {{ candles[index].date }}
                     </text>
                 </svg>
+                <p v-if="chartEvents.length" class="event-legend">
+                    <strong>차트 이벤트:</strong>
+                    <span class="event-key"
+                        ><span class="marker-badge dividend">D</span>
+                        배당락</span
+                    >
+                    <span class="event-key"
+                        ><span class="marker-badge split">S</span>
+                        주식분할</span
+                    >
+                    <span
+                        >표시된 이벤트에 마우스를 올리면 날짜와 내용을 확인할 수
+                        있습니다.</span
+                    >
+                </p>
+                <div class="chart-meta-footer">
+                    <footer class="chart-note">
+                        <span
+                            ><i class="red" />상승 <i class="blue" />하락 ·
+                            {{ candles.length }}거래일</span
+                        ><span
+                            >Yahoo Finance · 일별 시세 · 장중에는 당일 봉이
+                            변동될 수 있습니다.</span
+                        >
+                    </footer>
+                    <p class="basis-note">
+                        분할·배당 조정 여부는 제공처 기준입니다. 배당을 포함한
+                        총수익률과는 다릅니다.
+                    </p>
+                </div>
             </div>
-            <footer class="chart-note">
-                <span
-                    ><i class="red" />상승 <i class="blue" />하락 ·
-                    {{ candles.length }}거래일</span
-                ><span
-                    >Yahoo Finance · 일별 시세 · 장중에는 당일 봉이 변동될 수
-                    있습니다.</span
-                >
-            </footer>
-            <p v-if="chartEvents.length" class="event-legend">
-                D 배당락 · S 주식분할 · 표시된 이벤트에 마우스를 올리면 날짜와
-                내용을 확인할 수 있습니다.
-            </p>
-            <p class="basis-note">
-                분할·배당 조정 여부는 제공처 기준입니다. 배당을 포함한
-                총수익률과는 다릅니다.
-            </p>
         </template>
         <div v-if="!error" class="chart-refresh">
             <span
@@ -640,7 +654,13 @@
         color: var(--app-muted);
     }
     .stock-candlestick {
+        --stock-chart-grid: #f1f5f9;
+        --stock-chart-volume: #e2e8f0;
         color: var(--app-text);
+    }
+    .p-dark .stock-candlestick {
+        --stock-chart-grid: var(--app-border-subtle);
+        --stock-chart-volume: var(--app-border);
     }
     .chart-heading {
         display: flex;
@@ -757,8 +777,8 @@
         stroke: none;
     }
     .grid-line {
-        stroke: var(--app-border);
-        stroke-dasharray: 3 5;
+        stroke: var(--stock-chart-grid);
+        stroke-dasharray: none;
     }
     .axis {
         fill: var(--app-muted);
@@ -896,7 +916,7 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
-        margin-top: 16px;
+        margin-top: 32px;
         padding: 18px 16px 12px;
         border: 1px solid var(--app-border);
         border-radius: 8px;
@@ -955,8 +975,65 @@
     }
     .volume-bar rect {
         stroke: none;
+        fill: var(--stock-chart-volume);
+        opacity: 1;
+    }
+    .volume-selected rect {
+        fill: var(--app-accent);
+        opacity: 0.75;
     }
     .chart-event circle:not(.split):not(.dividend) {
         fill: var(--app-muted);
+    }
+    .chart-frame .event-legend {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin: 4px 0 0;
+        font-size: 12px;
+    }
+    .event-legend strong {
+        color: var(--app-text);
+        font-weight: 600;
+    }
+    .event-key {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .marker-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        color: var(--app-accent-contrast);
+        font-size: 11px;
+        font-weight: 800;
+    }
+    .marker-badge.dividend {
+        background: var(--app-accent);
+    }
+    .marker-badge.split {
+        background: var(--app-warning);
+        color: var(--app-brand-brown);
+    }
+    .chart-meta-footer {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        border-top: 1px solid var(--app-border);
+        padding-top: 10px;
+        color: var(--app-muted);
+        font-size: 12px;
+    }
+    .chart-meta-footer .chart-note,
+    .chart-meta-footer .basis-note {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.5;
     }
 </style>

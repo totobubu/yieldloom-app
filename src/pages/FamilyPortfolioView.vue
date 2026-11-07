@@ -2284,7 +2284,7 @@
                     <section class="asset-management-overview">
                         <header class="asset-overview-heading">
                             <div>
-                                <h2>자산관리</h2>
+                                <h2>자산 관리</h2>
                                 <small class="asset-scope-label"
                                     >저장 자료 기준 · 권한 있는 계좌</small
                                 >

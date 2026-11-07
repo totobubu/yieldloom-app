@@ -31,9 +31,39 @@
 <template>
     <nav
         class="portfolio-navigation"
-        :class="{ 'section-navigation': props.presentation === 'sections' }"
-        aria-label="포트폴리오 작업 공간">
-        <div v-if="props.presentation === 'compact'" class="compact-navigation">
+        :class="{
+            'section-navigation': props.presentation === 'sections',
+            'location-navigation': props.presentation === 'breadcrumb',
+        }"
+        :aria-label="
+            props.presentation === 'breadcrumb'
+                ? '현재 포트폴리오 위치'
+                : '포트폴리오 작업 공간'
+        ">
+        <template v-if="props.presentation === 'breadcrumb'">
+            <div class="location-path">
+                <span class="location-group">포트폴리오</span>
+                <template v-if="selected">
+                    <template
+                        v-if="(route.query.tab || 'overview') === 'overview'">
+                        <span aria-hidden="true" class="location-separator"
+                            >&gt;</span
+                        >
+                        <span class="location-group">개요</span>
+                    </template>
+                    <span aria-hidden="true" class="location-separator"
+                        >&gt;</span
+                    >
+                    <span class="location-current" aria-current="page">{{
+                        selected
+                    }}</span>
+                </template>
+            </div>
+            <span class="location-status">메뉴 닫힘</span>
+        </template>
+        <div
+            v-else-if="props.presentation === 'compact'"
+            class="compact-navigation">
             <Button
                 icon="pi pi-bars"
                 aria-label="서브메뉴 펼치기"
@@ -275,5 +305,50 @@
         width: 24px;
         height: 1px;
         background: var(--app-border);
+    }
+    .portfolio-navigation.location-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 16px;
+        border-top: 1px solid #f1f5f9;
+        background: var(--app-bg);
+        color: var(--app-muted);
+        font-size: 11px;
+        line-height: 16.5px;
+    }
+    .location-path {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 0;
+    }
+    .location-group {
+        color: #475569;
+        font-weight: 500;
+    }
+    .location-separator {
+        color: #cbd5e1;
+    }
+    .location-current {
+        color: var(--app-accent);
+        font-weight: 700;
+    }
+    .location-status {
+        color: #94a3b8;
+        flex-shrink: 0;
+        font-size: 10px;
+        line-height: 15px;
+    }
+    /* 03d52a... uses Slate 600/300/400 and a Slate 100 divider in light mode. */
+    .p-dark .location-navigation {
+        border-top-color: var(--app-border-subtle);
+    }
+    .p-dark .location-group,
+    .p-dark .location-status {
+        color: var(--app-muted);
+    }
+    .p-dark .location-separator {
+        color: var(--app-border);
     }
 </style>

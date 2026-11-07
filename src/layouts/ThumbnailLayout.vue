@@ -62,6 +62,15 @@
         return undefined;
     });
     const inPortfolio = computed(() => route.path.startsWith('/mypage'));
+    const portfolioHeaderClosed = computed(
+        () =>
+            isAdmin.value &&
+            inPortfolio.value &&
+            !accountOpen.value &&
+            (isCompactViewport.value
+                ? !mobileSubmenuOpen.value
+                : !submenuOpen.value)
+    );
     watch(
         () => route.fullPath,
         () => {
@@ -118,6 +127,7 @@
             'p-dark': isDarkMode,
             'portfolio-submenu-open': isAdmin && inPortfolio && submenuOpen,
             'portfolio-submenu-closed': isAdmin && inPortfolio && !submenuOpen,
+            'portfolio-header-closed': portfolioHeaderClosed,
         }">
         <a class="skip-link" href="#studio-main">본문으로 바로가기</a>
         <header class="studio-header">
@@ -188,6 +198,9 @@
                         @click="accountOpen = true" />
                 </div>
             </div>
+            <PortfolioNavigation
+                v-if="portfolioHeaderClosed && isMobileViewport"
+                presentation="breadcrumb" />
         </header>
         <div
             class="shell-body"
@@ -432,9 +445,17 @@
 
 <style scoped>
     .studio-shell {
-        --studio-header-height: 64px;
+        --studio-toolbar-height: 64px;
+        --studio-header-height: var(--studio-toolbar-height);
         display: flex;
         flex-direction: column;
+    }
+    /* Closed originals include the toolbar's full height plus its border. */
+    .portfolio-header-closed {
+        --studio-header-height: calc(var(--studio-toolbar-height) + 1px);
+    }
+    .portfolio-header-closed .header-inner {
+        height: var(--studio-toolbar-height);
     }
     .studio-header {
         position: sticky;
@@ -446,7 +467,7 @@
     .header-inner {
         box-sizing: border-box;
         max-width: 1120px;
-        height: calc(var(--studio-header-height) - 1px);
+        height: calc(var(--studio-toolbar-height) - 1px);
         padding: 0 24px;
         margin: auto;
         display: flex;
@@ -735,7 +756,11 @@
     }
     @media (max-width: 767px) {
         .studio-shell {
-            --studio-header-height: 56px;
+            --studio-toolbar-height: 56px;
+        }
+        .portfolio-header-closed {
+            /* 56px toolbar + 29.5px path row + 1px header border. */
+            --studio-header-height: calc(var(--studio-toolbar-height) + 30.5px);
         }
         .header-inner {
             padding: 0 16px;

@@ -166,7 +166,9 @@ class DropboxStore:
             except (ValueError, OSError):
                 details = {}
             if error.code == 409 and isinstance(details, dict):
-                path = details.get("path", {})
+                # Stone unions with struct values can inline the struct fields:
+                # {'.tag':'path','reason':{'.tag':'conflict',...}}.
+                path = details.get("path", details)
                 # UploadError.path is UploadWriteFailed(reason=WriteError),
                 # while download/metadata LookupError uses the path tag directly.
                 reason = path.get("reason", path) if isinstance(path, dict) else {}

@@ -86,6 +86,15 @@ class AuthenticationContractTests(unittest.TestCase):
         with self.assertRaises(RemoteError):
             DropboxStore("synthetic",opener=Opener()).put("verification/test/state.json",b"synthetic")
 
+    def test_inlined_upload_write_failed_struct_is_also_a_conflict(self):
+        class Opener:
+            def open(self,request,timeout):
+                raise urllib.error.HTTPError(request.full_url,409,"error",{},Response(encode({"error":{
+                    ".tag":"path","reason":{".tag":"conflict","conflict":{".tag":"file"}},
+                    "upload_session_id":"DO-NOT-PRINT-SESSION"}})))
+        with self.assertRaises(Conflict):
+            DropboxStore("synthetic",opener=Opener()).put("verification/test/state.json",b"synthetic")
+
 
 class SyntheticProbeTests(unittest.TestCase):
     def setUp(self):

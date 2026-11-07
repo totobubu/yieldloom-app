@@ -11,6 +11,11 @@ on:
                 type: boolean
                 required: true
                 default: false
+            resume_probe_run_id:
+                description: Optional existing probe ID; must still contain exact original synthetic bytes and no receipt
+                type: string
+                required: false
+                default: ''
 
 permissions:
     contents: read
@@ -44,5 +49,16 @@ jobs:
                   DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
                   DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
                   DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
-              run: python -m scripts.dividend_archive.smoke --apply --refresh --run-id gh-${{ github.run_id }}-${{ github.run_attempt }}
+                  PROBE_RUN_ID: gh-${{ github.run_id }}-${{ github.run_attempt }}
+                  PROBE_RESUME_ID: ${{ inputs.resume_probe_run_id }}
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  args=(--apply --refresh)
+                  if [ -n "$PROBE_RESUME_ID" ]; then
+                    args+=(--run-id "$PROBE_RESUME_ID" --resume-original)
+                  else
+                    args+=(--run-id "$PROBE_RUN_ID")
+                  fi
+                  python -m scripts.dividend_archive.smoke "${args[@]}"
             # No original data access, artifacts, cleanup, grants or deployments.

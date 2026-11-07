@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 import json
 import re
 
-from .storage import Conflict, DropboxStore, RemoteError, SHADOW, UncertainWrite, encode
+from .storage import Conflict, DropboxStore, Missing, RemoteError, SHADOW, UncertainWrite, encode
 from .preflight import PreflightFailure, preflight
 
 
@@ -28,7 +28,7 @@ def plan(run_id):
             "newCredentialSetup": False, "automaticCleanup": False}
 
 
-def probe(store, run_id):
+def probe(store, run_id, *, resume_original=False):
     """Uses only two new synthetic files. Never retries or deletes a prior probe."""
     result = plan(run_id)
     key = "verification/" + run_id + "/state.json"
@@ -37,7 +37,19 @@ def probe(store, run_id):
     stage = "create_unique_probe"
     try:
         original = body("original")
-        revision = store.put(key, original)
+        if resume_original:
+            stage = "verify_initial_synthetic_state_before_resume"
+            raw, revision = store.get(key)
+            if raw != original:
+                raise ProbeFailure(stage, "synthetic_state_does_not_match")
+            try:
+                store.get("verification/" + run_id + "/receipt.json")
+            except Missing:
+                pass
+            else:
+                raise ProbeFailure(stage, "completion_receipt_already_exists")
+        else:
+            revision = store.put(key, original)
         stage = "read_back_hash_and_revision"
         raw, read_revision = store.get(key)
         if raw != original or read_revision != revision:
@@ -113,6 +125,7 @@ def main(argv=None):
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--apply", action="store_true", help="Explicitly write synthetic shadow files")
     parser.add_argument("--refresh", action="store_true", help="Use an existing approved refresh grant in this environment")
+    parser.add_argument("--resume-original", action="store_true", help="Resume only an exact original synthetic state without a completion receipt")
     args = parser.parse_args(argv)
     result = plan(args.run_id)
     if not args.apply:
@@ -121,7 +134,7 @@ def main(argv=None):
     try:
         store = DropboxStore.from_environment(refresh=args.refresh)
         context = preflight(store)
-        result = probe(store, args.run_id)
+        result = probe(store, args.run_id, resume_original=args.resume_original)
         result["preflight"] = context
     except RemoteError as error:
         # _request only attaches allowlisted error categories, no raw response.

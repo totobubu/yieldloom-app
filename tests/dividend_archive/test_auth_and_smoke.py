@@ -10,7 +10,7 @@ import urllib.error
 from urllib.parse import parse_qs
 
 from scripts.dividend_archive.smoke import ProbeFailure, main, plan, probe
-from scripts.dividend_archive.storage import DropboxStore, LocalStore, Missing, RemoteError, UncertainWrite, encode
+from scripts.dividend_archive.storage import Conflict, DropboxStore, LocalStore, Missing, RemoteError, UncertainWrite, encode
 
 
 class Response(BytesIO):
@@ -68,6 +68,24 @@ class AuthenticationContractTests(unittest.TestCase):
         self.assertEqual(caught.exception.category, "http_error")
         self.assertNotIn("DO-NOT-PRINT", str(caught.exception))
 
+    def test_actual_upload_write_failed_envelope_is_a_conflict(self):
+        class Opener:
+            def open(self,request,timeout):
+                raise urllib.error.HTTPError(request.full_url,409,"error",{},Response(encode({"error":{
+                    ".tag":"path","path":{"reason":{".tag":"conflict","conflict":{".tag":"file"}},
+                        "upload_session_id":"DO-NOT-PRINT-UPLOAD-SESSION"}}})))
+        with self.assertRaises(Conflict) as caught:
+            DropboxStore("synthetic",opener=Opener()).put("verification/test/state.json",b"synthetic")
+        self.assertNotIn("DO-NOT-PRINT",str(caught.exception))
+
+    def test_other_upload_path_errors_are_not_misclassified_as_conflicts(self):
+        class Opener:
+            def open(self,request,timeout):
+                raise urllib.error.HTTPError(request.full_url,409,"error",{},Response(encode({"error":{
+                    ".tag":"path","path":{"reason":{".tag":"no_write_permission"}}}})))
+        with self.assertRaises(RemoteError):
+            DropboxStore("synthetic",opener=Opener()).put("verification/test/state.json",b"synthetic")
+
 
 class SyntheticProbeTests(unittest.TestCase):
     def setUp(self):
@@ -92,6 +110,25 @@ class SyntheticProbeTests(unittest.TestCase):
         self.assertEqual(files, ["verification/isolated-1/receipt.json", "verification/isolated-1/state.json"])
         payload = json.loads(self.store.get("verification/isolated-1/state.json")[0])
         self.assertEqual(payload["phase"], "original")
+
+    def test_resume_reuses_only_the_exact_known_original_synthetic_file(self):
+        key="verification/paused-1/state.json"
+        self.store.put(key,encode({"kind":"yieldloom-synthetic-storage-probe","runId":"paused-1","phase":"original"}))
+        result=probe(self.store,"paused-1",resume_original=True)
+        self.assertTrue(result["completed"])
+        self.assertEqual(len(list(self.store.root.rglob("*.json"))),2)
+
+    def test_resume_refuses_a_different_value_without_writing(self):
+        key="verification/paused-1/state.json"
+        self.store.put(key,b"DO-NOT-OVERWRITE-DIFFERENT-BYTES")
+        with self.assertRaises(ProbeFailure):probe(self.store,"paused-1",resume_original=True)
+        self.assertEqual(self.store.get(key)[0],b"DO-NOT-OVERWRITE-DIFFERENT-BYTES")
+
+    def test_resume_refuses_an_already_completed_probe(self):
+        probe(self.store,"complete-1")
+        before={p:p.read_bytes() for p in self.store.root.rglob("*.json")}
+        with self.assertRaises(ProbeFailure):probe(self.store,"complete-1",resume_original=True)
+        self.assertEqual(before,{p:p.read_bytes() for p in self.store.root.rglob("*.json")})
 
     def test_existing_probe_is_not_overwritten_or_retried(self):
         probe(self.store, "isolated-1")

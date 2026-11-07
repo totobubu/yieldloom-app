@@ -167,9 +167,12 @@ class DropboxStore:
                 details = {}
             if error.code == 409 and isinstance(details, dict):
                 path = details.get("path", {})
-                if details.get(".tag") == "path" and isinstance(path, dict) and path.get(".tag") == "not_found":
+                # UploadError.path is UploadWriteFailed(reason=WriteError),
+                # while download/metadata LookupError uses the path tag directly.
+                reason = path.get("reason", path) if isinstance(path, dict) else {}
+                if details.get(".tag") == "path" and isinstance(reason, dict) and reason.get(".tag") == "not_found" and not writing:
                     raise Missing() from None
-                if details.get(".tag") == "path" and isinstance(path, dict) and path.get(".tag") == "conflict":
+                if details.get(".tag") == "path" and isinstance(reason, dict) and reason.get(".tag") == "conflict":
                     raise Conflict("Dropbox revision/path conflict") from None
             if writing and error.code >= 500:
                 raise UncertainWrite("Dropbox server error; inspect write target before retry") from None

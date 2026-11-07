@@ -20,6 +20,9 @@
 `state.json`은 original → updated → 동시 쓰기의 단일 승자 → original로 변경한다.
 중복 add와 오래된 revision은 거절되어야 한다. 모든 검사가 통과한 뒤 receipt.json을
 생성한다. 실패/불확실한 결과는 자동 재시도하지 않으며 시험 파일은 삭제하지 않고 남긴다.
+중단된 시험을 명시적으로 재개할 때는 초기 합성 바이트가 정확히 일치하고 완료 영수증이
+없어야 한다. 다른 값이나 완료된 시험은 덮어쓰지 않는다. 재개는 기존 경로를 사용하여
+추가 시험 폴더/파일을 만들지 않는다.
 공유 상태를 바꾸거나, 실패한 요청 때문에 접근 권한을 확대하지 않는다.
 
 `.github/workflows/dividend-archive-smoke.yml`은 승인된 `test/dropbox-synthetic-shadow`

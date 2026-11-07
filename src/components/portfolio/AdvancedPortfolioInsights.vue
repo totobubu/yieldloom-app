@@ -535,6 +535,10 @@
         line-height: 24px;
         overflow-wrap: anywhere;
     }
+    .ledger-kpis article > span {
+        line-height: 16px;
+        font-weight: 500;
+    }
     .ledger-kpis small {
         color: var(--app-muted);
         line-height: 18px;
@@ -634,6 +638,21 @@
             grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
             gap: 16px;
             align-items: start;
+        }
+    }
+    @media (min-width: 641px) and (max-width: 1023px) {
+        .ledger-records .ledger-card-heading h4 {
+            font-size: 16px;
+            line-height: 24px;
+        }
+        .ledger-records table {
+            font-size: 12px;
+            line-height: 16px;
+        }
+        .ledger-records thead th {
+            height: 40px;
+            padding: 8px 12px;
+            font-weight: 700;
         }
     }
     @media (max-width: 640px) {

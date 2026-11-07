@@ -2276,6 +2276,95 @@
         padding-top: 12px;
         border-top: 1px solid var(--app-border-subtle);
     }
+    /* Final comparison references: keep metrics and controls, match their text styles. */
+    .heading-actions :deep(.p-button) {
+        line-height: 18px;
+    }
+    .responsive-matrix thead th {
+        font-weight: 600;
+    }
+    .responsive-matrix .ticker-line a {
+        font-weight: 700;
+    }
+    .responsive-comparison:not(.theme-comparison)
+        .responsive-matrix
+        tbody
+        th:has(+ .matrix-fee) {
+        font-weight: 700;
+    }
+    .context-summary > span,
+    .context-heading > span {
+        font-weight: 500;
+    }
+    .comparison-filter-context :deep(.p-button) {
+        --p-button-label-font-weight: 500;
+    }
+    .tray-heading h2 > span {
+        font-size: 11px;
+        line-height: 16px;
+    }
+    .tray-heading :deep(.p-button) {
+        font-size: 13px;
+        line-height: 18px;
+    }
+    .insight-cards h3 {
+        font-size: 13px;
+        line-height: 18px;
+    }
+    @media (min-width: 641px) {
+        .responsive-comparison:not(.theme-comparison)
+            .heading-actions
+            :deep(.p-button) {
+            min-height: 38px;
+            height: 38px;
+        }
+        .theme-comparison h1 {
+            font-weight: 600;
+        }
+        .theme-comparison .heading-actions :deep(.p-button),
+        .theme-comparison .tray-heading :deep(.p-button) {
+            --p-button-label-font-weight: 500;
+            font-size: 14px;
+            line-height: 20px;
+        }
+        .theme-comparison .theme-choice {
+            line-height: 19.5px;
+        }
+        .theme-comparison .explorer-filters label > span,
+        .theme-comparison .filter-search-row > p,
+        .theme-comparison .comparison-filter-context dt {
+            font-size: 12px;
+            line-height: 18px;
+        }
+        .theme-comparison .theme-members > span:first-child {
+            font-weight: 500;
+        }
+        .theme-comparison .responsive-navigation button {
+            font-size: 14px;
+            line-height: 20px;
+            font-weight: 500;
+        }
+        .theme-comparison .responsive-navigation button.active {
+            font-weight: 600;
+        }
+        .theme-comparison .responsive-matrix thead th {
+            font-size: 11px;
+            line-height: 16px;
+        }
+        .theme-comparison .responsive-matrix tbody th,
+        .theme-comparison .responsive-matrix tbody td {
+            line-height: 20px;
+        }
+        .theme-comparison .responsive-insights > h2 {
+            font-size: 16px;
+            line-height: 24px;
+        }
+        .theme-comparison .insight-cards h3 {
+            font-size: 11px;
+            line-height: 16px;
+            font-weight: 600;
+        }
+    }
     .sr-only {
         position: absolute;
         width: 1px;
@@ -2546,6 +2635,43 @@
         .theme-comparison .responsive-product-facts dd {
             font-size: 12px;
             line-height: 16px;
+        }
+        .responsive-comparison:not(.theme-comparison) h1 {
+            font-weight: 600;
+        }
+        .heading-actions :deep(.p-button) {
+            line-height: 16px;
+        }
+        .theme-comparison .heading-actions :deep(.p-button) {
+            font-size: 13px;
+            line-height: 18px;
+        }
+        .responsive-comparison:not(.theme-comparison) .filter-search-row > p {
+            line-height: 1.25;
+            font-weight: 500;
+        }
+        .responsive-navigation button {
+            line-height: 18px;
+            font-weight: 500;
+        }
+        .responsive-navigation button.active {
+            font-weight: 600;
+        }
+        .tray-heading :deep(.p-button) {
+            font-size: 11px;
+            line-height: 16px;
+        }
+        .theme-comparison .tray-heading :deep(.p-button) {
+            --p-button-label-font-weight: 500;
+        }
+        .theme-comparison .responsive-insights > h2 {
+            font-size: 18px;
+            line-height: 28px;
+        }
+        .theme-comparison .insight-cards h3 {
+            font-size: 13px;
+            line-height: 18px;
+            font-weight: 600;
         }
     }
     @media (max-width: 390px) {

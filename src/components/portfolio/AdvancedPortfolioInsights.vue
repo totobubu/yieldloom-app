@@ -226,13 +226,19 @@
                         </button>
                     </div>
                     <p class="ledger-notice">
-                        선택 월과 날짜 미확인 행 · 좌우로 스크롤하여 원장 필드를
-                        확인하세요.
+                        <span class="ledger-table-hint"
+                            >선택 월과 날짜 미확인 행 · 좌우로 스크롤하여 원장
+                            필드를 확인하세요.</span
+                        >
+                        <span class="ledger-card-hint"
+                            >선택 월과 날짜 미확인 행 · 카드별 저장 원장 필드와
+                            확인 상태를 표시합니다.</span
+                        >
                     </p>
                     <div
                         class="table-scroll"
                         tabindex="0"
-                        aria-label="원장 거래 기록 가로 스크롤">
+                        aria-label="원장 거래 기록">
                         <table aria-label="원장 트랜잭션 기록">
                             <thead>
                                 <tr>
@@ -249,6 +255,7 @@
                                 <tr
                                     v-for="entry in pagedRecords"
                                     :key="entry.index"
+                                    class="ledger-record"
                                     :class="{
                                         'ledger-missing': missingRecord(
                                             entry.row
@@ -595,6 +602,9 @@
         color: var(--app-accent-contrast);
         border-color: var(--app-accent);
     }
+    .ledger-card-hint {
+        display: none;
+    }
     .ledger-records table {
         min-width: 740px;
         font-size: 11px;
@@ -656,6 +666,115 @@
         }
     }
     @media (max-width: 640px) {
+        .ledger-table-hint {
+            display: none;
+        }
+        .ledger-card-hint {
+            display: inline;
+        }
+        /* Same table records and headers; Mobile presents each row as a card. */
+        .ledger-card.ledger-records {
+            padding: 0;
+            border: 0;
+            background: transparent;
+        }
+        .ledger-records > .table-scroll {
+            overflow: visible;
+        }
+        .ledger-records table {
+            min-width: 0;
+            display: block;
+            font-size: 12px;
+            line-height: 18px;
+        }
+        .ledger-records thead {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            overflow: hidden;
+            clip-path: inset(50%);
+            white-space: nowrap;
+        }
+        .ledger-records tbody {
+            display: grid;
+            gap: 8px;
+        }
+        .ledger-records .ledger-record {
+            display: grid;
+            grid-template-columns: max-content minmax(0, 1fr) max-content;
+            grid-template-areas:
+                'number date type'
+                'symbol symbol symbol'
+                'quantity amount amount'
+                'status status status';
+            align-items: start;
+            gap: 6px 8px;
+            padding: 12px;
+            border: 1px solid var(--app-border);
+            border-radius: 12px;
+            background: var(--app-surface);
+        }
+        .ledger-records .ledger-record > * {
+            padding: 0;
+            border: 0;
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+        .ledger-record > :nth-child(1) {
+            grid-area: number;
+            color: var(--app-muted);
+        }
+        .ledger-record > :nth-child(1)::before {
+            content: 'No. ';
+        }
+        .ledger-record > :nth-child(2) {
+            grid-area: date;
+            color: var(--app-muted);
+        }
+        .ledger-record > :nth-child(3) {
+            grid-area: symbol;
+            font-weight: 600;
+        }
+        .ledger-record > :nth-child(3) small {
+            display: inline;
+            margin-left: 4px;
+            font-weight: 400;
+        }
+        .ledger-record > :nth-child(4) {
+            grid-area: type;
+            max-width: 110px;
+            padding: 0 4px;
+            border-radius: 4px;
+            background: var(--app-surface-muted);
+            font-size: 11px;
+            line-height: 16px;
+        }
+        .ledger-record > :nth-child(5) {
+            grid-area: quantity;
+        }
+        .ledger-record > :nth-child(6) {
+            grid-area: amount;
+            text-align: right;
+            font-weight: 600;
+        }
+        .ledger-record > :nth-child(5) small {
+            display: inline;
+            margin-left: 4px;
+            font-weight: 400;
+        }
+        .ledger-record > :nth-child(7) {
+            grid-area: status;
+            padding-top: 6px;
+            border-top: 1px solid var(--app-border);
+            color: var(--app-muted);
+            font-size: 11px;
+            line-height: 16px;
+        }
+        .ledger-records .ledger-missing {
+            border-color: var(--app-warning, #fbbf24);
+            background: var(--app-warning-light);
+        }
         .ledger-heading h3 {
             font-size: 20px;
             line-height: 28px;

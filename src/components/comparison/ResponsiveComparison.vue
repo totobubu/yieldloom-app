@@ -1031,6 +1031,7 @@
                     비교 트레이 <span>{{ selection.length }}/3</span>
                 </h2>
                 <Button
+                    class="tray-reset-mobile"
                     label="선택 초기화"
                     icon="pi pi-refresh"
                     text
@@ -1051,6 +1052,13 @@
                     종목의 선택란을 눌러 최대 3개를 담으세요.
                 </p>
             </div>
+            <Button
+                class="tray-reset-tablet"
+                label="선택 초기화"
+                icon="pi pi-refresh"
+                outlined
+                severity="secondary"
+                @click="selection = []" />
             <Button
                 class="tray-compare-button"
                 :label="`선택 항목 정밀 비교 실행 (${selection.length}/3)`"
@@ -2242,6 +2250,56 @@
         width: 36px;
         height: 36px;
         padding: 0;
+    }
+    .tray-reset-tablet {
+        display: none;
+    }
+    /* The visible Tablet reset follows the chips in DOM and keyboard order. */
+    @media (min-width: 768px) and (max-width: 1024px) {
+        .responsive-comparison:not(.theme-comparison) .comparison-tray {
+            display: grid;
+            grid-template-columns:
+                max-content minmax(0, 1fr)
+                max-content max-content;
+            align-items: center;
+            gap: 12px 8px;
+        }
+        .responsive-comparison:not(.theme-comparison) .tray-heading {
+            display: contents;
+        }
+        .responsive-comparison:not(.theme-comparison) .tray-reset-mobile {
+            display: none;
+        }
+        .responsive-comparison:not(.theme-comparison) .tray-heading h2 {
+            white-space: nowrap;
+        }
+        .responsive-comparison:not(.theme-comparison) .tray-items {
+            min-width: 0;
+        }
+        .responsive-comparison:not(.theme-comparison)
+            .tray-items
+            :deep(.p-button) {
+            width: 24px;
+            min-width: 24px;
+            height: 24px;
+            min-height: 24px;
+        }
+        .responsive-comparison:not(.theme-comparison) .tray-reset-tablet {
+            display: inline-flex;
+            min-height: 44px;
+            font-size: 13px;
+            line-height: 18px;
+            white-space: nowrap;
+        }
+        .responsive-comparison:not(.theme-comparison) .tray-compare-button {
+            width: auto;
+            font-size: 13px;
+            line-height: 18px;
+            white-space: nowrap;
+        }
+        .responsive-comparison:not(.theme-comparison) .comparison-tray > p {
+            grid-column: 1 / -1;
+        }
     }
     .tray-compare-button {
         min-height: 44px;

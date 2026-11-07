@@ -4128,4 +4128,19 @@
             padding: 20px;
         }
     }
+    /* Their next card begins 20px below the tab bar, using the existing token. */
+    .ticker-thumbnail-page[data-stitch-view='details']
+        .stock-tabs-root
+        :deep(.p-tabpanels),
+    .ticker-thumbnail-page[data-stitch-view='prices']
+        .stock-tabs-root
+        :deep(.p-tabpanels) {
+        padding: var(--p-tabs-tabpanel-padding);
+    }
+    /* d33c8e... / 87cd20... .ticker-title remains 26/39 at all widths. */
+    .ticker-thumbnail-page[data-stitch-view='details'] .stock-identity h1,
+    .ticker-thumbnail-page[data-stitch-view='prices'] .stock-identity h1 {
+        font-size: 26px;
+        line-height: 39px;
+    }
 </style>

@@ -38,22 +38,55 @@ try {
         await page.route('**/api/**', (route) =>
             route.fulfill({ status: 403, json: { error: 'Visual fixture' } })
         );
-        for (const width of [1280, 768, 390, 320]) {
+        for (const width of [1280, 834, 768, 390, 320]) {
+            console.log(`CHECK shell ${admin ? 'admin' : 'public'}/${width}`);
             await page.setViewportSize({ width, height: 1024 });
             await page.goto(base + (admin ? '/mypage?view=summary' : '/'));
             await page.locator('.studio-header').waitFor();
+            if (admin) await page.locator('.family-page').waitFor();
+            await page
+                .locator('.fullscreen-data-loading-mask')
+                .waitFor({ state: 'hidden' });
+            await page
+                .locator('.portfolio-loading-overlay')
+                .waitFor({ state: 'hidden' });
             const account = page.getByRole('button', {
                 name: '계정 및 설정',
                 exact: true,
             });
             assert.equal(await account.count(), admin ? 1 : 0);
             assert.equal(await page.locator('.mobile-nav a').count(), 4);
-            assert.equal(
-                Math.round(
-                    (await page.locator('.studio-header').boundingBox()).height
-                ),
-                width < 768 ? 56 : 64
+            const expectedHeader = admin
+                ? width < 768
+                    ? 86.5
+                    : width < 1024
+                      ? 65
+                      : 64
+                : width < 768
+                  ? 56
+                  : 64;
+            const actualHeader = (
+                await page.locator('.studio-header').boundingBox()
+            ).height;
+            assert.ok(
+                Math.abs(actualHeader - expectedHeader) < 0.1,
+                `header ${admin}/${width}: ${actualHeader} vs ${expectedHeader}`
             );
+            const location = page.getByRole('navigation', {
+                name: '현재 포트폴리오 위치',
+                exact: true,
+            });
+            assert.equal(await location.count(), admin && width < 768 ? 1 : 0);
+            if (admin && width < 768) {
+                assert.match(
+                    await location.innerText(),
+                    /포트폴리오[\s\S]*개요[\s\S]*요약/
+                );
+                assert.equal(
+                    await location.locator('[aria-current="page"]').innerText(),
+                    '요약'
+                );
+            }
             assert.ok(
                 await page.evaluate(
                     () => document.documentElement.scrollWidth <= innerWidth + 1
@@ -72,6 +105,13 @@ try {
             await account.click();
             const drawer = page.locator('#account-drawer');
             await drawer.waitFor();
+            assert.equal(await location.count(), 0);
+            assert.ok(
+                Math.abs(
+                    (await page.locator('.studio-header').boundingBox())
+                        .height - (width < 768 ? 56 : 64)
+                ) < 0.1
+            );
             assert.equal(
                 await drawer
                     .getByRole('link', { name: '요약', exact: true })
@@ -90,6 +130,13 @@ try {
                 (url) => url.searchParams.get('view') === 'holdings'
             );
             await drawer.waitFor({ state: 'hidden' });
+            if (width < 768) {
+                assert.equal(
+                    await location.locator('[aria-current="page"]').innerText(),
+                    '보유 종목'
+                );
+                assert.ok(!(await location.innerText()).includes('원금'));
+            }
             if (width >= 1024) {
                 await page
                     .getByRole('button', { name: '메뉴 접기', exact: true })
@@ -133,7 +180,7 @@ try {
         }
         assert.deepEqual(errors, []);
         console.log(
-            `PASS ${admin ? 'synthetic admin' : 'public'}: 1280/768/390/320px, navigation, RBAC visibility, no overflow or JS errors`
+            `PASS ${admin ? 'synthetic admin' : 'public'}: 1280/834/768/390/320px, navigation, RBAC visibility, no overflow or JS errors`
         );
         await context.close();
     }

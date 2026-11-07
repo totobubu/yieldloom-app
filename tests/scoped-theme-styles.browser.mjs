@@ -5,6 +5,13 @@ import { parse, compileStyle } from '@vue/compiler-sfc';
 import { chromium } from 'playwright';
 const cases = [
     [
+        'src/components/navigation/PortfolioNavigation.vue',
+        '<nav class="portfolio-navigation location-navigation"><span class="location-group">포트폴리오</span><span class="location-current">원금</span><span class="location-status">메뉴 닫힘</span></nav>',
+        '.location-group',
+        'color',
+        'rgb(148, 163, 184)',
+    ],
+    [
         'src/components/portfolio/PortfolioImportReview.vue',
         '<span class="issue-metric">검토</span><span class="preview-badge">미리보기</span>',
         '.issue-metric',

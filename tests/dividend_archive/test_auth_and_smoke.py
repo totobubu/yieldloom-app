@@ -101,6 +101,14 @@ class SyntheticProbeTests(unittest.TestCase):
         self.assertFalse(result["applied"])
         self.assertFalse(result["originalDividendAccess"])
 
+    def test_external_sharing_proof_cannot_select_a_different_run_or_a_new_probe(self):
+        for args in (["--apply","--run-id","one","--sharing-checked-run-id","two"],
+                     ["--apply","--run-id","one","--sharing-checked-run-id","one"]):
+            output=StringIO()
+            with patch.object(DropboxStore,"from_environment",side_effect=AssertionError("No credential access")),redirect_stdout(output):
+                self.assertEqual(main(args),2)
+            self.assertEqual(json.loads(output.getvalue())["stage"],"external_sharing_check_binding_invalid")
+
     def test_probe_covers_roundtrip_conflicts_concurrency_and_restoration(self):
         result = probe(self.store, "isolated-1")
         self.assertEqual(len(result["checks"]), 6)

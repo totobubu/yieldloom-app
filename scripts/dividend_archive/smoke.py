@@ -126,14 +126,18 @@ def main(argv=None):
     parser.add_argument("--apply", action="store_true", help="Explicitly write synthetic shadow files")
     parser.add_argument("--refresh", action="store_true", help="Use an existing approved refresh grant in this environment")
     parser.add_argument("--resume-original", action="store_true", help="Resume only an exact original synthetic state without a completion receipt")
+    parser.add_argument("--sharing-checked-run-id", help="Explicit operator attestation from the approved reader for this same existing synthetic run only")
     args = parser.parse_args(argv)
     result = plan(args.run_id)
     if not args.apply:
         print(json.dumps({**result, "applied": False}))
         return 0
+    if args.sharing_checked_run_id and (not args.resume_original or args.sharing_checked_run_id != args.run_id):
+        print(json.dumps({"completed": False, "stage": "external_sharing_check_binding_invalid", "writeAttempted": False}))
+        return 2
     try:
         store = DropboxStore.from_environment(refresh=args.refresh)
-        context = preflight(store)
+        context = preflight(store, externally_checked_run_id=args.sharing_checked_run_id)
         result = probe(store, args.run_id, resume_original=args.resume_original)
         result["preflight"] = context
     except RemoteError as error:

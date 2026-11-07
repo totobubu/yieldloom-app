@@ -15,7 +15,7 @@ class PreflightFailure(RuntimeError):
         super().__init__(stage)
 
 
-def preflight(store):
+def preflight(store, *, externally_checked_run_id=None):
     stage = "read_account_context"
 
     def api(route, body):
@@ -44,6 +44,13 @@ def preflight(store):
             sharing = metadata.get("sharing_info") or {}
             if any(sharing.get(key) for key in ("shared_folder_id", "parent_shared_folder_id", "is_team_folder")):
                 raise PreflightFailure(stage, "shared_ancestor_detected")
+            if externally_checked_run_id:
+                # A trusted operator has read the SAME existing synthetic run's
+                # ancestry and exhausted its links through the approved connected
+                # reader. Never repeat an unsupported/denied sharing endpoint or
+                # change grants. Native account/folder metadata is still checked.
+                checked += 1
+                continue
             stage = "read_synthetic_ancestor_shared_links"
             links = api("sharing/list_shared_links", {"path": path, "direct_only": True})
             pages = 0
@@ -58,7 +65,9 @@ def preflight(store):
                 links = api("sharing/list_shared_links", {"cursor": links["cursor"]})
             checked += 1
         return {"personalHomeChecked": True, "existingAncestorsChecked": checked,
-                "targetAncestorAbsent": False, "sharedAncestorDetected": False}
+                "targetAncestorAbsent": False, "sharedAncestorDetected": False,
+                "sharedLinksCheck": "approved_connected_reader" if externally_checked_run_id else "native_api",
+                "externallyCheckedRunId": externally_checked_run_id}
     except RemoteError as error:
         raise PreflightFailure(stage, error.category or "remote_error", error.status) from None
     except (ValueError, TypeError, AttributeError):

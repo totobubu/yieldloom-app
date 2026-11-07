@@ -63,5 +63,17 @@ class PreflightTests(unittest.TestCase):
         self.assertEqual(caught.exception.category, "personal_home_not_established")
         self.assertEqual(len(store.calls), 1)
 
+    def test_external_read_proof_retains_native_account_and_ancestor_metadata_checks(self):
+        store=Store([PERSONAL,*({".tag":"folder"} for _ in range(4))])
+        result=preflight(store,externally_checked_run_id="gh-approved-1")
+        self.assertEqual(result["existingAncestorsChecked"],4)
+        self.assertEqual(result["externallyCheckedRunId"],"gh-approved-1")
+        self.assertEqual(result["sharedLinksCheck"],"approved_connected_reader")
+        self.assertFalse(any("sharing/list_shared_links" in call[0] for call in store.calls))
+
+    def test_external_read_proof_does_not_override_native_shared_folder_detection(self):
+        store=Store([PERSONAL,{".tag":"folder","sharing_info":{"shared_folder_id":"not-allowed"}}])
+        with self.assertRaises(PreflightFailure):preflight(store,externally_checked_run_id="gh-approved-1")
+
 
 if __name__ == "__main__": unittest.main()

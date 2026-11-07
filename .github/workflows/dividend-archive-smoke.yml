@@ -16,6 +16,11 @@ on:
                 type: string
                 required: false
                 default: ''
+            sharing_checked_run_id:
+                description: Only after approved reader checks the same existing run and every ancestor with no shared folders or links
+                type: string
+                required: false
+                default: ''
 
 permissions:
     contents: read
@@ -51,6 +56,7 @@ jobs:
                   DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
                   PROBE_RUN_ID: gh-${{ github.run_id }}-${{ github.run_attempt }}
                   PROBE_RESUME_ID: ${{ inputs.resume_probe_run_id }}
+                  PROBE_SHARING_CHECKED_ID: ${{ inputs.sharing_checked_run_id }}
               shell: bash
               run: |
                   set -euo pipefail
@@ -59,6 +65,9 @@ jobs:
                     args+=(--run-id "$PROBE_RESUME_ID" --resume-original)
                   else
                     args+=(--run-id "$PROBE_RUN_ID")
+                  fi
+                  if [ -n "$PROBE_SHARING_CHECKED_ID" ]; then
+                    args+=(--sharing-checked-run-id "$PROBE_SHARING_CHECKED_ID")
                   fi
                   python -m scripts.dividend_archive.smoke "${args[@]}"
             # No original data access, artifacts, cleanup, grants or deployments.

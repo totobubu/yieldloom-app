@@ -612,6 +612,9 @@
 </template>
 
 <style scoped>
+    .search-page {
+        line-height: 1.5;
+    }
     .search-heading {
         display: flex;
         justify-content: space-between;
@@ -692,6 +695,9 @@
         display: flex;
         align-items: center;
         gap: 8px;
+    }
+    .delisted-filter label {
+        font-size: 14px;
     }
     .sort-field label {
         color: var(--app-muted);
@@ -819,6 +825,7 @@
         overflow-wrap: anywhere;
     }
     .stock-card-heading :deep(.stock-product-type) {
+        --p-tag-font-weight: 600;
         flex-shrink: 0;
         font-size: 11px;
         padding: 3px 8px;

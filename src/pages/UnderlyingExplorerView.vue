@@ -1490,6 +1490,7 @@
 <style scoped>
     .underlying-explorer {
         max-width: 1200px;
+        line-height: 1.5;
         margin: auto;
         padding: 24px 0;
         color: var(--app-text);
@@ -1901,6 +1902,7 @@
         min-width: 0;
     }
     .comparison-basis-context > span {
+        font-weight: 600;
         color: var(--app-accent);
         background: var(--app-accent-light);
         padding: 4px 8px;
@@ -1978,6 +1980,8 @@
         width: 18px;
         height: 18px;
         font-size: 11px;
+        line-height: 18px;
+        font-weight: 600;
         background: var(--app-border);
         color: var(--app-muted);
     }
@@ -2121,6 +2125,10 @@
     .reference-choice > div {
         display: flex;
         gap: 8px;
+    }
+    .reference-choice :deep(.p-button) {
+        --p-button-label-font-weight: 500;
+        font-size: 14px;
     }
     .reference-choice select {
         min-width: 0;

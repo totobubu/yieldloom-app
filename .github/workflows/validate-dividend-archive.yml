@@ -1,0 +1,30 @@
+name: Validate synthetic Dropbox probe
+
+on:
+    pull_request:
+        paths:
+            - 'scripts/dividend_archive/**'
+            - 'tests/dividend_archive/**'
+            - '.github/workflows/dividend-archive-smoke.yml'
+            - '.github/workflows/validate-dividend-archive.yml'
+    push:
+        branches: [test/dropbox-synthetic-shadow]
+        paths:
+            - 'scripts/dividend_archive/**'
+            - 'tests/dividend_archive/**'
+            - '.github/workflows/validate-dividend-archive.yml'
+
+permissions:
+    contents: read
+
+jobs:
+    synthetic-tests:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: '3.11'
+            - run: python -m unittest discover -s tests/dividend_archive -v

@@ -1206,15 +1206,10 @@
                                 <section
                                     v-if="activeTab === 'details'"
                                     class="stock-section">
-                                    <h2>개요 및 기본 정보</h2>
-                                    <p class="hint">
-                                        시세 기준
-                                        {{
-                                            selectedData.sourceStatus
-                                                .priceDate || '미확인'
-                                        }}
-                                        · 수집된 실제 이력 기준
-                                    </p>
+                                    <div class="stock-facts-heading">
+                                        <h2>개요 및 기본 정보</h2>
+                                        <span>종목 메타데이터</span>
+                                    </div>
                                     <dl class="stock-facts">
                                         <div>
                                             <dt>종목명</dt>
@@ -1259,7 +1254,7 @@
                                             </dd>
                                         </div>
                                         <div>
-                                            <dt>수집 시세 범위</dt>
+                                            <dt>수집 시세 기간</dt>
                                             <dd>
                                                 {{
                                                     priceRows.at(-1)?.date ||
@@ -1288,27 +1283,30 @@
                                         </div>
                                         <div>
                                             <dt>순자산가치 (NAV)</dt>
-                                            <dd>
-                                                미확인 · 공식 자료 확인 필요
-                                            </dd>
+                                            <dd>미확인</dd>
                                         </div>
                                         <div>
                                             <dt>총보수 (운용수수료)</dt>
-                                            <dd>
-                                                미확인 · 공식 자료 확인 필요
-                                            </dd>
+                                            <dd>미확인</dd>
                                         </div>
                                         <div>
                                             <dt>총 운용자산 (AUM)</dt>
-                                            <dd>
-                                                미확인 · 공식 자료 확인 필요
-                                            </dd>
+                                            <dd>미확인</dd>
                                         </div>
                                     </dl>
                                     <p class="hint">
+                                        시세 기준
+                                        {{
+                                            selectedData.sourceStatus
+                                                .priceDate || '미확인'
+                                        }}
+                                        · 수집된 실제 이력 기준
+                                    </p>
+                                    <p class="hint">
                                         수집 이력은 실제 보유 기간과 다를 수
                                         있습니다. 미확인 수치는 0으로 간주하지
-                                        않습니다.
+                                        않습니다. NAV·총보수·AUM은 공식 자료
+                                        확인이 필요합니다.
                                     </p>
                                 </section>
                                 <OfficialFundData
@@ -4142,5 +4140,65 @@
     .ticker-thumbnail-page[data-stitch-view='prices'] .stock-identity h1 {
         font-size: 26px;
         line-height: 39px;
+    }
+    /* Both original content frames use 15px / 1.5 body typography. */
+    .ticker-thumbnail-page:is(
+        [data-stitch-view='details'],
+        [data-stitch-view='prices']
+    ) {
+        line-height: 1.5;
+    }
+    .ticker-thumbnail-page[data-stitch-view='details'] .stock-facts-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+    .ticker-thumbnail-page[data-stitch-view='details'] .stock-facts-heading h2 {
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: normal;
+    }
+    .stock-facts-heading > span {
+        color: var(--app-muted);
+        font-size: 12px;
+        font-weight: 500;
+    }
+    /* Original pending disclosure cards keep the unavailable state visible. */
+    .ticker-thumbnail-page[data-stitch-view='details']
+        .stock-official-pending
+        article {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        border-style: dashed;
+        background: var(--app-bg);
+    }
+    .ticker-thumbnail-page[data-stitch-view='details']
+        .stock-official-pending
+        article
+        strong {
+        font-size: 13px;
+        font-weight: 600;
+    }
+    .ticker-thumbnail-page[data-stitch-view='details']
+        .stock-official-pending
+        article
+        p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+    .ticker-thumbnail-page[data-stitch-view='details']
+        .stock-official-pending
+        article
+        span {
+        font-size: 13px;
+        font-weight: 600;
+    }
+    /* The outer frame owns the original border and padding, not the SVG. */
+    .ticker-thumbnail-page[data-stitch-view='prices'] :deep(.candle-plot) {
+        border: 0;
+        padding: 0;
     }
 </style>

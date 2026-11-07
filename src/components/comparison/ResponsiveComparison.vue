@@ -2311,6 +2311,13 @@
         font-size: 13px;
         line-height: 18px;
     }
+    @media (min-width: 641px) and (max-width: 1023px) {
+        .responsive-comparison:not(.theme-comparison)
+            .responsive-navigation
+            button:not(.active) {
+            font-weight: 500;
+        }
+    }
     @media (min-width: 641px) {
         .responsive-comparison:not(.theme-comparison)
             .heading-actions

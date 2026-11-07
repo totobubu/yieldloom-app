@@ -1320,6 +1320,21 @@
         padding: 0 14px;
         line-height: 42px;
     }
+    @media (max-width: 1023px) {
+        .insights-filters :deep(#insights-currency) {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: 600;
+        }
+    }
+    @media (max-width: 640px) {
+        .insights-filters :deep(#insights-currency) {
+            font-size: 13px;
+            line-height: 18px;
+        }
+    }
 
     /* Actual 2e3c66 KPI and twelve-month table properties. Extra data notes remain visible. */
     .insights-summary article {

@@ -1,0 +1,48 @@
+name: Approved synthetic Dropbox shadow probe
+
+on:
+    push:
+        branches: [test/dropbox-synthetic-shadow]
+        paths: ['.github/workflows/dividend-archive-smoke.yml']
+    workflow_dispatch:
+        inputs:
+            confirm_synthetic_shadow_write:
+                description: Write only two synthetic files in the isolated shadow verification directory
+                type: boolean
+                required: true
+                default: false
+
+permissions:
+    contents: read
+
+concurrency:
+    group: dropbox-shadow-storage-probe
+    cancel-in-progress: false
+
+jobs:
+    verify:
+        # First creation of this explicitly approved test branch only. Subsequent
+        # pushes cannot repeat a write. Manual reruns require a unique attempt ID.
+        if: >-
+            github.repository == 'totobubu/yieldloom-app' &&
+            github.ref == 'refs/heads/test/dropbox-synthetic-shadow' &&
+            ((github.event_name == 'push' && github.event.created == true) ||
+             (github.event_name == 'workflow_dispatch' && inputs.confirm_synthetic_shadow_write == true))
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-python@v5
+              with:
+                  python-version: '3.11'
+            - name: Verify probe code without credentials
+              run: python -m unittest discover -s tests/dividend_archive -v
+            - name: Read account and sharing context then test only synthetic files
+              env:
+                  DROPBOX_APP_KEY: ${{ secrets.DROPBOX_APP_KEY }}
+                  DROPBOX_APP_SECRET: ${{ secrets.DROPBOX_APP_SECRET }}
+                  DROPBOX_REFRESH_TOKEN: ${{ secrets.DROPBOX_REFRESH_TOKEN }}
+              run: python -m scripts.dividend_archive.smoke --apply --refresh --run-id gh-${{ github.run_id }}-${{ github.run_attempt }}
+            # No original data access, artifacts, cleanup, grants or deployments.

@@ -33,6 +33,33 @@ try {
             await page
                 .locator('.fullscreen-data-loading-mask')
                 .waitFor({ state: 'hidden' });
+            // Numbering is decorative: the existing accessible section names stay usable.
+            const sections = [
+                ['.dividend-next h2', '배당 일정'],
+                ['.dividend-trend h2', '월별 배당 추이'],
+                ['#dividend-core-heading', '핵심 재무 & 배당 지표'],
+                ['#dividend-roc-heading', '배당·ROC 이력'],
+                ['#stock-feedback-heading', '익명 요청 및 한마디'],
+            ];
+            for (const [index, [selector, name]] of sections.entries()) {
+                const heading = page.locator(selector);
+                await heading.waitFor();
+                assert.equal(await heading.count(), 1);
+                assert.match(
+                    await heading.innerText(),
+                    new RegExp(`^${index + 1}\\.`)
+                );
+                assert.equal(
+                    await heading.locator('[aria-hidden="true"]').count(),
+                    1
+                );
+                assert.equal(
+                    await page
+                        .getByRole('heading', { name, exact: true })
+                        .count(),
+                    1
+                );
+            }
             const cards = page.locator('.dividend-core-grid .insight-metric');
             assert.equal(await cards.count(), 9);
             assert.equal(

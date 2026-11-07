@@ -1850,6 +1850,7 @@
         margin: 0 0 6px;
         font-size: 24px;
         line-height: 36px;
+        letter-spacing: normal;
     }
     .comparison-page-heading p {
         font-size: 14px;

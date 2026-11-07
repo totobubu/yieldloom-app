@@ -1414,7 +1414,10 @@
                                 class="dividend-next">
                                 <div class="section-heading">
                                     <div class="schedule-title">
-                                        <h2>배당 일정</h2>
+                                        <h2>
+                                            <span aria-hidden="true">1. </span
+                                            >배당 일정
+                                        </h2>
                                         <InfoHelp
                                             label="배당 일정 안내"
                                             text="공시 전 일정은 최근 주기를 바탕으로 한 추정치입니다. 증권사 입금일은 다를 수 있으며, 개인별 수령액은 보유 수량과 세금에 따라 다릅니다." />
@@ -1506,6 +1509,7 @@
                             </div>
                             <StockDividendTrend
                                 v-if="dividendState === 'available'"
+                                :section-number="2"
                                 :rows="selectedData.backtestData || []"
                                 :as-of="
                                     selectedData.sourceStatus?.priceDate ||
@@ -1529,6 +1533,7 @@
                                 :security-type="securityType">
                                 <template #summary="{ metrics }"
                                     ><StockDividendMetrics
+                                        :section-number="3"
                                         :metrics="metrics"
                                         :trailing="trailingSummary"
                                         :currency="selectedInfo.currency || ''"
@@ -1541,6 +1546,7 @@
                                     }">
                                     <DividendRocHistory
                                         :key="normalize(route.params.ticker)"
+                                        :section-number="4"
                                         :history="historyRows"
                                         :observations="observations"
                                         :currency="
@@ -2226,6 +2232,7 @@
             </Tabs>
             <StockFeedbackForm
                 v-if="activeTab !== 'details'"
+                :section-number="activeTab === 'dividends' ? 5 : 0"
                 :symbol="selectedInfo.symbol" />
             <Dialog
                 v-model:visible="presetDialogOpen"
@@ -3433,6 +3440,7 @@
         .stock-official-pending
         h3 {
         line-height: 22.5px;
+        letter-spacing: normal;
     }
     .ticker-thumbnail-page[data-stitch-view='details'] .stock-facts > div {
         grid-template-columns: 32% minmax(0, 1fr);
@@ -3455,6 +3463,7 @@
     }
     .ticker-thumbnail-page[data-stitch-view='details']
         :deep(.stock-feedback h2) {
+        letter-spacing: normal;
         font-size: 16px;
         line-height: 24px;
         margin-bottom: 14px;
@@ -4062,15 +4071,55 @@
         transition: none;
     }
     .ticker-thumbnail-page[data-stitch-view='share'] .share-preview-heading h2 {
+        letter-spacing: normal;
         font-size: 16px;
         line-height: 24px;
         font-weight: 600;
     }
+    /* bd619d... has five numbered 20/28 semibold section headings. */
+    .ticker-thumbnail-page[data-stitch-view='dividends'] .dividend-next h2,
     .ticker-thumbnail-page[data-stitch-view='dividends']
-        :deep(.dividend-trend h2) {
+        :deep(.dividend-trend h2),
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(#dividend-core-heading),
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(#dividend-roc-heading),
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(#stock-feedback-heading) {
         font-size: 20px;
         line-height: 28px;
         font-weight: 600;
+        letter-spacing: normal;
+    }
+    /* The other four headings share the source's 10x24 accent marker;
+       the trend component already renders its own marker. */
+    .ticker-thumbnail-page[data-stitch-view='dividends'] .dividend-next h2,
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(#dividend-core-heading),
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(#dividend-roc-heading),
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(#stock-feedback-heading) {
+        position: relative;
+        padding-left: 20px;
+    }
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        .dividend-next
+        h2::before,
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(#dividend-core-heading)::before,
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(#dividend-roc-heading)::before,
+    .ticker-thumbnail-page[data-stitch-view='dividends']
+        :deep(#stock-feedback-heading)::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 2px;
+        width: 10px;
+        height: 24px;
+        border-radius: 2px;
+        background: var(--app-accent);
     }
     /* bd619d... trend card uses p-5 below md and p-6 from 768px. */
     @media (max-width: 767px) {

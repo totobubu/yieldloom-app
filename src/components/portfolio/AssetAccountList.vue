@@ -24,7 +24,7 @@
     const accountTypeLabels = {
         general: '일반',
         isa: 'ISA',
-        pension: '연금',
+        pension: '연금계좌',
         other: '기타',
     };
     const accountTypeLabel = (type) =>
@@ -185,6 +185,7 @@
     }
     .account-card-alias {
         width: 100%;
+        overflow-wrap: anywhere;
         color: var(--account-card-outline, var(--app-muted));
         font-size: 12px;
         line-height: 16px;
@@ -271,21 +272,25 @@
         gap: 8px;
         padding-top: 8px;
         margin-top: auto;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
     }
     .account-card-primary-tools :deep(.p-button) {
         flex: 1 1 100px;
-        height: 36px;
+        height: auto;
         min-height: 36px;
         padding: 0 12px;
         border-radius: 8px;
         border: 0;
         font-size: 12px;
         line-height: 16px;
+        white-space: normal;
+    }
+    .account-card-primary-tools :deep(.p-button-label) {
+        min-width: 0;
     }
     .account-card-primary-tools > .p-button:first-child {
-        flex: 1 1 0;
-        min-width: max-content;
+        flex: 1 1 auto;
+        min-width: 0;
     }
     .account-card-primary-tools > .p-button:last-child {
         flex: 0 1 auto;
